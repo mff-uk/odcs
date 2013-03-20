@@ -3,6 +3,7 @@
 # Eclipse Project Files #
 .project
 .settings/
+.classpath
 
 # Build Directories #
 target/
