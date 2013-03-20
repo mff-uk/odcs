@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cz.cuni.mff.ms.intlib.frontend</groupId>
+	<artifactId>intlib-frontend</artifactId>
+	<version>0.0.1</version>
+	<packaging>war</packaging>
+    
+	<repositories>	    
+	    <repository> 
+	        <id>JBoss Thirdparty Releases</id>
+	        <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+	    </repository>	    
+		<repository>
+			<id>maven-eclipse</id> <!-- repository for org.eclipse.tycho -->
+			<url>http://maven.eclipse.org/nexus/content/repositories/testing</url>
+		</repository>
+	</repositories>
+	
+	<dependencies>
+		<dependency> <!-- commons project dependency -->
+			<groupId>cz.cuni.mff.ms.intlib.commons</groupId>
+			<artifactId>intlib-commons</artifactId>
+			<!-- the version has to be specify -->
+			<version>0.0.1</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		 <dependency> <!-- OSGi impelemention -->  
+			<groupId>org.eclipse.tycho</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.8.1.v20120830-144521</version>
+		</dependency>		
+		
+	</dependencies>
+	
+	<build>
+	    <finalName>intlib</finalName>
+	    <plugins>	        
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-war-plugin</artifactId>
+			  <!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml which will be ignored -->
+			  <version>2.3</version>
+			</plugin>
+			
+			<!-- deploy to Apache tomcat
+				see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html
+					http://localhost:8080/docs/manager-howto.html
+				use maven cmd:
+				mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy
+			-->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.0</version>
+				<configuration>
+				    <url>http://localhost:8080/manager/text</url>
+					<username>deploy</username>
+					<password>deploy</password>
+					<!-- if already deployed update -->					
+					<update>true</update> 	
+					<!-- in tomcat-users.xml
+						<user name="deploy" password="deploy" roles="admin-script,manager-script"/> 
+					 -->				
+				</configuration>
+			</plugin>			
+			
+	    </plugins>
+	    
+	</build>
+	
+</project> 
