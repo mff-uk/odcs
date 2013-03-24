@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Name: intlib-module
+Bundle-SymbolicName: intlib-module
+Bundle-Version: 1.0.0
+Import-Package: org.osgi.framework,
+ cz.cuni.mff.ms.intlib.commons,
+ com.vaadin,
+ com.vaadin.ui
+Provide-Package: gui,
+ module
