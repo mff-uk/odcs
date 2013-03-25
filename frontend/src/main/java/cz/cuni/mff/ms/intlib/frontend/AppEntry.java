@@ -12,8 +12,13 @@ import cz.cuni.mff.ms.intlib.frontend.gui.MainLayout;
 public class AppEntry extends com.vaadin.ui.UI {
 				
 	@Override
-	protected void init(VaadinRequest request) {		
+	protected void init(VaadinRequest request) {
+		// create application instance
+		AppInstance.createInstance();
+		
+		// create application layout
 		MainLayout main = new MainLayout();
+		// set application content
 		setContent(main);
 	}
 	

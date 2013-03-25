@@ -30,22 +30,28 @@ public class MainLayout extends CustomComponent {
 		/**
 		 * Component to show.
 		 */
-		private CustomComponent component;
+		private Class<?> component;
 		
 		/**
 		 * @param parent
 		 * @param component Component to show in reaction.
 		 */
-		public ComponentChangeCommand(MainLayout parent, CustomComponent component) {
+		public ComponentChangeCommand (MainLayout parent, Class<?> component) {
 			this.parent = parent;
 			this.component = component;
 		}
 		
 		public void menuSelected(MenuItem selectedItem) {
 			// replace component on position 1 (the page)
-			this.parent.mainLayout.replaceComponent(
-					this.parent.mainLayout.getComponent(1)
-					, this.component);
+			CustomComponent component = null;
+
+			try {
+				component = (CustomComponent) this.component.newInstance();
+			} catch (InstantiationException e) {
+			} catch (IllegalAccessException e) {
+			}
+			
+			this.parent.mainLayout.replaceComponent(this.parent.mainLayout.getComponent(1), component);
 		}
 		
 	}
@@ -60,14 +66,15 @@ public class MainLayout extends CustomComponent {
 	public MainLayout() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
-		// init menuBar
-		menuBar.addItem("Pipelines", new ComponentChangeCommand(this, new Pipelines()));
-		menuBar.addItem("DPUs", new ComponentChangeCommand(this, new DPUs()));
-		menuBar.addItem("Execution Monitor", new ComponentChangeCommand(this, new ExecutionMonitor()));
-		menuBar.addItem("Browse Data", new ComponentChangeCommand(this, new DataBrowser()));
-		menuBar.addItem("Scheduler", new ComponentChangeCommand(this, new Scheduler()));
-		menuBar.addItem("Administrator", new ComponentChangeCommand(this, new Administrator()));
-		menuBar.addItem("Help", new ComponentChangeCommand(this, null));
+		// init menuBar		
+		menuBar.addItem("Pipelines", new ComponentChangeCommand(this, Pipelines.class));
+		menuBar.addItem("DPUs", new ComponentChangeCommand(this, DPUs.class));
+		menuBar.addItem("Execution Monitor", new ComponentChangeCommand(this, ExecutionMonitor.class));
+		menuBar.addItem("Browse Data", new ComponentChangeCommand(this, DataBrowser.class));
+		menuBar.addItem("Scheduler", new ComponentChangeCommand(this, Scheduler.class));
+		menuBar.addItem("Administrator", new ComponentChangeCommand(this, Administrator.class));
+		// menuBar.addItem("Help", new ComponentChangeCommand(this, null));
+		
 		// add default sub-page
 		mainLayout.addComponent(new Initial());
 	}
@@ -77,8 +84,6 @@ public class MainLayout extends CustomComponent {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(false);
-		mainLayout.setWidth("100%");
-		mainLayout.setHeight("100%");
 		mainLayout.setMargin(false);
 		
 		// top-level component properties
@@ -89,7 +94,7 @@ public class MainLayout extends CustomComponent {
 		menuBar = new MenuBar();
 		menuBar.setImmediate(false);
 		menuBar.setWidth("100.0%");
-		menuBar.setHeight("-1px");
+		menuBar.setHeight("20px");
 		mainLayout.addComponent(menuBar);
 		
 		return mainLayout;
