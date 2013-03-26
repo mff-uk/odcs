@@ -1,4 +1,4 @@
-package cz.cuni.mff.ms.intlib.data;
+package cz.cuni.intlib.commons.app.data;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

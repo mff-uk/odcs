@@ -42,4 +42,6 @@ public class AppInstance{
 	public static EntityManager getEntityManager() {
 		return instance.get().entityManager;
 	}
+	
+	// TODO provazat zivotnost tridy s zivotnosti session
 }

@@ -18,30 +18,30 @@
 	</repositories>
 	
 	<dependencies>
-		<dependency> <!-- commons project -->
-			<groupId>cz.cuni.mff.ms.intlib.commons</groupId>
-			<artifactId>intlib-commons</artifactId>
+		<dependency> <!-- commons-app project -->
+			<groupId>cz.cuni.intlib.commons.app</groupId>
+			<artifactId>intlib-commons-app</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
-			<groupId>cz.cuni.mff.ms.intlib.commons</groupId>
-			<artifactId>intlib-commons</artifactId>
+			<groupId>cz.cuni.intlib.commons.app</groupId>
+			<artifactId>intlib-commons-app</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
 			<type>jar</type>
-		</dependency>		
+		</dependency>
 
 		<dependency> <!-- commons-module project -->
-			<groupId>cz.cuni.mff.ms.intlib.commons.module</groupId>
+			<groupId>cz.cuni.intlib.commons.module</groupId>
 			<artifactId>intlib-commons-module</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
-			<groupId>cz.cuni.mff.ms.intlib.commons.module</groupId>
+			<groupId>cz.cuni.intlib.commons.module</groupId>
 			<artifactId>intlib-commons-module</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>

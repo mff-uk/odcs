@@ -1,6 +1,4 @@
-package cz.cuni.mff.ms.intlib.commons;
-
-import com.vaadin.ui.CustomComponent;
+package cz.cuni.intlib.commons;
 
 /**
  * Base DPU interface.
@@ -26,14 +24,5 @@ public interface BaseDPU {
 	 * @throws ExceptionSetting Thrown in case of invalid setting.
 	 */
 	public void setSettings(String value);	
-	
-	/**
-	 * Return configuration component for DPU. The configuration
-	 * component must not contains close button. The component will be closed
-	 * by application. 
-	 * @return DPU's configuration component.
-	 */
-	public CustomComponent getConfigurationComponent();
-	
 	
 }

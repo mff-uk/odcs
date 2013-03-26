@@ -1,74 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>cz.cuni.mff.ms.intlib.commons</groupId>
+	<groupId>cz.cuni.intlib.commons</groupId>
 	<artifactId>intlib-commons</artifactId>
 	<version>0.0.1</version>
-  	 
-	<repositories>
-		<repository> <!-- hibernate -->
-	        <id>JBoss</id>
-	        <name>JBoss Repsitory</name>
-	        <layout>default</layout>
-	        <url>http://repository.jboss.org/maven2</url>
-	    </repository>
-		<repository>
-			<id>maven-eclipse</id> <!-- repository for org.eclipse.tycho -->
-			<url>http://maven.eclipse.org/nexus/content/repositories/testing</url>
-		</repository>	    
-	</repositories>
-	 
+  
 	<dependencies>
 		<dependency> <!-- OSGi dependency -->
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<version>4.2.0</version>
 		</dependency>
-		
-		<dependency> <!-- OSGi impelemention -->  
-			<groupId>org.eclipse.tycho</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.8.1.v20120830-144521</version>
-		</dependency>			
-		
-		<dependency> <!-- javax.persistence -->
-		   <groupId>javax.persistence</groupId>
-		   <artifactId>persistence-api</artifactId>
-		   <version>1.0.2</version>
-		</dependency>
-
-		<dependency> <!-- mysql connector -->
-	      <groupId>mysql</groupId>
-	      <artifactId>mysql-connector-java</artifactId>
-	      <version>5.1.10</version>
-	    </dependency>
-	    
-	    <!-- hibernate dependencies -->
-        <dependency>
-            <groupId>org.hibernate.common</groupId>
-            <artifactId>hibernate-commons-annotations</artifactId>
-            <version>4.0.1.Final</version>
-            <classifier>tests</classifier>
-        </dependency>
-		<dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>4.0.1.Final</version>
-        </dependency>
- 		<dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.0.1.Final</version>
-        </dependency>
-      	<dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>1.0.1.Final</version>
-        </dependency>
-		<dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>4.2.0.Final</version>
-        </dependency>
-	</dependencies>  
-  
+	</dependencies>
 </project>

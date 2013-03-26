@@ -1,4 +1,4 @@
-package cz.cuni.mff.ms.intlib.commons;
+package cz.cuni.intlib.commons;
 
 /**
  * Exception used in relation do DPU invalid setting.
