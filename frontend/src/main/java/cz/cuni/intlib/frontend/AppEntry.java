@@ -1,8 +1,8 @@
-package cz.cuni.mff.ms.intlib.frontend;
+package cz.cuni.intlib.frontend;
 
 import com.vaadin.server.VaadinRequest;
 
-import cz.cuni.mff.ms.intlib.frontend.gui.MainLayout;
+import cz.cuni.intlib.frontend.gui.MainLayout;
 
 /**
  * Frontend application entry point.

@@ -1,4 +1,4 @@
-package cz.cuni.mff.ms.intlib.frontend.OSGi;
+package cz.cuni.intlib.frontend.OSGi;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.launch.FrameworkFactory;

@@ -1,4 +1,4 @@
-package cz.cuni.mff.ms.intlib.frontend;
+package cz.cuni.intlib.frontend;
 
 import javax.persistence.EntityManager;
 

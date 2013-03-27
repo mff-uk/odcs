@@ -1,4 +1,4 @@
-package cz.cuni.mff.ms.intlib.frontend.gui.pages;
+package cz.cuni.intlib.frontend.gui.pages;
 
 import com.vaadin.addon.jpacontainer.JPAContainer;
 import com.vaadin.addon.jpacontainer.JPAContainerFactory;
@@ -9,10 +9,8 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 
-import javax.persistence.EntityManager;
-
-import cz.cuni.mff.ms.intlib.data.Pipeline;;
-import cz.cuni.mff.ms.intlib.frontend.AppInstance;
+import cz.cuni.intlib.commons.app.data.Pipeline;
+import cz.cuni.intlib.frontend.AppInstance;
 
 public class Pipelines extends CustomComponent {
 
