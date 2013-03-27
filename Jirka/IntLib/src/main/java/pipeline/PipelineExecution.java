@@ -7,6 +7,11 @@ package pipeline;
 public class PipelineExecution {
 
     private ExecutionStatus status;
+    private Pipeline pipeline;
+
+    public PipelineExecution(Pipeline pipeline) {
+        this.pipeline = pipeline;
+    }
 
     public ExecutionStatus getExecutionStatus() {
         return status;
