@@ -40,6 +40,10 @@ public class AppInstance{
 	}
 	
 	public static EntityManager getEntityManager() {
+		// TODO: remove 
+		createInstance();
+		
+		
 		return instance.get().entityManager;
 	}
 	
