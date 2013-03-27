@@ -13,7 +13,7 @@
         <init-param>
             <description>Vaadin UI to display</description>
             <param-name>UI</param-name>
-            <param-value>cz.cuni.mff.ms.intlib.frontend.AppEntry</param-value>
+            <param-value>cz.cuni.intlib.frontend.AppEntry</param-value>
         </init-param>
     </servlet>
     

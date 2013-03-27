@@ -10,27 +10,49 @@
 	        <id>JBoss Thirdparty Releases</id>
 	        <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
 	    </repository>	    
-		<repository>
-			<id>maven-eclipse</id> <!-- repository for org.eclipse.tycho -->
-			<url>http://maven.eclipse.org/nexus/content/repositories/testing</url>
+
+		<repository> <!-- vaadin add-on repository -->
+   			<id>vaadin-addons</id>
+   			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
 	</repositories>
 	
 	<dependencies>
-		<dependency> <!-- commons project dependency -->
-			<groupId>cz.cuni.mff.ms.intlib.commons</groupId>
-			<artifactId>intlib-commons</artifactId>
+		<dependency> <!-- commons-app project -->
+			<groupId>cz.cuni.intlib.commons.app</groupId>
+			<artifactId>intlib-commons-app</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
-			<scope>compile</scope>
+			<type>pom</type>
 		</dependency>
-		
-		 <dependency> <!-- OSGi impelemention -->  
-			<groupId>org.eclipse.tycho</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.8.1.v20120830-144521</version>
-		</dependency>		
-		
+		<dependency>
+			<groupId>cz.cuni.intlib.commons.app</groupId>
+			<artifactId>intlib-commons-app</artifactId>
+			<!-- the version has to be specify -->
+			<version>0.0.1</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency> <!-- commons-module project -->
+			<groupId>cz.cuni.intlib.commons.module</groupId>
+			<artifactId>intlib-commons-module</artifactId>
+			<!-- the version has to be specify -->
+			<version>0.0.1</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>cz.cuni.intlib.commons.module</groupId>
+			<artifactId>intlib-commons-module</artifactId>
+			<!-- the version has to be specify -->
+			<version>0.0.1</version>
+			<type>jar</type>			
+		</dependency>
+	
+		<dependency> <!-- vaadin add-on jpacontainer -->
+		   <groupId>com.vaadin.addon</groupId>
+		   <artifactId>jpacontainer</artifactId>
+		   <version>3.0.0.beta1</version>
+		</dependency>
 	</dependencies>
 	
 	<build>
