@@ -3,17 +3,17 @@ package cz.cuni.intlib.commons.module;
 import com.vaadin.ui.CustomComponent;
 
 /**
- * Add vaadin support to BaseDPU.
+ * Interface with graphical configuration dialog.
  * @author Petyr
  *
  */
-public interface BaseDPU extends cz.cuni.intlib.commons.BaseDPU {
+public interface Graphical {
 
 	/**
-	 * Return configuration component for DPU. The configuration
+	 * Return configuration component for class. The configuration
 	 * component must not contains close button. The component will be closed
-	 * by application. 
-	 * @return DPU's configuration component.
+	 * by the application. 
+	 * @return configuration component.
 	 */
 	public CustomComponent getConfigurationComponent();
 
