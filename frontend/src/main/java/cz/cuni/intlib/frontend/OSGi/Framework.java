@@ -119,6 +119,8 @@ public class Framework {
 	{
     	try {
     		if (bundle == null) {
+    			// already cleaned ?
+    		} else {
     			bundle.uninstall();
     		}
     	} catch (org.osgi.framework.BundleException ex) {			
