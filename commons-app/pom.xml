@@ -3,7 +3,11 @@
 	<groupId>cz.cuni.intlib.commons.app</groupId>
 	<artifactId>intlib-commons-app</artifactId>
 	<version>0.0.1</version>
-  	 
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<repositories>
 		<repository> <!-- hibernate -->
 	        <id>JBoss</id>
