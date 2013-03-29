@@ -2,13 +2,12 @@ package cz.cuni.intlib.commons.app.data.user;
 
 import java.util.ArrayList;
 import java.util.List;
-import common.Resource;
 
 /**
  *
  * @author Jiri Tomes
  */
-public final class Account implements RoleHolder, Resource {
+public final class Account implements RoleHolder, cz.cuni.intlib.commons.app.data.Resource {
 
     private String ID;
     private String email;

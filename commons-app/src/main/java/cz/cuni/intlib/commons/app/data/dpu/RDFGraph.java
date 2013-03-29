@@ -25,7 +25,6 @@ public class RDFGraph {
 
     public String getGraphName() {
         return graphName;
-
     }
 
     public void setGraphName(String newGraphName) {

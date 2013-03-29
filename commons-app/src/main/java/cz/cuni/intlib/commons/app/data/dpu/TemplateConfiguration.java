@@ -7,7 +7,7 @@ import java.util.Map;
  *
  * @author Jiri Tomes
  */
-public class TemplateConfiguration implements cz.cuni.intlib.commons.app.data.Configuration {
+public class TemplateConfiguration implements cz.cuni.intlib.commons.configuration.Configuration {
 
     /*
      * For relation parameter(String)->Value(Object)
@@ -25,7 +25,7 @@ public class TemplateConfiguration implements cz.cuni.intlib.commons.app.data.Co
         return map.get(parameter);
     }
 
-    public void addValue(String parameter, Object value) {
-        map.put(parameter, value);
-    }
+	public void setValue(String parameter, Object value) {
+		map.put(parameter, value);		
+	}
 }
