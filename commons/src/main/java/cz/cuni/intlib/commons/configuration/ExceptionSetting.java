@@ -1,4 +1,4 @@
-package cz.cuni.intlib.commons;
+package cz.cuni.intlib.commons.configuration;
 
 /**
  * Exception used in relation do DPU invalid setting.
