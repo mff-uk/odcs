@@ -11,12 +11,13 @@ public class RdfFileExtractor implements DPU {
     private String name;
     private String description;
     private JarFile jarFile;
+    private TemplateConfiguration templateConfiguration;
 
     public RdfFileExtractor(String name, String description, JarFile jarFile) {
         this.name = name;
         this.description = description;
         this.jarFile = jarFile;
-
+        this.templateConfiguration = new TemplateConfiguration();
     }
 
     public String getDescription() {
@@ -37,5 +38,9 @@ public class RdfFileExtractor implements DPU {
 
     public SubType getSubtype() {
         return SubType.RDF_EXTRACTOR;
+    }
+
+    public TemplateConfiguration getTemplateConfiguration() {
+        return templateConfiguration;
     }
 }

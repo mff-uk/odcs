@@ -17,4 +17,6 @@ public interface DPU {
     public Type getType();
 
     public SubType getSubtype();
+
+    public TemplateConfiguration getTemplateConfiguration();
 }

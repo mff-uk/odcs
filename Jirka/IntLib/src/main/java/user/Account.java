@@ -2,13 +2,15 @@ package user;
 
 import java.util.ArrayList;
 import java.util.List;
+import common.Resource;
 
 /**
  *
  * @author Jiri Tomes
  */
-public class Account implements RoleHolder {
+public final class Account implements RoleHolder, Resource {
 
+    private String ID;
     private String email;
     private String name;
     private String password;
@@ -18,6 +20,7 @@ public class Account implements RoleHolder {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.ID = createUniqueID();
     }
 
     public String getEmail() {
@@ -55,6 +58,16 @@ public class Account implements RoleHolder {
     public void setRoles(List<Role> newRoles) {
         roles = newRoles;
     }
+
     
-   
+    public String getID() {
+        return ID;
+    }
+
+    /*
+     * TODO - IMPLEMENT
+     */
+    public String createUniqueID() {
+        return "ACOUNT_UNIQUE_ID";
+    }
 }
