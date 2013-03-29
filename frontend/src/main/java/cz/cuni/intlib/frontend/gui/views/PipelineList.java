@@ -12,7 +12,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 
-import cz.cuni.intlib.commons.app.data.Pipeline;
+import cz.cuni.intlib.auxiliaries.App;
+import cz.cuni.intlib.commons.app.data.pipeline.Pipeline;
 import cz.cuni.intlib.frontend.AppEntry;
 import cz.cuni.intlib.frontend.gui.ViewNames;
 
@@ -52,7 +53,7 @@ public class PipelineList extends CustomComponent implements View {
 		tablePipelines.setWidth("640px");
 		tablePipelines.setHeight("480px");
 		// assign data source
-		JPAContainer<Pipeline> pipes = ((AppEntry)UI.getCurrent()).getDataAccess().getPipelines();		
+		JPAContainer<Pipeline> pipes = App.getDataAccess().pipelines().getPipelines();		
 		tablePipelines.setContainerDataSource(pipes);
 		// set columns
 		tablePipelines.setVisibleColumns(new String[] {"id", "name", "description"});		
@@ -63,7 +64,6 @@ public class PipelineList extends CustomComponent implements View {
 		btnCreatePipeline.setHeight("25px");
 		btnCreatePipeline.setWidth("150px");
 		btnCreatePipeline.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
 			public void buttonClick(ClickEvent event) {
 				// navigate to PipelineEdit/New
 				((AppEntry)UI.getCurrent()).getNavigator().navigateTo( ViewNames.PipelineEdit_New.getUrl() );
@@ -74,7 +74,6 @@ public class PipelineList extends CustomComponent implements View {
 		return mainLayout;
 	}
 
-	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);		

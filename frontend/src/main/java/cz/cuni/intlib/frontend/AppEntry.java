@@ -3,7 +3,7 @@ package cz.cuni.intlib.frontend;
 import com.vaadin.navigator.Navigator;
 
 import cz.cuni.intlib.frontend.data.DataAccess;
-import cz.cuni.intlib.frontend.gui.MainLayout;
+import cz.cuni.intlib.frontend.gui.MenuLayout;
 import cz.cuni.intlib.frontend.gui.ViewNames;
 import cz.cuni.intlib.frontend.gui.views.*;
 
@@ -29,6 +29,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	/**
 	 * Return service for data access.
+	 * @see DataAccess
 	 */
 	public DataAccess getDataAccess() {
 		return this.dataAccess;
@@ -47,7 +48,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.dataAccess = new DataAccess();
 		
 		// create main application uber-view and set it as app. content
-		MainLayout main = new MainLayout();
+		MenuLayout main = new MenuLayout();
 		setContent(main);
 		
         // create a navigator to control the views

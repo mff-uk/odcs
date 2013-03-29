@@ -1,17 +1,15 @@
 package cz.cuni.intlib.frontend.gui.views;
 
-import com.vaadin.addon.jpacontainer.JPAContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 
-import cz.cuni.intlib.commons.app.data.Pipeline;
-import cz.cuni.intlib.frontend.AppEntry;
+import cz.cuni.intlib.auxiliaries.App;
+import cz.cuni.intlib.commons.app.data.pipeline.Pipeline;
 import cz.cuni.intlib.frontend.gui.ViewNames;
 
 public class PipelineEdit extends CustomComponent implements View {
@@ -54,7 +52,6 @@ public class PipelineEdit extends CustomComponent implements View {
 		button.setHeight("25px");
 		button.setWidth("150px");
 		button.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
 				savePipeline();
@@ -94,24 +91,13 @@ public class PipelineEdit extends CustomComponent implements View {
 	 * @return
 	 */
 	protected Pipeline loadPipeline(String id) {
-		// get data from DB .. 
-		JPAContainer<Pipeline> pipelineContainer = ((AppEntry)UI.getCurrent()).getDataAccess().getPipelines();
-		// prepare filter
-		pipelineContainer.setApplyFiltersImmediately(false);
-		pipelineContainer.addContainerFilter("id", id, true, false);
-		pipelineContainer.applyFilters();
-		// there should be at most one record
-
-		if (pipelineContainer.size() == 0) {
+		// get data from DB ..
+		this.entity = App.getDataAccess().pipelines().getPipeline(id);
+		if (this.entity == null) {
 			return null;
 		} else {
-			// get id
-			Object itemId = pipelineContainer.getIdByIndex(0);
-			// get entity
-			this.entity = pipelineContainer.getItem(itemId);
-			// get object
 			return this.entity.getEntity();
-		}		
+		}
 	}
 	
 	/**
@@ -127,12 +113,14 @@ public class PipelineEdit extends CustomComponent implements View {
 		if (pipeIdstr.compareTo( ViewNames.PipelineEdit_New.getParametr() ) == 0) {
 			// create empty, for new record
 			this.pipeline = new Pipeline("new pipeline", "description");
+			this.entity = null;
 		} else if (isInteger(pipeIdstr)) {
 			// use pipeIdstr as id
 			this.pipeline = loadPipeline(pipeIdstr);
 		} else {
 			// wring pipeIdstr
 			this.pipeline = null;
+			this.entity = null;
 		}
 		return this.pipeline;
 	}
@@ -141,25 +129,10 @@ public class PipelineEdit extends CustomComponent implements View {
 	 * Save loaded pipeline ie. this.entity.
 	 */
 	protected void savePipeline() {
-		if (this.entity == null) {
-			// save new 
-			JPAContainer<Pipeline> pipelineContainer = ((AppEntry)UI.getCurrent()).getDataAccess().getPipelines();
-			Object itemId = pipelineContainer.addEntity( this.pipeline );
-			this.entity = pipelineContainer.getItem(itemId);			
-		} else {			
-			javax.persistence.EntityManager entityManager = 
-					((AppEntry)UI.getCurrent()).getDataAccess().getEntityManager(); 
-			javax.persistence.EntityTransaction transaction = entityManager.getTransaction();
-
-			transaction.begin();			
-			entityManager.merge(this.entity.getEntity());
-			transaction.commit();
-			
-			this.entity.refresh();			
-		}
+		this.entity = 
+				App.getDataAccess().pipelines().set(this.pipeline, this.entity);
 	}
 	
-	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);

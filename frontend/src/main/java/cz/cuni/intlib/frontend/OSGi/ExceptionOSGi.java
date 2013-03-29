@@ -1,5 +1,10 @@
 package cz.cuni.intlib.frontend.OSGi;
 
+/**
+ * OSGi framework exception.
+ * @author Petyr
+ *
+ */
 public class ExceptionOSGi extends RuntimeException {
 
 	/**

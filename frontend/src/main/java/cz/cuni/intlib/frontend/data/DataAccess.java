@@ -5,7 +5,7 @@ import javax.persistence.EntityManager;
 import com.vaadin.addon.jpacontainer.JPAContainer;
 import com.vaadin.addon.jpacontainer.JPAContainerFactory;
 
-import cz.cuni.intlib.commons.app.data.Pipeline;
+import cz.cuni.intlib.commons.app.data.pipeline.Pipeline;
 
 /**
  * Class contains access to database.
@@ -15,7 +15,7 @@ import cz.cuni.intlib.commons.app.data.Pipeline;
 public class DataAccess {
 
 	/**
-	 * Entity manager for PUNIT_INTLIB entity connection.
+	 * Entity manager for entityIdIntlib entity connection.
 	 */
 	private EntityManager entityManagerIntlib = null;	
 	
@@ -25,28 +25,27 @@ public class DataAccess {
 	private final String entityIdIntlib = "intlib";	
 
 	/**
-	 * Create a JPAContainer for pipelines. Container
-	 * filters has been set according to user rights.
+	 * Contains function used to access pipeline related tables.
+	 */
+	private Pipelines pipelines = null;
+
+	/**
+	 * Return class for manipulation with pipeline related data.
 	 * @return
 	 */
-	public JPAContainer<Pipeline> getPipelines() {
-		JPAContainer<Pipeline> pipelines = 
-				JPAContainerFactory.make(Pipeline.class, this.entityManagerIntlib);
-		// TODO set filters ...
-		return pipelines;
-	}
-	
-	public EntityManager getEntityManager() {
-		return this.entityManagerIntlib;
+	public Pipelines pipelines() {
+		return this.pipelines;
 	}
 	
 	/**
-	 * Create entity managers.
+	 * Create entity managers. Should be called only once at application entry.  
 	 */
 	public DataAccess() {
 		// connect to database
 		this.entityManagerIntlib = 
 				JPAContainerFactory.createEntityManagerForPersistenceUnit(entityIdIntlib);
+		// ... 
+		this.pipelines = new Pipelines(this.entityManagerIntlib);
 	}
 	
 }

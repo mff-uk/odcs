@@ -148,7 +148,7 @@ public class Framework {
 	 * @param uri Uri to bundle.
 	 * @return Loaded BaseDPU class.
 	 */
-	public cz.cuni.intlib.commons.BaseDPU loadDPU(String uri) throws ExceptionOSGi {
+	public cz.cuni.intlib.commons.DataProcessingUnit loadDPU(String uri) throws ExceptionOSGi {
 		// start by loading Bundle
 		Bundle bundle = installBundle(uri);
 
@@ -163,9 +163,9 @@ public class Framework {
 		}
 
 		// dpu store loaded BaseDPU instance
-		cz.cuni.intlib.commons.BaseDPU dpu = null;		
+		cz.cuni.intlib.commons.DataProcessingUnit dpu = null;		
 		try {
-			dpu = (cz.cuni.intlib.commons.BaseDPU)loaderClass.newInstance();
+			dpu = (cz.cuni.intlib.commons.DataProcessingUnit)loaderClass.newInstance();
 		} catch (InstantiationException ex) {
 			// uninstall bundle and throw
 			uninstallBundle(bundle);
