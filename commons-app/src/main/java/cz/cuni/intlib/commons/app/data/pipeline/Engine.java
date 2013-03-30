@@ -1,7 +1,8 @@
 package cz.cuni.intlib.commons.app.data.pipeline;
 
 /**
- *
+ * Run a s
+ * 
  * @author Jiri Tomes
  */
 public class Engine {

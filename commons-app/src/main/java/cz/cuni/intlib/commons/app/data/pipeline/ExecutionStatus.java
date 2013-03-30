@@ -1,6 +1,7 @@
 package cz.cuni.intlib.commons.app.data.pipeline;
 
 /**
+ * Set of possible states during pipeline execution.
  *
  * @author Jiri Tomes
  */

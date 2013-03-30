@@ -1,6 +1,7 @@
 package cz.cuni.intlib.commons.app.data.dpu;
 
 /**
+ * For working with graph contains RDF data.
  *
  * @author Jiri Tomes
  */

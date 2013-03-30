@@ -3,6 +3,7 @@ package cz.cuni.intlib.commons.app.data.user;
 import java.util.List;
 
 /**
+ * For managing system rights.
  *
  * @author Jiri Tomes
  */

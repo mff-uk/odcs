@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Holds user data (his accounout).
  *
  * @author Jiri Tomes
  */
@@ -58,7 +59,6 @@ public final class Account implements RoleHolder, cz.cuni.intlib.commons.app.dat
         roles = newRoles;
     }
 
-    
     public String getID() {
         return ID;
     }

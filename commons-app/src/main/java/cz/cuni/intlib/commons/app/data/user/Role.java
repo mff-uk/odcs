@@ -1,6 +1,7 @@
 package cz.cuni.intlib.commons.app.data.user;
 
 /**
+ * Set of roles in the system.
  *
  * @author Jiri Tomes
  */
