@@ -1,30 +1,42 @@
 package cz.cuni.intlib.frontend.gui.views;
 
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.intlib.auxiliaries.App;
 import cz.cuni.intlib.commons.app.data.pipeline.Pipeline;
+import cz.cuni.intlib.frontend.data.pipeline.Dpu;
 import cz.cuni.intlib.frontend.gui.ViewNames;
+import cz.cuni.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 
+/**
+ * Page for creating new/editing pipeline.
+ * @author Bogo
+ */
 public class PipelineEdit extends CustomComponent implements View {
 
 	private VerticalLayout mainLayout;
 
 	private Label label;
-	
+
 	/**
 	 * Current pipeline entity.
 	 */
 	private com.vaadin.addon.jpacontainer.EntityItem<Pipeline> entity = null;
-	
+
 	private Pipeline pipeline = null;
-	
+
+    PipelineCanvas pc;
+
+
 	public PipelineEdit() {
 		// put init code into enter method
 	}
@@ -33,11 +45,11 @@ public class PipelineEdit extends CustomComponent implements View {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
-		
+
 		// top-level component properties
-		setWidth("600px");
-		setHeight("800px");
-		
+		setWidth("800px");
+		setHeight("1000px");
+
 		// label
 		label = new Label();
 		label.setImmediate(false);
@@ -46,7 +58,7 @@ public class PipelineEdit extends CustomComponent implements View {
 		label.setValue("");
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label);
-		
+
 		com.vaadin.ui.Button button = new com.vaadin.ui.Button();
 		button.setCaption("save");
 		button.setHeight("25px");
@@ -57,9 +69,82 @@ public class PipelineEdit extends CustomComponent implements View {
 				savePipeline();
 			}
 		});
-		mainLayout.addComponent(button);		
-				
+		mainLayout.addComponent(button);
+
+        HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(true);
+		pc = new PipelineCanvas();
+		pc.init();
+
+		DragAndDropWrapper dadWrapper = new DragAndDropWrapper(pc);
+		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
+		dadWrapper.setDropHandler(new DropHandler() {
+
+			@Override
+			public AcceptCriterion getAcceptCriterion() {
+				return AcceptAll.get();
+			}
+
+			@Override
+			public void drop(DragAndDropEvent event) {
+				Transferable t = (Transferable) event.getTransferable();
+				DragAndDropWrapper.WrapperTargetDetails details = (DragAndDropWrapper.WrapperTargetDetails) event.getTargetDetails();
+
+				Object obj = t.getData("itemId");
+
+				if(obj.getClass() == Dpu.class) {
+					Dpu dpu = (Dpu) obj;
+					pc.addDpu(dpu);
+				}
+
+			}
+		});
+
+		layout.addComponent(dadWrapper);
+
+		Tree dpuTree = new Tree("DPUs");
+		dpuTree.setDragMode(Tree.TreeDragMode.NODE);
+		fillStubTree(dpuTree);
+		layout.addComponentAsFirst(dpuTree);
+
+        mainLayout.addComponent(layout);
+
+//		Button button = new Button("Click Me");
+//		button.addClickListener(new Button.ClickListener() {
+//			public void buttonClick(ClickEvent event) {
+//				pc.getPipeline();
+//			}
+//		});
+//		layout.addComponent(button);
+
 		return mainLayout;
+	}
+
+    private void fillStubTree(Tree tree) {
+
+		Dpu rootExtractor = new Dpu(-1, "Extractors");
+		tree.addItem(rootExtractor);
+		Dpu rootTransformer = new Dpu(-2, "Transformers");
+		tree.addItem(rootTransformer);
+		Dpu rootLoader = new Dpu(-3, "Loaders");
+		tree.addItem(rootLoader);
+
+		Dpu basicEx = new Dpu(1, "RDF Extractor");
+		tree.addItem(basicEx);
+		tree.setParent(basicEx, rootExtractor);
+
+		Dpu sparqlEx = new Dpu(2, "SPARQL endpoint");
+		tree.addItem(sparqlEx);
+		tree.setParent(sparqlEx, rootExtractor);
+		Dpu genericTr = new Dpu(3, "Generic SPARQL");
+		tree.addItem(genericTr);
+		tree.setParent(genericTr, rootTransformer);
+		Dpu rdfLo = new Dpu(4, "RDF Loader");
+		tree.addItem(rdfLo);
+		tree.setParent(rdfLo, rootLoader);
+		Dpu sparqlLo = new Dpu(5, "SPARQL endpoint Loader");
+		tree.addItem(sparqlLo);
+		tree.setParent(sparqlLo, rootLoader);
 	}
 
 	/**
@@ -77,16 +162,16 @@ public class PipelineEdit extends CustomComponent implements View {
 		}
 		for (int i = 0; i < length; i++) {
 			if ( Character.isDigit(str.charAt(i)) ) {
-				
+
 			} else {
 				return false;
 			}
 		}
 		return true;
-	}	
-	
+	}
+
 	/**
-	 * Load pipeline with given id from database. 
+	 * Load pipeline with given id from database.
 	 * @param id
 	 * @return
 	 */
@@ -99,7 +184,7 @@ public class PipelineEdit extends CustomComponent implements View {
 			return this.entity.getEntity();
 		}
 	}
-	
+
 	/**
 	 * Load pipeline to edit/create. Pipeline entity is loaded into
 	 * this.entity. If /New parameter is passed in url, create just representation
@@ -124,31 +209,31 @@ public class PipelineEdit extends CustomComponent implements View {
 		}
 		return this.pipeline;
 	}
-	
+
 	/**
 	 * Save loaded pipeline ie. this.entity.
 	 */
 	protected void savePipeline() {
-		this.entity = 
+		this.entity =
 				App.getDataAccess().pipelines().set(this.pipeline, this.entity);
 	}
-	
+
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// ..
 		this.loadPipeline(event);
 		// or use this.entity.getEntity();
-		
+
 		if (this.pipeline == null) {
 			label.setValue("<h1>Pipeline '" + event.getParameters() + "' doesn't exist.</h1>");
 		} else {
 			label.setValue("<h1>Editing pipeline : " + this.pipeline.getName() + "</h1>");
 		}
-		
+
 		// work with pipeline here ...
-		
+
 	}
-	
-	
+
+
 }

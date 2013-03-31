@@ -4,23 +4,23 @@
 	<artifactId>intlib-frontend</artifactId>
 	<version>0.0.1</version>
 	<packaging>war</packaging>
-    
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-    
-	<repositories>	    
-	    <repository> 
+
+	<repositories>
+	    <repository>
 	        <id>JBoss Thirdparty Releases</id>
 	        <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
-	    </repository>	    
+	    </repository>
 
 		<repository> <!-- vaadin add-on repository -->
    			<id>vaadin-addons</id>
    			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
 	</repositories>
-	
+
 	<dependencies>
 		<dependency> <!-- commons-app project -->
 			<groupId>cz.cuni.intlib.commons.app</groupId>
@@ -49,39 +49,39 @@
 			<artifactId>intlib-commons-module</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
-			<type>jar</type>			
+			<type>jar</type>
 		</dependency>
-	
+
 		<dependency> <!-- vaadin add-on jpacontainer -->
 		   <groupId>com.vaadin.addon</groupId>
 		   <artifactId>jpacontainer</artifactId>
 		   <version>3.0.0.beta1</version>
 		</dependency>
-		
-		<dependency> <!--  JUL to SLF4J bridge --> 
+
+		<dependency> <!--  JUL to SLF4J bridge -->
 			<groupId>org.slf4j</groupId>
 			<artifactId>jul-to-slf4j</artifactId>
 			<version>1.7.3</version>
 		</dependency>
-		
-		<dependency> <!-- logging implementation --> 
+
+		<dependency> <!-- logging implementation -->
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.3</version>
-		</dependency>	
-		
+		</dependency>
+
 	</dependencies>
-	
+
 	<build>
 	    <finalName>intlib</finalName>
-	    <plugins>	        
+	    <plugins>
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
 			  <artifactId>maven-war-plugin</artifactId>
 			  <!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml which will be ignored -->
 			  <version>2.3</version>
 			</plugin>
-			
+
 			<!-- deploy to Apache tomcat
 				see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html
 					http://localhost:8080/docs/manager-howto.html
@@ -96,16 +96,24 @@
 				    <url>http://localhost:8080/manager/text</url>
 					<username>deploy</username>
 					<password>deploy</password>
-					<!-- if already deployed update -->					
-					<update>true</update> 	
+					<!-- if already deployed update -->
+					<update>true</update>
 					<!-- in tomcat-users.xml
-						<user name="deploy" password="deploy" roles="admin-script,manager-script"/> 
-					 -->				
+						<user name="deploy" password="deploy" roles="admin-script,manager-script"/>
+					 -->
 				</configuration>
-			</plugin>			
-			
+			</plugin>
+
 	    </plugins>
-	    
+        <resources>
+            <resource>
+                <directory>src\main\java</directory>
+            </resource>
+            <resource>
+                <directory>src\main\java\cz\cuni\intlib\frontend\gui\components\pipelinecanvas</directory>
+            </resource>
+        </resources>
+
 	</build>
-	
-</project> 
+
+</project>
