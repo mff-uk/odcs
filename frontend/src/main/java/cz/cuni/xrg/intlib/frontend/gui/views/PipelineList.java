@@ -5,6 +5,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.CustomComponent;
@@ -26,6 +27,27 @@ public class PipelineList extends CustomComponent implements View {
 	private Table tablePipelines;
 
 	private Button btnCreatePipeline;
+	
+	class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+
+		public Object generateCell(Table source, final Object itemId, Object columnId) {
+			HorizontalLayout layout = new HorizontalLayout();
+			
+			Button updateButton = new Button();
+			updateButton.setCaption("edit");
+			updateButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				public void buttonClick(ClickEvent event) {
+						// navigate to PipelineEdit/New
+						App.getApp().getNavigator().navigateTo( 
+								ViewNames.PipelineEdit.getUrl() + "/" + itemId.toString() );
+					}
+				});
+			layout.addComponent(updateButton);
+			
+			return layout;
+		}
+		
+	}
 	
 	public PipelineList() {
 
@@ -56,8 +78,10 @@ public class PipelineList extends CustomComponent implements View {
 		JPAContainer<Pipeline> pipes = App.getDataAccess().pipelines().getPipelines();		
 		tablePipelines.setContainerDataSource(pipes);
 		// set columns
-		tablePipelines.setVisibleColumns(new String[] {"id", "name", "description"});		
+		tablePipelines.setVisibleColumns(new String[] {"id", "name", "description"});
 		mainLayout.addComponent(tablePipelines);
+		// add column
+		tablePipelines.addGeneratedColumn("", new actionColumnGenerator() );
 		
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("create pipeline");
@@ -66,7 +90,7 @@ public class PipelineList extends CustomComponent implements View {
 		btnCreatePipeline.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				// navigate to PipelineEdit/New
-				((AppEntry)UI.getCurrent()).getNavigator().navigateTo( ViewNames.PipelineEdit_New.getUrl() );
+				App.getApp().getNavigator().navigateTo( ViewNames.PipelineEdit_New.getUrl() );
 			}
 		});
 		mainLayout.addComponent(btnCreatePipeline);
