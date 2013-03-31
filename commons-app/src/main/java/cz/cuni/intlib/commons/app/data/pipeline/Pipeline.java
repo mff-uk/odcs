@@ -1,10 +1,6 @@
 package cz.cuni.intlib.commons.app.data.pipeline;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  *
@@ -15,32 +11,35 @@ import javax.persistence.Table;
 public final class Pipeline implements cz.cuni.intlib.commons.app.data.Resource {
 
     //private State state;
-    
+
     private String name;
-    
+
     private String description;
-    
+
+    @Transient
+    private Graph graph;
+
     /**
      * Unique ID idetificator pro each pipeline
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)    
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
 
     /**
      * Default ctor for javax.persistante.
      */
     public Pipeline() {
-    	
+
     }
-    
+
     public Pipeline(String name, String description) {
         this.name = name;
         this.description = description;
         this.id = createUniqueID();
     }
 
-    
+
     public String getName() {
         return name;
     }
@@ -58,7 +57,7 @@ public final class Pipeline implements cz.cuni.intlib.commons.app.data.Resource 
         description = newDescription;
     }
 
- /*   
+ /*
     public State getState() {
         return state;
     }
@@ -67,7 +66,15 @@ public final class Pipeline implements cz.cuni.intlib.commons.app.data.Resource 
         state = newState;
     }
 */
-    
+
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
     public String getID() {
         return id;
     }
