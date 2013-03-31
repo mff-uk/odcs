@@ -1,0 +1,48 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cz.cuni.xrg.intlib</groupId>
+	<artifactId>intlib</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+	<name>intlib</name>
+	<description></description>
+	
+	<modules>
+		<module>commons</module>
+		<module>commons-app</module>
+		<module>commons-module</module>
+		<module>frontend</module>
+	</modules>
+
+	<scm>
+		<url></url>
+		<connection></connection>
+		<developerConnection></developerConnection>
+	</scm>
+	
+	<developers>
+		<!-- 
+		<developer>
+			<id></id>
+			<name></name>
+			<email></email>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+		 -->
+	</developers>
+	
+	<contributors>
+		<contributor>
+			<name>Tomáš Knap</name>
+			<email>knap@ksi.mff.cuni.cz</email>
+			<roles>
+				<role>project supervisor</role>
+			</roles>
+			<url>http://www.ksi.mff.cuni.cz/~knap</url>
+			<organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
+		</contributor>
+	</contributors>
+
+</project>
