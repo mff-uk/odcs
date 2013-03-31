@@ -1,7 +1,8 @@
 package cz.cuni.intlib.commons.app.data.dpu;
 
 /**
- *
+ * Set of subtype for DPU component.
+ * 
  * @author Jiri Tomes
  */
 public enum SubType {

@@ -7,6 +7,7 @@ package cz.cuni.intlib.commons.app.data.pipeline;
 import java.awt.Point;
 
 /**
+ * Represent coordinates of object in system (on canvas).
  *
  * @author Jiri Tomes
  */

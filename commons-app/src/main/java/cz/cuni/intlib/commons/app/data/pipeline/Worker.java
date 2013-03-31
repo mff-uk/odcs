@@ -1,6 +1,7 @@
 package cz.cuni.intlib.commons.app.data.pipeline;
 
 /**
+ * Run, cancel and debug concrete pipeline.
  *
  * @author Jiri Tomes
  */

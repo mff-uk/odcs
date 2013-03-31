@@ -3,6 +3,7 @@ package cz.cuni.intlib.commons.app.data.dpu;
 import java.util.jar.JarFile;
 
 /**
+ * Component for extracting data from RDF file.
  *
  * @author Jiri Tomes;
  */
