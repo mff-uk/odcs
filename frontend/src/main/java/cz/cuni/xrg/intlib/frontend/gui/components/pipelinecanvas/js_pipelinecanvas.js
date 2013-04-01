@@ -1,5 +1,5 @@
 /** Function name according to Vaadin specification **/
-cz_cuni_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = function() {
+cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = function() {
 
 	//remainder from JsLabel
 	//used to insert container for kineticJS canvas

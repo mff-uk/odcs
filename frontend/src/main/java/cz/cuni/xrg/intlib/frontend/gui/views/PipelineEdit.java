@@ -27,6 +27,10 @@ public class PipelineEdit extends CustomComponent implements View {
 
 	private Label label;
 
+    private TextField pipelineName;
+
+    private TextArea pipelineDescription;
+
 	/**
 	 * Current pipeline entity.
 	 */
@@ -58,6 +62,18 @@ public class PipelineEdit extends CustomComponent implements View {
 		label.setValue("");
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label);
+
+        pipelineName = new TextField("Name:", "New pipeline");
+        pipelineName.setImmediate(false);
+		pipelineName.setWidth("200px");
+		pipelineName.setHeight("-1px");
+        mainLayout.addComponent(pipelineName);
+
+        pipelineDescription = new TextArea("Description:", "pipeline description");
+        pipelineDescription.setImmediate(false);
+		pipelineDescription.setWidth("400px");
+		pipelineDescription.setHeight("60px");
+        mainLayout.addComponent(pipelineDescription);
 
 		com.vaadin.ui.Button button = new com.vaadin.ui.Button();
 		button.setCaption("save");
@@ -214,8 +230,13 @@ public class PipelineEdit extends CustomComponent implements View {
 	 * Save loaded pipeline ie. this.entity.
 	 */
 	protected void savePipeline() {
+        this.pipeline.setName(pipelineName.getValue());
+        this.pipeline.setDescription(pipelineDescription.getValue());
+
 		this.entity =
 				App.getDataAccess().pipelines().set(this.pipeline, this.entity);
+
+        App.getApp().getNavigator().navigateTo( ViewNames.PipelineList.getUrl() );
 	}
 
 	public void enter(ViewChangeEvent event) {
@@ -229,6 +250,8 @@ public class PipelineEdit extends CustomComponent implements View {
 			label.setValue("<h1>Pipeline '" + event.getParameters() + "' doesn't exist.</h1>");
 		} else {
 			label.setValue("<h1>Editing pipeline : " + this.pipeline.getName() + "</h1>");
+            pipelineName.setValue(this.pipeline.getName());
+            pipelineDescription.setValue(this.pipeline.getDescription());
 		}
 
 		// work with pipeline here ...
