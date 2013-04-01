@@ -6,7 +6,7 @@ import com.vaadin.addon.jpacontainer.EntityItem;
 import com.vaadin.addon.jpacontainer.JPAContainer;
 import com.vaadin.addon.jpacontainer.JPAContainerFactory;
 
-import cz.cuni.intlib.xrg.commons.app.data.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.data.pipeline.Pipeline;
 
 /**
  * Class provide function necessary to work with pipelines related

@@ -11,8 +11,8 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
-import cz.cuni.intlib.xrg.commons.app.data.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.auxiliaries.App;
+import cz.cuni.xrg.intlib.commons.app.data.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.frontend.data.pipeline.Dpu;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
