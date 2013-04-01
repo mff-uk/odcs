@@ -11,6 +11,10 @@ import cz.cuni.intlib.xrg.commons.app.data.pipeline.Pipeline;
 /**
  * Class provide function necessary to work with pipelines related
  * records in database.
+ * 
+ * Class hold single internal representation of JPAContainer, that
+ * is used to work with database.
+ * 
  * @author Petyr
  *
  */
@@ -22,6 +26,11 @@ public class Pipelines {
 	private EntityManager entityManager = null;		
 	
 	/**
+	 * Actual version of access container.
+	 */
+	private JPAContainer<Pipeline> pipelinesContainer = null;
+		
+	/**
 	 * 
 	 * @param entityManager entity manager for database connection
 	 */
@@ -30,15 +39,26 @@ public class Pipelines {
 	}
 
 	/**
+	 * Check existence of this.pipelinesContainer. If
+	 * the variable is not initialised then initialise it
+	 * otherwise do nothing.
+	 */
+	protected void createPipelineConteiner() {
+		if (this.pipelinesContainer == null) {
+			this.pipelinesContainer = 
+				JPAContainerFactory.make(Pipeline.class, this.entityManager);
+		}
+	}
+	
+	/**
 	 * Create a JPAContainer for pipelines. Container
 	 * filters has been set according to user rights.
 	 * @return
 	 */
-	public JPAContainer<Pipeline> getPipelines() {
-		JPAContainer<Pipeline> pipelines = 
-				JPAContainerFactory.make(Pipeline.class, this.entityManager);
+	public JPAContainer<Pipeline> getPipelines() {		
+		createPipelineConteiner();
 		// TODO set filters ...
-		return pipelines;
+		return this.pipelinesContainer;
 	}
 	
 	/**
@@ -51,9 +71,9 @@ public class Pipelines {
 	 * @return pipeline or null in case of invalid id
 	 */
 	public EntityItem<Pipeline> getPipeline(String id) {
-		JPAContainer<Pipeline> pipelineContainer = getPipelines();
+		createPipelineConteiner();
 		// return instance
-		return pipelineContainer.getItem(id);
+		return this.pipelinesContainer.getItem(id);
 	}
 	
 	/**
@@ -65,13 +85,14 @@ public class Pipelines {
 	 * @return updated/created pipeline entity
 	 */
 	public EntityItem<Pipeline> set(Pipeline pipeline, EntityItem<Pipeline> entity) {
+		createPipelineConteiner();
+		
 		if (entity == null ){
 			// new record
-			JPAContainer<Pipeline> pipelineContainer = this.getPipelines();
 			// retrieve id of new data
-			Object itemId = pipelineContainer.addEntity(pipeline);
+			Object itemId = this.pipelinesContainer.addEntity(pipeline);
 			// return new entity
-			return pipelineContainer.getItem(itemId);
+			return this.pipelinesContainer.getItem(itemId);
 		} else {
 			// update existing record
 			javax.persistence.EntityTransaction transaction = this.entityManager.getTransaction();
@@ -82,8 +103,20 @@ public class Pipelines {
 			// refresh entity end return it
 			entity.refresh();
 			return entity;
-		}
-		
+		}		
+	}
+	
+	/**
+	 * Try to delete pipeline of given id.
+	 * @param objectId pipeline id
+	 * @return true if pipeline has been deleted
+	 */
+	public boolean remove(Object objectId) {
+		createPipelineConteiner();
+		// try to remove object
+		boolean result = this.pipelinesContainer.removeItem(objectId);
+
+		return result;
 	}
 }
 

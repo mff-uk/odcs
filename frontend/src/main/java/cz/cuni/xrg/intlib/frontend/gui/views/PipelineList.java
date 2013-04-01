@@ -16,6 +16,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.intlib.xrg.commons.app.data.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
+import cz.cuni.xrg.intlib.frontend.data.DataAccess;
+import cz.cuni.xrg.intlib.frontend.data.Pipelines;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 
 public class PipelineList extends CustomComponent implements View {
@@ -43,6 +45,16 @@ public class PipelineList extends CustomComponent implements View {
 					}
 				});
 			layout.addComponent(updateButton);
+			
+			Button daleteButton = new Button();
+			daleteButton.setCaption("delete");
+			daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				public void buttonClick(ClickEvent event) {
+						// navigate to PipelineEdit/New
+						App.getDataAccess().pipelines().remove(itemId);
+					}
+				});
+			layout.addComponent(daleteButton);			
 			
 			return layout;
 		}
