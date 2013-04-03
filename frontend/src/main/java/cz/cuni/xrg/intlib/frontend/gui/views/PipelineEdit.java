@@ -51,8 +51,8 @@ public class PipelineEdit extends CustomComponent implements View {
 		mainLayout.setImmediate(true);
 
 		// top-level component properties
-		setWidth("800px");
-		setHeight("1000px");
+		setWidth("1280px");
+		setHeight("940px");
 
 		// label
 		label = new Label();
@@ -90,6 +90,8 @@ public class PipelineEdit extends CustomComponent implements View {
         HorizontalLayout layout = new HorizontalLayout();
 		layout.setMargin(true);
 		pc = new PipelineCanvas();
+        pc.setWidth(1060, Unit.PIXELS);
+        pc.setHeight(960, Unit.PIXELS);
 		pc.init();
 
 		DragAndDropWrapper dadWrapper = new DragAndDropWrapper(pc);
@@ -119,6 +121,7 @@ public class PipelineEdit extends CustomComponent implements View {
 		layout.addComponent(dadWrapper);
 
 		Tree dpuTree = new Tree("DPUs");
+        dpuTree.setWidth(220, Unit.PIXELS);
 		dpuTree.setDragMode(Tree.TreeDragMode.NODE);
 		fillStubTree(dpuTree);
 		layout.addComponentAsFirst(dpuTree);

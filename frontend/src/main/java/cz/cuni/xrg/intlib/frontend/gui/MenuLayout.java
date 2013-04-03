@@ -12,10 +12,10 @@ import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
 
 /**
- * Class represent main application component. 
+ * Class represent main application component.
  * The component contains menu bar and a place where to place
  * application view.
- * 
+ *
  * @author Petyr
  *
  */
@@ -33,7 +33,7 @@ public class MenuLayout extends CustomComponent {
 	 * Layout for application views.
 	 */
 	private VerticalLayout viewLayout;
-	
+
 	/**
 	 * Class use as command to change sub-pages.
 	 * @author Petyr
@@ -48,13 +48,13 @@ public class MenuLayout extends CustomComponent {
 		public NavigateToCommand (String url) {
 			this.url = url;
 		}
-		
+
 		public void menuSelected(MenuItem selectedItem) {
 			App.getApp().getNavigator().navigateTo(this.url);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Return layout for application views.
 	 * @return
@@ -62,7 +62,7 @@ public class MenuLayout extends CustomComponent {
 	public AbstractLayout getViewLayout() {
 		return this.viewLayout;
 	}
-	
+
 	/**
 	 * The constructor should first build the main layout, set the
 	 * composition root and then do any custom initialization.
@@ -73,25 +73,25 @@ public class MenuLayout extends CustomComponent {
 	public MenuLayout() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
-		// init menuBar		
+		// init menuBar
 		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PipelineList.getUrl()) );
 		menuBar.addItem("DPUs", new NavigateToCommand(ViewNames.DPU.getUrl()) );
 		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.ExecutionMonitor.getUrl()) );
 		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DataBrowser.getUrl()) );
 		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.Scheduler.getUrl()) );
-		menuBar.addItem("Administrator", new NavigateToCommand(ViewNames.Administrator.getUrl()) );		
+		menuBar.addItem("Administrator", new NavigateToCommand(ViewNames.Administrator.getUrl()) );
 	}
-	
+
 	private VerticalLayout buildMainLayout() {
 		// common part: create layout
 		this.mainLayout = new VerticalLayout();
 		this.mainLayout.setImmediate(false);
 		this.mainLayout.setMargin(false);
-		
+
 		// top-level component properties
 		this.setWidth("100.0%");
 		this.setHeight("100.0%");
-		
+
 		// menuBar
 		this.menuBar = new MenuBar();
 		this.menuBar.setImmediate(false);
@@ -104,7 +104,7 @@ public class MenuLayout extends CustomComponent {
 		this.viewLayout.setHeight("100.0%");
 		this.viewLayout.setMargin(false);
 		this.mainLayout.addComponent(viewLayout);
-		
+
 		return this.mainLayout;
 	}
 

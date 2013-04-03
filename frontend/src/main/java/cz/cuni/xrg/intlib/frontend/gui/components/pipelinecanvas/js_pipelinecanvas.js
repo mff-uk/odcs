@@ -30,6 +30,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         this.to = to;
         this.line = line;
         this.cmdDelete = cmdDelete;
+        this.arrowLeft = null;
+        this.arrowRight = null;
     }
 
     /** RPC proxy for calling server-side methods from client **/
@@ -86,12 +88,18 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         for(lineId in dpu.connectionFrom) {
             var conn = connections[dpu.connectionFrom[lineId]];
             var dpuTo = dpus[conn.to].group;
-            conn.line.setPoints(computeConnectionPoints2(dpuGroup, dpuTo));
+            var newPoints = computeConnectionPoints2(dpuGroup, dpuTo);
+            conn.line.setPoints(newPoints);
+            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
+            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
         }
         for(lineId in dpu.connectionTo) {
-            var conn = connections[dpu.connectionTo[lineId]];
+            conn = connections[dpu.connectionTo[lineId]];
             var dpuFrom = dpus[conn.from].group;
-            conn.line.setPoints(computeConnectionPoints2(dpuFrom, dpuGroup));
+            newPoints = computeConnectionPoints2(dpuFrom, dpuGroup);
+            conn.line.setPoints(newPoints);
+            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
+            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
         }
     }
 
@@ -204,8 +212,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             fontSize: 14,
             fontFamily: 'Calibri',
             fill: '#555',
-            width: 300,
-            padding: 20,
+            width: 200,
+            padding: 12,
             align: 'center'
         });
 
@@ -216,7 +224,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             stroke: '#555',
             strokeWidth: 5,
             fill: '#ddd',
-            width: 300,
+            width: 200,
             height: complexText.getHeight(),
             shadowColor: 'black',
             shadowBlur: 10,
@@ -418,12 +426,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     /** Adds connection between 2 given DPUs **/
     function addConnection(id, from, to) {
 
-        dpuFrom = dpus[from].group;
-        dpuTo = dpus[to].group;
+        var dpuFrom = dpus[from].group;
+        var dpuTo = dpus[to].group;
+
+        var linePoints = computeConnectionPoints2(dpuFrom, dpuTo);
 
         // Graphic representation of connection
         line = new Kinetic.Line({
-            points: computeConnectionPoints2(dpuFrom, dpuTo),
+            points: linePoints,
             stroke: 'red',
             strokeWidth: 3
         });
@@ -437,6 +447,18 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             del.moveToTop();
             del.setVisible(true);
             lineLayer.draw();
+        });
+
+        var lineArrowLeft = new Kinetic.Line({
+            points: computeLeftArrowPoints(linePoints),
+            stroke: 'red',
+            strokeWidth: 3
+        });
+
+        var lineArrowRight = new Kinetic.Line({
+            points: computeRightArrowPoints(linePoints),
+            stroke: 'red',
+            strokeWidth: 3
         });
 
 
@@ -460,10 +482,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             evt.cancelBubble = true;
         });
 
-
-        connections[id] = new Connection(id, from, to, line, cmdDelete);
+        var con = new Connection(id, from, to, line, cmdDelete);
+        con.arrowLeft = lineArrowLeft;
+        con.arrowRight = lineArrowRight;
+        connections[id] = con;
         dpus[from].connectionFrom.push(id);
         dpus[to].connectionTo.push(id);
+        lineLayer.add(lineArrowLeft);
+        lineLayer.add(lineArrowRight);
         lineLayer.add(cmdDelete);
         lineLayer.add(line);
         lineLayer.draw();
@@ -519,6 +545,24 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         }
         return 0;
     }
+
+    function computeLeftArrowPoints(points) {
+        var x = points[2] - points[0];
+        var y = points[3] - points[1];
+        var dist = 20 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
+        var leftX = points[2] - dist * x + dist * y;
+        var leftY = points[3] - dist * y - dist * x;
+        return [leftX, leftY, points[2], points[3]];
+     }
+
+     function computeRightArrowPoints(points) {
+        var x = points[2] - points[0];
+        var y = points[3] - points[1];
+        var dist = 20 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
+        var leftX = points[2] - dist * x - dist * y;
+        var leftY = points[3] - dist * y + dist * x;
+        return [leftX, leftY, points[2], points[3]];
+     }
 
     /** Computes connection points for uniform visual for 2 DPU **/
     function computeConnectionPoints2(start, end) {

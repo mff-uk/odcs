@@ -34,8 +34,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		this.pipeline = new Pipeline();
 
 		this.setId("container");
-		this.setWidth(1500,  Unit.PIXELS);
-		this.setHeight(800, Unit.PIXELS);
+		//this.setWidth(1500,  Unit.PIXELS);
+		//this.setHeight(800, Unit.PIXELS);
 		this.setStyleName("pipelineContainer");
 
 		registerRpc(new PipelineCanvasServerRpc() {
