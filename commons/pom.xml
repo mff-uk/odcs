@@ -1,42 +1,76 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>cz.cuni.xrg.intlib</groupId> 
-		<artifactId>intlib</artifactId> 
-		<version>0.0.1</version> 
-	</parent>	
-	<artifactId>commons</artifactId>
-	<name>intlib commons</name>
-	<description></description>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cz.cuni.xrg.intlib</groupId> 
+        <artifactId>intlib</artifactId> 
+        <version>0.0.1</version> 
+    </parent>	
+    <artifactId>commons</artifactId>
+    <name>intlib commons</name>
+    <description></description>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
   
-  	<repositories>
-	    <repository>
-	        <id>JBoss Thirdparty Releases</id>
-	        <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
-	    </repository>  	
-  	</repositories>
+    <repositories>
+        <repository>
+            <id>JBoss Thirdparty Releases</id>
+            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+        </repository>
+        <repository>
+            <id>aduna-releases</id>
+            <name>Aduna Maven Repository - Releases</name>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <url>http://repo.aduna-software.org/maven2/releases</url> 
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository> 	
+    </repositories>
   
-	<dependencies>
-		<dependency> <!-- OSGi dependency -->
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<version>4.2.0</version>
-		</dependency>
+    <dependencies>
+        <dependency> <!-- OSGi dependency -->
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
 		
-		<dependency> <!--  JUL to SLF4J bridge -->
-			<groupId>org.slf4j</groupId>
-			<artifactId>jul-to-slf4j</artifactId>
-			<version>1.7.3</version>
-		</dependency>
+        <dependency> <!--  JUL to SLF4J bridge -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.3</version>
+        </dependency>
 
-		<dependency> <!-- logging implementation -->
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.3</version>
-		</dependency>		
-	</dependencies>
+        <dependency> <!-- logging implementation -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+        <dependency> <!-- openRDF dependency-->
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-model</artifactId>
+            <version>2.6.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-repository-api</artifactId>
+            <version>2.6.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.1.2.RELEASE</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
 </project>
