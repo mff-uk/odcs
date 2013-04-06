@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class ProcessingContext {
 
-    protected final String id;
+    protected final String ID;
     protected ETLPipeline pipeline;
     protected long duration;
     protected boolean cancelPipeline;
@@ -20,18 +20,18 @@ public class ProcessingContext {
     protected final Map<String, Object> customData;
     protected List<String> warnings = new ArrayList<String>();
 
-    public ProcessingContext(String id, Map<String, Object> customData) {
-        this.id = id;
+    public ProcessingContext(String ID, Map<String, Object> customData) {
+        this.ID = ID;
         this.customData = customData;
     }
 
     /**
-     * Returns the id of the current pipeline process.
+     * Returns the ID of the current pipeline process.
      * 
      * @return 
      */
-    public String getId() {
-        return id;
+    public String getID() {
+        return ID;
     }
     
     /**

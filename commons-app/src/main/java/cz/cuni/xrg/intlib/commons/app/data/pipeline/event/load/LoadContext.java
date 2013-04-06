@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class LoadContext extends ProcessingContext {
 
-    public LoadContext(String id, Map<String, Object> customData) {
-        super(id, customData);
+    public LoadContext(String ID, Map<String, Object> customData) {
+        super(ID, customData);
     }
 }
