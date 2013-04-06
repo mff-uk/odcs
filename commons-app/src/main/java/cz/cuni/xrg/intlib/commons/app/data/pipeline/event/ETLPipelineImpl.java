@@ -63,37 +63,42 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
     protected List<Extractor> extractors = new ArrayList<Extractor>();
     protected List<Transformer> transformers = new ArrayList<Transformer>();
     protected List<Loader> loaders = new ArrayList<Loader>();
-    protected String id;
-    protected ApplicationEventPublisher eventPublisher;
-    protected Repository repository;
+   
     protected static final Logger logger = Logger.getLogger(ETLPipelineImpl.class);
     protected boolean cancelAllowed = true;
+    
+    protected String ID;
+    protected ApplicationEventPublisher eventPublisher;
+    protected Repository repository;
 
     /**
      * Constructor
      *
-     * @param id The identifier of this pipeline, will be used as named graph
+     * @param ID The identifier of this pipeline, will be used as named graph
      * where all the RDF data of this pipeline will be cached
      * @param eventPublisher Publisher for {@link ETLEvent}s
      * @param repository Repository functioning as RDF cache
      */
-    public ETLPipelineImpl(String id, ApplicationEventPublisher eventPublisher, Repository repository) {
-        this.id = id;
+    public ETLPipelineImpl(String ID, ApplicationEventPublisher eventPublisher, Repository repository) {
+        this.ID = ID;
         this.eventPublisher = eventPublisher;
         this.repository = repository;
     }
 
+    /**
+     * Empty constructor
+     */
     public ETLPipelineImpl() {
     }
 
     @Override
     public String getId() {
-        return id;
+        return ID;
     }
 
     @Override
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String ID) {
+        this.ID = ID;
     }
 
     public Repository getRepository() {
@@ -166,16 +171,20 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
     public void run() {
         long pipelineStart = System.currentTimeMillis();
         String runId = UUID.randomUUID().toString();
-        final URI pipelineId = new URIImpl(id);
+        final URI pipelineId = new URIImpl(ID);
         try {
             final Map<String, Object> customData = new HashMap<String, Object>();
             try {
                 eventPublisher.publishEvent(new PipelineStartedEvent(this, runId, this));
+                
                 RepositoryConnection con = repository.getConnection();
                 con.setAutoCommit(false);
+                
                 RDFInserter inserter = new RDFInserter(con);
                 inserter.enforceContext(pipelineId);
+                
                 NoStartEndWrapper wrapper = new NoStartEndWrapper(inserter);
+                
                 try {
                     for (Extractor extractor : extractors) {
                         if (extractor instanceof Disable && ((Disable) extractor).isDisabled()) {
@@ -183,11 +192,13 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
                         }
                         ExtractContext context = new ExtractContext(runId, customData);
                         context.setPipeline(this);
+                       
                         TripleCountingWrapper tripleCounter = new TripleCountingWrapper(wrapper);
                         try {
                             long start = System.currentTimeMillis();
                             extractor.extract(tripleCounter, context);
                             con.commit();
+                            
                             context.setDuration(System.currentTimeMillis() - start);
                             context.setTriplesExtracted(tripleCounter.getTriples());
                             eventPublisher.publishEvent(new ExtractCompletedEvent(extractor, context, this));
@@ -255,7 +266,7 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
                 con.clear(pipelineId);
                 con.commit();
             } catch (Exception ex) {
-                logger.fatal("Unable to clean graph [" + id + "]", ex);
+                logger.fatal("Unable to clean graph [" + ID + "]", ex);
             } finally {
                 if (con != null) {
                     try {
