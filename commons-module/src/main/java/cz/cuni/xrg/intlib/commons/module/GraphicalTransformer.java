@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.module;
 
-public interface GraphicalTransformer extends cz.cuni.xrg.intlib.commons.Transformer, Graphical {
+import cz.cuni.xrg.intlib.commons.app.data.Transformer;
+
+public interface GraphicalTransformer extends Transformer, Graphical {
 
 }
