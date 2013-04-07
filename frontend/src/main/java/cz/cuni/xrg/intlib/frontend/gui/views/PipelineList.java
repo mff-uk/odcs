@@ -14,7 +14,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.data.DataAccess;
 import cz.cuni.xrg.intlib.frontend.data.Pipelines;

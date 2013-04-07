@@ -5,7 +5,7 @@ import javax.persistence.EntityManager;
 import com.vaadin.addon.jpacontainer.JPAContainer;
 import com.vaadin.addon.jpacontainer.JPAContainerFactory;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
 /**
  * Class contains access to database.
