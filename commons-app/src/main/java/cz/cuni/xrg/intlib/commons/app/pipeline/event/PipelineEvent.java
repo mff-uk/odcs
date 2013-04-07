@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.event;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.event.ETLEvent;
 
 /**
@@ -9,10 +10,10 @@ import cz.cuni.xrg.intlib.commons.event.ETLEvent;
  */
 public abstract class PipelineEvent extends ETLEvent {
 
-    protected final ETLPipelineImpl pipeline;
+    protected final Pipeline pipeline;
     protected final String id;
 
-    public PipelineEvent(ETLPipelineImpl pipeline, String runId, Object source) {
+    public PipelineEvent(Pipeline pipeline, String runId, Object source) {
         super(source);
         this.pipeline = pipeline;
         this.id = runId;

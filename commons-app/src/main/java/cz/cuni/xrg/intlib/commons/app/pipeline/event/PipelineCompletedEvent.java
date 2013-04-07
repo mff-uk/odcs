@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.event;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+
 /**
  * Event indicating that a {@link ETLPipelineImpl} has completed successfully.
  *
@@ -9,7 +11,7 @@ public class PipelineCompletedEvent extends PipelineEvent {
 
     protected final long duration;
 
-    public PipelineCompletedEvent(long duration, ETLPipelineImpl pipeline, String id, Object source) {
+    public PipelineCompletedEvent(long duration, Pipeline pipeline, String id, Object source) {
         super(pipeline, id, source);
         this.duration = duration;
     }

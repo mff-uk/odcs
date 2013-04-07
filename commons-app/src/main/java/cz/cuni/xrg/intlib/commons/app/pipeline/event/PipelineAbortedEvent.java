@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.event;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
 
 //import at.punkt.lodms.impl.ETLPipelineImpl;
@@ -17,7 +18,7 @@ public class PipelineAbortedEvent extends PipelineEvent {
 
     private final String message;
 
-    public PipelineAbortedEvent(String message, ETLPipelineImpl pipeline, String id, Object source) {
+    public PipelineAbortedEvent(String message, Pipeline pipeline, String id, Object source) {
         super(pipeline, id, source);
         this.message = message;
     }

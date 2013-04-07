@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.event;
 
 import java.util.List;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Graph;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
@@ -22,78 +23,22 @@ import org.openrdf.repository.Repository;
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public interface ETLPipeline extends Runnable {
-
+    
     /**
-     * Returns the identifier of this pipeline, will be used as named graph
-     * where all the RDF data of this pipeline is cached.
-     *
+     * Get acyclic graph of DPUs, which represents data flow of pipeline.
      * @return
      */
-    public String getId();
-
+    public Graph getGraph();
+    
     /**
-     * Sets the identifier of this pipeline, will be used as named graph
-     * where all the RDF data of this pipeline is cached.<br/>
-     * <strong>The ID has to be unique for all pipelines that share an {@link Repository}</strong>
-     *
-     * @param id
+     * Set acyclic graph of DPUs, which represents data flow of pipeline.
+     * @param graph
      */
-    public void setId(String id);
-
+    public void setGraph(Graph graph);
+    
     /**
-     * Returns the list of extractors defined for this pipeline
-     *
-     * @return
+     * Runs the pipeline.
      */
-    public List<Extract> getExtractors();
+    public void run();
 
-    /**
-     * Sets the list of extractors defined for this pipeline
-     *
-     * @param extractors
-     */
-    public void setExtractors(List<Extract> extractors);
-
-    /**
-     * Returns the list of loaders defined for this pipeline
-     *
-     * @return
-     */
-    public List<Load> getLoaders();
-
-    /**
-     * Sets the list of loaders defined for this pipeline
-     *
-     * @param loaders
-     */
-    public void setLoaders(List<Load> loaders);
-
-    /**
-     * Returns the list of transformers defined for this pipeline
-     *
-     * @return
-     */
-    public List<Transform> getTransformers();
-
-    /**
-     * Sets the list of extractors defined for this pipeline
-     *
-     * @param transformers
-     */
-    public void setTransformers(List<Transform> transformers);
-
-    /**
-     * Returns the repository instance that will be used by the pipeline for caching RDF data.
-     *
-     * @return
-     */
-//    public Repository getRepository();
-
-    /**
-     * Sets the repository instance that will be used by the pipeline for caching RDF data.<br/>
-     * <strong>Has to be capable to store named graphs!</strong>
-     *
-     * @param repository
-     */
-    public void setRepository(Repository repository);
 }
