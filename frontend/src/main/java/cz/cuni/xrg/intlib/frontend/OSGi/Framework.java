@@ -60,9 +60,9 @@ public class Framework {
 	
 	/**
 	 * Start OSGi framework.
-	 * @throws ExceptionOSGi
+	 * @throws OSGiException
 	 */
-	public void start() throws ExceptionOSGi
+	public void start() throws OSGiException
 	{
 		FrameworkFactory frameworkFactory = null; // org.eclipse.osgi.launch.EquinoxFactory
 		
@@ -71,7 +71,7 @@ public class Framework {
 		}
 		catch(Exception ex) {
 			// failed to load FrameworkFactory class
-			throw new ExceptionOSGi("Can't load class FrameworkFactory.", ex);
+			throw new OSGiException("Can't load class FrameworkFactory.", ex);
 		}
 			
 		this.framework = frameworkFactory.newFramework( prepareSettings() );		
@@ -81,7 +81,7 @@ public class Framework {
 			this.framework.start();	    		    	
 		} catch (org.osgi.framework.BundleException ex) {
 			// failed to start/initiate framework
-			throw new ExceptionOSGi("Failed to start OSGi framework.", ex);
+			throw new OSGiException("Failed to start OSGi framework.", ex);
 		}
 		
 		try {
@@ -90,7 +90,7 @@ public class Framework {
 		catch (SecurityException ex) {
 			// we have to stop framework ..
 			stop();
-			throw new ExceptionOSGi("Failed to get OSGi context.", ex);
+			throw new OSGiException("Failed to get OSGi context.", ex);
 		}
 	}		
 
@@ -98,15 +98,15 @@ public class Framework {
 	 * Install bundle into framework.
 	 * @param uri Uri to install bundle from.
 	 * @return INstalled bundle.
-	 * @throws ExceptionOSGi
+	 * @throws OSGiException
 	 */
-	private Bundle installBundle(String uri) throws ExceptionOSGi
+	private Bundle installBundle(String uri) throws OSGiException
 	{
 		Bundle bundle = null;
 	    try {
 	    	bundle = this.context.installBundle(uri);
 		} catch (org.osgi.framework.BundleException ex) {			
-			throw new ExceptionOSGi("Failed to load bundle from uri: " + uri + " .", ex);
+			throw new OSGiException("Failed to load bundle from uri: " + uri + " .", ex);
 		}	
 	    return bundle;
 	}
@@ -149,7 +149,7 @@ public class Framework {
 	 * @param uri Uri to bundle.
 	 * @return Loaded BaseDPU class.
 	 */
-	public DPUExecutive loadDPU(String uri) throws ExceptionOSGi {
+	public DPUExecutive loadDPU(String uri) throws OSGiException {
 		// start by loading Bundle
 		Bundle bundle = installBundle(uri);
 
@@ -160,7 +160,7 @@ public class Framework {
 		} catch (ClassNotFoundException ex) {
 			// uninstall bundle and throw
 			uninstallBundle(bundle);
-			throw new ExceptionOSGi("Failed to load class from bundle.", ex);			
+			throw new OSGiException("Failed to load class from bundle.", ex);			
 		}
 
 		// dpu store loaded BaseDPU instance
@@ -170,11 +170,11 @@ public class Framework {
 		} catch (InstantiationException ex) {
 			// uninstall bundle and throw
 			uninstallBundle(bundle);
-			throw new ExceptionOSGi("Failed to load class from bundle.", ex);
+			throw new OSGiException("Failed to load class from bundle.", ex);
 		} catch (IllegalAccessException ex) {
 			// uninstall bundle and throw
 			uninstallBundle(bundle);
-			throw new ExceptionOSGi("Failed to load class from bundle.", ex);
+			throw new OSGiException("Failed to load class from bundle.", ex);
 		}
 				
 		return dpu;
