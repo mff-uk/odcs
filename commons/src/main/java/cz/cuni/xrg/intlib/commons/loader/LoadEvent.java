@@ -1,31 +1,30 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load;
+package cz.cuni.xrg.intlib.commons.loader;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.ETLEvent;
-import cz.cuni.xrg.intlib.commons.app.data.Loader;
+import cz.cuni.xrg.intlib.commons.event.ETLEvent;
 
 /**
- * Base class for {@link Loader} events.
+ * Base class for {@link Load} events.
  *
- * @see Loader
+ * @see Load
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public class LoadEvent extends ETLEvent {
 
-    protected final Loader loader;
+    protected final Load loader;
     protected final LoadContext loadContext;
 
-    public LoadEvent(Loader loader, LoadContext loadContext, Object source) {
+    public LoadEvent(Load loader, LoadContext loadContext, Object source) {
         super(source);
         this.loader = loader;
         this.loadContext = loadContext;
     }
 
     /**
-     * Returns the {@link Loader} associated with this event.
+     * Returns the {@link Load} associated with this event.
      *
      * @return
      */
-    public Loader getLoader() {
+    public Load getLoader() {
         return loader;
     }
 

@@ -6,7 +6,6 @@ package cz.cuni.xrg.intlib.commons;
  * @author Jiri Tomes
  */
 public enum Type {
-
     EXTRACTOR,
     TRANSFORMER,
     LOADER

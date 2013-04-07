@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons;
+package cz.cuni.xrg.intlib.commons.app.data.dpu;
 
 import java.util.HashMap;
 import java.util.Map;

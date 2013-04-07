@@ -1,8 +1,7 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load;
+package cz.cuni.xrg.intlib.commons.loader;
 
-import cz.cuni.xrg.intlib.commons.app.data.Loader;
 /**
- * Published when a {@link Loader} could not complete because an error occurred.
+ * Published when a {@link Load} could not complete because an error occurred.
  *
  * @author Alex Kreiser (akreiser@gmail.com)
  */
@@ -10,7 +9,7 @@ public class LoadFailedEvent extends LoadEvent {
 
     private final LoadException exception;
 
-    public LoadFailedEvent(LoadException exception, Loader loader, LoadContext loadContext, Object source) {
+    public LoadFailedEvent(LoadException exception, Load loader, LoadContext loadContext, Object source) {
         super(loader, loadContext, source);
         this.exception = exception;
     }

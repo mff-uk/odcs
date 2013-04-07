@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.data.pipeline.event;
 
+import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+
 /**
  * Base class for {@link ETLPipelineImpl} events
  *

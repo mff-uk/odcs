@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.module;
 
-import cz.cuni.xrg.intlib.commons.app.data.Loader;
+import cz.cuni.xrg.intlib.commons.loader.Load;
 
-public interface GraphicalLoader extends Loader, Graphical {
+public interface GraphicalLoader extends Load, Graphical {
 
 }

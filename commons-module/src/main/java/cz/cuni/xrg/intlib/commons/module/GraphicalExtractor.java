@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.module;
 
-import cz.cuni.xrg.intlib.commons.app.data.Extractor;
+import cz.cuni.xrg.intlib.commons.extractor.Extract;
         
-public interface GraphicalExtractor extends Extractor, Graphical {
+public interface GraphicalExtractor extends Extract, Graphical {
 
 }

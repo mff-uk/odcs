@@ -1,30 +1,30 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract;
+package cz.cuni.xrg.intlib.commons.extractor;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.ETLEvent;
-import cz.cuni.xrg.intlib.commons.app.data.Extractor;
+import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+
 /**
- * Base class for {@link Extractor} events
+ * Base class for {@link Extract} events
  *
- * @see Extractor
+ * @see Extract
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public abstract class ExtractEvent extends ETLEvent {
 
-    protected final Extractor extractor;
+    protected final Extract extractor;
     protected final ExtractContext extractContext;
 
-    public ExtractEvent(Extractor extractor, ExtractContext context, Object source) {
+    public ExtractEvent(Extract extractor, ExtractContext context, Object source) {
         super(source);
         this.extractor = extractor;
         this.extractContext = context;
     }
 
     /**
-     * Returns the {@link Extractor} associated with this event.
+     * Returns the {@link Extract} associated with this event.
      *
      * @return
      */
-    public Extractor getExtractor() {
+    public Extract getExtractor() {
         return extractor;
     }
 

@@ -1,10 +1,10 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform;
+package cz.cuni.xrg.intlib.commons.transformer;
 
 /**
  * Exception thrown by a transformer if something goes wrong throughout the
  * transformation process.
  *
- * @see Transformer
+ * @see Transform
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public class TransformException extends Exception {

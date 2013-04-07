@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.frontend.OSGi;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.launch.FrameworkFactory;
-import cz.cuni.xrg.intlib.commons.DPU;
+import cz.cuni.xrg.intlib.commons.DPUExecutive;
 
 public class Framework {
 
@@ -149,7 +149,7 @@ public class Framework {
 	 * @param uri Uri to bundle.
 	 * @return Loaded BaseDPU class.
 	 */
-	public DPU loadDPU(String uri) throws ExceptionOSGi {
+	public DPUExecutive loadDPU(String uri) throws ExceptionOSGi {
 		// start by loading Bundle
 		Bundle bundle = installBundle(uri);
 
@@ -164,9 +164,9 @@ public class Framework {
 		}
 
 		// dpu store loaded BaseDPU instance
-		DPU dpu = null;		
+		DPUExecutive dpu = null;		
 		try {
-			dpu = (DPU)loaderClass.newInstance();
+			dpu = (DPUExecutive)loaderClass.newInstance();
 		} catch (InstantiationException ex) {
 			// uninstall bundle and throw
 			uninstallBundle(bundle);

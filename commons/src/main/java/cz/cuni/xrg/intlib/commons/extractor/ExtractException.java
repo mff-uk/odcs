@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract;
+package cz.cuni.xrg.intlib.commons.extractor;
 
 /**
  * Exception thrown by an extractor if something goes wrong throughout the
  * extraction process.
  *
- * @see Extractor
+ * @see Extract
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public class ExtractException extends Exception {

@@ -1,10 +1,10 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load;
+package cz.cuni.xrg.intlib.commons.loader;
 
 /**
  * Exception thrown by a loader if something goes wrong throughout the
  * loading process.
  *
- * @see Loader
+ * @see Load
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public class LoadException extends Exception {

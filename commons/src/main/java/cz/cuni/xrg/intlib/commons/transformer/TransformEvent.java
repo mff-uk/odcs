@@ -1,30 +1,29 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform;
+package cz.cuni.xrg.intlib.commons.transformer;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.ETLEvent;
-import cz.cuni.xrg.intlib.commons.app.data.Transformer;
+import cz.cuni.xrg.intlib.commons.event.ETLEvent;
 /**
- * Base class for {@link Transformer} events
+ * Base class for {@link Transform} events
  *
- * @see Transformer
+ * @see Transform
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public abstract class TransformEvent extends ETLEvent {
 
-    protected final Transformer transformer;
+    protected final Transform transformer;
     protected final TransformContext transformContext;
 
-    public TransformEvent(Transformer transformer, TransformContext transformContext, Object source) {
+    public TransformEvent(Transform transformer, TransformContext transformContext, Object source) {
         super(source);
         this.transformer = transformer;
         this.transformContext = transformContext;
     }
 
     /**
-     * Returns the {@link Transformer} associated with this event.
+     * Returns the {@link Transform} associated with this event.
      *
      * @return
      */
-    public Transformer getTransformer() {
+    public Transform getTransformer() {
         return transformer;
     }
 

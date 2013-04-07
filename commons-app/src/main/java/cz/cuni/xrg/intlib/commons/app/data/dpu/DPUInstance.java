@@ -1,7 +1,9 @@
 package cz.cuni.xrg.intlib.commons.app.data.dpu;
 
+import cz.cuni.xrg.intlib.commons.RDFGraph;
+
 /**
- * For representing concrete DPU component on the canvas.
+ * For representing concrete DPU component in the pipeline.
  *
  * @author Jiri Tomes
  */

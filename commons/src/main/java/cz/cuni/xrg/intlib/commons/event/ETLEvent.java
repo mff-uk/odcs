@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event;
+package cz.cuni.xrg.intlib.commons.event;
 
 import org.springframework.context.ApplicationEvent;
 

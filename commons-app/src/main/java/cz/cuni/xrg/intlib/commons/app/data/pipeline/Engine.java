@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.data.pipeline;
 
 /**
- * Run a s
+ * Run as
  * 
  * @author Jiri Tomes
  */

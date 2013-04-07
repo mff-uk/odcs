@@ -19,6 +19,7 @@
             <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
         </repository>
         <repository>
+        
             <id>aduna-releases</id>
             <name>Aduna Maven Repository - Releases</name>
             <releases>
@@ -26,7 +27,8 @@
             </releases>
             <url>http://repo.aduna-software.org/maven2/releases</url> 
         </repository>
-        <repository>
+        
+        <repository> <!-- spring repository -->
             <id>com.springsource.repository.bundles.release</id>
             <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/release</url>
@@ -56,6 +58,7 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.3</version>
         </dependency>
+        
         <dependency> <!-- openRDF dependency-->
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-model</artifactId>
@@ -66,7 +69,8 @@
             <artifactId>sesame-repository-api</artifactId>
             <version>2.6.10</version>
         </dependency>
-        <dependency>
+        
+        <dependency> <!-- spring dependency -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>3.1.2.RELEASE</version>

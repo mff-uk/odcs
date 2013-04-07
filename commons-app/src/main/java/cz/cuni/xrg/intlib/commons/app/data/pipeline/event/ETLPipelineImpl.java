@@ -1,24 +1,25 @@
 package cz.cuni.xrg.intlib.commons.app.data.pipeline.event;
 
-import cz.cuni.xrg.intlib.commons.app.data.Extractor;
-import cz.cuni.xrg.intlib.commons.app.data.Loader;
-import cz.cuni.xrg.intlib.commons.app.data.Transformer;
+import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+import cz.cuni.xrg.intlib.commons.extractor.Extract;
+import cz.cuni.xrg.intlib.commons.loader.Load;
+import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.wraper.*;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract.ExtractContext;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract.ExtractException;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract.ExtractCompletedEvent;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract.ExtractFailedEvent;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform.TransformContext;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform.TransformException;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform.TransformCompletedEvent;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform.TransformFailedEvent;
-
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load.LoadContext;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load.LoadException;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load.LoadCompletedEvent;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load.LoadFailedEvent;
+import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractCompletedEvent;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractFailedEvent;
+import cz.cuni.xrg.intlib.commons.loader.LoadCompletedEvent;
+import cz.cuni.xrg.intlib.commons.loader.LoadContext;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
+import cz.cuni.xrg.intlib.commons.loader.LoadFailedEvent;
+import cz.cuni.xrg.intlib.commons.transformer.TransformCompletedEvent;
+import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.commons.transformer.TransformFailedEvent;
 
 /*
 import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract.Extractor;
@@ -42,21 +43,21 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
 /**
- * Represents a fixed workflow composed of one or several {@link Extractor}s,
- * {@link Transformer}s and {@link Loader}s executed in a fixed order. <br/>
+ * Represents a fixed workflow composed of one or several {@link Extract}s,
+ * {@link Transform}s and {@link Load}s executed in a fixed order. <br/>
  * Processing will always take place in the following order: <ol> <li>Execute
- * all {@link Extractor}s in the order of the {@link List}</li> <ul> <li>If an
+ * all {@link Extract}s in the order of the {@link List}</li> <ul> <li>If an
  * Extractor throws an error publish an {@link ExtractFailedEvent} - otherwise
  * publish an {@link ExtractCompletedEvent}</li> <li>If an Extractor requests
  * cancellation of the pipeline through {@link ProcessingContext#cancelPipeline}
  * publish a {@link PipelineAbortedEvent} and exit</li> </ul> <li>Execute all
- * {@link Transformer}s in the order of the {@link List}</li> <ul> <li>If a
+ * {@link Transform}s in the order of the {@link List}</li> <ul> <li>If a
  * Transformer throws an error publish an {@link TransformFailedEvent} -
  * otherwise publish an {@link TransformCompletedEvent}</li>
  * <li>If a Transformer requests cancellation of the pipeline through
  * {@link ProcessingContext#cancelPipeline} publish a
  * {@link PipelineAbortedEvent} and exit</li> </ul> <li>Execute all
- * {@link Loader}s in the order of the {@link List}</li> <ul> <li>If a Loader
+ * {@link Load}s in the order of the {@link List}</li> <ul> <li>If a Loader
  * throws an error publish an {@link LoadFailedEvent} - otherwise publish an
  * {@link LoadCompletedEvent}</li>
  * <li>If a Loader requests cancellation of the pipeline through
@@ -68,18 +69,18 @@ import org.springframework.context.ApplicationEventPublisherAware;
  * a {@link Repository} instance capable of storing named graphs is essential
  * for this pipeline to work. All extracted RDF data will be stored in a
  * dedicated graph in the repository and accessed / manipulated by the
- * {@link Transformer}s before it is exported by the {@link Loader}s.
+ * {@link Transform}s before it is exported by the {@link Load}s.
  *
- * @see Extractor
- * @see Transformer
- * @see Loader
+ * @see Extract
+ * @see Transform
+ * @see Load
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAware {
 
-    protected List<Extractor> extractors = new ArrayList<Extractor>();
-    protected List<Transformer> transformers = new ArrayList<Transformer>();
-    protected List<Loader> loaders = new ArrayList<Loader>();
+    protected List<Extract> extractors = new ArrayList<Extract>();
+    protected List<Transform> transformers = new ArrayList<Transform>();
+    protected List<Load> loaders = new ArrayList<Load>();
    
     protected static final Logger logger = Logger.getLogger(ETLPipelineImpl.class);
     protected boolean cancelAllowed = true;
@@ -108,12 +109,10 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
     public ETLPipelineImpl() {
     }
 
-    @Override
     public String getId() {
         return ID;
     }
 
-    @Override
     public void setId(String ID) {
         this.ID = ID;
     }
@@ -122,7 +121,6 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
         return repository;
     }
 
-    @Override
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -136,31 +134,27 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
         return eventPublisher;
     }
 
-    public List<Extractor> getExtractors() {
+    public List<Extract> getExtractors() {
         return extractors;
     }
 
-    public void setExtractors(List<Extractor> extractors) {
+    public void setExtractors(List<Extract> extractors) {
         this.extractors = extractors;
     }
 
-    @Override
-    public List<Loader> getLoaders() {
+    public List<Load> getLoaders() {
         return loaders;
     }
 
-    @Override
-    public void setLoaders(List<Loader> loaders) {
+    public void setLoaders(List<Load> loaders) {
         this.loaders = loaders;
     }
 
-    @Override
-    public List<Transformer> getTransformers() {
+    public List<Transform> getTransformers() {
         return transformers;
     }
 
-    @Override
-    public void setTransformers(List<Transformer> transformers) {
+    public void setTransformers(List<Transform> transformers) {
         this.transformers = transformers;
     }
 
@@ -184,16 +178,16 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
         this.cancelAllowed = cancelAllowed;
     }
 
-    @Override
     public void run() {
         long pipelineStart = System.currentTimeMillis();
         String runId = UUID.randomUUID().toString();
         final URI pipelineId = new URIImpl(ID);
+        /*
         try {
             final Map<String, Object> customData = new HashMap<String, Object>();
             try {
                 eventPublisher.publishEvent(new PipelineStartedEvent(this, runId, this));
-                
+              
                 RepositoryConnection con = repository.getConnection();
                 con.setAutoCommit(false);
                 
@@ -203,7 +197,7 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
                 NoStartEndWrapper wrapper = new NoStartEndWrapper(inserter);
                 
                 try {
-                    for (Extractor extractor : extractors) {
+                    for (Extract extractor : extractors) {
                         if (extractor instanceof Disable && ((Disable) extractor).isDisabled()) {
                             continue;
                         }
@@ -237,7 +231,7 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
                 logger.error(ex.getMessage(), ex);
             }
 
-            for (Transformer transformer : transformers) {
+            for (Transform transformer : transformers) {
                 if (transformer instanceof Disable && ((Disable) transformer).isDisabled()) {
                     continue;
                 }
@@ -257,7 +251,7 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
                 }
             }
 
-            for (Loader loader : loaders) {
+            for (Load loader : loaders) {
                 if (loader instanceof Disable && ((Disable) loader).isDisabled()) {
                     continue;
                 }
@@ -294,7 +288,7 @@ public class ETLPipelineImpl implements ETLPipeline, ApplicationEventPublisherAw
                 }
                 eventPublisher.publishEvent(new PipelineCompletedEvent((System.currentTimeMillis() - pipelineStart), this, runId, this));
             }
-        }
+        }*/
     }
 
     @Override

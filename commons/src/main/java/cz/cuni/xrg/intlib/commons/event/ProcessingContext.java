@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event;
+package cz.cuni.xrg.intlib.commons.event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,10 @@ import java.util.Map;
 public class ProcessingContext {
 
     protected final String ID;
-    protected ETLPipeline pipeline;
+    
+    // Petyr: DPU don't know about outside world .. 
+    //protected ETLPipeline pipeline;
+    
     protected long duration;
     protected boolean cancelPipeline;
     protected String cancelMessage;
@@ -91,6 +94,7 @@ public class ProcessingContext {
         return cancelMessage;
     }
 
+    /*
     public ETLPipeline getPipeline() {
         return pipeline;
     }
@@ -98,7 +102,8 @@ public class ProcessingContext {
     public void setPipeline(ETLPipeline pipeline) {
         this.pipeline = pipeline;
     }
-
+    */
+    
     public List<String> getWarnings() {
         return warnings;
     }

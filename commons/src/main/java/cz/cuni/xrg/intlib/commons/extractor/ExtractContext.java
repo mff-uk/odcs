@@ -1,16 +1,21 @@
-package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract;
+package cz.cuni.xrg.intlib.commons.extractor;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
+
 import java.util.Map;
 
+import org.openrdf.rio.RDFHandler;
+
 /**
- * Context used by {@link Extractor}s for the extraction process.
+ * Context used by {@link Extract}s for the extraction process.
  *
- * @see Extractor
+ * @see Extract
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public class ExtractContext extends ProcessingContext {
 
+	// RDFHandler handler, 
+	
     private long triplesExtracted;
 
     public ExtractContext(String id, Map<String, Object> customData) {

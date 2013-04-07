@@ -7,4 +7,5 @@ package cz.cuni.xrg.intlib.commons.configuration;
  *
  */
 public class ExceptionSetting extends RuntimeException {
+
 }
