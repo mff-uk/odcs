@@ -8,6 +8,12 @@ package cz.cuni.xrg.intlib.frontend.OSGi;
 public class ExceptionOSGi extends RuntimeException {
 
 	/**
+	 * User-defined ID in combination with custom serialization code
+	 * if the type did undergo structural changes since its first release.
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/**
 	 * Store original exception.
 	 */
 	protected Exception originalExpcetion;
