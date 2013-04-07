@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.cuni.xrg.intlib.commons.app.pipeline;
+package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import java.awt.Point;
 

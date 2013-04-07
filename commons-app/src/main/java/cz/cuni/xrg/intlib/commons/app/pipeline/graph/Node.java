@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.pipeline;
+package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 

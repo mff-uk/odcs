@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import javax.persistence.*;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Graph;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
 
 /**
