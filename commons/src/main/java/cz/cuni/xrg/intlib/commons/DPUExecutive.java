@@ -26,7 +26,7 @@ public interface DPUExecutive {
      * @return Serialised module settings.
      * @throws ExceptionSetting
      */
-    //public Configuration getSettings() throws ExceptionSetting;
+    public Configuration getSettings() throws ExceptionSetting;
 
     /**
      * Set DPU's settings. DPU settings.
@@ -34,5 +34,5 @@ public interface DPUExecutive {
      * @param configuration Configuration to load.
      * @throws ExceptionSetting Thrown in case of invalid setting.
      */
-    //public void setSettings(Configuration configuration);
+    public void setSettings(Configuration configuration);
 }
