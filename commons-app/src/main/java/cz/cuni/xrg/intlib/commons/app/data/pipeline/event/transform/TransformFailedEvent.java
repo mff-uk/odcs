@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform;
 
+import cz.cuni.xrg.intlib.commons.app.data.Transformer;
 /**
  * Published when a {@link Transformer} throws an exception during transformation.
  *

@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load;
 
 import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.ETLEvent;
+import cz.cuni.xrg.intlib.commons.app.data.Loader;
 
 /**
  * Base class for {@link Loader} events.

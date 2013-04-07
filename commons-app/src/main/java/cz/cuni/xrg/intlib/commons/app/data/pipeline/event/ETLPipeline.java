@@ -2,9 +2,9 @@ package cz.cuni.xrg.intlib.commons.app.data.pipeline.event;
 
 import java.util.List;
 
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract.Extractor;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.transform.Transformer;
-import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.load.Loader;
+import cz.cuni.xrg.intlib.commons.app.data.Extractor;
+import cz.cuni.xrg.intlib.commons.app.data.Transformer;
+import cz.cuni.xrg.intlib.commons.app.data.Loader;
 
 import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;

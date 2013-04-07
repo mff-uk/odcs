@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.data.pipeline;
 
 import javax.persistence.*;
+import cz.cuni.xrg.intlib.commons.app.data.Resource;
 
 /**
  *
@@ -8,7 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="pipeline_model")
-public final class Pipeline implements cz.cuni.xrg.intlib.commons.app.data.Resource {
+public class Pipeline implements Resource {
 
     //private State state;
 

@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.data.pipeline.event.extract;
 
 import cz.cuni.xrg.intlib.commons.app.data.pipeline.event.ETLEvent;
-
+import cz.cuni.xrg.intlib.commons.app.data.Extractor;
 /**
  * Base class for {@link Extractor} events
  *
