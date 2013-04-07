@@ -37,7 +37,6 @@ public class Pipeline implements Resource {
     public Pipeline(String name, String description) {
         this.name = name;
         this.description = description;
-        this.id = createUniqueID();
     }
 
 
@@ -76,12 +75,9 @@ public class Pipeline implements Resource {
         this.graph = graph;
     }
 
-    public String getID() {
+    @Override
+    public String getId() {
         return id;
     }
-
-    /*TODO - Method for implement*/
-    public String createUniqueID() {
-        return "PIPELINE_UNIQUE_ID";
-    }
+    
 }

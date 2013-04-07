@@ -3,14 +3,16 @@ package cz.cuni.xrg.intlib.commons.app.data.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.cuni.xrg.intlib.commons.app.data.Resource;
+
 /**
  * Holds user data (his accounout).
  *
  * @author Jiri Tomes
  */
-public final class Account implements RoleHolder, cz.cuni.xrg.intlib.commons.app.data.Resource {
+public final class Account implements RoleHolder, Resource {
 
-    private String ID;
+    private String id;
     private String email;
     private String name;
     private String password;
@@ -20,7 +22,6 @@ public final class Account implements RoleHolder, cz.cuni.xrg.intlib.commons.app
         this.name = name;
         this.password = password;
         this.email = email;
-        this.ID = createUniqueID();
     }
 
     public String getEmail() {
@@ -59,14 +60,9 @@ public final class Account implements RoleHolder, cz.cuni.xrg.intlib.commons.app
         roles = newRoles;
     }
 
-    public String getID() {
-        return ID;
+    @Override
+    public String getId() {
+        return id;
     }
-
-    /*
-     * TODO - IMPLEMENT
-     */
-    public String createUniqueID() {
-        return "ACOUNT_UNIQUE_ID";
-    }
+    
 }
