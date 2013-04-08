@@ -52,6 +52,7 @@ public class PipelineGraph {
     public int addDpu(DPU dpu) {
 		DPUInstance dpuInstance = new DPUInstance(dpu);
 		Node node = new Node(dpuInstance);
+        node.setId(GetUniqueDpuInstanceId());
         nodes.add(node);
 		return node.getId();
 	}
@@ -73,6 +74,7 @@ public class PipelineGraph {
 		//TODO: 2. Find Id of equal existing connection
 
 		Edge edge = new Edge(dpuFrom, dpuTo);
+        edge.setId(GetUniquePipelineConnectionId());
 		boolean newElement = edges.add(edge);
 		if(!newElement) {
 			return 0;
@@ -105,4 +107,24 @@ public class PipelineGraph {
 		}
 		return null;
 	}
+
+        /** Hack for IDs for Nodes and Edges - replace with IDs from db ASAP */
+    private int dpuCounter = 0;
+
+	private int connectionCounter = 0;
+
+	private int CONNECTION_SEED = 1000;
+
+	public int getCONNECTION_SEED() {
+		return CONNECTION_SEED;
+	}
+
+    public int GetUniqueDpuInstanceId() {
+		return ++dpuCounter;
+	}
+
+	public int GetUniquePipelineConnectionId() {
+		return ++connectionCounter + CONNECTION_SEED;
+	}
+    /** End of hack */
 }

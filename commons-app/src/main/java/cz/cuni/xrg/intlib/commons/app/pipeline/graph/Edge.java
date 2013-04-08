@@ -48,4 +48,8 @@ public class Edge {
         return id;
     }
 
+    void setId(int GetUniquePipelineConnectionId) {
+        id = GetUniquePipelineConnectionId;
+    }
+
 }

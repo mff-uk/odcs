@@ -25,13 +25,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	private Pipeline pipeline;
 	private PipelineGraph graph;
-
-	private int CONNECTION_SEED = 1000;
-
-	public int getCONNECTION_SEED() {
-		return CONNECTION_SEED;
-	}
-
+    
 	public PipelineCanvas() {
 
 		this.pipeline = App.getApp().getPipelines().createPipeline();

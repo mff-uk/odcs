@@ -503,6 +503,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         idx = dpus[con.to].connectionTo.indexOf(id);
         dpus[con.to].connectionTo.splice(idx, 1);
         con.line.destroy();
+        con.arrowLeft.destroy();
+        con.arrowRight.destroy();
         con.cmdDelete.destroy();
         connections[id] = null;
         lineLayer.draw();

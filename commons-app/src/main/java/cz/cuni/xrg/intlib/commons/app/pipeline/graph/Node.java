@@ -55,4 +55,8 @@ public class Node {
         return id;
     }
 
+    void setId(int GetUniqueDpuInstanceId) {
+        id = GetUniqueDpuInstanceId;
+    }
+
 }
