@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.frontend;
 
 import com.vaadin.navigator.Navigator;
 
+import cz.cuni.xrg.intlib.frontend.OSGi.Framework;
 import cz.cuni.xrg.intlib.frontend.data.DataAccess;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -27,6 +28,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 */
 	private DataAccess dataAccess;
 	
+	// TODO: Move to backend
+	private Framework osgiFramework;
+	
 	/**
 	 * Return service for data access.
 	 * @see DataAccess
@@ -42,8 +46,25 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return this.navigator;
 	}
 	
+	/**
+	 * Return acces to OSGi framework class.
+	 * @return
+	 */
+	public Framework getFrameWork() {
+		return this.osgiFramework;
+	}	
+	
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
+		this.osgiFramework = new Framework(); 
+		this.osgiFramework.start();
+		// on detach event
+		this.addDetachListener(new DetachListener() {
+			@Override
+			public void detach(DetachEvent event) {
+				osgiFramework.stop();
+			}} );
+		
 		// init data access
 		this.dataAccess = new DataAccess();
 		
@@ -64,7 +85,9 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.navigator.addView(ViewNames.PipelineList.getUrl(), new PipelineList());
         this.navigator.addView(ViewNames.PipelineEdit.getUrl(), new PipelineEdit());
         this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());
-                
+        // TODO: remove !
+        this.navigator.addView("expDialog", new DPUDialog());
+        
         /* You can create new views dynamically using a view provider 
          * that implements the  ViewProvider interface. 
          * A provider is registered in Navigator with  addProvider().
