@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.frontend;
 
 import com.vaadin.navigator.Navigator;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.data.DataAccess;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -28,11 +29,24 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private DataAccess dataAccess;
 	
 	/**
+	 * Facade interface providing services for managing pipelines.
+	 */
+	private PipelineFacade pipelines = new PipelineFacade();
+	
+	/**
 	 * Return service for data access.
 	 * @see DataAccess
 	 */
 	public DataAccess getDataAccess() {
 		return this.dataAccess;
+	}
+	
+	/**
+	 * Returns facade, which provides services for managing pipelines.
+	 * @return pipeline facade
+	 */
+	public PipelineFacade getPipelines() {
+		return pipelines;
 	}
 	
 	/**

@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
  * @author Petyr
  *
  */
+@Deprecated
 public class DataAccess {
 
 	/**

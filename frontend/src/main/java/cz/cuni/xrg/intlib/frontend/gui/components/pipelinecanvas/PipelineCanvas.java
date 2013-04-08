@@ -4,6 +4,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
+import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
@@ -31,8 +32,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	public PipelineCanvas() {
 
-		//TODO: Factory method for pipeline?
-		this.pipeline = new Pipeline();
+
+		this.pipeline = App.getApp().getPipelines().createPipeline();
 
 		this.setId("container");
 		//this.setWidth(1500,  Unit.PIXELS);
