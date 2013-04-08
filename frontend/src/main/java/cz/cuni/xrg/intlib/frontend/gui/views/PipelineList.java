@@ -1,6 +1,9 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
 import com.vaadin.addon.jpacontainer.JPAContainer;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -14,10 +17,9 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
+import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
-import cz.cuni.xrg.intlib.frontend.data.DataAccess;
-import cz.cuni.xrg.intlib.frontend.data.Pipelines;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 
 public class PipelineList extends CustomComponent implements View {
@@ -32,7 +34,7 @@ public class PipelineList extends CustomComponent implements View {
 	
 	class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
 
-		public Object generateCell(Table source, final Object itemId, Object columnId) {
+		public Object generateCell(final Table source, final Object itemId, Object columnId) {
 			HorizontalLayout layout = new HorizontalLayout();
 			
 			Button updateButton = new Button();
@@ -45,13 +47,17 @@ public class PipelineList extends CustomComponent implements View {
 					}
 				});
 			layout.addComponent(updateButton);
+			// get item 			
+			final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
 			
 			Button daleteButton = new Button();
 			daleteButton.setCaption("delete");
 			daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				public void buttonClick(ClickEvent event) {
 						// navigate to PipelineEdit/New
-						App.getDataAccess().pipelines().remove(itemId);
+						App.getApp().getPipelines().delete( item.getBean() );
+						// now we have to remove pipeline from table
+						source.removeItem(itemId);
 					}
 				});
 			layout.addComponent(daleteButton);			
@@ -87,8 +93,9 @@ public class PipelineList extends CustomComponent implements View {
 		tablePipelines.setWidth("640px");
 		tablePipelines.setHeight("480px");
 		// assign data source
-		JPAContainer<Pipeline> pipes = App.getDataAccess().pipelines().getPipelines();		
-		tablePipelines.setContainerDataSource(pipes);
+		Container container = ContainerFactory.Create(App.getApp().getPipelines().getAllPipelines());
+		tablePipelines.setContainerDataSource(container);
+		
 		// set columns
 		tablePipelines.setVisibleColumns(new String[] {"id", "name", "description"});
 		mainLayout.addComponent(tablePipelines);
