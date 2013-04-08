@@ -7,5 +7,5 @@ package cz.cuni.xrg.intlib.commons.app.user;
  */
 public interface Autorizator {
     
-    public boolean isAllowed(Role role, Account account, Privilege privilege);
+    public boolean isAllowed(Role role, User account, Privilege privilege);
 }
