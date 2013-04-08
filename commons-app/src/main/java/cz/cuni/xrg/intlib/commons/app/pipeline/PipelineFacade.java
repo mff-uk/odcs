@@ -74,7 +74,7 @@ public class PipelineFacade {
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 		
-		if (pipeline.getId() == null) {
+		if (pipeline.getId() == 0) {
 			em.persist(pipeline);
 		} else {
 			em.merge(pipeline);

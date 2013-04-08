@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * PipelineGraph representation as set of nodes.
+ * Oriented acyclic graph representation of pipeline.
+ * Each Node represents a DPU instance, and each edge represents data flow.
  *
  * @author Jiri Tomes
  * @author Bogo

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public final class User implements RoleHolder, Resource {
 
-    private String id;
+    private int id;
     private String email;
     private String name;
     private String password;
@@ -59,9 +59,13 @@ public final class User implements RoleHolder, Resource {
         roles = newRoles;
     }
 
-    @Override
-    public String getId() {
+    public int getId() {
         return id;
     }
+
+	@Override
+	public String getResourceId() {
+		return User.class.toString();
+	}
     
 }

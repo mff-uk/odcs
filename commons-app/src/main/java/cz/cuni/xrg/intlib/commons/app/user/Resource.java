@@ -7,6 +7,6 @@ package cz.cuni.xrg.intlib.commons.app.user;
  */
 public interface Resource {
 
-    public String getId();
+    public String getResourceId();
     
 }

@@ -66,7 +66,7 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private int id;
 
     //private State state;
 
@@ -145,8 +145,7 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
         this.graph = graph;
     }
 
-    @Override
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -238,6 +237,11 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public String getResourceId() {
+		return Pipeline.class.toString();
 	}
 
 }
