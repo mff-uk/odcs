@@ -24,15 +24,15 @@ public interface DPUExecutive {
      * dialog is invalid.
      *
      * @return Serialised module settings.
-     * @throws ExceptionConfiguration
+     * @throws ConfigurationException
      */
-    public Configuration getSettings() throws ExceptionConfiguration;
+    public Configuration getSettings() throws ConfigurationException;
 
     /**
      * Set DPU's settings. DPU settings.
      *
      * @param configuration Configuration to load.
-     * @throws ExceptionConfiguration Thrown in case of invalid setting.
+     * @throws ConfigurationException Thrown in case of invalid setting.
      */
     public void setSettings(Configuration configuration);
 }

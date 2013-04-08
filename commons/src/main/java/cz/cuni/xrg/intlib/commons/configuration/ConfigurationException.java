@@ -6,6 +6,6 @@ package cz.cuni.xrg.intlib.commons.configuration;
  * @author Petyr
  *
  */
-public class ExceptionConfiguration extends RuntimeException {
+public class ConfigurationException extends RuntimeException {
 
 }
