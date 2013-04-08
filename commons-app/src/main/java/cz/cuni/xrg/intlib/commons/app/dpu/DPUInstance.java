@@ -10,6 +10,11 @@ import cz.cuni.xrg.intlib.commons.RDFGraph;
 public class DPUInstance {
 
     /**
+     * DPU
+     */
+    private DPU dpu;
+
+    /**
      * All edges go to the component on the canvas.
      */
     private RDFGraph inputGraph;
@@ -25,6 +30,10 @@ public class DPUInstance {
      * Configuration setting for this component.
      */
     private InstanceConfiguration instanceConfig;
+
+    public DPUInstance(DPU dpu) {
+        this.dpu = dpu;
+    }
 
     public DPUInstance(RDFGraph inputGraph, RDFGraph outputGraph, InstanceConfiguration instanceConfig) {
         this.inputGraph = inputGraph;
@@ -62,5 +71,13 @@ public class DPUInstance {
 
     public void setInstanceConfiguration(InstanceConfiguration newInstanceConfig) {
         instanceConfig = newInstanceConfig;
+    }
+
+    public String getName() {
+        return dpu.getName();
+    }
+
+    public String getDescription() {
+        return dpu.getDescription();
     }
 }

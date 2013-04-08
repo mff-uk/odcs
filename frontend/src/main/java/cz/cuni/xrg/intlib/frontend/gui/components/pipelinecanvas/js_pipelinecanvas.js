@@ -46,13 +46,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         init: function() {
             init();
         },
-        addDpu: function(dpuId, name, description, x , y) {
+        addNode: function(dpuId, name, description, x , y) {
             addDpu(dpuId, name, description, x , y);
         },
-        addConnection: function(id, dpuFrom, dpuTo) {
+        addEdge: function(id, dpuFrom, dpuTo) {
             addConnection(id, dpuFrom, dpuTo);
         },
-        getDpuPosition: function(id) {
+        getNodePosition: function(id) {
             return getDpuPosition(id);
         }
     });

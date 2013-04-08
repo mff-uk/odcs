@@ -10,12 +10,12 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 
 	//public void loadPipeline(Pipeline pipeline);
 
-	public void addDpu(int dpuId, String name, String description, int posX, int posY);
+	public void addNode(int dpuId, String name, String description, int posX, int posY);
 
-	public void addConnection(int connId, int dpuFrom, int dpuTo);
+	public void addEdge(int connId, int dpuFrom, int dpuTo);
 
 	public void init();
 
-	public int[] getDpuPosition(int id);
+	public int[] getNodePosition(int id);
 
 }

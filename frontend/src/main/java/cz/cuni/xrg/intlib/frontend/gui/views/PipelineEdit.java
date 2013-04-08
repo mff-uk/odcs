@@ -13,7 +13,7 @@ import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.frontend.data.pipeline.Dpu;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 
@@ -110,8 +110,8 @@ public class PipelineEdit extends CustomComponent implements View {
 
 				Object obj = t.getData("itemId");
 
-				if(obj.getClass() == Dpu.class) {
-					Dpu dpu = (Dpu) obj;
+				if(obj.getClass() == DPU.class) {
+					DPU dpu = (DPU) obj;
 					pc.addDpu(dpu);
 				}
 
@@ -141,27 +141,27 @@ public class PipelineEdit extends CustomComponent implements View {
 
     private void fillStubTree(Tree tree) {
 
-		Dpu rootExtractor = new Dpu(-1, "Extractors");
+		DPU rootExtractor = new DPU(-1, "Extractors");
 		tree.addItem(rootExtractor);
-		Dpu rootTransformer = new Dpu(-2, "Transformers");
+		DPU rootTransformer = new DPU(-2, "Transformers");
 		tree.addItem(rootTransformer);
-		Dpu rootLoader = new Dpu(-3, "Loaders");
+		DPU rootLoader = new DPU(-3, "Loaders");
 		tree.addItem(rootLoader);
 
-		Dpu basicEx = new Dpu(1, "RDF Extractor");
+		DPU basicEx = new DPU(1, "RDF Extractor");
 		tree.addItem(basicEx);
 		tree.setParent(basicEx, rootExtractor);
 
-		Dpu sparqlEx = new Dpu(2, "SPARQL endpoint");
+		DPU sparqlEx = new DPU(2, "SPARQL endpoint");
 		tree.addItem(sparqlEx);
 		tree.setParent(sparqlEx, rootExtractor);
-		Dpu genericTr = new Dpu(3, "Generic SPARQL");
+		DPU genericTr = new DPU(3, "Generic SPARQL");
 		tree.addItem(genericTr);
 		tree.setParent(genericTr, rootTransformer);
-		Dpu rdfLo = new Dpu(4, "RDF Loader");
+		DPU rdfLo = new DPU(4, "RDF Loader");
 		tree.addItem(rdfLo);
 		tree.setParent(rdfLo, rootLoader);
-		Dpu sparqlLo = new Dpu(5, "SPARQL endpoint Loader");
+		DPU sparqlLo = new DPU(5, "SPARQL endpoint Loader");
 		tree.addItem(sparqlLo);
 		tree.setParent(sparqlLo, rootLoader);
 	}
