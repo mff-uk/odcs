@@ -24,7 +24,7 @@ public class OSGiException extends RuntimeException {
 	 * @param ex Original exception.
 	 */
 	public OSGiException(String message, Exception ex) {
-		super(message);
+		super(message + " original ex: " + ex.getMessage());
 		this.originalExpcetion = ex;
 	}
 

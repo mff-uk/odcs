@@ -1,41 +1,73 @@
 package gui;
 
+import module.Config;
+
 import com.vaadin.ui.*;
 
+import cz.cuni.xrg.intlib.commons.configuration.*;
+
+/**
+ * Configuration dialog.
+ * @author Petyr
+ *
+ */
 public class ConfigDialog extends CustomComponent {
 
 	private static final long serialVersionUID = 1L;
 	
-	private AbsoluteLayout mainLayout;
-	private TextField txtValue;
-	private Button btnSave;
+	private GridLayout mainLayout;
+
+	private TextField txtUrl;
+	
+	private TextField txtLogin;
+	
+	private TextField txtPassword;
+	
+	private TextArea txtQuery;
 		
-	public ConfigDialog(String value) {
+	public ConfigDialog() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
-		// set initial value		
-		this.txtValue.setValue(value);
-		// 
-		this.btnSave.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				// show some dialog ?
-				Notification.show("something happend", "message button clicked ..",
-						com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION);
-			}
-		});
 	}
 	
-	public String getSetting() { 
-		return this.txtValue.getValue();
+	/**
+	 * Return current configuration from dialog. Can return null, if 
+	 * current configuration is invalid.
+	 * @return current configuration or null
+	 */
+	public Configuration getConfiguration() { 
+		Configuration config = new Configuration();
+
+		config.setValue(Config.Url.name(), txtUrl.getValue());
+		config.setValue(Config.Login.name(), txtLogin.getValue());
+		config.setValue(Config.Password.name(), txtPassword.getValue());
+		config.setValue(Config.Query.name(), txtQuery.getValue());
+
+		return config;
 	}
 	
-	public void setSetting(String value) {
-		this.txtValue.setValue(value);
+	/**
+	 * Load values from configuration into dialog.
+	 * @throws ConfigurationException
+	 * @param conf
+	 */
+	public void setConfiguration(Configuration conf) {
+		try
+		{
+			txtUrl.setValue( (String) conf.getValue(Config.Url.name()));
+			txtLogin.setValue( (String) conf.getValue(Config.Login.name()));
+			txtPassword.setValue( (String) conf.getValue(Config.Password.name()));
+			txtQuery.setValue( (String) conf.getValue(Config.Query.name()));
+		} 
+		catch(Exception ex) {
+			// throw setting exception
+			throw new ConfigurationException();
+		}
 	}
 	
-	private AbsoluteLayout buildMainLayout() {
+	private GridLayout buildMainLayout() {
 		// common part: create layout
-		mainLayout = new AbsoluteLayout();
+		mainLayout = new GridLayout(2, 4);
 		mainLayout.setImmediate(false);
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
@@ -43,21 +75,30 @@ public class ConfigDialog extends CustomComponent {
 		// top-level component properties
 		setWidth("600px");
 		setHeight("300px");
+				
+		txtUrl = new TextField();
+		txtUrl.setWidth("450px");
+		txtUrl.setHeight("-1px");
+		mainLayout.addComponent(txtUrl, 1, 0);
+		mainLayout.addComponent(new Label("Url:"), 0, 0);
 		
-		// button_1
-		btnSave = new Button();
-		btnSave.setCaption("show message..");
-		btnSave.setImmediate(false);
-		btnSave.setWidth("-1px");
-		btnSave.setHeight("-1px");
-		mainLayout.addComponent(btnSave, "top:60.0px;left:224.0px;");
+		txtLogin = new TextField();
+		txtLogin.setWidth("450px");
+		txtLogin.setHeight("-1px");
+		mainLayout.addComponent(txtLogin, 1, 1);
+		mainLayout.addComponent(new Label("Login:"), 0, 1);
 		
-		// txtValue
-		txtValue = new TextField();
-		txtValue.setImmediate(false);
-		txtValue.setWidth("257px");
-		txtValue.setHeight("-1px");
-		mainLayout.addComponent(txtValue, "top:20.0px;left:23.0px;");
+		txtPassword = new TextField();
+		txtPassword.setWidth("450px");
+		txtPassword.setHeight("-1px");
+		mainLayout.addComponent(txtPassword, 1, 2);
+		mainLayout.addComponent(new Label("Password:"), 0, 2);
+		
+		txtQuery = new TextArea();
+		txtQuery.setWidth("450px");
+		txtQuery.setHeight("300px");
+		mainLayout.addComponent(txtQuery, 1, 3);
+		mainLayout.addComponent(new Label("Query:"), 0, 3);		
 		
 		return mainLayout;
 	}
