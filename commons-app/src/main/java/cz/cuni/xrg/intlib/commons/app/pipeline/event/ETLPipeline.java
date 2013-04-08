@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.event;
 
 import java.util.List;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Graph;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
@@ -28,13 +28,13 @@ public interface ETLPipeline extends Runnable {
      * Get acyclic graph of DPUs, which represents data flow of pipeline.
      * @return
      */
-    public Graph getGraph();
+    public PipelineGraph getGraph();
     
     /**
      * Set acyclic graph of DPUs, which represents data flow of pipeline.
      * @param graph
      */
-    public void setGraph(Graph graph);
+    public void setGraph(PipelineGraph graph);
     
     /**
      * Runs the pipeline.

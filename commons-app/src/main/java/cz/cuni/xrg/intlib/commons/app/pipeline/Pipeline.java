@@ -9,7 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.event.ETLPipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Graph;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
 import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
@@ -81,7 +81,7 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
     private String description;
 
     @Transient
-    private Graph graph;
+    private PipelineGraph graph;
 
     /**
      * Publisher instance responsible for publishing pipeline execution events.
@@ -136,12 +136,12 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
 */
 
     @Override
-    public Graph getGraph() {
+    public PipelineGraph getGraph() {
         return graph;
     }
 
     @Override
-    public void setGraph(Graph graph) {
+    public void setGraph(PipelineGraph graph) {
         this.graph = graph;
     }
 
