@@ -6,9 +6,12 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.util.List;
 
 /**
+ * Node represents DPU on the pipeline and holds information
+ * about its position on the Pipeline canvas.
  *
  * @author Jiri Tomes
  * @author Bogo
+ * @author Jan Vojt <jan@vojt.net>
  */
 public class Node {
 
@@ -20,8 +23,7 @@ public class Node {
 
     private Position position;
 
-    public Node(Pipeline pipeline, DPUInstance dpuInstance) {
-        //this.id = pipeline.GetUniqueDpuInstanceId();
+    public Node(DPUInstance dpuInstance) {
         this.dpuInstance = dpuInstance;
     }
 

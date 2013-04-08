@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
 /**
- * Resource represents uniquely identifiable object in the system.
+ * Represents resource, an object to which access is controlled.
  *
  * @author Jiri Tomes
  */

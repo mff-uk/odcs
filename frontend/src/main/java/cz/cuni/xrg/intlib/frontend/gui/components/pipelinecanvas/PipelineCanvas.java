@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 
 
 /**
@@ -23,6 +24,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	int connCount = 0;
 
 	private Pipeline pipeline;
+	private PipelineGraph graph;
 
 	private int CONNECTION_SEED = 1000;
 
@@ -32,8 +34,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	public PipelineCanvas() {
 
-
 		this.pipeline = App.getApp().getPipelines().createPipeline();
+		this.graph = this.pipeline.getGraph();
 
 		this.setId("container");
 		//this.setWidth(1500,  Unit.PIXELS);
@@ -50,7 +52,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onConnectionRemoved(int connectionId) {
-				pipeline.RemoveEdge(connectionId);
+				graph.removeEdge(connectionId);
 			}
 
 			@Override
@@ -60,7 +62,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onDpuRemoved(int dpuId) {
-				pipeline.RemoveDpu(dpuId);
+				graph.removeDpu(dpuId);
 
 			}
 		});
@@ -71,12 +73,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     }
 
 	public void addDpu(DPU dpu) {
-		int dpuInstanceId = pipeline.AddDpu(dpu);
+		int dpuInstanceId = graph.addDpu(dpu);
 		getRpcProxy(PipelineCanvasClientRpc.class).addNode(dpuInstanceId, dpu.getName(), dpu.getDescription(), -5, -5);
 	}
 
 	public void addConnection(int dpuFrom, int dpuTo) {
-		int connectionId = pipeline.AddEdge(dpuFrom, dpuTo);
+		int connectionId = graph.addEdge(dpuFrom, dpuTo);
 		getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
 	}
 

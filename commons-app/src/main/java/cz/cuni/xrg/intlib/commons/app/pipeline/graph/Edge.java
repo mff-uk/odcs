@@ -4,8 +4,6 @@
  */
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-
 /**
  * Edge represents oriented connection between nodes of the graph.
  *
@@ -19,8 +17,7 @@ public class Edge {
 
     private Node to;
 
-    public Edge(Pipeline pipeline, Node from, Node to) {
-        //this.id = pipeline.GetUniquePipelineConnectionId();
+    public Edge(Node from, Node to) {
         this.from = from;
         this.to = to;
     }

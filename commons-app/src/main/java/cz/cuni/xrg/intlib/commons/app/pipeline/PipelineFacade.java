@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 
 /**
@@ -34,7 +35,10 @@ public class PipelineFacade {
 	 * @return newly created pipeline
 	 */
 	public Pipeline createPipeline() {
-		return new Pipeline();
+		Pipeline pipe = new Pipeline();
+		pipe.setGraph(new PipelineGraph());
+		
+		return pipe;
 	}
 	
 	/**

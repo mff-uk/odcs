@@ -1,16 +1,12 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import javax.persistence.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.ETLPipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
 import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
@@ -88,12 +84,6 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
      */
     @Transient
     protected ApplicationEventPublisher eventPublisher;
-
-    private int dpuCounter = 0;
-
-	private int connectionCounter = 0;
-
-	private int CONNECTION_SEED = 100000;
 
     /**
      * Default constructor for JPA
@@ -174,70 +164,6 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
     public void run() {
     	//TODO implement
     }
-
-    public int GetUniqueDpuInstanceId() {
-		return ++dpuCounter;
-	}
-
-	public int GetUniquePipelineConnectionId() {
-		return ++connectionCounter + CONNECTION_SEED;
-	}
-
-    public int AddDpu(DPU dpu) {
-		DPUInstance dpuInstance = new DPUInstance(dpu);
-		Node node = new Node(this, dpuInstance);
-        this.getGraph().getNodes().add(node);
-		return node.getId();
-	}
-
-	public boolean RemoveDpu(int dpuId) {
-		Node node = getNodeById(dpuId);
-		if(node != null) {
-			return this.getGraph().getNodes().remove(node);
-		}
-		return false;
-	}
-
-	public int AddEdge(int fromId, int toId) {
-		Node dpuFrom = getNodeById(fromId);
-		Node dpuTo = getNodeById(toId);
-
-		//TODO: Check if same connection doesn't exist already!
-		//If it does - add to Set fails and returns false - TODO: 2.Find Id of equal existing connection
-
-		Edge edge = new Edge(this, dpuFrom, dpuTo);
-		boolean newElement = this.getGraph().getEdges().add(edge);
-		if(!newElement) {
-			return 0;
-		}
-		return edge.getId();
-	}
-
-	public boolean RemoveEdge(int pcId) {
-		Edge pc = getEdgeById(pcId);
-		if(pc != null) {
-			return this.getGraph().getEdges().remove(pc);
-		}
-		return false;
-	}
-
-	private Edge getEdgeById(int id) {
-		for(Edge el : this.getGraph().getEdges()) {
-			if(el.getId() == id) {
-				return el;
-			}
-		}
-		return null;
-	}
-
-	private Node getNodeById(int id) {
-		for(Node el : this.getGraph().getNodes()) {
-			if(el.getId() == id) {
-				return el;
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public String getResourceId() {
