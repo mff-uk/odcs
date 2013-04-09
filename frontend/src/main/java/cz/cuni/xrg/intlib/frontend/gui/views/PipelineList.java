@@ -1,15 +1,12 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
-import com.vaadin.addon.jpacontainer.JPAContainer;
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
@@ -19,7 +16,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 
 public class PipelineList extends CustomComponent implements View {
@@ -34,12 +30,14 @@ public class PipelineList extends CustomComponent implements View {
 	
 	class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
 
+                @Override
 		public Object generateCell(final Table source, final Object itemId, Object columnId) {
 			HorizontalLayout layout = new HorizontalLayout();
 			
 			Button updateButton = new Button();
 			updateButton.setCaption("edit");
 			updateButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+                                @Override
 				public void buttonClick(ClickEvent event) {
 						// navigate to PipelineEdit/New
 						App.getApp().getNavigator().navigateTo( 
@@ -53,6 +51,7 @@ public class PipelineList extends CustomComponent implements View {
 			Button daleteButton = new Button();
 			daleteButton.setCaption("delete");
 			daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+                                @Override
 				public void buttonClick(ClickEvent event) {
 						// navigate to PipelineEdit/New
 						App.getApp().getPipelines().delete( item.getBean() );
@@ -107,6 +106,7 @@ public class PipelineList extends CustomComponent implements View {
 		btnCreatePipeline.setHeight("25px");
 		btnCreatePipeline.setWidth("150px");
 		btnCreatePipeline.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+                        @Override
 			public void buttonClick(ClickEvent event) {
 				// navigate to PipelineEdit/New
 				App.getApp().getNavigator().navigateTo( ViewNames.PipelineEdit_New.getUrl() );
@@ -117,6 +117,7 @@ public class PipelineList extends CustomComponent implements View {
 		return mainLayout;
 	}
 
+        @Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);		
