@@ -1,0 +1,35 @@
+<h2>DPU Implementation tutorial</h2>
+
+<h3 style="color:blue">Project preparation</h3>
+<p style="margin-left:20px">
+	Copy module project into new directory. <br/>
+	Change <i>groupId</i> and <i>artifactId</i> in pom.xml.
+</p>
+
+<h3 style="color:blue">Implementation class detail</h3>
+<p style="margin-left:20px">
+	Implement class <i>module.Module</i>. The implementation must extends just one of the following class:
+	<ul>
+		<li>cz.cuni.xrg.intlib.commons.module.GraphicalExtractor</li>
+		<li>cz.cuni.xrg.intlib.commons.module.GraphicalLoader</li>
+		<li>cz.cuni.xrg.intlib.commons.module.GraphicalTransformer</li>
+	</ul>	
+</p>
+<p style="margin-left:20px">
+	Function implementation details: (for more information please refer to the documentation)
+	<ul>
+		<li>getType - must return type according to implemented interface</li>
+		<li>getConfigurationComponent - return configuration component for given DPU</li>
+		<li>getSettings - return current DPU setting. If the configuration component is active return configuration from dialog.</li>
+		<li>setSettings - set setting for module and configuration component if exist</li>
+	</ul>
+</p>
+<p style="margin-left:20px">
+	getSettings can return null in case of the presence of invalid configuration in active configuration component. <br/>
+	setSettings can throw <i>ConfigurationException</i> ,if the given configuration is invalid. 
+</p>
+
+<h3 style="color:blue">Configuration component</h3>
+<p style="margin-left:20px">
+	Configuration component must not contains any close button. The component will be closed from application. <br/>
+</p>

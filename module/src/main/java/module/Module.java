@@ -11,7 +11,6 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.GraphicalExtractor;
 
-//#!expDialog/file:///e:/Tmp/Intlib/module-0.0.1.jar
 
 public class Module implements GraphicalExtractor {
 
