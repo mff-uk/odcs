@@ -13,7 +13,7 @@
 		<li>cz.cuni.xrg.intlib.commons.module.GraphicalExtractor</li>
 		<li>cz.cuni.xrg.intlib.commons.module.GraphicalLoader</li>
 		<li>cz.cuni.xrg.intlib.commons.module.GraphicalTransformer</li>
-	</ul>	
+	</ul>
 </p>
 <p style="margin-left:20px">
 	Function implementation details: (for more information please refer to the documentation)
@@ -28,8 +28,23 @@
 	getSettings can return null in case of the presence of invalid configuration in active configuration component. <br/>
 	setSettings can throw <i>ConfigurationException</i> ,if the given configuration is invalid. 
 </p>
+<p style="margin-left:20px">
+	The configuration component must be located directly in package <i>gui</i>.
+</p>
 
 <h3 style="color:blue">Configuration component</h3>
 <p style="margin-left:20px">
 	Configuration component must not contains any close button. The component will be closed from application. <br/>
+	Usage of any class from other package vaadin.ui is not possible.  
+</p>
+
+<h3 style="color:blue">Recommended practice</h3>
+<p style="margin-left:20px">
+	Use enum (like module.Config) to define names of object stored in configuration. <br/>
+	The configuration component (gui.ConfigDialog) should contains methods for set/getConfiguration for example setConfiguration and getConfiguration. <br/>
+	<br/>
+	The configuration component can be developed in separate project and then add into project and connected by proper implementation of setConfiguration and getConfiguration method. <br/>
+	<br/>
+	Start with sample implementation in module project and modify it to get your own DPU rather than starting just with pom.xml file. Just follow TODOs. :)<br/>
+	On the end do not forget to change the author. 
 </p>

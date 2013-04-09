@@ -9,17 +9,29 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.module.GraphicalExtractor;
+import cz.cuni.xrg.intlib.commons.module.*;
 
-
+/** 
+ * TODO Change super class to desired one, you can choose from the following:
+ *	GraphicalExtractor, GraphicalLoader, GraphicalTransformer
+ */
 public class Module implements GraphicalExtractor {
 
+	/**
+	 * Configuration component.
+	 */
 	private gui.ConfigDialog configDialog = null;
 	
+	/**
+	 * DPU configuration.
+	 */
 	private Configuration config = new Configuration();
-	
+
 	public Module() {
 		// set initial configuration
+		/**
+		 * TODO Set default (possibly empty but better valid) configuration for your DPU. 
+		 */		
 		this.config.setValue(Config.Url.name(), "");
 		this.config.setValue(Config.Login.name(), "");
 		this.config.setValue(Config.Password.name(), "");
@@ -27,11 +39,17 @@ public class Module implements GraphicalExtractor {
 	}
 	
 	public void extract(ExtractContext context) throws ExtractException {
-		// TODO Auto-generated method stub		
+		/**
+		 * TODO Implement module functionality here. Use context to access input, output graphs and
+		 *	other context.
+		 */
 	}
 
 	public Type getType() {
 		return Type.EXTRACTOR;
+		/**
+		 * TODO Change type according to implemented interface.
+		 */
 	}
 
 	public CustomComponent getConfigurationComponent() {
@@ -61,7 +79,7 @@ public class Module implements GraphicalExtractor {
 		this.config = configuration;
 		if (this.configDialog == null) {			
 		} else {
-			// set configuration for dialog
+			// also set configuration for dialog
 			this.configDialog.setConfiguration(this.config); 
 		}
 	}
