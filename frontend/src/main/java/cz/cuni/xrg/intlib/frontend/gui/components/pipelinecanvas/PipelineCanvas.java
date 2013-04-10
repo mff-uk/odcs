@@ -12,9 +12,6 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
-import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetailDialog;
-import java.awt.event.ActionEvent;
-import java.util.Collection;
 
 
 /**
