@@ -38,7 +38,8 @@ public class ModuleFacade {
 	 * releasing all used instances from ModuleFacade.
 	 */
 	public void stop() {
-		this.framework.stop();
+		this.framework.uninstallBundles();
+		this.framework.stop();		
 	}
 	
 	/**

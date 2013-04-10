@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import java.util.Date;
+
 import com.vaadin.navigator.Navigator;
 
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -34,7 +36,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private PipelineFacade pipelines = new PipelineFacade();
 		
 	protected void finalize ()  {
-System.out.println("AppEntry::finalize");		
+		
+		
+System.out.println((new Date()).toString() + ": AppEntry::finalize");		
 		//modules.stop();
 		//modules = null;
     }	
@@ -43,7 +47,7 @@ System.out.println("AppEntry::finalize");
 	 * Returns facade, which provides services for managing pipelines.
 	 * @return pipeline facade
 	 */
-	public PipelineFacade getPipelines() {
+		public PipelineFacade getPipelines() {
 		return pipelines;
 	}
 	
@@ -66,15 +70,16 @@ System.out.println("AppEntry::finalize");
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
 		this.modules = new ModuleFacade(); 
-		//this.modules.start();
+		this.modules.start();
 		
-System.out.println("AppEntry::init");		
+System.out.println((new Date()).toString() + ": AppEntry::init");		
 		
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
-				//modules.stop();
-				//modules = null;
+				modules.stop();
+				modules = null;
+System.out.println((new Date()).toString() + ": AppEntry::detach");				
 			}} );
 		
 		// create main application uber-view and set it as app. content
