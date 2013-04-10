@@ -14,15 +14,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
-import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetailDialog;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Page for creating new/editing pipeline.
@@ -270,12 +263,8 @@ public class PipelineEdit extends CustomComponent implements View {
 	 */
 	protected Pipeline loadPipeline(String id) {
 		// get data from DB ..
-		this.entity = App.getDataAccess().pipelines().getPipeline(id);
-		if (this.entity == null) {
-			return null;
-		} else {
-			return this.entity.getEntity();
-		}
+		this.pipeline = App.getApp().getPipelines().getPipeline(Integer.parseInt(id));
+		return pipeline;
 	}
 
 	/**
