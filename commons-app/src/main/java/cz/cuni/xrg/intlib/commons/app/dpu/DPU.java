@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 
 /**
  * Represent imported DPUExecution in database.
+ *
  * @author Petyr
  * @author Bogo
  *
@@ -9,18 +10,18 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 public class DPU {
 
     private int id;
-	private String name;
-	private String description = "";
+    private String name;
+    private String description = "";
 
-	public DPU(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    public DPU(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     @Override
-	public String toString() {
-		return name;
-	}
+    public String toString() {
+        return name;
+    }
 
     public String getName() {
         return name;

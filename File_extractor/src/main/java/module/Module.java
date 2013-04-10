@@ -42,6 +42,7 @@ public class Module implements GraphicalExtractor {
         return Type.EXTRACTOR;
 
     }
+    
 
     public CustomComponent getConfigurationComponent() {
         // does dialog exist?
@@ -80,6 +81,7 @@ public class Module implements GraphicalExtractor {
      *
      */
     public void extract(ExtractContext context) throws ExtractException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        
     }
 }
