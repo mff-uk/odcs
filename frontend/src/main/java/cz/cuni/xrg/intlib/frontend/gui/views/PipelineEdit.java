@@ -14,8 +14,15 @@ import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
+import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetailDialog;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Page for creating new/editing pipeline.
@@ -51,41 +58,43 @@ public class PipelineEdit extends CustomComponent implements View {
 		mainLayout.setImmediate(true);
 
 		// top-level component properties
-		setWidth("1280px");
-		setHeight("940px");
+		setSizeUndefined();
+
+        GridLayout pipelineSettingsLayout = new GridLayout(2,3);
 
 		// label
 		label = new Label();
 		label.setImmediate(false);
 		label.setWidth("-1px");
 		label.setHeight("-1px");
-		label.setValue("");
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label);
 
-        pipelineName = new TextField("Name:", "New pipeline");
+        Label nameLabel = new Label("Name");
+        nameLabel.setImmediate(false);
+		nameLabel.setWidth("-1px");
+		nameLabel.setHeight("-1px");
+        pipelineSettingsLayout.addComponent(nameLabel, 0, 0);
+
+        pipelineName = new TextField();
         pipelineName.setImmediate(false);
 		pipelineName.setWidth("200px");
 		pipelineName.setHeight("-1px");
-        mainLayout.addComponent(pipelineName);
+        pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
 
-        pipelineDescription = new TextArea("Description:", "pipeline description");
+        Label descriptionLabel = new Label("Description");
+        descriptionLabel.setImmediate(false);
+		descriptionLabel.setWidth("-1px");
+		descriptionLabel.setHeight("-1px");
+        pipelineSettingsLayout.addComponent(descriptionLabel, 0, 1);
+
+        pipelineDescription = new TextArea();
         pipelineDescription.setImmediate(false);
 		pipelineDescription.setWidth("400px");
 		pipelineDescription.setHeight("60px");
-        mainLayout.addComponent(pipelineDescription);
+        pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
-		com.vaadin.ui.Button button = new com.vaadin.ui.Button();
-		button.setCaption("save");
-		button.setHeight("25px");
-		button.setWidth("150px");
-		button.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				// save current pipeline
-				savePipeline();
-			}
-		});
-		mainLayout.addComponent(button);
+        mainLayout.addComponent(pipelineSettingsLayout);
 
         HorizontalLayout layout = new HorizontalLayout();
 		layout.setMargin(true);
@@ -93,6 +102,24 @@ public class PipelineEdit extends CustomComponent implements View {
         pc.setWidth(1060, Unit.PIXELS);
         pc.setHeight(960, Unit.PIXELS);
 		pc.init();
+
+//        try {
+//            pc.addListener(ActionEvent.class, this, PipelineEdit.class.getMethod("showDPUDetail", new Class[]{DPUInstance.class}));
+//    //        pc.addListener(new ActionListener() {
+//    //
+//    //            @Override
+//    //            public void actionPerformed(ActionEvent ae) {
+//    //                if(ae.getActionCommand().equals("detail")) {
+//    //                    DPUInstance dpu = (DPUInstance) ae.getSource();
+//    //                }
+//    //            }
+//    //
+//    //        });
+//        } catch (NoSuchMethodException ex) {
+//            Logger.getLogger(PipelineEdit.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (SecurityException ex) {
+//            Logger.getLogger(PipelineEdit.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
 		DragAndDropWrapper dadWrapper = new DragAndDropWrapper(pc);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
@@ -112,7 +139,9 @@ public class PipelineEdit extends CustomComponent implements View {
 
 				if(obj.getClass() == DPU.class) {
 					DPU dpu = (DPU) obj;
-					pc.addDpu(dpu);
+                    if(dpu.getId() >= 0) {
+                        pc.addDpu(dpu);
+                    }
 				}
 
 			}
@@ -128,6 +157,51 @@ public class PipelineEdit extends CustomComponent implements View {
 
         mainLayout.addComponent(layout);
 
+        HorizontalLayout buttonBar = new HorizontalLayout();
+        buttonBar.setWidth("100%");
+        Label labelFiller = new Label(" ");
+        //labelFiller.setWidth("100%");
+        buttonBar.addComponent(labelFiller);
+
+
+        Button buttonRevert = new Button();
+		buttonRevert.setCaption("Revert to last commit");
+		buttonRevert.setHeight("25px");
+		buttonRevert.setWidth("150px");
+		buttonRevert.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+            @Override
+			public void buttonClick(ClickEvent event) {
+			}
+		});
+		buttonBar.addComponent(buttonRevert);
+
+        Button buttonCommit = new Button();
+		buttonCommit.setCaption("Save & Commit");
+		buttonCommit.setHeight("25px");
+		buttonCommit.setWidth("150px");
+		buttonCommit.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+            @Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipeline();
+			}
+		});
+		buttonBar.addComponent(buttonCommit);
+
+        Button button = new Button();
+		button.setCaption("Save");
+		button.setHeight("25px");
+		button.setWidth("150px");
+		button.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+            @Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipeline();
+			}
+		});
+		buttonBar.addComponent(button);
+        buttonBar.setExpandRatio(labelFiller, 1.0f);
+        mainLayout.addComponent(buttonBar);
 //		Button button = new Button("Click Me");
 //		button.addClickListener(new Button.ClickListener() {
 //			public void buttonClick(ClickEvent event) {
@@ -242,6 +316,7 @@ public class PipelineEdit extends CustomComponent implements View {
         App.getApp().getNavigator().navigateTo( ViewNames.PipelineList.getUrl() );
 	}
 
+    @Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
@@ -250,9 +325,9 @@ public class PipelineEdit extends CustomComponent implements View {
 		// or use this.entity.getEntity();
 
 		if (this.pipeline == null) {
-			label.setValue("<h1>Pipeline '" + event.getParameters() + "' doesn't exist.</h1>");
+			label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
 		} else {
-			label.setValue("<h1>Editing pipeline : " + this.pipeline.getName() + "</h1>");
+			label.setValue("<h3>Editing pipeline : " + this.pipeline.getName() + "</h3>");
             pipelineName.setValue(this.pipeline.getName());
             pipelineDescription.setValue(this.pipeline.getDescription());
 		}
@@ -260,6 +335,7 @@ public class PipelineEdit extends CustomComponent implements View {
 		// work with pipeline here ...
 
 	}
+
 
 
 }

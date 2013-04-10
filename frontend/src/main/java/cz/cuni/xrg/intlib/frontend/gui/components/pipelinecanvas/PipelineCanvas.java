@@ -6,10 +6,15 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
+import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetailDialog;
+import java.awt.event.ActionEvent;
+import java.util.Collection;
 
 
 /**
@@ -25,7 +30,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	private Pipeline pipeline;
 	private PipelineGraph graph;
-    
+
 	public PipelineCanvas() {
 
 		this.pipeline = App.getApp().getPipelines().createPipeline();
@@ -42,6 +47,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDetailRequested(int dpuId) {
 				// TODO Auto-generated method stub
 				// propably publish event one level higher
+                DPUInstance dpu = pipeline.getGraph().getDPUInstanceById(dpuId);
+                if(dpu != null) {
+                    showDPUDetail(dpu);
+                }
 			}
 
 			@Override
@@ -103,4 +112,15 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	  protected PipelineCanvasState getState() {
 	    return (PipelineCanvasState) super.getState();
 	  }
+
+    /**
+     * Shows detail of given DPUInstance in new sub-window
+     *
+     * @param dpu
+     */
+    public void showDPUDetail(DPUInstance dpu) {
+        DPUDetail detailDialog = new DPUDetail(dpu);
+        App.getApp().addWindow(detailDialog);
+
+    }
 }

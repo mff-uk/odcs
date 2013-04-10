@@ -77,7 +77,15 @@ public class DPUInstance {
         return dpu.getName();
     }
 
+    public void setName(String value) {
+
+    }
+
     public String getDescription() {
         return dpu.getDescription();
+    }
+
+    public void setDescription(String value) {
+
     }
 }
