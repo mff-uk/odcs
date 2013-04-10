@@ -2,8 +2,11 @@ package cz.cuni.xrg.intlib.commons.app;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -11,13 +14,12 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
-
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import javax.persistence.TemporalType;
 
 public class InMemoryEntityManager implements EntityManager {
 
 	/**
-	 * Entites are saved in here
+	 * Entities are saved in here
 	 */
 	private Map<Object, Object> repo = new HashMap<Object, Object>();
 
@@ -34,8 +36,7 @@ public class InMemoryEntityManager implements EntityManager {
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		isOpen = false;
 	}
 
 	@Override
@@ -45,32 +46,28 @@ public class InMemoryEntityManager implements EntityManager {
 
 	@Override
 	public Query createNamedQuery(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return new QueryStub();
 	}
 
 	@Override
 	public Query createNativeQuery(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query createNativeQuery(String arg0, Class arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return new QueryStub();
 	}
 
 	@Override
 	public Query createNativeQuery(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return new QueryStub();
+	}
+
+	@Override
+	public Query createNativeQuery(String sqlString,
+			@SuppressWarnings("rawtypes") Class resultClass) {
+		return new QueryStub();
 	}
 
 	@Override
 	public Query createQuery(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return new QueryStub();
 	}
 
 	@Override
@@ -126,6 +123,7 @@ public class InMemoryEntityManager implements EntityManager {
 	@Override
 	public <T> T merge(T arg0) {
 
+		@SuppressWarnings("unchecked")
 		T e = (T) repo.get(getId(arg0));
 
 		if (e == null) {
@@ -204,24 +202,27 @@ public class InMemoryEntityManager implements EntityManager {
 
 	}
 
+	/**
+	 * Stub to immitate transaction in tests.
+	 * @author Jan Vojt <jan@vojt.net>
+	 */
 	private class EntityTransactionStub implements EntityTransaction {
+		
+		private boolean inTransaction = false;
 
 		@Override
 		public void begin() {
-			// TODO Auto-generated method stub
-
+			inTransaction = true;
 		}
 
 		@Override
 		public void commit() {
-			// TODO Auto-generated method stub
-
+			inTransaction = false;
 		}
 
 		@Override
 		public void rollback() {
-			// TODO Auto-generated method stub
-
+			inTransaction = false;
 		}
 
 		@Override
@@ -238,10 +239,86 @@ public class InMemoryEntityManager implements EntityManager {
 
 		@Override
 		public boolean isActive() {
-			// TODO Auto-generated method stub
-			return false;
+			return inTransaction;
 		}
 
 	}
 
+	/**
+	 * Stub to immitate qeuries in tests..
+	 * @author Jan Vojt <jan@vojt.net>
+	 */
+	private class QueryStub implements Query {
+
+		@Override
+		public List<Object> getResultList() {
+			return new ArrayList<Object>(repo.values());
+		}
+
+		@Override
+		public Object getSingleResult() {
+			// not supported, use EntityManager#find instead
+			return null;
+		}
+
+		@Override
+		public int executeUpdate() {
+			return 0;
+		}
+
+		@Override
+		public Query setMaxResults(int maxResult) {
+			return this;
+		}
+
+		@Override
+		public Query setFirstResult(int startPosition) {
+			return this;
+		}
+
+		@Override
+		public Query setHint(String hintName, Object value) {
+			return this;
+		}
+
+		@Override
+		public Query setParameter(String name, Object value) {
+			return this;
+		}
+
+		@Override
+		public Query setParameter(String name, Date value,
+				TemporalType temporalType) {
+			return this;
+		}
+
+		@Override
+		public Query setParameter(String name, Calendar value,
+				TemporalType temporalType) {
+			return this;
+		}
+
+		@Override
+		public Query setParameter(int position, Object value) {
+			return this;
+		}
+
+		@Override
+		public Query setParameter(int position, Date value,
+				TemporalType temporalType) {
+			return this;
+		}
+
+		@Override
+		public Query setParameter(int position, Calendar value,
+				TemporalType temporalType) {
+			return this;
+		}
+
+		@Override
+		public Query setFlushMode(FlushModeType flushMode) {
+			return this;
+		}
+		
+	}
 }

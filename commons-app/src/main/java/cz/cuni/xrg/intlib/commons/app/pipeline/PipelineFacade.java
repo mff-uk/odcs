@@ -5,17 +5,17 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 
 import cz.cuni.xrg.intlib.commons.app.InMemoryEntityManager;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 
 /**
  * Facade providing actions with pipelines.
  * 
  * @author Jan Vojt <jan@vojt.net>
- *
+ * 
+ * TODO	Refactor transactions to be able to perform multiple actions
+ * 			per one transaction.
  */
 public class PipelineFacade {
 	

@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -7,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.InMemoryEntityManager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Test suite for pipeline facade interface.
@@ -57,9 +60,24 @@ public class PipelineFacadeTests {
 		
 		facade.delete(pipes[1]);
 
-		assertNotNull(facade.getPipeline(pipes[0].getId()));
+		assertEquals(pipes[0], facade.getPipeline(pipes[0].getId()));
 		assertNull(facade.getPipeline(pipes[1].getId()));
-		assertNotNull(facade.getPipeline(pipes[2].getId()));
+		assertEquals(pipes[2], facade.getPipeline(pipes[2].getId()));
+	}
+	
+	@Test
+	public void testPipelineList() {
+		
+		Pipeline[] pipes = new Pipeline[3];
+		for (int i = 0; i<3; i++) {
+			pipes[i] = facade.createPipeline();
+			facade.save(pipes[i]);
+		}
+		
+		List<Pipeline> resPipes = facade.getAllPipelines();
+		
+		assertEquals(pipes.length, resPipes.size());
+		assertArrayEquals(pipes, resPipes.toArray());
 	}
 
 }
