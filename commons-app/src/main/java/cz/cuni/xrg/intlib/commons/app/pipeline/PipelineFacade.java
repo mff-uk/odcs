@@ -20,6 +20,7 @@ public class PipelineFacade {
 	
 	/**
 	 * Entity manager for accessing database with persisted objects
+	 * @todo autowire through Spring and remove setter and constructor
 	 */
 	private EntityManager em;
 	
@@ -27,7 +28,15 @@ public class PipelineFacade {
 	 * Constructs facade and its dependencies.
 	 */
 	public PipelineFacade() {
-		em = IntlibEntityManagerFactory.create();
+		this(IntlibEntityManagerFactory.create());
+	}
+	
+	/**
+	 * Construct with given Entity Manager
+	 * @param em
+	 */
+	public PipelineFacade(EntityManager em) {
+		this.em = em;
 	}
 	
 	/**
@@ -63,10 +72,7 @@ public class PipelineFacade {
 	 */
 	public Pipeline getPipeline(int id) {
 		
-		Query jpql = em.createQuery("SELECT e FROM Pipeline e WHERE w.id = :id")
-			.setParameter("id", id);
-		
-		return (Pipeline) jpql.getSingleResult();
+		return em.find(Pipeline.class, id);
 	}
 	
 	/**
