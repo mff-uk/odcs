@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
+import cz.cuni.xrg.intlib.commons.app.InMemoryEntityManager;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 
@@ -28,7 +29,8 @@ public class PipelineFacade {
 	 * Constructs facade and its dependencies.
 	 */
 	public PipelineFacade() {
-		this(IntlibEntityManagerFactory.create());
+//		this(IntlibEntityManagerFactory.create());
+		this(new InMemoryEntityManager());
 	}
 	
 	/**
