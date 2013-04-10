@@ -6,19 +6,28 @@
 
 	<persistence-unit name="intlib">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<!-- <exclude-unlisted-classes>true</exclude-unlisted-classes>  -->
-		<class>cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline</class>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
+			
+			<!-- Database connection parameters -->
+			<property name="hibernate.connection.username" value="dba" />
+			<property name="hibernate.connection.password" value="dba" />
+			<property name="hibernate.connection.url" value="jdbc:virtuoso://localhost:1111/" />
+			
+			<!-- Determine which element is auto discovered
+			 by Hibernate Entity Manager while parsing the .par archive. -->
 			<property name="hibernate.archive.autodetection" value="class" />
-			<property name="hibernate.format_sql" value="false" />
+			
+			<!-- JDBC database driver for hibernate to use -->
+			<property name="hibernate.connection.driver_class" value="virtuoso.jdbc4.Driver" />
+			
+			<!-- SQL dialect -->
+			<property name="hibernate.dialect" value="virtuoso.hibernate.VirtuosoDialect" />
+			
+        	<!-- Echo and format all executed SQL to stdout -->
 			<property name="hibernate.show_sql" value="false" />
-			<property name="hibernate.hbm2ddl.auto" value="create-update" />
-			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
-			<!-- connection  -->
-			<property name="hibernate.connection.username" value="intlib_user" />
-			<property name="hibernate.connection.password" value="intlib" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/intlib" />
+			<property name="hibernate.format_sql" value="false" />
+			
 		</properties>
 	</persistence-unit>
 

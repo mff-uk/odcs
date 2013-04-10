@@ -14,16 +14,14 @@
 	</properties>
 
 	<repositories>
-		<repository> <!-- hibernate -->
-	        <id>JBoss</id>
-	        <name>JBoss Repsitory</name>
-	        <layout>default</layout>
-	        <url>http://repository.jboss.org/maven2</url>
-	    </repository>
 		<repository>
 			<id>maven-eclipse</id> <!-- repository for org.eclipse.tycho -->
 			<url>http://maven.eclipse.org/nexus/content/repositories/testing</url>
-		</repository>	    
+		</repository>
+		<repository> <!-- Virtuoso JDBC -->
+	        <id>Vojt</id>
+	        <url>http://asgard.vojt.net:8080/maven2</url>
+	    </repository>
 	</repositories>
 	 
 	<dependencies>
@@ -53,12 +51,6 @@
 		   <artifactId>persistence-api</artifactId>
 		   <version>1.0.2</version>
 		</dependency>
-
-		<dependency> <!-- mysql connector -->
-	      <groupId>mysql</groupId>
-	      <artifactId>mysql-connector-java</artifactId>
-	      <version>5.1.10</version>
-	    </dependency>
 	    
 	    <!-- hibernate dependencies -->
         <dependency>
@@ -87,6 +79,17 @@
             <artifactId>hibernate-validator</artifactId>
             <version>4.2.0.Final</version>
         </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>virtuoso</groupId>
+			<artifactId>jdbc-driver</artifactId>
+			<version>4</version>
+		</dependency>
+		
 	</dependencies>  
   
 </project>

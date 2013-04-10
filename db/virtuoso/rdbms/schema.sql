@@ -1,0 +1,8 @@
+DROP TABLE "DB"."INTLIB"."PPL_MODEL";
+CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
+(
+  "id" INTEGER IDENTITY,
+  "name" VARCHAR(45),
+  "description" VARCHAR(255),
+  PRIMARY KEY ("id")
+);
