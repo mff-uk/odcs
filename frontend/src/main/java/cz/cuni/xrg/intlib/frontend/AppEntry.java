@@ -2,9 +2,8 @@ package cz.cuni.xrg.intlib.frontend;
 
 import com.vaadin.navigator.Navigator;
 
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
-import cz.cuni.xrg.intlib.frontend.OSGi.Framework;
-import cz.cuni.xrg.intlib.frontend.data.DataAccess;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
@@ -23,27 +22,22 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Used to resolve url request and select active view.
 	 */
 	private com.vaadin.navigator.Navigator navigator;
-	
+
 	/**
-	 * Data access service.
+	 * Provide service to manipulate modules.
 	 */
-	private DataAccess dataAccess;
-	
-	// TODO: Move to backend
-	private Framework osgiFramework;
+	private ModuleFacade modules;
 	
 	/**
 	 * Facade interface providing services for managing pipelines.
 	 */
 	private PipelineFacade pipelines = new PipelineFacade();
-	
-	/**
-	 * Return service for data access.
-	 * @see DataAccess
-	 */
-	public DataAccess getDataAccess() {
-		return this.dataAccess;
-	}
+		
+	protected void finalize ()  {
+System.out.println("AppEntry::finalize");		
+		//modules.stop();
+		//modules = null;
+    }	
 	
 	/**
 	 * Returns facade, which provides services for managing pipelines.
@@ -55,32 +49,33 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	/**
 	 * Return application navigator.
+	 * @return application navigator
 	 */
 	public Navigator getNavigator() {
 		return this.navigator;
 	}
 	
 	/**
-	 * Return acces to OSGi framework class.
-	 * @return
+	 * Return facade, which provide services for manipulating with modules.
+	 * @return  modules facade
 	 */
-	public Framework getFrameWork() {
-		return this.osgiFramework;
+	public ModuleFacade getModules() {
+		return this.modules;
 	}	
 	
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-		this.osgiFramework = new Framework(); 
-		this.osgiFramework.start();
-		// on detach event
+		this.modules = new ModuleFacade(); 
+		//this.modules.start();
+		
+System.out.println("AppEntry::init");		
+		
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
-				osgiFramework.stop();
+				//modules.stop();
+				//modules = null;
 			}} );
-		
-		// init data access
-		this.dataAccess = new DataAccess();
 		
 		// create main application uber-view and set it as app. content
 		MenuLayout main = new MenuLayout();
@@ -88,7 +83,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		
         // create a navigator to control the views
         this.navigator = new com.vaadin.navigator.Navigator(this, main.getViewLayout());
-        
+                
 		// add views to the navigator
         this.navigator.addView("", new Initial());
         // TODO: check rights !!

@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.auxiliaries;
 
 import com.vaadin.ui.UI;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
 
 /**
@@ -31,10 +32,10 @@ public class App {
 	}
 	
 	/**
-	 * Return access to data access class.
-	 * @return
-	 */
-	public static cz.cuni.xrg.intlib.frontend.data.DataAccess getDataAccess() {
-		return getApp().getDataAccess();
-	}
+	 * Returns facade, which provides services for managing pipelines.
+	 * @return pipeline facade
+	 */	
+	public PipelineFacade getPipelines() {
+		return getApp().getPipelines();
+	}	
 }
