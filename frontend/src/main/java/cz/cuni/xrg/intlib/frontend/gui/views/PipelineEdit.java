@@ -310,8 +310,7 @@ public class PipelineEdit extends CustomComponent implements View {
         this.pipeline.setName(pipelineName.getValue());
         this.pipeline.setDescription(pipelineDescription.getValue());
 
-		this.entity =
-				App.getDataAccess().pipelines().set(this.pipeline, this.entity);
+		App.getApp().getPipelines().save(this.pipeline);
 
         App.getApp().getNavigator().navigateTo( ViewNames.PipelineList.getUrl() );
 	}
