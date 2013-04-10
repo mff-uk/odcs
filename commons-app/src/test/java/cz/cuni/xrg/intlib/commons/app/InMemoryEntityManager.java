@@ -15,7 +15,7 @@ import javax.persistence.Query;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
 public class InMemoryEntityManager implements EntityManager {
-	
+
 	/**
 	 * Entites are saved in here
 	 */
@@ -24,9 +24,9 @@ public class InMemoryEntityManager implements EntityManager {
 	private boolean isOpen = true;
 
 	private EntityTransaction tx = new EntityTransactionStub();
-	
+
 	private static int nextId = 1;
-	
+
 	@Override
 	public void clear() {
 		repo.clear();
@@ -35,7 +35,7 @@ public class InMemoryEntityManager implements EntityManager {
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -114,20 +114,20 @@ public class InMemoryEntityManager implements EntityManager {
 	@Override
 	public void joinTransaction() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void lock(Object arg0, LockModeType arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T> T merge(T arg0) {
-		
+
 		T e = (T) repo.get(getId(arg0));
-		
+
 		if (e == null) {
 			return arg0;
 		} else {
@@ -141,24 +141,24 @@ public class InMemoryEntityManager implements EntityManager {
 		setId(o, getNextId());
 		repo.put(getId(o), o);
 	}
-	
+
 	/**
 	 * Retrieves ID of entity
 	 * @param o
 	 * @return
 	 */
 	private Integer getId(Object o) {
-		
+
 		int id = 0;
-		
+
 		try {
 			Method m = o.getClass().getMethod("getId");
-			id = (int) m.invoke(o);
+			id = (Integer) m.invoke(o);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return new Integer(id);
 	}
 
@@ -178,7 +178,7 @@ public class InMemoryEntityManager implements EntityManager {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Unique ID generator
 	 * @return
@@ -201,33 +201,33 @@ public class InMemoryEntityManager implements EntityManager {
 	@Override
 	public void setFlushMode(FlushModeType arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	private class EntityTransactionStub implements EntityTransaction {
 
 		@Override
 		public void begin() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void commit() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void rollback() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void setRollbackOnly() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -241,7 +241,7 @@ public class InMemoryEntityManager implements EntityManager {
 			// TODO Auto-generated method stub
 			return false;
 		}
-		
+
 	}
 
 }
