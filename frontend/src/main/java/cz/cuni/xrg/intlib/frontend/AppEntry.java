@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.vaadin.navigator.Navigator;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
@@ -34,6 +35,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Facade interface providing services for managing pipelines.
 	 */
 	private PipelineFacade pipelines = new PipelineFacade();
+	
+	/**
+	 * Facade interface providing services for managing DPUs.
+	 */
+	private DpuFacade dpus = new DpuFacade();
 
 	protected void finalize ()  {
 

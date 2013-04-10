@@ -11,6 +11,13 @@ public class DPU {
     private int id;
 	private String name;
 	private String description = "";
+	
+	/**
+	 * Allow empty constructor.
+	 */
+	public DPU() {
+		
+	}
 
 	public DPU(int id, String name) {
 		this.id = id;
