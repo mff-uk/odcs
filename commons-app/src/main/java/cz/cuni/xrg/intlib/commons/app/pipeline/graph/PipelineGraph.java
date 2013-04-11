@@ -108,6 +108,17 @@ public class PipelineGraph {
 		return null;
 	}
 
+    /**
+     * Gets DPUInstance of Node with given ID
+     *
+     * @param id
+     * @return DPUIntance of Node with given id
+     */
+    public DPUInstance getDPUInstanceById(int id) {
+        Node node = getNodeById(id);
+        return (node == null) ? null : node.getDpuInstance();
+    }
+
         /** Hack for IDs for Nodes and Edges - replace with IDs from db ASAP */
     private int dpuCounter = 0;
 

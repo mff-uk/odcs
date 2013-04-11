@@ -32,4 +32,11 @@
                 <netbeans.deploy.clientUrlPart>l</netbeans.deploy.clientUrlPart>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-Tomcat Deploy</actionName>
+            <displayName>Tomcat Deploy</displayName>
+            <goals>
+                <goal>tomcat7:deploy</goal>
+            </goals>
+        </action>
     </actions>

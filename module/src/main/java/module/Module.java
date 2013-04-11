@@ -71,6 +71,10 @@ public class Module implements GraphicalExtractor {
 				// in dialog is invalid configuration .. 
 				return null;
 			}
+			else
+			{
+				this.config = conf;
+			}
 		}
 		return this.config;
 	}

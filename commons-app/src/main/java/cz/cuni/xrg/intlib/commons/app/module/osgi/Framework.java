@@ -1,8 +1,9 @@
-package cz.cuni.xrg.intlib.frontend.OSGi;
+package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.launch.FrameworkFactory;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;;
 
 public class Framework {
 
@@ -10,7 +11,7 @@ public class Framework {
 	 * Package and class name for class, that will be loaded
 	 * from bundle into application.
 	 */
-	private final String baseDpuClassName = "module.Module"; 
+	private final String baseDpuClassName = "module.Module";
 	
 	/**
 	 * OSGi framework class.
@@ -69,6 +70,7 @@ public class Framework {
 	public void stop() {
         try {
         	if (this.framework != null ) {
+        		// stop equinox
         		this.framework.stop();
         	}
 		} catch (Exception e) {
@@ -80,9 +82,9 @@ public class Framework {
 	
 	/**
 	 * Start OSGi framework.
-	 * @throws OSGiException
+	 * @throws ModuleException
 	 */
-	public void start() throws OSGiException
+	public void start() throws ModuleException
 	{
 		FrameworkFactory frameworkFactory = null; // org.eclipse.osgi.launch.EquinoxFactory
 		
@@ -91,7 +93,7 @@ public class Framework {
 		}
 		catch(Exception ex) {
 			// failed to load FrameworkFactory class
-			throw new OSGiException("Can't load class FrameworkFactory.", ex);
+			throw new ModuleException("Can't load class FrameworkFactory.", ex);
 		}
 			
 		this.framework = frameworkFactory.newFramework( prepareSettings() );		
@@ -101,7 +103,7 @@ public class Framework {
 			this.framework.start();	    		    	
 		} catch (org.osgi.framework.BundleException ex) {
 			// failed to start/initiate framework
-			throw new OSGiException("Failed to start OSGi framework.", ex);
+			throw new ModuleException("Failed to start OSGi framework.", ex);
 		}
 		
 		try {
@@ -110,17 +112,17 @@ public class Framework {
 		catch (SecurityException ex) {
 			// we have to stop framework ..
 			stop();
-			throw new OSGiException("Failed to get OSGi context.", ex);
+			throw new ModuleException("Failed to get OSGi context.", ex);
 		}
 	}		
 
 	/**
 	 * Install bundle into framework.
 	 * @param uri Uri to install bundle from.
-	 * @return INstalled bundle.
-	 * @throws OSGiException
+	 * @return Installed bundle or null.
+	 * @throws ModuleException
 	 */
-	private Bundle installBundle(String uri) throws OSGiException
+	private Bundle installBundle(String uri) throws ModuleException
 	{
 		// has bundle been already loaded?
 		if (this.loadedBundles.containsKey(uri)) {
@@ -134,7 +136,7 @@ public class Framework {
 	    	this.loadedBundles.put(uri, bundle);
 	    	this.reverseLoadedBundles.put(bundle, uri);
 		} catch (org.osgi.framework.BundleException ex) {			
-			throw new OSGiException("Failed to load bundle from uri: " + uri + " .", ex);
+			throw new ModuleException("Failed to load bundle from uri: " + uri + " .", ex);
 		}	
 	    return bundle;
 	}
@@ -225,5 +227,5 @@ public class Framework {
 				
 		return dpu;
 	}
-		
+	
 }

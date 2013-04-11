@@ -52,9 +52,16 @@
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository> 	
     </repositories>
-  
-    <dependencies>
-        <dependency> <!-- OSGi dependency -->
+
+	<dependencies>
+	
+		<dependency> <!--  JUnit dependency -->
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
+
+		<dependency> <!-- OSGi dependency -->
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>4.2.0</version>
