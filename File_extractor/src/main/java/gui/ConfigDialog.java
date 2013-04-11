@@ -48,7 +48,7 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 		
-		config.setValue(Config.Url.name(), txtUrl.getValue());
+		config.setValue(Config.File.name(), txtUrl.getValue());
 		config.setValue(Config.Login.name(), txtLogin.getValue());
 		config.setValue(Config.Password.name(), txtPassword.getValue());
 		config.setValue(Config.Query.name(), txtQuery.getValue());
@@ -70,7 +70,7 @@ public class ConfigDialog extends CustomComponent {
 		
 		try
 		{
-			txtUrl.setValue( (String) conf.getValue(Config.Url.name()));
+			txtUrl.setValue( (String) conf.getValue(Config.File.name()));
 			txtLogin.setValue( (String) conf.getValue(Config.Login.name()));
 			txtPassword.setValue( (String) conf.getValue(Config.Password.name()));
 			txtQuery.setValue( (String) conf.getValue(Config.Query.name()));

@@ -10,6 +10,9 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.*;
+import cz.cuni.xrg.intlib.repository.LocalRepo;
+import java.io.File;
+import org.openrdf.rio.RDFFormat;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -32,7 +35,7 @@ public class Module implements GraphicalExtractor {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.Url.name(), "");
+        this.config.setValue(Config.File.name(), "");
         this.config.setValue(Config.Login.name(), "");
         this.config.setValue(Config.Password.name(), "");
         this.config.setValue(Config.Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
@@ -85,7 +88,11 @@ public class Module implements GraphicalExtractor {
      *
      */
     public void extract(ExtractContext context) throws ExtractException {
+        RDFFormat format= RDFFormat.RDFXML;
+        String baseURI="";
+        File dataInputFile=new File("C:\\intlib\\inputFile");
         
-        
+        LocalRepo repository = LocalRepo.createLocalRepo();
+        repository.extractRDFfromXMLFileToRepository(dataInputFile, baseURI, format);
     }
 }
