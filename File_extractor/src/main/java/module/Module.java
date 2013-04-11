@@ -12,7 +12,6 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.io.File;
-import org.openrdf.rio.RDFFormat;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -45,7 +44,6 @@ public class Module implements GraphicalExtractor {
         return Type.EXTRACTOR;
 
     }
-    
 
     public CustomComponent getConfigurationComponent() {
         // does dialog exist?
@@ -61,15 +59,13 @@ public class Module implements GraphicalExtractor {
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
-			Configuration conf = this.configDialog.getConfiguration();
-			if (conf == null) {
-				// in dialog is invalid configuration .. 
-				return null;
-			}
-			else
-			{
-				this.config = conf;
-			}
+            Configuration conf = this.configDialog.getConfiguration();
+            if (conf == null) {
+                // in dialog is invalid configuration .. 
+                return null;
+            } else {
+                this.config = conf;
+            }
         }
         return this.config;
     }
@@ -88,11 +84,11 @@ public class Module implements GraphicalExtractor {
      *
      */
     public void extract(ExtractContext context) throws ExtractException {
-        RDFFormat format= RDFFormat.RDFXML;
-        String baseURI="";
-        File dataInputFile=new File("C:\\intlib\\inputFile");
-        
+
+        File dataInputFile = new File("C:\\intlib\\inputFile.rdf");
+        String baseURI = "file://" + dataInputFile.getName();
+
         LocalRepo repository = LocalRepo.createLocalRepo();
-        repository.extractRDFfromXMLFileToRepository(dataInputFile, baseURI, format);
+        repository.extractRDFfromXMLFileToRepository(dataInputFile, baseURI);
     }
 }

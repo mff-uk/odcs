@@ -12,7 +12,13 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.rdfxml.RDFXMLWriter;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -85,10 +91,29 @@ public class Module implements GraphicalLoader {
      *
      */
     public void load(LoadContext context) throws LoadException {
-        RDFFormat format = RDFFormat.RDFXML;
-        File dataOutputFile = new File("C:\\intlib\\outputFile");
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
-        repository.loadRDFfromRepositoryToXMLFile(dataOutputFile, format);
+        FileOutputStream os = null;
+
+        try {
+            RDFFormat format = RDFFormat.RDFXML;
+            File dataOutputFile = new File("C:\\intlib\\outputFile");
+            os = new FileOutputStream(dataOutputFile);
+            RDFXMLWriter handler = new RDFXMLWriter(os);
+
+            LocalRepo repository = LocalRepo.createLocalRepo();
+            repository.loadRDFfromRepositoryToXMLFile(dataOutputFile,format);
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Module.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (os != null) {
+
+                    os.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(Module.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

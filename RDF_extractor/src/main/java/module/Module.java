@@ -95,11 +95,9 @@ public class Module implements GraphicalExtractor {
             int port = 8080;
 
             URL endpoint = new URL(protokol, host, port, file);
-            String dataBaseUri = "";
-            RDFFormat format = RDFFormat.RDFXML;
 
             LocalRepo repository = LocalRepo.createLocalRepo();
-            repository.extractfromSPARQLEndpoint(endpoint, dataBaseUri, format);
+            repository.extractfromSPARQLEndpoint(endpoint);
 
         } catch (MalformedURLException ex) {
             Logger.getLogger(Module.class.getName()).log(Level.SEVERE, null, ex);

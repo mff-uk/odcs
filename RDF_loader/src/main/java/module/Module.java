@@ -11,6 +11,9 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
+import java.net.URI;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.rdfxml.RDFXMLWriter;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -84,7 +87,9 @@ public class Module implements GraphicalLoader {
      */
     public void load(LoadContext context) throws LoadException {
 
+        URI graph = URI.create("graphURI");
+
         LocalRepo repository = LocalRepo.createLocalRepo();
-        repository.loadtoSPARQLEndpoint();
+
     }
 }
