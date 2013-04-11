@@ -1,41 +1,29 @@
 package cz.cuni.xrg.intlib.repository;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.logging.Level;
-import javax.management.Query;
 import org.openrdf.model.*;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.GraphImpl;
 
 import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
+import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.sail.memory.MemoryStore;
-import org.openrdf.sesame.admin.StdOutAdminListener;
-import org.openrdf.sesame.config.AccessDeniedException;
-import org.openrdf.sesame.config.ConfigurationException;
-import org.openrdf.sesame.config.RepositoryConfig;
-import org.openrdf.sesame.query.GraphQueryResultListener;
-import org.openrdf.sesame.query.MalformedQueryException;
-import org.openrdf.sesame.query.QueryEvaluationException;
-import org.openrdf.sesame.query.StdOutGraphQueryResultWriter;
-import org.openrdf.sesame.repository.local.*;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -125,15 +113,17 @@ public class LocalRepo {
     }
 
     private void addStatement(Statement statement) {
-        RepositoryConnection conection;
+
         try {
 
             //ERROR by getConnection. 
             // WHY ????
-            conection = repository.getConnection();
+            RepositoryConnection conection = repository.getConnection();
             conection.add(statement);
+
             conection.commit();
             conection.close();
+
         } catch (RepositoryException ex) {
             System.out.println(ex.getMessage());
 
@@ -148,7 +138,7 @@ public class LocalRepo {
      * @param dataFile
      * @param baseURI
      */
-    public void extractRDFfromXMLFileToRepository(File dataFile, String baseURI, org.openrdf.rio.RDFFormat format) {
+    public void extractRDFfromXMLFileToRepository(File dataFile, String baseURI) {
         try {
             //boolean verify = true;
             //AdminListener listener = new StdOutAdminListener();
@@ -156,7 +146,9 @@ public class LocalRepo {
             // repository.getConnection().add(dataFile, baseURI, RDFFormat.RDFXML);
 
             RepositoryConnection connection = repository.getConnection();
-            connection.add(dataFile, baseURI, format);
+
+            connection.add(dataFile, baseURI, RDFFormat.forFileName(dataFile.getName()));
+
             connection.commit();
             connection.close();
 
@@ -165,39 +157,50 @@ public class LocalRepo {
     }
 
     public void loadRDFfromRepositoryToXMLFile(File dataFile, org.openrdf.rio.RDFFormat format) {
-        boolean ontology = true;
-        boolean instances = true;
-        boolean explicitOnly = true;
-        boolean niceOutput = true;
+
         try {
             RepositoryConnection connection = repository.getConnection();
-            /*TODO - resolve print to FILE*/
 
+            OutputStream os = new FileOutputStream(dataFile);
+
+            RDFHandler handler = new RDFXMLWriter(os);
+
+            Resource resource = new URIImpl(dataFile.toURI().toString());
+
+            connection.export(handler, resource);
             connection.commit();
             connection.close();
 
-            /*
-             InputStream stream = repository.extractRDF(RDFFormat.RDFXML, ontology, instances, explicitOnly, niceOutput);
-             OutputStream os = new FileOutputStream(dataFile);
-
-             for (int i = stream.read(); i != -1; i = stream.read()) {
-             os.write(i);
-             }*/
-        } catch (RepositoryException ex) {
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
         }
 
+        /*
+         InputStream stream = repository.extractRDF(RDFFormat.RDFXML, ontology, instances, explicitOnly, niceOutput);
+         OutputStream os = new FileOutputStream(dataFile);
+
+         for (int i = stream.read(); i != -1; i = stream.read()) {
+         os.write(i);
+         }
+         */
     }
 
     /**
-     * Load RDF data from repository to SPARQL endpoint.
+     * Load RDF data from repository to SPARQL endpointURL.
      */
-    public void loadtoSPARQLEndpoint() {
+    public void loadtoSPARQLEndpoint(URL endpointURL) {
         try {
             RepositoryConnection connection = repository.getConnection();
-            /*TODO - resolve load from FILE*/
 
+            OutputStream os = endpointURL.openConnection().getOutputStream();
+
+            RDFHandler handler = new RDFXMLWriter(os);
+            Resource resource = new URIImpl(endpointURL.toURI().toString());
+
+            connection.export(handler, resource);
             connection.commit();
             connection.close();
+
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
@@ -210,13 +213,18 @@ public class LocalRepo {
      * @param dataBaseURI
      * @param handler
      */
-    public void extractfromSPARQLEndpoint(URL endpoint, String dataBaseURI, org.openrdf.rio.RDFFormat format) {
+    public void extractfromSPARQLEndpoint(URL endpointURL) {
         try {
 
-            HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
+            RDFInserter goal = new RDFInserter(repository.getConnection());
+
+            InputStream inputStream = endpointURL.openStream();
+
+            RDFFormat format = RDFFormat.forFileName(endpointURL.toString());
+
             RDFParser parser = Rio.createParser(format);
-            //parser.setRDFHandler(handler);
-            parser.parse(connection.getInputStream(), dataBaseURI);
+            parser.setRDFHandler(goal);
+            parser.parse(inputStream, endpointURL.toString());
 
 
         } catch (Exception ex) {
@@ -232,27 +240,13 @@ public class LocalRepo {
 
         try {
             RepositoryConnection connection = repository.getConnection();
+
             Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
             myupdate.execute();
+
             connection.commit();
             connection.close();
-            /*
-             GraphQueryResultListener listener = new StdOutGraphQueryResultWriter();
 
-             try {
-             repository.performGraphQuery(org.openrdf.sesame.constants.QueryLanguage.SERQL, updateQuery, listener);
-             // repository.performGraphQuery(org.openrdf.updateQuery.QueryLanguage.SPARQL,updateQuery,listener);
-             } catch (IOException ex) {
-             Logger.getLogger(LocalRepo.class.getName()).log(Level.SEVERE, null, ex);
-             } catch (MalformedQueryException ex) {
-             Logger.getLogger(LocalRepo.class.getName()).log(Level.SEVERE, null, ex);
-             } catch (QueryEvaluationException ex) {
-             Logger.getLogger(LocalRepo.class.getName()).log(Level.SEVERE, null, ex);
-             } catch (AccessDeniedException ex) {
-             Logger.getLogger(LocalRepo.class.getName()).log(Level.SEVERE, null, ex);
-             }
-
-             }*/
         } catch (Exception ex) {
         }
 
