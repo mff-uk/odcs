@@ -119,6 +119,18 @@ public class PipelineGraph {
         return (node == null) ? null : node.getDpuInstance();
     }
 
+	/**
+	 * Updates Node position in graph.
+	 *
+	 * @param dpuId
+	 * @param newX
+	 * @param newY
+	 */
+	public void moveNode(int dpuId, int newX, int newY) {
+		Node node = getNodeById(dpuId);
+		node.setPosition(new Position(newX, newY));
+	}
+
         /** Hack for IDs for Nodes and Edges - replace with IDs from db ASAP */
     private int dpuCounter = 0;
 
@@ -137,5 +149,6 @@ public class PipelineGraph {
 	public int GetUniquePipelineConnectionId() {
 		return ++connectionCounter + CONNECTION_SEED;
 	}
+
     /** End of hack */
 }

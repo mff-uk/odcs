@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import cz.cuni.xrg.intlib.commons.Type;
+
 /**
  * Represent imported DPUExecution in database.
  * @author Petyr
@@ -11,17 +13,19 @@ public class DPU {
     private int id;
 	private String name;
 	private String description = "";
-	
+    private Type type;
+
 	/**
 	 * Allow empty constructor.
 	 */
 	public DPU() {
-		
+
 	}
 
-	public DPU(int id, String name) {
-		this.id = id;
+	public DPU(String name, Type type) {
+		//this.id = id;
 		this.name = name;
+        this.type = type;
 	}
 
     @Override
@@ -48,4 +52,9 @@ public class DPU {
     public int getId() {
         return id;
     }
+
+    public Type getType() {
+        return type;
+    }
+
 }

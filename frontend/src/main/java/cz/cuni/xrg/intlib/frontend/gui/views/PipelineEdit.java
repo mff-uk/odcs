@@ -12,10 +12,12 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
+import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
+import java.util.List;
 
 /**
  * Page for creating new/editing pipeline.
@@ -30,11 +32,6 @@ public class PipelineEdit extends CustomComponent implements View {
     private TextField pipelineName;
 
     private TextArea pipelineDescription;
-
-	/**
-	 * Current pipeline entity.
-	 */
-	private com.vaadin.addon.jpacontainer.EntityItem<Pipeline> entity = null;
 
 	private Pipeline pipeline = null;
 
@@ -145,7 +142,7 @@ public class PipelineEdit extends CustomComponent implements View {
 		Tree dpuTree = new Tree("DPUs");
         dpuTree.setWidth(220, Unit.PIXELS);
 		dpuTree.setDragMode(Tree.TreeDragMode.NODE);
-		fillStubTree(dpuTree);
+		fillTree(dpuTree);
 		layout.addComponentAsFirst(dpuTree);
 
         mainLayout.addComponent(layout);
@@ -206,31 +203,33 @@ public class PipelineEdit extends CustomComponent implements View {
 		return mainLayout;
 	}
 
-    private void fillStubTree(Tree tree) {
+    private void fillTree(Tree tree) {
 
-		DPU rootExtractor = new DPU(-1, "Extractors");
+        DPU rootExtractor = new DPU("Extractors", null);
 		tree.addItem(rootExtractor);
-		DPU rootTransformer = new DPU(-2, "Transformers");
+		DPU rootTransformer = new DPU("Transformers", null);
 		tree.addItem(rootTransformer);
-		DPU rootLoader = new DPU(-3, "Loaders");
+		DPU rootLoader = new DPU("Loaders", null);
 		tree.addItem(rootLoader);
 
-		DPU basicEx = new DPU(1, "RDF Extractor");
-		tree.addItem(basicEx);
-		tree.setParent(basicEx, rootExtractor);
+		List<DPU> dpus = App.getApp().getDPUs().getAllDpus();
+        for(DPU dpu : dpus) {
+            tree.addItem(dpu);
 
-		DPU sparqlEx = new DPU(2, "SPARQL endpoint");
-		tree.addItem(sparqlEx);
-		tree.setParent(sparqlEx, rootExtractor);
-		DPU genericTr = new DPU(3, "Generic SPARQL");
-		tree.addItem(genericTr);
-		tree.setParent(genericTr, rootTransformer);
-		DPU rdfLo = new DPU(4, "RDF Loader");
-		tree.addItem(rdfLo);
-		tree.setParent(rdfLo, rootLoader);
-		DPU sparqlLo = new DPU(5, "SPARQL endpoint Loader");
-		tree.addItem(sparqlLo);
-		tree.setParent(sparqlLo, rootLoader);
+            switch(dpu.getType()) {
+                case EXTRACTOR:
+                    tree.setParent(dpu, rootExtractor);
+                    break;
+                case TRANSFORMER:
+                    tree.setParent(dpu, rootTransformer);
+                    break;
+                case LOADER:
+                    tree.setParent(dpu, rootLoader);
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
 	}
 
 	/**
@@ -279,15 +278,18 @@ public class PipelineEdit extends CustomComponent implements View {
 		String pipeIdstr = event.getParameters();
 		if (pipeIdstr.compareTo( ViewNames.PipelineEdit_New.getParametr() ) == 0) {
 			// create empty, for new record
-			this.pipeline = new Pipeline("new pipeline", "description");
-			this.entity = null;
+			this.pipeline = App.getApp().getPipelines().createPipeline();
+			pipeline.setName("empty pipeline");
+			pipeline.setDescription("empty pipeline description");
 		} else if (isInteger(pipeIdstr)) {
 			// use pipeIdstr as id
 			this.pipeline = loadPipeline(pipeIdstr);
 		} else {
 			// wring pipeIdstr
 			this.pipeline = null;
-			this.entity = null;
+		}
+		if(pipeline != null) {
+			pc.showPipeline(pipeline);
 		}
 		return this.pipeline;
 	}
@@ -298,6 +300,7 @@ public class PipelineEdit extends CustomComponent implements View {
 	protected void savePipeline() {
         this.pipeline.setName(pipelineName.getValue());
         this.pipeline.setDescription(pipelineDescription.getValue());
+		pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
 

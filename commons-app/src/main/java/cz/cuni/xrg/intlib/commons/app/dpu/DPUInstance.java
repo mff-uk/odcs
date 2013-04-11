@@ -30,9 +30,12 @@ public class DPUInstance {
      * Configuration setting for this component.
      */
     private InstanceConfiguration instanceConfig;
+    private int id;
 
     public DPUInstance(DPU dpu) {
         this.dpu = dpu;
+		this.name = dpu.getName();
+		this.description = dpu.getDescription();
     }
 
     public DPUInstance(RDFGraph inputGraph, RDFGraph outputGraph, InstanceConfiguration instanceConfig) {
@@ -74,18 +77,30 @@ public class DPUInstance {
     }
 
     public String getName() {
-        return dpu.getName();
+        return name;
     }
 
     public void setName(String value) {
-
+        name = value;
     }
 
     public String getDescription() {
-        return dpu.getDescription();
+        return description;
     }
 
     public void setDescription(String value) {
-
+        description = value;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int value) {
+        id = value;
+    }
+
+    private String name;
+
+    private String description;
 }

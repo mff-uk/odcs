@@ -25,13 +25,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	int dpuCount = 0;
 	int connCount = 0;
 
-	private Pipeline pipeline;
 	private PipelineGraph graph;
 
 	public PipelineCanvas() {
-
-		this.pipeline = App.getApp().getPipelines().createPipeline();
-		this.graph = this.pipeline.getGraph();
 
 		this.setId("container");
 		//this.setWidth(1500,  Unit.PIXELS);
@@ -44,7 +40,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDetailRequested(int dpuId) {
 				// TODO Auto-generated method stub
 				// propably publish event one level higher
-                DPUInstance dpu = pipeline.getGraph().getDPUInstanceById(dpuId);
+                DPUInstance dpu = graph.getDPUInstanceById(dpuId);
                 if(dpu != null) {
                     showDPUDetail(dpu);
                 }
@@ -65,12 +61,21 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				graph.removeDpu(dpuId);
 
 			}
+
+			@Override
+			public void onDpuMoved(int dpuId, int newX, int newY) {
+				dpuMoved(dpuId, newX, newY);
+			}
 		});
 	}
 
 	public void init() {
         getRpcProxy(PipelineCanvasClientRpc.class).init();
     }
+
+	private void dpuMoved(int dpuId, int newX, int newY) {
+		graph.moveNode(dpuId, newX, newY);
+	}
 
 	public void addDpu(DPU dpu) {
 		int dpuInstanceId = graph.addDpu(dpu);
@@ -82,18 +87,17 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
 	}
 
-	//OR loadPipeline
 	public void showPipeline(Pipeline pipeline) {
-		this.pipeline = pipeline;
-		for(Node node : pipeline.getGraph().getNodes()) {
+		this.graph = pipeline.getGraph();
+		for(Node node : graph.getNodes()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.getId(), node.getDpuInstance().getName(), node.getDpuInstance().getDescription(), node.getPosition().getX(), node.getPosition().getY());
 		}
-		for(Edge edge : pipeline.getGraph().getEdges()) {
+		for(Edge edge : graph.getEdges()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.getId(), edge.getFrom().getId(), edge.getTo().getId());
 		}
 	}
 
-	public Pipeline getPipeline() {
+	public void saveGraph(Pipeline pipeline) {
 //		for(DpuInstance dpu : pipeline.getDpus()) {
 //			int[] position = getRpcProxy(PipelineCanvasClientRpc.class).getDpuPosition(dpu.Id);
 //			dpu.setX(position[0]);
@@ -102,7 +106,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		//pipeline.setWidth(Math.round(this.getWidth()));
 		//pipeline.setHeight(Math.round(this.getHeight()));
 
-		return pipeline;
+		pipeline.setGraph(graph);
 	}
 
 	@Override

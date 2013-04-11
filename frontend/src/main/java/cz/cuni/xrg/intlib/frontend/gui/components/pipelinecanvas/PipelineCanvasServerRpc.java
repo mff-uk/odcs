@@ -15,4 +15,6 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 	public void onDetailRequested(int dpuId);
 
 	public void onDpuRemoved(int dpuId);
+
+	public void onDpuMoved(int dpuId, int newX, int newY);
 }
