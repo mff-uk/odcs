@@ -103,4 +103,8 @@ public class DPUInstance {
     private String name;
 
     private String description;
+
+	public String getJarPath() {
+		return "file:///C:/Users/Bogo/intlib/intlib/module/target/module-0.0.1.jar";
+	}
 }
