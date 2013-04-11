@@ -92,7 +92,7 @@ public class PipelineList extends CustomComponent implements View {
 		tablePipelines.setWidth("640px");
 		tablePipelines.setHeight("480px");
 		// assign data source
-		Container container = ContainerFactory.Create(App.getApp().getPipelines().getAllPipelines());
+		Container container = ContainerFactory.CreatePipelines(App.getApp().getPipelines().getAllPipelines());
 		tablePipelines.setContainerDataSource(container);
 		
 		// set columns
