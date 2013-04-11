@@ -21,6 +21,7 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
@@ -30,7 +31,6 @@ import org.openrdf.sesame.admin.StdOutAdminListener;
 import org.openrdf.sesame.config.AccessDeniedException;
 import org.openrdf.sesame.config.ConfigurationException;
 import org.openrdf.sesame.config.RepositoryConfig;
-import org.openrdf.sesame.constants.RDFFormat;
 import org.openrdf.sesame.query.GraphQueryResultListener;
 import org.openrdf.sesame.query.MalformedQueryException;
 import org.openrdf.sesame.query.QueryEvaluationException;
@@ -44,29 +44,25 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalRepo {
 
-    static LocalRepo localrepo=null;
+    static LocalRepo localrepo = null;
     static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
-    
+
     /**
-     * 
-     * Main for debuggin - will be deleted 
+     *
+     * Main for debuggin - will be deleted
      */
-    public static void main(String[]args)
-    {
-        LocalRepo myRepository=LocalRepo.createLocalRepo();
-        myRepository.addTripleToRepository("http://namespace/intlib/", "subject", "object","predicate");
+    public static void main(String[] args) {
+        LocalRepo myRepository = LocalRepo.createLocalRepo();
+        myRepository.addTripleToRepository("http://namespace/intlib/", "subject", "object", "predicate");
     }
-    
-    public static LocalRepo createLocalRepo()
-    {
-        if (localrepo==null)
-        {
-            localrepo=new LocalRepo("C:\\intlib\\myRepository");
+
+    public static LocalRepo createLocalRepo() {
+        if (localrepo == null) {
+            localrepo = new LocalRepo("C:\\intlib\\myRepository");
         }
-        
+
         return localrepo;
     }
-    
     private Repository repository = null;
 
     public LocalRepo(String repositoryPath) {
@@ -109,11 +105,11 @@ public class LocalRepo {
 
     /**
      * Add tripple RDF (statement) to the repository.
-     * 
-     * @param namespace 
+     *
+     * @param namespace
      * @param subjectName
      * @param predicateName
-     * @param objectName 
+     * @param objectName
      */
     public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName) {
 
@@ -148,11 +144,11 @@ public class LocalRepo {
 
     /**
      * Add RDF triples from XML file to repository.
-     * 
+     *
      * @param dataFile
-     * @param baseURI 
+     * @param baseURI
      */
-    public void loadRDFfromXMLFileToRepository(File dataFile, String baseURI) {
+    public void extractRDFfromXMLFileToRepository(File dataFile, String baseURI, org.openrdf.rio.RDFFormat format) {
         try {
             //boolean verify = true;
             //AdminListener listener = new StdOutAdminListener();
@@ -160,7 +156,7 @@ public class LocalRepo {
             // repository.getConnection().add(dataFile, baseURI, RDFFormat.RDFXML);
 
             RepositoryConnection connection = repository.getConnection();
-            connection.add(dataFile, baseURI, org.openrdf.rio.RDFFormat.RDFXML);
+            connection.add(dataFile, baseURI, format);
             connection.commit();
             connection.close();
 
@@ -168,8 +164,7 @@ public class LocalRepo {
         }
     }
 
-    
-    public void saveRDFfromRepositoryToXMLFile(File dataFile) throws IOException, AccessDeniedException {
+    public void loadRDFfromRepositoryToXMLFile(File dataFile, org.openrdf.rio.RDFFormat format) {
         boolean ontology = true;
         boolean instances = true;
         boolean explicitOnly = true;
@@ -210,17 +205,17 @@ public class LocalRepo {
 
     /**
      * Add RDF data from SPARQL endpoint to repository.
-     * 
+     *
      * @param endpoint
      * @param dataBaseURI
-     * @param handler 
+     * @param handler
      */
-    public void extractfromSPARQLEndpoint(URL endpoint, String dataBaseURI, RDFHandler handler) {
+    public void extractfromSPARQLEndpoint(URL endpoint, String dataBaseURI, org.openrdf.rio.RDFFormat format) {
         try {
 
             HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
-            RDFParser parser = Rio.createParser(org.openrdf.rio.RDFFormat.RDFXML);
-            parser.setRDFHandler(handler);
+            RDFParser parser = Rio.createParser(format);
+            //parser.setRDFHandler(handler);
             parser.parse(connection.getInputStream(), dataBaseURI);
 
 
@@ -229,14 +224,15 @@ public class LocalRepo {
     }
 
     /**
-     * Transform RDF in repository by SPARQL query.
-     * @param query 
+     * Transform RDF in repository by SPARQL updateQuery.
+     *
+     * @param updateQuery
      */
-    public void transformSPARQL(String query) {
+    public void transformUsingSPARQL(String updateQuery) {
 
         try {
             RepositoryConnection connection = repository.getConnection();
-            Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, query);
+            Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
             myupdate.execute();
             connection.commit();
             connection.close();
@@ -244,8 +240,8 @@ public class LocalRepo {
              GraphQueryResultListener listener = new StdOutGraphQueryResultWriter();
 
              try {
-             repository.performGraphQuery(org.openrdf.sesame.constants.QueryLanguage.SERQL, query, listener);
-             // repository.performGraphQuery(org.openrdf.query.QueryLanguage.SPARQL,query,listener);
+             repository.performGraphQuery(org.openrdf.sesame.constants.QueryLanguage.SERQL, updateQuery, listener);
+             // repository.performGraphQuery(org.openrdf.updateQuery.QueryLanguage.SPARQL,updateQuery,listener);
              } catch (IOException ex) {
              Logger.getLogger(LocalRepo.class.getName()).log(Level.SEVERE, null, ex);
              } catch (MalformedQueryException ex) {

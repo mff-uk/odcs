@@ -9,7 +9,7 @@ public enum Config {
 	/**
 	 * TODO: Put names for your configuration here.
 	 */
-	Url
+	File
 	,Login
 	,Password
 	,Query

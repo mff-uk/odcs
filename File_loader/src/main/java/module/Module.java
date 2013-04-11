@@ -10,6 +10,9 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.*;
+import cz.cuni.xrg.intlib.repository.LocalRepo;
+import java.io.File;
+import org.openrdf.rio.RDFFormat;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -57,15 +60,13 @@ public class Module implements GraphicalLoader {
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
-			Configuration conf = this.configDialog.getConfiguration();
-			if (conf == null) {
-				// in dialog is invalid configuration .. 
-				return null;
-			}
-			else
-			{
-				this.config = conf;
-			}
+            Configuration conf = this.configDialog.getConfiguration();
+            if (conf == null) {
+                // in dialog is invalid configuration .. 
+                return null;
+            } else {
+                this.config = conf;
+            }
         }
         return this.config;
     }
@@ -84,6 +85,10 @@ public class Module implements GraphicalLoader {
      *
      */
     public void load(LoadContext context) throws LoadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        RDFFormat format = RDFFormat.RDFXML;
+        File dataOutputFile = new File("C:\\intlib\\outputFile");
+
+        LocalRepo repository = LocalRepo.createLocalRepo();
+        repository.loadRDFfromRepositoryToXMLFile(dataOutputFile, format);
     }
 }

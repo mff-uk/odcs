@@ -7,10 +7,7 @@ package module;
  */
 public enum Config {
 	/**
-	 * TODO: Put names for your configuration here.
+	 * String Query for SPARQL transformation update.
 	 */
-	Url
-	,Login
-	,Password
-	,Query
+	UpdateQuery
 }
