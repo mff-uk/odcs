@@ -44,13 +44,29 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalRepo {
 
-    public static void main(String[] args) {
-        LocalRepo repo = new LocalRepo("C:\\intlib\\myRepository");
-        repo.addTripleToRepository("http://namespace/", "sub", "obj", "predicate");
-
-
-    }
+    static LocalRepo localrepo=null;
     static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
+    
+    /**
+     * 
+     * Main for debuggin - will be deleted 
+     */
+    public static void main(String[]args)
+    {
+        LocalRepo myRepository=LocalRepo.createLocalRepo();
+        myRepository.addTripleToRepository("http://namespace/intlib/", "subject", "object","predicate");
+    }
+    
+    public static LocalRepo createLocalRepo()
+    {
+        if (localrepo==null)
+        {
+            localrepo=new LocalRepo("C:\\intlib\\myRepository");
+        }
+        
+        return localrepo;
+    }
+    
     private Repository repository = null;
 
     public LocalRepo(String repositoryPath) {
@@ -91,6 +107,14 @@ public class LocalRepo {
         return graph;
     }
 
+    /**
+     * Add tripple RDF (statement) to the repository.
+     * 
+     * @param namespace 
+     * @param subjectName
+     * @param predicateName
+     * @param objectName 
+     */
     public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName) {
 
         ValueFactory valueFaktory = repository.getValueFactory();
@@ -108,7 +132,8 @@ public class LocalRepo {
         RepositoryConnection conection;
         try {
 
-            //ERROR by getConnection. WHY ????
+            //ERROR by getConnection. 
+            // WHY ????
             conection = repository.getConnection();
             conection.add(statement);
             conection.commit();
@@ -121,6 +146,12 @@ public class LocalRepo {
 
     }
 
+    /**
+     * Add RDF triples from XML file to repository.
+     * 
+     * @param dataFile
+     * @param baseURI 
+     */
     public void loadRDFfromXMLFileToRepository(File dataFile, String baseURI) {
         try {
             //boolean verify = true;
@@ -137,6 +168,7 @@ public class LocalRepo {
         }
     }
 
+    
     public void saveRDFfromRepositoryToXMLFile(File dataFile) throws IOException, AccessDeniedException {
         boolean ontology = true;
         boolean instances = true;
@@ -161,6 +193,9 @@ public class LocalRepo {
 
     }
 
+    /**
+     * Load RDF data from repository to SPARQL endpoint.
+     */
     public void loadtoSPARQLEndpoint() {
         try {
             RepositoryConnection connection = repository.getConnection();
@@ -173,6 +208,13 @@ public class LocalRepo {
         }
     }
 
+    /**
+     * Add RDF data from SPARQL endpoint to repository.
+     * 
+     * @param endpoint
+     * @param dataBaseURI
+     * @param handler 
+     */
     public void extractfromSPARQLEndpoint(URL endpoint, String dataBaseURI, RDFHandler handler) {
         try {
 
@@ -186,6 +228,10 @@ public class LocalRepo {
         }
     }
 
+    /**
+     * Transform RDF in repository by SPARQL query.
+     * @param query 
+     */
     public void transformSPARQL(String query) {
 
         try {
