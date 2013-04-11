@@ -6,7 +6,12 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.ui.*;
+import cz.cuni.xrg.intlib.auxiliaries.App;
+import cz.cuni.xrg.intlib.auxiliaries.ModuleDialogGetter;
+import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 
 /**
  *
@@ -15,6 +20,8 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 public class DPUDetail extends Window {
 
     private DPUInstance dpu;
+
+	private DPUExecutive dpuExec;
 
     private TextField dpuName;
 
@@ -60,6 +67,11 @@ public class DPUDetail extends Window {
 
         //TODO: Add custom configuration dialog from DPUInstance
         //mainLayout.addComponent(dpu.getConfigurationDialog());
+		dpuExec = App.getApp().getModules().getInstance(dpu.getJarPath());
+		if(dpuExec != null) {
+			CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec);
+			mainLayout.addComponent(dpuConfigurationDialog);
+		}
 
         Button saveButton = new Button("Save", new Button.ClickListener() {
 
@@ -80,6 +92,10 @@ public class DPUDetail extends Window {
     protected void saveDPUInstance() {
         dpu.setName(dpuName.getValue());
         dpu.setDescription(dpuDescription.getValue());
+
+		//TODO: Make this work - solve COnfiguration/Template/Instance ambiguity
+		//Configuration conf = dpuExec.getSettings();
+		//.setInstanceConfiguration((InstanceConfiguration)conf);
     }
 
 }
