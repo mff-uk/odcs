@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend;
 import java.util.Date;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Panel;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -35,7 +36,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Facade interface providing services for managing pipelines.
 	 */
 	private PipelineFacade pipelines = new PipelineFacade();
-	
+
 	/**
 	 * Facade interface providing services for managing DPUs.
 	 */
@@ -73,6 +74,14 @@ System.out.println((new Date()).toString() + ": AppEntry::finalize");
 		return this.modules;
 	}
 
+    /**
+     * Return facade, which provide services for manipulating with DPUs.
+     * @return dpus facade
+     */
+    public DpuFacade getDPUs() {
+        return this.dpus;
+    }
+
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
 		this.modules = new ModuleFacade();
@@ -89,8 +98,10 @@ System.out.println((new Date()).toString() + ": AppEntry::detach");
 			}} );
 
 		// create main application uber-view and set it as app. content
+        // in panel, for possible vertical scrolling
 		MenuLayout main = new MenuLayout();
-		setContent(main);
+        Panel mainPanel = new Panel(main);
+		setContent(mainPanel);
 
         // create a navigator to control the views
         this.navigator = new com.vaadin.navigator.Navigator(this, main.getViewLayout());

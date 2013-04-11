@@ -1,22 +1,22 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 import java.util.Collections;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
-
 /**
- * Facade for working with DPUs.
- * @author Jan Vojt <jan@vojt.net>
  *
+ * @author Bogo
  */
-public class DpuFacade {
+public class DPUInstanceFacade {
 
-	private static boolean initialized = false;
 	/**
 	 * Entity manager for accessing database with persisted objects.
 	 * @todo autowire through Spring and remove setter and constructor
@@ -26,7 +26,7 @@ public class DpuFacade {
 	/**
 	 * Constructs facade and its dependencies.
 	 */
-	public DpuFacade() {
+	public DPUInstanceFacade() {
 		this(IntlibEntityManagerFactory.getImem());
 	}
 
@@ -34,34 +34,29 @@ public class DpuFacade {
 	 * Construct with given Entity Manager
 	 * @param em
 	 */
-	public DpuFacade(EntityManager em) {
+	public DPUInstanceFacade(EntityManager em) {
 		this.em = em;
-
-		if(!initialized) {
-			this.prefillDPUs();
-			initialized = true;
-		}
 	}
 
 	/**
 	 * Creates DPU without persisting it.
 	 * @return
 	 */
-	public DPU createDpu() {
-		DPU dpu = new DPU();
-		return dpu;
+	public DPUInstance createDPUInstance(DPU dpu) {
+		DPUInstance dpuInstance = new DPUInstance(dpu);
+		return dpuInstance;
 	}
 
 	/**
 	 * Returns list of all DPUs currently persisted in database.
 	 * @return DPU list
 	 */
-	public List<DPU> getAllDpus() {
+	public List<DPUInstance> getAllDPUInstances() {
 
 		@SuppressWarnings("unchecked")
-		List<DPU> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPU e").getResultList(),
-				DPU.class
+		List<DPUInstance> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM DPUInstance e").getResultList(),
+				DPUInstance.class
 		);
 
 		return resultList;
@@ -72,15 +67,15 @@ public class DpuFacade {
 	 * @param id
 	 * @return
 	 */
-	public DPU getDpu(int id) {
-		return em.find(DPU.class, id);
+	public DPUInstance getDPUInstance(int id) {
+		return em.find(DPUInstance.class, id);
 	}
 
 	/**
 	 * Saves any modifications made to the DPU into the database.
 	 * @param dpu
 	 */
-	public void save(DPU dpu) {
+	public void save(DPUInstance dpu) {
 
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
@@ -98,7 +93,7 @@ public class DpuFacade {
 	 * Deletes DPU from the database.
 	 * @param dpu
 	 */
-	public void delete(DPU dpu) {
+	public void delete(DPUInstance dpu) {
 
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
@@ -107,20 +102,5 @@ public class DpuFacade {
 
 		tx.commit();
 	}
-
-    private void prefillDPUs() {
-
-		DPU basicEx = new DPU("RDF Extractor", Type.EXTRACTOR);
-		this.save(basicEx);
-
-		DPU sparqlEx = new DPU("SPARQL endpoint", Type.EXTRACTOR);
-		this.save(sparqlEx);
-		DPU genericTr = new DPU("Generic SPARQL", Type.TRANSFORMER);
-		save(genericTr);
-		DPU rdfLo = new DPU("RDF Loader", Type.LOADER);
-		save(rdfLo);
-		DPU sparqlLo = new DPU("SPARQL endpoint Loader", Type.LOADER);
-		save(sparqlLo);
-    }
 
 }

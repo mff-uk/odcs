@@ -16,6 +16,4 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 
 	public void init();
 
-	public int[] getNodePosition(int id);
-
 }

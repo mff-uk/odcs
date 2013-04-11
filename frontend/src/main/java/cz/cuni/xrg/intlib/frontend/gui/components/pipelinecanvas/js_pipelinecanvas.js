@@ -51,9 +51,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         },
         addEdge: function(id, dpuFrom, dpuTo) {
             addConnection(id, dpuFrom, dpuTo);
-        },
-        getNodePosition: function(id) {
-            return getDpuPosition(id);
         }
     });
 
@@ -368,7 +365,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 removeDpu(dpu);
                 rpcProxy.onDpuRemoved(dpu.id);
                 evt.cancelBubble = true;
-            }
+            } else {
+				rpcProxy.onDpuMoved(dpu.id, endPosition.x, endPosition.y);
+			}
         });
 
         // Creating new connection
@@ -421,6 +420,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpus[id] = dpu;
         dpuLayer.add(group);
         dpuLayer.draw();
+
+		rpcProxy.onDpuMoved(id, posX, posY);
     }
 
     /** Adds connection between 2 given DPUs **/

@@ -1,7 +1,10 @@
 package cz.cuni.xrg.intlib.commons.app;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -67,7 +70,7 @@ public class InMemoryEntityManager implements EntityManager {
 
 	@Override
 	public Query createQuery(String arg0) {
-		return new QueryStub();
+		return new QueryStub(arg0);
 	}
 
 	@Override
@@ -207,7 +210,7 @@ public class InMemoryEntityManager implements EntityManager {
 	 * @author Jan Vojt <jan@vojt.net>
 	 */
 	private class EntityTransactionStub implements EntityTransaction {
-		
+
 		private boolean inTransaction = false;
 
 		@Override
@@ -250,9 +253,31 @@ public class InMemoryEntityManager implements EntityManager {
 	 */
 	private class QueryStub implements Query {
 
+        private String classString;
+
+        private QueryStub() {
+
+        }
+
+        private QueryStub(String arg0) {
+            if(arg0.contains("DPU")) {
+                classString = "DPU";
+            } else if(arg0.contains("Pipeline")) {
+                classString = "Pipeline";
+            }
+        }
+
 		@Override
 		public List<Object> getResultList() {
-			return new ArrayList<Object>(repo.values());
+            List<Object> result = new ArrayList<Object>();
+            for(Object o : repo.values()) {
+                if(classString.equals("DPU") && o.getClass() == DPU.class) {
+                    result.add(o);
+                } else if(classString.equals("Pipeline") && o.getClass() == Pipeline.class) {
+                    result.add(o);
+                }
+            }
+			return result;
 		}
 
 		@Override
@@ -319,6 +344,6 @@ public class InMemoryEntityManager implements EntityManager {
 		public Query setFlushMode(FlushModeType flushMode) {
 			return this;
 		}
-		
+
 	}
 }
