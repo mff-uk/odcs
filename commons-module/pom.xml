@@ -61,7 +61,24 @@
             <version>2.4</version>
             <scope>provided</scope>
         </dependency>
-			
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-sail-memory</artifactId>
+            <version>2.7.0-beta2</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf</groupId>
+            <artifactId>sesame</artifactId>
+            <version>1.2.7</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-model</artifactId>
+            <version>2.7.0-beta2</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 	
 </project>

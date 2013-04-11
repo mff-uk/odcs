@@ -4,9 +4,6 @@ import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
 
 import java.util.Map;
 
-import org.openrdf.model.URI;
-import org.openrdf.repository.Repository;
-
 /**
  * Context used by {@link Load}s for the loading process.
  *
