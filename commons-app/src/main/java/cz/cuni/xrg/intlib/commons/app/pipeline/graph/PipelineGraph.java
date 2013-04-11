@@ -99,7 +99,7 @@ public class PipelineGraph {
 		return null;
 	}
 
-	private Node getNodeById(int id) {
+	public Node getNodeById(int id) {
 		for(Node el : nodes) {
 			if(el.getId() == id) {
 				return el;
@@ -108,16 +108,16 @@ public class PipelineGraph {
 		return null;
 	}
 
-    /**
-     * Gets DPUInstance of Node with given ID
-     *
-     * @param id
-     * @return DPUIntance of Node with given id
-     */
-    public DPUInstance getDPUInstanceById(int id) {
-        Node node = getNodeById(id);
-        return (node == null) ? null : node.getDpuInstance();
-    }
+//    /**
+//     * Gets DPUInstance of Node with given ID
+//     *
+//     * @param id
+//     * @return DPUIntance of Node with given id
+//     */
+//    public DPUInstance getDPUInstanceById(int id) {
+//        Node node = getNodeById(id);
+//        return (node == null) ? null : node.getDpuInstance();
+//    }
 
 	/**
 	 * Updates Node position in graph.
