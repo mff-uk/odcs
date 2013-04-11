@@ -3,6 +3,8 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
@@ -40,9 +42,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDetailRequested(int dpuId) {
 				// TODO Auto-generated method stub
 				// propably publish event one level higher
-                DPUInstance dpu = graph.getDPUInstanceById(dpuId);
-                if(dpu != null) {
-                    showDPUDetail(dpu);
+                Node node = graph.getNodeById(dpuId);
+                if(node != null) {
+                    showDPUDetail(node);
                 }
 			}
 
@@ -119,8 +121,16 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      *
      * @param dpu
      */
-    public void showDPUDetail(DPUInstance dpu) {
+    public void showDPUDetail(final Node node) {
+		final DPUInstance dpu = node.getDpuInstance();
         DPUDetail detailDialog = new DPUDetail(dpu);
+		detailDialog.addCloseListener(new Window.CloseListener() {
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.getId(), dpu.getName(), dpu.getDescription());
+			}
+		});
         App.getApp().addWindow(detailDialog);
 
     }

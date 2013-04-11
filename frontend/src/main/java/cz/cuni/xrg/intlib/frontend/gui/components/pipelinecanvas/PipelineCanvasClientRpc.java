@@ -16,4 +16,6 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 
 	public void init();
 
+	public void updateNode(int id, String name, String description);
+
 }

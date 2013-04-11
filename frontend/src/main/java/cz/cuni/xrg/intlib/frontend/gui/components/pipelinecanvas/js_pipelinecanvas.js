@@ -14,6 +14,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         this.name = name;
         this.description = description;
         this.group = null;
+		this.text = null;
+		this.rect = null;
 
         this.connectionFrom = [];
         this.connectionTo = [];
@@ -51,7 +53,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         },
         addEdge: function(id, dpuFrom, dpuTo) {
             addConnection(id, dpuFrom, dpuTo);
-        }
+        },
+		updateNode: function(id, name, description) {
+			updateDpu(id, name, description);
+		}
     });
 
 
@@ -194,6 +199,16 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         stage.add(messageLayer);
         writeMessage(messageLayer, 'initialized');
     }
+
+	/** Updates text in DPU visualization
+	 *
+	 */
+	function updateDpu(id, name, description) {
+		var dpu = dpus[id];
+		dpu.text.setText(name + '\n\n'+ description);
+		dpu.rect.setHeight(dpu.text.getHeight());
+		dpuLayer.draw();
+	}
 
     /** Builds DPU object and creates its representations on the stage **/
     function addDpu(id, name, description, posX, posY) {
@@ -416,6 +431,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             }
         });
 
+		dpu.rect = rect;
+		dpu.text = complexText;
         dpu.group = group;
         dpus[id] = dpu;
         dpuLayer.add(group);
