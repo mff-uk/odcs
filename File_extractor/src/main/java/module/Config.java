@@ -11,9 +11,6 @@ public enum Config {
 	 */
 	NameDPU
 	,Description
-	,SPARQLendpoint
-	,NameAdm
-	,Password
-	,NamedGraph
-	,SPARQLConstruct
+        ,Path
+	,RDFFormat
 }

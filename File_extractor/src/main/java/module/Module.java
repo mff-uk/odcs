@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.io.File;
+import org.openrdf.rio.RDFFormat;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -34,10 +35,10 @@ public class Module implements GraphicalExtractor {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.File.name(), "");
-        this.config.setValue(Config.Login.name(), "");
-        this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
+        this.config.setValue(Config.NameDPU.name(), "");
+        this.config.setValue(Config.Description.name(), "");
+        this.config.setValue(Config.Path.name(), "");
+        this.config.setValue(Config.RDFFormat.name(),RDFFormat.RDFXML.toString());
     }
 
     public Type getType() {
