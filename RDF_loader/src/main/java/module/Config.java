@@ -12,7 +12,7 @@ public enum Config {
 	NameDPU
 	,Description
 	,SPARQLendpoint
-	,NameAdm
+	,Host_name
 	,Password
 	,NamedGraph
 }

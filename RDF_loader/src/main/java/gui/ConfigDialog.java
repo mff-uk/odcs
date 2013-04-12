@@ -47,7 +47,7 @@ public class ConfigDialog extends CustomComponent {
 	private Label labelGraph;
 	private PasswordField passwordFieldPass; // Password
 	private Label labelPass;
-	private TextField textFieldNameAdm; // NameAdm
+	private TextField textFieldNameAdm; // Host_name
 	private Label labelNameAdm;
 	private ComboBox comboBoxSparql; // SPARQLendpoint
 	private Label labelSparql;
@@ -86,7 +86,7 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
 		config.setValue(Config.Description.name(), textAreaDesc.getValue());
 		config.setValue(Config.SPARQLendpoint.name(), comboBoxSparql.getValue());
-		config.setValue(Config.NameAdm.name(), textFieldNameAdm.getValue());
+		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
 		config.setValue(Config.NamedGraph.name(), textAreaGraph.getValue());
 
@@ -110,7 +110,7 @@ public class ConfigDialog extends CustomComponent {
 			textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
 			textAreaDesc.setValue( (String) conf.getValue(Config.Description.name()));
 			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQLendpoint.name()));
-			textFieldNameAdm.setValue( (String) conf.getValue(Config.NameAdm.name()));
+			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 			textAreaGraph.setValue( (String) conf.getValue(Config.NamedGraph.name()));
 		} 

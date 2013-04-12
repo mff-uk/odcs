@@ -12,8 +12,6 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.net.URI;
-import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -36,10 +34,12 @@ public class Module implements GraphicalLoader {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.Url.name(), "");
-        this.config.setValue(Config.Login.name(), "");
+        this.config.setValue(Config.NameDPU.name(), "");
+        this.config.setValue(Config.Description.name(), "");
+        this.config.setValue(Config.SPARQLendpoint.name(), "");
+        this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
+        this.config.setValue(Config.NamedGraph.name(), "");
     }
 
     public Type getType() {
