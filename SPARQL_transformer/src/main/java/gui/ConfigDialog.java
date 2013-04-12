@@ -21,14 +21,17 @@ public class ConfigDialog extends CustomComponent {
 	 */
 	
 	private GridLayout mainLayout;
-
-	private TextField txtUrl;
-	
-	private TextField txtLogin;
-	
-	private TextField txtPassword;
-	
+	private Button buttonCanc;
+	private Button buttonSave;
+	private Button buttonDev;
+	private GridLayout gridLayoutName;
 	private TextArea txtQuery;
+	private Label labelUpQuer;
+	private TextArea textAreaDescr;
+	private Label labelDescr;
+	private TextField textFieldName;
+	private Label labelName;
+	private HorizontalLayout horizontalLayoutButtons;
 		
 	public ConfigDialog() {
 		buildMainLayout();
@@ -47,9 +50,10 @@ public class ConfigDialog extends CustomComponent {
 		 * 	enum Config to make sure that you don't miss spell the ids of values.
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
-		
 		config.setValue(Config.UpdateQuery.name(), txtQuery.getValue());
-
+		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
+		config.setValue(Config.Description.name(), textAreaDescr.getValue());
+		
 		return config;
 	}
 	
@@ -68,6 +72,8 @@ public class ConfigDialog extends CustomComponent {
 		try
 		{
 			txtQuery.setValue( (String) conf.getValue(Config.UpdateQuery.name()));
+			textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
+			textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
 		} 
 		catch(Exception ex) {
 			// throw setting exception
@@ -80,42 +86,111 @@ public class ConfigDialog extends CustomComponent {
 		 * TODO Build your component here.
 		 */
 		
-		
 		// common part: create layout
 		mainLayout = new GridLayout(2, 4);
 		mainLayout.setImmediate(false);
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
-		
+		mainLayout.setMargin(true);
+
 		// top-level component properties
-		setWidth("600px");
-		setHeight("300px");
-				
-		txtUrl = new TextField();
-		txtUrl.setWidth("450px");
-		txtUrl.setHeight("-1px");
-		mainLayout.addComponent(txtUrl, 1, 0);
-		mainLayout.addComponent(new Label("Url:"), 0, 0);
-		
-		txtLogin = new TextField();
-		txtLogin.setWidth("450px");
-		txtLogin.setHeight("-1px");
-		mainLayout.addComponent(txtLogin, 1, 1);
-		mainLayout.addComponent(new Label("Login:"), 0, 1);
-		
-		txtPassword = new TextField();
-		txtPassword.setWidth("450px");
-		txtPassword.setHeight("-1px");
-		mainLayout.addComponent(txtPassword, 1, 2);
-		mainLayout.addComponent(new Label("Password:"), 0, 2);
-		
+		setWidth("100%");
+		setHeight("100%");
+
+		// gridLayoutName
+		// gridLayoutName = buildGridLayoutName();
+		// mainLayout.addComponent(gridLayoutName, "top:40.0px;left:40.0px;");
+
+		// labelName
+		labelName = new Label();
+		labelName.setImmediate(false);
+		labelName.setWidth("-1px");
+		labelName.setHeight("-1px");
+		labelName.setValue("Name:");
+		mainLayout.addComponent(labelName, 0, 0);
+
+		// textFieldName
+		textFieldName = new TextField();
+		textFieldName.setImmediate(false);
+		textFieldName.setWidth("260px");
+		textFieldName.setHeight("-1px");
+		mainLayout.addComponent(textFieldName, 1, 0);
+
+		// labelDescr
+		labelDescr = new Label();
+		labelDescr.setImmediate(false);
+		labelDescr.setWidth("-1px");
+		labelDescr.setHeight("-1px");
+		labelDescr.setValue("Description:");
+		mainLayout.addComponent(labelDescr, 0, 1);
+
+		// textAreaDescr
+		textAreaDescr = new TextArea();
+		textAreaDescr.setImmediate(false);
+		textAreaDescr.setWidth("260px");
+		textAreaDescr.setHeight("36px");
+		mainLayout.addComponent(textAreaDescr, 1, 1);
+
+		// labelUpQuer
+		labelUpQuer = new Label();
+		labelUpQuer.setImmediate(false);
+		labelUpQuer.setWidth("74px");
+		labelUpQuer.setHeight("-1px");
+		labelUpQuer.setValue("SPARQL  Update Query");
+		mainLayout.addComponent(labelUpQuer, 0, 2);
+
+		// txtQuery
 		txtQuery = new TextArea();
-		txtQuery.setWidth("450px");
-		txtQuery.setHeight("300px");
-		mainLayout.addComponent(txtQuery, 1, 3);
-		mainLayout.addComponent(new Label("Query:"), 0, 3);		
+		txtQuery.setImmediate(false);
+		txtQuery.setWidth("260px");
+		txtQuery.setHeight("211px");
+		mainLayout.addComponent(txtQuery, 1, 2);
+
+		// buttonDev
+		buttonDev = new Button();
+		buttonDev.setCaption("Develop");
+		buttonDev.setImmediate(true);
+		buttonDev.setWidth("-1px");
+		buttonDev.setHeight("-1px");
+		mainLayout.addComponent(buttonDev, 0,3 );
+
 		
+		horizontalLayoutButtons = buildHorizontalLayout();
+		mainLayout.addComponent(horizontalLayoutButtons,1,3);
+
+
 		return mainLayout;
 	}
+
+	private HorizontalLayout buildHorizontalLayout() {
+		// common part: create layout
+		horizontalLayoutButtons = new HorizontalLayout();
+		horizontalLayoutButtons.setImmediate(false);
+		horizontalLayoutButtons.setWidth("240px");
+		horizontalLayoutButtons.setHeight("1px");
+		horizontalLayoutButtons.setMargin(false);
+		horizontalLayoutButtons.setSpacing(true);
+
+		
+		// buttonSave
+		buttonSave = new Button();
+		buttonSave.setCaption("Save & Commit");
+		buttonSave.setImmediate(true);
+		buttonSave.setWidth("-1px");
+
+		buttonSave.setHeight("-1px");
+		horizontalLayoutButtons.addComponent(buttonSave);
+		
+		// buttonCanc
+		buttonCanc = new Button();
+		buttonCanc.setCaption("Cancel");
+		buttonCanc.setImmediate(true);
+		buttonCanc.setWidth("-1px");
+		buttonCanc.setHeight("-1px");
+		horizontalLayoutButtons.addComponent(buttonCanc);
+		
+		return horizontalLayoutButtons;
+	}
+
 
 }
