@@ -9,8 +9,10 @@ public enum Config {
 	/**
 	 * TODO: Put names for your configuration here.
 	 */
-	Url
-	,Login
+	NameDPU
+	,Description
+	,SPARQLendpoint
+	,NameAdm
 	,Password
-	,Query
+	,NamedGraph
 }
