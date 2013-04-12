@@ -58,12 +58,13 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 		
+                /* OPRAVIT
 		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
 		config.setValue(Config.Description.name(), textAreaDescr.getValue());
 		config.setValue(Config.Path.name(), textFieldPath.getValue());
 		config.setValue(Config.OnlyFiles.name(), textFieldOnly.getValue());
 		config.setValue(Config.RDFFormat.name(), comboBoxFormat.getValue());
-
+                */
 		return config;
 	}
 	
@@ -81,11 +82,14 @@ public class ConfigDialog extends CustomComponent {
 		
 		try
 		{
-			textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
+			/**
+                         * Opravit
+                         */
+                        //textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
 			textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
-			textFieldPath.setValue( (String) conf.getValue(Config.Path.name()));
-			textFieldOnly.setValue( (String) conf.getValue(Config.OnlyFiles.name()));
-			comboBoxFormat.setValue( (String) conf.getValue(Config.RDFFormat.name()));
+			//textFieldPath.setValue( (String) conf.getValue(Config.Path.name()));
+			//textFieldOnly.setValue( (String) conf.getValue(Config.OnlyFiles.name()));
+			//comboBoxFormat.setValue( (String) conf.getValue(Config.RDFFormat.name()));
 		} 
 		catch(Exception ex) {
 			// throw setting exception

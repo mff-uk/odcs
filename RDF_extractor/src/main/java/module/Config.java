@@ -9,9 +9,11 @@ public enum Config {
 	/**
 	 * TODO: Put names for your configuration here.
 	 */
-	NameDPU	
+	DPU_name	
 	,Description
-	,Path
-	,OnlyFiles
-	,RDFFormat
+	,SPARQL_endpoint
+        ,Host_name
+        ,Password
+	,Graphs_name
+	,SPARQL_query
 }

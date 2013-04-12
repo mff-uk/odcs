@@ -38,10 +38,13 @@ public class Module implements GraphicalExtractor {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.Url.name(), "");
-        this.config.setValue(Config.Login.name(), "");
+        this.config.setValue(Config.DPU_name.name(), "");
+        this.config.setValue(Config.Description.name(), "");
+        this.config.setValue(Config.SPARQL_endpoint.name(), "");
+        this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
+        this.config.setValue(Config.Graphs_name.name(), "");
+        this.config.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
     public Type getType() {
