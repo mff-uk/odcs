@@ -41,10 +41,11 @@ public class Module implements GraphicalLoader {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.Url.name(), "");
-        this.config.setValue(Config.Login.name(), "");
-        this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
+        this.config.setValue(Config.NameDPU.name(), "");
+        this.config.setValue(Config.Description.name(), "");
+        this.config.setValue(Config.FileName.name(), "");
+        this.config.setValue(Config.Directory.name(), "");
+        this.config.setValue(Config.RDFformat.name(), RDFFormat.RDFXML.toString());
     }
 
     public Type getType() {
