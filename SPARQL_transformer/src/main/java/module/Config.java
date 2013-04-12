@@ -9,5 +9,5 @@ public enum Config {
 	/**
 	 * String Query for SPARQL transformation update.
 	 */
-	UpdateQuery
+	SPARQL_Update_Query
 }
