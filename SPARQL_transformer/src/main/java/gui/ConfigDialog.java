@@ -48,7 +48,7 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 		
-		config.setValue(Config.UpdateQuery.name(), txtQuery.getValue());
+		config.setValue(Config.SPARQL_Update_Query.name(), txtQuery.getValue());
 
 		return config;
 	}
@@ -67,7 +67,7 @@ public class ConfigDialog extends CustomComponent {
 		
 		try
 		{
-			txtQuery.setValue( (String) conf.getValue(Config.UpdateQuery.name()));
+			txtQuery.setValue( (String) conf.getValue(Config.SPARQL_Update_Query.name()));
 		} 
 		catch(Exception ex) {
 			// throw setting exception

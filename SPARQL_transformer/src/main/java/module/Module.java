@@ -33,7 +33,7 @@ public class Module implements GraphicalTransformer {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.UpdateQuery.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");
+        this.config.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");
     }
 
     public Type getType() {
@@ -82,6 +82,6 @@ public class Module implements GraphicalTransformer {
     public void transform(TransformContext context) throws TransformException {
 
         LocalRepo repository = LocalRepo.createLocalRepo();
-        repository.transformUsingSPARQL(Config.UpdateQuery.toString());
+        repository.transformUsingSPARQL(Config.SPARQL_Update_Query.toString());
     }
 }
