@@ -24,21 +24,30 @@ public class ConfigDialog extends CustomComponent {
 	private GridLayout mainLayout;
 	private Button buttonCanc;
 	private Button buttonSave;
-	private Button buttonDev;
-	private ComboBox comboBoxFormat; //RDFFormat
-	private Label labelFormat;
-	private TextField textFieldOnly; //OnlyFiles
-	private Label labelOnly;
-	private CheckBox checkBoxWhole;
-	private TextField textFieldPath; // Path
+	private Button buttonDevel;
+	private TabSheet tabSheet;
+	private VerticalLayout verticalLayoutDetails;
+	private CheckBox checkBoxFail;
+	private Label labelOpt;
+	private GridLayout gridLayoutConstr;
+	private TextArea textAreaConstr; //SPARQL_query
+	private Label labelConstr;
+	private VerticalLayout verticalLayoutCore;
+	private GridLayout gridLayoutAdm;
+	private TextArea textAreaGraph; //Graphs_name
+	private Label labelGraph;
+	private PasswordField passwordFieldPass; //Password
+	private Label labelPass;
+	private TextField textFieldNameAdm; //Host_name
+	private Label labelNameAdm;
+	private ComboBox comboBoxSparql;//SPARQL_endpoint
+	private Label labelSparql;
 	private GridLayout gridLayoutName;
-	private TextArea textAreaDescr; // Description
-	private Label labelDescr;
-	private TextField textFieldName; //NameDPU
+	private TextArea textAreaDesc; //Description
+	private Label labelDesc;
+	private TextField textFieldName; //DPU_name
 	private Label labelName;
-	private HorizontalLayout horizontalLayoutOnly;
 	private HorizontalLayout horizontalLayoutButtons;
-	private HorizontalLayout horizontalLayoutFormat;
 		
 	public ConfigDialog() {
 		buildMainLayout();
@@ -57,14 +66,15 @@ public class ConfigDialog extends CustomComponent {
 		 * 	enum Config to make sure that you don't miss spell the ids of values.
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
-		
-                /* OPRAVIT
-		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
+		                
+		config.setValue(Config.DPU_name.name(), textFieldName.getValue());
 		config.setValue(Config.Description.name(), textAreaDescr.getValue());
-		config.setValue(Config.Path.name(), textFieldPath.getValue());
-		config.setValue(Config.OnlyFiles.name(), textFieldOnly.getValue());
-		config.setValue(Config.RDFFormat.name(), comboBoxFormat.getValue());
-                */
+		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
+		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
+		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
+		config.setValue(Config.Graphs_name.name(), textAreaGraph.getValue());
+		config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
+               
 		return config;
 	}
 	
@@ -82,14 +92,14 @@ public class ConfigDialog extends CustomComponent {
 		
 		try
 		{
-			/**
-                         * Opravit
-                         */
-                        //textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
+		
+			textFieldName.setValue( (String) conf.getValue(Config.DPU_name.name()));
 			textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
-			//textFieldPath.setValue( (String) conf.getValue(Config.Path.name()));
-			//textFieldOnly.setValue( (String) conf.getValue(Config.OnlyFiles.name()));
-			//comboBoxFormat.setValue( (String) conf.getValue(Config.RDFFormat.name()));
+			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQL_endpoint.name()));
+			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
+			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
+			textAreaGraph.setValue( (String) conf.getValue(Config.Graphs_name.name()));
+			textAreaConstr.setValue( (String) conf.getValue(Config.SPARQL_query.name()));
 		} 
 		catch(Exception ex) {
 			// throw setting exception
@@ -102,190 +112,287 @@ public class ConfigDialog extends CustomComponent {
 		/**
 		 * TODO Build your component here.
 		 */
-			// common part: create layout
-			mainLayout = new GridLayout(2, 6);
-			mainLayout.setImmediate(false);
-			mainLayout.setWidth("100%");
-			mainLayout.setHeight("100%");
-			mainLayout.setMargin(true);
-			
-			// top-level component properties
-			setWidth("100%");
-			setHeight("100%");
-			
-			// gridLayoutName
-			gridLayoutName = buildGridLayoutName();
-			mainLayout.addComponent(gridLayoutName, 0,0,1,1);
-			mainLayout.setComponentAlignment(gridLayoutName, Alignment.TOP_CENTER);
-			
-			// textFieldPath
-			textFieldPath = new TextField();
-			textFieldPath.setCaption("Path to file or directory:");
-			textFieldPath.setImmediate(false);
-			textFieldPath.setWidth("85%");
-			textFieldPath.setHeight("-1px");
-			mainLayout.addComponent(textFieldPath, 0,2,1,2);
-			
-			// checkBoxWhole
-			checkBoxWhole = new CheckBox();
-			checkBoxWhole.setCaption("Process whole directory.");
-			checkBoxWhole.setImmediate(false);
-			checkBoxWhole.setWidth("-1px");
-			checkBoxWhole.setHeight("-1px");
-			mainLayout.addComponent(checkBoxWhole, 0,3);
-			
-			// layoutOnly
-			horizontalLayoutOnly = buildHorizontalLayoutOnly();
-			mainLayout.addComponent(horizontalLayoutOnly,1,3);
-			
 		
+		// common part: create layout
+		mainLayout = new GridLayout(2, 2);
+		mainLayout.setImmediate(false);
+		mainLayout.setWidth("100%");
+		mainLayout.setHeight("100%");
+		
+		// top-level component properties
+		setWidth("360px");
+		setHeight("450px");
+		
+		// tabSheet
+		tabSheet = buildTabSheet();
+		mainLayout.addComponent(tabSheet,  0, 0, 1, 0);
+		mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
+		
+		// buttonDevel
+		buttonDevel = new Button();
+		buttonDevel.setCaption("Develop");
+		buttonDevel.setImmediate(true);
+		buttonDevel.setWidth("80px");
+		buttonDevel.setHeight("-1px");
+		mainLayout.addComponent(buttonDevel, 0,1);
+		mainLayout.setComponentAlignment(buttonDevel, Alignment.TOP_LEFT);
+		
+		horizontalLayoutButtons = buildHorizontalLayout();
+		mainLayout.addComponent(horizontalLayoutButtons,1,1);
+		mainLayout.setComponentAlignment(horizontalLayoutButtons, Alignment.TOP_RIGHT);
+
+		
+		return mainLayout;
+	}
+
 	
-			// horizontalLayoutFormat
-			horizontalLayoutFormat = buildHorizontalLayoutFormat();
-			mainLayout.addComponent(horizontalLayoutFormat,0,4);
-			
-			// buttonDev
-			buttonDev = new Button();
-			buttonDev.setCaption("Develop");
-			buttonDev.setImmediate(true);
-			buttonDev.setWidth("-1px");
-			buttonDev.setHeight("-1px");
-			mainLayout.addComponent(buttonDev, 0,5);
+	private TabSheet buildTabSheet() {
+		// common part: create layout
+		tabSheet = new TabSheet();
+		tabSheet.setImmediate(true);
+		tabSheet.setWidth("360px");
+		tabSheet.setHeight("340px");
 		
-			
-			horizontalLayoutButtons = buildHorizontalLayout();
-			mainLayout.addComponent(horizontalLayoutButtons,1,5);
+		// verticalLayoutCore
+		verticalLayoutCore = buildVerticalLayoutCore();
+		tabSheet.addTab(verticalLayoutCore, "Core", null);
+		
+		// verticalLayoutDetails
+		verticalLayoutDetails = buildVerticalLayoutDetails();
+		tabSheet.addTab(verticalLayoutDetails, "Details", null);
+		
+		return tabSheet;
+	}
 
-			return mainLayout;
-		}
+	
+	private VerticalLayout buildVerticalLayoutCore() {
+		// common part: create layout
+		verticalLayoutCore = new VerticalLayout();
+		verticalLayoutCore.setImmediate(false);
+		verticalLayoutCore.setWidth("100.0%");
+		verticalLayoutCore.setHeight("93.33%");
+		verticalLayoutCore.setMargin(true);
+		
+		// gridLayoutName
+		gridLayoutName = buildGridLayoutName();
+		verticalLayoutCore.addComponent(gridLayoutName);
+		
+		// gridLayoutAdm
+		gridLayoutAdm = buildGridLayoutAdm();
+		verticalLayoutCore.addComponent(gridLayoutAdm);
+		
+		return verticalLayoutCore;
+	}
+
+	
+	private GridLayout buildGridLayoutName() {
+		// common part: create layout
+		gridLayoutName = new GridLayout();
+		gridLayoutName.setImmediate(false);
+		gridLayoutName.setWidth("321px");
+		gridLayoutName.setHeight("-1px");
+		gridLayoutName.setMargin(false);
+		gridLayoutName.setSpacing(true);
+		gridLayoutName.setColumns(2);
+		gridLayoutName.setRows(2);
+		
+		// labelName
+		labelName = new Label();
+		labelName.setImmediate(false);
+		labelName.setWidth("-1px");
+		labelName.setHeight("-1px");
+		labelName.setValue("Name:");
+		gridLayoutName.addComponent(labelName, 0, 0);
+		
+		// textFieldName
+		textFieldName = new TextField();
+		textFieldName.setImmediate(false);
+		textFieldName.setWidth("256px");
+		textFieldName.setHeight("-1px");
+		gridLayoutName.addComponent(textFieldName, 1, 0);
+		
+		// labelDesc
+		labelDesc = new Label();
+		labelDesc.setImmediate(false);
+		labelDesc.setWidth("-1px");
+		labelDesc.setHeight("-1px");
+		labelDesc.setValue("Description:");
+		gridLayoutName.addComponent(labelDesc, 0, 1);
+		
+		// textAreaDesc
+		textAreaDesc = new TextArea();
+		textAreaDesc.setImmediate(false);
+		textAreaDesc.setWidth("255px");
+		textAreaDesc.setHeight("51px");
+		gridLayoutName.addComponent(textAreaDesc, 1, 1);
+		
+		return gridLayoutName;
+	}
+
+
+	private GridLayout buildGridLayoutAdm() {
+		// common part: create layout
+		gridLayoutAdm = new GridLayout();
+		gridLayoutAdm.setImmediate(false);
+		gridLayoutAdm.setWidth("299px");
+		gridLayoutAdm.setHeight("152px");
+		gridLayoutAdm.setMargin(false);
+		gridLayoutAdm.setColumns(2);
+		gridLayoutAdm.setRows(4);
+		
+		// labelSparql
+		labelSparql = new Label();
+		labelSparql.setImmediate(false);
+		labelSparql.setWidth("-1px");
+		labelSparql.setHeight("-1px");
+		labelSparql.setValue("SPARQL endpoint:");
+		gridLayoutAdm.addComponent(labelSparql, 0, 0);
+		
+		// comboBoxSparql
+		comboBoxSparql = new ComboBox();
+		comboBoxSparql.setImmediate(false);
+		comboBoxSparql.setWidth("197px");
+		comboBoxSparql.setHeight("-1px");
+		gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
+		
+		// labelNameAdm
+		labelNameAdm = new Label();
+		labelNameAdm.setImmediate(false);
+		labelNameAdm.setWidth("-1px");
+		labelNameAdm.setHeight("-1px");
+		labelNameAdm.setValue("Name:");
+		gridLayoutAdm.addComponent(labelNameAdm, 0, 1);
+		
+		// textFieldNameAdm
+		textFieldNameAdm = new TextField();
+		textFieldNameAdm.setImmediate(false);
+		textFieldNameAdm.setWidth("197px");
+		textFieldNameAdm.setHeight("-1px");
+		gridLayoutAdm.addComponent(textFieldNameAdm, 1, 1);
+		
+		// labelPass
+		labelPass = new Label();
+		labelPass.setImmediate(false);
+		labelPass.setWidth("-1px");
+		labelPass.setHeight("-1px");
+		labelPass.setValue("Password:");
+		gridLayoutAdm.addComponent(labelPass, 0, 2);
+		
+		// passwordFieldPass
+		passwordFieldPass = new PasswordField();
+		passwordFieldPass.setImmediate(false);
+		passwordFieldPass.setWidth("197px");
+		passwordFieldPass.setHeight("-1px");
+		gridLayoutAdm.addComponent(passwordFieldPass, 1, 2);
+		
+		// labelGraph
+		labelGraph = new Label();
+		labelGraph.setImmediate(false);
+		labelGraph.setWidth("-1px");
+		labelGraph.setHeight("-1px");
+		labelGraph.setValue("Named Graph:");
+		gridLayoutAdm.addComponent(labelGraph, 0, 3);
+		
+		// textAreaGraph
+		textAreaGraph = new TextArea();
+		textAreaGraph.setImmediate(false);
+		textAreaGraph.setWidth("197px");
+		textAreaGraph.setHeight("46px");
+		gridLayoutAdm.addComponent(textAreaGraph, 1, 3);
+		
+		return gridLayoutAdm;
+	}
+
+	
+	private VerticalLayout buildVerticalLayoutDetails() {
+		// common part: create layout
+		verticalLayoutDetails = new VerticalLayout();
+		verticalLayoutDetails.setImmediate(false);
+		verticalLayoutDetails.setWidth("-1px");
+		verticalLayoutDetails.setHeight("-1px");
+		verticalLayoutDetails.setMargin(true);
+		verticalLayoutDetails.setSpacing(true);
+		
+		// gridLayoutConstr
+		gridLayoutConstr = buildGridLayoutConstr();
+		verticalLayoutDetails.addComponent(gridLayoutConstr);
+		
+		// labelOpt
+		labelOpt = new Label();
+		labelOpt.setImmediate(false);
+		labelOpt.setWidth("-1px");
+		labelOpt.setHeight("-1px");
+		labelOpt.setValue("Options:");
+		verticalLayoutDetails.addComponent(labelOpt);
+		
+		// checkBoxFail
+		checkBoxFail = new CheckBox();
+		checkBoxFail
+				.setCaption("Extraction fails if there is no triple extracted.");
+		checkBoxFail.setImmediate(false);
+		checkBoxFail.setWidth("-1px");
+		checkBoxFail.setHeight("-1px");
+		verticalLayoutDetails.addComponent(checkBoxFail);
+		
+		return verticalLayoutDetails;
+	}
+
+	private GridLayout buildGridLayoutConstr() {
+		// common part: create layout
+		gridLayoutConstr = new GridLayout();
+		gridLayoutConstr.setImmediate(false);
+		gridLayoutConstr.setWidth("-1px");
+		gridLayoutConstr.setHeight("-1px");
+		gridLayoutConstr.setMargin(false);
+		gridLayoutConstr.setSpacing(true);
+		gridLayoutConstr.setColumns(2);
+		
+		// labelConstr
+		labelConstr = new Label();
+		labelConstr.setImmediate(false);
+		labelConstr.setWidth("101px");
+		labelConstr.setHeight("-1px");
+		labelConstr.setValue("SPARQL  Construct:");
+		gridLayoutConstr.addComponent(labelConstr, 0, 0);
+		
+		// textAreaConstr
+		textAreaConstr = new TextArea();
+		textAreaConstr.setImmediate(false);
+		textAreaConstr.setWidth("208px");
+		textAreaConstr.setHeight("190px");
+		gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
+		
+		return gridLayoutConstr;
+	}
+	
+	private HorizontalLayout buildHorizontalLayout() {
+		// common part: create layout
+		horizontalLayoutButtons = new HorizontalLayout();
+		horizontalLayoutButtons.setImmediate(false);
+		horizontalLayoutButtons.setWidth("240px");
+		horizontalLayoutButtons.setHeight("1px");
+		horizontalLayoutButtons.setMargin(false);
+		horizontalLayoutButtons.setSpacing(true);
 
 		
-		private GridLayout buildGridLayoutName() {
-			// common part: create layout
-			gridLayoutName = new GridLayout();
-			gridLayoutName.setImmediate(false);
-			gridLayoutName.setWidth("100%");
-			gridLayoutName.setHeight("-1px");
-			gridLayoutName.setMargin(false);
-			gridLayoutName.setSpacing(true);
-			gridLayoutName.setColumns(2);
-			gridLayoutName.setRows(2);
-			
-			// labelName
-			labelName = new Label();
-			labelName.setImmediate(false);
-			labelName.setWidth("-1px");
-			labelName.setHeight("-1px");
-			labelName.setValue("Name:");
-			gridLayoutName.addComponent(labelName, 0, 0);
-			
-			// textFieldName
-			textFieldName = new TextField();
-			textFieldName.setImmediate(false);
-			textFieldName.setWidth("267px");
-			textFieldName.setHeight("-1px");
-			gridLayoutName.addComponent(textFieldName, 1, 0);
-			
-			// labelDescr
-			labelDescr = new Label();
-			labelDescr.setImmediate(false);
-			labelDescr.setWidth("-1px");
-			labelDescr.setHeight("-1px");
-			labelDescr.setValue("Description:");
-			gridLayoutName.addComponent(labelDescr, 0, 1);
-			
-			// textAreaDescr
-			textAreaDescr = new TextArea();
-			textAreaDescr.setImmediate(false);
-			textAreaDescr.setWidth("267px");
-			textAreaDescr.setHeight("36px");
-			gridLayoutName.addComponent(textAreaDescr, 1, 1);
-			
-			return gridLayoutName;
-		}
-		private HorizontalLayout buildHorizontalLayoutOnly() {
-			// common part: create layout
-			horizontalLayoutOnly = new HorizontalLayout();
-			horizontalLayoutOnly.setImmediate(false);
-			horizontalLayoutOnly.setWidth("-1px");
-			horizontalLayoutOnly.setHeight("-1px");
-			horizontalLayoutOnly.setMargin(false);
-			horizontalLayoutOnly.setSpacing(true);
-			
-			// labelOnly
-			labelOnly = new Label();
-			labelOnly.setImmediate(false);
-			labelOnly.setWidth("-1px");
-			labelOnly.setHeight("-1px");
-			labelOnly.setValue("Only files:");
-			horizontalLayoutOnly.addComponent(labelOnly);
-			
-			// textFieldOnly
-			textFieldOnly = new TextField();
-			textFieldOnly.setImmediate(false);
-			textFieldOnly.setWidth("52px");
-			textFieldOnly.setHeight("-1px");
-			horizontalLayoutOnly.addComponent(textFieldOnly);
-			
-			return horizontalLayoutOnly;
-		}
+		// buttonSave
+		buttonSave = new Button();
+		buttonSave.setCaption("Save & Commit");
+		buttonSave.setImmediate(true);
+		buttonSave.setWidth("-1px");
+
+		buttonSave.setHeight("-1px");
+		horizontalLayoutButtons.addComponent(buttonSave);
 		
-		private HorizontalLayout buildHorizontalLayoutFormat() {
-			// common part: create layout
-			horizontalLayoutFormat = new HorizontalLayout();
-			horizontalLayoutFormat.setImmediate(false);
-			horizontalLayoutFormat.setWidth("-1px");
-			horizontalLayoutFormat.setHeight("-1px");
-			horizontalLayoutFormat.setMargin(false);
-			horizontalLayoutFormat.setSpacing(true);
-			
-			// labelFormat
-			labelFormat = new Label();
-			labelFormat.setImmediate(false);
-			labelFormat.setWidth("-1px");
-			labelFormat.setHeight("-1px");
-			labelFormat.setValue("RDF Format:");
-			horizontalLayoutFormat.addComponent(labelFormat);
-			
-			// comboBoxFormat
-			comboBoxFormat = new ComboBox();
-			comboBoxFormat.setImmediate(false);
-			comboBoxFormat.setWidth("-1px");
-			comboBoxFormat.setHeight("-1px");
-			horizontalLayoutFormat.addComponent(comboBoxFormat);
-			
-			return horizontalLayoutFormat;
-		}
-
-
-		private HorizontalLayout buildHorizontalLayout() {
-			// common part: create layout
-			horizontalLayoutButtons = new HorizontalLayout();
-			horizontalLayoutButtons.setImmediate(false);
-			horizontalLayoutButtons.setWidth("240px");
-			horizontalLayoutButtons.setHeight("1px");
-			horizontalLayoutButtons.setMargin(false);
-			horizontalLayoutButtons.setSpacing(true);
-
-			
-			// buttonSave
-			buttonSave = new Button();
-			buttonSave.setCaption("Save & Commit");
-			buttonSave.setImmediate(true);
-			buttonSave.setWidth("-1px");
-
-			buttonSave.setHeight("-1px");
-			horizontalLayoutButtons.addComponent(buttonSave);
-			
-			// buttonCanc
-			buttonCanc = new Button();
-			buttonCanc.setCaption("Cancel");
-			buttonCanc.setImmediate(true);
-			buttonCanc.setWidth("-1px");
-			buttonCanc.setHeight("-1px");
-			horizontalLayoutButtons.addComponent(buttonCanc);
-			
-			return horizontalLayoutButtons;
-		}
+		// buttonCanc
+		buttonCanc = new Button();
+		buttonCanc.setCaption("Cancel");
+		buttonCanc.setImmediate(true);
+		buttonCanc.setWidth("-1px");
+		buttonCanc.setHeight("-1px");
+		horizontalLayoutButtons.addComponent(buttonCanc);
+		
+		return horizontalLayoutButtons;
+	}
 
 }
