@@ -11,7 +11,6 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
-import java.io.File;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -38,7 +37,7 @@ public class Module implements GraphicalExtractor {
         this.config.setValue(Config.NameDPU.name(), "");
         this.config.setValue(Config.Description.name(), "");
         this.config.setValue(Config.Path.name(), "");
-        this.config.setValue(Config.RDFFormat.name(),RDFFormat.RDFXML.toString());
+        this.config.setValue(Config.RDFFormat.name(), RDFFormat.RDFXML.toString());
     }
 
     public Type getType() {
@@ -86,10 +85,14 @@ public class Module implements GraphicalExtractor {
      */
     public void extract(ExtractContext context) throws ExtractException {
 
-        File dataInputFile = new File("C:\\intlib\\inputFile.rdf");
-        String baseURI = "file://" + dataInputFile.getName();
+        String repositoryPath = "C:\\intlib\\myRepository";
+        
+        String path = "C:\\intlib\\Input_Test_Files\\";
+        String suffix = ".rdf";
+        String baseURI = "";
+        boolean useSuffix = true;
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
-        repository.extractRDFfromXMLFileToRepository(dataInputFile, baseURI);
+        LocalRepo repository = LocalRepo.createLocalRepo(repositoryPath);
+        repository.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
     }
 }
