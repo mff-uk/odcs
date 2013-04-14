@@ -51,4 +51,18 @@
         </contributor>
     </contributors>
 
+    <repositories>
+	<!-- odkud se bude tahat do lokalniho uloziste mavenu, muze tu byt vic repositories, v jednolivych subprojektech taktez muzou byt dalsi -->
+ 
+	<repository>
+	<id>intlib</id>
+	<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
+	</repository>
+ 
+	<repository>
+	<id>intlib-thirdparty</id>
+	<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty/</url>
+	</repository>
+ 
+   </repositories>
 </project>
