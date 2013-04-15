@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
+import java.io.File;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.launch.FrameworkFactory;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
@@ -58,9 +60,9 @@ public class Framework {
 						"cz.cuni.xrg.intlib.commons.transformer," +
 						// commons-module
 						"cz.cuni.xrg.intlib.commons.module," +
+						"cz.cuni.xrg.intlib.repository," +
 						// vaadin
 						"com.vaadin,com.vaadin.ui");
-		
 		return config;
 	}
 			
@@ -122,7 +124,7 @@ public class Framework {
 	 * @return Installed bundle or null.
 	 * @throws ModuleException
 	 */
-	private Bundle installBundle(String uri) throws ModuleException
+	public Bundle installBundle(String uri) throws ModuleException
 	{
 		// has bundle been already loaded?
 		if (this.loadedBundles.containsKey(uri)) {
@@ -227,5 +229,4 @@ public class Framework {
 				
 		return dpu;
 	}
-	
 }

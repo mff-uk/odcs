@@ -80,5 +80,17 @@ public class ModuleFacade {
 	 */
 	public Transform getInstanceTransform(String uri) throws ModuleException {
 		return (Transform) getInstance(uri);
-	}	
+	}
+	
+	/**
+	 * Install bundle from given uri.
+	 */
+	public void installBundle(String uri) {
+		try {
+			this.framework.installBundle(uri);
+		}
+		catch(ModuleException ex) {
+			System.out.println("installBundle ex: " + ex.getMessage());
+		}
+	}
 }
