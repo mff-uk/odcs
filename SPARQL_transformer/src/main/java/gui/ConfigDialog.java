@@ -21,9 +21,9 @@ public class ConfigDialog extends CustomComponent {
      * not located directly in package com.vaadi.ui;
      */
     private GridLayout mainLayout;
-    private Button buttonCanc;
-    private Button buttonSave;
-    private Button buttonDev;
+//    private Button buttonCanc;
+//    private Button buttonSave;
+//    private Button buttonDev;
     private GridLayout gridLayoutName;
     private TextArea txtQuery;
     private Label labelUpQuer;
@@ -150,12 +150,12 @@ public class ConfigDialog extends CustomComponent {
         mainLayout.addComponent(txtQuery, 1, 2);
 
         // buttonDev
-        buttonDev = new Button();
-        buttonDev.setCaption("Develop");
-        buttonDev.setImmediate(true);
-        buttonDev.setWidth("-1px");
-        buttonDev.setHeight("-1px");
-        mainLayout.addComponent(buttonDev, 0, 3);
+//        buttonDev = new Button();
+//        buttonDev.setCaption("Develop");
+//        buttonDev.setImmediate(true);
+//        buttonDev.setWidth("-1px");
+//        buttonDev.setHeight("-1px");
+//        mainLayout.addComponent(buttonDev, 0, 3);
 
 
         horizontalLayoutButtons = buildHorizontalLayout();
@@ -176,21 +176,21 @@ public class ConfigDialog extends CustomComponent {
 
 
         // buttonSave
-        buttonSave = new Button();
-        buttonSave.setCaption("Save & Commit");
-        buttonSave.setImmediate(true);
-        buttonSave.setWidth("-1px");
-
-        buttonSave.setHeight("-1px");
-        horizontalLayoutButtons.addComponent(buttonSave);
-
-        // buttonCanc
-        buttonCanc = new Button();
-        buttonCanc.setCaption("Cancel");
-        buttonCanc.setImmediate(true);
-        buttonCanc.setWidth("-1px");
-        buttonCanc.setHeight("-1px");
-        horizontalLayoutButtons.addComponent(buttonCanc);
+//        buttonSave = new Button();
+//        buttonSave.setCaption("Save & Commit");
+//        buttonSave.setImmediate(true);
+//        buttonSave.setWidth("-1px");
+//
+//        buttonSave.setHeight("-1px");
+//        horizontalLayoutButtons.addComponent(buttonSave);
+//
+//        // buttonCanc
+//        buttonCanc = new Button();
+//        buttonCanc.setCaption("Cancel");
+//        buttonCanc.setImmediate(true);
+//        buttonCanc.setWidth("-1px");
+//        buttonCanc.setHeight("-1px");
+//        horizontalLayoutButtons.addComponent(buttonCanc);
 
         return horizontalLayoutButtons;
     }

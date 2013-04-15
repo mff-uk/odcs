@@ -67,7 +67,7 @@ public class Module implements GraphicalExtractor {
             // get configuration from dialog
             Configuration conf = this.configDialog.getConfiguration();
             if (conf == null) {
-                // in dialog is invalid configuration .. 
+                // in dialog is invalid configuration ..
                 return null;
             } else {
                 this.config = conf;

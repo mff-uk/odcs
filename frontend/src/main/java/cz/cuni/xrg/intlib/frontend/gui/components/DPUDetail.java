@@ -79,7 +79,9 @@ public class DPUDetail extends Window {
 			dpuExec.setSettings(conf);
 		}
 
-        Button saveButton = new Button("Save", new Button.ClickListener() {
+		HorizontalLayout buttonBar = new HorizontalLayout();
+
+        Button saveButton = new Button("Develop", new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -89,7 +91,34 @@ public class DPUDetail extends Window {
 
 
         });
-        mainLayout.addComponent(saveButton);
+        buttonBar.addComponent(saveButton);
+
+		Button saveAndCommitButton = new Button("Save & Commit", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                saveDPUInstance();
+                close();
+            }
+
+
+        });
+        buttonBar.addComponent(saveAndCommitButton);
+
+		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                close();
+            }
+
+
+        });
+        buttonBar.addComponent(cancelButton);
+
+		mainLayout.addComponent(buttonBar);
+
+
 
 
         this.setContent(mainLayout);

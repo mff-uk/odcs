@@ -28,16 +28,16 @@ import com.vaadin.ui.VerticalLayout;
 public class ConfigDialog extends CustomComponent {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * TODO Implement your own configuration component. You can use vaadin visual editor if you like.
-	 * Just remember don't use vaddin classes the ere not located directly in package com.vaadi.ui; 
+	 * Just remember don't use vaddin classes the ere not located directly in package com.vaadi.ui;
 	 */
-	
+
 	private GridLayout mainLayout;
-	private Button buttonCanc;
-	private Button buttonSave;
-	private Button buttonDevel;
+//	private Button buttonCanc;
+//	private Button buttonSave;
+//	private Button buttonDevel;
 	private TabSheet tabSheet;
 	private VerticalLayout verticalLayoutDetails;
 	private OptionGroup optionGroupDetail;
@@ -57,32 +57,32 @@ public class ConfigDialog extends CustomComponent {
 	private TextField textFieldName; // NameDPU
 	private Label labelName;
 	private HorizontalLayout horizontalLayout;
-		
+
 	public ConfigDialog() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
 	}
 	private void mapData() {
-		
+
 		optionGroupDetail.addItem("Overwrite target graph");
 		optionGroupDetail.addItem("Merge with target graph's content");
 		optionGroupDetail.addItem("Fail if the target graph exists");
 		optionGroupDetail.setValue("Overwrite target graph");
 	}
 	/**
-	 * Return current configuration from dialog. Can return null, if 
+	 * Return current configuration from dialog. Can return null, if
 	 * current configuration is invalid.
 	 * @return current configuration or null
 	 */
-	public Configuration getConfiguration() { 
+	public Configuration getConfiguration() {
 		Configuration config = new Configuration();
 		/**
-		 * TODO Gather data from you dialog and store them into configuration. You can use 
+		 * TODO Gather data from you dialog and store them into configuration. You can use
 		 * 	enum Config to make sure that you don't miss spell the ids of values.
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
-		
+
 		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
 		config.setValue(Config.Description.name(), textAreaDesc.getValue());
 		config.setValue(Config.SPARQLendpoint.name(), comboBoxSparql.getValue());
@@ -92,7 +92,7 @@ public class ConfigDialog extends CustomComponent {
 
 		return config;
 	}
-	
+
 	/**
 	 * Load values from configuration into dialog.
 	 * @throws ConfigurationException
@@ -100,11 +100,11 @@ public class ConfigDialog extends CustomComponent {
 	 */
 	public void setConfiguration(Configuration conf) {
 		/**
-		 * TODO Load configuration from conf into dialog components. You can use 
+		 * TODO Load configuration from conf into dialog components. You can use
 		 * 	enum Config to make sure that you don't miss spell the ids of values.
 		 *  The ConfigurationException can be thrown in case of invalid configuration.
 		 */
-		
+
 		try
 		{
 			textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
@@ -113,45 +113,45 @@ public class ConfigDialog extends CustomComponent {
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 			textAreaGraph.setValue( (String) conf.getValue(Config.NamedGraph.name()));
-		} 
+		}
 		catch(Exception ex) {
 			// throw setting exception
 			throw new ConfigurationException();
 		}
 	}
-	
+
 	private GridLayout buildMainLayout() {
 		// common part: create layout
-	
+
 		mainLayout = new GridLayout(2, 2);
 		mainLayout.setImmediate(false);
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
-		
+
 		// top-level component properties
 		setWidth("360px");
 		setHeight("450px");
-		
+
 		// tabSheet
 		tabSheet = buildTabSheet();
 		mainLayout.addComponent(tabSheet,  0, 0, 1, 0);
 		mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
 
-		
+
 		// buttonDevel
-		buttonDevel = new Button();
-		buttonDevel.setCaption("Develop");
-		buttonDevel.setImmediate(true);
-		buttonDevel.setWidth("80px");
-		buttonDevel.setHeight("-1px");
-		mainLayout.addComponent(buttonDevel, 0,1);
-		mainLayout.setComponentAlignment(buttonDevel, Alignment.TOP_LEFT);
-		
+//		buttonDevel = new Button();
+//		buttonDevel.setCaption("Develop");
+//		buttonDevel.setImmediate(true);
+//		buttonDevel.setWidth("80px");
+//		buttonDevel.setHeight("-1px");
+//		mainLayout.addComponent(buttonDevel, 0,1);
+//		mainLayout.setComponentAlignment(buttonDevel, Alignment.TOP_LEFT);
+
 
 		horizontalLayout = buildHorizontalLayout();
 		mainLayout.addComponent(horizontalLayout,1,1);
 		mainLayout.setComponentAlignment(horizontalLayout, Alignment.TOP_RIGHT);
-		
+
 		return mainLayout;
 	}
 
@@ -162,15 +162,15 @@ public class ConfigDialog extends CustomComponent {
 		tabSheet.setImmediate(true);
 		tabSheet.setWidth("360px");
 		tabSheet.setHeight("340px");
-		
+
 		// verticalLayoutCore
 		verticalLayoutCore = buildVerticalLayoutCore();
 		tabSheet.addTab(verticalLayoutCore, "Core", null);
-		
+
 		// verticalLayoutDetails
 		verticalLayoutDetails = buildVerticalLayoutDetails();
 		tabSheet.addTab(verticalLayoutDetails, "Details", null);
-		
+
 		return tabSheet;
 	}
 
@@ -182,15 +182,15 @@ public class ConfigDialog extends CustomComponent {
 		verticalLayoutCore.setWidth("100.0%");
 		verticalLayoutCore.setHeight("93.33%");
 		verticalLayoutCore.setMargin(true);
-		
+
 		// gridLayoutName
 		gridLayoutName = buildGridLayoutName();
 		verticalLayoutCore.addComponent(gridLayoutName);
-		
+
 		// gridLayoutAdm
 		gridLayoutAdm = buildGridLayoutAdm();
 		verticalLayoutCore.addComponent(gridLayoutAdm);
-		
+
 		return verticalLayoutCore;
 	}
 
@@ -205,7 +205,7 @@ public class ConfigDialog extends CustomComponent {
 		gridLayoutName.setSpacing(true);
 		gridLayoutName.setColumns(2);
 		gridLayoutName.setRows(2);
-		
+
 		// labelName
 		labelName = new Label();
 		labelName.setImmediate(false);
@@ -213,14 +213,14 @@ public class ConfigDialog extends CustomComponent {
 		labelName.setHeight("-1px");
 		labelName.setValue("Name:");
 		gridLayoutName.addComponent(labelName, 0, 0);
-		
+
 		// textFieldName
 		textFieldName = new TextField();
 		textFieldName.setImmediate(false);
 		textFieldName.setWidth("256px");
 		textFieldName.setHeight("-1px");
 		gridLayoutName.addComponent(textFieldName, 1, 0);
-		
+
 		// labelDesc
 		labelDesc = new Label();
 		labelDesc.setImmediate(false);
@@ -228,14 +228,14 @@ public class ConfigDialog extends CustomComponent {
 		labelDesc.setHeight("-1px");
 		labelDesc.setValue("Description:");
 		gridLayoutName.addComponent(labelDesc, 0, 1);
-		
+
 		// textAreaDesc
 		textAreaDesc = new TextArea();
 		textAreaDesc.setImmediate(false);
 		textAreaDesc.setWidth("255px");
 		textAreaDesc.setHeight("51px");
 		gridLayoutName.addComponent(textAreaDesc, 1, 1);
-		
+
 		return gridLayoutName;
 	}
 
@@ -249,7 +249,7 @@ public class ConfigDialog extends CustomComponent {
 		gridLayoutAdm.setMargin(false);
 		gridLayoutAdm.setColumns(2);
 		gridLayoutAdm.setRows(4);
-		
+
 		// labelSparql
 		labelSparql = new Label();
 		labelSparql.setImmediate(false);
@@ -257,14 +257,14 @@ public class ConfigDialog extends CustomComponent {
 		labelSparql.setHeight("-1px");
 		labelSparql.setValue("SPARQL endpoint:");
 		gridLayoutAdm.addComponent(labelSparql, 0, 0);
-		
+
 		// comboBoxSparql
 		comboBoxSparql = new ComboBox();
 		comboBoxSparql.setImmediate(false);
 		comboBoxSparql.setWidth("197px");
 		comboBoxSparql.setHeight("-1px");
 		gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
-		
+
 		// labelNameAdm
 		labelNameAdm = new Label();
 		labelNameAdm.setImmediate(false);
@@ -272,14 +272,14 @@ public class ConfigDialog extends CustomComponent {
 		labelNameAdm.setHeight("-1px");
 		labelNameAdm.setValue("Name:");
 		gridLayoutAdm.addComponent(labelNameAdm, 0, 1);
-		
+
 		// textFieldNameAdm
 		textFieldNameAdm = new TextField();
 		textFieldNameAdm.setImmediate(false);
 		textFieldNameAdm.setWidth("197px");
 		textFieldNameAdm.setHeight("-1px");
 		gridLayoutAdm.addComponent(textFieldNameAdm, 1, 1);
-		
+
 		// labelPass
 		labelPass = new Label();
 		labelPass.setImmediate(false);
@@ -287,14 +287,14 @@ public class ConfigDialog extends CustomComponent {
 		labelPass.setHeight("-1px");
 		labelPass.setValue("Password:");
 		gridLayoutAdm.addComponent(labelPass, 0, 2);
-		
+
 		// passwordFieldPass
 		passwordFieldPass = new PasswordField();
 		passwordFieldPass.setImmediate(false);
 		passwordFieldPass.setWidth("197px");
 		passwordFieldPass.setHeight("-1px");
 		gridLayoutAdm.addComponent(passwordFieldPass, 1, 2);
-		
+
 		// labelGraph
 		labelGraph = new Label();
 		labelGraph.setImmediate(false);
@@ -302,14 +302,14 @@ public class ConfigDialog extends CustomComponent {
 		labelGraph.setHeight("-1px");
 		labelGraph.setValue("Named Graph:");
 		gridLayoutAdm.addComponent(labelGraph, 0, 3);
-		
+
 		// textAreaGraph
 		textAreaGraph = new TextArea();
 		textAreaGraph.setImmediate(false);
 		textAreaGraph.setWidth("197px");
 		textAreaGraph.setHeight("46px");
 		gridLayoutAdm.addComponent(textAreaGraph, 1, 3);
-		
+
 		return gridLayoutAdm;
 	}
 
@@ -322,7 +322,7 @@ public class ConfigDialog extends CustomComponent {
 		verticalLayoutDetails.setHeight("100.0%");
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
-		
+
 		// optionGroup_1
 		optionGroupDetail = new OptionGroup();
 		optionGroupDetail.setCaption("Options:");
@@ -330,10 +330,10 @@ public class ConfigDialog extends CustomComponent {
 		optionGroupDetail.setWidth("-1px");
 		optionGroupDetail.setHeight("-1px");
 		verticalLayoutDetails.addComponent(optionGroupDetail);
-		
+
 		return verticalLayoutDetails;
 	}
-	
+
 	private HorizontalLayout buildHorizontalLayout() {
 		// common part: create layout
 		horizontalLayout = new HorizontalLayout();
@@ -343,24 +343,24 @@ public class ConfigDialog extends CustomComponent {
 		horizontalLayout.setMargin(false);
 		horizontalLayout.setSpacing(true);
 
-		
-		// buttonSave
-		buttonSave = new Button();
-		buttonSave.setCaption("Save & Commit");
-		buttonSave.setImmediate(true);
-		buttonSave.setWidth("-1px");
 
-		buttonSave.setHeight("-1px");
-		horizontalLayout.addComponent(buttonSave);
-		
-		// buttonCanc
-		buttonCanc = new Button();
-		buttonCanc.setCaption("Cancel");
-		buttonCanc.setImmediate(true);
-		buttonCanc.setWidth("-1px");
-		buttonCanc.setHeight("-1px");
-		horizontalLayout.addComponent(buttonCanc);
-		
+		// buttonSave
+//		buttonSave = new Button();
+//		buttonSave.setCaption("Save & Commit");
+//		buttonSave.setImmediate(true);
+//		buttonSave.setWidth("-1px");
+//
+//		buttonSave.setHeight("-1px");
+//		horizontalLayout.addComponent(buttonSave);
+//
+//		// buttonCanc
+//		buttonCanc = new Button();
+//		buttonCanc.setCaption("Cancel");
+//		buttonCanc.setImmediate(true);
+//		buttonCanc.setWidth("-1px");
+//		buttonCanc.setHeight("-1px");
+//		horizontalLayout.addComponent(buttonCanc);
+
 		return horizontalLayout;
 	}
 

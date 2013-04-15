@@ -14,16 +14,16 @@ import cz.cuni.xrg.intlib.commons.configuration.*;
 public class ConfigDialog extends CustomComponent {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * TODO Implement your own configuration component. You can use vaadin visual editor if you like.
-	 * Just remember don't use vaddin classes the ere not located directly in package com.vaadi.ui; 
+	 * Just remember don't use vaddin classes the ere not located directly in package com.vaadi.ui;
 	 */
-	
+
 	private GridLayout mainLayout;
-	private Button buttonCanc;
-	private Button buttonSave;
-	private Button buttonDev;
+//	private Button buttonCanc;
+//	private Button buttonSave;
+//	private Button buttonDev;
 	private ComboBox comboBoxFormat; //RDFFormat
 	private Label labelFormat;
 	private TextField textFieldOnly;
@@ -38,21 +38,21 @@ public class ConfigDialog extends CustomComponent {
 	private HorizontalLayout horizontalLayoutOnly;
 	private HorizontalLayout horizontalLayoutButtons;
 	private HorizontalLayout horizontalLayoutFormat;
-		
+
 	public ConfigDialog() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
-	
+
 	/**
-	 * Return current configuration from dialog. Can return null, if 
+	 * Return current configuration from dialog. Can return null, if
 	 * current configuration is invalid.
 	 * @return current configuration or null
 	 */
-	public Configuration getConfiguration() { 
+	public Configuration getConfiguration() {
 		Configuration config = new Configuration();
 		/**
-		 * TODO Gather data from you dialog and store them into configuration. You can use 
+		 * TODO Gather data from you dialog and store them into configuration. You can use
 		 * 	enum Config to make sure that you don't miss spell the ids of values.
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
@@ -62,10 +62,10 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.Path.name(), textFieldPath.getValue());
 		config.setValue(Config.RDFFormat.name(), comboBoxFormat.getValue());
 
-		
+
 		return config;
 	}
-	
+
 	/**
 	 * Load values from configuration into dialog.
 	 * @throws ConfigurationException
@@ -73,31 +73,31 @@ public class ConfigDialog extends CustomComponent {
 	 */
 	public void setConfiguration(Configuration conf) {
 		/**
-		 * TODO Load configuration from conf into dialog components. You can use 
+		 * TODO Load configuration from conf into dialog components. You can use
 		 * 	enum Config to make sure that you don't miss spell the ids of values.
 		 *  The ConfigurationException can be thrown in case of invalid configuration.
 		 */
-		
+
 		try
 		{
-			
+
             textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
 			textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
 			textFieldPath.setValue( (String) conf.getValue(Config.Path.name()));
 			comboBoxFormat.setValue( (String) conf.getValue(Config.RDFFormat.name()));
 
-			
-		
+
+
                 }
-                
+
 		catch(Exception ex) {
 			// throw setting exception
 			throw new ConfigurationException();
 		}
 	}
-	
+
 	private GridLayout buildMainLayout() {
-		
+
 	/**
 	 * TODO Build your component here.
 	 */
@@ -107,16 +107,16 @@ public class ConfigDialog extends CustomComponent {
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
 		mainLayout.setMargin(true);
-		
+
 		// top-level component properties
 		setWidth("100%");
 		setHeight("100%");
-		
+
 		// gridLayoutName
 		gridLayoutName = buildGridLayoutName();
 		mainLayout.addComponent(gridLayoutName, 0,0,1,1);
 		mainLayout.setComponentAlignment(gridLayoutName, Alignment.TOP_CENTER);
-		
+
 		// textFieldPath
 		textFieldPath = new TextField();
 		textFieldPath.setCaption("Path to file or directory:");
@@ -124,7 +124,7 @@ public class ConfigDialog extends CustomComponent {
 		textFieldPath.setWidth("85%");
 		textFieldPath.setHeight("-1px");
 		mainLayout.addComponent(textFieldPath, 0,2,1,2);
-		
+
 		// checkBoxWhole
 		checkBoxWhole = new CheckBox();
 		checkBoxWhole.setCaption("Process whole directory.");
@@ -132,33 +132,33 @@ public class ConfigDialog extends CustomComponent {
 		checkBoxWhole.setWidth("-1px");
 		checkBoxWhole.setHeight("-1px");
 		mainLayout.addComponent(checkBoxWhole, 0,3);
-		
+
 		// layoutOnly
 		horizontalLayoutOnly = buildHorizontalLayoutOnly();
 		mainLayout.addComponent(horizontalLayoutOnly,1,3);
-		
-	
+
+
 
 		// horizontalLayoutFormat
 		horizontalLayoutFormat = buildHorizontalLayoutFormat();
 		mainLayout.addComponent(horizontalLayoutFormat,0,4);
-		
+
 		// buttonDev
-		buttonDev = new Button();
-		buttonDev.setCaption("Develop");
-		buttonDev.setImmediate(true);
-		buttonDev.setWidth("-1px");
-		buttonDev.setHeight("-1px");
-		mainLayout.addComponent(buttonDev, 0,5);
-	
-		
+//		buttonDev = new Button();
+//		buttonDev.setCaption("Develop");
+//		buttonDev.setImmediate(true);
+//		buttonDev.setWidth("-1px");
+//		buttonDev.setHeight("-1px");
+//		mainLayout.addComponent(buttonDev, 0,5);
+
+
 		horizontalLayoutButtons = buildHorizontalLayout();
 		mainLayout.addComponent(horizontalLayoutButtons,1,5);
 
 		return mainLayout;
 	}
 
-	
+
 	private GridLayout buildGridLayoutName() {
 		// common part: create layout
 		gridLayoutName = new GridLayout();
@@ -169,7 +169,7 @@ public class ConfigDialog extends CustomComponent {
 		gridLayoutName.setSpacing(true);
 		gridLayoutName.setColumns(2);
 		gridLayoutName.setRows(2);
-		
+
 		// labelName
 		labelName = new Label();
 		labelName.setImmediate(false);
@@ -177,14 +177,14 @@ public class ConfigDialog extends CustomComponent {
 		labelName.setHeight("-1px");
 		labelName.setValue("Name:");
 		gridLayoutName.addComponent(labelName, 0, 0);
-		
+
 		// textFieldName
 		textFieldName = new TextField();
 		textFieldName.setImmediate(false);
 		textFieldName.setWidth("267px");
 		textFieldName.setHeight("-1px");
 		gridLayoutName.addComponent(textFieldName, 1, 0);
-		
+
 		// labelDescr
 		labelDescr = new Label();
 		labelDescr.setImmediate(false);
@@ -192,14 +192,14 @@ public class ConfigDialog extends CustomComponent {
 		labelDescr.setHeight("-1px");
 		labelDescr.setValue("Description:");
 		gridLayoutName.addComponent(labelDescr, 0, 1);
-		
+
 		// textAreaDescr
 		textAreaDescr = new TextArea();
 		textAreaDescr.setImmediate(false);
 		textAreaDescr.setWidth("267px");
 		textAreaDescr.setHeight("36px");
 		gridLayoutName.addComponent(textAreaDescr, 1, 1);
-		
+
 		return gridLayoutName;
 	}
 	private HorizontalLayout buildHorizontalLayoutOnly() {
@@ -210,7 +210,7 @@ public class ConfigDialog extends CustomComponent {
 		horizontalLayoutOnly.setHeight("-1px");
 		horizontalLayoutOnly.setMargin(false);
 		horizontalLayoutOnly.setSpacing(true);
-		
+
 		// labelOnly
 		labelOnly = new Label();
 		labelOnly.setImmediate(false);
@@ -218,17 +218,17 @@ public class ConfigDialog extends CustomComponent {
 		labelOnly.setHeight("-1px");
 		labelOnly.setValue("Only files:");
 		horizontalLayoutOnly.addComponent(labelOnly);
-		
+
 		// textFieldOnly
 		textFieldOnly = new TextField();
 		textFieldOnly.setImmediate(false);
 		textFieldOnly.setWidth("52px");
 		textFieldOnly.setHeight("-1px");
 		horizontalLayoutOnly.addComponent(textFieldOnly);
-		
+
 		return horizontalLayoutOnly;
 	}
-	
+
 	private HorizontalLayout buildHorizontalLayoutFormat() {
 		// common part: create layout
 		horizontalLayoutFormat = new HorizontalLayout();
@@ -237,7 +237,7 @@ public class ConfigDialog extends CustomComponent {
 		horizontalLayoutFormat.setHeight("-1px");
 		horizontalLayoutFormat.setMargin(false);
 		horizontalLayoutFormat.setSpacing(true);
-		
+
 		// labelFormat
 		labelFormat = new Label();
 		labelFormat.setImmediate(false);
@@ -245,14 +245,14 @@ public class ConfigDialog extends CustomComponent {
 		labelFormat.setHeight("-1px");
 		labelFormat.setValue("RDF Format:");
 		horizontalLayoutFormat.addComponent(labelFormat);
-		
+
 		// comboBoxFormat
 		comboBoxFormat = new ComboBox();
 		comboBoxFormat.setImmediate(false);
 		comboBoxFormat.setWidth("-1px");
 		comboBoxFormat.setHeight("-1px");
 		horizontalLayoutFormat.addComponent(comboBoxFormat);
-		
+
 		return horizontalLayoutFormat;
 	}
 
@@ -266,24 +266,24 @@ public class ConfigDialog extends CustomComponent {
 		horizontalLayoutButtons.setMargin(false);
 		horizontalLayoutButtons.setSpacing(true);
 
-		
-		// buttonSave
-		buttonSave = new Button();
-		buttonSave.setCaption("Save & Commit");
-		buttonSave.setImmediate(true);
-		buttonSave.setWidth("-1px");
 
-		buttonSave.setHeight("-1px");
-		horizontalLayoutButtons.addComponent(buttonSave);
-		
-		// buttonCanc
-		buttonCanc = new Button();
-		buttonCanc.setCaption("Cancel");
-		buttonCanc.setImmediate(true);
-		buttonCanc.setWidth("-1px");
-		buttonCanc.setHeight("-1px");
-		horizontalLayoutButtons.addComponent(buttonCanc);
-		
+		// buttonSave
+//		buttonSave = new Button();
+//		buttonSave.setCaption("Save & Commit");
+//		buttonSave.setImmediate(true);
+//		buttonSave.setWidth("-1px");
+//
+//		buttonSave.setHeight("-1px");
+//		horizontalLayoutButtons.addComponent(buttonSave);
+//
+//		// buttonCanc
+//		buttonCanc = new Button();
+//		buttonCanc.setCaption("Cancel");
+//		buttonCanc.setImmediate(true);
+//		buttonCanc.setWidth("-1px");
+//		buttonCanc.setHeight("-1px");
+//		horizontalLayoutButtons.addComponent(buttonCanc);
+
 		return horizontalLayoutButtons;
 	}
 
