@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.repository;
 
+import java.io.File;
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.openrdf.rio.RDFFormat;
@@ -10,12 +11,13 @@ import org.openrdf.rio.RDFFormat;
  */
 public class LocalRepoTest {
 
-    private final String pathRepo = "C:\\intlib\\myRepository";
+    private static final String pathRepo = "C:\\intlib\\myRepository";
+    private static final String testFileDirectory=new File("Input_Test_Files").getAbsolutePath();
     private static LocalRepo localRepo;
 
-    @Before
-    @Test
-    public void isRepositorySucecessfulCreatedTest() {
+    
+    @BeforeClass
+    public static void isRepositorySucecessfulCreatedTest() {
         localRepo = LocalRepo.createLocalRepo(pathRepo);
         assertNotNull(localRepo);
     }
@@ -144,7 +146,9 @@ public class LocalRepoTest {
 
     @Test
     public void extractRDFFilesToRepository() {
-        String path = "C:\\intlib\\Input_Test_Files\\";
+        
+        String path =testFileDirectory;
+         
         String suffix = ".rdf";
         String baseURI = "";
         boolean useSuffix = true;
@@ -160,9 +164,11 @@ public class LocalRepoTest {
         assertTrue(triplesAdded);
     }
 
+    
     @Test
     public void extractN3FilesToRepository() {
-        String path = "C:\\intlib\\Input_Test_Files\\";
+        String path = testFileDirectory;
+        
         String suffix = ".n3";
         String baseURI = "";
         boolean useSuffix = true;
@@ -193,8 +199,8 @@ public class LocalRepoTest {
         }
     }
 
-    @Test
-    public void cleanRepository() {
+    @AfterClass
+    public static void cleanRepository() {
         localRepo.cleanAllRepositoryData();
         assertEquals(0, localRepo.getTripleCountInRepository());
     }
