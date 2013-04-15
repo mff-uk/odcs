@@ -7,7 +7,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import org.openrdf.model.*;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.GraphImpl;
@@ -19,8 +21,10 @@ import org.openrdf.query.Update;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.http.HTTPRepository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.util.RDFInserter;
+import org.openrdf.repository.util.RDFRemover;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
@@ -38,13 +42,14 @@ import org.slf4j.LoggerFactory;
 public class LocalRepo {
 
     static LocalRepo localrepo = null;
-    static final String repositoryPath="C:\\intlib\\myRepository\\";
+    static final String repositoryPath = "C:\\intlib\\myRepository\\";
     static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
+    private final String encode = "UTF-8";
 
-    public static LocalRepo createLocalRepo()
-    {
+    public static LocalRepo createLocalRepo() {
         return LocalRepo.createLocalRepo(repositoryPath);
     }
+
     public static LocalRepo createLocalRepo(String path) {
         if (localrepo == null) {
             localrepo = new LocalRepo(path);
@@ -73,23 +78,8 @@ public class LocalRepo {
         }
     }
 
-    /*
-     private LocalRepository createLocalRepository(String repositoryName) {
-
-     LocalService service = Sesame.getService();
-     boolean inferenced = true;
-
-     try {
-     repository = service.createRepository(repositoryName, inferenced);
-     } catch (ConfigurationException ex) {
-     Logger.getLogger(LocalRepo.class.getName()).log(Level.SEVERE, ex.getMessage());
-
-     }
-
-     return repository;
-     }*/
-    public Graph creatNewGraph() {
-        Graph graph = new GraphImpl();
+    public Resource creatNewGraph(String graphURI) {
+        Resource graph = new URIImpl(graphURI);
         return graph;
     }
 
@@ -115,29 +105,37 @@ public class LocalRepo {
      * @param objectName
      */
     public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName) {
-        
+
         Statement statement = createNewStatement(namespace, subjectName, predicateName, objectName);
         addStatement(statement);
     }
-    
+
     private void addStatement(Statement statement) {
-        
+
         try {
-            
+
             RepositoryConnection conection = repository.getConnection();
             conection.add(statement);
-            
+
             conection.commit();
             conection.close();
-            
+
         } catch (RepositoryException ex) {
             System.out.println(ex.getMessage());
-            
-            
+
+
         }
-        
+
     }
 
+    /**
+     * Extract RDF triples from RDF file to repository.
+     *
+     * @param path
+     * @param suffix
+     * @param baseURI
+     * @param useSuffix
+     */
     public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
 
         final String aceptedSuffix = suffix.toUpperCase();
@@ -194,11 +192,27 @@ public class LocalRepo {
         }
     }
 
-    //VYRESENO
+    /**
+     * Load all triples in repository to defined file in defined RDF format.
+     *
+     * @param directoryPath
+     * @param fileName
+     * @param format
+     * @throws FileCannotOverwriteException
+     */
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format) throws FileCannotOverwriteException {
         loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false);
     }
 
+    /**
+     * Load all triples in repository to defined file in defined RDF format.
+     *
+     * @param directoryPath
+     * @param fileName
+     * @param format
+     * @param canFileOverWrite
+     * @throws FileCannotOverwriteException
+     */
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format, boolean canFileOverWrite) throws FileCannotOverwriteException {
 
         final String slash = "\\";
@@ -245,62 +259,95 @@ public class LocalRepo {
             connection.close();
 
         } catch (RDFHandlerException ex) {
-//            logger.error(ex.getMessage());
+            logger.error(ex.getMessage());
         } catch (RepositoryException ex) {
-//            logger.error(ex.getMessage());
+            logger.error(ex.getMessage());
         }
+    }
+
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
+        loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, "", "");
     }
 
     /**
      * Load RDF data from repository to SPARQL endpointURL.
+     *
+     * @param endpointURL
+     * @param defaultGraphURI
+     * @param userName
+     * @param password
      */
-    public void loadtoSPARQLEndpoint(URL endpointURL) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String userName, String password) {
         try {
+
+            Resource graph = new URIImpl(defaultGraphURI);
             RepositoryConnection connection = repository.getConnection();
 
-            OutputStream os = endpointURL.openConnection().getOutputStream();
+            boolean autentize = (!userName.isEmpty() && !password.isEmpty());
 
-            RDFHandler goal = new RDFXMLWriter(os);
-            //Resource resource = new URIImpl(endpointURL.toURI().toString());
-            //connection.export(handler, resource);
-            connection.export(goal);
+            HTTPRepository httpRepository = new HTTPRepository(endpointURL.toString());
+
+            if (autentize) {
+                httpRepository.setUsernameAndPassword(userName, password);
+            }
+            if (!httpRepository.isInitialized()) {
+                httpRepository.initialize();
+            }
+
+            RepositoryConnection httpConnection = httpRepository.getConnection();
+
+            RDFHandler goal = new RDFRemover(httpConnection);
+            connection.export(goal, graph);
+
+            httpConnection.commit();
+            httpConnection.close();
+
             connection.commit();
             connection.close();
 
+
         } catch (Exception ex) {
-//            logger.error(ex.getMessage());
+            System.err.println(ex.getMessage());
         }
     }
 
     /**
      * Add RDF data from SPARQL endpoint to repository.
      *
-     * @param endpoint
-     * @param dataBaseURI
-     * @param handler
+     * @param endpointURL
+     * @param defaultGraphUri
+     * @param query
+     * @param format
      */
-    public void extractfromSPARQLEndpoint(URL endpointURL) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, RDFFormat format) {
         try {
 
-            InputStream inputStream = endpointURL.openStream();
+            final String graph = defaultGraphUri.replace(" ", "+");
+            final String myquery = query.replace(" ", "+");
 
-            RDFFormat format = RDFFormat.forFileName(endpointURL.toString());
+            String encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
 
-            RDFParser parser = Rio.createParser(format);
+            URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + graph + "&query=" + myquery + "&format=" + encoder);
+
+            HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
+            httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
+
+            InputStream inputStream = httpConnection.getInputStream();
 
             RepositoryConnection connection = repository.getConnection();
-            RDFInserter goal = new RDFInserter(connection);
-
-            parser.setRDFHandler(goal);
-            parser.parse(inputStream, endpointURL.toString());
+            connection.add(inputStream, graph, format);
 
             connection.close();
+            inputStream.close();
 
+        } catch (IOException ex) {
+            System.err.println("Can not open http connection stream");
+            System.err.println(ex.getMessage());
         } catch (Exception ex) {
+            System.err.println(ex.getMessage());
         }
     }
 
-    //VYRESENO
     /**
      * Transform RDF in repository by SPARQL updateQuery.
      *
@@ -318,10 +365,15 @@ public class LocalRepo {
             connection.close();
 
         } catch (Exception ex) {
+            System.err.println(ex.getMessage());
         }
 
     }
 
+    /**
+     *
+     * @return size of triples in repository.
+     */
     public long getTripleCountInRepository() {
         long size = 0;
 
@@ -338,6 +390,15 @@ public class LocalRepo {
         return size;
     }
 
+    /**
+     * Return if RDF triple is in repository.
+     *
+     * @param namespace
+     * @param subjectName
+     * @param predicateName
+     * @param objectName
+     * @return
+     */
     public boolean isTripleInRepository(String namespace, String subjectName, String predicateName, String objectName) {
         boolean hasTriple = false;
         if (repository.isInitialized()) {
@@ -353,6 +414,9 @@ public class LocalRepo {
         return hasTriple;
     }
 
+    /**
+     * Removes all RDF data from repository.
+     */
     public void cleanAllRepositoryData() {
         try {
             RepositoryConnection connection = repository.getConnection();
