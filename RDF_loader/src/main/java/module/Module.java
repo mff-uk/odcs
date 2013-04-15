@@ -87,9 +87,7 @@ public class Module implements GraphicalLoader {
      */
     public void load(LoadContext context) throws LoadException {
 
-        URI graph = URI.create("graphURI");
-
-        LocalRepo repository = LocalRepo.createLocalRepo();
+       LocalRepo repository = LocalRepo.createLocalRepo();
 
     }
 }

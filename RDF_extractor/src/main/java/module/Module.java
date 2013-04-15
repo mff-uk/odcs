@@ -15,7 +15,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openrdf.rio.RDFFormat;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -92,12 +91,9 @@ public class Module implements GraphicalExtractor {
      */
     public void extract(ExtractContext context) throws ExtractException {
         try {
-            String protokol = "http";
-            String host = "host";
-            String file = "myRDFFile.rdf";
-            int port = 8080;
+            String adress="";
 
-            URL endpoint = new URL(protokol, host, port, file);
+            URL endpoint = new URL(adress);
 
             LocalRepo repository = LocalRepo.createLocalRepo();
             repository.extractfromSPARQLEndpoint(endpoint);
