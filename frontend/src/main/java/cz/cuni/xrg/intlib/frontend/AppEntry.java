@@ -5,6 +5,7 @@ import java.util.Date;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Panel;
 
+import cz.cuni.xrg.intlib.auxiliaries.StaticTest;
 import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
@@ -44,10 +45,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	protected void finalize ()  {
 
-
 System.out.println((new Date()).toString() + ": AppEntry::finalize");
-		//modules.stop();
-		//modules = null;
+
+		modules.stop();
+		modules = null;
     }
 
 	/**
@@ -87,8 +88,10 @@ System.out.println((new Date()).toString() + ": AppEntry::finalize");
 		this.modules = new ModuleFacade();
 		this.modules.start();
 
-System.out.println((new Date()).toString() + ": AppEntry::init");
+		
+// System.out.println("Instance: " + (++StaticTest.getInstance().value).toString() );
 
+System.out.println((new Date()).toString() + ": AppEntry::init");
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
