@@ -5,7 +5,6 @@ import java.util.Date;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Panel;
 
-import cz.cuni.xrg.intlib.auxiliaries.StaticTest;
 import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
