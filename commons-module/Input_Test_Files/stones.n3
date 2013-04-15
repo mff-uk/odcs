@@ -1,0 +1,32 @@
+# Saved by TopBraid on Sun Nov 23 22:16:07 PST 2008
+# baseURI: http://www.workingontologist.org/Examples/Chapter7/stones.owl
+
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dm:      <http://www.workingontologist.org/Examples/Chapter7/dm.owl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix gm:      <http://www.workingontologist.org/Examples/Chapter7/gm.owl#> .
+@prefix :        <http://www.workingontologist.org/Examples/Chapter7/stones.owl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+
+dm:partOf
+      a       owl:ObjectProperty ;
+      rdfs:subPropertyOf gm:partOf .
+
+gm:partOf
+      a       owl:ObjectProperty , owl:TransitiveProperty .
+
+<http://www.workingontologist.org/Examples/Chapter7/stones.owl>
+      a       owl:Ontology ;
+      owl:versionInfo "Created with TopBraid Composer"^^xsd:string .
+
+:MickJagger
+      a       owl:Thing ;
+      dm:partOf :TheRollingStones .
+
+:MickJaggersThumb
+      a       owl:Thing ;
+      dm:partOf :MickJagger .
+
+:TheRollingStones
+      a       owl:Thing .
