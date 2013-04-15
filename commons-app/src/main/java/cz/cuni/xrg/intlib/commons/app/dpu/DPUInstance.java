@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.RDFGraph;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 
 /**
  * For representing concrete DPU component in the pipeline.
@@ -29,7 +30,7 @@ public class DPUInstance {
     /**
      * Configuration setting for this component.
      */
-    private InstanceConfiguration instanceConfig;
+    private Configuration instanceConfig;
     private int id;
 
     public DPUInstance(DPU dpu) {
@@ -68,11 +69,11 @@ public class DPUInstance {
         outputGraph = newOutputGraph;
     }
 
-    public InstanceConfiguration getInstanceConfiguration() {
+    public Configuration getInstanceConfiguration() {
         return instanceConfig;
     }
 
-    public void setInstanceConfiguration(InstanceConfiguration newInstanceConfig) {
+    public void setInstanceConfiguration(Configuration newInstanceConfig) {
         instanceConfig = newInstanceConfig;
     }
 
@@ -105,6 +106,6 @@ public class DPUInstance {
     private String description;
 
 	public String getJarPath() {
-		return "file:///C:/Users/Bogo/intlib/intlib/module/target/module-0.0.1.jar";
+		return dpu.getJarPath();
 	}
 }

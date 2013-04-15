@@ -12,7 +12,7 @@ public interface Graphical {
 	/**
 	 * Return configuration component for class. The configuration
 	 * component must not contains close button. The component will be closed
-	 * by the application. 
+	 * by the application.
 	 * @return configuration component.
 	 */
 	public CustomComponent getConfigurationComponent();

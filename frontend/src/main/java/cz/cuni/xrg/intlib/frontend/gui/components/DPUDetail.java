@@ -4,13 +4,11 @@
  */
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ModuleDialogGetter;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 
 /**
@@ -66,11 +64,19 @@ public class DPUDetail extends Window {
         mainLayout.addComponent(dpuGeneralSettingsLayout);
 
         //TODO: Add custom configuration dialog from DPUInstance
-        //mainLayout.addComponent(dpu.getConfigurationDialog());
-		dpuExec = App.getApp().getModules().getInstance(dpu.getJarPath());
+
+
+		String jarPath = dpu.getJarPath();
+		//String jarPath = "file:///C:/Users/Bogo/intlib/intlib/module/target/module-0.0.1.jar";
+
+		dpuExec = App.getApp().getModules().getInstance(jarPath);
 		if(dpuExec != null) {
 			CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec);
 			mainLayout.addComponent(dpuConfigurationDialog);
+		}
+		Configuration conf = dpu.getInstanceConfiguration();
+		if(conf != null) {
+			dpuExec.setSettings(conf);
 		}
 
         Button saveButton = new Button("Save", new Button.ClickListener() {
@@ -94,8 +100,8 @@ public class DPUDetail extends Window {
         dpu.setDescription(dpuDescription.getValue());
 
 		//TODO: Make this work - solve COnfiguration/Template/Instance ambiguity
-		//Configuration conf = dpuExec.getSettings();
-		//.setInstanceConfiguration((InstanceConfiguration)conf);
+		Configuration conf = dpuExec.getSettings();
+		dpu.setInstanceConfiguration(conf);
     }
 
 }

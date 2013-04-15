@@ -15,6 +15,8 @@ public class DPU {
 	private String description = "";
     private Type type;
 
+	private String jarPath;
+
 	/**
 	 * Allow empty constructor.
 	 */
@@ -56,5 +58,15 @@ public class DPU {
     public Type getType() {
         return type;
     }
+
+	public void setJarPath(String path) {
+		jarPath = path;
+	}
+
+	public String getJarPath() {
+		return HACK_basePath + jarPath;
+	}
+
+	public static String HACK_basePath = "file:///C:/Users/Bogo/intlib/intlib/";
 
 }
