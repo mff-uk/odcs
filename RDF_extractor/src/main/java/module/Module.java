@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.openrdf.rio.RDFFormat;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -91,12 +92,13 @@ public class Module implements GraphicalExtractor {
      */
     public void extract(ExtractContext context) throws ExtractException {
         try {
-            String adress="";
-
-            URL endpoint = new URL(adress);
+            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql");
+            String defaultGraphUri = "http://ld.opendata.cz/resource/business-entity/00640808";
+            String query = "select * where {?s ?o ?p}";
+            RDFFormat format = RDFFormat.RDFXML;
 
             LocalRepo repository = LocalRepo.createLocalRepo();
-            repository.extractfromSPARQLEndpoint(endpoint);
+            repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, format);
 
         } catch (MalformedURLException ex) {
             Logger.getLogger(Module.class.getName()).log(Level.SEVERE, null, ex);

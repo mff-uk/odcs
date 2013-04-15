@@ -11,7 +11,9 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -86,8 +88,24 @@ public class Module implements GraphicalLoader {
      *
      */
     public void load(LoadContext context) throws LoadException {
-
-       LocalRepo repository = LocalRepo.createLocalRepo();
+        try {
+            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql");
+            String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
+            String name="";
+            String password="";
+            
+            
+            LocalRepo repository = LocalRepo.createLocalRepo();
+            
+            
+            /* CHOOSE ON FOR CALL
+            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri);
+            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name, password);
+            */
+        } 
+        catch (MalformedURLException ex) {
+           
+        }
 
     }
 }
