@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import org.openrdf.model.*;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.GraphImpl;
@@ -266,9 +268,19 @@ public class LocalRepo {
     }
 
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
-        loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, "", "");
+        List<String> graphs=new ArrayList<String>();
+        graphs.add(defaultGraphURI);
+        
+        loadtoSPARQLEndpoint(endpointURL, graphs, "", "");
     }
-
+    
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,String name, String password) {
+        List<String> graphs=new ArrayList<String>();
+        graphs.add(defaultGraphURI);
+        
+        loadtoSPARQLEndpoint(endpointURL, graphs, name, password);
+    }
+    
     /**
      * Load RDF data from repository to SPARQL endpointURL.
      *
@@ -277,10 +289,19 @@ public class LocalRepo {
      * @param userName
      * @param password
      */
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String userName, String password) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, List<String> defaultGraphsURI, String userName, String password) {
         try {
 
-            Resource graph = new URIImpl(defaultGraphURI);
+            final int graphSize=defaultGraphsURI.size();
+            
+            Resource[] graphs = new Resource[graphSize];
+            
+            for (int i=0;i<graphSize;i++)
+            {
+                graphs[i]=new URIImpl(defaultGraphsURI.get(i));
+            }
+                    
+                   
             RepositoryConnection connection = repository.getConnection();
 
             boolean autentize = (!userName.isEmpty() && !password.isEmpty());
@@ -297,7 +318,7 @@ public class LocalRepo {
             RepositoryConnection httpConnection = httpRepository.getConnection();
 
             RDFHandler goal = new RDFRemover(httpConnection);
-            connection.export(goal, graph);
+            connection.export(goal, graphs);
 
             httpConnection.commit();
             httpConnection.close();

@@ -11,9 +11,8 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
-import java.net.MalformedURLException;
 import java.net.URL;
-
+import java.util.List;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -41,7 +40,7 @@ public class Module implements GraphicalLoader {
         this.config.setValue(Config.SPARQLendpoint.name(), "");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.NamedGraph.name(), "");
+        this.config.setValue(Config.GraphsUri.name(), "");
     }
 
     public Type getType() {
@@ -87,25 +86,39 @@ public class Module implements GraphicalLoader {
      * Implementation of module functionality here.
      *
      */
+    private URL getSPARQLEndpoinURL() {
+        URL endpoint = (URL) config.getValue(Config.SPARQLendpoint.name());
+
+        return endpoint;
+    }
+
+    private String getHostName() {
+        String hostName = (String) config.getValue(Config.Host_name.name());
+
+        return hostName;
+    }
+
+    private String getPassword() {
+        String password = (String) config.getValue(Config.Password.name());
+
+        return password;
+    }
+
+    private List<String> getGraphsURI() {
+        List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
+
+        return graphs;
+    }
+
     public void load(LoadContext context) throws LoadException {
-        try {
-            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql");
-            String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
-            String name="";
-            String password="";
-            
-            
-            LocalRepo repository = LocalRepo.createLocalRepo();
-            
-            
-            /* CHOOSE ON FOR CALL
-            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri);
-            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name, password);
-            */
-        } 
-        catch (MalformedURLException ex) {
-           
-        }
+
+        final URL endpointURL = getSPARQLEndpoinURL();
+        final List<String> defaultGraphsURI = getGraphsURI();
+        final String hostName = getHostName();
+        final String password = getPassword();
+
+        LocalRepo repository = LocalRepo.createLocalRepo();
+        repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password);
 
     }
 }
