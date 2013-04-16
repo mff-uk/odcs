@@ -200,16 +200,16 @@ public class LocalRepoTest {
             fail(ex.getMessage());
         }
     }
+    
     @Test
     public void extractDataFromSPARQLEndpointTest() {
         try {
-            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql");
-            String defaultGraphUri = "http://ld.opendata.cz/resource/business-entity/00640808";
-            String query = "select * where {?s ?o ?p}";
-            RDFFormat format = RDFFormat.RDFXML;
+            URL endpointURL = new URL("http://dbpedia.org/sparql");
+            String defaultGraphUri = "http://dbpedia.org";
+            String query = "select * where {?s ?o ?p} LIMIT 50";
 
             long sizeBefore = localRepo.getTripleCountInRepository();
-            localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, format);
+            localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
             long sizeAfter = localRepo.getTripleCountInRepository();
 
             boolean addValues = sizeBefore < sizeAfter;
@@ -220,7 +220,31 @@ public class LocalRepoTest {
             System.err.println(ex.getMessage());
 
         }
+    }
 
+    @Test
+    public void extractDataFromSPARQLEndpointNamePasswordTest() {
+        try {
+            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
+            String defaultGraphUri = "";
+            String query = "select * where {?s ?o ?p} LIMIT 10";
+            String name="SPARQL";
+            String password="nejlepsipaper";
+            
+            RDFFormat format = RDFFormat.N3;
+
+            long sizeBefore = localRepo.getTripleCountInRepository();
+            localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, name, password, format);
+            long sizeAfter = localRepo.getTripleCountInRepository();
+
+            boolean addValues = sizeBefore < sizeAfter;
+            assertTrue(addValues);
+
+        } catch (MalformedURLException ex) {
+            System.err.println("Bad URL for SPARQL endpoint");
+            System.err.println(ex.getMessage());
+
+        }
     }
 
     @Test
