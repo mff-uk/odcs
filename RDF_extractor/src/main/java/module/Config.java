@@ -9,11 +9,12 @@ public enum Config {
 	/**
 	 * TODO: Put names for your configuration here.
 	 */
-	DPU_name	
-	,Description
-	,SPARQL_endpoint
-        ,Host_name
-        ,Password
-	,Graphs_name
-	,SPARQL_query
+    
+	DPU_name //String
+	,Description //String
+	,SPARQL_endpoint //URL
+        ,Host_name //String  
+        ,Password //String
+	,GraphsUri //List<String>
+	,SPARQL_query //String
 }

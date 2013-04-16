@@ -11,11 +11,9 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.openrdf.rio.RDFFormat;
+import java.util.List;
+
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -43,7 +41,7 @@ public class Module implements GraphicalExtractor {
         this.config.setValue(Config.SPARQL_endpoint.name(), "");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.Graphs_name.name(), "");
+        this.config.setValue(Config.GraphsUri.name(), "");
         this.config.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
@@ -86,22 +84,51 @@ public class Module implements GraphicalExtractor {
         }
     }
 
+    private URL getSPARQLEndpoinURL() {
+        URL endpoint = (URL) config.getValue(Config.SPARQL_endpoint.name());
+
+        return endpoint;
+    }
+
+    private String getHostName() {
+        String hostName = (String) config.getValue(Config.Host_name.name());
+
+        return hostName;
+    }
+
+    private String getPassword() {
+        String password = (String) config.getValue(Config.Password.name());
+
+        return password;
+    }
+
+    private List<String> getGraphsURI() {
+        List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
+
+        return graphs;
+    }
+
+    private String getQuery() {
+        String query = (String) config.getValue(Config.SPARQL_query.name());
+
+        return query;
+    }
+
     /**
      * Implementation of module functionality here.
      *
      */
     public void extract(ExtractContext context) throws ExtractException {
-        try {
-            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql");
-            String defaultGraphUri = "http://ld.opendata.cz/resource/business-entity/00640808";
-            String query = "select * where {?s ?o ?p}";
-            RDFFormat format = RDFFormat.RDFXML;
 
-            LocalRepo repository = LocalRepo.createLocalRepo();
-            repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, format);
+        final URL endpointURL = getSPARQLEndpoinURL();
+        final String hostName = getHostName();
+        final String password = getPassword();
+        final List<String> defaultGraphsUri = getGraphsURI();
+        final String query = getQuery();
 
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Module.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        LocalRepo repository = LocalRepo.createLocalRepo();
+        repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
+
+
     }
 }

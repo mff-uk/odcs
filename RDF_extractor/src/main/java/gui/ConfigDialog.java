@@ -71,7 +71,7 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-		config.setValue(Config.Graphs_name.name(), textAreaGraph.getValue());
+		config.setValue(Config.GraphsUri.name(), textAreaGraph.getValue());
 		config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
 
 		return config;
@@ -97,7 +97,7 @@ public class ConfigDialog extends CustomComponent {
 			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQL_endpoint.name()));
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
-			textAreaGraph.setValue( (String) conf.getValue(Config.Graphs_name.name()));
+			textAreaGraph.setValue( (String) conf.getValue(Config.GraphsUri.name()));
 			textAreaConstr.setValue( (String) conf.getValue(Config.SPARQL_query.name()));
 		}
 		catch(Exception ex) {
