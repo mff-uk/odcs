@@ -9,9 +9,9 @@ public enum Config {
 	/**
 	 * TODO: Put names for your configuration here.
 	 */
-	NameDPU
-	,Description
-	,Directory
+	//NameDPU
+	//,Description
+	Directory
 	,FileName
 	,RDFformat
 }

@@ -34,17 +34,27 @@ public class ConfigDialog extends CustomComponent {
 	private CheckBox checkBoxDiffName;
 	private TextField textFieldFileName; // FileName
 	private TextField textFieldDir;	//Directory
-	private HorizontalLayout horizontalLayout_2;
-	private GridLayout gridLayoutName;
-	private TextArea textAreaDescr; //Description
-	private Label labelDescr;
-	private TextField textFieldName; // NameDPU
-	private Label labelName;
-	private HorizontalLayout horizontalLayoutButtons;
+//	private GridLayout gridLayoutName;
+//	private TextArea textAreaDescr; //Description
+//	private Label labelDescr;
+//	private TextField textFieldName; // NameDPU
+//	private Label labelName;
+//	private HorizontalLayout horizontalLayoutButtons;
 
 	public ConfigDialog() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
+		mapData();
+	}
+	
+	private void mapData() {
+		
+		comboBoxFormat.addItem("TTL");
+		comboBoxFormat.addItem("RDF/XML");
+		comboBoxFormat.addItem("N3");
+		comboBoxFormat.addItem("TriG");
+		comboBoxFormat.setValue("TTL");
+		
 	}
 
 	/**
@@ -60,8 +70,8 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 
-		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
-		config.setValue(Config.Description.name(), textAreaDescr.getValue());
+		//config.setValue(Config.NameDPU.name(), textFieldName.getValue());
+		//config.setValue(Config.Description.name(), textAreaDescr.getValue());
 		config.setValue(Config.Directory.name(), textFieldDir.getValue());
 		config.setValue(Config.FileName.name(), textFieldFileName.getValue());
 		config.setValue(Config.RDFformat.name(), comboBoxFormat.getValue());
@@ -83,8 +93,8 @@ public class ConfigDialog extends CustomComponent {
 
 		try
 		{
-			textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
-			textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
+			//textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
+			//textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
 			textFieldDir.setValue( (String) conf.getValue(Config.Directory.name()));
 			textFieldFileName.setValue( (String) conf.getValue(Config.FileName.name()));
 			comboBoxFormat.setValue( (String) conf.getValue(Config.RDFformat.name()));
@@ -97,33 +107,20 @@ public class ConfigDialog extends CustomComponent {
 
 	private GridLayout buildMainLayout() {
 		// common part: create layout
-		mainLayout = new GridLayout(2, 2);
+		mainLayout = new GridLayout(1, 1);
 		mainLayout.setImmediate(false);
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
 
 		// top-level component properties
-		setWidth("360px");
-		setHeight("450px");
-
+		setWidth("100%");
+		setHeight("100%");
+		
 		// tabSheet
 		tabSheet = buildTabSheet();
-		mainLayout.addComponent(tabSheet,  0, 0, 1, 0);
+		mainLayout.addComponent(tabSheet,  0, 0);
 		mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
-
-		// buttonDevel
-//		buttonDevel = new Button();
-//		buttonDevel.setCaption("Develop");
-//		buttonDevel.setImmediate(true);
-//		buttonDevel.setWidth("80px");
-//		mainLayout.addComponent(buttonDevel, 0,1);
-//		mainLayout.setComponentAlignment(buttonDevel, Alignment.TOP_LEFT);
-
-
-		horizontalLayoutButtons = buildHorizontalLayout();
-		mainLayout.addComponent(horizontalLayoutButtons,1,1);
-		mainLayout.setComponentAlignment(horizontalLayoutButtons, Alignment.TOP_RIGHT);
-
+		
 		return mainLayout;
 	}
 
@@ -132,13 +129,16 @@ public class ConfigDialog extends CustomComponent {
 		// common part: create layout
 		tabSheet = new TabSheet();
 		tabSheet.setImmediate(true);
-		tabSheet.setWidth("360px");
-		tabSheet.setHeight("340px");
-
+		tabSheet.setWidth("100%");
+		tabSheet.setHeight("100%");
+		
 		// verticalLayoutCore
 		verticalLayoutCore = buildVerticalLayoutCore();
+		verticalLayoutCore.setImmediate(false);
+		verticalLayoutCore.setWidth("100.0%");
+		verticalLayoutCore.setHeight("100.0%");
 		tabSheet.addTab(verticalLayoutCore, "Core", null);
-
+		
 		// verticalLayoutDetails
 		verticalLayoutDetails = new VerticalLayout();
 		verticalLayoutDetails.setImmediate(false);
@@ -146,9 +146,10 @@ public class ConfigDialog extends CustomComponent {
 		verticalLayoutDetails.setHeight("100.0%");
 		verticalLayoutDetails.setMargin(false);
 		tabSheet.addTab(verticalLayoutDetails, "Details", null);
-
+		
 		return tabSheet;
 	}
+
 
 
 	private VerticalLayout buildVerticalLayoutCore() {
@@ -159,35 +160,24 @@ public class ConfigDialog extends CustomComponent {
 		verticalLayoutCore.setHeight("100.0%");
 		verticalLayoutCore.setMargin(true);
 		verticalLayoutCore.setSpacing(true);
-
-		// gridLayoutName
-		gridLayoutName = buildGridLayoutName();
-		verticalLayoutCore.addComponent(gridLayoutName);
-
-		// horizontalLayout_2
-		horizontalLayout_2 = new HorizontalLayout();
-		horizontalLayout_2.setImmediate(false);
-		horizontalLayout_2.setWidth("312px");
-		horizontalLayout_2.setHeight("1px");
-		horizontalLayout_2.setMargin(false);
-		verticalLayoutCore.addComponent(horizontalLayout_2);
-
+		
+		
 		// textFieldDir
 		textFieldDir = new TextField();
 		textFieldDir.setCaption("Directory:");
 		textFieldDir.setImmediate(false);
-		textFieldDir.setWidth("305px");
+		textFieldDir.setWidth("90%");
 		textFieldDir.setHeight("-1px");
 		verticalLayoutCore.addComponent(textFieldDir);
-
+		
 		// textFieldFileName
 		textFieldFileName = new TextField();
 		textFieldFileName.setCaption("File name (no extension):");
 		textFieldFileName.setImmediate(false);
-		textFieldFileName.setWidth("305px");
+		textFieldFileName.setWidth("90%");
 		textFieldFileName.setHeight("-1px");
 		verticalLayoutCore.addComponent(textFieldFileName);
-
+		
 		// checkBoxDiffName
 		checkBoxDiffName = new CheckBox();
 		checkBoxDiffName
@@ -196,57 +186,12 @@ public class ConfigDialog extends CustomComponent {
 		checkBoxDiffName.setWidth("-1px");
 		checkBoxDiffName.setHeight("-1px");
 		verticalLayoutCore.addComponent(checkBoxDiffName);
-
+		
 		// horizontalLayoutFormat
 		horizontalLayoutFormat = buildHorizontalLayoutFormat();
 		verticalLayoutCore.addComponent(horizontalLayoutFormat);
-
+		
 		return verticalLayoutCore;
-	}
-
-
-	private GridLayout buildGridLayoutName() {
-		// common part: create layout
-		gridLayoutName = new GridLayout();
-		gridLayoutName.setImmediate(false);
-		gridLayoutName.setWidth("-1px");
-		gridLayoutName.setHeight("-1px");
-		gridLayoutName.setMargin(false);
-		gridLayoutName.setSpacing(true);
-		gridLayoutName.setColumns(2);
-		gridLayoutName.setRows(2);
-
-		// labelName
-		labelName = new Label();
-		labelName.setImmediate(false);
-		labelName.setWidth("-1px");
-		labelName.setHeight("-1px");
-		labelName.setValue("Name:");
-		gridLayoutName.addComponent(labelName, 0, 0);
-
-		// textFieldName
-		textFieldName = new TextField();
-		textFieldName.setImmediate(false);
-		textFieldName.setWidth("234px");
-		textFieldName.setHeight("-1px");
-		gridLayoutName.addComponent(textFieldName, 1, 0);
-
-		// labelDescr
-		labelDescr = new Label();
-		labelDescr.setImmediate(false);
-		labelDescr.setWidth("-1px");
-		labelDescr.setHeight("18px");
-		labelDescr.setValue("Description:");
-		gridLayoutName.addComponent(labelDescr, 0, 1);
-
-		// textAreaDescr
-		textAreaDescr = new TextArea();
-		textAreaDescr.setImmediate(false);
-		textAreaDescr.setWidth("234px");
-		textAreaDescr.setHeight("40px");
-		gridLayoutName.addComponent(textAreaDescr, 1, 1);
-
-		return gridLayoutName;
 	}
 
 
@@ -258,7 +203,7 @@ public class ConfigDialog extends CustomComponent {
 		horizontalLayoutFormat.setHeight("-1px");
 		horizontalLayoutFormat.setMargin(false);
 		horizontalLayoutFormat.setSpacing(true);
-
+		
 		// labelFormat
 		labelFormat = new Label();
 		labelFormat.setImmediate(false);
@@ -266,45 +211,15 @@ public class ConfigDialog extends CustomComponent {
 		labelFormat.setHeight("-1px");
 		labelFormat.setValue("RDF Format:");
 		horizontalLayoutFormat.addComponent(labelFormat);
-
+		
 		// comboBoxFormat
 		comboBoxFormat = new ComboBox();
 		comboBoxFormat.setImmediate(false);
-		comboBoxFormat.setWidth("100px");
+		comboBoxFormat.setWidth("30%");
 		comboBoxFormat.setHeight("-1px");
 		horizontalLayoutFormat.addComponent(comboBoxFormat);
-
+		
 		return horizontalLayoutFormat;
-	}
-
-	private HorizontalLayout buildHorizontalLayout() {
-		// common part: create layout
-		horizontalLayoutButtons = new HorizontalLayout();
-		horizontalLayoutButtons.setImmediate(false);
-		horizontalLayoutButtons.setWidth("240px");
-		horizontalLayoutButtons.setHeight("1px");
-		horizontalLayoutButtons.setMargin(false);
-		horizontalLayoutButtons.setSpacing(true);
-
-
-		// buttonSave
-//		buttonSave = new Button();
-//		buttonSave.setCaption("Save & Commit");
-//		buttonSave.setImmediate(true);
-//		buttonSave.setWidth("-1px");
-//
-//		buttonSave.setHeight("-1px");
-//		horizontalLayoutButtons.addComponent(buttonSave);
-//
-//		// buttonCanc
-//		buttonCanc = new Button();
-//		buttonCanc.setCaption("Cancel");
-//		buttonCanc.setImmediate(true);
-//		buttonCanc.setWidth("-1px");
-//		buttonCanc.setHeight("-1px");
-//		horizontalLayoutButtons.addComponent(buttonCanc);
-
-		return horizontalLayoutButtons;
 	}
 
 }
