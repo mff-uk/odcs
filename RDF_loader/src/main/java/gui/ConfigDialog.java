@@ -49,12 +49,12 @@ public class ConfigDialog extends CustomComponent {
 	private Label labelPass;
 	private TextField textFieldNameAdm; // Host_name
 	private Label labelNameAdm;
-	private ComboBox comboBoxSparql; // SPARQLendpoint
+	private ComboBox comboBoxSparql; // SPARQL_endpoint
 	private Label labelSparql;
 	private GridLayout gridLayoutName;
 	private TextArea textAreaDesc; // Description
 	private Label labelDesc;
-	private TextField textFieldName; // NameDPU
+	private TextField textFieldName; // DPU_name
 	private Label labelName;
 	private HorizontalLayout horizontalLayout;
 
@@ -83,9 +83,9 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 
-		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
+		config.setValue(Config.DPU_name.name(), textFieldName.getValue());
 		config.setValue(Config.Description.name(), textAreaDesc.getValue());
-		config.setValue(Config.SPARQLendpoint.name(), comboBoxSparql.getValue());
+		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
 		config.setValue(Config.GraphsUri.name(), textAreaGraph.getValue());
@@ -107,9 +107,9 @@ public class ConfigDialog extends CustomComponent {
 
 		try
 		{
-			textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
+			textFieldName.setValue( (String) conf.getValue(Config.DPU_name.name()));
 			textAreaDesc.setValue( (String) conf.getValue(Config.Description.name()));
-			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQLendpoint.name()));
+			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQL_endpoint.name()));
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 			textAreaGraph.setValue( (String) conf.getValue(Config.GraphsUri.name()));

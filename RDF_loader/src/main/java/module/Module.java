@@ -35,9 +35,9 @@ public class Module implements GraphicalLoader {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.NameDPU.name(), "");
+        this.config.setValue(Config.DPU_name.name(), "");
         this.config.setValue(Config.Description.name(), "");
-        this.config.setValue(Config.SPARQLendpoint.name(), "");
+        this.config.setValue(Config.SPARQL_endpoint.name(), "");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
         this.config.setValue(Config.GraphsUri.name(), "");
@@ -87,7 +87,7 @@ public class Module implements GraphicalLoader {
      *
      */
     private URL getSPARQLEndpoinURL() {
-        URL endpoint = (URL) config.getValue(Config.SPARQLendpoint.name());
+        URL endpoint = (URL) config.getValue(Config.SPARQL_endpoint.name());
 
         return endpoint;
     }

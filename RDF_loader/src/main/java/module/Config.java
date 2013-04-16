@@ -10,10 +10,10 @@ public enum Config {
 	 * TODO: Put names for your configuration here.
 	 */
          
-        NameDPU,//String
+        DPU_name, //String
 	Description, //String
-	SPARQLendpoint //URL
-	,Host_name //String
-	,Password  // String
-	,GraphsUri // List<String>
+	SPARQL_endpoint,//URL
+	Host_name, //String
+	Password, // String
+	GraphsUri // List<String>
 }
