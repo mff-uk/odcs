@@ -1,9 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-
-import java.util.List;
 
 /**
  * Node represents DPU on the pipeline and holds information
@@ -19,8 +16,6 @@ public class Node {
 
     private DPUInstance dpuInstance;
 
-    private List<Node> neighbours;
-
     private Position position;
 
     public Node(DPUInstance dpuInstance) {
@@ -31,20 +26,12 @@ public class Node {
         return dpuInstance;
     }
 
-    public List<Node> getNeighbours() {
-        return neighbours;
-    }
-
     public Position getPosition() {
         return position;
     }
 
     public void setDpuInstance(DPUInstance dpuInstance) {
         this.dpuInstance = dpuInstance;
-    }
-
-    public void setNeighbours(List<Node> neighbours) {
-        this.neighbours = neighbours;
     }
 
     public void setPosition(Position newPosition) {
