@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.repository;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -7,7 +8,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -268,19 +271,19 @@ public class LocalRepo {
     }
 
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
-        List<String> graphs=new ArrayList<String>();
+        List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphURI);
-        
+
         loadtoSPARQLEndpoint(endpointURL, graphs, "", "");
     }
-    
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,String name, String password) {
-        List<String> graphs=new ArrayList<String>();
+
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password) {
+        List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphURI);
-        
+
         loadtoSPARQLEndpoint(endpointURL, graphs, name, password);
     }
-    
+
     /**
      * Load RDF data from repository to SPARQL endpointURL.
      *
@@ -292,74 +295,130 @@ public class LocalRepo {
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> defaultGraphsURI, String userName, String password) {
         try {
 
-            final int graphSize=defaultGraphsURI.size();
-            
+            final int graphSize = defaultGraphsURI.size();
+            final RDFFormat format = RDFFormat.N3;
+
             Resource[] graphs = new Resource[graphSize];
-            
-            for (int i=0;i<graphSize;i++)
-            {
-                graphs[i]=new URIImpl(defaultGraphsURI.get(i));
+
+            for (int i = 0; i < graphSize; i++) {
+                graphs[i] = new URIImpl(defaultGraphsURI.get(i));
             }
-                    
-                   
+
+
             RepositoryConnection connection = repository.getConnection();
 
-            boolean autentize = (!userName.isEmpty() && !password.isEmpty());
+            boolean autentize = !(userName.isEmpty() && password.isEmpty());
 
-            HTTPRepository httpRepository = new HTTPRepository(endpointURL.toString());
+            HttpURLConnection httpConnection = (HttpURLConnection) endpointURL.openConnection();
+
+            httpConnection.setDoInput(true);
+            httpConnection.setDoOutput(true);
+            httpConnection.setRequestMethod("POST");
+            httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
 
             if (autentize) {
-                httpRepository.setUsernameAndPassword(userName, password);
+
+                final String myName = userName;
+                final String myPassword = password;
+
+                Authenticator autentisator = new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(myName, myPassword.toCharArray());
+                    }
+                };
+
+                Authenticator.setDefault(autentisator);
+
             }
-            if (!httpRepository.isInitialized()) {
-                httpRepository.initialize();
+
+            OutputStream outputStream = new BufferedOutputStream(httpConnection.getOutputStream());
+
+            RDFWriter goal = Rio.createWriter(format, outputStream);
+
+            for (int i=0;i<graphSize;i++)
+            {
+                connection.export(goal, graphs[i]);
+                connection.commit();
             }
 
-            RepositoryConnection httpConnection = httpRepository.getConnection();
-
-            RDFHandler goal = new RDFRemover(httpConnection);
-            connection.export(goal, graphs);
-
-            httpConnection.commit();
-            httpConnection.close();
-
-            connection.commit();
             connection.close();
-
+            outputStream.close();
 
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
     }
 
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
+        List<String> graphs = new ArrayList<String>();
+        graphs.add(defaultGraphUri);
+
+        extractfromSPARQLEndpoint(endpointURL, graphs, query, "", "");
+    }
+
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
+        List<String> graphs = new ArrayList<String>();
+        graphs.add(defaultGraphUri);
+
+        extractfromSPARQLEndpoint(endpointURL, graphs, query, hostName, password);
+    }
+
     /**
      * Add RDF data from SPARQL endpoint to repository.
      *
      * @param endpointURL
-     * @param defaultGraphUri
+     * @param defaultGraphsUri
      * @param query
+     * @param hostName
+     * @param password
      * @param format
      */
-    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, RDFFormat format) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> defaultGraphsUri, String query, String hostName, String password) {
         try {
 
-            final String graph = defaultGraphUri.replace(" ", "+");
+            final RDFFormat format = RDFFormat.N3;
+            final int graphSize = defaultGraphsUri.size();
             final String myquery = query.replace(" ", "+");
-
-            String encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
-
-            URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + graph + "&query=" + myquery + "&format=" + encoder);
-
-            HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
-            httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
-
-            InputStream inputStream = httpConnection.getInputStream();
+            final String encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
 
             RepositoryConnection connection = repository.getConnection();
-            connection.add(inputStream, graph, format);
+
+            for (int i = 0; i < graphSize; i++) {
+
+                final String graph = defaultGraphsUri.get(i).replace(" ", "+");
+
+                URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + graph + "&query=" + myquery + "&format=" + encoder);
+
+                HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
+                httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
+
+                boolean usePassword = (!hostName.isEmpty() | !password.isEmpty());
+
+                if (usePassword) {
+
+                    final String myName = hostName;
+                    final String myPassword = password;
+
+                    Authenticator autentisator = new Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(myName, myPassword.toCharArray());
+                        }
+                    };
+
+                    Authenticator.setDefault(autentisator);
+
+                }
+
+                InputStream inputStream = httpConnection.getInputStream();
+
+                connection.add(inputStream, graph, format);
+                inputStream.close();
+            }
 
             connection.close();
-            inputStream.close();
+
 
         } catch (IOException ex) {
             System.err.println("Can not open http connection stream");
