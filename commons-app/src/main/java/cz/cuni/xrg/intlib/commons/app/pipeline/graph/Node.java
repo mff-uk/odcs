@@ -17,6 +17,11 @@ public class Node {
     private DPUInstance dpuInstance;
 
     private Position position;
+    
+    /**
+     * Empty constructor for Hibernate.
+     */
+    public Node() {}
 
     public Node(DPUInstance dpuInstance) {
         this.dpuInstance = dpuInstance;
