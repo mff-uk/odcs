@@ -9,8 +9,9 @@ public enum Config {
 	/**
 	 * TODO: Put names for your configuration here.
 	 */
-	NameDPU
-	,Description
-        ,Path
-	,RDFFormat
+	NameDPU //String
+	,Description //String
+        ,Path //String
+	,FileSuffix //String
+        ,OnlyThisSuffix //boolean
 }

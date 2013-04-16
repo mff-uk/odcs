@@ -60,7 +60,7 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
 		config.setValue(Config.Description.name(), textAreaDescr.getValue());
 		config.setValue(Config.Path.name(), textFieldPath.getValue());
-		config.setValue(Config.RDFFormat.name(), comboBoxFormat.getValue());
+		config.setValue(Config.FileSuffix.name(), comboBoxFormat.getValue());
 
 
 		return config;
@@ -84,7 +84,7 @@ public class ConfigDialog extends CustomComponent {
             textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
 			textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
 			textFieldPath.setValue( (String) conf.getValue(Config.Path.name()));
-			comboBoxFormat.setValue( (String) conf.getValue(Config.RDFFormat.name()));
+			comboBoxFormat.setValue( (String) conf.getValue(Config.FileSuffix.name()));
 
 
 
