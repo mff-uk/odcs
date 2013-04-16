@@ -7,18 +7,18 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
  */
 public class Engine {
 
-    private Worker[] threads;
+    private PipelineWorker[] threads;
     private int size;
 
     public Engine(int size) {
         this.size = size;
-        this.threads = new Worker[size];
+        this.threads = new PipelineWorker[size];
         inicialize();
     }
 
     private void inicialize() {
         for (int i = 0; i < size; i++) {
-            threads[i] = new Worker();
+            threads[i] = new PipelineWorker();
 
         }
     }
