@@ -62,9 +62,9 @@ public class ConfigDialog extends CustomComponent {
 
 		config.setValue(Config.NameDPU.name(), textFieldName.getValue());
 		config.setValue(Config.Description.name(), textAreaDescr.getValue());
-		config.setValue(Config.Directory.name(), textFieldDir.getValue());
+		config.setValue(Config.DirectoryPath.name(), textFieldDir.getValue());
 		config.setValue(Config.FileName.name(), textFieldFileName.getValue());
-		config.setValue(Config.RDFformat.name(), comboBoxFormat.getValue());
+		config.setValue(Config.RDFFileFormat.name(), comboBoxFormat.getValue());
 
 		return config;
 	}
@@ -85,9 +85,9 @@ public class ConfigDialog extends CustomComponent {
 		{
 			textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
 			textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
-			textFieldDir.setValue( (String) conf.getValue(Config.Directory.name()));
+			textFieldDir.setValue( (String) conf.getValue(Config.DirectoryPath.name()));
 			textFieldFileName.setValue( (String) conf.getValue(Config.FileName.name()));
-			comboBoxFormat.setValue( (String) conf.getValue(Config.RDFformat.name()));
+			comboBoxFormat.setValue( (String) conf.getValue(Config.RDFFileFormat.name()));
 		}
 		catch(Exception ex) {
 			// throw setting exception

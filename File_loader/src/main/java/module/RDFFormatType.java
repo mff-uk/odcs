@@ -8,7 +8,7 @@ package module;
 public enum RDFFormatType {
 
     AUTO,
-    RDF_XML,
+    RDFXML,
     N3,
     TRIG,
     TTL
