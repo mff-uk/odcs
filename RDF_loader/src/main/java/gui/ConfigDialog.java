@@ -32,6 +32,8 @@ import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -99,7 +101,7 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-		//config.setValue(Config.GraphsUri.name(), textAreaGraph.getValue());
+		config.setValue(Config.GraphsUri.name(), griddata.getValue());
 
 		return config;
 	}
@@ -123,7 +125,9 @@ public class ConfigDialog extends CustomComponent {
 			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQL_endpoint.name()));
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
-		//	textAreaGraph.setValue( (String) conf.getValue(Config.GraphsUri.name()));
+		//	griddata.setValue( (List<String>) conf.getValue(Config.GraphsUri.name()));
+			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name()));
+			
 		}
 		catch(Exception ex) {
 			// throw setting exception
@@ -339,10 +343,10 @@ public class ConfigDialog extends CustomComponent {
 			return gridLayoutAdm;
 		}
 		
-		private static Vector<String> griddata = initializeGridData();
-		private static Vector<String> initializeGridData()
+		private static List<String> griddata = initializeGridData();
+		private static List<String> initializeGridData()
 		{
-			Vector<String> result = new Vector<String>();
+			List<String> result = new LinkedList<String>(); 
 			result.add("Some Item 1");
 		//	result.add("Some Item 2");
 			return result;
@@ -363,7 +367,8 @@ public class ConfigDialog extends CustomComponent {
 		private static void replaceText(int index, String newText)
 		{
 			griddata.remove(index);
-			griddata.insertElementAt(newText, index);
+			griddata.add(index, newText);
+			//griddata.insertElementAt(newText, index);
 		}
 
 		private void refreshNamedGraphData()
