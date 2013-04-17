@@ -4,19 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 /**
- * Base context class for all specific contexts for Extractors, Transformers and Loaders.<br/>
- * Provides a flexible way of passing custom data between components with a {@link Map}.
+ * Base context class for all specific contexts for Extractors, Transformers and
+ * Loaders.<br/>
+ * Provides a flexible way of passing custom data between components with a
+ * {@link Map}.
  *
  * @author Alex Kreiser (akreiser@gmail.com)
  */
 public class ProcessingContext {
 
     protected final String ID;
-    
-    // Petyr: DPU don't know about outside world .. 
-    //protected ETLPipeline pipeline;
-    
     protected long duration;
     protected boolean cancelPipeline;
     protected String cancelMessage;
@@ -30,17 +29,19 @@ public class ProcessingContext {
 
     /**
      * Returns the ID of the current pipeline process.
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getID() {
         return ID;
     }
-    
+
     /**
      * Returns a map containing global custom data of components that want to
-     * exchange information that is not stored explicitly in the repository.<br/>
-     * This information will only be available within the scope of a pipeline execution.
+     * exchange information that is not stored explicitly in the
+     * repository.<br/>
+     * This information will only be available within the scope of a pipeline
+     * execution.
      *
      * @return
      */
@@ -76,7 +77,8 @@ public class ProcessingContext {
     }
 
     /**
-     * Requests cancellation of the pipeline after this component finished (successfully or not).
+     * Requests cancellation of the pipeline after this component finished
+     * (successfully or not).
      *
      * @param message Informative message why the pipeline should be cancelled
      */
@@ -101,9 +103,8 @@ public class ProcessingContext {
 
     public void setPipeline(ETLPipeline pipeline) {
         this.pipeline = pipeline;
-    }
-    */
-    
+    }*/
+
     public List<String> getWarnings() {
         return warnings;
     }

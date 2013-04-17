@@ -1,8 +1,7 @@
-package cz.cuni.xrg.intlib.commons.app.pipeline.event;
-
-import java.util.List;
+package cz.cuni.xrg.intlib.commons.event;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import java.util.List;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
