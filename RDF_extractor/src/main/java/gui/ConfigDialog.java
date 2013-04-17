@@ -97,7 +97,7 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-		config.setValue(Config.GraphsUri.name(), griddata.getValue());
+	//	config.setValue(Config.GraphsUri.name(), griddata.getValue());
 		config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
 
 		return config;
