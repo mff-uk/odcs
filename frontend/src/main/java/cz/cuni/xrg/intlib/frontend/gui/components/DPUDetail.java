@@ -127,8 +127,9 @@ public class DPUDetail extends Window {
 		});
 		buttonBar.addComponent(cancelButton);
 
-		mainLayout.addComponent(buttonBar);
-		mainLayout.setSizeUndefined();
+    protected void saveDPUInstance() {
+        dpu.setName(dpuName.getValue());
+        dpu.setDescription(dpuDescription.getValue());
 
 
 

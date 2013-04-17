@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend;
 
-import com.vaadin.annotations.Theme;
 import java.util.Date;
 
 import com.vaadin.navigator.Navigator;
@@ -44,14 +43,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 */
 	private DpuFacade dpus = new DpuFacade();
 
-	protected void finalize ()  {
-
-System.out.println((new Date()).toString() + ": AppEntry::finalize");
-
-		modules.stop();
-		modules = null;
-    }
-
 	/**
 	 * Returns facade, which provides services for managing pipelines.
 	 * @return pipeline facade
@@ -88,17 +79,16 @@ System.out.println((new Date()).toString() + ": AppEntry::finalize");
 	protected void init(com.vaadin.server.VaadinRequest request) {
 		this.modules = new ModuleFacade();
 		this.modules.start();
+		// load bundles from directory
+// TODO: Change according to your settings		
+		this.modules.installDirectory("e:/Tmp/intlib/libs_3");
 
-
-// System.out.println("Instance: " + (++StaticTest.getInstance().value).toString() );
-
-System.out.println((new Date()).toString() + ": AppEntry::init");
+		
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
 				modules.stop();
 				modules = null;
-System.out.println((new Date()).toString() + ": AppEntry::detach");
 			}} );
 
 		// create main application uber-view and set it as app. content
@@ -119,9 +109,10 @@ System.out.println((new Date()).toString() + ": AppEntry::detach");
         this.navigator.addView(ViewNames.ExecutionMonitor.getUrl(), new ExecutionMonitor());
         this.navigator.addView(ViewNames.PipelineList.getUrl(), new PipelineList());
         this.navigator.addView(ViewNames.PipelineEdit.getUrl(), new PipelineEdit());
-        this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());
+        this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());        
         // TODO: remove !
         this.navigator.addView("expDialog", new DPUDialog());
+        this.navigator.addView(ViewNames.OSGiSupport.getUrl(), new OSGiSupport());
 
         /* You can create new views dynamically using a view provider
          * that implements the  ViewProvider interface.

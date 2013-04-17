@@ -68,11 +68,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDpuMoved(int dpuId, int newX, int newY) {
 				dpuMoved(dpuId, newX, newY);
 			}
-
-			@Override
-			public void onLogMessage(String message) {
-				//TODO: Logging from JS
-			}
 		});
 	}
 

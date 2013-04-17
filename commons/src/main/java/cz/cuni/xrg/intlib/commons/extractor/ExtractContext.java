@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class ExtractContext extends ProcessingContext {
 
+	// RDFHandler handler, 
+	
     private long triplesExtracted;
 
     public ExtractContext(String id, Map<String, Object> customData) {

@@ -14,7 +14,8 @@ public enum ViewNames {
 	PipelineList("PipelineList"),
 	PipelineEdit("PipelineEdit"),
 	PipelineEdit_New("PipelineEdit","New"),
-	Scheduler("Scheduler");
+	Scheduler("Scheduler"),
+	OSGiSupport("OSGiSupport");
 	
 	/**
 	 * String for view.

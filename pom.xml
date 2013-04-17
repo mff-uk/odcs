@@ -18,6 +18,7 @@
         <module>RDF_extractor</module>
         <module>File_loader</module>
         <module>RDF_loader</module>
+        <module>commons-web</module>
     </modules>
 
     <scm>

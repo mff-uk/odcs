@@ -6,20 +6,29 @@
 	<packaging>jar</packaging>
   
   	<dependencies>
-		<dependency> <!-- commons-module project -->
-			<groupId>cz.cuni.xrg.intlib</groupId>
-			<artifactId>commons-module</artifactId>
-			<!-- the version has to be specify -->
-			<version>0.0.1</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>cz.cuni.xrg.intlib</groupId>
-			<artifactId>commons-module</artifactId>
-			<!-- the version has to be specify -->
-			<version>0.0.1</version>
-			<type>jar</type>
-		</dependency>				
+        <dependency> <!-- commons-module project -->
+            <groupId>cz.cuni.xrg.intlib</groupId>
+            <artifactId>commons</artifactId>
+            <!-- the version has to be specify -->
+            <version>0.0.1</version>
+            <type>jar</type>
+        </dependency>        
+        
+        <dependency> <!-- commons-module project -->
+            <groupId>cz.cuni.xrg.intlib</groupId>
+            <artifactId>commons-web</artifactId>
+            <!-- the version has to be specify -->
+            <version>0.0.1</version>
+            <type>jar</type>
+        </dependency> 
+
+        <dependency> <!-- commons-module project -->
+            <groupId>cz.cuni.xrg.intlib</groupId>
+            <artifactId>commons-module</artifactId>
+            <!-- the version has to be specify -->
+            <version>0.0.1</version>
+            <type>jar</type>
+        </dependency>
 	</dependencies>
   
 	<build>

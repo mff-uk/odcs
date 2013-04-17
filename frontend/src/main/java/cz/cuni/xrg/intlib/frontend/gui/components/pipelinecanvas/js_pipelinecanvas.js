@@ -665,5 +665,4 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         return [startX, startY, endX, endY];
     }
-
 };

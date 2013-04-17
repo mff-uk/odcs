@@ -9,7 +9,7 @@ Import-Package: org.osgi.framework,
  cz.cuni.xrg.intlib.commons.extractor,
  cz.cuni.xrg.intlib.commons.loader,
  cz.cuni.xrg.intlib.commons.transformer,
- cz.cuni.xrg.intlib.commons.module,
+ cz.cuni.xrg.intlib.commons.web,
  com.vaadin,
  com.vaadin.ui
 Provide-Package: gui,
