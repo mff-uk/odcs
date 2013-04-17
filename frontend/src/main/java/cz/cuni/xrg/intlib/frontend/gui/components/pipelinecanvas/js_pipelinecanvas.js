@@ -107,11 +107,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
     /** Writes message on given message layer **/
     function writeMessage(messageLayer, message) {
-        var context = messageLayer.getContext();
-        messageLayer.clear();
-        context.font = '18pt Calibri';
-        context.fillStyle = 'black';
-        context.fillText(message, 10, 25);
+        //var context = messageLayer.getContext();
+        //messageLayer.clear();
+        //context.font = '18pt Calibri';
+        //context.fillStyle = 'black';
+        //context.fillText(message, 10, 25);
+
+		rpcProxy.onLogMessage(message);
     }
 
     /** Kinetic stage and layers accessed from different functions **/
@@ -569,7 +571,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     function computeLeftArrowPoints(points) {
         var x = points[2] - points[0];
         var y = points[3] - points[1];
-        var dist = 20 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
+        var dist = 10 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
         var leftX = points[2] - dist * x + dist * y;
         var leftY = points[3] - dist * y - dist * x;
         return [leftX, leftY, points[2], points[3]];
@@ -578,7 +580,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
      function computeRightArrowPoints(points) {
         var x = points[2] - points[0];
         var y = points[3] - points[1];
-        var dist = 20 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
+        var dist = 10 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
         var leftX = points[2] - dist * x - dist * y;
         var leftY = points[3] - dist * y + dist * x;
         return [leftX, leftY, points[2], points[3]];
