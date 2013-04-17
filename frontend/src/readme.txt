@@ -12,4 +12,9 @@ Developing notes:
 - to access application instance or data access service use auxiliaries.App class
 - to redirect on some view (page) use AppEntry.getNavigator().navigateTo(ulr .. ) 
   as URL use value from gui.ViewNames.
-- serialization on Tomcat Restart is turned off, because we have non-serializable class in session 
+- serialization on Tomcat Restart is turned off, because we have non-serializable class in session
+
+Before compile:
+	- change path in AppEntry.java
+		this.modules.installDirectory to place where a files from frontned/dist are placed
+	- change HACK_basePath : commons-app.dpu.DPU.java to the root of project 
