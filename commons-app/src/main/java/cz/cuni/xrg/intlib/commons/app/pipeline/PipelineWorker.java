@@ -5,7 +5,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
  *
  * @author Jiri Tomes
  */
-public class Worker implements Runnable {
+public class PipelineWorker implements Runnable {
 
     private boolean justWorking = false;
 

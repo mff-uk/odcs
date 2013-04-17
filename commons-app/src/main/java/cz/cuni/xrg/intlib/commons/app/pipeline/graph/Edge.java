@@ -35,13 +35,15 @@ public class Edge {
 		if(other.getClass() != Edge.class) {
 			return false;
 		}
-		Edge otherConnection = (Edge)other;
-		if(this.id == otherConnection.id) {
+		Edge o = (Edge)other;
+		if(this.id == o.id) {
 			return true;
-		} else if(this.from.getId() == otherConnection.from.getId() && this.to.getId() == otherConnection.to.getId()) {
+		} else if(this.from.getId() == o.from.getId()
+				&& this.to.getId() == o.to.getId()) {
 			return true;
+		} else {
+			return this.from == o.from && this.to == o.to;
 		}
-		return false;
 	}
 
     public int getId() {

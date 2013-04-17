@@ -114,11 +114,11 @@ public class DpuFacade {
 		basicEx.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
 		this.save(basicEx);
 
-		DPU sparqlEx = new DPU("File extractor", Type.EXTRACTOR);
+		DPU sparqlEx = new DPU("File Extractor", Type.EXTRACTOR);
 		sparqlEx.setJarPath("File_extractor/target/File_extractor-0.0.1.jar");
 		this.save(sparqlEx);
 
-		DPU genericTr = new DPU("SPARQL transformer", Type.TRANSFORMER);
+		DPU genericTr = new DPU("SPARQL Transformer", Type.TRANSFORMER);
 		genericTr.setJarPath("SPARQL_transformer/target/SPARQL_transformer-0.0.1.jar");
 		save(genericTr);
 

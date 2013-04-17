@@ -5,7 +5,7 @@ import java.util.List;
 
 
 /**
- * Holds user data (his accounout).
+ * Holds user data (his account).
  *
  * @author Jiri Tomes
  */
@@ -67,5 +67,5 @@ public final class User implements RoleHolder, Resource {
 	public String getResourceId() {
 		return User.class.toString();
 	}
-    
+
 }

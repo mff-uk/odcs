@@ -11,10 +11,9 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -42,7 +41,7 @@ public class Module implements GraphicalExtractor {
         this.config.setValue(Config.SPARQL_endpoint.name(), "");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.Graphs_name.name(), "");
+        this.config.setValue(Config.GraphsUri.name(), "");
         this.config.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
@@ -67,7 +66,7 @@ public class Module implements GraphicalExtractor {
             // get configuration from dialog
             Configuration conf = this.configDialog.getConfiguration();
             if (conf == null) {
-                // in dialog is invalid configuration .. 
+                // in dialog is invalid configuration ..
                 return null;
             } else {
                 this.config = conf;
@@ -85,21 +84,51 @@ public class Module implements GraphicalExtractor {
         }
     }
 
+    private URL getSPARQLEndpoinURL() {
+        URL endpoint = (URL) config.getValue(Config.SPARQL_endpoint.name());
+
+        return endpoint;
+    }
+
+    private String getHostName() {
+        String hostName = (String) config.getValue(Config.Host_name.name());
+
+        return hostName;
+    }
+
+    private String getPassword() {
+        String password = (String) config.getValue(Config.Password.name());
+
+        return password;
+    }
+
+    private List<String> getGraphsURI() {
+        List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
+
+        return graphs;
+    }
+
+    private String getQuery() {
+        String query = (String) config.getValue(Config.SPARQL_query.name());
+
+        return query;
+    }
+
     /**
      * Implementation of module functionality here.
      *
      */
     public void extract(ExtractContext context) throws ExtractException {
-        try {
-            String adress="";
 
-            URL endpoint = new URL(adress);
+        final URL endpointURL = getSPARQLEndpoinURL();
+        final String hostName = getHostName();
+        final String password = getPassword();
+        final List<String> defaultGraphsUri = getGraphsURI();
+        final String query = getQuery();
 
-            LocalRepo repository = LocalRepo.createLocalRepo();
-            repository.extractfromSPARQLEndpoint(endpoint);
+        LocalRepo repository = LocalRepo.createLocalRepo();
+        repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
 
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Module.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }
 }

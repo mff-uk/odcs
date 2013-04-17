@@ -21,6 +21,7 @@ import cz.cuni.xrg.intlib.frontend.gui.views.*;
  * @author Petyr
  *
  */
+@Theme("IntLibTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
 	/**

@@ -1,6 +1,8 @@
 package cz.cuni.xrg.intlib.repository;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.openrdf.rio.RDFFormat;
@@ -197,6 +199,131 @@ public class LocalRepoTest {
         } catch (FileCannotOverwriteException ex) {
             fail(ex.getMessage());
         }
+    }
+    
+    @Test
+    public void extractDataFromSPARQLEndpointTest() {
+        try {
+            URL endpointURL = new URL("http://dbpedia.org/sparql");
+            String defaultGraphUri = "http://dbpedia.org";
+            String query = "select * where {?s ?o ?p} LIMIT 50";
+
+            long sizeBefore = localRepo.getTripleCountInRepository();
+            localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
+            long sizeAfter = localRepo.getTripleCountInRepository();
+
+            boolean addValues = sizeBefore < sizeAfter;
+            assertTrue(addValues);
+
+        } catch (MalformedURLException ex) {
+            System.err.println("Bad URL for SPARQL endpoint");
+            System.err.println(ex.getMessage());
+
+        }
+    }
+
+    @Test
+    public void extractDataFromSPARQLEndpointNamePasswordTest() {
+        try {
+            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
+            String defaultGraphUri = "";
+            String query = "select * where {?s ?o ?p} LIMIT 10";
+            String name="SPARQL";
+            String password="nejlepsipaper";
+            
+            RDFFormat format = RDFFormat.N3;
+
+            long sizeBefore = localRepo.getTripleCountInRepository();
+            localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, name, password, format);
+            long sizeAfter = localRepo.getTripleCountInRepository();
+
+            boolean addValues = sizeBefore < sizeAfter;
+            assertTrue(addValues);
+
+        } catch (MalformedURLException ex) {
+            System.err.println("Bad URL for SPARQL endpoint");
+            System.err.println(ex.getMessage());
+
+        }
+    }
+
+    @Test
+    public void loadDataToSPARQLEndpointTest() {
+        try {
+            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql");
+            String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
+
+            localRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri);
+
+
+        } catch (MalformedURLException ex) {
+            System.err.println("Bad URL for SPARQL endpoint");
+        }
+
+    }
+
+    @Test
+    public void transformUsingSPARQLUpdate() {
+        
+        String namespace = "http://sport/hockey/";
+        String subjectName = "Jagr";
+        String predicateName = "playes_in";
+        String objectName = "Dalas_Stars";
+        
+        String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }" 
+                +"INSERT { ?who ?what 'Boston_Bruins' }" 
+                +"WHERE { ?who ?what 'Dalas_Stars' }";
+        
+        cleanRepository();
+        
+        localRepo.addTripleToRepository(namespace, subjectName, predicateName, objectName);
+        
+        boolean beforeUpdate=localRepo.isTripleInRepository(namespace, subjectName, predicateName, objectName);
+        assertTrue(beforeUpdate);
+        
+        localRepo.transformUsingSPARQL(updateQuery);
+        
+        boolean afterUpdate=localRepo.isTripleInRepository(namespace, subjectName, predicateName,objectName);
+        assertFalse(afterUpdate);
+        
+    }
+    
+    @Test
+    public void extractTEDFile1ToRepository() {
+        String path = "http://ld.opendata.cz/tedDumps/ted4.ttl";
+        String suffix = "";
+        String baseURI = "";
+        boolean useSuffix = false;
+
+        cleanRepository();
+        long size = localRepo.getTripleCountInRepository();
+
+        localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+
+        long newSize = localRepo.getTripleCountInRepository();
+
+        boolean triplesAdded = newSize > size;
+
+        assertTrue(triplesAdded);
+    }
+    
+    @Test
+    public void extractTEDFile2ToRepository() {
+        String path = "http://ld.opendata.cz/tedDumps/ted4b.ttl";
+        String suffix = "";
+        String baseURI = "";
+        boolean useSuffix = true;
+
+        cleanRepository();
+        long size = localRepo.getTripleCountInRepository();
+
+        localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+
+        long newSize = localRepo.getTripleCountInRepository();
+
+        boolean triplesAdded = newSize > size;
+
+        assertTrue(triplesAdded);
     }
 
     @AfterClass

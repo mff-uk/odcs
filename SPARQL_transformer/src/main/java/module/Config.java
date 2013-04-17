@@ -9,8 +9,10 @@ public enum Config {
 	/**
 	 * String Query for SPARQL transformation update.
 	 */
-        NameDPU
-	,Description
-	,SPARQL_Update_Query
+
+        NameDPU //String
+	,Description //String
+	,SPARQL_Update_Query //String
+
 
 }

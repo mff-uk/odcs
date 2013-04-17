@@ -79,9 +79,17 @@ public class Module implements GraphicalTransformer {
      * Implementation of module functionality here.
      *
      */
+    private String getUpdateQuery() {
+        String query = (String) config.getValue(Config.SPARQL_Update_Query.name());
+
+        return query;
+    }
+
     public void transform(TransformContext context) throws TransformException {
 
+        final String updateQuery = getUpdateQuery();
+
         LocalRepo repository = LocalRepo.createLocalRepo();
-        repository.transformUsingSPARQL(Config.SPARQL_Update_Query.toString());
+        repository.transformUsingSPARQL(updateQuery);
     }
 }

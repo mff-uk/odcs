@@ -14,7 +14,6 @@ import cz.cuni.xrg.intlib.repository.FileCannotOverwriteException;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import org.openrdf.rio.RDFFormat;
 
-
 /**
  * TODO Change super class to desired one, you can choose from the following:
  * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
@@ -36,11 +35,11 @@ public class Module implements GraphicalLoader {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.NameDPU.name(), "");
-        this.config.setValue(Config.Description.name(), "");
+        //this.config.setValue(Config.NameDPU.name(), "");
+        //this.config.setValue(Config.Description.name(), "");
         this.config.setValue(Config.FileName.name(), "");
-        this.config.setValue(Config.Directory.name(), "");
-        this.config.setValue(Config.RDFformat.name(), RDFFormat.RDFXML.toString());
+        this.config.setValue(Config.DirectoryPath.name(), "");
+        this.config.setValue(Config.RDFFileFormat.name(),RDFFormatType.RDFXML.name());
     }
 
     public Type getType() {
@@ -82,20 +81,61 @@ public class Module implements GraphicalLoader {
         }
     }
 
+    private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
+        RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
+
+        switch (enumFormatType) {
+            case AUTO:
+            case RDFXML: {
+                return RDFFormat.RDFXML;
+            }
+
+            case N3: {
+                return RDFFormat.N3;
+            }
+
+            case TRIG: {
+                return RDFFormat.TRIG;
+            }
+            case TTL: {
+                return RDFFormat.TURTLE;
+            }
+        }
+
+        throw new NotSupporteRDFFormatException();
+    }
+
+    private String getDirectoryPath() {
+        String path = (String) config.getValue(Config.DirectoryPath.name());
+
+        return path;
+    }
+
+    private String getFileName() {
+        String fileName = (String) config.getValue(Config.FileName.name());
+
+        return fileName;
+    }
+
     /**
      * Implementation of module functionality here.
      *
      */
     public void load(LoadContext context) throws LoadException {
         try {
-            String path = "C:\\intlib\\Output_Test_Files\\";
-            String fileName = "RDF_output.rdf";
-            RDFFormat format = RDFFormat.RDFXML;
+
+            String directoryPath = getDirectoryPath();
+            String fileName = getFileName();
+            RDFFormat format = getRDFFormat();
             boolean canFileOverwritte = true;
 
             LocalRepo repository = LocalRepo.createLocalRepo();
-            repository.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+            repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte);
+
         } catch (FileCannotOverwriteException ex) {
+            System.err.println(ex.getMessage());
+        } catch (NotSupporteRDFFormatException ex) {
+            System.err.println(ex.getMessage());
         }
     }
 }

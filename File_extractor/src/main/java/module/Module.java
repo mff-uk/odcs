@@ -37,7 +37,7 @@ public class Module implements GraphicalExtractor {
         this.config.setValue(Config.NameDPU.name(), "");
         this.config.setValue(Config.Description.name(), "");
         this.config.setValue(Config.Path.name(), "");
-        this.config.setValue(Config.RDFFormat.name(), RDFFormat.RDFXML.toString());
+        this.config.setValue(Config.FileSuffix.name(), RDFFormat.RDFXML.toString());
     }
 
     public Type getType() {
@@ -83,16 +83,37 @@ public class Module implements GraphicalExtractor {
      * Implementation of module functionality here.
      *
      */
+    private String getPath()
+    {
+        String path=(String)config.getValue(Config.Path.name());
+        
+        return path;
+    }
+    
+    private String getFileSuffix()
+    {
+        String suffix=(String)config.getValue(Config.FileSuffix.name());
+        
+        return suffix;
+    }
+    
+    private boolean isOnlySuffixUsed()
+    {
+        boolean useSuffix=(Boolean)config.getValue(Config.OnlyThisSuffix.name());
+        
+        return useSuffix;
+    }
+    
+    
+    
     public void extract(ExtractContext context) throws ExtractException {
 
-        String repositoryPath = "C:\\intlib\\myRepository";
-        
-        String path = "C:\\intlib\\Input_Test_Files\\";
-        String suffix = ".rdf";
-        String baseURI = "";
-        boolean useSuffix = true;
+        final String baseURI = "";
+        final String path = getPath();
+        final String suffix =getFileSuffix();
+        final boolean useOnlyThisSuffix =isOnlySuffixUsed();
 
-        LocalRepo repository = LocalRepo.createLocalRepo(repositoryPath);
-        repository.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+        LocalRepo repository = LocalRepo.createLocalRepo();
+        repository.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useOnlyThisSuffix);
     }
 }
