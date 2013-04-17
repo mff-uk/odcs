@@ -79,7 +79,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.modules.start();
 		// load bundles from directory
 // TODO: Change according to your settings
-		this.modules.installDirectory("e:/Tmp/intlib/libs_3");
+		this.modules.installDirectory("C:/Users/Bogo/intlib/intlib/frontend/dist");
 
 
 		this.addDetachListener(new DetachListener() {

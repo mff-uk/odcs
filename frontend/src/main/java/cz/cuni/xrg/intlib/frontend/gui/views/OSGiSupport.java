@@ -170,8 +170,7 @@ public class OSGiSupport extends CustomComponent implements View {
 				for (String key : bundlesKeys) {
 					Bundle item = installed.get(key);
 
-					String Name = item.getHeaders().get("Bundle-Name");
-					String SymbolicName = item.getHeaders().get("Bundle-SymbolicName");
+					String SymbolicName = (String)item.getHeaders().get("Bundle-SymbolicName");
 
 					table_1.addItem(new Object[] {key, SymbolicName}, id++);
 				}
