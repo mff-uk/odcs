@@ -127,13 +127,6 @@ public class DPUDetail extends Window {
 		});
 		buttonBar.addComponent(cancelButton);
 
-    protected void saveDPUInstance() {
-        dpu.setName(dpuName.getValue());
-        dpu.setDescription(dpuDescription.getValue());
-
-
-
-
 		this.setContent(mainLayout);
 	}
 
