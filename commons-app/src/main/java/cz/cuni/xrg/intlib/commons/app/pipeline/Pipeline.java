@@ -1,42 +1,59 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import javax.persistence.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import cz.cuni.xrg.intlib.commons.app.pipeline.event.ETLPipeline;
-import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineAbortedEvent;
+import cz.cuni.xrg.intlib.commons.event.ETLPipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
+import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineStartedEvent;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.GraphIterator;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
-import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractCompletedEvent;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadCompletedEvent;
+import cz.cuni.xrg.intlib.commons.loader.LoadContext;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.loader.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.transformer.TransformCompletedEvent;
+import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformFailedEvent;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Represents a fixed workflow composed of one or several {@link Extract}s,
  * {@link Transform}s and {@link Load}s organized in acyclic graph. <br/>
  * Processing will always take place in the following order: <ol> <li>Execute
- * all {@link Extract}s</li> <ul> <li>If an Extractor throws an error publish
- * an {@link ExtractFailedEvent} - otherwise publish
- * an {@link ExtractCompletedEvent}</li> <li>If an Extractor requests
- * cancellation of the pipeline through {@link ProcessingContext#cancelPipeline}
- * publish a {@link PipelineAbortedEvent} and exit</li> </ul> <li>Execute all
+ * all {@link Extract}s</li> <ul> <li>If an Extractor throws an error publish an
+ * {@link ExtractFailedEvent} - otherwise publish an
+ * {@link ExtractCompletedEvent}</li> <li>If an Extractor requests cancellation
+ * of the pipeline through {@link ProcessingContext#cancelPipeline} publish a
+ * {@link PipelineAbortedEvent} and exit</li> </ul> <li>Execute all
  * {@link Transform}s in the order of their dependences given by graph</li>
- * <ul> <li>If a Transformer throws an error publish
- * an {@link TransformFailedEvent} - otherwise publish
- * an {@link TransformCompletedEvent}</li>
+ * <ul> <li>If a Transformer throws an error publish an
+ * {@link TransformFailedEvent} - otherwise publish an
+ * {@link TransformCompletedEvent}</li>
  * <li>If a Transformer requests cancellation of the pipeline through
  * {@link ProcessingContext#cancelPipeline} publish a
  * {@link PipelineAbortedEvent} and exit</li> </ul> <li>Execute all
- * {@link Load}s</li> <ul> <li>If a Loader throws an error publish
- * an {@link LoadFailedEvent} - otherwise publish an {@link LoadCompletedEvent}
+ * {@link Load}s</li> <ul> <li>If a Loader throws an error publish an
+ * {@link LoadFailedEvent} - otherwise publish an {@link LoadCompletedEvent}
  * </li>
  * <li>If a Loader requests cancellation of the pipeline through
  * {@link ProcessingContext#cancelPipeline} publish a
@@ -54,7 +71,7 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformFailedEvent;
  * @author Bogo
  */
 @Entity
-@Table(name="pipeline_model")
+@Table(name = "pipeline_model")
 public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublisherAware {
 
     /**
@@ -63,22 +80,17 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
     //private State state;
-
     /**
      * Human-readable pipeline name
      */
     private String name;
-
     /**
      * Human-readable pipeline description
      */
     private String description;
-
     @Transient
     private PipelineGraph graph;
-
     /**
      * Publisher instance responsible for publishing pipeline execution events.
      */
@@ -89,14 +101,14 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
      * Default constructor for JPA
      */
     public Pipeline() {
-
+        this.eventPublisher = new GenericApplicationContext();
     }
 
     public Pipeline(String name, String description) {
         this.name = name;
         this.description = description;
+        this.eventPublisher = new GenericApplicationContext();
     }
-
 
     public String getName() {
         return name;
@@ -115,16 +127,15 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
         description = newDescription;
     }
 
- /*
-    public State getState() {
-        return state;
-    }
+    /*
+     public State getState() {
+     return state;
+     }
 
-    public void setState(State newState) {
-        state = newState;
-    }
-*/
-
+     public void setState(State newState) {
+     state = newState;
+     }
+     */
     @Override
     public PipelineGraph getGraph() {
         return graph;
@@ -150,6 +161,7 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
 
     /**
      * Setter for event publisher instance.
+     *
      * @param eventPublisher
      */
     @Override
@@ -162,12 +174,90 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
      */
     @Override
     public void run() {
-    	//TODO implement
+
+        long pipelineStart = System.currentTimeMillis();
+        String runId = UUID.randomUUID().toString();
+        final Map<String, Object> customData = new HashMap<String, Object>();
+
+        DependencyGraph dependencyGraph = new DependencyGraph(graph);
+        GraphIterator iterator = new GraphIterator(dependencyGraph);
+
+        eventPublisher.publishEvent(new PipelineStartedEvent(this, runId, this));
+        
+        while (iterator.hasNext()) {
+
+            Node node = iterator.next();
+            DPUInstance dpuInstance = node.getDpuInstance();
+            DPU dpu = dpuInstance.getDpu();
+
+            Type dpuType = dpu.getType();
+            String dpuJarPath = dpu.getJarPath();
+
+            Configuration configuration = dpuInstance.getInstanceConfig();
+            ModuleFacade moduleFacade = new ModuleFacade();
+
+            switch (dpuType) {
+
+                case EXTRACTOR: {
+
+                    Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
+                    extractor.setSettings(configuration);
+
+                    ExtractContext context = new ExtractContext(runId, customData);
+
+                    try {
+                        long start = System.currentTimeMillis();
+
+                        extractor.extract(context);
+                        context.setDuration(System.currentTimeMillis() - start);
+                        eventPublisher.publishEvent(new ExtractCompletedEvent(extractor, context, this));
+
+                    } catch (ExtractException ex) {
+                        eventPublisher.publishEvent(new ExtractFailedEvent(ex, extractor, context, this));
+                    }
+                }
+
+                case TRANSFORMER: {
+                    Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
+                    transformer.setSettings(configuration);
+
+                    TransformContext context = new TransformContext(runId, customData);
+
+                    try {
+                        long start = System.currentTimeMillis();
+
+                        transformer.transform(context);
+                        context.setDuration(System.currentTimeMillis() - start);
+                        eventPublisher.publishEvent(new TransformCompletedEvent(transformer, context, this));
+
+                    } catch (TransformException ex) {
+                        eventPublisher.publishEvent(new TransformFailedEvent(ex, transformer, context, this));
+                    }
+                }
+
+                case LOADER: {
+                    Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
+                    loader.setSettings(configuration);
+
+                    LoadContext context = new LoadContext(runId, customData);
+                    try {
+                        long start = System.currentTimeMillis();
+
+                        loader.load(context);
+                        context.setDuration(System.currentTimeMillis() - start);
+                        eventPublisher.publishEvent(new LoadCompletedEvent(loader, context, this));
+                    } catch (LoadException ex) {
+                        eventPublisher.publishEvent(new LoadFailedEvent(ex, loader, context, this));
+                    }
+                }
+            }
+        }
+        
+        eventPublisher.publishEvent(new PipelineCompletedEvent((System.currentTimeMillis() - pipelineStart), this, runId, this));
     }
 
-	@Override
-	public String getResourceId() {
-		return Pipeline.class.toString();
-	}
-
+    @Override
+    public String getResourceId() {
+        return Pipeline.class.toString();
+    }
 }

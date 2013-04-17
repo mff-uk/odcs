@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.event;
 
+import cz.cuni.xrg.intlib.commons.event.ETLPipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.event.ETLEvent;
 
