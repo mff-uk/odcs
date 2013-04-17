@@ -9,7 +9,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.module.*;
+import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.net.URI;
 
