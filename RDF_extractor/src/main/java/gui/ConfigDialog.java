@@ -125,7 +125,7 @@ public class ConfigDialog extends CustomComponent {
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 			//griddata.setValue( (List<String>) conf.getValue(Config.GraphsUri.name()));
 			textAreaConstr.setValue( (String) conf.getValue(Config.SPARQL_query.name()));
-			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name()));
+			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
 		}
 		catch(Exception ex) {
 			// throw setting exception
