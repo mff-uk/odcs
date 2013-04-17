@@ -5,17 +5,11 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
  *
  * @author Jiri Tomes
  */
-public class PipelineWorker implements Runnable {
+public class PipelineWorker extends Thread {
 
-    private boolean justWorking = false;
+    private boolean alive = true;
 
-    public boolean isWorking() {
-        return justWorking;
-    }
 
-    /*
-     * TODO - Implement me
-     */
     public void cancel(PipelineExecution execution) {
     }
 
@@ -23,8 +17,14 @@ public class PipelineWorker implements Runnable {
     }
 
     public void kill() {
+    	alive = false;
     }
 
     public void run() {
+    	
+    	while (alive) {
+    		
+    	}
+    	
     }
 }
