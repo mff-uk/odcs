@@ -260,7 +260,7 @@ public static IndexedContainer getFridContainer() {
 		        // captions before approving it as a new item.
 
 			comboBoxSparql.setNewItemHandler(new NewItemHandler() {
-	            @Override
+
 	            public void addNewItem(final String newItemCaption) {
 	                boolean newItem = true;
 	                for (final Object itemId : comboBoxSparql.getItemIds()) {

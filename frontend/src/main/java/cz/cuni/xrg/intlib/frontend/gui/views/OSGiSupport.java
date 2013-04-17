@@ -164,7 +164,6 @@ public class OSGiSupport extends CustomComponent implements View {
 				java.util.Map<String, Bundle> installed = frame.HACK_installed();
 
 				int id = 0;
-
 				//Collection<Bundle> bundles = installed.keySet()();
 				Set<String> bundlesKeys = installed.keySet();
 				for (String key : bundlesKeys) {
