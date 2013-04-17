@@ -9,9 +9,11 @@ public enum Config {
 	/**
 	 * TODO: Put names for your configuration here.
 	 */
+
 	NameDPU //String
 	,Description //String
         ,Path //String
 	,FileSuffix //String
         ,OnlyThisSuffix //boolean
+
 }

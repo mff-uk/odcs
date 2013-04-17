@@ -24,14 +24,14 @@ public class ConfigDialog extends CustomComponent {
 //    private Button buttonCanc;
 //    private Button buttonSave;
 //    private Button buttonDev;
-    private GridLayout gridLayoutName;
+//    private GridLayout gridLayoutName;
     private TextArea txtQuery;
     private Label labelUpQuer;
-    private TextArea textAreaDescr;
-    private Label labelDescr;
-    private TextField textFieldName;
-    private Label labelName;
-    private HorizontalLayout horizontalLayoutButtons;
+  //  private TextArea textAreaDescr;
+ //   private Label labelDescr;
+  //  private TextField textFieldName;
+ //   private Label labelName;
+  //  private HorizontalLayout horizontalLayoutButtons;
 
     public ConfigDialog() {
         buildMainLayout();
@@ -52,8 +52,8 @@ public class ConfigDialog extends CustomComponent {
          * ids of values. Also remember that you can return null in case of
          * invalid configuration in dialog.
          */
-        config.setValue(Config.NameDPU.name(), textFieldName.getValue());
-        config.setValue(Config.Description.name(), textAreaDescr.getValue());
+     //   config.setValue(Config.NameDPU.name(), textFieldName.getValue());
+     //   config.setValue(Config.Description.name(), textAreaDescr.getValue());
         config.setValue(Config.SPARQL_Update_Query.name(), txtQuery.getValue());
 
 
@@ -75,8 +75,8 @@ public class ConfigDialog extends CustomComponent {
          */
         try {
 
-            textFieldName.setValue((String) conf.getValue(Config.NameDPU.name()));
-            textAreaDescr.setValue((String) conf.getValue(Config.Description.name()));
+      //      textFieldName.setValue((String) conf.getValue(Config.NameDPU.name()));
+      //      textAreaDescr.setValue((String) conf.getValue(Config.Description.name()));
             txtQuery.setValue((String) conf.getValue(Config.SPARQL_Update_Query.name()));
 
         } catch (Exception ex) {
@@ -86,112 +86,38 @@ public class ConfigDialog extends CustomComponent {
     }
 
     private GridLayout buildMainLayout() {
-        /**
-         * TODO Build your component here.
-         */
-        // common part: create layout
-        mainLayout = new GridLayout(2, 4);
-        mainLayout.setImmediate(false);
-        mainLayout.setWidth("100%");
-        mainLayout.setHeight("100%");
-        mainLayout.setMargin(true);
+		/**
+		 * TODO Build your component here.
+		 */
+		
+		// common part: create layout
+		mainLayout = new GridLayout(2, 1);
+		mainLayout.setImmediate(false);
+		mainLayout.setWidth("100%");
+		mainLayout.setHeight("100%");
+		mainLayout.setMargin(true);
 
-        // top-level component properties
-        setWidth("100%");
-        setHeight("100%");
+		// top-level component properties
+		setWidth("100%");
+		setHeight("100%");
 
-        // gridLayoutName
-        // gridLayoutName = buildGridLayoutName();
-        // mainLayout.addComponent(gridLayoutName, "top:40.0px;left:40.0px;");
+		// labelUpQuer
+		labelUpQuer = new Label();
+		labelUpQuer.setImmediate(false);
+		labelUpQuer.setWidth("74px");
+		labelUpQuer.setHeight("-1px");
+		labelUpQuer.setValue("SPARQL  Update Query");
+		mainLayout.addComponent(labelUpQuer, 0, 0);
 
-        // labelName
-        labelName = new Label();
-        labelName.setImmediate(false);
-        labelName.setWidth("-1px");
-        labelName.setHeight("-1px");
-        labelName.setValue("Name:");
-        mainLayout.addComponent(labelName, 0, 0);
+		// textAreaUpQuer
+		txtQuery = new TextArea();
+		txtQuery.setImmediate(false);
+		txtQuery.setWidth("100%");
+		txtQuery.setHeight("211px");
+		mainLayout.addComponent(txtQuery, 1, 0);
+		mainLayout.setColumnExpandRatio(0, 0.10f);
+		mainLayout.setColumnExpandRatio(1, 0.90f);
 
-        // textFieldName
-        textFieldName = new TextField();
-        textFieldName.setImmediate(false);
-        textFieldName.setWidth("260px");
-        textFieldName.setHeight("-1px");
-        mainLayout.addComponent(textFieldName, 1, 0);
-
-        // labelDescr
-        labelDescr = new Label();
-        labelDescr.setImmediate(false);
-        labelDescr.setWidth("-1px");
-        labelDescr.setHeight("-1px");
-        labelDescr.setValue("Description:");
-        mainLayout.addComponent(labelDescr, 0, 1);
-
-        // textAreaDescr
-        textAreaDescr = new TextArea();
-        textAreaDescr.setImmediate(false);
-        textAreaDescr.setWidth("260px");
-        textAreaDescr.setHeight("36px");
-        mainLayout.addComponent(textAreaDescr, 1, 1);
-
-        // labelUpQuer
-        labelUpQuer = new Label();
-        labelUpQuer.setImmediate(false);
-        labelUpQuer.setWidth("74px");
-        labelUpQuer.setHeight("-1px");
-        labelUpQuer.setValue("SPARQL  Update Query");
-        mainLayout.addComponent(labelUpQuer, 0, 2);
-
-        // txtQuery
-        txtQuery = new TextArea();
-        txtQuery.setImmediate(false);
-        txtQuery.setWidth("260px");
-        txtQuery.setHeight("211px");
-        mainLayout.addComponent(txtQuery, 1, 2);
-
-        // buttonDev
-//        buttonDev = new Button();
-//        buttonDev.setCaption("Develop");
-//        buttonDev.setImmediate(true);
-//        buttonDev.setWidth("-1px");
-//        buttonDev.setHeight("-1px");
-//        mainLayout.addComponent(buttonDev, 0, 3);
-
-
-        horizontalLayoutButtons = buildHorizontalLayout();
-        mainLayout.addComponent(horizontalLayoutButtons, 1, 3);
-
-
-        return mainLayout;
-    }
-
-    private HorizontalLayout buildHorizontalLayout() {
-        // common part: create layout
-        horizontalLayoutButtons = new HorizontalLayout();
-        horizontalLayoutButtons.setImmediate(false);
-        horizontalLayoutButtons.setWidth("240px");
-        horizontalLayoutButtons.setHeight("1px");
-        horizontalLayoutButtons.setMargin(false);
-        horizontalLayoutButtons.setSpacing(true);
-
-
-        // buttonSave
-//        buttonSave = new Button();
-//        buttonSave.setCaption("Save & Commit");
-//        buttonSave.setImmediate(true);
-//        buttonSave.setWidth("-1px");
-//
-//        buttonSave.setHeight("-1px");
-//        horizontalLayoutButtons.addComponent(buttonSave);
-//
-//        // buttonCanc
-//        buttonCanc = new Button();
-//        buttonCanc.setCaption("Cancel");
-//        buttonCanc.setImmediate(true);
-//        buttonCanc.setWidth("-1px");
-//        buttonCanc.setHeight("-1px");
-//        horizontalLayoutButtons.addComponent(buttonCanc);
-
-        return horizontalLayoutButtons;
-    }
+		return mainLayout;
+	}
 }
