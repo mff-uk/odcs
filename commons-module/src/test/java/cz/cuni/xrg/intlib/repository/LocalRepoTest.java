@@ -287,6 +287,44 @@ public class LocalRepoTest {
         assertFalse(afterUpdate);
         
     }
+    
+    @Test
+    public void extractTEDFile1ToRepository() {
+        String path = "http://ld.opendata.cz/tedDumps/ted4.ttl";
+        String suffix = "";
+        String baseURI = "";
+        boolean useSuffix = false;
+
+        cleanRepository();
+        long size = localRepo.getTripleCountInRepository();
+
+        localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+
+        long newSize = localRepo.getTripleCountInRepository();
+
+        boolean triplesAdded = newSize > size;
+
+        assertTrue(triplesAdded);
+    }
+    
+    @Test
+    public void extractTEDFile2ToRepository() {
+        String path = "http://ld.opendata.cz/tedDumps/ted4b.ttl";
+        String suffix = "";
+        String baseURI = "";
+        boolean useSuffix = true;
+
+        cleanRepository();
+        long size = localRepo.getTripleCountInRepository();
+
+        localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+
+        long newSize = localRepo.getTripleCountInRepository();
+
+        boolean triplesAdded = newSize > size;
+
+        assertTrue(triplesAdded);
+    }
 
     @AfterClass
     public static void cleanRepository() {
