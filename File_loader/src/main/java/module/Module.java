@@ -35,8 +35,8 @@ public class Module implements GraphicalLoader {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.NameDPU.name(), "");
-        this.config.setValue(Config.Description.name(), "");
+        //this.config.setValue(Config.NameDPU.name(), "");
+        //this.config.setValue(Config.Description.name(), "");
         this.config.setValue(Config.FileName.name(), "");
         this.config.setValue(Config.DirectoryPath.name(), "");
         this.config.setValue(Config.RDFFileFormat.name(),RDFFormatType.RDFXML.name());
