@@ -67,7 +67,7 @@ public class DPU extends CustomComponent implements View {
 		mainLayout.addComponent(lblUri, "top:100.0px;left:80.0px;");
 		
 		txtUri = new TextField();
-		txtUri.setWidth("250px");
+		txtUri.setWidth("480px");
 		txtUri.setHeight("25px");
 		mainLayout.addComponent(txtUri, "top:120.0px;left:80.0px;");
 		

@@ -6,7 +6,7 @@ import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.Type;
 
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
-import cz.cuni.xrg.intlib.commons.module.*;
+import cz.cuni.xrg.intlib.commons.web.*;
 
 
 import com.vaadin.navigator.View;

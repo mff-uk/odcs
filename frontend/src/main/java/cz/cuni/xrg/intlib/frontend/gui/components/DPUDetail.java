@@ -127,12 +127,6 @@ public class DPUDetail extends Window {
 		});
 		buttonBar.addComponent(cancelButton);
 
-		mainLayout.addComponent(buttonBar);
-		mainLayout.setSizeUndefined();
-
-
-
-
 		this.setContent(mainLayout);
 	}
 

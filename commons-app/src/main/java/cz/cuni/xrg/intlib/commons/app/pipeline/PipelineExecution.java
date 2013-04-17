@@ -1,21 +1,50 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import java.util.HashMap;
+import java.util.UUID;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+
+import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
+import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineStartedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractCompletedEvent;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
+import cz.cuni.xrg.intlib.commons.loader.LoadCompletedEvent;
+import cz.cuni.xrg.intlib.commons.loader.LoadContext;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
+import cz.cuni.xrg.intlib.commons.loader.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
+import cz.cuni.xrg.intlib.commons.transformer.TransformCompletedEvent;
+import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.commons.transformer.TransformFailedEvent;
+
 
 /**
  * Information about executed pipeline and their states.
  *
  * @author Jiri Tomes
+ * @author Jan Vojt
  */
-public class PipelineExecution implements Runnable {
+public class PipelineExecution implements Runnable, ApplicationEventPublisherAware {
 
+	/**
+	 * Unique run identification.
+	 */
+	private String runId = UUID.randomUUID().toString();
+	
     /**
      * Actual status for executed pipeline.
      */
@@ -26,8 +55,20 @@ public class PipelineExecution implements Runnable {
      */
     private Pipeline pipeline;
     
-    private ModuleFacade modules;
-
+    /**
+     * Publisher instance responsible for publishing pipeline execution events.
+     */
+    private ApplicationEventPublisher eventPublisher;
+    
+    /**
+     * Module facade for fetching executable DPUs through OSGi.
+     */
+    private ModuleFacade moduleFacade;
+    
+    /**
+     * Constructor
+     * @param pipeline
+     */
     public PipelineExecution(Pipeline pipeline) {
         this.pipeline = pipeline;
     }
@@ -38,10 +79,6 @@ public class PipelineExecution implements Runnable {
 
     public void setExecutionStatus(ExecutionStatus newStatus) {
         status = newStatus;
-    }
-    
-    public void setModuleFacade(ModuleFacade modules) {
-    	this.modules = modules;
     }
 
 	/**
@@ -57,41 +94,145 @@ public class PipelineExecution implements Runnable {
 	public void setPipeline(Pipeline pipeline) {
 		this.pipeline = pipeline;
 	}
-    
-    public void run() {
-    	
-    	DependencyGraph dGraph = new DependencyGraph(pipeline.getGraph());
-    	for (Node node : dGraph) {
-    		DPUInstance iDpu = node.getDpuInstance();
-    		DPU dpu = iDpu.getDpu();
-    		String uri = dpu.getJarPath();
-    		
-    		switch (dpu.getType()) {
-    			case EXTRACTOR :
-    				runExtractor(modules.getInstanceExtract(uri));
-    				break;
-    			case TRANSFORMER :
-    				runTransformer(modules.getInstanceTransform(uri));
-    				break;
-    			case LOADER :
-    				runLoader(modules.getInstanceLoader(uri));
-    				break;
-    			default :
-    				throw new RuntimeException("Unknown DPU type.");
-    		}
-    	}
-    }
-    
-    private void runExtractor(Extract dpu) {
 
+	/**
+	 * @param moduleFacade the moduleFacade to set
+	 */
+	public void setModuleFacade(ModuleFacade moduleFacade) {
+		this.moduleFacade = moduleFacade;
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.eventPublisher = publisher;
+	}
+
+	/**
+	 * Runs the pipeline.
+	 */
+	@Override
+    public void run() {
+
+        long pipelineStart = System.currentTimeMillis();
+        DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
+        eventPublisher.publishEvent(new PipelineStartedEvent(pipeline, runId, this));
+
+        for (Node node : dependencyGraph) {
+        	runNode(node);
+        }
+        
+        long duration = System.currentTimeMillis() - pipelineStart;
+        eventPublisher.publishEvent(
+        	new PipelineCompletedEvent(duration, pipeline, runId, this)
+        );
     }
     
-    private void runTransformer(Transform dpu) {
+	/**
+	 * Executes a general node (ETL) in pipeline graph.
+	 * @param node
+	 */
+    private void runNode(Node node) {
     	
+    	DPUInstance dpuInstance = node.getDpuInstance();
+        DPU dpu = dpuInstance.getDpu();
+
+        Type dpuType = dpu.getType();
+        String dpuJarPath = dpu.getJarPath();
+        Configuration configuration = dpuInstance.getInstanceConfig();
+        
+        switch (dpuType) {
+        case EXTRACTOR : {
+            Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
+            extractor.setSettings(configuration);
+            ExtractContext ctx = new ExtractContext(runId, new HashMap<String, Object>());
+            runExtractor(extractor, ctx);
+        	break;
+        }
+        case TRANSFORMER : {
+            Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
+            transformer.setSettings(configuration);
+            TransformContext ctx = new TransformContext(runId, new HashMap<String, Object>());
+        	runTransformer(transformer, ctx);
+        	break;
+        }
+        case LOADER : {
+            Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
+            loader.setSettings(configuration);
+        	LoadContext ctx = new LoadContext(runId, new HashMap<String, Object>());
+        	runLoader(loader, ctx);
+        	break;
+        }
+        default :
+        	throw new RuntimeException("Unknown DPU type.");
+        }
     }
     
-    private void runLoader(Load dpu) {
+    /**
+     * Runs a single extractor DPU module.
+     * @param extractor
+     * @param ctx
+     */
+    private void runExtractor(Extract extractor, ExtractContext ctx) {
+
+        try {
+            long start = System.currentTimeMillis();
+
+            extractor.extract(ctx);
+            ctx.setDuration(System.currentTimeMillis() - start);
+            eventPublisher.publishEvent(
+            	new ExtractCompletedEvent(extractor, ctx, this)
+            );
+
+        } catch (ExtractException ex) {
+            eventPublisher.publishEvent(
+            	new ExtractFailedEvent(ex, extractor, ctx, this)
+            );
+        }
+    }
     
+    /**
+     * Runs a single Transformer DPU module.
+     * @param transformer
+     * @param ctx
+     */
+    private void runTransformer(Transform transformer, TransformContext ctx) {
+
+        try {
+            long start = System.currentTimeMillis();
+
+            transformer.transform(ctx);
+            ctx.setDuration(System.currentTimeMillis() - start);
+            eventPublisher.publishEvent(
+            		new TransformCompletedEvent(transformer, ctx, this)
+            );
+
+        } catch (TransformException ex) {
+            eventPublisher.publishEvent(
+            	new TransformFailedEvent(ex, transformer, ctx, this)
+            );
+        }
+    }
+    
+    /**
+     * Runs a single Loader DPU module.
+     * @param loader
+     * @param ctx
+     */
+    private void runLoader(Load loader, LoadContext ctx) {
+
+        try {
+            long start = System.currentTimeMillis();
+
+            loader.load(ctx);
+            ctx.setDuration(System.currentTimeMillis() - start);
+            eventPublisher.publishEvent(
+            	new LoadCompletedEvent(loader, ctx, this)
+            );
+        } catch (LoadException ex) {
+            eventPublisher.publishEvent(
+            	new LoadFailedEvent(ex, loader, ctx, this)
+            );
+        }
     }
     
 }
