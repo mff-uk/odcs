@@ -134,10 +134,10 @@ public class ConfigDialog extends CustomComponent {
 	}
 
 public static IndexedContainer getFridContainer() {
-		
+
 		String[] endpoint = { "http://example:8894/sparql" };
 		String[] visibleCols = new String[] {  "endpoint" };
-		
+
 		IndexedContainer result = new IndexedContainer();
 
 		for (String p : visibleCols) {
@@ -148,7 +148,7 @@ public static IndexedContainer getFridContainer() {
 		for (int i = 0; i < endpoint.length ; i++) {
 			Object num = result.addItem();
 			result.getContainerProperty(num, "endpoint").setValue(endpoint[i]);
-		
+
 		}
 
 		return result;
@@ -156,23 +156,23 @@ public static IndexedContainer getFridContainer() {
 
 		private GridLayout buildMainLayout() {
 			// common part: create layout
-		
+
 			mainLayout = new GridLayout(1, 1);
 			mainLayout.setImmediate(false);
 			mainLayout.setWidth("100%");
 			mainLayout.setHeight("100%");
-	
-			
+
+
 			// top-level component properties
 			setWidth("100%");
 			setHeight("100%");
-			
+
 			// tabSheet
 			tabSheet = buildTabSheet();
 			mainLayout.addComponent(tabSheet,  0, 0);
 			mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
-			
-			
+
+
 			return mainLayout;
 		}
 
@@ -183,15 +183,15 @@ public static IndexedContainer getFridContainer() {
 			tabSheet.setImmediate(true);
 			tabSheet.setWidth("100%");
 			tabSheet.setHeight("100%");
-			
+
 			// verticalLayoutCore
 			verticalLayoutCore = buildVerticalLayoutCore();
 			tabSheet.addTab(verticalLayoutCore, "Core", null);
-			
+
 			// verticalLayoutDetails
 			verticalLayoutDetails = buildVerticalLayoutDetails();
 			tabSheet.addTab(verticalLayoutDetails, "Details", null);
-			
+
 			return tabSheet;
 		}
 
@@ -203,16 +203,16 @@ public static IndexedContainer getFridContainer() {
 			verticalLayoutCore.setWidth("100.0%");
 			verticalLayoutCore.setHeight("100%");
 			verticalLayoutCore.setMargin(true);
-			
-			
+
+
 			// gridLayoutAdm
 			gridLayoutAdm = buildGridLayoutAdm();
 			verticalLayoutCore.addComponent(gridLayoutAdm);
-			
+
 			return verticalLayoutCore;
 		}
 
-		
+
 
 		private GridLayout buildGridLayoutAdm() {
 			// common part: create layout
@@ -225,7 +225,7 @@ public static IndexedContainer getFridContainer() {
 			gridLayoutAdm.setRows(4);
 			gridLayoutAdm.setColumnExpandRatio(0, 0.10f);
 			gridLayoutAdm.setColumnExpandRatio(1, 0.90f);
-			
+
 			// labelSparql
 			labelSparql = new Label();
 			labelSparql.setImmediate(false);
@@ -234,7 +234,7 @@ public static IndexedContainer getFridContainer() {
 			labelSparql.setValue("SPARQL endpoint:");
 			gridLayoutAdm.addComponent(labelSparql, 0, 0);
 			gridLayoutAdm.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
-			
+
 			// comboBoxSparql
 			Container cont = getFridContainer();
 			comboBoxSparql = new ComboBox();
@@ -245,22 +245,22 @@ public static IndexedContainer getFridContainer() {
 			comboBoxSparql.setNewItemsAllowed(true);
 			comboBoxSparql.setNullSelectionAllowed(false);
 			comboBoxSparql.setTextInputAllowed(true);
-			
+
 			comboBoxSparql.setItemCaptionPropertyId("endpoint");
 			comboBoxSparql.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-			
+
 			comboBoxSparql.setFilteringMode(FilteringMode.CONTAINS);
 			comboBoxSparql.setImmediate(true);
-			
+
 
 		        // Disallow null selections
 			comboBoxSparql.setNullSelectionAllowed(false);
 
 		        // Check if the caption for new item already exists in the list of item
 		        // captions before approving it as a new item.
-			
+
 			comboBoxSparql.setNewItemHandler(new NewItemHandler() {
-	          
+
 	            public void addNewItem(final String newItemCaption) {
 	                boolean newItem = true;
 	                for (final Object itemId : comboBoxSparql.getItemIds()) {
@@ -283,8 +283,8 @@ public static IndexedContainer getFridContainer() {
 	        });
 
 			comboBoxSparql.addValueChangeListener(new Property.ValueChangeListener() {
-				
 
+				@Override
 				public void valueChange(Property.ValueChangeEvent event) {
 					// TODO Auto-generated method stub
 					 final String valueString = String.valueOf(event.getProperty()
@@ -295,7 +295,7 @@ public static IndexedContainer getFridContainer() {
 			});
 			//comboBoxSparql.setInputPrompt(inputPrompt);
 			gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
-			
+
 			// labelNameAdm
 			labelNameAdm = new Label();
 			labelNameAdm.setImmediate(false);
@@ -303,14 +303,14 @@ public static IndexedContainer getFridContainer() {
 			labelNameAdm.setHeight("-1px");
 			labelNameAdm.setValue("Name:");
 			gridLayoutAdm.addComponent(labelNameAdm, 0, 1);
-			
+
 			// textFieldNameAdm
 			textFieldNameAdm = new TextField();
 			textFieldNameAdm.setImmediate(false);
 			textFieldNameAdm.setWidth("100%");
 			textFieldNameAdm.setHeight("-1px");
 			gridLayoutAdm.addComponent(textFieldNameAdm, 1, 1);
-			
+
 			// labelPass
 			labelPass = new Label();
 			labelPass.setImmediate(false);
@@ -318,14 +318,14 @@ public static IndexedContainer getFridContainer() {
 			labelPass.setHeight("-1px");
 			labelPass.setValue("Password:");
 			gridLayoutAdm.addComponent(labelPass, 0, 2);
-			
+
 			// passwordFieldPass
 			passwordFieldPass = new PasswordField();
 			passwordFieldPass.setImmediate(false);
 			passwordFieldPass.setWidth("100%");
 			passwordFieldPass.setHeight("-1px");
 			gridLayoutAdm.addComponent(passwordFieldPass, 1, 2);
-			
+
 			// labelGraph
 			labelGraph = new Label();
 			labelGraph.setImmediate(false);
@@ -333,23 +333,23 @@ public static IndexedContainer getFridContainer() {
 			labelGraph.setHeight("-1px");
 			labelGraph.setValue("Named Graph:");
 			gridLayoutAdm.addComponent(labelGraph, 0, 3);
-			
-		
+
+
 			initializeNamedGraphList();
 			gridLayoutAdm.addComponent(gridLayoutGraph, 1, 3);
-			
-			
+
+
 			return gridLayoutAdm;
 		}
-		
+
 		private static List<String> griddata = initializeGridData();
 		private static List<String> initializeGridData()
 		{
-			List<String> result = new LinkedList<String>(); 
+			List<String> result = new LinkedList<String>();
 			result.add("Some Item 1");
 		//	result.add("Some Item 2");
 			return result;
-			
+
 		}
 		private static void addDataToGridData(String newData)
 		{
@@ -375,14 +375,15 @@ public static IndexedContainer getFridContainer() {
 			gridLayoutGraph.removeAllComponents();
 			gridLayoutGraph.setRows(griddata.size()+1);
 			int row = 0;
-			
+
 			for (String item : griddata) {
 				textFieldGraph = new TextField();
 				textFieldGraph.setWidth("100%");
 				textFieldGraph.setData(row);
 				textFieldGraph.setValue(item);
 				textFieldGraph.addListener(new TextChangeListener() {
-					
+
+					@Override
 					public void textChange(TextChangeEvent event) {
 						TextField tf = (TextField)event.getComponent();
 						Integer index = (Integer)tf.getData();
@@ -394,8 +395,8 @@ public static IndexedContainer getFridContainer() {
 				buttonGraphRem.setCaption("-");
 				buttonGraphRem.setData(row);
 				buttonGraphRem.addClickListener(new ClickListener() {
-					
 
+					@Override
 					public void buttonClick(ClickEvent event) {
 						Button senderButton = event.getButton();
 						Integer row =  (Integer)senderButton.getData();
@@ -409,12 +410,12 @@ public static IndexedContainer getFridContainer() {
 				row++;
 			}
 			gridLayoutGraph.addComponent(buttonGraphAdd, 0, row);
-			
+
 
 		}
 
 		private void initializeNamedGraphList() {
-			
+
 			gridLayoutGraph = new GridLayout();
 			gridLayoutGraph.setImmediate(false);
 			gridLayoutGraph.setWidth("100%");
@@ -423,7 +424,7 @@ public static IndexedContainer getFridContainer() {
 			gridLayoutGraph.setColumns(2);
 			gridLayoutGraph.setColumnExpandRatio(0, 0.95f);
 			gridLayoutGraph.setColumnExpandRatio(1, 0.05f);
-			
+
 			// buttonGraphAdd
 			buttonGraphAdd = new Button();
 			buttonGraphAdd.setCaption("+");
@@ -431,16 +432,16 @@ public static IndexedContainer getFridContainer() {
 			buttonGraphAdd.setWidth("55px");
 			buttonGraphAdd.setHeight("-1px");
 			buttonGraphAdd.addListener(new ClickListener() {
-		
 
+				@Override
 				public void buttonClick(ClickEvent event) {
 					addDataToGridData("New data");
 					refreshNamedGraphData();
 				}
 			});
-	
+
 			refreshNamedGraphData();
-			
+
 		}
 
 
@@ -452,11 +453,11 @@ public static IndexedContainer getFridContainer() {
 		verticalLayoutDetails.setHeight("-1px");
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
-		
+
 		// gridLayoutConstr
 		gridLayoutConstr = buildGridLayoutConstr();
 		verticalLayoutDetails.addComponent(gridLayoutConstr);
-		
+
 		// labelOpt
 		labelOpt = new Label();
 		labelOpt.setImmediate(false);
@@ -464,7 +465,7 @@ public static IndexedContainer getFridContainer() {
 		labelOpt.setHeight("-1px");
 		labelOpt.setValue("Options:");
 		verticalLayoutDetails.addComponent(labelOpt);
-		
+
 		// checkBoxFail
 		checkBoxFail = new CheckBox();
 		checkBoxFail
@@ -473,7 +474,7 @@ public static IndexedContainer getFridContainer() {
 		checkBoxFail.setWidth("-1px");
 		checkBoxFail.setHeight("-1px");
 		verticalLayoutDetails.addComponent(checkBoxFail);
-		
+
 		return verticalLayoutDetails;
 	}
 
@@ -487,7 +488,7 @@ public static IndexedContainer getFridContainer() {
 		gridLayoutConstr.setMargin(false);
 		gridLayoutConstr.setSpacing(true);
 		gridLayoutConstr.setColumns(2);
-		
+
 		// labelConstr
 		labelConstr = new Label();
 		labelConstr.setImmediate(false);
@@ -495,14 +496,14 @@ public static IndexedContainer getFridContainer() {
 		labelConstr.setHeight("-1px");
 		labelConstr.setValue("SPARQL  Construct:");
 		gridLayoutConstr.addComponent(labelConstr, 0, 0);
-		
+
 		// textAreaConstr
 		textAreaConstr = new TextArea();
 		textAreaConstr.setImmediate(false);
 		textAreaConstr.setWidth("208px");
 		textAreaConstr.setHeight("190px");
 		gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
-		
+
 		return gridLayoutConstr;
 	}
 

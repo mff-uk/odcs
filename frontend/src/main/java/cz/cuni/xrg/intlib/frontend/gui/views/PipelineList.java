@@ -98,7 +98,7 @@ public class PipelineList extends CustomComponent implements View {
 			layout.addComponent(deleteButton);
 
 			Button runButton = new Button();
-			runButton.setCaption("delete");
+			runButton.setCaption("run");
 			runButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
