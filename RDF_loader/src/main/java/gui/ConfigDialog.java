@@ -125,7 +125,7 @@ public class ConfigDialog extends CustomComponent {
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 		//	griddata.setValue( (List<String>) conf.getValue(Config.GraphsUri.name()));
-			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name()));
+			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
 
 		}
 		catch(Exception ex) {
