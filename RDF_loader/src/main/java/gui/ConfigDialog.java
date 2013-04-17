@@ -33,7 +33,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import java.util.ArrayList;
 import java.util.Vector;
-import org.apache.commons.lang.ArrayUtils;
 
 
 /**
@@ -132,10 +131,10 @@ public class ConfigDialog extends CustomComponent {
 	}
 
 	public static IndexedContainer getFridContainer() {
-		
+
 		String[] endpoint = { "http://example:8894/sparql" };
 		String[] visibleCols = new String[] {  "endpoint" };
-		
+
 		IndexedContainer result = new IndexedContainer();
 
 		for (String p : visibleCols) {
@@ -146,30 +145,30 @@ public class ConfigDialog extends CustomComponent {
 		for (int i = 0; i < endpoint.length ; i++) {
 			Object num = result.addItem();
 			result.getContainerProperty(num, "endpoint").setValue(endpoint[i]);
-		
+
 		}
 
 		return result;
 	}
 		private GridLayout buildMainLayout() {
 			// common part: create layout
-		
+
 			mainLayout = new GridLayout(1, 1);
 			mainLayout.setImmediate(false);
 			mainLayout.setWidth("100%");
 			mainLayout.setHeight("100%");
-	
-			
+
+
 			// top-level component properties
 			setWidth("100%");
 			setHeight("100%");
-			
+
 			// tabSheet
 			tabSheet = buildTabSheet();
 			mainLayout.addComponent(tabSheet,  0, 0);
 			mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
-			
-			
+
+
 			return mainLayout;
 		}
 
@@ -180,15 +179,15 @@ public class ConfigDialog extends CustomComponent {
 			tabSheet.setImmediate(true);
 			tabSheet.setWidth("100%");
 			tabSheet.setHeight("100%");
-			
+
 			// verticalLayoutCore
 			verticalLayoutCore = buildVerticalLayoutCore();
 			tabSheet.addTab(verticalLayoutCore, "Core", null);
-			
+
 			// verticalLayoutDetails
 			verticalLayoutDetails = buildVerticalLayoutDetails();
 			tabSheet.addTab(verticalLayoutDetails, "Details", null);
-			
+
 			return tabSheet;
 		}
 
@@ -200,16 +199,16 @@ public class ConfigDialog extends CustomComponent {
 			verticalLayoutCore.setWidth("100.0%");
 			verticalLayoutCore.setHeight("100%");
 			verticalLayoutCore.setMargin(true);
-			
-			
+
+
 			// gridLayoutAdm
 			gridLayoutAdm = buildGridLayoutAdm();
 			verticalLayoutCore.addComponent(gridLayoutAdm);
-			
+
 			return verticalLayoutCore;
 		}
 
-		
+
 
 		private GridLayout buildGridLayoutAdm() {
 			// common part: create layout
@@ -222,7 +221,7 @@ public class ConfigDialog extends CustomComponent {
 			gridLayoutAdm.setRows(4);
 			gridLayoutAdm.setColumnExpandRatio(0, 0.10f);
 			gridLayoutAdm.setColumnExpandRatio(1, 0.90f);
-			
+
 			// labelSparql
 			labelSparql = new Label();
 			labelSparql.setImmediate(false);
@@ -231,7 +230,7 @@ public class ConfigDialog extends CustomComponent {
 			labelSparql.setValue("SPARQL endpoint:");
 			gridLayoutAdm.addComponent(labelSparql, 0, 0);
 			gridLayoutAdm.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
-			
+
 			// comboBoxSparql
 			Container cont = getFridContainer();
 			comboBoxSparql = new ComboBox();
@@ -242,20 +241,20 @@ public class ConfigDialog extends CustomComponent {
 			comboBoxSparql.setNewItemsAllowed(true);
 			comboBoxSparql.setNullSelectionAllowed(false);
 			comboBoxSparql.setTextInputAllowed(true);
-			
+
 			comboBoxSparql.setItemCaptionPropertyId("endpoint");
 			comboBoxSparql.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-			
+
 			comboBoxSparql.setFilteringMode(FilteringMode.CONTAINS);
 			comboBoxSparql.setImmediate(true);
-			
+
 
 		        // Disallow null selections
 			comboBoxSparql.setNullSelectionAllowed(false);
 
 		        // Check if the caption for new item already exists in the list of item
 		        // captions before approving it as a new item.
-			
+
 			comboBoxSparql.setNewItemHandler(new NewItemHandler() {
 	            @Override
 	            public void addNewItem(final String newItemCaption) {
@@ -280,7 +279,7 @@ public class ConfigDialog extends CustomComponent {
 	        });
 
 			comboBoxSparql.addValueChangeListener(new Property.ValueChangeListener() {
-				
+
 				@Override
 				public void valueChange(Property.ValueChangeEvent event) {
 					// TODO Auto-generated method stub
@@ -292,7 +291,7 @@ public class ConfigDialog extends CustomComponent {
 			});
 			//comboBoxSparql.setInputPrompt(inputPrompt);
 			gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
-			
+
 			// labelNameAdm
 			labelNameAdm = new Label();
 			labelNameAdm.setImmediate(false);
@@ -300,14 +299,14 @@ public class ConfigDialog extends CustomComponent {
 			labelNameAdm.setHeight("-1px");
 			labelNameAdm.setValue("Name:");
 			gridLayoutAdm.addComponent(labelNameAdm, 0, 1);
-			
+
 			// textFieldNameAdm
 			textFieldNameAdm = new TextField();
 			textFieldNameAdm.setImmediate(false);
 			textFieldNameAdm.setWidth("100%");
 			textFieldNameAdm.setHeight("-1px");
 			gridLayoutAdm.addComponent(textFieldNameAdm, 1, 1);
-			
+
 			// labelPass
 			labelPass = new Label();
 			labelPass.setImmediate(false);
@@ -315,14 +314,14 @@ public class ConfigDialog extends CustomComponent {
 			labelPass.setHeight("-1px");
 			labelPass.setValue("Password:");
 			gridLayoutAdm.addComponent(labelPass, 0, 2);
-			
+
 			// passwordFieldPass
 			passwordFieldPass = new PasswordField();
 			passwordFieldPass.setImmediate(false);
 			passwordFieldPass.setWidth("100%");
 			passwordFieldPass.setHeight("-1px");
 			gridLayoutAdm.addComponent(passwordFieldPass, 1, 2);
-			
+
 			// labelGraph
 			labelGraph = new Label();
 			labelGraph.setImmediate(false);
@@ -330,15 +329,15 @@ public class ConfigDialog extends CustomComponent {
 			labelGraph.setHeight("-1px");
 			labelGraph.setValue("Named Graph:");
 			gridLayoutAdm.addComponent(labelGraph, 0, 3);
-			
-		
+
+
 			initializeNamedGraphList();
 			gridLayoutAdm.addComponent(gridLayoutGraph, 1, 3);
-			
-			
+
+
 			return gridLayoutAdm;
 		}
-		
+
 		private static Vector<String> griddata = initializeGridData();
 		private static Vector<String> initializeGridData()
 		{
@@ -346,7 +345,7 @@ public class ConfigDialog extends CustomComponent {
 			result.add("Some Item 1");
 		//	result.add("Some Item 2");
 			return result;
-			
+
 		}
 		private static void addDataToGridData(String newData)
 		{
@@ -371,14 +370,14 @@ public class ConfigDialog extends CustomComponent {
 			gridLayoutGraph.removeAllComponents();
 			gridLayoutGraph.setRows(griddata.size()+1);
 			int row = 0;
-			
+
 			for (String item : griddata) {
 				textFieldGraph = new TextField();
 				textFieldGraph.setWidth("100%");
 				textFieldGraph.setData(row);
 				textFieldGraph.setValue(item);
 				textFieldGraph.addListener(new TextChangeListener() {
-					
+
 					@Override
 					public void textChange(TextChangeEvent event) {
 						TextField tf = (TextField)event.getComponent();
@@ -391,7 +390,7 @@ public class ConfigDialog extends CustomComponent {
 				buttonGraphRem.setCaption("-");
 				buttonGraphRem.setData(row);
 				buttonGraphRem.addClickListener(new ClickListener() {
-					
+
 					@Override
 					public void buttonClick(ClickEvent event) {
 						Button senderButton = event.getButton();
@@ -406,12 +405,12 @@ public class ConfigDialog extends CustomComponent {
 				row++;
 			}
 			gridLayoutGraph.addComponent(buttonGraphAdd, 0, row);
-			
+
 
 		}
 
 		private void initializeNamedGraphList() {
-			
+
 			gridLayoutGraph = new GridLayout();
 			gridLayoutGraph.setImmediate(false);
 			gridLayoutGraph.setWidth("100%");
@@ -420,7 +419,7 @@ public class ConfigDialog extends CustomComponent {
 			gridLayoutGraph.setColumns(2);
 			gridLayoutGraph.setColumnExpandRatio(0, 0.95f);
 			gridLayoutGraph.setColumnExpandRatio(1, 0.05f);
-			
+
 			// buttonGraphAdd
 			buttonGraphAdd = new Button();
 			buttonGraphAdd.setCaption("+");
@@ -428,18 +427,18 @@ public class ConfigDialog extends CustomComponent {
 			buttonGraphAdd.setWidth("55px");
 			buttonGraphAdd.setHeight("-1px");
 			buttonGraphAdd.addListener(new ClickListener() {
-		
+
 				@Override
 				public void buttonClick(ClickEvent event) {
 					addDataToGridData("New data");
 					refreshNamedGraphData();
 				}
 			});
-	
+
 			refreshNamedGraphData();
-			
+
 		}
-		
+
 
  		private VerticalLayout buildVerticalLayoutDetails() {
 			// common part: create layout
@@ -449,7 +448,7 @@ public class ConfigDialog extends CustomComponent {
 			verticalLayoutDetails.setHeight("100.0%");
 			verticalLayoutDetails.setMargin(true);
 			verticalLayoutDetails.setSpacing(true);
-			
+
 			// optionGroup_1
 			optionGroupDetail = new OptionGroup();
 			optionGroupDetail.setCaption("Options:");
@@ -457,7 +456,7 @@ public class ConfigDialog extends CustomComponent {
 			optionGroupDetail.setWidth("-1px");
 			optionGroupDetail.setHeight("-1px");
 			verticalLayoutDetails.addComponent(optionGroupDetail);
-			
+
 			return verticalLayoutDetails;
 		}
 }

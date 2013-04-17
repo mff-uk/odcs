@@ -125,6 +125,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     /** Mesage/debug layer **/
     var messageLayer = null;
 
+	var addConnectionIcon = null;
+
     /** Init function which builds entire stage for pipeline */
     function init() {
 
@@ -200,6 +202,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         stage.add(dpuLayer);
         stage.add(messageLayer);
         writeMessage(messageLayer, 'initialized');
+
+		addConnectionIcon = new Image();
+		addConnectionIcon.src = 'http://i50.tinypic.com/2qjykb5.jpg';
     }
 
 	/** Updates text in DPU visualization
@@ -271,6 +276,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         // New Connection command
+		/*
         var cmdConnection = new Kinetic.Rect({
             x: 0,
             y: 0,
@@ -280,6 +286,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             strokeWidth: 3,
             fill : '#a00'
         });
+		*/
+		var cmdConnection = new Kinetic.Image({
+			x: 0,
+			y: 0,
+			image: addConnectionIcon,
+			width: 32,
+			height: 32,
+			startScale: 1
+		});
 
         cmdConnection.on('click', function(evt) {
             if(stageMode == NormalMode) {
@@ -287,7 +302,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 var mousePosition = stage.getMousePosition();
                 newConnLine = new Kinetic.Line({
                     points: computeConnectionPoints3(group, mousePosition.x, mousePosition.y),
-                    stroke: 'red',
+                    stroke: '#555',
                     strokeWidth: 3
                 });
                 stageMode = NewConnectionMode;
@@ -454,7 +469,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         // Graphic representation of connection
         line = new Kinetic.Line({
             points: linePoints,
-            stroke: 'red',
+            stroke: '#555',
             strokeWidth: 3
         });
 
@@ -471,14 +486,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         var lineArrowLeft = new Kinetic.Line({
             points: computeLeftArrowPoints(linePoints),
-            stroke: 'red',
-            strokeWidth: 3
+            stroke: '#555',
+            strokeWidth: 2
         });
 
         var lineArrowRight = new Kinetic.Line({
             points: computeRightArrowPoints(linePoints),
-            stroke: 'red',
-            strokeWidth: 3
+            stroke: '#555',
+            strokeWidth: 2
         });
 
 
