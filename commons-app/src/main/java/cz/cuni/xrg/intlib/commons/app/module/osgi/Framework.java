@@ -1,8 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
-import java.io.File;
-
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.FrameworkFactory;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;;
@@ -58,11 +57,12 @@ public class Framework {
 						"cz.cuni.xrg.intlib.commons.extractor," +
 						"cz.cuni.xrg.intlib.commons.loader," +
 						"cz.cuni.xrg.intlib.commons.transformer," +
+						// commons-web
+						"cz.cuni.xrg.intlib.commons.web," +
 						// commons-module
-						"cz.cuni.xrg.intlib.commons.module," +
 						"cz.cuni.xrg.intlib.repository," +
 						// vaadin
-						"com.vaadin,com.vaadin.ui");
+						"com.vaadin,com.vaadin.ui" );
 		return config;
 	}
 			
@@ -95,7 +95,7 @@ public class Framework {
 		}
 		catch(Exception ex) {
 			// failed to load FrameworkFactory class
-			throw new ModuleException("Can't load class FrameworkFactory.", ex);
+			throw new OSGiException("Can't load class FrameworkFactory.", ex);
 		}
 			
 		this.framework = frameworkFactory.newFramework( prepareSettings() );		
@@ -105,7 +105,7 @@ public class Framework {
 			this.framework.start();	    		    	
 		} catch (org.osgi.framework.BundleException ex) {
 			// failed to start/initiate framework
-			throw new ModuleException("Failed to start OSGi framework.", ex);
+			throw new OSGiException("Failed to start OSGi framework.", ex);
 		}
 		
 		try {
@@ -114,7 +114,7 @@ public class Framework {
 		catch (SecurityException ex) {
 			// we have to stop framework ..
 			stop();
-			throw new ModuleException("Failed to get OSGi context.", ex);
+			throw new OSGiException("Failed to get OSGi context.", ex);
 		}
 	}		
 
@@ -138,7 +138,7 @@ public class Framework {
 	    	this.loadedBundles.put(uri, bundle);
 	    	this.reverseLoadedBundles.put(bundle, uri);
 		} catch (org.osgi.framework.BundleException ex) {			
-			throw new ModuleException("Failed to load bundle from uri: " + uri + " .", ex);
+			throw new OSGiException("Failed to load bundle from uri: " + uri, ex);
 		}	
 	    return bundle;
 	}
@@ -228,5 +228,24 @@ public class Framework {
 		}
 				
 		return dpu;
+	}
+
+	public void startBundle(String uri) throws ModuleException
+	{
+		// has bundle been already loaded?
+		if (this.loadedBundles.containsKey(uri)) {
+			try {
+				this.loadedBundles.get(uri).start();
+			} catch (BundleException e) {
+				throw new ModuleException("Can't start bundle: ", e);
+			}
+		}
+	}
+	public org.osgi.framework.launch.Framework HACK_getFramework() {
+		return this.framework;
+	}
+	
+	public java.util.Map<String, Bundle> HACK_installed() {
+		return this.loadedBundles;
 	}
 }

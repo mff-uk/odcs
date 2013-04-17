@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
+import java.io.File;
+
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
@@ -30,6 +32,7 @@ public class ModuleFacade {
 	 * Start framework. Must be called as a first method after ctor.
 	 */
 	public void start() {
+		// start
 		this.framework.start();
 	}
 	
@@ -83,14 +86,37 @@ public class ModuleFacade {
 	}
 	
 	/**
-	 * Install bundle from given uri.
+	 * List files in single directory (non-recursive). If the
+	 * file is *.jar then load id as a bundle.
+	 * @param directoryPath system path to directory. Not url.
 	 */
-	public void installBundle(String uri) {
-		try {
-			this.framework.installBundle(uri);
-		}
-		catch(ModuleException ex) {
-			System.out.println("installBundle ex: " + ex.getMessage());
+	public void installDirectory(String directoryPath) {
+		String message = "";
+		
+		File directory = new File( directoryPath );
+		File[] fList = directory.listFiles();
+		for (File file : fList){
+			if (file.isFile()){
+				if (file.getName().contains("jar")) {
+					// load as bundle
+					// install bundle
+					String path = "file:///" + file.getAbsolutePath().replace('\\', '/');
+					message += "loading: " + path + "\n";
+					try {
+						framework.installBundle( path );
+					} catch (OSGiException e) {
+						message += e.getMessage() + " > " + e.getOriginal().getMessage() + "\n";
+					} catch(Exception e) {
+						message += "Exception: " + e.getMessage() + "\n";
+					}							
+				}
+				
+			}
 		}
 	}
+	
+	public cz.cuni.xrg.intlib.commons.app.module.osgi.Framework HACK_getFramework() {
+		return this.framework;
+	}
+	
 }
