@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.module;
+package cz.cuni.xrg.intlib.commons.web;
 
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 
