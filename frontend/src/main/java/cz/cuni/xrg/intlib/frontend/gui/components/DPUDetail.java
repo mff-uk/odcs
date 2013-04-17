@@ -33,6 +33,8 @@ public class DPUDetail extends Window {
 		this.setCaption(String.format("%s detail", dpu.getName()));
 
 		VerticalLayout mainLayout = new VerticalLayout();
+		mainLayout.setStyleName("dpuDetailMainLayout");
+		mainLayout.setMargin(true);
 
 		GridLayout dpuGeneralSettingsLayout = new GridLayout(2, 2);
 		dpuGeneralSettingsLayout.setSpacing(true);

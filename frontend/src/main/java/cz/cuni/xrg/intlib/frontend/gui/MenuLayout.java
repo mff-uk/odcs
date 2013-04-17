@@ -103,6 +103,7 @@ public class MenuLayout extends CustomComponent {
 		this.viewLayout.setWidth("100.0%");
 		this.viewLayout.setHeight("100.0%");
 		this.viewLayout.setMargin(false);
+		this.viewLayout.setStyleName("viewLayout");
 		this.mainLayout.addComponent(viewLayout);
 
 		return this.mainLayout;

@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import com.vaadin.annotations.Theme;
 import java.util.Date;
 
 import com.vaadin.navigator.Navigator;
@@ -20,6 +21,7 @@ import cz.cuni.xrg.intlib.frontend.gui.views.*;
  * @author Petyr
  *
  */
+@Theme("IntLibTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
@@ -87,7 +89,7 @@ System.out.println((new Date()).toString() + ": AppEntry::finalize");
 		this.modules = new ModuleFacade();
 		this.modules.start();
 
-		
+
 // System.out.println("Instance: " + (++StaticTest.getInstance().value).toString() );
 
 System.out.println((new Date()).toString() + ": AppEntry::init");

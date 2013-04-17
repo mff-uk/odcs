@@ -9,6 +9,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -47,6 +48,8 @@ public class PipelineEdit extends CustomComponent implements View {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
+		mainLayout.setMargin(true);
+		mainLayout.setStyleName("mainLayout");
 
 		// top-level component properties
 		setSizeUndefined();
@@ -66,7 +69,7 @@ public class PipelineEdit extends CustomComponent implements View {
 		layout.setMargin(true);
 		pc = new PipelineCanvas();
 		pc.setWidth(1060, Unit.PIXELS);
-		pc.setHeight(960, Unit.PIXELS);
+		pc.setHeight(630, Unit.PIXELS);
 		pc.init();
 
 //        try {
@@ -90,7 +93,7 @@ public class PipelineEdit extends CustomComponent implements View {
 		DragAndDropWrapper dadWrapper = new DragAndDropWrapper(pc);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
 		dadWrapper.setWidth(1060, Unit.PIXELS);
-		dadWrapper.setHeight(960, Unit.PIXELS);
+		dadWrapper.setHeight(630, Unit.PIXELS);
 		dadWrapper.setDropHandler(new DropHandler() {
 
 			@Override
@@ -107,7 +110,7 @@ public class PipelineEdit extends CustomComponent implements View {
 
 				if (obj.getClass() == DPU.class) {
 					DPU dpu = (DPU) obj;
-					if (dpu.getId() >= 0) {
+					if (App.getApp().getDPUs().getAllDpus().contains(dpu)) {
 						pc.addDpu(dpu);
 					}
 				}
@@ -124,11 +127,12 @@ public class PipelineEdit extends CustomComponent implements View {
 		tabSheet.setSelectedTab(developTab);
 
 		tabSheet.setWidth(1080, Unit.PIXELS);
-		tabSheet.setHeight(1000, Unit.PIXELS);
+		tabSheet.setHeight(670, Unit.PIXELS);
 
 		layout.addComponent(tabSheet);
 
 		Tree dpuTree = new Tree("DPUs");
+		dpuTree.setStyleName("dpuTree");
 		dpuTree.setWidth(220, Unit.PIXELS);
 		dpuTree.setDragMode(Tree.TreeDragMode.NODE);
 		fillTree(dpuTree);
@@ -219,37 +223,37 @@ public class PipelineEdit extends CustomComponent implements View {
 		pipelineDescription.setHeight("60px");
 		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
-		Label permissionLabel = new Label("Permissions");
-		permissionLabel.setImmediate(false);
-		permissionLabel.setWidth("-1px");
-		permissionLabel.setHeight("-1px");
-		pipelineSettingsLayout.addComponent(permissionLabel, 0, 2);
-
-		Table permissionsTable = new Table();
-
-		class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
-
-			@Override
-			public Object generateCell(final Table source, final Object itemId, Object columnId) {
-				HorizontalLayout layout = new HorizontalLayout();
-
-				// get item
-				final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
-
-				Button daleteButton = new Button();
-				daleteButton.setCaption("delete");
-				daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-
-					@Override
-					public void buttonClick(ClickEvent event) {
-						//TODO: Delete permission record
-					}
-				});
-				layout.addComponent(daleteButton);
-
-				return layout;
-			}
-		}
+//		Label permissionLabel = new Label("Permissions");
+//		permissionLabel.setImmediate(false);
+//		permissionLabel.setWidth("-1px");
+//		permissionLabel.setHeight("-1px");
+//		pipelineSettingsLayout.addComponent(permissionLabel, 0, 2);
+//
+//		Table permissionsTable = new Table();
+//
+//		class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+//
+//			@Override
+//			public Object generateCell(final Table source, final Object itemId, Object columnId) {
+//				HorizontalLayout layout = new HorizontalLayout();
+//
+//				// get item
+//				final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
+//
+//				Button daleteButton = new Button();
+//				daleteButton.setCaption("delete");
+//				daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+//
+//					@Override
+//					public void buttonClick(ClickEvent event) {
+//						//TODO: Delete permission record
+//					}
+//				});
+//				layout.addComponent(daleteButton);
+//
+//				return layout;
+//			}
+//		}
 //		TODO: Have some object for representing permissions for pipeline by user
 //		permissionsTable = new Table();
 //		permissionsTable.setWidth("400px");
@@ -265,6 +269,10 @@ public class PipelineEdit extends CustomComponent implements View {
 //		permissionsTable.addGeneratedColumn("Actions", new actionColumnGenerator() );
 //		pipelineSettingsLayout.addComponent(permissionsTable, 1, 2);
 
+		pipelineSettingsLayout.setStyleName("pipelineSettingsLayout");
+		pipelineSettingsLayout.setMargin(true);
+		pipelineSettingsLayout.setSpacing(true);
+		pipelineSettingsLayout.setWidth("100%");
 		return pipelineSettingsLayout;
 	}
 
