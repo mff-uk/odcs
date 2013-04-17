@@ -100,7 +100,7 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-		config.setValue(Config.GraphsUri.name(), griddata.getValue());
+	//	config.setValue(Config.GraphsUri.name(), griddata.getValue());
 
 		return config;
 	}
@@ -125,7 +125,7 @@ public class ConfigDialog extends CustomComponent {
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 		//	griddata.setValue( (List<String>) conf.getValue(Config.GraphsUri.name()));
-			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name()));
+			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
 
 		}
 		catch(Exception ex) {
@@ -260,7 +260,7 @@ public class ConfigDialog extends CustomComponent {
 		        // captions before approving it as a new item.
 
 			comboBoxSparql.setNewItemHandler(new NewItemHandler() {
-	            @Override
+	           
 	            public void addNewItem(final String newItemCaption) {
 	                boolean newItem = true;
 	                for (final Object itemId : comboBoxSparql.getItemIds()) {
@@ -284,7 +284,7 @@ public class ConfigDialog extends CustomComponent {
 
 			comboBoxSparql.addValueChangeListener(new Property.ValueChangeListener() {
 
-				@Override
+				
 				public void valueChange(Property.ValueChangeEvent event) {
 					// TODO Auto-generated method stub
 					 final String valueString = String.valueOf(event.getProperty()
@@ -384,7 +384,7 @@ public class ConfigDialog extends CustomComponent {
 				textFieldGraph.setValue(item);
 				textFieldGraph.addListener(new TextChangeListener() {
 
-					@Override
+					
 					public void textChange(TextChangeEvent event) {
 						TextField tf = (TextField)event.getComponent();
 						Integer index = (Integer)tf.getData();
@@ -397,7 +397,7 @@ public class ConfigDialog extends CustomComponent {
 				buttonGraphRem.setData(row);
 				buttonGraphRem.addClickListener(new ClickListener() {
 
-					@Override
+					
 					public void buttonClick(ClickEvent event) {
 						Button senderButton = event.getButton();
 						Integer row =  (Integer)senderButton.getData();
@@ -434,7 +434,7 @@ public class ConfigDialog extends CustomComponent {
 			buttonGraphAdd.setHeight("-1px");
 			buttonGraphAdd.addListener(new ClickListener() {
 
-				@Override
+				
 				public void buttonClick(ClickEvent event) {
 					addDataToGridData("New data");
 					refreshNamedGraphData();

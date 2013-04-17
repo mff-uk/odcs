@@ -1,10 +1,8 @@
 package cz.cuni.xrg.intlib.frontend;
 
-import java.util.Date;
-
+import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Panel;
-
 import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
@@ -80,10 +78,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.modules = new ModuleFacade();
 		this.modules.start();
 		// load bundles from directory
-// TODO: Change according to your settings		
-		this.modules.installDirectory("e:/Tmp/intlib/libs_3");
+// TODO: Change according to your settings
+		this.modules.installDirectory("C:/Users/Bogo/intlib/intlib/frontend/dist");
 
-		
+
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
@@ -109,7 +107,7 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.navigator.addView(ViewNames.ExecutionMonitor.getUrl(), new ExecutionMonitor());
         this.navigator.addView(ViewNames.PipelineList.getUrl(), new PipelineList());
         this.navigator.addView(ViewNames.PipelineEdit.getUrl(), new PipelineEdit());
-        this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());        
+        this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());
         // TODO: remove !
         this.navigator.addView("expDialog", new DPUDialog());
         this.navigator.addView(ViewNames.OSGiSupport.getUrl(), new OSGiSupport());

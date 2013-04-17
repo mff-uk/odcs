@@ -28,6 +28,7 @@ public class DPUDetail extends Window {
 
 	public DPUDetail(DPUInstance dpu) {
 
+		this.setResizable(false);
 		this.setModal(true);
 		this.dpu = dpu;
 		this.setCaption(String.format("%s detail", dpu.getName()));
@@ -127,14 +128,10 @@ public class DPUDetail extends Window {
 		});
 		buttonBar.addComponent(cancelButton);
 
-    protected void saveDPUInstance() {
-        dpu.setName(dpuName.getValue());
-        dpu.setDescription(dpuDescription.getValue());
-
-
-
+		mainLayout.addComponent(buttonBar);
 
 		this.setContent(mainLayout);
+		setSizeUndefined();
 	}
 
 	protected boolean saveDPUInstance() {
