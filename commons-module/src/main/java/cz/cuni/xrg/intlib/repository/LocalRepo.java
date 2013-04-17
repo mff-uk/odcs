@@ -158,23 +158,23 @@ public class LocalRepo {
 
         File dirFile = new File(path);
 
-        if (path.toLowerCase().startsWith("http"))
-        {
-           
+        if (path.toLowerCase().startsWith("http")) {
+
             try {
+
                 URL urlPath = new URL(path);
-                InputStream inputStream=urlPath.openStream();
-                RDFFormat format= RDFFormat.forFileName(path, RDFFormat.RDFXML);
-                
-                RepositoryConnection connection=repository.getConnection();
-                connection.add(inputStream,baseURI, format);
-                
+                InputStream inputStream = urlPath.openStream();
+                RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
+
+                RepositoryConnection connection = repository.getConnection();
+                connection.add(inputStream, baseURI, format);
+
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
-           
+
         }
-        
+
         if (dirFile.isDirectory()) {
             File[] files;
             if (useSuffix) {
@@ -353,8 +353,7 @@ public class LocalRepo {
 
             RDFWriter goal = Rio.createWriter(format, outputStream);
 
-            for (int i=0;i<graphSize;i++)
-            {
+            for (int i = 0; i < graphSize; i++) {
                 connection.export(goal, graphs[i]);
                 connection.commit();
             }
