@@ -260,7 +260,7 @@ public static IndexedContainer getFridContainer() {
 		        // captions before approving it as a new item.
 			
 			comboBoxSparql.setNewItemHandler(new NewItemHandler() {
-	            @Override
+	          
 	            public void addNewItem(final String newItemCaption) {
 	                boolean newItem = true;
 	                for (final Object itemId : comboBoxSparql.getItemIds()) {
@@ -284,7 +284,7 @@ public static IndexedContainer getFridContainer() {
 
 			comboBoxSparql.addValueChangeListener(new Property.ValueChangeListener() {
 				
-				@Override
+
 				public void valueChange(Property.ValueChangeEvent event) {
 					// TODO Auto-generated method stub
 					 final String valueString = String.valueOf(event.getProperty()
@@ -383,7 +383,6 @@ public static IndexedContainer getFridContainer() {
 				textFieldGraph.setValue(item);
 				textFieldGraph.addListener(new TextChangeListener() {
 					
-					@Override
 					public void textChange(TextChangeEvent event) {
 						TextField tf = (TextField)event.getComponent();
 						Integer index = (Integer)tf.getData();
@@ -396,7 +395,7 @@ public static IndexedContainer getFridContainer() {
 				buttonGraphRem.setData(row);
 				buttonGraphRem.addClickListener(new ClickListener() {
 					
-					@Override
+
 					public void buttonClick(ClickEvent event) {
 						Button senderButton = event.getButton();
 						Integer row =  (Integer)senderButton.getData();
@@ -433,7 +432,7 @@ public static IndexedContainer getFridContainer() {
 			buttonGraphAdd.setHeight("-1px");
 			buttonGraphAdd.addListener(new ClickListener() {
 		
-				@Override
+
 				public void buttonClick(ClickEvent event) {
 					addDataToGridData("New data");
 					refreshNamedGraphData();
