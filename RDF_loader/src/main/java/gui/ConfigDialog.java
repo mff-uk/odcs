@@ -100,8 +100,10 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-	//	config.setValue(Config.GraphsUri.name(), griddata.getValue());
-
+		config.setValue(Config.GraphsUri.name(), griddata);
+		if (griddata.size()<1){
+			griddata.add(" ");
+		}
 		return config;
 	}
 
@@ -347,7 +349,7 @@ public class ConfigDialog extends CustomComponent {
 		private static List<String> initializeGridData()
 		{
 			List<String> result = new LinkedList<String>();
-			result.add("Some Item 1");
+		//	result.add("Some Item 1");
 		//	result.add("Some Item 2");
 			return result;
 
@@ -436,7 +438,7 @@ public class ConfigDialog extends CustomComponent {
 
 				
 				public void buttonClick(ClickEvent event) {
-					addDataToGridData("New data");
+					addDataToGridData(" ");
 					refreshNamedGraphData();
 				}
 			});
