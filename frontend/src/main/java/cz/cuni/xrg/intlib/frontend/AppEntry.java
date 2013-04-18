@@ -1,8 +1,15 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import java.io.File;
+import java.util.Enumeration;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Panel;
+
+import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
@@ -76,11 +83,19 @@ public class AppEntry extends com.vaadin.ui.UI {
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
 		this.modules = new ModuleFacade();
-		this.modules.start();
-		// load bundles from directory
-// TODO: Change according to your settings
-		this.modules.installDirectory("C:/Users/Bogo/intlib/intlib/frontend/dist");
-
+		// add vaadin to export package list
+		this.modules.start(
+				",com.vaadin,com.vaadin.ui," +
+				"com.vaadin.data,com.vaadin.data.Property,com.vaadin.data.util," +
+				"" +
+				"com.vaadin.event.FieldEvents,com.vaadin.shared.ui.combobox," +
+				// OpenRdf
+				"org.openrdf.rio"
+						);
+				
+		// TODO: set module relative path .. ? 
+//		this.modules.installDirectory(App.getWebAppDirectory() + "/OSGI/libs/");
+//		cz.cuni.xrg.intlib.commons.app.dpu.DPU.HACK_basePath = App.getWebAppDirectory() + "/OSGI";
 
 		this.addDetachListener(new DetachListener() {
 			@Override

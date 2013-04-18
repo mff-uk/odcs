@@ -35,7 +35,17 @@ public class App {
 	 * Returns facade, which provides services for managing pipelines.
 	 * @return pipeline facade
 	 */	
-	public PipelineFacade getPipelines() {
+	public static PipelineFacade getPipelines() {
 		return getApp().getPipelines();
 	}	
+	
+	/**
+	 * Return path to the root directory of application.
+	 * @return
+	 */
+	public static String getWebAppDirectory() {
+// TODO: wtp.deploy eclipse dependent .. 	
+		return (String)System.getProperty("wtp.deploy") + "/frontend";
+	}
+	
 }

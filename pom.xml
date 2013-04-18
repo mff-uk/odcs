@@ -11,14 +11,15 @@
     <modules>
         <module>commons</module>
         <module>commons-app</module>
-        <module>commons-module</module>
-        <module>frontend</module>
+        <module>commons-module</module>        
+        <module>commons-web</module>
         <module>SPARQL_transformer</module>
         <module>File_extractor</module>
         <module>RDF_extractor</module>
         <module>File_loader</module>
-        <module>RDF_loader</module>
-        <module>commons-web</module>
+        <module>RDF_loader</module>        
+        <!-- frontend is the last build module -->
+        <module>frontend</module>
     </modules>
 
     <scm>
