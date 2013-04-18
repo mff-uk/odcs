@@ -288,14 +288,13 @@ public class LocalRepoTest {
         
     }
     
-    @Test
-    public void extractTEDFile1ToRepository() {
+    
+    public void TEDextractFile1ToRepository() {
         String path = "http://ld.opendata.cz/tedDumps/ted4.ttl";
         String suffix = "";
         String baseURI = "";
         boolean useSuffix = false;
 
-        cleanRepository();
         long size = localRepo.getTripleCountInRepository();
 
         localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
@@ -307,14 +306,13 @@ public class LocalRepoTest {
         assertTrue(triplesAdded);
     }
     
-    @Test
-    public void extractTEDFile2ToRepository() {
+    
+    public void TEDextractFile2ToRepository() {
         String path = "http://ld.opendata.cz/tedDumps/ted4b.ttl";
         String suffix = "";
         String baseURI = "";
         boolean useSuffix = true;
 
-        cleanRepository();
         long size = localRepo.getTripleCountInRepository();
 
         localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
@@ -325,6 +323,48 @@ public class LocalRepoTest {
 
         assertTrue(triplesAdded);
     }
+    
+    public void TEDTransformSPARQL() {
+
+        String updateQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+                + "INSERT DATA"
+                + "{ "
+                + "<http://example/book1> dc:title \"A new book\" ."
+                + "}";
+
+        localRepo.transformUsingSPARQL(updateQuery);
+
+    }
+    
+    public void TEDloadtoTTLFile() {
+        String path = "C:\\intlib\\Output_Test_Files\\";
+        String fileName = "output-ted-test.ttl";
+        RDFFormat format = RDFFormat.TURTLE;
+        boolean canFileOverwritte = true;
+
+        try {
+            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+
+        } catch (FileCannotOverwriteException ex) {
+            fail(ex.getMessage());
+        }
+    }
+    
+    @Test
+    public void TEDPipelineTest()
+    {
+        cleanRepository();
+        
+        TEDextractFile1ToRepository();
+        TEDextractFile2ToRepository();
+        TEDTransformSPARQL();
+        TEDloadtoTTLFile();
+        
+        boolean addedData=localRepo.getTripleCountInRepository()>0;
+        
+        assertTrue(addedData);
+    }
+    
 
     @AfterClass
     public static void cleanRepository() {
