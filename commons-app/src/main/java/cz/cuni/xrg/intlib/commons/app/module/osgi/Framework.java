@@ -1,7 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
+import java.util.Collection;
+
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.FrameworkFactory;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;;
@@ -41,9 +42,10 @@ public class Framework {
 	
 	/**
 	 * Return configuration used to start up OSGi implementation.
+	 * @param exportedPackages names of additional packages to export started and separated by comma 
 	 * @return
 	 */
-	private java.util.Map<String, String> prepareSettings() {
+	private java.util.Map<String, String> prepareSettings(String exportedPackages) {
 		java.util.Map<String, String> config = new java.util.HashMap<String, String>();
 		config.put("osgi.console", "");
 		config.put("osgi.clean", "true");
@@ -60,16 +62,15 @@ public class Framework {
 						// commons-web
 						"cz.cuni.xrg.intlib.commons.web," +
 						// commons-module
-						"cz.cuni.xrg.intlib.repository," +
-						// vaadin
-						"com.vaadin,com.vaadin.ui" );
+						"cz.cuni.xrg.intlib.repository" +
+						exportedPackages );
 		return config;
 	}
 			
 	/**
 	 * Stop OSGi framework.
 	 */
-	public void stop() {
+	public void stop() {			
         try {
         	if (this.framework != null ) {
         		// stop equinox
@@ -84,9 +85,10 @@ public class Framework {
 	
 	/**
 	 * Start OSGi framework.
+	 * @param exportedPackages names of additional packages to export started and separated by comma
 	 * @throws ModuleException
 	 */
-	public void start() throws ModuleException
+	public void start(String exportedPackages) throws OSGiException
 	{
 		FrameworkFactory frameworkFactory = null; // org.eclipse.osgi.launch.EquinoxFactory
 		
@@ -98,7 +100,7 @@ public class Framework {
 			throw new OSGiException("Can't load class FrameworkFactory.", ex);
 		}
 			
-		this.framework = frameworkFactory.newFramework( prepareSettings() );		
+		this.framework = frameworkFactory.newFramework( prepareSettings(exportedPackages) );		
 		this.context = null;
 		try {
 	    	// start OSGi container ..
@@ -124,7 +126,7 @@ public class Framework {
 	 * @return Installed bundle or null.
 	 * @throws ModuleException
 	 */
-	public Bundle installBundle(String uri) throws ModuleException
+	public Bundle installBundle(String uri) throws OSGiException
 	{
 		// has bundle been already loaded?
 		if (this.loadedBundles.containsKey(uri)) {
@@ -172,13 +174,18 @@ public class Framework {
 	 * Uninstall all installed bundles.
 	 * @return False if exception was thrown during uninstallation of any module.
 	 */
-	public boolean uninstallBundles() {
+	public boolean uninstallBundles() {	
 		boolean result = true;
-		for (Bundle item : this.loadedBundles.values()) {
-			if (!uninstallBundle(item)) {
-				result = false;
+		
+		Collection<Bundle> toDelete = this.loadedBundles.values();
+		for (Bundle item : toDelete) {
+			try {			
+				item.uninstall();
+			} catch (org.osgi.framework.BundleException ex) {
+				// can't throw ..
 			}
 		}
+		
 		// clean storages 
 		this.loadedBundles.clear();
 		this.reverseLoadedBundles.clear();
@@ -230,21 +237,22 @@ public class Framework {
 		return dpu;
 	}
 
-	public void startBundle(String uri) throws ModuleException
+	public void HACK_startBundle(String uri) throws ModuleException
 	{
 		// has bundle been already loaded?
 		if (this.loadedBundles.containsKey(uri)) {
 			try {
 				this.loadedBundles.get(uri).start();
-			} catch (BundleException e) {
+			} catch (org.osgi.framework.BundleException e) {
 				throw new ModuleException("Can't start bundle: ", e);
 			}
+		} else {
+			throw new RuntimeException("Can't find bundle.");
 		}
 	}
 	public org.osgi.framework.launch.Framework HACK_getFramework() {
 		return this.framework;
 	}
-	
 	public java.util.Map<String, Bundle> HACK_installed() {
 		return this.loadedBundles;
 	}

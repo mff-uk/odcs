@@ -14,7 +14,7 @@ public class OSGiException extends ModuleException {
 	 * @param ex Original exception.
 	 */	
 	public OSGiException(String message, Exception ex) {
-		super(message + " reason: " + ex.getMessage() , ex);
+		super(message, ex);
 	}
 
 }

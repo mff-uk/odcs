@@ -29,4 +29,12 @@ public class ModuleException extends RuntimeException {
 		return this.originalException;
 	}
 	
+	/**
+	 * Return exception message extended by original exception message.
+	 * @return
+	 */
+	public String getTraceMessage() {
+		return "Exception: " + getMessage() + " caused by: " + originalException.getMessage();
+	}
+	
 }

@@ -30,10 +30,11 @@ public class ModuleFacade {
 	
 	/**
 	 * Start framework. Must be called as a first method after ctor.
+	 * @param exportedPackages names of additional packages to export started and separated by comma
 	 */
-	public void start() {
+	public void start(String exportedPackages) throws ModuleException {
 		// start
-		this.framework.start();
+		this.framework.start(exportedPackages);
 	}
 	
 	/**
