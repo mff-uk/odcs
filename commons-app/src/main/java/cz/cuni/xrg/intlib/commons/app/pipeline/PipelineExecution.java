@@ -3,33 +3,22 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
-import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineStartedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.loader.LoadCompletedEvent;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.loader.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.commons.transformer.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
-import cz.cuni.xrg.intlib.commons.transformer.TransformFailedEvent;
 
 
 /**
@@ -38,7 +27,7 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformFailedEvent;
  * @author Jiri Tomes
  * @author Jan Vojt
  */
-public class PipelineExecution implements Runnable, ApplicationEventPublisherAware {
+public class PipelineExecution implements Runnable/*, ApplicationEventPublisherAware*/ {
 
 	/**
 	 * Unique run identification.
@@ -58,7 +47,7 @@ public class PipelineExecution implements Runnable, ApplicationEventPublisherAwa
     /**
      * Publisher instance responsible for publishing pipeline execution events.
      */
-    private ApplicationEventPublisher eventPublisher;
+//    private ApplicationEventPublisher eventPublisher;
     
     /**
      * Module facade for fetching executable DPUs through OSGi.
@@ -102,10 +91,10 @@ public class PipelineExecution implements Runnable, ApplicationEventPublisherAwa
 		this.moduleFacade = moduleFacade;
 	}
 
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.eventPublisher = publisher;
-	}
+//	@Override
+//	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+//		this.eventPublisher = publisher;
+//	}
 
 	/**
 	 * Runs the pipeline.
@@ -113,18 +102,18 @@ public class PipelineExecution implements Runnable, ApplicationEventPublisherAwa
 	@Override
     public void run() {
 
-        long pipelineStart = System.currentTimeMillis();
+//        long pipelineStart = System.currentTimeMillis();
         DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-        eventPublisher.publishEvent(new PipelineStartedEvent(pipeline, runId, this));
+//        eventPublisher.publishEvent(new PipelineStartedEvent(pipeline, runId, this));
 
         for (Node node : dependencyGraph) {
         	runNode(node);
         }
         
-        long duration = System.currentTimeMillis() - pipelineStart;
-        eventPublisher.publishEvent(
-        	new PipelineCompletedEvent(duration, pipeline, runId, this)
-        );
+//        long duration = System.currentTimeMillis() - pipelineStart;
+//        eventPublisher.publishEvent(
+//        	new PipelineCompletedEvent(duration, pipeline, runId, this)
+//        );
     }
     
 	/**
@@ -179,14 +168,15 @@ public class PipelineExecution implements Runnable, ApplicationEventPublisherAwa
 
             extractor.extract(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-            	new ExtractCompletedEvent(extractor, ctx, this)
-            );
+//            eventPublisher.publishEvent(
+//            	new ExtractCompletedEvent(extractor, ctx, this)
+//            );
 
         } catch (ExtractException ex) {
-            eventPublisher.publishEvent(
-            	new ExtractFailedEvent(ex, extractor, ctx, this)
-            );
+//            eventPublisher.publishEvent(
+//            	new ExtractFailedEvent(ex, extractor, ctx, this)
+//            );
+        	ex.printStackTrace();
         }
     }
     
@@ -202,14 +192,15 @@ public class PipelineExecution implements Runnable, ApplicationEventPublisherAwa
 
             transformer.transform(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-            		new TransformCompletedEvent(transformer, ctx, this)
-            );
+//            eventPublisher.publishEvent(
+//            		new TransformCompletedEvent(transformer, ctx, this)
+//            );
 
         } catch (TransformException ex) {
-            eventPublisher.publishEvent(
-            	new TransformFailedEvent(ex, transformer, ctx, this)
-            );
+//            eventPublisher.publishEvent(
+//            	new TransformFailedEvent(ex, transformer, ctx, this)
+//            );
+        	ex.printStackTrace();
         }
     }
     
@@ -225,13 +216,14 @@ public class PipelineExecution implements Runnable, ApplicationEventPublisherAwa
 
             loader.load(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-            	new LoadCompletedEvent(loader, ctx, this)
-            );
+//            eventPublisher.publishEvent(
+//            	new LoadCompletedEvent(loader, ctx, this)
+//            );
         } catch (LoadException ex) {
-            eventPublisher.publishEvent(
-            	new LoadFailedEvent(ex, loader, ctx, this)
-            );
+//            eventPublisher.publishEvent(
+//            	new LoadFailedEvent(ex, loader, ctx, this)
+//            );
+        	ex.printStackTrace();
         }
     }
     
