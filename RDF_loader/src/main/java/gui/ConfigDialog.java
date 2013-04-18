@@ -4,20 +4,6 @@ import module.Config;
 
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -26,11 +12,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.AbstractSelect.NewItemHandler;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -249,7 +231,7 @@ public class ConfigDialog extends CustomComponent {
 			comboBoxSparql.setTextInputAllowed(true);
 
 			comboBoxSparql.setItemCaptionPropertyId("endpoint");
-			comboBoxSparql.setItemCaptionMode(ItemCaptionMode.PROPERTY);
+			comboBoxSparql.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 
 			comboBoxSparql.setFilteringMode(FilteringMode.CONTAINS);
 			comboBoxSparql.setImmediate(true);
@@ -261,7 +243,7 @@ public class ConfigDialog extends CustomComponent {
 		        // Check if the caption for new item already exists in the list of item
 		        // captions before approving it as a new item.
 
-			comboBoxSparql.setNewItemHandler(new NewItemHandler() {
+			comboBoxSparql.setNewItemHandler(new AbstractSelect.NewItemHandler() {
 	           
 	            public void addNewItem(final String newItemCaption) {
 	                boolean newItem = true;
@@ -292,7 +274,7 @@ public class ConfigDialog extends CustomComponent {
 					 final String valueString = String.valueOf(event.getProperty()
 		                        .getValue());
 		                Notification.show("Value changed:", valueString,
-		                        Type.TRAY_NOTIFICATION);
+		                        Notification.Type.TRAY_NOTIFICATION);
 				}
 			});
 			//comboBoxSparql.setInputPrompt(inputPrompt);
@@ -384,23 +366,23 @@ public class ConfigDialog extends CustomComponent {
 				textFieldGraph.setWidth("100%");
 				textFieldGraph.setData(row);
 				textFieldGraph.setValue(item);
-				textFieldGraph.addListener(new TextChangeListener() {
-
-					
-					public void textChange(TextChangeEvent event) {
-						TextField tf = (TextField)event.getComponent();
-						Integer index = (Integer)tf.getData();
-						replaceText(index,event.getText());
-					}
-				});
+/*
+textFieldGraph.addListener(new TextChangeListener() {					
+	public void textChange(TextChangeEvent event) {
+		TextField tf = (TextField)event.getComponent();
+		Integer index = (Integer)tf.getData();
+		replaceText(index,event.getText());
+	}
+});
+*/
 				buttonGraphRem = new Button();
 				buttonGraphRem.setWidth("55px");
 				buttonGraphRem.setCaption("-");
 				buttonGraphRem.setData(row);
-				buttonGraphRem.addClickListener(new ClickListener() {
+				buttonGraphRem.addClickListener(new Button.ClickListener() {
 
 					
-					public void buttonClick(ClickEvent event) {
+					public void buttonClick(Button.ClickEvent event) {
 						Button senderButton = event.getButton();
 						Integer row =  (Integer)senderButton.getData();
 						removeDataFromGridData(row);
@@ -434,10 +416,10 @@ public class ConfigDialog extends CustomComponent {
 			buttonGraphAdd.setImmediate(true);
 			buttonGraphAdd.setWidth("55px");
 			buttonGraphAdd.setHeight("-1px");
-			buttonGraphAdd.addListener(new ClickListener() {
+			buttonGraphAdd.addListener(new Button.ClickListener() {
 
 				
-				public void buttonClick(ClickEvent event) {
+				public void buttonClick(Button.ClickEvent event) {
 					addDataToGridData(" ");
 					refreshNamedGraphData();
 				}

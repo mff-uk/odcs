@@ -87,8 +87,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.modules.start(
 				",com.vaadin,com.vaadin.ui," +
 				"com.vaadin.data,com.vaadin.data.Property,com.vaadin.data.util," +
-				"" +
-				"com.vaadin.event.FieldEvents,com.vaadin.shared.ui.combobox," +
+				"com.vaadin.event.FieldEvents," + 
+				"com.vaadin.shared.ui.combobox," +
 				// OpenRdf
 				"org.openrdf.rio"
 						);

@@ -11,6 +11,11 @@ Import-Package: org.osgi.framework,
  cz.cuni.xrg.intlib.commons.transformer,
  cz.cuni.xrg.intlib.commons.web,
  com.vaadin,
- com.vaadin.ui
+ com.vaadin.ui,
+ com.vaadin.data,
+ com.vaadin.data.Property,
+ com.vaadin.data.util,
+ com.vaadin.event.FieldEvents,
+ com.vaadin.shared.ui.combobox 
 Provide-Package: gui,
  module
