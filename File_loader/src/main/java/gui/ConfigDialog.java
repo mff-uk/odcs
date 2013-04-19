@@ -21,9 +21,6 @@ public class ConfigDialog extends CustomComponent {
 	 */
 
 	private GridLayout mainLayout;
-//	private Button buttonCanc;
-//	private Button buttonSave;
-//	private Button buttonDevel;
 	private TabSheet tabSheet;
 	private VerticalLayout verticalLayoutDetails;
 	private VerticalLayout verticalLayoutCore;
@@ -33,12 +30,7 @@ public class ConfigDialog extends CustomComponent {
 	private CheckBox checkBoxDiffName;
 	private TextField textFieldFileName; // FileName
 	private TextField textFieldDir;	//Directory
-//	private GridLayout gridLayoutName;
-//	private TextArea textAreaDescr; //Description
-//	private Label labelDescr;
-//	private TextField textFieldName; // NameDPU
-//	private Label labelName;
-//	private HorizontalLayout horizontalLayoutButtons;
+
 
 	public ConfigDialog() {
 		buildMainLayout();
@@ -166,7 +158,7 @@ public class ConfigDialog extends CustomComponent {
 		textFieldDir = new TextField();
 		textFieldDir.setCaption("Directory:");
 		textFieldDir.setImmediate(false);
-		textFieldDir.setWidth("90%");
+		textFieldDir.setWidth("100%");
 		textFieldDir.setHeight("-1px");
 		verticalLayoutCore.addComponent(textFieldDir);
 		
@@ -174,7 +166,7 @@ public class ConfigDialog extends CustomComponent {
 		textFieldFileName = new TextField();
 		textFieldFileName.setCaption("File name (no extension):");
 		textFieldFileName.setImmediate(false);
-		textFieldFileName.setWidth("90%");
+		textFieldFileName.setWidth("100%");
 		textFieldFileName.setHeight("-1px");
 		verticalLayoutCore.addComponent(textFieldFileName);
 		

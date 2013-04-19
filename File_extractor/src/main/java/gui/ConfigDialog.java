@@ -118,6 +118,7 @@ public class ConfigDialog extends CustomComponent {
         mainLayout.setWidth("100%");
         mainLayout.setHeight("100%");
         mainLayout.setMargin(false);
+        mainLayout.setSpacing(true);
 
         // top-level component properties
         setWidth("100%");

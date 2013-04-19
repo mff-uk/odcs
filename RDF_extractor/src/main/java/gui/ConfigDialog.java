@@ -76,10 +76,10 @@ public class ConfigDialog extends CustomComponent {
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
 		config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
-		config.setValue(Config.GraphsUri.name(), griddata);
-		if (griddata.size()<1){
+	//	config.setValue(Config.GraphsUri.name(), griddata);
+		/*if (griddata.size()<1){
 				griddata.add(" ");
-			}
+			} */
 
 		return config;
 	}
@@ -106,11 +106,19 @@ public class ConfigDialog extends CustomComponent {
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 			//griddata.setValue( (List<String>) conf.getValue(Config.GraphsUri.name()));
 			textAreaConstr.setValue( (String) conf.getValue(Config.SPARQL_query.name()));
-			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
-		}
+		  /*   griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
+		     if (griddata == null )
+		     {
+		    	 griddata = new LinkedList<String>();
+		     }
+		     if (griddata.size()<1)
+		     {
+		    	 griddata.add("");
+		     } */
+		} 
 		catch(Exception ex) {
 			// throw setting exception
-			throw new ConfigurationException();
+			throw new ConfigurationException(); 
 		}
 	}
 
@@ -321,7 +329,7 @@ public static IndexedContainer getFridContainer() {
 			return gridLayoutAdm;
 		}
 
-		private static List<String> griddata = initializeGridData();
+		private  List<String> griddata = initializeGridData();
 		private static List<String> initializeGridData()
 		{
 			List<String> result = new LinkedList<String>(); 
@@ -330,12 +338,12 @@ public static IndexedContainer getFridContainer() {
 			return result;
 			
 		}
-		private static void addDataToGridData(String newData)
+		private void addDataToGridData(String newData)
 		{
 			griddata.add(newData);
 		}
 
-		private static void removeDataFromGridData(Integer row)
+		private void removeDataFromGridData(Integer row)
 		{
 			int index=  row;
 			if(griddata.size()>1){
@@ -344,7 +352,7 @@ public static IndexedContainer getFridContainer() {
 		}
 		
 		private List<TextField> listedEditText = null; 
-		private static void replaceText(int index, String newText)
+		private void replaceText(int index, String newText)
 		{
 			griddata.remove(index);
 			griddata.add(index, newText);
@@ -371,15 +379,7 @@ public static IndexedContainer getFridContainer() {
 				textFieldGraph.setWidth("100%");
 				textFieldGraph.setData(row);
 				textFieldGraph.setValue(item);
-				/*textFieldGraph.addListener(new TextChangeListener() {
-					
-					@Override
-					public void textChange(TextChangeEvent event) {
-						TextField tf = (TextField)event.getComponent();
-						Integer index = (Integer)tf.getData();
-						replaceText(index,event.getText());
-					}
-				});*/
+				
 				buttonGraphRem = new Button();
 				buttonGraphRem.setWidth("55px");
 				buttonGraphRem.setCaption("-");
@@ -424,6 +424,7 @@ public static IndexedContainer getFridContainer() {
 
 
 				public void buttonClick(Button.ClickEvent event) {
+					saveEditedTexts();
 					addDataToGridData(" ");
 					refreshNamedGraphData();
 				}
@@ -438,7 +439,7 @@ public static IndexedContainer getFridContainer() {
 		// common part: create layout
 		verticalLayoutDetails = new VerticalLayout();
 		verticalLayoutDetails.setImmediate(false);
-		verticalLayoutDetails.setWidth("-1px");
+		verticalLayoutDetails.setWidth("100%");
 		verticalLayoutDetails.setHeight("-1px");
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
@@ -472,16 +473,18 @@ public static IndexedContainer getFridContainer() {
 		// common part: create layout
 		gridLayoutConstr = new GridLayout();
 		gridLayoutConstr.setImmediate(false);
-		gridLayoutConstr.setWidth("-1px");
+		gridLayoutConstr.setWidth("100%");
 		gridLayoutConstr.setHeight("-1px");
 		gridLayoutConstr.setMargin(false);
 		gridLayoutConstr.setSpacing(true);
 		gridLayoutConstr.setColumns(2);
-
+		gridLayoutConstr.setColumnExpandRatio(0, 0.20f);
+		gridLayoutConstr.setColumnExpandRatio(1, 0.80f);
+		
 		// labelConstr
 		labelConstr = new Label();
 		labelConstr.setImmediate(false);
-		labelConstr.setWidth("101px");
+		labelConstr.setWidth("100%");
 		labelConstr.setHeight("-1px");
 		labelConstr.setValue("SPARQL  Construct:");
 		gridLayoutConstr.addComponent(labelConstr, 0, 0);
@@ -489,7 +492,7 @@ public static IndexedContainer getFridContainer() {
 		// textAreaConstr
 		textAreaConstr = new TextArea();
 		textAreaConstr.setImmediate(false);
-		textAreaConstr.setWidth("208px");
+		textAreaConstr.setWidth("100%");
 		textAreaConstr.setHeight("190px");
 		gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
 

@@ -21,17 +21,8 @@ public class ConfigDialog extends CustomComponent {
      * not located directly in package com.vaadi.ui;
      */
     private GridLayout mainLayout;
-//    private Button buttonCanc;
-//    private Button buttonSave;
-//    private Button buttonDev;
-//    private GridLayout gridLayoutName;
     private TextArea txtQuery;
     private Label labelUpQuer;
-  //  private TextArea textAreaDescr;
- //   private Label labelDescr;
-  //  private TextField textFieldName;
- //   private Label labelName;
-  //  private HorizontalLayout horizontalLayoutButtons;
 
     public ConfigDialog() {
         buildMainLayout();
@@ -95,7 +86,8 @@ public class ConfigDialog extends CustomComponent {
 		mainLayout.setImmediate(false);
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
-		mainLayout.setMargin(true);
+		mainLayout.setMargin(false);
+		mainLayout.setSpacing(true);
 
 		// top-level component properties
 		setWidth("100%");
