@@ -19,6 +19,7 @@ import org.openrdf.rio.RDFFormat;
  */
 public class Module implements GraphicalExtractor {
 
+    private LocalRepo repository = LocalRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -83,37 +84,39 @@ public class Module implements GraphicalExtractor {
      * Implementation of module functionality here.
      *
      */
-    private String getPath()
-    {
-        String path=(String)config.getValue(Config.Path.name());
-        
+    private String getPath() {
+        String path = (String) config.getValue(Config.Path.name());
+
         return path;
     }
-    
-    private String getFileSuffix()
-    {
-        String suffix=(String)config.getValue(Config.FileSuffix.name());
-        
+
+    private String getFileSuffix() {
+        String suffix = (String) config.getValue(Config.FileSuffix.name());
+
         return suffix;
     }
-    
-    private boolean isOnlySuffixUsed()
-    {
-        boolean useSuffix=(Boolean)config.getValue(Config.OnlyThisSuffix.name());
-        
+
+    private boolean isOnlySuffixUsed() {
+        boolean useSuffix = (Boolean) config.getValue(Config.OnlyThisSuffix.name());
+
         return useSuffix;
     }
-    
-    
-    
+
     public void extract(ExtractContext context) throws ExtractException {
 
         final String baseURI = "";
         final String path = getPath();
-        final String suffix =getFileSuffix();
-        final boolean useOnlyThisSuffix =isOnlySuffixUsed();
+        final String suffix = getFileSuffix();
+        final boolean useOnlyThisSuffix = isOnlySuffixUsed();
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
         repository.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useOnlyThisSuffix);
+    }
+
+    public LocalRepo getLocalRepo() {
+        return repository;
+    }
+
+    public void setLocalRepo(LocalRepo localRepo) {
+        repository = localRepo;
     }
 }

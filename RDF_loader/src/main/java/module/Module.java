@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class Module implements GraphicalLoader {
 
+    private LocalRepo repository = LocalRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -117,8 +118,15 @@ public class Module implements GraphicalLoader {
         final String hostName = getHostName();
         final String password = getPassword();
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
         repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password);
 
+    }
+
+    public LocalRepo getLocalRepo() {
+        return repository;
+    }
+
+    public void setLocalRepo(LocalRepo localRepo) {
+        repository=localRepo;
     }
 }

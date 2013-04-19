@@ -20,6 +20,7 @@ import org.openrdf.rio.RDFFormat;
  */
 public class Module implements GraphicalLoader {
 
+    private LocalRepo repository = LocalRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -39,7 +40,7 @@ public class Module implements GraphicalLoader {
         //this.config.setValue(Config.Description.name(), "");
         this.config.setValue(Config.FileName.name(), "");
         this.config.setValue(Config.DirectoryPath.name(), "");
-        this.config.setValue(Config.RDFFileFormat.name(),RDFFormatType.RDFXML.name());
+        this.config.setValue(Config.RDFFileFormat.name(), RDFFormatType.RDFXML.name());
     }
 
     public Type getType() {
@@ -129,7 +130,6 @@ public class Module implements GraphicalLoader {
             RDFFormat format = getRDFFormat();
             boolean canFileOverwritte = true;
 
-            LocalRepo repository = LocalRepo.createLocalRepo();
             repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte);
 
         } catch (FileCannotOverwriteException ex) {
@@ -137,5 +137,13 @@ public class Module implements GraphicalLoader {
         } catch (NotSupporteRDFFormatException ex) {
             System.err.println(ex.getMessage());
         }
+    }
+
+    public LocalRepo getLocalRepo() {
+        return repository;
+    }
+
+    public void setLocalRepo(LocalRepo localRepo) {
+        repository = localRepo;
     }
 }

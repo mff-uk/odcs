@@ -18,6 +18,7 @@ import cz.cuni.xrg.intlib.repository.LocalRepo;
  */
 public class Module implements GraphicalTransformer {
 
+    private LocalRepo repository = LocalRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -89,7 +90,14 @@ public class Module implements GraphicalTransformer {
 
         final String updateQuery = getUpdateQuery();
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
         repository.transformUsingSPARQL(updateQuery);
+    }
+
+    public LocalRepo getLocalRepo() {
+        return repository;
+    }
+
+    public void setLocalRepo(LocalRepo localRepo) {
+        repository = localRepo;
     }
 }

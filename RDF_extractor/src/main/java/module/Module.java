@@ -14,13 +14,13 @@ import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.net.URL;
 import java.util.List;
 
-
 /**
  * TODO Change super class to desired one, you can choose from the following:
  * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
  */
 public class Module implements GraphicalExtractor {
 
+    private LocalRepo repository = LocalRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -126,9 +126,16 @@ public class Module implements GraphicalExtractor {
         final List<String> defaultGraphsUri = getGraphsURI();
         final String query = getQuery();
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
         repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
 
 
+    }
+
+    public LocalRepo getLocalRepo() {
+        return repository;
+    }
+
+    public void setLocalRepo(LocalRepo localRepo) {
+        repository = localRepo;
     }
 }
