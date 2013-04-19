@@ -37,13 +37,15 @@ public class Module implements GraphicalExtractor {
          */
         this.config.setValue(Config.NameDPU.name(), "");
         this.config.setValue(Config.Description.name(), "");
+        // ...
         this.config.setValue(Config.Path.name(), "");
         this.config.setValue(Config.FileSuffix.name(), RDFFormat.RDFXML.toString());
+        this.config.setValue(Config.OnlyThisSuffix.name(), false);
+        
     }
 
     public Type getType() {
         return Type.EXTRACTOR;
-
     }
 
     public CustomComponent getConfigurationComponent() {

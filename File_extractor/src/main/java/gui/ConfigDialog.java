@@ -73,7 +73,8 @@ public class ConfigDialog extends CustomComponent {
         //config.setValue(Config.Description.name(), textAreaDescr.getValue());
         config.setValue(Config.Path.name(), textFieldPath.getValue());
         config.setValue(Config.FileSuffix.name(), comboBoxFormat.getValue());
-
+// TODO: read from dialog
+        config.setValue(Config.OnlyThisSuffix.name(), false);
 
         return config;
     }
