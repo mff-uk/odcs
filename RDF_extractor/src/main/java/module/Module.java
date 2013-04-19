@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,18 +37,16 @@ public class Module implements GraphicalExtractor {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.DPU_name.name(), "");
-        this.config.setValue(Config.Description.name(), "");
+
         this.config.setValue(Config.SPARQL_endpoint.name(), "");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.GraphsUri.name(), "");
+        this.config.setValue(Config.GraphsUri.name(), new LinkedList<String>() );
         this.config.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
     public Type getType() {
         return Type.EXTRACTOR;
-
     }
 
     public CustomComponent getConfigurationComponent() {
@@ -86,31 +85,26 @@ public class Module implements GraphicalExtractor {
 
     private URL getSPARQLEndpoinURL() {
         URL endpoint = (URL) config.getValue(Config.SPARQL_endpoint.name());
-
         return endpoint;
     }
 
     private String getHostName() {
         String hostName = (String) config.getValue(Config.Host_name.name());
-
         return hostName;
     }
 
     private String getPassword() {
         String password = (String) config.getValue(Config.Password.name());
-
         return password;
     }
 
     private List<String> getGraphsURI() {
         List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
-
         return graphs;
     }
 
     private String getQuery() {
         String query = (String) config.getValue(Config.SPARQL_query.name());
-
         return query;
     }
 
@@ -127,8 +121,6 @@ public class Module implements GraphicalExtractor {
         final String query = getQuery();
 
         repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
-
-
     }
 
     public LocalRepo getLocalRepo() {

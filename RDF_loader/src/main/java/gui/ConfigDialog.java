@@ -78,12 +78,10 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 
-		//config.setValue(Config.DPU_name.name(), textFieldName.getValue());
-		//config.setValue(Config.Description.name(), textAreaDesc.getValue());
 		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-	//	config.setValue(Config.GraphsUri.name(), griddata);
+		config.setValue(Config.GraphsUri.name(), griddata);
 	//	if (griddata.size()<1){
 	//		griddata.add(" ");
 	//	}
@@ -104,13 +102,11 @@ public class ConfigDialog extends CustomComponent {
 
 		try
 		{
-		//	textFieldName.setValue( (String) conf.getValue(Config.DPU_name.name()));
-		//	textAreaDesc.setValue( (String) conf.getValue(Config.Description.name()));
 			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQL_endpoint.name()));
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
 		//	griddata.setValue( (List<String>) conf.getValue(Config.GraphsUri.name()));
-		//	List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
+			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
 
 		}
 		catch(Exception ex) {
