@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -19,6 +21,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.repository.LocalRepo;
 
 
 /**
@@ -129,10 +132,13 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
         String dpuJarPath = dpu.getJarPath();
         Configuration configuration = dpuInstance.getInstanceConfig();
         
+        LocalRepo repo = createRdfRepository();
+        
         switch (dpuType) {
         case EXTRACTOR : {
             Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
             extractor.setSettings(configuration);
+            extractor.setLocalRepo(repo);
             ExtractContext ctx = new ExtractContext(runId, new HashMap<String, Object>());
             runExtractor(extractor, ctx);
         	break;
@@ -140,6 +146,7 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
         case TRANSFORMER : {
             Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
             transformer.setSettings(configuration);
+            transformer.setLocalRepo(repo);
             TransformContext ctx = new TransformContext(runId, new HashMap<String, Object>());
         	runTransformer(transformer, ctx);
         	break;
@@ -147,6 +154,7 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
         case LOADER : {
             Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
             loader.setSettings(configuration);
+            loader.setLocalRepo(repo);
         	LoadContext ctx = new LoadContext(runId, new HashMap<String, Object>());
         	runLoader(loader, ctx);
         	break;
@@ -225,6 +233,15 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
 //            );
         	ex.printStackTrace();
         }
+    }
+    
+    /**
+     * Repository initialization
+     * @return
+     */
+    private LocalRepo createRdfRepository() {
+    	String file = "/tmp/intlib-rdf-repo.dat";
+    	return new LocalRepo(file);
     }
     
 }
