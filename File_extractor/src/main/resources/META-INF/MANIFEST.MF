@@ -17,7 +17,7 @@ Import-Package: org.osgi.framework,
  com.vaadin.data.Property,
  com.vaadin.data.util,
  com.vaadin.event.FieldEvents,
- com.vaadin.shared.ui.combobox 
+ com.vaadin.shared.ui.combobox, 
  org.openrdf.rio
 Provide-Package: gui,
  module

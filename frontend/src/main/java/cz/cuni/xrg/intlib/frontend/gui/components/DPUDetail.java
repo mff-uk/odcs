@@ -93,10 +93,11 @@ public class DPUDetail extends Window {
 			}
 		} catch (ModuleException me) {
 			//TODO: Show info about failed load of custom part of dialog
-			Notification.show("ModuleException:Failed to load configuration dialog.", Type.ERROR_MESSAGE);
+			Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);
 		} catch (ConfigurationException ce) {
 			//TODO: Show info about invalid saved config(should not happen -> validity check on save)
-			Notification.show("ConfigurationException: Failed to set configuration for dialog.", Type.ERROR_MESSAGE);
+			Notification.show("ConfigurationException: Failed to set configuration for dialog.", 
+					ce.getMessage(), Type.ERROR_MESSAGE);
 		}
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
