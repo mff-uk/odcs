@@ -6,6 +6,7 @@ import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -323,11 +324,11 @@ public static IndexedContainer getFridContainer() {
 		private static List<String> griddata = initializeGridData();
 		private static List<String> initializeGridData()
 		{
-			List<String> result = new LinkedList<String>();
-		//	result.add("Some Item 1");
+			List<String> result = new LinkedList<String>(); 
+			result.add("Some Item 1");
 		//	result.add("Some Item 2");
 			return result;
-
+			
 		}
 		private static void addDataToGridData(String newData)
 		{
@@ -341,33 +342,44 @@ public static IndexedContainer getFridContainer() {
 				griddata.remove(index);
 			}
 		}
+		
+		private List<TextField> listedEditText = null; 
 		private static void replaceText(int index, String newText)
 		{
 			griddata.remove(index);
 			griddata.add(index, newText);
 			//griddata.insertElementAt(newText, index);
 		}
-
+		
+		private void saveEditedTexts()
+		{
+			griddata = new LinkedList<String>();
+			for (TextField editText : listedEditText) {
+				griddata.add(editText.getValue());
+			}
+		}
+	//	@SuppressWarnings("serial")
 		private void refreshNamedGraphData()
 		{
 			gridLayoutGraph.removeAllComponents();
 			gridLayoutGraph.setRows(griddata.size()+1);
 			int row = 0;
-
+			listedEditText = new ArrayList<TextField>();
 			for (String item : griddata) {
 				textFieldGraph = new TextField();
+				listedEditText.add(textFieldGraph);
 				textFieldGraph.setWidth("100%");
 				textFieldGraph.setData(row);
 				textFieldGraph.setValue(item);
-	/*
-	textFieldGraph.addListener(new TextChangeListener() {
-		public void textChange(TextChangeEvent event) {
-			TextField tf = (TextField)event.getComponent();
-			Integer index = (Integer)tf.getData();
-			replaceText(index,event.getText());
-		}
-	});
-	*/
+				/*textFieldGraph.addListener(new TextChangeListener() {
+					
+					@Override
+					public void textChange(TextChangeEvent event) {
+						TextField tf = (TextField)event.getComponent();
+						Integer index = (Integer)tf.getData();
+						replaceText(index,event.getText());
+					}
+				});*/
 				buttonGraphRem = new Button();
 				buttonGraphRem.setWidth("55px");
 				buttonGraphRem.setCaption("-");
