@@ -40,7 +40,7 @@ public class Module implements GraphicalExtractor {
         // ...
         this.config.setValue(Config.Path.name(), "");
         this.config.setValue(Config.FileSuffix.name(), RDFFormat.RDFXML.toString());
-        this.config.setValue(Config.OnlyThisSuffix.name(), false);
+        this.config.setValue(Config.OnlyThisSuffix.name(), new Boolean(false));
         
     }
 
