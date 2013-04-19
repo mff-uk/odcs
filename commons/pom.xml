@@ -35,14 +35,6 @@
 
     <dependencies>
     
-		<dependency> <!-- commons -->
-			<groupId>${project.groupId}</groupId>
-			<artifactId>commons</artifactId>
-			<!-- the version has to be specify -->
-			<version>0.0.1</version>
-			<type>jar</type>
-		</dependency>    
-    
         <dependency> <!--  JUnit dependency -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
