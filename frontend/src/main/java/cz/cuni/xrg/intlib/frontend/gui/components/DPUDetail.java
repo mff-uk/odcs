@@ -137,10 +137,13 @@ public class DPUDetail extends Window {
 	protected boolean saveDPUInstance() {
 
 		try {
-			Configuration conf = dpuExec.getSettings();
+			if(dpuExec != null) {
+				Configuration conf = dpuExec.getSettings();
+				dpu.setInstanceConfig(conf);
+			}
 			dpu.setName(dpuName.getValue());
 			dpu.setDescription(dpuDescription.getValue());
-			dpu.setInstanceConfig(conf);
+
 		} catch (ConfigurationException ce) {
 			//TODO: Inform about invalid settings and do not close detail dialog
 			return false;

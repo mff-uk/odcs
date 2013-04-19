@@ -440,7 +440,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             }
         });
 
-        group.on('dblclick', function() {
+        group.on('dblclick', function(evt) {
             if(stageMode == NormalMode) {
                 writeMessage(messageLayer, 'Detail requested');
                 rpcProxy.onDetailRequested(dpu.id);
