@@ -368,6 +368,9 @@ public class ConfigDialog extends CustomComponent {
 			gridLayoutGraph.setRows(griddata.size()+1);
 			int row = 0;
 			listedEditText = new ArrayList<TextField>();
+			if(griddata.size()<1){
+				griddata.add("");
+			}
 			for (String item : griddata) {
 				textFieldGraph = new TextField();
 				listedEditText.add(textFieldGraph);
@@ -383,6 +386,7 @@ public class ConfigDialog extends CustomComponent {
 
 					
 					public void buttonClick(Button.ClickEvent event) {
+						saveEditedTexts();
 						Button senderButton = event.getButton();
 						Integer row =  (Integer)senderButton.getData();
 						removeDataFromGridData(row);
