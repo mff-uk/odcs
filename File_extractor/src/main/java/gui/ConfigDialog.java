@@ -202,6 +202,8 @@ public class ConfigDialog extends CustomComponent {
         comboBoxFormat.setImmediate(false);
         comboBoxFormat.setWidth("-1px");
         comboBoxFormat.setHeight("-1px");
+        comboBoxFormat.setNewItemsAllowed(false);
+		comboBoxFormat.setNullSelectionAllowed(false);
         horizontalLayoutFormat.addComponent(comboBoxFormat);
 
         return horizontalLayoutFormat;
