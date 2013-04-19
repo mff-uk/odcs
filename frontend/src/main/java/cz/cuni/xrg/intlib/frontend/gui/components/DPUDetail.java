@@ -7,6 +7,8 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
+
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ModuleDialogGetter;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
@@ -91,8 +93,10 @@ public class DPUDetail extends Window {
 			}
 		} catch (ModuleException me) {
 			//TODO: Show info about failed load of custom part of dialog
+			Notification.show("ModuleException:Failed to load configuration dialog.", Type.ERROR_MESSAGE);
 		} catch (ConfigurationException ce) {
 			//TODO: Show info about invalid saved config(should not happen -> validity check on save)
+			Notification.show("ConfigurationException: Failed to set configuration for dialog.", Type.ERROR_MESSAGE);
 		}
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
