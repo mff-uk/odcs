@@ -87,7 +87,7 @@ public class ConfigDialog extends CustomComponent {
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
 		mainLayout.setMargin(false);
-		mainLayout.setSpacing(true);
+		//mainLayout.setSpacing(true);
 
 		// top-level component properties
 		setWidth("100%");
@@ -96,7 +96,7 @@ public class ConfigDialog extends CustomComponent {
 		// labelUpQuer
 		labelUpQuer = new Label();
 		labelUpQuer.setImmediate(false);
-		labelUpQuer.setWidth("74px");
+		labelUpQuer.setWidth("68px");
 		labelUpQuer.setHeight("-1px");
 		labelUpQuer.setValue("SPARQL  Update Query");
 		mainLayout.addComponent(labelUpQuer, 0, 0);
@@ -107,8 +107,8 @@ public class ConfigDialog extends CustomComponent {
 		txtQuery.setWidth("100%");
 		txtQuery.setHeight("211px");
 		mainLayout.addComponent(txtQuery, 1, 0);
-		mainLayout.setColumnExpandRatio(0, 0.10f);
-		mainLayout.setColumnExpandRatio(1, 0.90f);
+		mainLayout.setColumnExpandRatio(0, 0.00001f);
+		mainLayout.setColumnExpandRatio(1, 0.99999f);
 
 		return mainLayout;
 	}
