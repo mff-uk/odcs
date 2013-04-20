@@ -38,7 +38,7 @@ public class GraphIterator implements Iterator<Node> {
 	public Node next() {
 		for (DependencyNode n : stack) {
 			if (n.hasMetDependencies()) {
-				replaceWithDependencies(n);
+				replaceWithDependants(n);
 				return n.getNode();
 			}
 		}
@@ -55,10 +55,20 @@ public class GraphIterator implements Iterator<Node> {
 		);
 	}
 	
-	private void replaceWithDependencies(DependencyNode node) {
+	/**
+	 * Remove given node from stack and replace it with its dependants
+	 * @param node
+	 */
+	private void replaceWithDependants(DependencyNode node) {
 		node.setExecuted(true);
 		stack.remove(node);
-		stack.addAll(node.getDependencies());
+		
+		// we need to make sure dependant is not already in the stack
+		for (DependencyNode n : node.getDependants()) {
+			if (!stack.contains(n)) {
+				stack.add(n);
+			}
+		}
 	}
 
 }

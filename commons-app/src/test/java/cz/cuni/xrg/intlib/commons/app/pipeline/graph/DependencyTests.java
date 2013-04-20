@@ -1,9 +1,9 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,10 +55,17 @@ public class DependencyTests {
 		
 		DependencyGraph dGraph = new DependencyGraph(graph);
 
-		int i = 0;
-		for (Node n : dGraph) {
-			assertSame(nodes[i++], n);
+		GraphIterator iter = dGraph.iterator();
+
+		// check correct order
+		for (int i = 0; i<5; i++) {
+			assertTrue(iter.hasNext());
+			assertSame(nodes[i], iter.next());
 		}
+		
+		// no more nodes
+		assertFalse(iter.hasNext());
+		assertNull(iter.next());
 	}
 	
 	/**
@@ -77,24 +84,32 @@ public class DependencyTests {
 
 		DependencyGraph dGraph = new DependencyGraph(graph);
 
-		int i = 0;
-		for (Node n : dGraph) {
-			if (i==0) {
-				// first must be E0 or E4
-				assertTrue(n==nodes[0] || n==nodes[4]);
-			} else if (i==1) {
-				// second may be any of E0, E4, T1
-				assertTrue(n==nodes[0] || n==nodes[1]
-						|| n==nodes[4]);
-			} else if (i==2) {
-				// third may be E4 or T1
-				assertTrue(n==nodes[1] || n==nodes[4]);
-			} else {
-				// otherwise T2 or L3
-				assertSame(nodes[i], n);
-			}
-			i++;
-		}
+		GraphIterator iter = dGraph.iterator();
+		
+		// first must be E0 or E4
+		Node n = iter.next();
+		assertTrue(n==nodes[0] || n==nodes[4]);
+		
+		// second may be any of E0, E4, T1
+		n = iter.next();
+		assertTrue(n==nodes[0] || n==nodes[1]
+				|| n==nodes[4]);
+		
+		// third may be E4 or T1
+		n = iter.next();
+		assertTrue(n==nodes[1] || n==nodes[4]);
+		
+		// fourth is always T2
+		n = iter.next();
+		assertSame(nodes[2], n);
+		
+		// last is always L3
+		n = iter.next();
+		assertSame(nodes[3], n);
+		
+		// no more nodes
+		assertFalse(iter.hasNext());
+		assertNull(iter.next());
 	}
 	
 	/**
@@ -120,7 +135,10 @@ public class DependencyTests {
 		assertSame(nodes[0], iter.next());
 		
 		// second node is in the circle
-		assertFalse(iter.hasNext());
+		// graph still says to have more nodes and so return true for hasNext,
+		// however does not return any node, because it is impossible to tell
+		// which node is next
+		assertTrue(iter.hasNext());
 		assertNull(iter.next());
 	}
 

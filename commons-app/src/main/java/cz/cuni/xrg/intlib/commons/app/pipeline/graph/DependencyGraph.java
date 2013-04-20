@@ -83,6 +83,7 @@ public class DependencyGraph implements Iterable<Node> {
 			
 			// add the dependency
 			tNode.addDependency(sNode);
+			sNode.addDependant(tNode);
 		}
 	}
 	

@@ -20,6 +20,11 @@ public class DependencyNode {
 	private List<DependencyNode> dependencies = new ArrayList<DependencyNode>();
 	
 	/**
+	 * List of nodes that depend on this node
+	 */
+	private List<DependencyNode> dependants = new ArrayList<DependencyNode>();
+	
+	/**
 	 * Tells whether this dependency is already satisfied.
 	 */
 	private boolean executed = false;
@@ -72,6 +77,37 @@ public class DependencyNode {
 	 */
 	public void addDependency(DependencyNode node) {
 		if (!hasDependency(node)) dependencies.add(node);
+	}
+	
+	/**
+	 * @return the dependants
+	 */
+	public List<DependencyNode> getDependants() {
+		return dependants;
+	}
+
+	/**
+	 * @param dependants the dependants to set
+	 */
+	public void setDependants(List<DependencyNode> dependants) {
+		this.dependants = dependants;
+	}
+	
+	/**
+	 * Adds dependent node
+	 * @param node
+	 */
+	public void addDependant(DependencyNode node) {
+		if (!hasDependant(node)) dependants.add(node);
+	}
+	
+	/**
+	 * Tells whether this node is directly dependent on given node
+	 * @param node
+	 * @return
+	 */
+	public boolean hasDependant(DependencyNode node) {
+		return dependants.contains(node);
 	}
 
 	/**
