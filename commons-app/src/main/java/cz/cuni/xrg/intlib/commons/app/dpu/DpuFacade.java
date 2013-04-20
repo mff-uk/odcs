@@ -129,10 +129,6 @@ public class DpuFacade {
 		DPU sparqlLo = new DPU("File Loader", Type.LOADER);
 		sparqlLo.setJarPath("File_loader/target/File_loader-0.0.1.jar");
 		save(sparqlLo);
-
-		DPU module = new DPU("TEST MODULE", Type.LOADER);
-		module.setJarPath("module/target/module-0.0.1.jar");
-		save(module);
     }
 
 }
