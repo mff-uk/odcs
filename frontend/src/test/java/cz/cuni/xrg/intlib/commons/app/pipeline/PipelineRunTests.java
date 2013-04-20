@@ -13,6 +13,12 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 
+/**
+ * Test scenario for pipeline runs.
+ * @author Jan Vojt <jan@vojt.net>
+ * 
+ * TODO resolve vaadin dependency on config dialogue and move to backend
+ */
 public class PipelineRunTests {
 	
 	/**
@@ -25,7 +31,7 @@ public class PipelineRunTests {
 	 * Setup OSGi
 	 * TODO What are exported packages in {@link ModuleFacade#start(String)}??
 	 */
-//	@Test
+	@Test
 	public void testTrivialRun() {
 		moduleFacade = new ModuleFacade();
 		
