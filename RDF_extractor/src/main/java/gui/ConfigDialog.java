@@ -129,7 +129,7 @@ public class ConfigDialog extends CustomComponent {
 
 	public static IndexedContainer getFridContainer() {
 
-		String[] endpoint = { "http://example:8894/sparql" };
+//		String[] endpoint = { "http://example:8894/sparql" };
 		String[] visibleCols = new String[] { "endpoint" };
 
 		IndexedContainer result = new IndexedContainer();
@@ -138,12 +138,13 @@ public class ConfigDialog extends CustomComponent {
 			result.addContainerProperty(p, String.class, "");
 		}
 
-		for (int i = 0; i < endpoint.length; i++) {
+/*		for (int i = 0; i < endpoint.length; i++) {
 			Object num = result.addItem();
 			result.getContainerProperty(num, "endpoint").setValue(endpoint[i]);
-		}
+		} */
+		
 		return result;
-	}
+	} 
 
 	private GridLayout buildMainLayout() {
 		// common part: create layout
@@ -227,9 +228,7 @@ public class ConfigDialog extends CustomComponent {
 		comboBoxSparql.setWidth("100%");
 		comboBoxSparql.setHeight("-1px");
 		comboBoxSparql.setNewItemsAllowed(true);
-		comboBoxSparql.setNullSelectionAllowed(false);
 		comboBoxSparql.setTextInputAllowed(true);
-
 		comboBoxSparql.setItemCaptionPropertyId("endpoint");
 		comboBoxSparql
 				.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
@@ -267,7 +266,7 @@ public class ConfigDialog extends CustomComponent {
 			}
 		});
 
-		comboBoxSparql
+	/*	comboBoxSparql
 				.addValueChangeListener(new Property.ValueChangeListener() {
 					public void valueChange(Property.ValueChangeEvent event) {
 						// TODO Auto-generated method stub
@@ -276,8 +275,8 @@ public class ConfigDialog extends CustomComponent {
 						Notification.show("Value changed:", valueString,
 								Notification.Type.TRAY_NOTIFICATION);
 					}
-				});
-		// comboBoxSparql.setInputPrompt(inputPrompt);
+				}); */
+		
 		gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
 
 		// labelNameAdm
@@ -328,8 +327,8 @@ public class ConfigDialog extends CustomComponent {
 
 	private static List<String> initializeGridData() {
 		List<String> result = new LinkedList<String>();
-		result.add("Some Item 1");
-		// result.add("Some Item 2");
+		result.add("");
+		
 		return result;
 
 	}
