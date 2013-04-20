@@ -3,6 +3,7 @@ package gui;
 import module.Config;
 
 import com.vaadin.ui.*;
+
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -77,15 +78,13 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 
-		//config.setValue(Config.DPU_name.name(), textFieldName.getValue());
-		//config.setValue(Config.Description.name(), textAreaDesc.getValue());
 		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
 		config.setValue(Config.GraphsUri.name(), griddata);
-		if (griddata.size()<1){
-			griddata.add(" ");
-		}
+	//	if (griddata.size()<1){
+	//		griddata.add(" ");
+	//	}
 		return config;
 	}
 
@@ -103,8 +102,6 @@ public class ConfigDialog extends CustomComponent {
 
 		try
 		{
-		//	textFieldName.setValue( (String) conf.getValue(Config.DPU_name.name()));
-		//	textAreaDesc.setValue( (String) conf.getValue(Config.Description.name()));
 			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQL_endpoint.name()));
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
@@ -327,54 +324,60 @@ public class ConfigDialog extends CustomComponent {
 		}
 
 
-		private static List<String> griddata = initializeGridData();
+		private  List<String> griddata = initializeGridData();
 		private static List<String> initializeGridData()
 		{
-			List<String> result = new LinkedList<String>();
-		//	result.add("Some Item 1");
+			List<String> result = new LinkedList<String>(); 
+			result.add("Some Item 1");
 		//	result.add("Some Item 2");
 			return result;
-
+			
 		}
-		private static void addDataToGridData(String newData)
+		private void addDataToGridData(String newData)
 		{
 			griddata.add(newData);
 		}
 
-		private static void removeDataFromGridData(Integer row)
+		private void removeDataFromGridData(Integer row)
 		{
 			int index=  row;
 			if(griddata.size()>1){
 				griddata.remove(index);
 			}
 		}
-		private static void replaceText(int index, String newText)
+		
+		private List<TextField> listedEditText = null; 
+		private void replaceText(int index, String newText)
 		{
 			griddata.remove(index);
 			griddata.add(index, newText);
 			//griddata.insertElementAt(newText, index);
 		}
-
+		
+		private void saveEditedTexts()
+		{
+			griddata = new LinkedList<String>();
+			for (TextField editText : listedEditText) {
+				griddata.add(editText.getValue());
+			}
+		}
+	//	@SuppressWarnings("serial")
 		private void refreshNamedGraphData()
 		{
 			gridLayoutGraph.removeAllComponents();
 			gridLayoutGraph.setRows(griddata.size()+1);
 			int row = 0;
-
+			listedEditText = new ArrayList<TextField>();
+			if(griddata.size()<1){
+				griddata.add("");
+			}
 			for (String item : griddata) {
 				textFieldGraph = new TextField();
+				listedEditText.add(textFieldGraph);
 				textFieldGraph.setWidth("100%");
 				textFieldGraph.setData(row);
 				textFieldGraph.setValue(item);
-/*
-textFieldGraph.addListener(new TextChangeListener() {					
-	public void textChange(TextChangeEvent event) {
-		TextField tf = (TextField)event.getComponent();
-		Integer index = (Integer)tf.getData();
-		replaceText(index,event.getText());
-	}
-});
-*/
+				
 				buttonGraphRem = new Button();
 				buttonGraphRem.setWidth("55px");
 				buttonGraphRem.setCaption("-");
@@ -383,6 +386,7 @@ textFieldGraph.addListener(new TextChangeListener() {
 
 					
 					public void buttonClick(Button.ClickEvent event) {
+						saveEditedTexts();
 						Button senderButton = event.getButton();
 						Integer row =  (Integer)senderButton.getData();
 						removeDataFromGridData(row);
@@ -420,6 +424,7 @@ textFieldGraph.addListener(new TextChangeListener() {
 
 				
 				public void buttonClick(Button.ClickEvent event) {
+					saveEditedTexts();
 					addDataToGridData(" ");
 					refreshNamedGraphData();
 				}

@@ -49,6 +49,7 @@ public class PipelineList extends CustomComponent implements View {
 
 	    public void run() {
 	    	PipelineExecution pipelineExec = new PipelineExecution(pipeline);
+	    	pipelineExec.setModuleFacade( App.getApp().getModules() );
 			pipelineExec.run();
 	    }
 	}

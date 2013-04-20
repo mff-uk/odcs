@@ -73,7 +73,8 @@ public class ConfigDialog extends CustomComponent {
         //config.setValue(Config.Description.name(), textAreaDescr.getValue());
         config.setValue(Config.Path.name(), textFieldPath.getValue());
         config.setValue(Config.FileSuffix.name(), comboBoxFormat.getValue());
-
+// TODO: read from dialog
+        config.setValue(Config.OnlyThisSuffix.name(), new Boolean(false));
 
         return config;
     }
@@ -116,7 +117,8 @@ public class ConfigDialog extends CustomComponent {
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("100%");
-        mainLayout.setMargin(true);
+        mainLayout.setMargin(false);
+        mainLayout.setSpacing(true);
 
         // top-level component properties
         setWidth("100%");
@@ -202,6 +204,8 @@ public class ConfigDialog extends CustomComponent {
         comboBoxFormat.setImmediate(false);
         comboBoxFormat.setWidth("-1px");
         comboBoxFormat.setHeight("-1px");
+        comboBoxFormat.setNewItemsAllowed(false);
+		comboBoxFormat.setNullSelectionAllowed(false);
         horizontalLayoutFormat.addComponent(comboBoxFormat);
 
         return horizontalLayoutFormat;

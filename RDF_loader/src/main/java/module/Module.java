@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ import java.util.List;
  */
 public class Module implements GraphicalLoader {
 
+    private LocalRepo repository = LocalRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -35,12 +37,10 @@ public class Module implements GraphicalLoader {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.DPU_name.name(), "");
-        this.config.setValue(Config.Description.name(), "");
         this.config.setValue(Config.SPARQL_endpoint.name(), "");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.GraphsUri.name(), "");
+        this.config.setValue(Config.GraphsUri.name(), new LinkedList<String>());
     }
 
     public Type getType() {
@@ -88,37 +88,38 @@ public class Module implements GraphicalLoader {
      */
     private URL getSPARQLEndpoinURL() {
         URL endpoint = (URL) config.getValue(Config.SPARQL_endpoint.name());
-
         return endpoint;
     }
 
     private String getHostName() {
         String hostName = (String) config.getValue(Config.Host_name.name());
-
         return hostName;
     }
 
     private String getPassword() {
         String password = (String) config.getValue(Config.Password.name());
-
         return password;
     }
 
     private List<String> getGraphsURI() {
         List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
-
         return graphs;
     }
 
     public void load(LoadContext context) throws LoadException {
-
         final URL endpointURL = getSPARQLEndpoinURL();
         final List<String> defaultGraphsURI = getGraphsURI();
         final String hostName = getHostName();
         final String password = getPassword();
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
         repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password);
+    }
 
+    public LocalRepo getLocalRepo() {
+        return repository;
+    }
+
+    public void setLocalRepo(LocalRepo localRepo) {
+        repository=localRepo;
     }
 }
