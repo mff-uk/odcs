@@ -107,11 +107,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
     /** Writes message on given message layer **/
     function writeMessage(messageLayer, message) {
-        //var context = messageLayer.getContext();
-        //messageLayer.clear();
-        //context.font = '18pt Calibri';
-        //context.fillStyle = 'black';
-        //context.fillText(message, 10, 25);
+        var context = messageLayer.getContext();
+        messageLayer.clear();
+        context.font = '18pt Calibri';
+        context.fillStyle = 'black';
+        context.fillText(message, 10, 25);
 
 		rpcProxy.onLogMessage(message);
     }
@@ -158,7 +158,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         // Redraws Connection layer after drag
-        stage.getDragLayer().afterDraw(function() {
+        dpuLayer.on('draw', function() {
             lineLayer.draw();
         });
 
@@ -254,9 +254,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // Group containing text and rect
         if(posX < 0) {
-            var mousePos = stage.getMousePosition();
-            posX = mousePos.x;
-            posY = mousePos.y;
+            var mousePos = stage.getPointerPosition();// stage.getMousePosition();
+			if(mousePos != null) {
+				posX = mousePos.x;
+				posY = mousePos.y;
+			} else {
+				posX = 200;
+				posY = 200;
+			}
         }
 
         var group = new Kinetic.Group({
@@ -398,7 +403,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 rpcProxy.onDpuRemoved(dpu.id);
                 evt.cancelBubble = true;
             } else {
-				rpcProxy.onDpuMoved(dpu.id, endPosition.x, endPosition.y);
+				rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y));
 			}
         });
 
@@ -427,7 +432,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     var mousePosition = stage.getMousePosition();
                     newConnLine = new Kinetic.Line({
                         points: computeConnectionPoints3(group, mousePosition.x, mousePosition.y),
-                        stroke: 'red',
+                        stroke: '#555',
                         strokeWidth: 3
                     });
                     stageMode = NewConnectionMode;
@@ -455,7 +460,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpuLayer.add(group);
         dpuLayer.draw();
 
-		rpcProxy.onDpuMoved(id, posX, posY);
+		rpcProxy.onDpuMoved(id, parseInt(posX), parseInt(posY));
     }
 
     /** Adds connection between 2 given DPUs **/

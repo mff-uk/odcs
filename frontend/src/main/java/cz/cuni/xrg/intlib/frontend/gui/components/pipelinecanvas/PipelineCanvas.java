@@ -21,7 +21,7 @@ import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
  * @author Bogo
  */
 @SuppressWarnings("serial")
-@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.3.3.min.js" })
+@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.4.3.min.js" })
 public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	int dpuCount = 0;
