@@ -21,22 +21,13 @@ public class ConfigDialog extends CustomComponent {
      * not located directly in package com.vaadi.ui;
      */
     private GridLayout mainLayout;
-//	private Button buttonCanc;
-//	private Button buttonSave;
-//	private Button buttonDev;
     private ComboBox comboBoxFormat; //RDFFormat
     private Label labelFormat;
     private TextField textFieldOnly;
     private Label labelOnly;
-    private CheckBox checkBoxWhole;
+ //   private CheckBox checkBoxWhole;
     private TextField textFieldPath; //Path
-    private GridLayout gridLayoutName;
-    private TextArea textAreaDescr; //Description
-    private Label labelDescr;
-    private TextField textFieldName; //NameDPU
-    private Label labelName;
     private HorizontalLayout horizontalLayoutOnly;
-    private HorizontalLayout horizontalLayoutButtons;
     private HorizontalLayout horizontalLayoutFormat;
 
     public ConfigDialog() {
@@ -113,7 +104,7 @@ public class ConfigDialog extends CustomComponent {
          * TODO Build your component here.
          */
         // common part: create layout
-        mainLayout = new GridLayout(2, 3);
+        mainLayout = new GridLayout(1, 3);
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("100%");
@@ -131,25 +122,26 @@ public class ConfigDialog extends CustomComponent {
         textFieldPath.setImmediate(false);
         textFieldPath.setWidth("100%");
         textFieldPath.setHeight("-1px");
-        mainLayout.addComponent(textFieldPath, 0, 0, 1, 0);
+        mainLayout.addComponent(textFieldPath, 0, 0);
 
-        // checkBoxWhole
+   /*     // checkBoxWhole
         checkBoxWhole = new CheckBox();
         checkBoxWhole.setCaption("Process whole directory.");
         checkBoxWhole.setImmediate(false);
         checkBoxWhole.setWidth("-1px");
         checkBoxWhole.setHeight("-1px");
-        mainLayout.addComponent(checkBoxWhole, 0, 1);
+        mainLayout.addComponent(checkBoxWhole, 0, 1);*/
 
         // layoutOnly
         horizontalLayoutOnly = buildHorizontalLayoutOnly();
-        mainLayout.addComponent(horizontalLayoutOnly, 1, 1);
-        mainLayout.setComponentAlignment(horizontalLayoutOnly, Alignment.TOP_RIGHT);
-
+        mainLayout.addComponent(horizontalLayoutOnly, 0, 1);
+      // mainLayout.setComponentAlignment(horizontalLayoutOnly, Alignment.TOP_RIGHT);
+    //    
 
         // horizontalLayoutFormat
         horizontalLayoutFormat = buildHorizontalLayoutFormat();
         mainLayout.addComponent(horizontalLayoutFormat, 0, 2);
+      //  horizontalLayoutFormat.setComponentAlignment(textFieldOnly,Alignment.TOP_RIGHT);
 
 
         return mainLayout;
@@ -167,17 +159,19 @@ public class ConfigDialog extends CustomComponent {
         // labelOnly
         labelOnly = new Label();
         labelOnly.setImmediate(false);
-        labelOnly.setWidth("-1px");
+        labelOnly.setWidth("181px");
         labelOnly.setHeight("-1px");
-        labelOnly.setValue("Only files:");
+        labelOnly.setValue("Process only files with extension:");
         horizontalLayoutOnly.addComponent(labelOnly);
 
         // textFieldOnly
         textFieldOnly = new TextField();
         textFieldOnly.setImmediate(false);
-        textFieldOnly.setWidth("52px");
+        textFieldOnly.setWidth("50px");
         textFieldOnly.setHeight("-1px");
         horizontalLayoutOnly.addComponent(textFieldOnly);
+        horizontalLayoutOnly.setComponentAlignment(textFieldOnly,Alignment.TOP_RIGHT);
+        
 
         return horizontalLayoutOnly;
     }
@@ -190,11 +184,12 @@ public class ConfigDialog extends CustomComponent {
         horizontalLayoutFormat.setHeight("-1px");
         horizontalLayoutFormat.setMargin(false);
         horizontalLayoutFormat.setSpacing(true);
+        
 
         // labelFormat
         labelFormat = new Label();
         labelFormat.setImmediate(false);
-        labelFormat.setWidth("-1px");
+        labelFormat.setWidth("74px");
         labelFormat.setHeight("-1px");
         labelFormat.setValue("RDF Format:");
         horizontalLayoutFormat.addComponent(labelFormat);
@@ -207,6 +202,8 @@ public class ConfigDialog extends CustomComponent {
         comboBoxFormat.setNewItemsAllowed(false);
 		comboBoxFormat.setNullSelectionAllowed(false);
         horizontalLayoutFormat.addComponent(comboBoxFormat);
+   //     horizontalLayoutFormat.setComponentAlignment(comboBoxFormat,Alignment.TOP_RIGHT);
+        
 
         return horizontalLayoutFormat;
     }
