@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cz.cuni.xrg.intlib.commons.Type;
@@ -10,29 +11,44 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.repository.LocalRepo;
 
 public class PipelineRunTests {
 	
 	/**
 	 * Facade for loading modules given as jar files
 	 */
-	private ModuleFacade moduleFacade = new ModuleFacade();
+	private ModuleFacade moduleFacade = null;
+		
 	
 	/**
 	 * Setup OSGi
 	 * TODO What are exported packages in {@link ModuleFacade#start(String)}??
 	 */
-//	@Test
+	@Test
 	public void testTrivialRun() {
+		moduleFacade = new ModuleFacade();
+		
+		moduleFacade.start(
+				",com.vaadin,com.vaadin.ui," +
+				"com.vaadin.data,com.vaadin.data.Property,com.vaadin.data.util," +
+				"com.vaadin.event.FieldEvents," + 
+				"com.vaadin.shared.ui.combobox," +
+				// OpenRdf
+				"org.openrdf.rio"
+				);	
 		
 		// setup pipeline
 		Pipeline pipe = createEmptyPipeline();
 		setupTrivialPipelineGraph(pipe.getGraph());
-		
+
 		// create run model and run it
 		PipelineExecution run = new PipelineExecution(pipe);
 		run.setModuleFacade(moduleFacade);
-		run.run();
+		run.run();		
+		
+		moduleFacade.stop();
+		moduleFacade = null;
 	}
 	
 	/**
