@@ -1,5 +1,6 @@
 package module;
 
+import cz.cuni.xrg.intlib.repository.RDFFormatType;
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
@@ -40,14 +41,16 @@ public class Module implements GraphicalLoader {
         //this.config.setValue(Config.Description.name(), "");
         this.config.setValue(Config.FileName.name(), "");
         this.config.setValue(Config.DirectoryPath.name(), "");
-        this.config.setValue(Config.RDFFileFormat.name(), RDFFormatType.RDFXML.name());
+        this.config.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);
     }
 
+    @Override
     public Type getType() {
         return Type.LOADER;
 
     }
 
+    @Override
     public CustomComponent getConfigurationComponent() {
         // does dialog exist?
         if (this.configDialog == null) {
@@ -58,6 +61,7 @@ public class Module implements GraphicalLoader {
         return this.configDialog;
     }
 
+    @Override
     public Configuration getSettings() throws ConfigurationException {
         if (this.configDialog == null) {
         } else {
@@ -73,6 +77,7 @@ public class Module implements GraphicalLoader {
         return this.config;
     }
 
+    @Override
     public void setSettings(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
@@ -122,6 +127,7 @@ public class Module implements GraphicalLoader {
      * Implementation of module functionality here.
      *
      */
+    @Override
     public void load(LoadContext context) throws LoadException {
         try {
 
@@ -139,10 +145,12 @@ public class Module implements GraphicalLoader {
         }
     }
 
+    @Override
     public LocalRepo getLocalRepo() {
         return repository;
     }
 
+    @Override
     public void setLocalRepo(LocalRepo localRepo) {
         repository = localRepo;
     }
