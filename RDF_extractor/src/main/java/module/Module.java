@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,18 +38,19 @@ public class Module implements GraphicalExtractor {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-
-        this.config.setValue(Config.SPARQL_endpoint.name(), "");
+        this.config.setValue(Config.SPARQL_endpoint.name(), "http://");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.GraphsUri.name(), new LinkedList<String>() );
+        this.config.setValue(Config.GraphsUri.name(), new LinkedList<String>());
         this.config.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
+    @Override
     public Type getType() {
         return Type.EXTRACTOR;
     }
 
+    @Override
     public CustomComponent getConfigurationComponent() {
         // does dialog exist?
         if (this.configDialog == null) {
@@ -59,6 +61,7 @@ public class Module implements GraphicalExtractor {
         return this.configDialog;
     }
 
+    @Override
     public Configuration getSettings() throws ConfigurationException {
         if (this.configDialog == null) {
         } else {
@@ -74,6 +77,7 @@ public class Module implements GraphicalExtractor {
         return this.config;
     }
 
+    @Override
     public void setSettings(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
@@ -83,8 +87,8 @@ public class Module implements GraphicalExtractor {
         }
     }
 
-    private URL getSPARQLEndpoinURL() {
-        URL endpoint = (URL) config.getValue(Config.SPARQL_endpoint.name());
+    private String getSPARQLEndpoinURLAsString() {
+        String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
         return endpoint;
     }
 
@@ -112,21 +116,31 @@ public class Module implements GraphicalExtractor {
      * Implementation of module functionality here.
      *
      */
+    @Override
     public void extract(ExtractContext context) throws ExtractException {
 
-        final URL endpointURL = getSPARQLEndpoinURL();
-        final String hostName = getHostName();
-        final String password = getPassword();
-        final List<String> defaultGraphsUri = getGraphsURI();
-        final String query = getQuery();
+        final String endpoint = getSPARQLEndpoinURLAsString();
+        try {
+            final URL endpointURL = new URL(endpoint);
+            final String hostName = getHostName();
+            final String password = getPassword();
+            final List<String> defaultGraphsUri = getGraphsURI();
+            final String query = getQuery();
 
-        repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
+            repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
+
+        } catch (MalformedURLException ex) {
+            System.err.println("This URL not exists.");
+            System.err.println(ex.getMessage());
+        }
     }
 
+    @Override
     public LocalRepo getLocalRepo() {
         return repository;
     }
 
+    @Override
     public void setLocalRepo(LocalRepo localRepo) {
         repository = localRepo;
     }
