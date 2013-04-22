@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class Module implements GraphicalLoader {
 
-    private LocalRepo repository = LocalRepo.createLocalRepo();
+    private LocalRepo repository = null;
     /**
      * Configuration component.
      */

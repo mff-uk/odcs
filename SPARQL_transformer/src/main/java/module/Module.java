@@ -18,7 +18,7 @@ import cz.cuni.xrg.intlib.repository.LocalRepo;
  */
 public class Module implements GraphicalTransformer {
 
-    private LocalRepo repository = LocalRepo.createLocalRepo();
+    private LocalRepo repository = null;
     /**
      * Configuration component.
      */

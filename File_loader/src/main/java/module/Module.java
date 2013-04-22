@@ -20,7 +20,7 @@ import org.openrdf.rio.RDFFormat;
  */
 public class Module implements GraphicalLoader {
 
-    private LocalRepo repository = LocalRepo.createLocalRepo();
+    private LocalRepo repository = null; // LocalRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -84,6 +84,8 @@ public class Module implements GraphicalLoader {
 
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
+
+    	//RDFFormatType enumFormatType = RDFFormatType.RDFXML;
 
         switch (enumFormatType) {
             case AUTO:

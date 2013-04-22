@@ -19,7 +19,7 @@ import org.openrdf.rio.RDFFormat;
  */
 public class Module implements GraphicalExtractor {
 
-    private LocalRepo repository = LocalRepo.createLocalRepo();
+    private LocalRepo repository = null;
     /**
      * Configuration component.
      */
