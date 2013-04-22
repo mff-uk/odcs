@@ -83,9 +83,6 @@ public class Module implements GraphicalLoader {
     }
 
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
-    	return RDFFormat.RDFXML;
-    	
-    	/*
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
 
         switch (enumFormatType) {
@@ -105,7 +102,6 @@ public class Module implements GraphicalLoader {
         }
 
         throw new NotSupporteRDFFormatException();
-    	 */   
     }
 
     private String getDirectoryPath() {
