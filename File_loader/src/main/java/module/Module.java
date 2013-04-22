@@ -83,6 +83,9 @@ public class Module implements GraphicalLoader {
     }
 
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
+    	return RDFFormat.RDFXML;
+    	
+    	/*
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
 
         switch (enumFormatType) {
@@ -90,11 +93,9 @@ public class Module implements GraphicalLoader {
             case RDFXML: {
                 return RDFFormat.RDFXML;
             }
-
             case N3: {
                 return RDFFormat.N3;
             }
-
             case TRIG: {
                 return RDFFormat.TRIG;
             }
@@ -104,6 +105,7 @@ public class Module implements GraphicalLoader {
         }
 
         throw new NotSupporteRDFFormatException();
+    	 */   
     }
 
     private String getDirectoryPath() {
