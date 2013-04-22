@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.Type;
 
 /**
  * Represent imported DPUExecution in database.
+ *
  * @author Petyr
  * @author Bogo
  *
@@ -11,29 +12,27 @@ import cz.cuni.xrg.intlib.commons.Type;
 public class DPU {
 
     private int id;
-	private String name;
-	private String description = "";
+    private String name;
+    private String description = "";
     private Type type;
+    private String jarPath;
 
-	private String jarPath;
+    /**
+     * Allow empty constructor.
+     */
+    public DPU() {
+    }
 
-	/**
-	 * Allow empty constructor.
-	 */
-	public DPU() {
-
-	}
-
-	public DPU(String name, Type type) {
-		//this.id = id;
-		this.name = name;
+    public DPU(String name, Type type) {
+        //this.id = id;
+        this.name = name;
         this.type = type;
-	}
+    }
 
     @Override
-	public String toString() {
-		return name;
-	}
+    public String toString() {
+        return name;
+    }
 
     public String getName() {
         return name;
@@ -59,14 +58,12 @@ public class DPU {
         return type;
     }
 
-	public void setJarPath(String path) {
-		jarPath = path;
-	}
+    public void setJarPath(String path) {
+        jarPath = path;
+    }
 
-	public String getJarPath() {
-		return HACK_basePath + jarPath;
-	}
-
-	public static String HACK_basePath = "file:///C:/Users/Bogo/intlib/intlib/";
-
+    public String getJarPath() {
+        return HACK_basePath + jarPath;
+    }
+    public static String HACK_basePath = "file:///C:/MyGit/intlib/";
 }
