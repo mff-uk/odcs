@@ -9,6 +9,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -105,13 +106,14 @@ public class PipelineEdit extends CustomComponent implements View {
 			public void drop(DragAndDropEvent event) {
 				Transferable t = (Transferable) event.getTransferable();
 				DragAndDropWrapper.WrapperTargetDetails details = (DragAndDropWrapper.WrapperTargetDetails) event.getTargetDetails();
+				MouseEventDetails mouse =  details.getMouseEvent();
 
 				Object obj = t.getData("itemId");
 
 				if (obj.getClass() == DPU.class) {
 					DPU dpu = (DPU) obj;
 					if (App.getApp().getDPUs().getAllDpus().contains(dpu)) {
-						pc.addDpu(dpu);
+						pc.addDpu(dpu, mouse.getClientX() - 261, mouse.getClientY() - 256);
 					}
 				}
 
@@ -337,6 +339,8 @@ public class PipelineEdit extends CustomComponent implements View {
 	protected Pipeline loadPipeline(String id) {
 		// get data from DB ..
 		this.pipeline = App.getApp().getPipelines().getPipeline(Integer.parseInt(id));
+		pipelineName.setValue(this.pipeline.getName());
+		pipelineDescription.setValue(this.pipeline.getDescription());
 		return pipeline;
 	}
 
@@ -356,6 +360,8 @@ public class PipelineEdit extends CustomComponent implements View {
 			this.pipeline = App.getApp().getPipelines().createPipeline();
 			pipeline.setName("empty pipeline");
 			pipeline.setDescription("empty pipeline description");
+			pipelineName.setInputPrompt("empty pipeline");
+			pipelineDescription.setInputPrompt("empty pipeline description");
 		} else if (isInteger(pipeIdstr)) {
 			// use pipeIdstr as id
 			this.pipeline = loadPipeline(pipeIdstr);
@@ -394,8 +400,6 @@ public class PipelineEdit extends CustomComponent implements View {
 			label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
 		} else {
 			label.setValue("<h3>Editing pipeline<h3>");// + this.pipeline.getName() + "</h3>");
-			pipelineName.setValue(this.pipeline.getName());
-			pipelineDescription.setValue(this.pipeline.getDescription());
 		}
 
 		// work with pipeline here ...

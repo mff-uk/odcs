@@ -96,11 +96,13 @@ public class DPUDetail extends Window {
 			Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);
 		} catch (ConfigurationException ce) {
 			//TODO: Show info about invalid saved config(should not happen -> validity check on save)
-			Notification.show("ConfigurationException: Failed to set configuration for dialog.", 
+			Notification.show("ConfigurationException: Failed to set configuration for dialog.",
 					ce.getMessage(), Type.ERROR_MESSAGE);
 		}
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setStyleName("dpuDetailButtonBar");
+		buttonBar.setMargin(true);
 
 //		Button saveButton = new Button("Develop", new Button.ClickListener() {
 //

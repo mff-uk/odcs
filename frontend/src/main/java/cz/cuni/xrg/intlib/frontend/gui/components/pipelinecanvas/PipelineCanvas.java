@@ -21,7 +21,7 @@ import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
  * @author Bogo
  */
 @SuppressWarnings("serial")
-@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.4.3.min.js" })
+@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.4.3.min.js", "jquery-2.0.0.min.js" })
 public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	int dpuCount = 0;
@@ -84,9 +84,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		graph.moveNode(dpuId, newX, newY);
 	}
 
-	public void addDpu(DPU dpu) {
+	public void addDpu(DPU dpu, int x, int y) {
 		int dpuInstanceId = graph.addDpu(dpu);
-		getRpcProxy(PipelineCanvasClientRpc.class).addNode(dpuInstanceId, dpu.getName(), dpu.getDescription(), -5, -5);
+		getRpcProxy(PipelineCanvasClientRpc.class).addNode(dpuInstanceId, dpu.getName(), dpu.getDescription(), x, y);
 	}
 
 	public void addConnection(int dpuFrom, int dpuTo) {

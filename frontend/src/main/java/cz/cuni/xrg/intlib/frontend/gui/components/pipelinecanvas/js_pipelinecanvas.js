@@ -43,6 +43,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var dpus = {};
     var connections = {};
 
+	var lastPositionX = 0;
+	var	lastPositionY = 0;
+
     /** Registering RPC for calls from server-side**/
     this.registerRpc({
         init: function() {
@@ -254,13 +257,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // Group containing text and rect
         if(posX < 0) {
-            var mousePos = stage.getPointerPosition();// stage.getMousePosition();
+            var mousePos = null; //stage.getPointerPosition();// stage.getMousePosition();
 			if(mousePos != null) {
 				posX = mousePos.x;
 				posY = mousePos.y;
 			} else {
-				posX = 200;
-				posY = 200;
+				console.log("X: " + lastPositionX + " Y: " + lastPositionY);
+				posX = lastPositionX - 261;
+				posY = lastPositionY - 256;
 			}
         }
 
@@ -396,7 +400,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             writeMessage(messageLayer, 'dragend');
             isDragging = false;
             dragId = 0;
-            var endPosition = stage.getMousePosition();
+            var endPosition = group.getPosition();
             if(endPosition == null) {
                 writeMessage(messageLayer, 'DPU removed - Out of Stage');
                 removeDpu(dpu);
@@ -670,4 +674,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         return [startX, startY, endX, endY];
     }
+
+	jQuery(document).ready(function() {
+		$("#container").mousemove(function(e) {
+			lastPositionX = e.pageX;
+			lastPositionY = e.pageY;
+		});
+	});
 };
