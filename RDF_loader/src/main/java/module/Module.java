@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,17 +38,19 @@ public class Module implements GraphicalLoader {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.SPARQL_endpoint.name(), "");
+        this.config.setValue(Config.SPARQL_endpoint.name(), "http://");
         this.config.setValue(Config.Host_name.name(), "");
         this.config.setValue(Config.Password.name(), "");
         this.config.setValue(Config.GraphsUri.name(), new LinkedList<String>());
     }
 
+    @Override
     public Type getType() {
         return Type.LOADER;
 
     }
 
+    @Override
     public CustomComponent getConfigurationComponent() {
         // does dialog exist?
         if (this.configDialog == null) {
@@ -58,6 +61,7 @@ public class Module implements GraphicalLoader {
         return this.configDialog;
     }
 
+    @Override
     public Configuration getSettings() throws ConfigurationException {
         if (this.configDialog == null) {
         } else {
@@ -73,6 +77,7 @@ public class Module implements GraphicalLoader {
         return this.config;
     }
 
+    @Override
     public void setSettings(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
@@ -86,8 +91,8 @@ public class Module implements GraphicalLoader {
      * Implementation of module functionality here.
      *
      */
-    private URL getSPARQLEndpoinURL() {
-        URL endpoint = (URL) config.getValue(Config.SPARQL_endpoint.name());
+    private String getSPARQLEndpointURLAsString() {
+        String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
         return endpoint;
     }
 
@@ -106,20 +111,29 @@ public class Module implements GraphicalLoader {
         return graphs;
     }
 
+    @Override
     public void load(LoadContext context) throws LoadException {
-        final URL endpointURL = getSPARQLEndpoinURL();
-        final List<String> defaultGraphsURI = getGraphsURI();
-        final String hostName = getHostName();
-        final String password = getPassword();
+        final String endpoint = getSPARQLEndpointURLAsString();
+        try {
+            final URL endpointURL = new URL(endpoint);
+            final List<String> defaultGraphsURI = getGraphsURI();
+            final String hostName = getHostName();
+            final String password = getPassword();
 
-        repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password);
+            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password);
+        } catch (MalformedURLException ex) {
+            System.err.println("This URL not exists");
+            System.err.println(ex.getMessage());
+        }
     }
 
+    @Override
     public LocalRepo getLocalRepo() {
         return repository;
     }
 
+    @Override
     public void setLocalRepo(LocalRepo localRepo) {
-        repository=localRepo;
+        repository = localRepo;
     }
 }
