@@ -11,7 +11,6 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
-import org.openrdf.rio.RDFFormat;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
@@ -39,15 +38,17 @@ public class Module implements GraphicalExtractor {
         this.config.setValue(Config.Description.name(), "");
         // ...
         this.config.setValue(Config.Path.name(), "");
-        this.config.setValue(Config.FileSuffix.name(), RDFFormat.RDFXML.toString());
-        this.config.setValue(Config.OnlyThisSuffix.name(), new Boolean(false));
+        this.config.setValue(Config.FileSuffix.name(), ".rdf");
+        this.config.setValue(Config.OnlyThisSuffix.name(), false);
         
     }
 
+    @Override
     public Type getType() {
         return Type.EXTRACTOR;
     }
 
+    @Override
     public CustomComponent getConfigurationComponent() {
         // does dialog exist?
         if (this.configDialog == null) {
@@ -58,6 +59,7 @@ public class Module implements GraphicalExtractor {
         return this.configDialog;
     }
 
+    @Override
     public Configuration getSettings() throws ConfigurationException {
         if (this.configDialog == null) {
         } else {
@@ -73,6 +75,7 @@ public class Module implements GraphicalExtractor {
         return this.config;
     }
 
+    @Override
     public void setSettings(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
@@ -104,6 +107,7 @@ public class Module implements GraphicalExtractor {
         return useSuffix;
     }
 
+    @Override
     public void extract(ExtractContext context) throws ExtractException {
 
         final String baseURI = "";
@@ -114,10 +118,12 @@ public class Module implements GraphicalExtractor {
         repository.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useOnlyThisSuffix);
     }
 
+    @Override
     public LocalRepo getLocalRepo() {
         return repository;
     }
 
+    @Override
     public void setLocalRepo(LocalRepo localRepo) {
         repository = localRepo;
     }
