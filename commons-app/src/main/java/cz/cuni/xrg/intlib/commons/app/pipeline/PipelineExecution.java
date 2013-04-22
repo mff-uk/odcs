@@ -109,8 +109,10 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
         DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
 //        eventPublisher.publishEvent(new PipelineStartedEvent(pipeline, runId, this));
 
+        LocalRepo repository = LocalRepo.createLocalRepo();
+        
         for (Node node : dependencyGraph) {
-        	runNode(node);
+        	runNode(node, repository);
         }
         
 //        long duration = System.currentTimeMillis() - pipelineStart;
@@ -122,8 +124,9 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
 	/**
 	 * Executes a general node (ETL) in pipeline graph.
 	 * @param node
+	 * @param repo
 	 */
-    private void runNode(Node node) {
+    private void runNode(Node node, LocalRepo repo) {
     	
     	DPUInstance dpuInstance = node.getDpuInstance();
         DPU dpu = dpuInstance.getDpu();
@@ -131,9 +134,7 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
         Type dpuType = dpu.getType();
         String dpuJarPath = dpu.getJarPath();
         Configuration configuration = dpuInstance.getInstanceConfig();
-        
-        LocalRepo repo = createRdfRepository();
-        
+  
         switch (dpuType) {
         case EXTRACTOR : {
             Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
