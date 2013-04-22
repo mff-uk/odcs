@@ -37,11 +37,13 @@ public class Module implements GraphicalTransformer {
         this.config.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");
     }
 
+    @Override
     public Type getType() {
         return Type.TRANSFORMER;
 
     }
 
+    @Override
     public CustomComponent getConfigurationComponent() {
         // does dialog exist?
         if (this.configDialog == null) {
@@ -52,6 +54,7 @@ public class Module implements GraphicalTransformer {
         return this.configDialog;
     }
 
+    @Override
     public Configuration getSettings() throws ConfigurationException {
         if (this.configDialog == null) {
         } else {
@@ -67,6 +70,7 @@ public class Module implements GraphicalTransformer {
         return this.config;
     }
 
+    @Override
     public void setSettings(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
@@ -86,6 +90,7 @@ public class Module implements GraphicalTransformer {
         return query;
     }
 
+    @Override
     public void transform(TransformContext context) throws TransformException {
 
         final String updateQuery = getUpdateQuery();
@@ -93,10 +98,12 @@ public class Module implements GraphicalTransformer {
         repository.transformUsingSPARQL(updateQuery);
     }
 
+    @Override
     public LocalRepo getLocalRepo() {
         return repository;
     }
 
+    @Override
     public void setLocalRepo(LocalRepo localRepo) {
         repository = localRepo;
     }
