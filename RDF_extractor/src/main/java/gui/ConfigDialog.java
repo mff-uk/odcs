@@ -72,7 +72,7 @@ public class ConfigDialog extends CustomComponent {
          * invalid configuration in dialog.
          */
         config.setValue(Config.SPARQL_endpoint.name(),
-                (String)comboBoxSparql.getValue());
+                (String) comboBoxSparql.getValue());
         config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
         config.setValue(Config.Password.name(), passwordFieldPass.getValue());
         config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
