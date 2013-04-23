@@ -38,12 +38,11 @@ public class ConfigDialog extends CustomComponent {
 
     private void mapData() {
 
-        comboBoxFormat.addItem("Auto");
         comboBoxFormat.addItem("TTL");
         comboBoxFormat.addItem("RDF/XML");
         comboBoxFormat.addItem("N3");
         comboBoxFormat.addItem("TriG");
-        comboBoxFormat.setValue("Auto");
+        comboBoxFormat.setValue("TTL");
     }
 
     /**
@@ -63,9 +62,9 @@ public class ConfigDialog extends CustomComponent {
         //config.setValue(Config.NameDPU.name(), textFieldName.getValue());
         //config.setValue(Config.Description.name(), textAreaDescr.getValue());
         config.setValue(Config.Path.name(), textFieldPath.getValue());
-        config.setValue(Config.FileSuffix.name(), comboBoxFormat.getValue());
+        config.setValue(Config.FileSuffix.name(), (String)comboBoxFormat.getValue());
 // TODO: read from dialog
-        config.setValue(Config.OnlyThisSuffix.name(), new Boolean(false));
+        config.setValue(Config.OnlyThisSuffix.name(), false);
 
         return config;
     }
