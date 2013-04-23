@@ -34,8 +34,8 @@ public class Module implements GraphicalExtractor {
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.NameDPU.name(), "");
-        this.config.setValue(Config.Description.name(), "");
+        //this.config.setValue(Config.NameDPU.name(), "");
+       // this.config.setValue(Config.Description.name(), "");
         // ...
         this.config.setValue(Config.Path.name(), "");
         this.config.setValue(Config.FileSuffix.name(), ".rdf");
