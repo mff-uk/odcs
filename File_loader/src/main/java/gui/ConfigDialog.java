@@ -7,7 +7,6 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.repository.RDFFormatType;
 
-
 /**
  * Configuration dialog.
  *
@@ -32,9 +31,8 @@ public class ConfigDialog extends CustomComponent {
     private CheckBox checkBoxDiffName;
     private TextField textFieldFileName; // FileName
     private TextField textFieldDir;	//Directory
-    
-    //private Map<String, RDFFormatType> map = new HashMap<String, RDFFormatType>();
 
+    //private Map<String, RDFFormatType> map = new HashMap<String, RDFFormatType>();
     public ConfigDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
@@ -42,33 +40,32 @@ public class ConfigDialog extends CustomComponent {
     }
 
     /*
-    private void CreateFormatMapping() {
-        map.put("AUTO", RDFFormatType.AUTO);
-        map.put("TTL", RDFFormatType.TTL);
-        map.put("RDF/XML", RDFFormatType.RDFXML);
-        map.put("N3", RDFFormatType.N3);
-        map.put("TriG", RDFFormatType.TRIG);
+     private void CreateFormatMapping() {
+     map.put("AUTO", RDFFormatType.AUTO);
+     map.put("TTL", RDFFormatType.TTL);
+     map.put("RDF/XML", RDFFormatType.RDFXML);
+     map.put("N3", RDFFormatType.N3);
+     map.put("TriG", RDFFormatType.TRIG);
      
-    }*/
-
+     }*/
     private void mapData() {
 
 
-         comboBoxFormat.addItem(RDFFormatType.AUTO);
-         comboBoxFormat.addItem(RDFFormatType.TTL);
-         comboBoxFormat.addItem(RDFFormatType.RDFXML);
-         comboBoxFormat.addItem(RDFFormatType.N3);
-         comboBoxFormat.addItem(RDFFormatType.TTL);
-         
-         comboBoxFormat.setValue(RDFFormatType.TTL);
-        
+        comboBoxFormat.addItem(RDFFormatType.AUTO);
+        comboBoxFormat.addItem(RDFFormatType.TTL);
+        comboBoxFormat.addItem(RDFFormatType.RDFXML);
+        comboBoxFormat.addItem(RDFFormatType.N3);
+        comboBoxFormat.addItem(RDFFormatType.TTL);
+
+        comboBoxFormat.setValue(RDFFormatType.TTL);
+
         /*CreateFormatMapping();
         
-        for (String nextItem : map.keySet()) {
-            comboBoxFormat.addItem(nextItem);
-        }
+         for (String nextItem : map.keySet()) {
+         comboBoxFormat.addItem(nextItem);
+         }
 
-        comboBoxFormat.setValue("TTL");
+         comboBoxFormat.setValue("TTL");
 
         
          comboBoxFormat.addItem("TTL");
@@ -97,7 +94,7 @@ public class ConfigDialog extends CustomComponent {
         //config.setValue(Config.Description.name(), textAreaDescr.getValue());
         config.setValue(Config.DirectoryPath.name(), textFieldDir.getValue());
         config.setValue(Config.FileName.name(), textFieldFileName.getValue());
-        config.setValue(Config.RDFFileFormat.name(), (RDFFormatType)comboBoxFormat.getValue());
+        config.setValue(Config.RDFFileFormat.name(), (RDFFormatType) comboBoxFormat.getValue());
 
         return config;
     }
@@ -121,7 +118,7 @@ public class ConfigDialog extends CustomComponent {
             textFieldDir.setValue((String) conf.getValue(Config.DirectoryPath.name()));
             textFieldFileName.setValue((String) conf.getValue(Config.FileName.name()));
             comboBoxFormat.setValue((RDFFormatType) conf.getValue(Config.RDFFileFormat.name()));
-           
+
         } catch (Exception ex) {
             // throw setting exception
             throw new ConfigurationException();
