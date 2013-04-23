@@ -7,17 +7,13 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
+
 
 
 /**
@@ -78,13 +74,11 @@ public class ConfigDialog extends CustomComponent {
 		 * 	Also remember that you can return null in case of invalid configuration in dialog.
 		 */
 
-		config.setValue(Config.SPARQL_endpoint.name(), comboBoxSparql.getValue());
+                config.setValue(Config.SPARQL_endpoint.name(), (String)comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
 		config.setValue(Config.GraphsUri.name(), griddata);
-	//	if (griddata.size()<1){
-	//		griddata.add(" ");
-	//	}
+	
 		return config;
 	}
 
@@ -105,8 +99,7 @@ public class ConfigDialog extends CustomComponent {
 			comboBoxSparql.setValue( (String) conf.getValue(Config.SPARQL_endpoint.name()));
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
-		//	griddata.setValue( (List<String>) conf.getValue(Config.GraphsUri.name()));
-			List<String> griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
+			griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
 
 		}
 		catch(Exception ex) {
