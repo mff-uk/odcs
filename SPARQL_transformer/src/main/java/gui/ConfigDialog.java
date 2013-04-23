@@ -43,8 +43,8 @@ public class ConfigDialog extends CustomComponent {
          * ids of values. Also remember that you can return null in case of
          * invalid configuration in dialog.
          */
-     //   config.setValue(Config.NameDPU.name(), textFieldName.getValue());
-     //   config.setValue(Config.Description.name(), textAreaDescr.getValue());
+        //   config.setValue(Config.NameDPU.name(), textFieldName.getValue());
+        //   config.setValue(Config.Description.name(), textAreaDescr.getValue());
         config.setValue(Config.SPARQL_Update_Query.name(), txtQuery.getValue());
 
 
@@ -66,8 +66,8 @@ public class ConfigDialog extends CustomComponent {
          */
         try {
 
-      //      textFieldName.setValue((String) conf.getValue(Config.NameDPU.name()));
-      //      textAreaDescr.setValue((String) conf.getValue(Config.Description.name()));
+            //      textFieldName.setValue((String) conf.getValue(Config.NameDPU.name()));
+            //      textAreaDescr.setValue((String) conf.getValue(Config.Description.name()));
             txtQuery.setValue((String) conf.getValue(Config.SPARQL_Update_Query.name()));
 
         } catch (Exception ex) {
@@ -77,39 +77,38 @@ public class ConfigDialog extends CustomComponent {
     }
 
     private GridLayout buildMainLayout() {
-		/**
-		 * TODO Build your component here.
-		 */
-		
-		// common part: create layout
-		mainLayout = new GridLayout(2, 1);
-		mainLayout.setImmediate(false);
-		mainLayout.setWidth("100%");
-		mainLayout.setHeight("100%");
-		mainLayout.setMargin(false);
-		//mainLayout.setSpacing(true);
+        /**
+         * TODO Build your component here.
+         */
+        // common part: create layout
+        mainLayout = new GridLayout(2, 1);
+        mainLayout.setImmediate(false);
+        mainLayout.setWidth("100%");
+        mainLayout.setHeight("100%");
+        mainLayout.setMargin(false);
+        //mainLayout.setSpacing(true);
 
-		// top-level component properties
-		setWidth("100%");
-		setHeight("100%");
+        // top-level component properties
+        setWidth("100%");
+        setHeight("100%");
 
-		// labelUpQuer
-		labelUpQuer = new Label();
-		labelUpQuer.setImmediate(false);
-		labelUpQuer.setWidth("68px");
-		labelUpQuer.setHeight("-1px");
-		labelUpQuer.setValue("SPARQL  Update Query");
-		mainLayout.addComponent(labelUpQuer, 0, 0);
+        // labelUpQuer
+        labelUpQuer = new Label();
+        labelUpQuer.setImmediate(false);
+        labelUpQuer.setWidth("68px");
+        labelUpQuer.setHeight("-1px");
+        labelUpQuer.setValue("SPARQL  Update Query");
+        mainLayout.addComponent(labelUpQuer, 0, 0);
 
-		// textAreaUpQuer
-		txtQuery = new TextArea();
-		txtQuery.setImmediate(false);
-		txtQuery.setWidth("100%");
-		txtQuery.setHeight("211px");
-		mainLayout.addComponent(txtQuery, 1, 0);
-		mainLayout.setColumnExpandRatio(0, 0.00001f);
-		mainLayout.setColumnExpandRatio(1, 0.99999f);
+        // textAreaUpQuer
+        txtQuery = new TextArea();
+        txtQuery.setImmediate(false);
+        txtQuery.setWidth("100%");
+        txtQuery.setHeight("211px");
+        mainLayout.addComponent(txtQuery, 1, 0);
+        mainLayout.setColumnExpandRatio(0, 0.00001f);
+        mainLayout.setColumnExpandRatio(1, 0.99999f);
 
-		return mainLayout;
-	}
+        return mainLayout;
+    }
 }
