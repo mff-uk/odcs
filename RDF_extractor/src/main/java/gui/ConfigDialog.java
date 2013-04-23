@@ -73,19 +73,19 @@ public class ConfigDialog extends CustomComponent {
 		 * ids of values. Also remember that you can return null in case of
 		 * invalid configuration in dialog.
 		 */
-
+		saveEditedTexts();
 		config.setValue(Config.SPARQL_endpoint.name(),
 				comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
 		config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
-
-		griddata.add("sa");
 		config.setValue(Config.GraphsUri.name(), griddata);
-		/*
-		 * if (griddata.size()<1){ griddata.add(" "); }
-		 */
+		String endp = (String) config
+				.getValue(Config.SPARQL_endpoint.name());
+		String qry = (String) config
+				.getValue(Config.SPARQL_query.name());
 
+		
 		return config;
 	}
 
@@ -104,26 +104,43 @@ public class ConfigDialog extends CustomComponent {
 		 */
 
 		try {
-			comboBoxSparql.setValue((String) conf
-					.getValue(Config.SPARQL_endpoint.name()));
+			String endp = (String) conf
+					.getValue(Config.SPARQL_endpoint.name());
+			String qry = (String) conf
+					.getValue(Config.SPARQL_query.name());
+			if (comboBoxSparql.addItem(endp) != null) {
+				final Item item = comboBoxSparql
+						.getItem(endp);
+				item.getItemProperty("endpoint").setValue(
+						endp);
+				comboBoxSparql.setValue(endp);
+			}
+			
+			//comboBoxSparql.setValue(endp);
+			//comboBoxSparql.setValue((String) conf
+				//	.getValue(Config.SPARQL_endpoint.name()));
 			textFieldNameAdm.setValue((String) conf.getValue(Config.Host_name
 					.name()));
 			passwordFieldPass.setValue((String) conf.getValue(Config.Password
 					.name()));
-			// griddata.setValue( (List<String>)
+			// griddata.setValue( (List<String>)7
 			// conf.getValue(Config.GraphsUri.name()));
 			textAreaConstr.setValue((String) conf.getValue(Config.SPARQL_query
 					.name()));
-			griddata = (List<String>) conf.getValue(Config.GraphsUri.name());
-			if (griddata == null) {
+			try {
+				griddata = (List<String>) conf.getValue(Config.GraphsUri.name());
+				if (griddata == null) {
+					griddata = new LinkedList<String>();
+				}
+			} catch (Exception e) {
 				griddata = new LinkedList<String>();
 			}
-			if (griddata.size() < 1) {
-				griddata.add("");
-			}
+			
+			refreshNamedGraphData();
 		} catch (Exception ex) {
 			// throw setting exception
 			throw new ConfigurationException();
+		
 		}
 	}
 
@@ -314,7 +331,7 @@ public class ConfigDialog extends CustomComponent {
 		labelGraph.setImmediate(false);
 		labelGraph.setWidth("-1px");
 		labelGraph.setHeight("-1px");
-		labelGraph.setValue("Named Graph:");
+		labelGraph.setValue("Named Graph2:");
 		gridLayoutAdm.addComponent(labelGraph, 0, 3);
 
 		initializeNamedGraphList();
@@ -362,12 +379,12 @@ public class ConfigDialog extends CustomComponent {
 	// @SuppressWarnings("serial")
 	private void refreshNamedGraphData() {
 		gridLayoutGraph.removeAllComponents();
-		gridLayoutGraph.setRows(griddata.size() + 1);
 		int row = 0;
 		listedEditText = new ArrayList<TextField>();
 		if(griddata.size()<1){
 			griddata.add("");
 		}
+		gridLayoutGraph.setRows(griddata.size() + 1);
 		for (String item : griddata) {
 			textFieldGraph = new TextField();
 			listedEditText.add(textFieldGraph);
@@ -395,6 +412,19 @@ public class ConfigDialog extends CustomComponent {
 					Alignment.TOP_RIGHT);
 			row++;
 		}
+		Button buttonGraphAdd = new Button();
+		buttonGraphAdd.setCaption("+");
+		buttonGraphAdd.setImmediate(true);
+		buttonGraphAdd.setWidth("55px");
+		buttonGraphAdd.setHeight("-1px");
+		buttonGraphAdd.addListener(new Button.ClickListener() {
+
+			public void buttonClick(Button.ClickEvent event) {
+				saveEditedTexts();
+				addDataToGridData(" ");
+				refreshNamedGraphData();
+			}
+		});
 		gridLayoutGraph.addComponent(buttonGraphAdd, 0, row);
 
 	}
@@ -411,24 +441,12 @@ public class ConfigDialog extends CustomComponent {
 		gridLayoutGraph.setColumnExpandRatio(1, 0.05f);
 
 		// buttonGraphAdd
-		buttonGraphAdd = new Button();
-		buttonGraphAdd.setCaption("+");
-		buttonGraphAdd.setImmediate(true);
-		buttonGraphAdd.setWidth("55px");
-		buttonGraphAdd.setHeight("-1px");
-		buttonGraphAdd.addListener(new Button.ClickListener() {
+		
 
-			public void buttonClick(Button.ClickEvent event) {
-				saveEditedTexts();
-				addDataToGridData(" ");
-				refreshNamedGraphData();
-			}
-		});
-
-		refreshNamedGraphData();
+		//refreshNamedGraphData();
 
 	}
-
+	
 	private VerticalLayout buildVerticalLayoutDetails() {
 		// common part: create layout
 		verticalLayoutDetails = new VerticalLayout();
