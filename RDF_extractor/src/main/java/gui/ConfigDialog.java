@@ -71,17 +71,13 @@ public class ConfigDialog extends CustomComponent {
          * ids of values. Also remember that you can return null in case of
          * invalid configuration in dialog.
          */
-        config.setValue(Config.SPARQL_endpoint.name(),
-                (String) comboBoxSparql.getValue());
+        saveEditedTexts();
+        config.setValue(Config.SPARQL_endpoint.name(), (String)comboBoxSparql.getValue());
         config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
         config.setValue(Config.Password.name(), passwordFieldPass.getValue());
         config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
-
         config.setValue(Config.GraphsUri.name(), griddata);
-        /*
-         * if (griddata.size()<1){ griddata.add(" "); }
-         */
-
+        
         return config;
     }
 
@@ -99,44 +95,47 @@ public class ConfigDialog extends CustomComponent {
          * configuration.
          */
         try {
-            comboBoxSparql.setValue((String) conf
-                    .getValue(Config.SPARQL_endpoint.name()));
+        	String endp = (String)conf.getValue(Config.SPARQL_endpoint.name());
+
+        	if (comboBoxSparql.addItem(endp) != null) {
+        		final Item item = comboBoxSparql.getItem(endp);
+        		item.getItemProperty("endpoint").setValue(endp);
+        		comboBoxSparql.setValue(endp);
+        		}
             textFieldNameAdm.setValue((String) conf.getValue(Config.Host_name
                     .name()));
             passwordFieldPass.setValue((String) conf.getValue(Config.Password
                     .name()));
-            // griddata.setValue( (List<String>)
-            // conf.getValue(Config.GraphsUri.name()));
+
             textAreaConstr.setValue((String) conf.getValue(Config.SPARQL_query
                     .name()));
-            griddata = (List<String>) conf.getValue(Config.GraphsUri.name());
-            if (griddata == null) {
+
+            try {
+            	griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
+            	if (griddata == null) {
+            		griddata = new LinkedList<String>();
+            		}
+            	} 
+            catch (Exception e) { 
                 griddata = new LinkedList<String>();
-            }
-            if (griddata.size() < 1) {
-                griddata.add("");
-            }
-        } catch (Exception ex) {
+                }
+            refreshNamedGraphData();
+            } 
+        
+        catch (Exception ex) {
             // throw setting exception
             throw new ConfigurationException();
+            }
         }
-    }
 
     public static IndexedContainer getFridContainer() {
 
-//		String[] endpoint = { "http://example:8894/sparql" };
         String[] visibleCols = new String[]{"endpoint"};
-
         IndexedContainer result = new IndexedContainer();
 
         for (String p : visibleCols) {
             result.addContainerProperty(p, String.class, "");
         }
-
-        /*		for (int i = 0; i < endpoint.length; i++) {
-         Object num = result.addItem();
-         result.getContainerProperty(num, "endpoint").setValue(endpoint[i]);
-         } */
 
         return result;
     }
@@ -261,16 +260,6 @@ public class ConfigDialog extends CustomComponent {
             }
         });
 
-        /*	comboBoxSparql
-         .addValueChangeListener(new Property.ValueChangeListener() {
-         public void valueChange(Property.ValueChangeEvent event) {
-         // TODO Auto-generated method stub
-         final String valueString = String.valueOf(event
-         .getProperty().getValue());
-         Notification.show("Value changed:", valueString,
-         Notification.Type.TRAY_NOTIFICATION);
-         }
-         }); */
 
         gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
 
@@ -355,12 +344,12 @@ public class ConfigDialog extends CustomComponent {
     // @SuppressWarnings("serial")
     private void refreshNamedGraphData() {
         gridLayoutGraph.removeAllComponents();
-        gridLayoutGraph.setRows(griddata.size() + 1);
         int row = 0;
         listedEditText = new ArrayList<TextField>();
         if (griddata.size() < 1) {
             griddata.add("");
         }
+        gridLayoutGraph.setRows(griddata.size() + 1);
         for (String item : griddata) {
             textFieldGraph = new TextField();
             listedEditText.add(textFieldGraph);
@@ -388,6 +377,19 @@ public class ConfigDialog extends CustomComponent {
                     Alignment.TOP_RIGHT);
             row++;
         }
+	        Button buttonGraphAdd = new Button();
+	        buttonGraphAdd.setCaption("+");
+	        buttonGraphAdd.setImmediate(true);
+	        buttonGraphAdd.setWidth("55px");
+	        buttonGraphAdd.setHeight("-1px");
+	        buttonGraphAdd.addListener(new Button.ClickListener() {
+
+        	public void buttonClick(Button.ClickEvent event) {
+        		saveEditedTexts();
+        		addDataToGridData(" ");
+        		refreshNamedGraphData();
+        	}
+        }); 
         gridLayoutGraph.addComponent(buttonGraphAdd, 0, row);
 
     }
@@ -402,23 +404,6 @@ public class ConfigDialog extends CustomComponent {
         gridLayoutGraph.setColumns(2);
         gridLayoutGraph.setColumnExpandRatio(0, 0.95f);
         gridLayoutGraph.setColumnExpandRatio(1, 0.05f);
-
-        // buttonGraphAdd
-        buttonGraphAdd = new Button();
-        buttonGraphAdd.setCaption("+");
-        buttonGraphAdd.setImmediate(true);
-        buttonGraphAdd.setWidth("55px");
-        buttonGraphAdd.setHeight("-1px");
-        buttonGraphAdd.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                saveEditedTexts();
-                addDataToGridData(" ");
-                refreshNamedGraphData();
-            }
-        });
-
-        refreshNamedGraphData();
 
     }
 
