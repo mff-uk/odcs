@@ -105,6 +105,7 @@ public class ConfigDialog extends CustomComponent {
         txtQuery.setImmediate(false);
         txtQuery.setWidth("100%");
         txtQuery.setHeight("211px");
+        txtQuery.setInputPrompt("PREFIX br:<http://purl.org/business-register#>\nMODIFY\nDELETE { ?s pc:contact ?o}\nINSERT { ?s br:contact ?o}\nWHERE {\n\t     ?s a gr:BusinessEntity .\n\t      ?s pc:contact ?o\n}");
         mainLayout.addComponent(txtQuery, 1, 0);
         mainLayout.setColumnExpandRatio(0, 0.00001f);
         mainLayout.setColumnExpandRatio(1, 0.99999f);

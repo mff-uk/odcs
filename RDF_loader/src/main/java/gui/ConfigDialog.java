@@ -235,6 +235,7 @@ public class ConfigDialog extends CustomComponent {
 			comboBoxSparql.setTextInputAllowed(true);
 			comboBoxSparql.setItemCaptionPropertyId("endpoint");
 			comboBoxSparql.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+			comboBoxSparql.setInputPrompt("KNOWLEDGE BASE");
 
 			comboBoxSparql.setFilteringMode(FilteringMode.CONTAINS);
 			comboBoxSparql.setImmediate(true);
@@ -284,6 +285,7 @@ public class ConfigDialog extends CustomComponent {
 			textFieldNameAdm.setImmediate(false);
 			textFieldNameAdm.setWidth("100%");
 			textFieldNameAdm.setHeight("-1px");
+			textFieldNameAdm.setInputPrompt("username to connect to SPARQL endpoints");
 			gridLayoutAdm.addComponent(textFieldNameAdm, 1, 1);
 
 			// labelPass
@@ -299,6 +301,7 @@ public class ConfigDialog extends CustomComponent {
 			passwordFieldPass.setImmediate(false);
 			passwordFieldPass.setWidth("100%");
 			passwordFieldPass.setHeight("-1px");
+			passwordFieldPass.setInputPrompt("password");
 			gridLayoutAdm.addComponent(passwordFieldPass, 1, 2);
 
 			// labelGraph
@@ -371,6 +374,7 @@ public class ConfigDialog extends CustomComponent {
 				textFieldGraph.setWidth("100%");
 				textFieldGraph.setData(row);
 				textFieldGraph.setValue(item);
+				textFieldGraph.setInputPrompt("http://ld.opendata.cz/kb");
 				
 				buttonGraphRem = new Button();
 				buttonGraphRem.setWidth("55px");

@@ -185,6 +185,7 @@ public class ConfigDialog extends CustomComponent {
         textFieldDir.setImmediate(false);
         textFieldDir.setWidth("100%");
         textFieldDir.setHeight("-1px");
+        textFieldDir.setInputPrompt("C:/ted/");
         verticalLayoutCore.addComponent(textFieldDir);
 
         // textFieldFileName
@@ -193,6 +194,7 @@ public class ConfigDialog extends CustomComponent {
         textFieldFileName.setImmediate(false);
         textFieldFileName.setWidth("100%");
         textFieldFileName.setHeight("-1px");
+        textFieldFileName.setInputPrompt("test-ted");
         verticalLayoutCore.addComponent(textFieldFileName);
 
         // checkBoxDiffName
