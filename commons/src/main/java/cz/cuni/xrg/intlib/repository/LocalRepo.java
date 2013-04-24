@@ -531,4 +531,32 @@ public class LocalRepo {
             logger.debug(ex.getMessage());
         }
     }
+    
+    /**
+     * Add all data from repository to targetRepository.
+     * 
+     * @param targetRepository 
+     */
+    public void copyAllDataToTargetRepository(Repository targetRepository) {
+        try {
+            RepositoryConnection sourceConnection = repository.getConnection();
+
+            if (!sourceConnection.isEmpty()) {
+
+                List<Statement> sourceStatemens = sourceConnection.getStatements(null, null, null, true).asList();
+
+                if (targetRepository != null) {
+                    
+                    RepositoryConnection targetConnection = targetRepository.getConnection();
+
+                    for (Statement nextStatement : sourceStatemens) {
+                        targetConnection.add(nextStatement);
+                    }
+                }
+            }
+        } catch (RepositoryException ex) {
+            logger.debug(ex.getMessage());
+        }
+
+    }
 }
