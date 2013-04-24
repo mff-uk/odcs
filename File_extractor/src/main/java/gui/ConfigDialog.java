@@ -2,6 +2,7 @@ package gui;
 
 import module.Config;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
@@ -59,8 +60,10 @@ public class ConfigDialog extends CustomComponent {
          * ids of values. Also remember that you can return null in case of
          * invalid configuration in dialog.
          */
-        //config.setValue(Config.NameDPU.name(), textFieldName.getValue());
-        //config.setValue(Config.Description.name(), textAreaDescr.getValue());
+        
+        
+
+    	config.setValue(Config.OnlyThisText.name(), textFieldOnly.getValue());
         config.setValue(Config.Path.name(), textFieldPath.getValue());
         config.setValue(Config.FileSuffix.name(), (String)comboBoxFormat.getValue());
 // TODO: read from dialog
@@ -84,11 +87,10 @@ public class ConfigDialog extends CustomComponent {
          */
         try {
 
-            //textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
-            //textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
+        	
             textFieldPath.setValue((String) conf.getValue(Config.Path.name()));
             comboBoxFormat.setValue((String) conf.getValue(Config.FileSuffix.name()));
-
+            textFieldOnly.setValue((String) conf.getValue(Config.OnlyThisText.name()));
 
 
         } catch (Exception ex) {
@@ -124,26 +126,15 @@ public class ConfigDialog extends CustomComponent {
         textFieldPath.setInputPrompt("C:/ted/ted1.ttl");
         mainLayout.addComponent(textFieldPath, 0, 0);
 
-   /*     // checkBoxWhole
-        checkBoxWhole = new CheckBox();
-        checkBoxWhole.setCaption("Process whole directory.");
-        checkBoxWhole.setImmediate(false);
-        checkBoxWhole.setWidth("-1px");
-        checkBoxWhole.setHeight("-1px");
-        mainLayout.addComponent(checkBoxWhole, 0, 1);*/
 
         // layoutOnly
         horizontalLayoutOnly = buildHorizontalLayoutOnly();
         mainLayout.addComponent(horizontalLayoutOnly, 0, 1);
-      // mainLayout.setComponentAlignment(horizontalLayoutOnly, Alignment.TOP_RIGHT);
-    //    
 
         // horizontalLayoutFormat
         horizontalLayoutFormat = buildHorizontalLayoutFormat();
         mainLayout.addComponent(horizontalLayoutFormat, 0, 2);
-      //  horizontalLayoutFormat.setComponentAlignment(textFieldOnly,Alignment.TOP_RIGHT);
-
-
+   
         return mainLayout;
     }
 

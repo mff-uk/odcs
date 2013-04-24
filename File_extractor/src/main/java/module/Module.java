@@ -37,8 +37,9 @@ public class Module implements GraphicalExtractor {
         //this.config.setValue(Config.NameDPU.name(), "");
        // this.config.setValue(Config.Description.name(), "");
         // ...
-        this.config.setValue(Config.Path.name(), "");
+        this.config.setValue(Config.OnlyThisText.name(), "");
         this.config.setValue(Config.FileSuffix.name(), ".rdf");
+        this.config.setValue(Config.Path.name(), "");
         this.config.setValue(Config.OnlyThisSuffix.name(), false);
         
     }

@@ -14,6 +14,7 @@ public enum Config {
 	,Description //String
         ,Path //String
 	,FileSuffix //String
-        ,OnlyThisSuffix //boolean
+        ,OnlyThisSuffix, //boolean
+        OnlyThisText //String
 
 }
