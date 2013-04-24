@@ -121,6 +121,7 @@ public class ConfigDialog extends CustomComponent {
         textFieldPath.setImmediate(false);
         textFieldPath.setWidth("100%");
         textFieldPath.setHeight("-1px");
+        textFieldPath.setInputPrompt("C:/ted/ted1.ttl");
         mainLayout.addComponent(textFieldPath, 0, 0);
 
    /*     // checkBoxWhole
@@ -168,6 +169,7 @@ public class ConfigDialog extends CustomComponent {
         textFieldOnly.setImmediate(false);
         textFieldOnly.setWidth("50px");
         textFieldOnly.setHeight("-1px");
+        textFieldOnly.setInputPrompt("*.ttl");
         horizontalLayoutOnly.addComponent(textFieldOnly);
         horizontalLayoutOnly.setComponentAlignment(textFieldOnly,Alignment.TOP_RIGHT);
         
