@@ -77,6 +77,7 @@ public class ConfigDialog extends CustomComponent {
         config.setValue(Config.SPARQL_endpoint.name(), (String)comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
+		config.setValue(Config.Options.name(), optionGroupDetail.getValue());
 		config.setValue(Config.GraphsUri.name(), griddata);
 	
 		return config;
@@ -105,6 +106,7 @@ public class ConfigDialog extends CustomComponent {
         		}
 			textFieldNameAdm.setValue( (String) conf.getValue(Config.Host_name.name()));
 			passwordFieldPass.setValue( (String) conf.getValue(Config.Password.name()));
+			optionGroupDetail.setValue( (String) conf.getValue(Config.Options.name()));
             try {
             	griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
             	if (griddata == null) {

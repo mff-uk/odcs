@@ -15,5 +15,6 @@ public enum Config {
     SPARQL_endpoint, // String
     Host_name, // String
     Password, // String
-    GraphsUri 	// LinkedList<String>
+    GraphsUri, 	// LinkedList<String>
+    Options // String
 }
