@@ -1,6 +1,8 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
@@ -213,6 +215,16 @@ public class PipelineEdit extends CustomComponent implements View {
 		pipelineName.setImmediate(false);
 		pipelineName.setWidth("200px");
 		pipelineName.setHeight("-1px");
+		pipelineName.addValidator(new Validator() {
+
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if(value.getClass() == String.class && !((String)value).isEmpty()) {
+					return;
+				}
+				throw new InvalidValueException("Name must be filled!");
+			}
+		});
 		pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
 		Label descriptionLabel = new Label("Description");
 		descriptionLabel.setImmediate(false);
@@ -379,6 +391,9 @@ public class PipelineEdit extends CustomComponent implements View {
 	 * Save loaded pipeline ie. this.entity.
 	 */
 	protected void savePipeline() {
+		if(!pipelineName.isValid()) {
+			return;
+		}
 		this.pipeline.setName(pipelineName.getValue());
 		this.pipeline.setDescription(pipelineDescription.getValue());
 		pc.saveGraph(pipeline);

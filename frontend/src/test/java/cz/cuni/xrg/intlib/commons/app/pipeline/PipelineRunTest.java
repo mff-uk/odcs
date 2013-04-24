@@ -92,7 +92,7 @@ public class PipelineRunTest {
         Configuration ldConfig = new Configuration();
         List<String> graphsURI=new LinkedList<String>();
         graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
-        
+
 // TODO: set your RDF loader
         exConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql");
         exConfig.setValue("Host_name", "SPARQL");
