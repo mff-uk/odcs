@@ -19,8 +19,13 @@ public class LocalRepoTest {
 
     
     @BeforeClass
-    public static void isRepositorySucecessfulCreatedTest() {
+    public static void RepositorySucecessfulCreate() {
         localRepo = LocalRepo.createLocalRepo(pathRepo);
+    }
+    
+    @Test
+    public void isRepositoryCreated()
+    {
         assertNotNull(localRepo);
     }
 
@@ -289,7 +294,7 @@ public class LocalRepoTest {
     }
     
     
-    public void TEDextractFile1ToRepository() {
+    private void TEDextractFile1ToRepository() {
         String path = "http://ld.opendata.cz/tedDumps/ted4.ttl";
         String suffix = "";
         String baseURI = "";
@@ -307,7 +312,7 @@ public class LocalRepoTest {
     }
     
     
-    public void TEDextractFile2ToRepository() {
+    private void TEDextractFile2ToRepository() {
         String path = "http://ld.opendata.cz/tedDumps/ted4b.ttl";
         String suffix = "";
         String baseURI = "";
@@ -324,7 +329,7 @@ public class LocalRepoTest {
         assertTrue(triplesAdded);
     }
     
-    public void TEDTransformSPARQL() {
+    private void TEDTransformSPARQL() {
 
         String updateQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
                 + "INSERT DATA"
@@ -336,7 +341,7 @@ public class LocalRepoTest {
 
     }
     
-    public void TEDloadtoTTLFile() {
+    private void TEDloadtoTTLFile() {
         String path = "C:\\intlib\\Output_Test_Files\\";
         String fileName = "output-ted-test.ttl";
         RDFFormat format = RDFFormat.TURTLE;
@@ -365,10 +370,16 @@ public class LocalRepoTest {
         assertTrue(addedData);
     }
     
+    @Test
+    public void isRepositoryEmpty()
+    {
+        localRepo.cleanAllRepositoryData();
+        assertEquals(0, localRepo.getTripleCountInRepository());
+    }
 
     @AfterClass
     public static void cleanRepository() {
         localRepo.cleanAllRepositoryData();
-        assertEquals(0, localRepo.getTripleCountInRepository());
+        
     }
 }
