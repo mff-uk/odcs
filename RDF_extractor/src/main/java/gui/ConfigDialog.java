@@ -77,6 +77,7 @@ public class ConfigDialog extends CustomComponent {
         config.setValue(Config.Password.name(), passwordFieldPass.getValue());
         config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
         config.setValue(Config.GraphsUri.name(), griddata);
+        config.setValue(Config.ExtractFail.name(), checkBoxFail.getValue());
         
         return config;
     }
@@ -108,6 +109,8 @@ public class ConfigDialog extends CustomComponent {
                     .name()));
 
             textAreaConstr.setValue((String) conf.getValue(Config.SPARQL_query
+                    .name()));
+            checkBoxFail.setValue((Boolean) conf.getValue(Config.ExtractFail
                     .name()));
 
             try {

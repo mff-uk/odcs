@@ -16,4 +16,5 @@ public enum Config {
     , Password //String
     , GraphsUri //LinkedList<String>
     , SPARQL_query //String
+    , ExtractFail //Boolean
 }
