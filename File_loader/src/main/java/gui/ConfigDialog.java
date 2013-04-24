@@ -39,15 +39,7 @@ public class ConfigDialog extends CustomComponent {
         mapData();
     }
 
-    /*
-     private void CreateFormatMapping() {
-     map.put("AUTO", RDFFormatType.AUTO);
-     map.put("TTL", RDFFormatType.TTL);
-     map.put("RDF/XML", RDFFormatType.RDFXML);
-     map.put("N3", RDFFormatType.N3);
-     map.put("TriG", RDFFormatType.TRIG);
-     
-     }*/
+
     private void mapData() {
 
 
@@ -59,21 +51,7 @@ public class ConfigDialog extends CustomComponent {
 
         comboBoxFormat.setValue(RDFFormatType.TTL);
 
-        /*CreateFormatMapping();
-        
-         for (String nextItem : map.keySet()) {
-         comboBoxFormat.addItem(nextItem);
-         }
-
-         comboBoxFormat.setValue("TTL");
-
-        
-         comboBoxFormat.addItem("TTL");
-         comboBoxFormat.addItem("RDF/XML");
-         comboBoxFormat.addItem("N3");
-         comboBoxFormat.addItem("TriG");
-         comboBoxFormat.setValue("TTL");
-         */
+  
     }
 
     /**
@@ -90,8 +68,7 @@ public class ConfigDialog extends CustomComponent {
          * ids of values. Also remember that you can return null in case of
          * invalid configuration in dialog.
          */
-        //config.setValue(Config.NameDPU.name(), textFieldName.getValue());
-        //config.setValue(Config.Description.name(), textAreaDescr.getValue());
+        config.setValue(Config.DiffName.name(), checkBoxDiffName.getValue());
         config.setValue(Config.DirectoryPath.name(), textFieldDir.getValue());
         config.setValue(Config.FileName.name(), textFieldFileName.getValue());
         config.setValue(Config.RDFFileFormat.name(), (RDFFormatType) comboBoxFormat.getValue());
@@ -113,8 +90,7 @@ public class ConfigDialog extends CustomComponent {
          * configuration.
          */
         try {
-            //textFieldName.setValue( (String) conf.getValue(Config.NameDPU.name()));
-            //textAreaDescr.setValue( (String) conf.getValue(Config.Description.name()));
+        	checkBoxDiffName.setValue((Boolean) conf.getValue(Config.DiffName.name()));
             textFieldDir.setValue((String) conf.getValue(Config.DirectoryPath.name()));
             textFieldFileName.setValue((String) conf.getValue(Config.FileName.name()));
             comboBoxFormat.setValue((RDFFormatType) conf.getValue(Config.RDFFileFormat.name()));

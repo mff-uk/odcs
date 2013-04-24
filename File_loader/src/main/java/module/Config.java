@@ -16,5 +16,6 @@ public enum Config {
     //Description //String
     DirectoryPath, //String
     FileName, //String
-    RDFFileFormat //RDFFormatType - enum in this package
+    RDFFileFormat, //RDFFormatType - enum in this package
+    DiffName //Boolean
 }
