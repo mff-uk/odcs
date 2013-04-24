@@ -46,8 +46,7 @@ public class Initial extends CustomComponent implements View {
 		label.setWidth("-1px");
 		label.setHeight("-1px");
 		label.setValue("<p>Welcome to the administration interface of the ETL tool for RDF data.</p>" +
-				"<p>The tool" +
-				"uses data processing pipelines for obtaining, processing, and storing RDF data;<br/>" +
+				"<p>The tool uses data processing pipelines for obtaining, processing, and storing RDF data;<br/>" +
 				"makes data processing highly customizable by employing custom data processing units;<br/>" +
 				"provides data processing monitoring, debugging, and schedulling capabilities.<br/>" + 
 				"</p>" +
