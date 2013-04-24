@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Authenticator;
@@ -430,10 +431,10 @@ public class LocalRepo {
 
                 }
 
-                InputStream inputStream = httpConnection.getInputStream();
+                InputStreamReader inputStreamReader=new InputStreamReader(httpConnection.getInputStream(), encode);
 
-                connection.add(inputStream, graph, format);
-                inputStream.close();
+                connection.add(inputStreamReader, graph, format);
+                inputStreamReader.close();
             }
 
             connection.close();
@@ -456,12 +457,16 @@ public class LocalRepo {
 
         try {
             RepositoryConnection connection = repository.getConnection();
-
+            
             Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
+            logger.debug("SPARQL query for transform is valid and prepared for execution");
+            
             myupdate.execute();
 
             connection.commit();
             connection.close();
+            
+            logger.debug("SPARQL query for transform was executed succesfully");
 
         } catch (Exception ex) {
             logger.debug(ex.getMessage());
