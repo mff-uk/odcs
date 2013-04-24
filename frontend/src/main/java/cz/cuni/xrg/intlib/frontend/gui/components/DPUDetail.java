@@ -6,6 +6,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
 
@@ -75,6 +76,7 @@ public class DPUDetail extends Window {
 		dpuDescription.setValue(dpu.getDescription());
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
+		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true, false));
 		mainLayout.addComponent(dpuGeneralSettingsLayout);
 
 		String jarPath = dpu.getDpu().getJarPath();
@@ -102,7 +104,7 @@ public class DPUDetail extends Window {
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setStyleName("dpuDetailButtonBar");
-		buttonBar.setMargin(true);
+		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
 //		Button saveButton = new Button("Develop", new Button.ClickListener() {
 //

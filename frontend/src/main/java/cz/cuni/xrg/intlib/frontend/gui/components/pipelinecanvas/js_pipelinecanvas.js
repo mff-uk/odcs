@@ -26,12 +26,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     }
 
     /** Class representing Connection between 2 DPUs on Canvas **/
-    function Connection(id, from, to, line, cmdDelete) {
+    function Connection(id, from, to, line, cmdDelete, hitLine) {
         this.id = id;
         this.from = from;
         this.to = to;
         this.line = line;
         this.cmdDelete = cmdDelete;
+		this.hitLine = hitLine;
         this.arrowLeft = null;
         this.arrowRight = null;
     }
@@ -129,6 +130,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var messageLayer = null;
 
 	var addConnectionIcon = null;
+	var removeConnectionIcon = null;
 
     /** Init function which builds entire stage for pipeline */
     function init() {
@@ -207,7 +209,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         writeMessage(messageLayer, 'initialized');
 
 		addConnectionIcon = new Image();
-		addConnectionIcon.src = 'http://i50.tinypic.com/2qjykb5.jpg';
+		addConnectionIcon.src = "http://" + window.location.host + window.location.pathname + "VAADIN/themes/IntLibTheme/img/arrow_right_32.png"; //'http://i50.tinypic.com/2qjykb5.jpg';
+
+		removeConnectionIcon = new Image();
+		removeConnectionIcon.src = "http://" + window.location.host + window.location.pathname + "VAADIN/themes/IntLibTheme/img/recyclebin32x32.png";
     }
 
 	/** Updates text in DPU visualization
@@ -482,7 +487,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             strokeWidth: 3
         });
 
-        line.on('click', function(evt) {
+		var hitLine = new Kinetic.Line({
+			points: linePoints,
+			strokeWidth: 20,
+			stroke: '#555',
+			opacity: 0
+		})
+
+        hitLine.on('click', function(evt) {
             var del = connections[id].cmdDelete;
             var pos = stage.getMousePosition();
             pos.x = pos.x - 16;
@@ -507,14 +519,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 
         // Delete command for connection
-        var cmdDelete = new Kinetic.Rect({
-            x: 0,
-            y: 0,
-            width: 32,
-            height: 32,
-            fill: '#0f0',
-            visible: false
-        });
+        var cmdDelete = new Kinetic.Image({
+			x: 0,
+			y: 0,
+			image: removeConnectionIcon,
+			width: 32,
+			height: 32,
+			startScale: 1
+		});
 
         cmdDelete.on('mouseleave', function(evt) {
             cmdDelete.setVisible(false);
@@ -526,7 +538,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             evt.cancelBubble = true;
         });
 
-        var con = new Connection(id, from, to, line, cmdDelete);
+		cmdDelete.setVisible(false);
+
+        var con = new Connection(id, from, to, line, cmdDelete, hitLine);
         con.arrowLeft = lineArrowLeft;
         con.arrowRight = lineArrowRight;
         connections[id] = con;
@@ -535,6 +549,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         lineLayer.add(lineArrowLeft);
         lineLayer.add(lineArrowRight);
         lineLayer.add(cmdDelete);
+		lineLayer.add(hitLine);
         lineLayer.add(line);
         lineLayer.draw();
     }
@@ -550,7 +565,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         con.arrowLeft.destroy();
         con.arrowRight.destroy();
         con.cmdDelete.destroy();
+		con.hitLine.destroy();
         connections[id] = null;
+		rpcProxy.onConnectionRemoved(id);
         lineLayer.draw();
     }
 

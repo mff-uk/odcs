@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
@@ -137,6 +138,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			}
 		});
         App.getApp().addWindow(detailDialog);
-
+		
     }
 }
