@@ -4,6 +4,8 @@
 .project
 .settings/
 .classpath
+# Netbeans files #
+nbactions.xml
 
 # Build Directories #
 target/
