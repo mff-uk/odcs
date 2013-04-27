@@ -19,7 +19,7 @@ import org.openrdf.rio.RDFFormat;
  * TODO Change super class to desired one, you can choose from the following:
  * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
  */
-public class Module implements GraphicalLoader {
+public class File_loader implements GraphicalLoader {
 
     private LocalRepo repository = null; // LocalRepo.createLocalRepo();
     /**
@@ -31,7 +31,7 @@ public class Module implements GraphicalLoader {
      */
     private Configuration config = new Configuration();
 
-    public Module() {
+    public File_loader() {
         // set initial configuration
         /**
          * TODO Set default (possibly empty but better valid) configuration for

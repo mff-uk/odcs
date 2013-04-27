@@ -20,7 +20,7 @@ import java.util.List;
  * TODO Change super class to desired one, you can choose from the following:
  * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
  */
-public class Module implements GraphicalExtractor {
+public class RDF_extractor implements GraphicalExtractor {
 
     private LocalRepo repository = null;
     /**
@@ -32,7 +32,7 @@ public class Module implements GraphicalExtractor {
      */
     private Configuration config = new Configuration();
 
-    public Module() {
+    public RDF_extractor() {
         // set initial configuration
         /**
          * TODO Set default (possibly empty but better valid) configuration for

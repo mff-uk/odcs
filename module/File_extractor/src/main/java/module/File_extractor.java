@@ -7,16 +7,16 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
  * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
  */
-public class Module implements GraphicalTransformer {
+public class File_extractor implements GraphicalExtractor {
 
     private LocalRepo repository = null;
     /**
@@ -28,19 +28,25 @@ public class Module implements GraphicalTransformer {
      */
     private Configuration config = new Configuration();
 
-    public Module() {
+    public File_extractor() {
         // set initial configuration
         /**
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");
+        //this.config.setValue(Config.NameDPU.name(), "");
+       // this.config.setValue(Config.Description.name(), "");
+        // ...
+        this.config.setValue(Config.OnlyThisText.name(), "");
+        this.config.setValue(Config.FileSuffix.name(), ".rdf");
+        this.config.setValue(Config.Path.name(), "");
+        this.config.setValue(Config.OnlyThisSuffix.name(), false);
+        
     }
 
     @Override
     public Type getType() {
-        return Type.TRANSFORMER;
-
+        return Type.EXTRACTOR;
     }
 
     @Override
@@ -84,18 +90,33 @@ public class Module implements GraphicalTransformer {
      * Implementation of module functionality here.
      *
      */
-    private String getUpdateQuery() {
-        String query = (String) config.getValue(Config.SPARQL_Update_Query.name());
+    private String getPath() {
+        String path = (String) config.getValue(Config.Path.name());
 
-        return query;
+        return path;
+    }
+
+    private String getFileSuffix() {
+        String suffix = (String) config.getValue(Config.FileSuffix.name());
+
+        return suffix;
+    }
+
+    private boolean isOnlySuffixUsed() {
+        boolean useSuffix = (Boolean) config.getValue(Config.OnlyThisSuffix.name());
+
+        return useSuffix;
     }
 
     @Override
-    public void transform(TransformContext context) throws TransformException {
+    public void extract(ExtractContext context) throws ExtractException {
 
-        final String updateQuery = getUpdateQuery();
+        final String baseURI = "";
+        final String path = getPath();
+        final String suffix = getFileSuffix();
+        final boolean useOnlyThisSuffix = isOnlySuffixUsed();
 
-        repository.transformUsingSPARQL(updateQuery);
+        repository.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useOnlyThisSuffix);
     }
 
     @Override

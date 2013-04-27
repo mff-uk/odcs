@@ -7,20 +7,16 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
-import cz.cuni.xrg.intlib.commons.loader.LoadContext;
-import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
+import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.repository.LocalRepo;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:
  * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
  */
-public class Module implements GraphicalLoader {
+public class SPARQL_transformer implements GraphicalTransformer {
 
     private LocalRepo repository = null;
     /**
@@ -32,21 +28,18 @@ public class Module implements GraphicalLoader {
      */
     private Configuration config = new Configuration();
 
-    public Module() {
+    public SPARQL_transformer() {
         // set initial configuration
         /**
          * TODO Set default (possibly empty but better valid) configuration for
          * your DPU.
          */
-        this.config.setValue(Config.SPARQL_endpoint.name(), "http://");
-        this.config.setValue(Config.Host_name.name(), "");
-        this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.GraphsUri.name(), new LinkedList<String>());
+        this.config.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");
     }
 
     @Override
     public Type getType() {
-        return Type.LOADER;
+        return Type.TRANSFORMER;
 
     }
 
@@ -91,40 +84,18 @@ public class Module implements GraphicalLoader {
      * Implementation of module functionality here.
      *
      */
-    private String getSPARQLEndpointURLAsString() {
-        String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
-        return endpoint;
-    }
+    private String getUpdateQuery() {
+        String query = (String) config.getValue(Config.SPARQL_Update_Query.name());
 
-    private String getHostName() {
-        String hostName = (String) config.getValue(Config.Host_name.name());
-        return hostName;
-    }
-
-    private String getPassword() {
-        String password = (String) config.getValue(Config.Password.name());
-        return password;
-    }
-
-    private List<String> getGraphsURI() {
-        List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
-        return graphs;
+        return query;
     }
 
     @Override
-    public void load(LoadContext context) throws LoadException {
-        final String endpoint = getSPARQLEndpointURLAsString();
-        try {
-            final URL endpointURL = new URL(endpoint);
-            final List<String> defaultGraphsURI = getGraphsURI();
-            final String hostName = getHostName();
-            final String password = getPassword();
+    public void transform(TransformContext context) throws TransformException {
 
-            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password);
-        } catch (MalformedURLException ex) {
-            System.err.println("This URL not exists");
-            System.err.println(ex.getMessage());
-        }
+        final String updateQuery = getUpdateQuery();
+
+        repository.transformUsingSPARQL(updateQuery);
     }
 
     @Override
