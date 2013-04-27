@@ -116,6 +116,11 @@ public class ModuleFacade {
 		}
 	}
 	
+	/**
+	 * Return framework that is used to work with bundles.
+	 * @return
+	 */
+	@Deprecated
 	public cz.cuni.xrg.intlib.commons.app.module.osgi.Framework HACK_getFramework() {
 		return this.framework;
 	}

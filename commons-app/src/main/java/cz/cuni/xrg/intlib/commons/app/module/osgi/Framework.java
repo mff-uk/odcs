@@ -66,22 +66,6 @@ public class Framework {
 						exportedPackages );
 		return config;
 	}
-			
-	/**
-	 * Stop OSGi framework.
-	 */
-	public void stop() {			
-        try {
-        	if (this.framework != null ) {
-        		// stop equinox
-        		this.framework.stop();
-        	}
-		} catch (Exception e) {
-			// we can't throw here .. 
-		}
-        this.framework = null;
-        this.context = null;
-	}
 	
 	/**
 	 * Start OSGi framework.
@@ -118,8 +102,24 @@ public class Framework {
 			stop();
 			throw new OSGiException("Failed to get OSGi context.", ex);
 		}
-	}		
-
+	}	
+	
+	/**
+	 * Stop OSGi framework. Does not uninstall installed bundles.
+	 */
+	public void stop() {			
+        try {
+        	if (this.framework != null ) {
+        		// stop equinox
+        		this.framework.stop();
+        	}
+		} catch (Exception e) {
+			// we can't throw here .. 
+		}
+        this.framework = null;
+        this.context = null;
+	}
+	
 	/**
 	 * Install bundle into framework.
 	 * @param uri Uri to install bundle from.
@@ -144,6 +144,7 @@ public class Framework {
 		}	
 	    return bundle;
 	}
+		
 	
 	/**
 	 * Uninstall bundle from framework.
@@ -237,6 +238,7 @@ public class Framework {
 		return dpu;
 	}
 
+	@Deprecated
 	public void HACK_startBundle(String uri) throws ModuleException
 	{
 		// has bundle been already loaded?
@@ -250,9 +252,13 @@ public class Framework {
 			throw new RuntimeException("Can't find bundle.");
 		}
 	}
+	
+	@Deprecated
 	public org.osgi.framework.launch.Framework HACK_getFramework() {
 		return this.framework;
 	}
+	
+	@Deprecated
 	public java.util.Map<String, Bundle> HACK_installed() {
 		return this.loadedBundles;
 	}
