@@ -1,39 +1,69 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.cuni.xrg.intlib</groupId>
-	<artifactId>module</artifactId>
+	<artifactId>module_master</artifactId>
 	<version>0.0.1</version>
-	<packaging>jar</packaging>
-  
-  	<dependencies>
-        <dependency> <!-- commons-module project -->
-            <groupId>cz.cuni.xrg.intlib</groupId>
-            <artifactId>commons</artifactId>
-            <!-- the version has to be specify -->
-            <version>0.0.1</version>
-            <type>jar</type>
-        </dependency>        
-        
-        <dependency> <!-- commons-module project -->
-            <groupId>cz.cuni.xrg.intlib</groupId>
-            <artifactId>commons-web</artifactId>
-            <!-- the version has to be specify -->
-            <version>0.0.1</version>
-            <type>jar</type>
-        </dependency> 
+	<packaging>pom</packaging>
+	<name>module master project</name>
+	<description />
 
-        <dependency> <!-- commons-module project -->
-            <groupId>cz.cuni.xrg.intlib</groupId>
-            <artifactId>commons-module</artifactId>
-            <!-- the version has to be specify -->
-            <version>0.0.1</version>
-            <type>jar</type>
-        </dependency>
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
+    </properties>
+
+	<modules>
+		<module>File_extractor</module>
+		<module>File_loader</module>
+		<module>RDF_extractor</module>
+		<module>RDF_loader</module>
+		<module>SPARQL_transformer</module>
+	</modules>
+
+    <repositories>
+		<repository>
+		  <id>thirdparty-releases</id>
+		  <name>JBoss Thirdparty Releases</name>
+		  <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+		</repository> 
+				    
+		<repository>
+          <id>maven2-repository.dev.java.net</id>
+          <name>Java.net Repository for Maven</name>
+          <url>http://download.java.net/maven/2/</url>
+          <layout>default</layout>
+        </repository>      
+    </repositories>
+
+	<dependencies>
+
+		<dependency> <!-- commons-web project -->
+			<groupId>cz.cuni.xrg.intlib</groupId>
+			<artifactId>commons-web</artifactId>
+			<version>0.0.1</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency> <!-- commons-module project -->
+			<groupId>cz.cuni.xrg.intlib</groupId>
+			<artifactId>commons-module</artifactId>
+			<version>0.0.1</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency> <!-- JUnit dependency -->
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope> <!-- will not be included in output bundles -->
+		</dependency>
+
 	</dependencies>
-  
+
 	<build>
-	    <plugins>
-			<plugin>
+		<plugins>
+
+			<plugin> <!-- set java version for modules -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.1</version>
@@ -43,16 +73,38 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.2</version>
+			<plugin> <!-- generate manifest file -->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
 				<configuration>
-					<archive>
-						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
+					<!-- exclude dependencies provided by application -->
+					<excludeDependencies>
+						*;groupId=cz.cuni.xrg.intlib
+						,*;groupId=com.vaadin
+						,*;groupId=org.openrdf.sesame
+						<!-- TODO: add any new application provided library here ... -->
+					</excludeDependencies>
+					<instructions>
+						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.artifactId}</Bundle-Name>
+						<Bundle-Version>${module.version}</Bundle-Version>
+						<Export-Package>module,gui</Export-Package>
+						<Import-Package>*</Import-Package>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<!-- dependencies embedding -->
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<!-- TODO: try to use with 'true', add more dependencies to excludeDependencies -->
+						<Embed-Transitive>false</Embed-Transitive>
+						<!-- dependencies location in output file -->
+						<Embed-Directory>dependency</Embed-Directory>
+						<Embed-StripGroup>false</Embed-StripGroup>
+					</instructions>
 				</configuration>
-			</plugin>			
-	    </plugins>
-	</build>  
+			</plugin>
+
+		</plugins>
+	</build>
+
 </project>
