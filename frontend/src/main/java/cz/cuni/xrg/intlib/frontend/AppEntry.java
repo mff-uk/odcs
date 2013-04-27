@@ -85,12 +85,13 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.modules = new ModuleFacade();
 		// add vaadin to export package list
 		this.modules.start(
-				",com.vaadin,com.vaadin.ui," +
-				"com.vaadin.data,com.vaadin.data.Property,com.vaadin.data.util," +
-				"com.vaadin.event.FieldEvents," + 
-				"com.vaadin.shared.ui.combobox," +
+				",com.vaadin.ui" +
+				",com.vaadin.data" +						
+				",com.vaadin.data.util" +
+				",com.vaadin.shared.ui.combobox" +
+				",com.vaadin.server" +
 				// OpenRdf
-				"org.openrdf.rio"
+				",org.openrdf.rio"
 						);
 				
 		// TODO: set module relative path .. ? 
