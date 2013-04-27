@@ -1,18 +1,12 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
-import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.repository.LocalRepo;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,13 +33,15 @@ public class PipelineRunTest {
         moduleFacade = new ModuleFacade();
 
         moduleFacade.start(
-                ",com.vaadin,com.vaadin.ui,"
-                + "com.vaadin.data,com.vaadin.data.Property,com.vaadin.data.util,"
-                + "com.vaadin.event.FieldEvents,"
-                + "com.vaadin.shared.ui.combobox,"
-                + // OpenRdf
-                "org.openrdf.rio");
-
+				",com.vaadin.ui" +
+				",com.vaadin.data" +						
+				",com.vaadin.data.util" +
+				",com.vaadin.shared.ui.combobox" +
+				",com.vaadin.server" +
+				// OpenRdf
+				",org.openrdf.rio"
+						);
+        
         // setup pipeline
         Pipeline pipe = createEmptyPipeline();
         setupTrivialPipelineGraph(pipe.getGraph());
@@ -94,10 +90,10 @@ public class PipelineRunTest {
         graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
 
 // TODO: set your RDF loader
-        exConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql");
-        exConfig.setValue("Host_name", "SPARQL");
-        exConfig.setValue("Password", "nejlepsipaper");
-        exConfig.setValue("GraphsUri", graphsURI);
+        ldConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql");
+        ldConfig.setValue("Host_name", "SPARQL");
+        ldConfig.setValue("Password", "nejlepsipaper");
+        ldConfig.setValue("GraphsUri", graphsURI);
 
         graph.getNodeById(lId).getDpuInstance().setInstanceConfig(ldConfig);
 
