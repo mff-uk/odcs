@@ -34,7 +34,11 @@ public class ModuleException extends RuntimeException {
 	 * @return
 	 */
 	public String getTraceMessage() {
-		return "Exception: " + getMessage() + " caused by: " + originalException.getMessage();
+		if (originalException == null) {
+			return "Exception: " + getMessage();
+		} else {
+			return "Exception: " + getMessage() + " caused by: " + originalException.getMessage();
+		}
 	}
 	
 }

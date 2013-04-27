@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
 import java.util.Collection;
+import java.util.Dictionary;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.launch.FrameworkFactory;
@@ -10,10 +11,10 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleException;;
 public class Framework {
 
 	/**
-	 * Package and class name for class, that will be loaded
+	 * Package and class, that will be loaded
 	 * from bundle into application.
 	 */
-	private final String baseDpuClassName = "module.Module";
+	private final String baseDpuClassName = "module.";
 	
 	/**
 	 * OSGi framework class.
@@ -66,6 +67,21 @@ public class Framework {
 						exportedPackages );
 		return config;
 	}
+	/*
+	
+	Export-Package: 
+		module;uses:="cz.cuni.xrg.intlib.commons.web,gui,cz.cuni.xrg.intlib.commons,cz.cuni.xrg.intlib.commons.configuration,cz.cuni.xrg.intlib.repository,cz.cuni.xrg.intlib.commons.extractor,com.vaadin.ui";version="0.0.2",
+		gui;uses:="com.vaadin.data,module,cz.cuni.xrg.intlib.commons.configuration,com.vaadin.ui";version="0.0.2"
+			 
+	Import-Package: 
+		com.vaadin.data,
+		com.vaadin.ui,
+		cz.cuni.xrg.intlib.commons
+		cz.cuni.xrg.intlib.commons.configuration,
+		cz.cuni.xrg.intlib.commons.extractor,
+		cz.cuni.xrg.intlib.commons.web,
+		cz.cuni.xrg.intlib.repository	
+	*/
 	
 	/**
 	 * Start OSGi framework.
@@ -209,12 +225,29 @@ public class Framework {
 			loaderClass = this.loadedClassCtors.get(uri);
 		} else  {
 			// load class from bundle
+			
+			// we need construct class name
+			String className = this.baseDpuClassName;
+			Dictionary<String, String> header = bundle.getHeaders();
+			String bundleName = header.get("Bundle-Name");
+			
+			if (bundleName == null) {
+				// wring size .. 
+				uninstallBundle(bundle);
+				throw new OSGiException(
+						"Wrong header, can't get Bundle-Name value.", null);
+			} else {
+				className += bundleName;
+			}
+			
 			try {
 				// load class from bundle
-				loaderClass = bundle.loadClass(this.baseDpuClassName);
+				loaderClass = bundle.loadClass(className);
 				// store loaded class
 				this.loadedClassCtors.put(uri, loaderClass);
 			} catch (ClassNotFoundException ex) {
+				System.out.println("Ex:" + ex.getMessage());
+				
 				// uninstall bundle and throw
 				uninstallBundle(bundle);
 				throw new OSGiException("Failed to load class from bundle.", ex);			
