@@ -1,70 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>cz.cuni.xrg.intlib</groupId>
-    <artifactId>intlib</artifactId>
-    <version>0.0.1</version>
-    <packaging>pom</packaging>
-    <name>intlib</name>
-    <description/>
-	
-    <modules>
-        <module>commons</module>
-        <module>commons-app</module>
-        <module>commons-module</module>        
-        <module>commons-web</module>
-        <module>SPARQL_transformer</module>
-        <module>File_extractor</module>
-        <module>RDF_extractor</module>
-        <module>File_loader</module>
-        <module>RDF_loader</module>        
-        <!-- frontend is the last build module -->
-        <module>frontend</module>
-    </modules>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cz.cuni.xrg.intlib</groupId>
+	<artifactId>intlib</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+	<name>intlib</name>
+	<description />
 
-    <scm>
-        <url/>
-        <connection/>
-        <developerConnection/>
-    </scm>
-	
-    <developers>
-        <!-- 
-       <developer>
-               <id></id>
-               <name></name>
-               <email></email>
-               <roles>
-                       <role>developer</role>
-               </roles>
-       </developer>
-        -->
-    </developers>
-	
-    <contributors>
-        <contributor>
-            <name>Tomas Knap</name>
-            <email>knap@ksi.mff.cuni.cz</email>
-            <roles>
-                <role>project supervisor</role>
-            </roles>
-            <url>http://www.ksi.mff.cuni.cz/~knap</url>
-            <organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
-        </contributor>
-    </contributors>
+	<modules>
+		<module>commons</module>
+		<module>commons-app</module>
+		<module>commons-module</module>
+		<module>commons-web</module>
+		<module>SPARQL_transformer</module>
+		<module>File_extractor</module>
+		<module>RDF_extractor</module>
+		<module>File_loader</module>
+		<module>RDF_loader</module>
+		<!-- frontend is the last build -->
+		<module>frontend</module>
+		<module>backend</module>
+	</modules>
 
-    <repositories>
-	<!-- odkud se bude tahat do lokalniho uloziste mavenu, muze tu byt vic repositories, v jednolivych subprojektech taktez muzou byt dalsi -->
- 
-	<repository>
-	<id>intlib</id>
-	<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
-	</repository>
- 
-	<repository>
-	<id>intlib-thirdparty</id>
-	<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty/</url>
-	</repository>
- 
-   </repositories>
+	<scm>
+		<url />
+		<connection />
+		<developerConnection />
+	</scm>
+
+	<developers>
+		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> 
+			</roles> </developer> -->
+	</developers>
+
+	<contributors>
+		<contributor>
+			<name>Tomas Knap</name>
+			<email>knap@ksi.mff.cuni.cz</email>
+			<roles>
+				<role>project supervisor</role>
+			</roles>
+			<url>http://www.ksi.mff.cuni.cz/~knap</url>
+			<organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
+		</contributor>
+	</contributors>
+
+	<repositories>
+		<!-- odkud se bude tahat do lokalniho uloziste mavenu, muze tu byt vic 
+			repositories, v jednolivych subprojektech taktez muzou byt dalsi -->
+		<repository>
+			<id>intlib</id>
+			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
+		</repository>
+
+		<repository>
+			<id>intlib-thirdparty</id>
+			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty/</url>
+		</repository>
+	</repositories>
+
+	<build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                	<!-- specify java build version for whole project -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
 </project>
