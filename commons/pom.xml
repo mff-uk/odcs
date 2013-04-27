@@ -21,16 +21,12 @@
             <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
         </repository>
 
-        <repository> <!-- spring repository -->
-            <id>com.springsource.repository.bundles.release</id>
-            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/release</url>
-        </repository>
         <repository>
             <id>com.springsource.repository.bundles.external</id>
             <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
+        
     </repositories>
 
     <dependencies>
@@ -41,26 +37,21 @@
             <version>4.11</version>
         </dependency>
         
-        <!-- OSGi dependency
-                <dependency> 
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                    <version>4.2.0</version>
-                </dependency>
+        <!-- OSGi dependency -->
+        <!--
+        <dependency> 
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
         -->
+        
         <dependency> <!--  JUL to SLF4J bridge -->
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
             <version>1.7.3</version>
         </dependency>
-        
-        <dependency> <!-- spring dependency -->
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>3.1.2.RELEASE</version>
-            <type>jar</type>
-        </dependency>
-        
+              
         <dependency> <!-- openRDF dependency-->
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-config</artifactId>
