@@ -5,8 +5,8 @@
 	<artifactId>module_master</artifactId>
 	<version>0.0.1</version>
 	<packaging>pom</packaging>
-	<name>module master project</name>
-	<description />
+	<name>Module' parent project.</name>
+	<description>Maven parent project for modules-DPU implementations.</description>
 
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        

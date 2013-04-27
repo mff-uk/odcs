@@ -9,7 +9,7 @@
     </parent>
     <artifactId>RDF_extractor</artifactId>
     <packaging>bundle</packaging>
-    <name>File_extractor</name>
+    <name>RDF_extractor</name>
     
     <properties>       
     	<!-- specify module version -->

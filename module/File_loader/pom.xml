@@ -9,7 +9,7 @@
     </parent>
     <artifactId>File_loader</artifactId>
     <packaging>bundle</packaging>
-    <name>File_extractor</name>
+    <name>File_loader</name>
     
     <properties>       
     	<!-- specify module version -->

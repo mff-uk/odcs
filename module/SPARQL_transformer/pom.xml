@@ -9,7 +9,7 @@
     </parent>
     <artifactId>SPARQL_transformer</artifactId>
     <packaging>bundle</packaging>
-    <name>File_extractor</name>
+    <name>SPARQL_transformer</name>
     
     <properties>       
     	<!-- specify module version -->
