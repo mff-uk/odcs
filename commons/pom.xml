@@ -31,11 +31,13 @@
 
     <dependencies>
     
-   		<repository> <!-- spring repository TODO: Remove -->
-            <id>com.springsource.repository.bundles.release</id>
-            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/release</url>
-        </repository>
+        <!-- spring dependency -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.1.2.RELEASE</version>
+            <type>jar</type>
+        </dependency>
     
         <dependency> <!--  JUnit dependency -->
             <groupId>junit</groupId>
