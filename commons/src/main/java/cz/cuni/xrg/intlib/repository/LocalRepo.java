@@ -57,10 +57,21 @@ public class LocalRepo {
     private static final int STATEMENTS_COUNT = 10;
     private final String encode = "UTF-8";
 
+    /**
+     * Create local repository in default path.
+     *
+     * @return
+     */
     public static LocalRepo createLocalRepo() {
         return LocalRepo.createLocalRepo(repositoryPath);
     }
 
+    /**
+     * Create local repository in defined path.
+     *
+     * @param path
+     * @return
+     */
     public static LocalRepo createLocalRepo(String path) {
         if (localrepo == null) {
             localrepo = new LocalRepo(path);
@@ -70,6 +81,11 @@ public class LocalRepo {
     }
     private Repository repository = null;
 
+    /**
+     * Public constructor - create new instance of repository in defined path.
+     *
+     * @param repositoryPath
+     */
     public LocalRepo(String repositoryPath) {
 
         long timeToStart = 1000L;
@@ -89,7 +105,7 @@ public class LocalRepo {
         }
     }
 
-    public Resource creatNewGraph(String graphURI) {
+    private Resource createNewGraph(String graphURI) {
         Resource graph = new URIImpl(graphURI);
         return graph;
     }
@@ -299,6 +315,13 @@ public class LocalRepo {
         }
     }
 
+    /**
+     * Load RDF data from repository to SPARQL endpointURL to the one URI graph
+     * without endpoint authentisation.
+     *
+     * @param endpointURL
+     * @param defaultGraphURI
+     */
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphURI);
@@ -306,6 +329,15 @@ public class LocalRepo {
         loadtoSPARQLEndpoint(endpointURL, graphs, "", "");
     }
 
+    /**
+     * Load RDF data from repository to SPARQL endpointURL to the one URI graph
+     * with endpoint authentisation (name,password).
+     *
+     * @param endpointURL
+     * @param defaultGraphURI
+     * @param name
+     * @param password
+     */
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphURI);
@@ -314,7 +346,8 @@ public class LocalRepo {
     }
 
     /**
-     * Load RDF data from repository to SPARQL endpointURL.
+     * Load RDF data from repository to SPARQL endpointURL to the collection of
+     * URI graphs with endpoint authentisation (name,password).
      *
      * @param endpointURL
      * @param defaultGraphURI
@@ -451,6 +484,14 @@ public class LocalRepo {
         return parts;
     }
 
+    /**
+     * Extract RDF data from SPARQL endpoint to repository using only data from
+     * URI graph withnout authentisation.
+     *
+     * @param endpointURL
+     * @param defaultGraphUri
+     * @param query
+     */
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphUri);
@@ -458,6 +499,17 @@ public class LocalRepo {
         extractfromSPARQLEndpoint(endpointURL, graphs, query, "", "");
     }
 
+    /**
+     * Extract RDF data from SPARQL endpoint to repository using only data from
+     * URI graph using authentisation (name,password).
+     *
+     * @param endpointURL
+     * @param defaultGraphUri
+     * @param query
+     * @param hostName
+     * @param password
+     * @param format
+     */
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphUri);
@@ -466,7 +518,8 @@ public class LocalRepo {
     }
 
     /**
-     * Add RDF data from SPARQL endpoint to repository.
+     * Extract RDF data from SPARQL endpoint to repository using only data from
+     * collection of URI graphs using authentisation (name,password).
      *
      * @param endpointURL
      * @param defaultGraphsUri
@@ -556,6 +609,7 @@ public class LocalRepo {
     }
 
     /**
+     * Return count of triples stored in repository.
      *
      * @return size of triples in repository.
      */
