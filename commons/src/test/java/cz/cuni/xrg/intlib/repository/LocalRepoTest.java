@@ -14,18 +14,16 @@ import org.openrdf.rio.RDFFormat;
 public class LocalRepoTest {
 
     private static final String pathRepo = "C:\\intlib\\myRepository";
-    private static final String testFileDirectory=new File("Input_Test_Files").getAbsolutePath();
+    private static final String testFileDirectory = new File("Input_Test_Files").getAbsolutePath();
     private static LocalRepo localRepo;
 
-    
     @BeforeClass
     public static void RepositorySucecessfulCreate() {
         localRepo = LocalRepo.createLocalRepo(pathRepo);
     }
-    
+
     @Test
-    public void isRepositoryCreated()
-    {
+    public void isRepositoryCreated() {
         assertNotNull(localRepo);
     }
 
@@ -153,9 +151,9 @@ public class LocalRepoTest {
 
     @Test
     public void extractRDFFilesToRepository() {
-        
-        String path =testFileDirectory;
-         
+
+        String path = testFileDirectory;
+
         String suffix = ".rdf";
         String baseURI = "";
         boolean useSuffix = true;
@@ -171,11 +169,10 @@ public class LocalRepoTest {
         assertTrue(triplesAdded);
     }
 
-    
     @Test
     public void extractN3FilesToRepository() {
         String path = testFileDirectory;
-        
+
         String suffix = ".n3";
         String baseURI = "";
         boolean useSuffix = true;
@@ -205,7 +202,7 @@ public class LocalRepoTest {
             fail(ex.getMessage());
         }
     }
-    
+
     @Test
     public void extractDataFromSPARQLEndpointTest() {
         try {
@@ -233,9 +230,9 @@ public class LocalRepoTest {
             URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
             String defaultGraphUri = "";
             String query = "select * where {?s ?o ?p} LIMIT 10";
-            String name="SPARQL";
-            String password="nejlepsipaper";
-            
+            String name = "SPARQL";
+            String password = "nejlepsipaper";
+
             RDFFormat format = RDFFormat.N3;
 
             long sizeBefore = localRepo.getTripleCountInRepository();
@@ -255,10 +252,12 @@ public class LocalRepoTest {
     @Test
     public void loadDataToSPARQLEndpointTest() {
         try {
-            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql");
+            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
             String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
+            String name = "SPARQL";
+            String password = "nejlepsipaper";
 
-            localRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri);
+            localRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name, password);
 
 
         } catch (MalformedURLException ex) {
@@ -269,31 +268,30 @@ public class LocalRepoTest {
 
     @Test
     public void transformUsingSPARQLUpdate() {
-        
+
         String namespace = "http://sport/hockey/";
         String subjectName = "Jagr";
         String predicateName = "playes_in";
         String objectName = "Dalas_Stars";
-        
-        String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }" 
-                +"INSERT { ?who ?what 'Boston_Bruins' }" 
-                +"WHERE { ?who ?what 'Dalas_Stars' }";
-        
+
+        String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
+                + "INSERT { ?who ?what 'Boston_Bruins' }"
+                + "WHERE { ?who ?what 'Dalas_Stars' }";
+
         cleanRepository();
-        
+
         localRepo.addTripleToRepository(namespace, subjectName, predicateName, objectName);
-        
-        boolean beforeUpdate=localRepo.isTripleInRepository(namespace, subjectName, predicateName, objectName);
+
+        boolean beforeUpdate = localRepo.isTripleInRepository(namespace, subjectName, predicateName, objectName);
         assertTrue(beforeUpdate);
-        
+
         localRepo.transformUsingSPARQL(updateQuery);
-        
-        boolean afterUpdate=localRepo.isTripleInRepository(namespace, subjectName, predicateName,objectName);
+
+        boolean afterUpdate = localRepo.isTripleInRepository(namespace, subjectName, predicateName, objectName);
         assertFalse(afterUpdate);
-        
+
     }
-    
-    
+
     private void TEDextractFile1ToRepository() {
         String path = "http://ld.opendata.cz/tedDumps/ted4.ttl";
         String suffix = "";
@@ -310,8 +308,7 @@ public class LocalRepoTest {
 
         assertTrue(triplesAdded);
     }
-    
-    
+
     private void TEDextractFile2ToRepository() {
         String path = "http://ld.opendata.cz/tedDumps/ted4b.ttl";
         String suffix = "";
@@ -328,7 +325,7 @@ public class LocalRepoTest {
 
         assertTrue(triplesAdded);
     }
-    
+
     private void TEDTransformSPARQL() {
 
         String updateQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
@@ -340,7 +337,7 @@ public class LocalRepoTest {
         localRepo.transformUsingSPARQL(updateQuery);
 
     }
-    
+
     private void TEDloadtoTTLFile() {
         String path = "C:\\intlib\\Output_Test_Files\\";
         String fileName = "output-ted-test.ttl";
@@ -354,25 +351,23 @@ public class LocalRepoTest {
             fail(ex.getMessage());
         }
     }
-    
+
     @Test
-    public void TEDPipelineTest()
-    {
+    public void TEDPipelineTest() {
         cleanRepository();
-        
+
         TEDextractFile1ToRepository();
         TEDextractFile2ToRepository();
         TEDTransformSPARQL();
         TEDloadtoTTLFile();
-        
-        boolean addedData=localRepo.getTripleCountInRepository()>0;
-        
+
+        boolean addedData = localRepo.getTripleCountInRepository() > 0;
+
         assertTrue(addedData);
     }
-    
+
     @Test
-    public void isRepositoryEmpty()
-    {
+    public void isRepositoryEmpty() {
         localRepo.cleanAllRepositoryData();
         assertEquals(0, localRepo.getTripleCountInRepository());
     }
@@ -380,6 +375,6 @@ public class LocalRepoTest {
     @AfterClass
     public static void cleanRepository() {
         localRepo.cleanAllRepositoryData();
-        
+
     }
 }
