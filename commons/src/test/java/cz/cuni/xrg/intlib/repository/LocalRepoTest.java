@@ -1,11 +1,17 @@
 package cz.cuni.xrg.intlib.repository;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -13,34 +19,36 @@ import org.openrdf.rio.RDFFormat;
  */
 public class LocalRepoTest {
 
-    private static final String pathRepo = "C:\\intlib\\myRepository";
-    private static final String testFileDirectory=new File("Input_Test_Files").getAbsolutePath();
+	/** Path to test repository */
+    private static Path pathRepo;
+    
+    /** Path to directory with produced data */
+    private static Path outDir;
+    
+    /** Path to directory with test input data */
+    private final String testFileDirectory = new File("Input_Test_Files").getAbsolutePath();
+    
+    /** Local repository */
     private static LocalRepo localRepo;
-
+    
+    private static final Logger logger = LoggerFactory.getLogger(LocalRepoTest.class);
     
     @BeforeClass
-    public static void RepositorySucecessfulCreate() {
-        localRepo = LocalRepo.createLocalRepo(pathRepo);
+    public static void setUp() {
+    	try {
+	    	pathRepo = Files.createTempDirectory("intlib-repo");
+	    	outDir = Files.createTempDirectory("intlib-out");
+    	} catch (IOException e) {
+    		throw new RuntimeException(e.getMessage());
+    	}
+    	
+        localRepo = LocalRepo.createLocalRepo(pathRepo.toString());
     }
     
     @Test
     public void isRepositoryCreated()
     {
         assertNotNull(localRepo);
-    }
-
-    private void testNewTriple(String namespace, String subjectName, String predicateName, String objectName) {
-        long size = localRepo.getTripleCountInRepository();
-        boolean isInRepository = localRepo.isTripleInRepository(namespace, subjectName, predicateName, objectName);
-
-        localRepo.addTripleToRepository(namespace, subjectName, predicateName, objectName);
-        long expectedSize = localRepo.getTripleCountInRepository();
-
-        if (isInRepository) {
-            assertEquals(expectedSize, size);
-        } else {
-            assertEquals(expectedSize, size + 1L);
-        }
     }
 
     @Test
@@ -77,13 +85,14 @@ public class LocalRepoTest {
 
     @Test
     public void loadRDFtoXMLFile() {
-        String path = "C:\\intlib\\Output_Test_Files\\";
-        String fileName = "RDF_output.rdf";
+
+    	String fileName = "RDF_output.rdf";
         RDFFormat format = RDFFormat.RDFXML;
-        boolean canFileOverwritte = true;
 
         try {
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+            localRepo.loadRDFfromRepositoryToXMLFile(
+            	outDir.toString(), fileName, format, true
+            );
 
         } catch (FileCannotOverwriteException ex) {
             fail(ex.getMessage());
@@ -92,13 +101,14 @@ public class LocalRepoTest {
 
     @Test
     public void loadRDFtoN3File() {
-        String path = "C:\\intlib\\Output_Test_Files\\";
+        
         String fileName = "N3_output.n3";
         RDFFormat format = RDFFormat.N3;
-        boolean canFileOverwritte = true;
 
         try {
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+            localRepo.loadRDFfromRepositoryToXMLFile(
+            	outDir.toString(), fileName, format, true
+            );
 
         } catch (FileCannotOverwriteException ex) {
             fail(ex.getMessage());
@@ -107,13 +117,14 @@ public class LocalRepoTest {
 
     @Test
     public void loadRDFtoTRIGFile() {
-        String path = "C:\\intlib\\Output_Test_Files\\";
-        String fileName = "TRIG_output.trig";
+
+    	String fileName = "TRIG_output.trig";
         RDFFormat format = RDFFormat.TRIG;
-        boolean canFileOverwritte = true;
 
         try {
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+            localRepo.loadRDFfromRepositoryToXMLFile(
+            	outDir.toString(), fileName, format, true
+            );
 
         } catch (FileCannotOverwriteException ex) {
             fail(ex.getMessage());
@@ -122,13 +133,14 @@ public class LocalRepoTest {
 
     @Test
     public void loadRDFtoTURTLEFile() {
-        String path = "C:\\intlib\\Output_Test_Files\\";
-        String fileName = "TURTLE_output.ttl";
+
+    	String fileName = "TURTLE_output.ttl";
         RDFFormat format = RDFFormat.TURTLE;
-        boolean canFileOverwritte = true;
 
         try {
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+            localRepo.loadRDFfromRepositoryToXMLFile(
+            	outDir.toString(), fileName, format, true
+            );
 
         } catch (FileCannotOverwriteException ex) {
             fail(ex.getMessage());
@@ -137,24 +149,22 @@ public class LocalRepoTest {
 
     @Test
     public void loadOverWriteFail() {
-        String path = "C:\\intlib\\Output_Test_Files\\";
-        String fileName = "CanNotOverWrite_output.rdf";
+
+    	String fileName = "CanNotOverWrite_output.rdf";
         RDFFormat format = RDFFormat.RDFXML;
 
         try {
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format);
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format);
+            localRepo.loadRDFfromRepositoryToXMLFile(outDir.toString(), fileName, format);
+            localRepo.loadRDFfromRepositoryToXMLFile(outDir.toString(), fileName, format);
             fail();
 
-        } catch (FileCannotOverwriteException ex) {
-            assertTrue(true);
-        }
+        } catch (FileCannotOverwriteException ex) {}
     }
 
     @Test
     public void extractRDFFilesToRepository() {
         
-        String path =testFileDirectory;
+        String path = testFileDirectory;
          
         String suffix = ".rdf";
         String baseURI = "";
@@ -166,15 +176,12 @@ public class LocalRepoTest {
 
         long newSize = localRepo.getTripleCountInRepository();
 
-        boolean triplesAdded = newSize > size;
-
-        assertTrue(triplesAdded);
+        assertTrue(newSize > size);
     }
 
     
     @Test
     public void extractN3FilesToRepository() {
-        String path = testFileDirectory;
         
         String suffix = ".n3";
         String baseURI = "";
@@ -182,24 +189,25 @@ public class LocalRepoTest {
 
         long size = localRepo.getTripleCountInRepository();
 
-        localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+        localRepo.extractRDFfromXMLFileToRepository(
+        	testFileDirectory, suffix, baseURI, useSuffix
+        );
 
         long newSize = localRepo.getTripleCountInRepository();
 
-        boolean triplesAdded = newSize > size;
-
-        assertTrue(triplesAdded);
+        assertTrue(newSize > size);
     }
 
     @Test
     public void loadAllToXMLfile() {
-        String path = "C:\\intlib\\Output_Test_Files\\";
-        String fileName = "AllData_output.rdf";
+
+    	String fileName = "AllData_output.rdf";
         RDFFormat format = RDFFormat.RDFXML;
-        boolean canFileOverwritte = true;
 
         try {
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+            localRepo.loadRDFfromRepositoryToXMLFile(
+            	outDir.toString(), fileName, format, true
+            );
 
         } catch (FileCannotOverwriteException ex) {
             fail(ex.getMessage());
@@ -208,6 +216,7 @@ public class LocalRepoTest {
     
     @Test
     public void extractDataFromSPARQLEndpointTest() {
+    	
         try {
             URL endpointURL = new URL("http://dbpedia.org/sparql");
             String defaultGraphUri = "http://dbpedia.org";
@@ -217,13 +226,10 @@ public class LocalRepoTest {
             localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
             long sizeAfter = localRepo.getTripleCountInRepository();
 
-            boolean addValues = sizeBefore < sizeAfter;
-            assertTrue(addValues);
+            assertTrue(sizeBefore < sizeAfter);
 
         } catch (MalformedURLException ex) {
-            System.err.println("Bad URL for SPARQL endpoint");
-            System.err.println(ex.getMessage());
-
+        	logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
     }
 
@@ -242,13 +248,10 @@ public class LocalRepoTest {
             localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, name, password, format);
             long sizeAfter = localRepo.getTripleCountInRepository();
 
-            boolean addValues = sizeBefore < sizeAfter;
-            assertTrue(addValues);
+            assertTrue(sizeBefore < sizeAfter);
 
         } catch (MalformedURLException ex) {
-            System.err.println("Bad URL for SPARQL endpoint");
-            System.err.println(ex.getMessage());
-
+        	logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
     }
 
@@ -262,7 +265,7 @@ public class LocalRepoTest {
 
 
         } catch (MalformedURLException ex) {
-            System.err.println("Bad URL for SPARQL endpoint");
+        	logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
 
     }
@@ -278,19 +281,26 @@ public class LocalRepoTest {
         String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }" 
                 +"INSERT { ?who ?what 'Boston_Bruins' }" 
                 +"WHERE { ?who ?what 'Dalas_Stars' }";
+
+//      cleanRepository();
+  	// TODO do before each test
+      localRepo.cleanAllRepositoryData();
         
-        cleanRepository();
+        localRepo.addTripleToRepository(
+        	namespace, subjectName, predicateName, objectName
+        );
         
-        localRepo.addTripleToRepository(namespace, subjectName, predicateName, objectName);
-        
-        boolean beforeUpdate=localRepo.isTripleInRepository(namespace, subjectName, predicateName, objectName);
+        boolean beforeUpdate = localRepo.isTripleInRepository(
+        	namespace, subjectName, predicateName, objectName
+        );
         assertTrue(beforeUpdate);
         
         localRepo.transformUsingSPARQL(updateQuery);
         
-        boolean afterUpdate=localRepo.isTripleInRepository(namespace, subjectName, predicateName,objectName);
+        boolean afterUpdate=localRepo.isTripleInRepository(
+        	namespace, subjectName, predicateName,objectName
+        );
         assertFalse(afterUpdate);
-        
     }
     
     
@@ -306,13 +316,12 @@ public class LocalRepoTest {
 
         long newSize = localRepo.getTripleCountInRepository();
 
-        boolean triplesAdded = newSize > size;
-
-        assertTrue(triplesAdded);
+        assertTrue(newSize > size);
     }
     
     
     private void TEDextractFile2ToRepository() {
+    	
         String path = "http://ld.opendata.cz/tedDumps/ted4b.ttl";
         String suffix = "";
         String baseURI = "";
@@ -342,13 +351,14 @@ public class LocalRepoTest {
     }
     
     private void TEDloadtoTTLFile() {
-        String path = "C:\\intlib\\Output_Test_Files\\";
-        String fileName = "output-ted-test.ttl";
+
+    	String fileName = "output-ted-test.ttl";
         RDFFormat format = RDFFormat.TURTLE;
-        boolean canFileOverwritte = true;
 
         try {
-            localRepo.loadRDFfromRepositoryToXMLFile(path, fileName, format, canFileOverwritte);
+            localRepo.loadRDFfromRepositoryToXMLFile(
+            	outDir.toString(), fileName, format, true
+            );
 
         } catch (FileCannotOverwriteException ex) {
             fail(ex.getMessage());
@@ -358,16 +368,18 @@ public class LocalRepoTest {
     @Test
     public void TEDPipelineTest()
     {
-        cleanRepository();
+//        cleanRepository();
+    	// TODO do before each test
+        localRepo.cleanAllRepositoryData();
         
         TEDextractFile1ToRepository();
         TEDextractFile2ToRepository();
         TEDTransformSPARQL();
         TEDloadtoTTLFile();
         
-        boolean addedData=localRepo.getTripleCountInRepository()>0;
+        long addedData = localRepo.getTripleCountInRepository();
         
-        assertTrue(addedData);
+        assertTrue(addedData > 0);
     }
     
     @Test
@@ -378,8 +390,48 @@ public class LocalRepoTest {
     }
 
     @AfterClass
-    public static void cleanRepository() {
+    public static void cleanUp() {
         localRepo.cleanAllRepositoryData();
-        
+        deleteDirectory(new File(outDir.toString()));
+    }
+
+    private void testNewTriple(String namespace,
+    						String subjectName,
+    						String predicateName,
+    						String objectName) {
+    	
+        long size = localRepo.getTripleCountInRepository();
+        boolean isInRepository = localRepo.isTripleInRepository(
+        	namespace, subjectName, predicateName, objectName
+        );
+
+        localRepo.addTripleToRepository(
+        	namespace, subjectName, predicateName, objectName
+        );
+        long expectedSize = localRepo.getTripleCountInRepository();
+
+        if (isInRepository) {
+            assertEquals(expectedSize, size);
+        } else {
+            assertEquals(expectedSize, size + 1L);
+        }
+    }
+    
+    /**
+     * Recursively deletes a directory, follows symbolic links
+     * @param directory
+     */
+    private static void deleteDirectory(File directory) {
+    	File[] files = directory.listFiles();
+		if (files != null) {
+	    	for (File file : files) {
+	    		if (file.isDirectory()) {
+	    			deleteDirectory(file);
+	    		} else {
+	    			file.delete();
+	    		}
+	    	}
+		}
+		directory.delete();
     }
 }
