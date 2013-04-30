@@ -1,14 +1,12 @@
 package cz.cuni.xrg.intlib.repository;
 
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
@@ -45,14 +43,35 @@ import org.slf4j.LoggerFactory;
 public class LocalRepo {
 
     static LocalRepo localrepo = null;
+    /**
+     * Default path, where the repository is saved.
+     */
     static final String repositoryPath = "C:\\intlib\\myRepository\\";
+    /**
+     * Logging information about execution of method using openRDF.
+     */
     static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
+    /**
+     * How many triples is possible to add to SPARQL endpoind at once.
+     */
+    private static final int STATEMENTS_COUNT = 10;
     private final String encode = "UTF-8";
 
+    /**
+     * Create local repository in default path.
+     *
+     * @return
+     */
     public static LocalRepo createLocalRepo() {
         return LocalRepo.createLocalRepo(repositoryPath);
     }
 
+    /**
+     * Create local repository in defined path.
+     *
+     * @param path
+     * @return
+     */
     public static LocalRepo createLocalRepo(String path) {
         if (localrepo == null) {
             localrepo = new LocalRepo(path);
@@ -62,6 +81,11 @@ public class LocalRepo {
     }
     private Repository repository = null;
 
+    /**
+     * Public constructor - create new instance of repository in defined path.
+     *
+     * @param repositoryPath
+     */
     public LocalRepo(String repositoryPath) {
 
         long timeToStart = 1000L;
@@ -81,7 +105,7 @@ public class LocalRepo {
         }
     }
 
-    public Resource creatNewGraph(String graphURI) {
+    private Resource createNewGraph(String graphURI) {
         Resource graph = new URIImpl(graphURI);
         return graph;
     }
@@ -161,7 +185,8 @@ public class LocalRepo {
             try {
 
                 URL urlPath = new URL(path);
-                InputStream inputStream = urlPath.openStream();
+
+                InputStreamReader inputStream = new InputStreamReader(urlPath.openStream(), encode);
                 RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
 
                 RepositoryConnection connection = repository.getConnection();
@@ -266,8 +291,8 @@ public class LocalRepo {
             }
 
             try {
-                OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(dataFile.getAbsoluteFile()),encode);
-                
+                OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(dataFile.getAbsoluteFile()), encode);
+
                 RDFWriter writer = Rio.createWriter(format, os);
 
                 RepositoryConnection connection = repository.getConnection();
@@ -290,6 +315,13 @@ public class LocalRepo {
         }
     }
 
+    /**
+     * Load RDF data from repository to SPARQL endpointURL to the one URI graph
+     * without endpoint authentisation.
+     *
+     * @param endpointURL
+     * @param defaultGraphURI
+     */
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphURI);
@@ -297,6 +329,15 @@ public class LocalRepo {
         loadtoSPARQLEndpoint(endpointURL, graphs, "", "");
     }
 
+    /**
+     * Load RDF data from repository to SPARQL endpointURL to the one URI graph
+     * with endpoint authentisation (name,password).
+     *
+     * @param endpointURL
+     * @param defaultGraphURI
+     * @param name
+     * @param password
+     */
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphURI);
@@ -305,7 +346,8 @@ public class LocalRepo {
     }
 
     /**
-     * Load RDF data from repository to SPARQL endpointURL.
+     * Load RDF data from repository to SPARQL endpointURL to the collection of
+     * URI graphs with endpoint authentisation (name,password).
      *
      * @param endpointURL
      * @param defaultGraphURI
@@ -316,27 +358,12 @@ public class LocalRepo {
         try {
 
             final int graphSize = defaultGraphsURI.size();
-            final RDFFormat format = RDFFormat.N3;
+            List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT);
+            final int partsCount = dataParts.size();
 
-            Resource[] graphs = new Resource[graphSize];
+            boolean usePassword = (!userName.isEmpty() | !password.isEmpty());
 
-            for (int i = 0; i < graphSize; i++) {
-                graphs[i] = new URIImpl(defaultGraphsURI.get(i));
-            }
-
-
-            RepositoryConnection connection = repository.getConnection();
-
-            boolean autentize = !(userName.isEmpty() && password.isEmpty());
-
-            HttpURLConnection httpConnection = (HttpURLConnection) endpointURL.openConnection();
-
-            httpConnection.setDoInput(true);
-            httpConnection.setDoOutput(true);
-            httpConnection.setRequestMethod("POST");
-            httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
-
-            if (autentize) {
+            if (usePassword) {
 
                 final String myName = userName;
                 final String myPassword = password;
@@ -352,24 +379,119 @@ public class LocalRepo {
 
             }
 
-            OutputStream outputStream = new BufferedOutputStream(httpConnection.getOutputStream());
-
-            RDFWriter goal = Rio.createWriter(format, outputStream);
+            RepositoryConnection connection = repository.getConnection();
 
             for (int i = 0; i < graphSize; i++) {
-                connection.export(goal, graphs[i]);
-                connection.commit();
+
+                for (int j = 0; j < partsCount; j++) {
+
+                    final String graph = defaultGraphsURI.get(i).replace(" ", "+");
+                    final String query = dataParts.get(j);
+                    final String myquery = URLEncoder.encode(query, encode);
+
+                    URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + graph + "&query=" + myquery);
+
+                    HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
+                    httpConnection.setRequestProperty("Content-type", "text/xml");
+
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+                        reader.close();
+
+                        final String processing = String.valueOf(j + 1) + "/" + String.valueOf(partsCount);
+
+                        logger.debug("Data " + processing + " part loaded successful");
+                    } catch (IOException ex) {
+                        logger.debug("Can not open http connection stream - data no loaded");
+                        logger.debug(ex.getMessage());
+                    } finally {
+                        httpConnection.disconnect();
+                    }
+
+                }
             }
 
             connection.close();
-            httpConnection.disconnect();
-            outputStream.close();
 
         } catch (Exception ex) {
             logger.debug(ex.getMessage());
         }
     }
 
+    private List<Statement> getStatementsInRepository() {
+
+        List<Statement> statemens = new ArrayList<Statement>();
+
+        if (repository != null) {
+            try {
+                RepositoryConnection connection = repository.getConnection();
+                statemens = connection.getStatements(null, null, null, true).asList();
+            } catch (RepositoryException ex) {
+                logger.debug(ex.getMessage());
+            }
+        }
+
+        return statemens;
+    }
+
+    private List<String> getInsertPartsTriplesQuery(int sizeSplit) {
+
+        final String insertStart = "INSERT {";
+        final String insertStop = "} ";
+
+        List<String> parts = new ArrayList<String>();
+
+        StringBuilder builder = new StringBuilder();
+
+        List<Statement> statements = getStatementsInRepository();
+
+        if (!statements.isEmpty()) {
+            builder.append(insertStart);
+
+            int count = 0;
+
+            for (Statement nextStatement : statements) {
+
+                String subject = nextStatement.getSubject().stringValue();
+                String predicate = nextStatement.getPredicate().stringValue();
+                String object = nextStatement.getObject().stringValue();
+
+                object = object.replaceAll("<br\\s*/>", "")
+                        .replaceAll("\\s+", "_")
+                        .replaceAll("<", "â€ą")
+                        .replaceAll(">", "â€ş");
+
+                String appendLine = "<" + subject + "> <" + predicate + "> <" + object + "> . ";
+                builder.append(appendLine.replaceAll("\\s+", " ").replaceAll("\"", "'"));
+
+                count++;
+                if (count == sizeSplit) {
+                    builder.append(insertStop);
+                    parts.add(builder.toString());
+
+                    builder = new StringBuilder();
+                    builder.append(insertStart);
+                    count = 0;
+                }
+            }
+
+            if (count > 0) {
+                builder.append(insertStop);
+                parts.add(builder.toString());
+            }
+        }
+
+        return parts;
+    }
+
+    /**
+     * Extract RDF data from SPARQL endpoint to repository using only data from
+     * URI graph withnout authentisation.
+     *
+     * @param endpointURL
+     * @param defaultGraphUri
+     * @param query
+     */
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphUri);
@@ -377,6 +499,17 @@ public class LocalRepo {
         extractfromSPARQLEndpoint(endpointURL, graphs, query, "", "");
     }
 
+    /**
+     * Extract RDF data from SPARQL endpoint to repository using only data from
+     * URI graph using authentisation (name,password).
+     *
+     * @param endpointURL
+     * @param defaultGraphUri
+     * @param query
+     * @param hostName
+     * @param password
+     * @param format
+     */
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
         List<String> graphs = new ArrayList<String>();
         graphs.add(defaultGraphUri);
@@ -385,7 +518,8 @@ public class LocalRepo {
     }
 
     /**
-     * Add RDF data from SPARQL endpoint to repository.
+     * Extract RDF data from SPARQL endpoint to repository using only data from
+     * collection of URI graphs using authentisation (name,password).
      *
      * @param endpointURL
      * @param defaultGraphsUri
@@ -431,7 +565,7 @@ public class LocalRepo {
 
                 }
 
-                InputStreamReader inputStreamReader=new InputStreamReader(httpConnection.getInputStream(), encode);
+                InputStreamReader inputStreamReader = new InputStreamReader(httpConnection.getInputStream(), encode);
 
                 connection.add(inputStreamReader, graph, format);
                 inputStreamReader.close();
@@ -457,15 +591,15 @@ public class LocalRepo {
 
         try {
             RepositoryConnection connection = repository.getConnection();
-            
+
             Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
             logger.debug("SPARQL query for transform is valid and prepared for execution");
-            
+
             myupdate.execute();
 
             connection.commit();
             connection.close();
-            
+
             logger.debug("SPARQL query for transform was executed succesfully");
 
         } catch (Exception ex) {
@@ -475,6 +609,7 @@ public class LocalRepo {
     }
 
     /**
+     * Return count of triples stored in repository.
      *
      * @return size of triples in repository.
      */
@@ -531,11 +666,11 @@ public class LocalRepo {
             logger.debug(ex.getMessage());
         }
     }
-    
+
     /**
      * Add all data from repository to targetRepository.
-     * 
-     * @param targetRepository 
+     *
+     * @param targetRepository
      */
     public void copyAllDataToTargetRepository(Repository targetRepository) {
         try {
@@ -546,7 +681,7 @@ public class LocalRepo {
                 List<Statement> sourceStatemens = sourceConnection.getStatements(null, null, null, true).asList();
 
                 if (targetRepository != null) {
-                    
+
                     RepositoryConnection targetConnection = targetRepository.getConnection();
 
                     for (Statement nextStatement : sourceStatemens) {
