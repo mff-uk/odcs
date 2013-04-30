@@ -31,3 +31,17 @@
 .dpuDetailButtonBar {
 	padding-top: 15px;
 }
+
+.v-select-optiongroup-horizontalgroup .v-select-option {
+    display: inline-block;
+}
+
+.v-select-optiongroup-horizontalgroup {
+    white-space: nowrap;
+}
+
+
+.v-select-optiongroup-horizontalgroup
+  .v-select-option.v-radiobutton {
+    padding-right: 10px;
+}
