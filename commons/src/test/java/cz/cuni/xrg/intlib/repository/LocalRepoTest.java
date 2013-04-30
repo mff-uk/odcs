@@ -304,14 +304,16 @@ public class LocalRepoTest {
     }
 
     private void TEDextractFile1ToRepository() {
-        String path = "http://ld.opendata.cz/tedDumps/ted4.ttl";
-        String suffix = "";
+    	
+        String suffix = "ted4.ttl";
         String baseURI = "";
-        boolean useSuffix = false;
+        boolean useSuffix = true;
 
         long size = localRepo.getTripleCountInRepository();
 
-        localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+        localRepo.extractRDFfromXMLFileToRepository(
+        	testFileDirectory, suffix, baseURI, useSuffix
+        );
 
         long newSize = localRepo.getTripleCountInRepository();
 
@@ -320,14 +322,15 @@ public class LocalRepoTest {
 
     private void TEDextractFile2ToRepository() {
     	
-        String path = "http://ld.opendata.cz/tedDumps/ted4b.ttl";
-        String suffix = "";
+        String suffix = "ted4b.ttl";
         String baseURI = "";
         boolean useSuffix = true;
 
         long size = localRepo.getTripleCountInRepository();
 
-        localRepo.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+        localRepo.extractRDFfromXMLFileToRepository(
+        	testFileDirectory, suffix, baseURI, useSuffix
+        );
 
         long newSize = localRepo.getTripleCountInRepository();
 
