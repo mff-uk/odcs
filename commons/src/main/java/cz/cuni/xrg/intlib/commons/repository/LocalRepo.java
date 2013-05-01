@@ -13,6 +13,8 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,20 +45,21 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalRepo {
 
-    static LocalRepo localrepo = null;
-    /**
-     * Default path, where the repository is saved.
-     */
-    static final String repositoryPath = "C:\\intlib\\myRepository\\";
-    /**
+    private static LocalRepo localrepo = null;
+
+	/**
      * Logging information about execution of method using openRDF.
      */
-    static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
+	
     /**
      * How many triples is possible to add to SPARQL endpoind at once.
      */
     private static final int STATEMENTS_COUNT = 10;
+	
     private final String encode = "UTF-8";
+	
+    private Repository repository = null;
 
     /**
      * Create local repository in default path.
@@ -64,7 +67,15 @@ public class LocalRepo {
      * @return
      */
     public static LocalRepo createLocalRepo() {
-        return LocalRepo.createLocalRepo(repositoryPath);
+		
+    	Path repo = null;
+		try {
+			repo = Files.createTempDirectory("intlib-repo");
+		} catch (IOException e) {
+    		throw new RuntimeException(e.getMessage());
+		}
+		
+        return LocalRepo.createLocalRepo(repo.toString());
     }
 
     /**
@@ -80,7 +91,6 @@ public class LocalRepo {
 
         return localrepo;
     }
-    private Repository repository = null;
 
     /**
      * Public constructor - create new instance of repository in defined path.
