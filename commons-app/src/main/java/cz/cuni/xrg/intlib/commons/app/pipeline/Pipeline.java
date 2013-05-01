@@ -7,8 +7,8 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import javax.persistence.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
-import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineStartedEvent;
+//import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
+//import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineStartedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.GraphIterator;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
@@ -178,7 +178,7 @@ public class Pipeline implements Resource, ApplicationEventPublisherAware {
         DependencyGraph dependencyGraph = new DependencyGraph(graph);
         GraphIterator iterator = new GraphIterator(dependencyGraph);
 
-        eventPublisher.publishEvent(new PipelineStartedEvent(this, runId, this));
+        //eventPublisher.publishEvent(new PipelineStartedEvent(this, runId, this));
 
         while (iterator.hasNext()) {
 
@@ -249,7 +249,7 @@ public class Pipeline implements Resource, ApplicationEventPublisherAware {
             }
         }
 
-        eventPublisher.publishEvent(new PipelineCompletedEvent((System.currentTimeMillis() - pipelineStart), this, runId, this));
+        //eventPublisher.publishEvent(new PipelineCompletedEvent((System.currentTimeMillis() - pipelineStart), this, runId, this));
     }
 
     @Override
