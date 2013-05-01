@@ -6,17 +6,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import junit.framework.TestFailure;
-
-import static org.junit.Assert.*;
 import org.junit.*;
+import static org.junit.Assert.*;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cz.cuni.xrg.intlib.commons.repository.CannotOverwriteFileException;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
 /**
  *
@@ -25,21 +19,21 @@ import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 public class LocalRepoTest {
 
 	/** Path to test repository */
-    private static Path pathRepo;
+    private Path pathRepo;
     
     /** Path to directory with produced data */
-    private static Path outDir;
+    private Path outDir;
     
     /** Path to directory with test input data */
-    private static String testFileDir;
+    private String testFileDir;
     
     /** Local repository */
-    private static LocalRepo localRepo;
+    private LocalRepo localRepo;
     
     private static final Logger logger = LoggerFactory.getLogger(LocalRepoTest.class);
     
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
     	try {
 	    	pathRepo = Files.createTempDirectory("intlib-repo");
 	    	outDir = Files.createTempDirectory("intlib-out");
@@ -163,7 +157,9 @@ public class LocalRepoTest {
             localRepo.loadRDFfromRepositoryToXMLFile(outDir.toString(), fileName, format);
             fail();
 
-        } catch (CannotOverwriteFileException ex) {}
+        } catch (CannotOverwriteFileException ex) {
+        	// test passed
+        }
     }
 
     @Test
@@ -218,7 +214,12 @@ public class LocalRepoTest {
         }
     }
 
-    @Test
+
+    /**
+     * This is not unit test, as it depends on remote server
+     * -> commented out for build, use only when debugging
+     */
+//    @Test
     public void extractDataFromSPARQLEndpointTest() {
     	
         try {
@@ -237,7 +238,11 @@ public class LocalRepoTest {
         }
     }
 
-    @Test
+    /**
+     * This is not unit test, as it depends on remote server
+     * -> commented out for build, use only when debugging
+     */
+//    @Test
     public void extractDataFromSPARQLEndpointNamePasswordTest() {
         try {
             URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
@@ -261,7 +266,11 @@ public class LocalRepoTest {
         }
     }
 
-    @Test
+    /**
+     * This is not unit test, as it depends on remote server
+     * -> commented out for build, use only when debugging
+     */
+//    @Test
     public void loadDataToSPARQLEndpointTest() {
         try {
             URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
@@ -290,10 +299,6 @@ public class LocalRepoTest {
 		        + "INSERT { ?who ?what 'Boston_Bruins' }"
 		        + "WHERE { ?who ?what 'Dalas_Stars' }";
 
-//      cleanRepository();
-  	// TODO do before each test
-		localRepo.cleanAllRepositoryData();
-        
         localRepo.addTripleToRepository(
         	namespace, subjectName, predicateName, objectName
         );
@@ -377,10 +382,6 @@ public class LocalRepoTest {
     @Test
     public void TEDPipelineTest()
     {
-//        cleanRepository();
-    	// TODO do before each test
-        localRepo.cleanAllRepositoryData();
-        
         TEDextractFile1ToRepository();
         TEDextractFile2ToRepository();
         TEDTransformSPARQL();
@@ -397,9 +398,9 @@ public class LocalRepoTest {
         assertEquals(0, localRepo.getTripleCountInRepository());
     }
 
-    @AfterClass
-    public static void cleanUp() {
-        localRepo.cleanAllRepositoryData();
+    @After
+    public void cleanUp() {
+		deleteDirectory(pathRepo.toFile());
         deleteDirectory(new File(outDir.toString()));
     }
 

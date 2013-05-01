@@ -31,6 +31,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sail.memory.MemoryStore;
@@ -234,7 +235,7 @@ public class LocalRepo {
             connection.commit();
             connection.close();
 
-        } catch (Exception ex) {
+        } catch (RepositoryException | IOException | RDFParseException ex) {
             logger.debug("Error by adding file to repository");
         }
     }
@@ -277,7 +278,7 @@ public class LocalRepo {
 
             File dataFile = new File(directoryPath + fileName);
 
-            if (!dataFile.exists() | canFileOverWrite) {
+            if (!dataFile.exists() || canFileOverWrite) {
                 try {
                     dataFile.createNewFile();
                 } catch (IOException ex) {
@@ -285,7 +286,7 @@ public class LocalRepo {
                 }
 
             } else {
-                logger.debug("File existed and can not be overwritten");
+                logger.debug("File existed and cannot be overwritten");
                 throw new CannotOverwriteFileException();
 
             }
@@ -308,9 +309,7 @@ public class LocalRepo {
                 logger.debug(ex.getMessage());
             }
 
-        } catch (RDFHandlerException ex) {
-            logger.debug(ex.getMessage());
-        } catch (RepositoryException ex) {
+        } catch (RDFHandlerException | RepositoryException ex) {
             logger.debug(ex.getMessage());
         }
     }
@@ -402,7 +401,11 @@ public class LocalRepo {
 
                         logger.debug("Data " + processing + " part loaded successful");
                     } catch (IOException ex) {
-                        logger.debug("Can not open http connection stream - data no loaded");
+                        logger.debug(
+                        	"Cannot open http connection stream at '"
+                        	+ call.toString()
+                        	+ "' - data not loaded"
+                        );
                         logger.debug(ex.getMessage());
                     } finally {
                         httpConnection.disconnect();
