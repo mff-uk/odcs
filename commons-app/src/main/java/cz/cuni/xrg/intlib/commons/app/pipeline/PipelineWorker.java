@@ -9,54 +9,52 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 public class PipelineWorker extends Thread {
 
     private boolean alive = true;
-    
     private boolean isWorking = true;
-    
     private Engine engine;
 
     public PipelineWorker(Engine engine) {
-    	this.engine = engine;
+        this.engine = engine;
     }
 
     /**
      * Lazy kill - waits until Pipeline run is finished.
      */
     public void kill() {
-    	alive = false;
+        alive = false;
     }
 
     /**
-     * Implementation of workers activity.
-     * Worker constantly keeps asking engine for jobs to run,
-     * until it is killed.
+     * Implementation of workers activity. Worker constantly keeps asking engine
+     * for jobs to run, until it is killed.
      */
     @Override
     public void run() {
-    	
-    	while (alive) {
-    		
-    		PipelineExecution exec = engine.getJob();
-    		
-    		if (exec == null) {
-    			isWorking = false;
-        		try {
-    				Thread.sleep(1000);
-    			} catch (InterruptedException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    			}
-    		} else {
-    			isWorking = true;
-    			exec.run();
-    		}
-    	}
+
+        while (alive) {
+
+            PipelineExecution execution = engine.getJob();
+
+            if (execution == null) {
+                isWorking = false;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+
+                    e.fillInStackTrace();
+                }
+            } else {
+                isWorking = true;
+                execution.run();
+            }
+        }
     }
-    
+
     /**
      * Tells whether worker is currently processing any pipeline.
+     *
      * @return
      */
     public boolean isWorking() {
-    	return isWorking;
+        return isWorking;
     }
 }
