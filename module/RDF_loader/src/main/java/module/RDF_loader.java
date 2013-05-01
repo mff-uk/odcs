@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;

@@ -1,6 +1,6 @@
 package module;
 
-import cz.cuni.xrg.intlib.repository.RDFFormatType;
+import cz.cuni.xrg.intlib.commons.repository.RDFFormatType;
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
@@ -11,8 +11,8 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.repository.FileCannotOverwriteException;
-import cz.cuni.xrg.intlib.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.repository.FileCannotOverwriteException;
+import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 import org.openrdf.rio.RDFFormat;
 
 /**

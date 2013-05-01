@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.repository;
+package cz.cuni.xrg.intlib.commons.repository;
 
 
 /**

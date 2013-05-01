@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.repository;
+package cz.cuni.xrg.intlib.commons.repository;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,11 +7,16 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import junit.framework.TestFailure;
+
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.xrg.intlib.commons.repository.FileCannotOverwriteException;
+import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
 /**
  *
@@ -26,7 +31,7 @@ public class LocalRepoTest {
     private static Path outDir;
     
     /** Path to directory with test input data */
-    private final String testFileDirectory = new File("Input_Test_Files").getAbsolutePath();
+    private static String testFileDir;
     
     /** Local repository */
     private static LocalRepo localRepo;
@@ -38,6 +43,7 @@ public class LocalRepoTest {
     	try {
 	    	pathRepo = Files.createTempDirectory("intlib-repo");
 	    	outDir = Files.createTempDirectory("intlib-out");
+	    	testFileDir = LocalRepoTest.class.getResource("/repository").getPath();
     	} catch (IOException e) {
     		throw new RuntimeException(e.getMessage());
     	}
@@ -170,7 +176,7 @@ public class LocalRepoTest {
         long size = localRepo.getTripleCountInRepository();
 
         localRepo.extractRDFfromXMLFileToRepository(
-        	testFileDirectory, suffix, baseURI, useSuffix
+        	testFileDir, suffix, baseURI, useSuffix
         );
 
         long newSize = localRepo.getTripleCountInRepository();
@@ -188,7 +194,7 @@ public class LocalRepoTest {
         long size = localRepo.getTripleCountInRepository();
 
         localRepo.extractRDFfromXMLFileToRepository(
-        	testFileDirectory, suffix, baseURI, useSuffix
+        	testFileDir, suffix, baseURI, useSuffix
         );
 
         long newSize = localRepo.getTripleCountInRepository();
@@ -243,7 +249,9 @@ public class LocalRepoTest {
             RDFFormat format = RDFFormat.N3;
 
             long sizeBefore = localRepo.getTripleCountInRepository();
-            localRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, name, password, format);
+            localRepo.extractfromSPARQLEndpoint(
+            	endpointURL, defaultGraphUri, query, name, password, format
+            );
             long sizeAfter = localRepo.getTripleCountInRepository();
 
             assertTrue(sizeBefore < sizeAfter);
@@ -312,7 +320,7 @@ public class LocalRepoTest {
         long size = localRepo.getTripleCountInRepository();
 
         localRepo.extractRDFfromXMLFileToRepository(
-        	testFileDirectory, suffix, baseURI, useSuffix
+        	testFileDir, suffix, baseURI, useSuffix
         );
 
         long newSize = localRepo.getTripleCountInRepository();
@@ -329,7 +337,7 @@ public class LocalRepoTest {
         long size = localRepo.getTripleCountInRepository();
 
         localRepo.extractRDFfromXMLFileToRepository(
-        	testFileDirectory, suffix, baseURI, useSuffix
+        	testFileDir, suffix, baseURI, useSuffix
         );
 
         long newSize = localRepo.getTripleCountInRepository();

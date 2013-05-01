@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
 /**
  * Basic executive interface of each DPU component.

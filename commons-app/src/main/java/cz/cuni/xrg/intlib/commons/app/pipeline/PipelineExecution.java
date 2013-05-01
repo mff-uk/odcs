@@ -18,10 +18,10 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
+import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
-import cz.cuni.xrg.intlib.repository.LocalRepo;
 
 /**
  * Information about executed pipeline and their states.

@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
 /**
  * TODO Change super class to desired one, you can choose from the following:

@@ -63,14 +63,14 @@ public class Framework {
 						// commons-web
 						"cz.cuni.xrg.intlib.commons.web," +
 						// commons-module
-						"cz.cuni.xrg.intlib.repository" +
+						"cz.cuni.xrg.intlib.commons.repository" +
 						exportedPackages );
 		return config;
 	}
 	/*
 	
 	Export-Package: 
-		module;uses:="cz.cuni.xrg.intlib.commons.web,gui,cz.cuni.xrg.intlib.commons,cz.cuni.xrg.intlib.commons.configuration,cz.cuni.xrg.intlib.repository,cz.cuni.xrg.intlib.commons.extractor,com.vaadin.ui";version="0.0.2",
+		module;uses:="cz.cuni.xrg.intlib.commons.web,gui,cz.cuni.xrg.intlib.commons,cz.cuni.xrg.intlib.commons.configuration,cz.cuni.xrg.intlib.commons.repository,cz.cuni.xrg.intlib.commons.extractor,com.vaadin.ui";version="0.0.2",
 		gui;uses:="com.vaadin.data,module,cz.cuni.xrg.intlib.commons.configuration,com.vaadin.ui";version="0.0.2"
 			 
 	Import-Package: 
@@ -80,7 +80,7 @@ public class Framework {
 		cz.cuni.xrg.intlib.commons.configuration,
 		cz.cuni.xrg.intlib.commons.extractor,
 		cz.cuni.xrg.intlib.commons.web,
-		cz.cuni.xrg.intlib.repository	
+		cz.cuni.xrg.intlib.commons.repository	
 	*/
 	
 	/**
