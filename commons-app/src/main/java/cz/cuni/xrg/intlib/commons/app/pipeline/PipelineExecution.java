@@ -181,7 +181,7 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
 //            	new ExtractFailedEvent(ex, extractor, ctx, this)
 //            );
             ex.fillInStackTrace();
-            
+
         }
     }
 
@@ -232,15 +232,5 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
 //            );
             ex.fillInStackTrace();
         }
-    }
-
-    /**
-     * Repository initialization
-     *
-     * @return
-     */
-    private LocalRepo createRdfRepository() {
-        String file = "/tmp/intlib-rdf-repo.dat";
-        return new LocalRepo(file);
     }
 }
