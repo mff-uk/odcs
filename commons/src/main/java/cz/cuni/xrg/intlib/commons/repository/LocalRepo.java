@@ -245,9 +245,9 @@ public class LocalRepo {
      * @param directoryPath
      * @param fileName
      * @param format
-     * @throws FileCannotOverwriteException
+     * @throws CannotOverwriteFileException
      */
-    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format) throws FileCannotOverwriteException {
+    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException {
         loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false);
     }
 
@@ -258,9 +258,9 @@ public class LocalRepo {
      * @param fileName
      * @param format
      * @param canFileOverWrite
-     * @throws FileCannotOverwriteException
+     * @throws CannotOverwriteFileException
      */
-    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format, boolean canFileOverWrite) throws FileCannotOverwriteException {
+    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format, boolean canFileOverWrite) throws CannotOverwriteFileException {
 
         final String slash = File.separator;
 
@@ -286,7 +286,7 @@ public class LocalRepo {
 
             } else {
                 logger.debug("File existed and can not be overwritten");
-                throw new FileCannotOverwriteException();
+                throw new CannotOverwriteFileException();
 
             }
 

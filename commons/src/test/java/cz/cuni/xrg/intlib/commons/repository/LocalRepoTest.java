@@ -15,7 +15,7 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.xrg.intlib.commons.repository.FileCannotOverwriteException;
+import cz.cuni.xrg.intlib.commons.repository.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
 /**
@@ -99,7 +99,7 @@ public class LocalRepoTest {
             	outDir.toString(), fileName, format, true
             );
 
-        } catch (FileCannotOverwriteException ex) {
+        } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
         }
     }
@@ -115,7 +115,7 @@ public class LocalRepoTest {
             	outDir.toString(), fileName, format, true
             );
 
-        } catch (FileCannotOverwriteException ex) {
+        } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
         }
     }
@@ -131,7 +131,7 @@ public class LocalRepoTest {
             	outDir.toString(), fileName, format, true
             );
 
-        } catch (FileCannotOverwriteException ex) {
+        } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
         }
     }
@@ -147,7 +147,7 @@ public class LocalRepoTest {
             	outDir.toString(), fileName, format, true
             );
 
-        } catch (FileCannotOverwriteException ex) {
+        } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
         }
     }
@@ -163,7 +163,7 @@ public class LocalRepoTest {
             localRepo.loadRDFfromRepositoryToXMLFile(outDir.toString(), fileName, format);
             fail();
 
-        } catch (FileCannotOverwriteException ex) {}
+        } catch (CannotOverwriteFileException ex) {}
     }
 
     @Test
@@ -213,7 +213,7 @@ public class LocalRepoTest {
             	outDir.toString(), fileName, format, true
             );
 
-        } catch (FileCannotOverwriteException ex) {
+        } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
         }
     }
@@ -369,7 +369,7 @@ public class LocalRepoTest {
             	outDir.toString(), fileName, format, true
             );
 
-        } catch (FileCannotOverwriteException ex) {
+        } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
         }
     }
