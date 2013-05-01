@@ -7,7 +7,6 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import javax.persistence.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import cz.cuni.xrg.intlib.commons.event.ETLPipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.event.PipelineStartedEvent;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
@@ -72,7 +71,7 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 @Entity
 @Table(name = "pipeline_model")
-public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublisherAware {
+public class Pipeline implements Resource, ApplicationEventPublisherAware {
 
     /**
      * Unique ID for each pipeline
@@ -136,12 +135,10 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
      state = newState;
      }
      */
-    @Override
     public PipelineGraph getGraph() {
         return graph;
     }
 
-    @Override
     public void setGraph(PipelineGraph graph) {
         this.graph = graph;
     }
@@ -172,7 +169,6 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
     /**
      * Runs the pipeline.
      */
-    @Override
     public void run() {
 
         long pipelineStart = System.currentTimeMillis();
@@ -183,7 +179,7 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
         GraphIterator iterator = new GraphIterator(dependencyGraph);
 
         eventPublisher.publishEvent(new PipelineStartedEvent(this, runId, this));
-        
+
         while (iterator.hasNext()) {
 
             Node node = iterator.next();
@@ -252,7 +248,7 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
                 }
             }
         }
-        
+
         eventPublisher.publishEvent(new PipelineCompletedEvent((System.currentTimeMillis() - pipelineStart), this, runId, this));
     }
 
