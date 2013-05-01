@@ -10,10 +10,10 @@ public class PipelineWorker extends Thread {
 
     private boolean alive = true;
     private boolean isWorking = true;
-    private Engine engine;
+    private PipelineExecution execution;
 
-    public PipelineWorker(Engine engine) {
-        this.engine = engine;
+    public PipelineWorker(PipelineExecution execution) {
+        this.execution=execution;
     }
 
     /**
@@ -32,8 +32,6 @@ public class PipelineWorker extends Thread {
 
         while (alive) {
 
-            PipelineExecution execution = engine.getJob();
-
             if (execution == null) {
                 isWorking = false;
                 try {
@@ -48,6 +46,7 @@ public class PipelineWorker extends Thread {
             }
         }
     }
+    
 
     /**
      * Tells whether worker is currently processing any pipeline.
