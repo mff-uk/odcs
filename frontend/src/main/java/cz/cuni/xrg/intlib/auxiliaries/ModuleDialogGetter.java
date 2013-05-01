@@ -3,9 +3,9 @@ package cz.cuni.xrg.intlib.auxiliaries;
 import com.vaadin.ui.CustomComponent;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
-import cz.cuni.xrg.intlib.commons.module.GraphicalExtractor;
-import cz.cuni.xrg.intlib.commons.module.GraphicalLoader;
-import cz.cuni.xrg.intlib.commons.module.GraphicalTransformer;
+import cz.cuni.xrg.intlib.commons.web.GraphicalExtractor;
+import cz.cuni.xrg.intlib.commons.web.GraphicalLoader;
+import cz.cuni.xrg.intlib.commons.web.GraphicalTransformer;
 
 /**
  * Provide function that enable obtain Configuration dialog 

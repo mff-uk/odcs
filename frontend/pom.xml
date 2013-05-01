@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>cz.cuni.xrg.intlib</groupId>
@@ -12,25 +13,39 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	 <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+		
+		<!-- in tomcat-users.xml <user name="deploy" password="deploy" roles="admin-script,manager-script"/> -->
+		<!-- TODO: use settings.xml instead ? -->		
+		<tomcat.deploy.url>http://localhost:8080/manager/text</tomcat.deploy.url>
+		<tomcat.deploy.username>deploy</tomcat.deploy.username>
+		<tomcat.deploy.password>deploy</tomcat.deploy.password>
 	</properties>
 
 	<repositories>
 		<repository> <!-- vaadin add-on repository -->
-   			<id>vaadin-addons</id>
-   			<url>http://maven.vaadin.com/vaadin-addons</url>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
-		<dependency> <!-- commons-app project -->
+        <dependency> <!--  JUnit dependency -->
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>	
+	
+		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>commons-app</artifactId>
+			<artifactId>commons</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
+			<type>jar</type>
+		</dependency>	
+	
+		<dependency> <!-- commons-app project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons-app</artifactId>
 			<!-- the version has to be specify -->
@@ -43,73 +58,64 @@
 			<artifactId>commons-module</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
-			<type>pom</type>
+			<type>jar</type>
 		</dependency>
-		<dependency>
+
+		<dependency> <!-- commons-web project -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>commons-module</artifactId>
+			<artifactId>commons-web</artifactId>
 			<!-- the version has to be specify -->
 			<version>0.0.1</version>
 			<type>jar</type>
 		</dependency>
 
-		<dependency> <!-- vaadin add-on jpacontainer -->
-		   <groupId>com.vaadin.addon</groupId>
-		   <artifactId>jpacontainer</artifactId>
-		   <version>3.0.0</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
-	    <finalName>intlib</finalName>
-	    <plugins>
+		<finalName>intlib</finalName>
+		<plugins>
+
 			<plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-war-plugin</artifactId>
-			  <!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml which will be ignored -->
-			  <version>2.3</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml 
+					which will be ignored -->
+				<version>2.3</version>
 			</plugin>
 
-			<!-- deploy to Apache tomcat
-				see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html
-					http://localhost:8080/docs/manager-howto.html
-				use maven cmd:
-				mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy
-			-->
+			<!-- deploy to Apache tomcat see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html 
+				http://localhost:8080/docs/manager-howto.html use maven cmd: mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.0</version>
 				<configuration>
-				    <url>http://localhost:8080/manager/text</url>
-					<username>deploy</username>
-					<password>deploy</password>
+					<url>${tomcat.deploy.url}</url>
+					<username>${tomcat.deploy.username}</username>
+					<password>${tomcat.deploy.password}</password>
 					<!-- if already deployed update -->
 					<update>true</update>
-					<!-- in tomcat-users.xml
-						<user name="deploy" password="deploy" roles="admin-script,manager-script"/>
-					 -->
 				</configuration>
 			</plugin>
-	      <plugin>
-	        <groupId>org.apache.maven.plugins</groupId>
-	        <artifactId>maven-compiler-plugin</artifactId>
-	        <version>2.3.2</version>
-	        <configuration>
-	          <source>1.6</source>
-	          <target>1.6</target>
-	        </configuration>
-	      </plugin>
-	    </plugins>
-        <resources>
-            <resource>
-                <directory>src\main\java</directory>
-            </resource>
-            <resource>
-                <directory>src\main\java\cz\cuni\xrg\intlib\frontend\gui\components\pipelinecanvas</directory>
-            </resource>
-        </resources>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src\main\java</directory>
+			</resource>
+			<resource>
+				<directory>src\main\java\cz\cuni\xrg\intlib\frontend\gui\components\pipelinecanvas</directory>
+			</resource>
+		</resources>
 
 	</build>
 

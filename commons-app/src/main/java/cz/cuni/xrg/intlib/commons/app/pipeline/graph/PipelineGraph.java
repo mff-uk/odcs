@@ -48,7 +48,7 @@ public class PipelineGraph {
     public void setEdges(Set<Edge> edges) {
         this.edges = edges;
     }
-
+    
     public int addDpu(DPU dpu) {
 		DPUInstance dpuInstance = new DPUInstance(dpu);
 		Node node = new Node(dpuInstance);
@@ -63,6 +63,20 @@ public class PipelineGraph {
 			return nodes.remove(node);
 		}
 		return false;
+	}
+	
+	/**
+	 * Adds a single edge into pipeline graph, unless it exists already.
+	 * @param from source DPU
+	 * @param to target DPU
+	 * @return newly created edge or null
+	 * TODO find and return edge even if it was present before
+	 */
+	public Edge addEdge(Node from, Node to) {
+		Edge e = new Edge(from, to);
+		// adds unless it is present already
+		boolean added = edges.add(e);
+		return added ? e : null;
 	}
 
 	public int addEdge(int fromId, int toId) {
@@ -99,13 +113,36 @@ public class PipelineGraph {
 		return null;
 	}
 
-	private Node getNodeById(int id) {
+	public Node getNodeById(int id) {
 		for(Node el : nodes) {
 			if(el.getId() == id) {
 				return el;
 			}
 		}
 		return null;
+	}
+
+//    /**
+//     * Gets DPUInstance of Node with given ID
+//     *
+//     * @param id
+//     * @return DPUIntance of Node with given id
+//     */
+//    public DPUInstance getDPUInstanceById(int id) {
+//        Node node = getNodeById(id);
+//        return (node == null) ? null : node.getDpuInstance();
+//    }
+
+	/**
+	 * Updates Node position in graph.
+	 *
+	 * @param dpuId
+	 * @param newX
+	 * @param newY
+	 */
+	public void moveNode(int dpuId, int newX, int newY) {
+		Node node = getNodeById(dpuId);
+		node.setPosition(new Position(newX, newY));
 	}
 
         /** Hack for IDs for Nodes and Edges - replace with IDs from db ASAP */
@@ -126,5 +163,6 @@ public class PipelineGraph {
 	public int GetUniquePipelineConnectionId() {
 		return ++connectionCounter + CONNECTION_SEED;
 	}
+
     /** End of hack */
 }

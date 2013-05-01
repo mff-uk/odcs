@@ -14,6 +14,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         this.name = name;
         this.description = description;
         this.group = null;
+		this.text = null;
+		this.rect = null;
 
         this.connectionFrom = [];
         this.connectionTo = [];
@@ -24,12 +26,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     }
 
     /** Class representing Connection between 2 DPUs on Canvas **/
-    function Connection(id, from, to, line, cmdDelete) {
+    function Connection(id, from, to, line, cmdDelete, hitLine) {
         this.id = id;
         this.from = from;
         this.to = to;
         this.line = line;
         this.cmdDelete = cmdDelete;
+		this.hitLine = hitLine;
         this.arrowLeft = null;
         this.arrowRight = null;
     }
@@ -40,6 +43,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     /** DPUs and Connections collections**/
     var dpus = {};
     var connections = {};
+
+	var lastPositionX = 0;
+	var	lastPositionY = 0;
 
     /** Registering RPC for calls from server-side**/
     this.registerRpc({
@@ -52,9 +58,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         addEdge: function(id, dpuFrom, dpuTo) {
             addConnection(id, dpuFrom, dpuTo);
         },
-        getNodePosition: function(id) {
-            return getDpuPosition(id);
-        }
+		updateNode: function(id, name, description) {
+			updateDpu(id, name, description);
+		}
     });
 
 
@@ -105,11 +111,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
     /** Writes message on given message layer **/
     function writeMessage(messageLayer, message) {
-        var context = messageLayer.getContext();
-        messageLayer.clear();
-        context.font = '18pt Calibri';
-        context.fillStyle = 'black';
-        context.fillText(message, 10, 25);
+        //var context = messageLayer.getContext();
+        //messageLayer.clear();
+        //context.font = '18pt Calibri';
+        //context.fillStyle = 'black';
+        //context.fillText(message, 10, 25);
+
+		rpcProxy.onLogMessage(message);
     }
 
     /** Kinetic stage and layers accessed from different functions **/
@@ -120,6 +128,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var lineLayer = null;
     /** Mesage/debug layer **/
     var messageLayer = null;
+
+	var addConnectionIcon = null;
+	var removeConnectionIcon = null;
 
     /** Init function which builds entire stage for pipeline */
     function init() {
@@ -152,7 +163,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         // Redraws Connection layer after drag
-        stage.getDragLayer().afterDraw(function() {
+        dpuLayer.on('draw', function() {
             lineLayer.draw();
         });
 
@@ -196,7 +207,23 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         stage.add(dpuLayer);
         stage.add(messageLayer);
         writeMessage(messageLayer, 'initialized');
+
+		addConnectionIcon = new Image();
+		addConnectionIcon.src = "http://" + window.location.host + window.location.pathname + "VAADIN/themes/IntLibTheme/img/arrow_right_32.png"; //'http://i50.tinypic.com/2qjykb5.jpg';
+
+		removeConnectionIcon = new Image();
+		removeConnectionIcon.src = "http://" + window.location.host + window.location.pathname + "VAADIN/themes/IntLibTheme/img/recyclebin32x32.png";
     }
+
+	/** Updates text in DPU visualization
+	 *
+	 */
+	function updateDpu(id, name, description) {
+		var dpu = dpus[id];
+		dpu.text.setText(name + '\n\n'+ description);
+		dpu.rect.setHeight(dpu.text.getHeight());
+		dpuLayer.draw();
+	}
 
     /** Builds DPU object and creates its representations on the stage **/
     function addDpu(id, name, description, posX, posY) {
@@ -235,9 +262,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // Group containing text and rect
         if(posX < 0) {
-            var mousePos = stage.getMousePosition();
-            posX = mousePos.x;
-            posY = mousePos.y;
+            var mousePos = null; //stage.getPointerPosition();// stage.getMousePosition();
+			if(mousePos != null) {
+				posX = mousePos.x;
+				posY = mousePos.y;
+			} else {
+				console.log("X: " + lastPositionX + " Y: " + lastPositionY);
+				posX = lastPositionX - 261;
+				posY = lastPositionY - 256;
+			}
         }
 
         var group = new Kinetic.Group({
@@ -257,6 +290,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         // New Connection command
+		/*
         var cmdConnection = new Kinetic.Rect({
             x: 0,
             y: 0,
@@ -266,6 +300,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             strokeWidth: 3,
             fill : '#a00'
         });
+		*/
+		var cmdConnection = new Kinetic.Image({
+			x: 0,
+			y: 0,
+			image: addConnectionIcon,
+			width: 32,
+			height: 32,
+			startScale: 1
+		});
 
         cmdConnection.on('click', function(evt) {
             if(stageMode == NormalMode) {
@@ -273,7 +316,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 var mousePosition = stage.getMousePosition();
                 newConnLine = new Kinetic.Line({
                     points: computeConnectionPoints3(group, mousePosition.x, mousePosition.y),
-                    stroke: 'red',
+                    stroke: '#555',
                     strokeWidth: 3
                 });
                 stageMode = NewConnectionMode;
@@ -362,13 +405,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             writeMessage(messageLayer, 'dragend');
             isDragging = false;
             dragId = 0;
-            var endPosition = stage.getMousePosition();
+            var endPosition = group.getPosition();
             if(endPosition == null) {
                 writeMessage(messageLayer, 'DPU removed - Out of Stage');
                 removeDpu(dpu);
                 rpcProxy.onDpuRemoved(dpu.id);
                 evt.cancelBubble = true;
-            }
+            } else {
+				rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y));
+			}
         });
 
         // Creating new connection
@@ -396,7 +441,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     var mousePosition = stage.getMousePosition();
                     newConnLine = new Kinetic.Line({
                         points: computeConnectionPoints3(group, mousePosition.x, mousePosition.y),
-                        stroke: 'red',
+                        stroke: '#555',
                         strokeWidth: 3
                     });
                     stageMode = NewConnectionMode;
@@ -409,7 +454,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             }
         });
 
-        group.on('dblclick', function() {
+        group.on('dblclick', function(evt) {
             if(stageMode == NormalMode) {
                 writeMessage(messageLayer, 'Detail requested');
                 rpcProxy.onDetailRequested(dpu.id);
@@ -417,10 +462,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             }
         });
 
+		dpu.rect = rect;
+		dpu.text = complexText;
         dpu.group = group;
         dpus[id] = dpu;
         dpuLayer.add(group);
         dpuLayer.draw();
+
+		rpcProxy.onDpuMoved(id, parseInt(posX), parseInt(posY));
     }
 
     /** Adds connection between 2 given DPUs **/
@@ -434,11 +483,18 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         // Graphic representation of connection
         line = new Kinetic.Line({
             points: linePoints,
-            stroke: 'red',
+            stroke: '#555',
             strokeWidth: 3
         });
 
-        line.on('click', function(evt) {
+		var hitLine = new Kinetic.Line({
+			points: linePoints,
+			strokeWidth: 20,
+			stroke: '#555',
+			opacity: 0
+		})
+
+        hitLine.on('click', function(evt) {
             var del = connections[id].cmdDelete;
             var pos = stage.getMousePosition();
             pos.x = pos.x - 16;
@@ -451,26 +507,26 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         var lineArrowLeft = new Kinetic.Line({
             points: computeLeftArrowPoints(linePoints),
-            stroke: 'red',
-            strokeWidth: 3
+            stroke: '#555',
+            strokeWidth: 2
         });
 
         var lineArrowRight = new Kinetic.Line({
             points: computeRightArrowPoints(linePoints),
-            stroke: 'red',
-            strokeWidth: 3
+            stroke: '#555',
+            strokeWidth: 2
         });
 
 
         // Delete command for connection
-        var cmdDelete = new Kinetic.Rect({
-            x: 0,
-            y: 0,
-            width: 32,
-            height: 32,
-            fill: '#0f0',
-            visible: false
-        });
+        var cmdDelete = new Kinetic.Image({
+			x: 0,
+			y: 0,
+			image: removeConnectionIcon,
+			width: 32,
+			height: 32,
+			startScale: 1
+		});
 
         cmdDelete.on('mouseleave', function(evt) {
             cmdDelete.setVisible(false);
@@ -482,7 +538,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             evt.cancelBubble = true;
         });
 
-        var con = new Connection(id, from, to, line, cmdDelete);
+		cmdDelete.setVisible(false);
+
+        var con = new Connection(id, from, to, line, cmdDelete, hitLine);
         con.arrowLeft = lineArrowLeft;
         con.arrowRight = lineArrowRight;
         connections[id] = con;
@@ -491,6 +549,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         lineLayer.add(lineArrowLeft);
         lineLayer.add(lineArrowRight);
         lineLayer.add(cmdDelete);
+		lineLayer.add(hitLine);
         lineLayer.add(line);
         lineLayer.draw();
     }
@@ -506,7 +565,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         con.arrowLeft.destroy();
         con.arrowRight.destroy();
         con.cmdDelete.destroy();
+		con.hitLine.destroy();
         connections[id] = null;
+		rpcProxy.onConnectionRemoved(id);
         lineLayer.draw();
     }
 
@@ -551,7 +612,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     function computeLeftArrowPoints(points) {
         var x = points[2] - points[0];
         var y = points[3] - points[1];
-        var dist = 20 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
+        var dist = 10 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
         var leftX = points[2] - dist * x + dist * y;
         var leftY = points[3] - dist * y - dist * x;
         return [leftX, leftY, points[2], points[3]];
@@ -560,7 +621,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
      function computeRightArrowPoints(points) {
         var x = points[2] - points[0];
         var y = points[3] - points[1];
-        var dist = 20 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
+        var dist = 10 / Math.sqrt(Math.pow(x,2) + Math.pow(y, 2));
         var leftX = points[2] - dist * x - dist * y;
         var leftY = points[3] - dist * y + dist * x;
         return [leftX, leftY, points[2], points[3]];
@@ -631,4 +692,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         return [startX, startY, endX, endY];
     }
 
+	jQuery(document).ready(function() {
+		$("#container").mousemove(function(e) {
+			lastPositionX = e.pageX;
+			lastPositionY = e.pageY;
+		});
+	});
 };

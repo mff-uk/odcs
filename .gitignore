@@ -4,12 +4,14 @@
 .project
 .settings/
 .classpath
+# Netbeans files #
+nbactions.xml
 
 # Build Directories #
 target/
 bin/
 
 # Package Files #
-*.jar
 *.war
+*.jar
 *.ear

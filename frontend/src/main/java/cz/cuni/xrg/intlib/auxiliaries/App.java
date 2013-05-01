@@ -35,7 +35,8 @@ public class App {
 	 * Returns facade, which provides services for managing pipelines.
 	 * @return pipeline facade
 	 */	
-	public PipelineFacade getPipelines() {
+	public static PipelineFacade getPipelines() {
 		return getApp().getPipelines();
 	}	
+	
 }

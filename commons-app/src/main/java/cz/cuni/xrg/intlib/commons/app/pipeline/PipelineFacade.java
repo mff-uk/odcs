@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
@@ -14,12 +13,15 @@ import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
  * Facade providing actions with pipelines.
  * 
  * @author Jan Vojt <jan@vojt.net>
- *
+ * 
+ * TODO	Refactor transactions to be able to perform multiple actions
+ * 			per one transaction.
  */
 public class PipelineFacade {
 	
 	/**
 	 * Entity manager for accessing database with persisted objects
+	 * @todo autowire through Spring and remove setter and constructor
 	 */
 	private EntityManager em;
 	
@@ -27,7 +29,16 @@ public class PipelineFacade {
 	 * Constructs facade and its dependencies.
 	 */
 	public PipelineFacade() {
-		em = IntlibEntityManagerFactory.create();
+//		this(IntlibEntityManagerFactory.getEm());
+		this(IntlibEntityManagerFactory.getImem());
+	}
+	
+	/**
+	 * Construct with given Entity Manager
+	 * @param em
+	 */
+	public PipelineFacade(EntityManager em) {
+		this.em = em;
 	}
 	
 	/**
@@ -63,10 +74,7 @@ public class PipelineFacade {
 	 */
 	public Pipeline getPipeline(int id) {
 		
-		Query jpql = em.createQuery("SELECT e FROM Pipeline e WHERE w.id = :id")
-			.setParameter("id", id);
-		
-		return (Pipeline) jpql.getSingleResult();
+		return em.find(Pipeline.class, id);
 	}
 	
 	/**

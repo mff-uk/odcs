@@ -1,0 +1,47 @@
+/*
+    Document   : styles
+    Created on : Apr 17, 2013, 1:40:25 PM
+    Author     : Bogo
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+@import "../reindeer/legacy-styles.css";
+
+.v-app {
+    background-color: #eeeeee;
+}
+
+.pipelineSettingsLayout {
+	padding-left: 30px;
+	background-color: #dddddd;
+}
+
+.viewLayout {
+	background-color: #eeeeee;
+}
+
+.dpuTree {
+	/*background-color: #dddddd;*/
+}
+
+.dpuDetailMainLayout {
+}
+
+.dpuDetailButtonBar {
+	padding-top: 15px;
+}
+
+.v-select-optiongroup-horizontalgroup .v-select-option {
+    display: inline-block;
+}
+
+.v-select-optiongroup-horizontalgroup {
+    white-space: nowrap;
+}
+
+
+.v-select-optiongroup-horizontalgroup
+  .v-select-option.v-radiobutton {
+    padding-right: 10px;
+}

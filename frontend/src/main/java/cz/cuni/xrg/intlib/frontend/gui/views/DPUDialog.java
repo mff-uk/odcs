@@ -6,7 +6,7 @@ import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.Type;
 
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
-import cz.cuni.xrg.intlib.commons.module.*;
+import cz.cuni.xrg.intlib.commons.web.*;
 
 
 import com.vaadin.navigator.View;
@@ -41,7 +41,7 @@ public class DPUDialog extends CustomComponent implements View {
 		} catch (ModuleException ex) {
 			// in case of exception show the exception and end
 			TextArea txtError = new TextArea();			
-			txtError.setValue( ex.getMessage() );
+			txtError.setValue( ex.getMessage() + " >> " + ex.getOriginal().getMessage() );
 						
 			txtError.setWidth("300px");
 			txtError.setHeight("200px");			

@@ -4,6 +4,7 @@ import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.helpers.RDFHandlerWrapper;
 
+
 /**
  * Prevents {@link #startRDF()} and {@link #endRDF()} from being called in the wrapped handler.
  *

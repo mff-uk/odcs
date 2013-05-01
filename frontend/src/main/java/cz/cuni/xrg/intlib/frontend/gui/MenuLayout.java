@@ -10,6 +10,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
+import cz.cuni.xrg.intlib.frontend.gui.views.OSGiSupport;
 
 /**
  * Class represent main application component.
@@ -80,6 +81,8 @@ public class MenuLayout extends CustomComponent {
 		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DataBrowser.getUrl()) );
 		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.Scheduler.getUrl()) );
 		menuBar.addItem("Administrator", new NavigateToCommand(ViewNames.Administrator.getUrl()) );
+		// TODO Remove
+		menuBar.addItem("OSGi Support", new NavigateToCommand(ViewNames.OSGiSupport.getUrl()) );
 	}
 
 	private VerticalLayout buildMainLayout() {
@@ -103,6 +106,7 @@ public class MenuLayout extends CustomComponent {
 		this.viewLayout.setWidth("100.0%");
 		this.viewLayout.setHeight("100.0%");
 		this.viewLayout.setMargin(false);
+		this.viewLayout.setStyleName("viewLayout");
 		this.mainLayout.addComponent(viewLayout);
 
 		return this.mainLayout;

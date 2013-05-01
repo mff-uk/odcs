@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons.extractor;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
-import cz.cuni.xrg.intlib.commons.extractor.*;
 
 /**
  * Is responsible for extracting data from data source and convert it to RDF data.

@@ -2,14 +2,19 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractJavaScriptComponent;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
 
 
 /**
@@ -17,19 +22,15 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
  * @author Bogo
  */
 @SuppressWarnings("serial")
-@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.3.3.min.js" })
+@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.4.3.min.js", "jquery-2.0.0.min.js" })
 public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	int dpuCount = 0;
 	int connCount = 0;
 
-	private Pipeline pipeline;
 	private PipelineGraph graph;
-    
-	public PipelineCanvas() {
 
-		this.pipeline = App.getApp().getPipelines().createPipeline();
-		this.graph = this.pipeline.getGraph();
+	public PipelineCanvas() {
 
 		this.setId("container");
 		//this.setWidth(1500,  Unit.PIXELS);
@@ -42,6 +43,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDetailRequested(int dpuId) {
 				// TODO Auto-generated method stub
 				// propably publish event one level higher
+                Node node = graph.getNodeById(dpuId);
+                if(node != null) {
+                    showDPUDetail(node);
+                }
 			}
 
 			@Override
@@ -59,6 +64,16 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				graph.removeDpu(dpuId);
 
 			}
+
+			@Override
+			public void onDpuMoved(int dpuId, int newX, int newY) {
+				dpuMoved(dpuId, newX, newY);
+			}
+
+			@Override
+			public void onLogMessage(String message) {
+				//TODO: Log JS messages
+			}
 		});
 	}
 
@@ -66,9 +81,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         getRpcProxy(PipelineCanvasClientRpc.class).init();
     }
 
-	public void addDpu(DPU dpu) {
+	private void dpuMoved(int dpuId, int newX, int newY) {
+		graph.moveNode(dpuId, newX, newY);
+	}
+
+	public void addDpu(DPU dpu, int x, int y) {
 		int dpuInstanceId = graph.addDpu(dpu);
-		getRpcProxy(PipelineCanvasClientRpc.class).addNode(dpuInstanceId, dpu.getName(), dpu.getDescription(), -5, -5);
+		getRpcProxy(PipelineCanvasClientRpc.class).addNode(dpuInstanceId, dpu.getName(), dpu.getDescription(), x, y);
 	}
 
 	public void addConnection(int dpuFrom, int dpuTo) {
@@ -76,18 +95,17 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
 	}
 
-	//OR loadPipeline
 	public void showPipeline(Pipeline pipeline) {
-		this.pipeline = pipeline;
-		for(Node node : pipeline.getGraph().getNodes()) {
+		this.graph = pipeline.getGraph();
+		for(Node node : graph.getNodes()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.getId(), node.getDpuInstance().getName(), node.getDpuInstance().getDescription(), node.getPosition().getX(), node.getPosition().getY());
 		}
-		for(Edge edge : pipeline.getGraph().getEdges()) {
+		for(Edge edge : graph.getEdges()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.getId(), edge.getFrom().getId(), edge.getTo().getId());
 		}
 	}
 
-	public Pipeline getPipeline() {
+	public void saveGraph(Pipeline pipeline) {
 //		for(DpuInstance dpu : pipeline.getDpus()) {
 //			int[] position = getRpcProxy(PipelineCanvasClientRpc.class).getDpuPosition(dpu.Id);
 //			dpu.setX(position[0]);
@@ -96,11 +114,30 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		//pipeline.setWidth(Math.round(this.getWidth()));
 		//pipeline.setHeight(Math.round(this.getHeight()));
 
-		return pipeline;
+		pipeline.setGraph(graph);
 	}
 
 	@Override
 	  protected PipelineCanvasState getState() {
 	    return (PipelineCanvasState) super.getState();
 	  }
+
+    /**
+     * Shows detail of given DPUInstance in new sub-window
+     *
+     * @param dpu
+     */
+    public void showDPUDetail(final Node node) {
+		final DPUInstance dpu = node.getDpuInstance();
+        DPUDetail detailDialog = new DPUDetail(dpu);
+		detailDialog.addCloseListener(new Window.CloseListener() {
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.getId(), dpu.getName(), dpu.getDescription());
+			}
+		});
+        App.getApp().addWindow(detailDialog);
+		
+    }
 }

@@ -1,10 +1,7 @@
 package cz.cuni.xrg.intlib.commons.extractor;
 
 import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
-
 import java.util.Map;
-
-import org.openrdf.rio.RDFHandler;
 
 /**
  * Context used by {@link Extract}s for the extraction process.
