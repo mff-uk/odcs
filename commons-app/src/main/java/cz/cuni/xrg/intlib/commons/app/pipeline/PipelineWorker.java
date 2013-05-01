@@ -30,6 +30,7 @@ public class PipelineWorker extends Thread {
      * Worker constantly keeps asking engine for jobs to run,
      * until it is killed.
      */
+    @Override
     public void run() {
     	
     	while (alive) {
