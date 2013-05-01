@@ -25,8 +25,10 @@ import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -46,19 +48,15 @@ import org.slf4j.LoggerFactory;
 public class LocalRepo {
 
     private static LocalRepo localrepo = null;
-
-	/**
+    /**
      * Logging information about execution of method using openRDF.
      */
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
-	
     /**
      * How many triples is possible to add to SPARQL endpoind at once.
      */
     private static final int STATEMENTS_COUNT = 10;
-	
     private final String encode = "UTF-8";
-	
     private Repository repository = null;
 
     /**
@@ -67,14 +65,14 @@ public class LocalRepo {
      * @return
      */
     public static LocalRepo createLocalRepo() {
-		
-    	Path repo = null;
-		try {
-			repo = Files.createTempDirectory("intlib-repo");
-		} catch (IOException e) {
-    		throw new RuntimeException(e.getMessage());
-		}
-		
+
+        Path repo = null;
+        try {
+            repo = Files.createTempDirectory("intlib-repo");
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
         return LocalRepo.createLocalRepo(repo.toString());
     }
 
@@ -193,11 +191,12 @@ public class LocalRepo {
 
         if (path.toLowerCase().startsWith("http")) {
 
+            InputStreamReader inputStream;
             try {
 
                 URL urlPath = new URL(path);
 
-                InputStreamReader inputStream = new InputStreamReader(urlPath.openStream(), encode);
+                inputStream = new InputStreamReader(urlPath.openStream(), encode);
                 RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
 
                 RepositoryConnection connection = repository.getConnection();
@@ -205,7 +204,7 @@ public class LocalRepo {
 
                 inputStream.close();
 
-            } catch (Exception ex) {
+            } catch (IOException | RepositoryException | RDFParseException ex) {
                 logger.debug(ex.getMessage());
             }
 
@@ -301,8 +300,9 @@ public class LocalRepo {
 
             }
 
+            OutputStreamWriter os;
             try {
-                OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(dataFile.getAbsoluteFile()), encode);
+                os = new OutputStreamWriter(new FileOutputStream(dataFile.getAbsoluteFile()), encode);
 
                 RDFWriter writer = Rio.createWriter(format, os);
 
@@ -332,7 +332,7 @@ public class LocalRepo {
      * @param defaultGraphURI
      */
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
-        List<String> graphs = new ArrayList<String>();
+        List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphURI);
 
         loadtoSPARQLEndpoint(endpointURL, graphs, "", "");
@@ -348,7 +348,7 @@ public class LocalRepo {
      * @param password
      */
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password) {
-        List<String> graphs = new ArrayList<String>();
+        List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphURI);
 
         loadtoSPARQLEndpoint(endpointURL, graphs, name, password);
@@ -412,10 +412,9 @@ public class LocalRepo {
                         logger.debug("Data " + processing + " part loaded successful");
                     } catch (IOException ex) {
                         logger.debug(
-                        	"Cannot open http connection stream at '"
-                        	+ call.toString()
-                        	+ "' - data not loaded"
-                        );
+                                "Cannot open http connection stream at '"
+                                + call.toString()
+                                + "' - data not loaded");
                         logger.debug(ex.getMessage());
                     } finally {
                         httpConnection.disconnect();
@@ -426,14 +425,14 @@ public class LocalRepo {
 
             connection.close();
 
-        } catch (Exception ex) {
+        } catch (RepositoryException | IOException ex) {
             logger.debug(ex.getMessage());
         }
     }
 
     private List<Statement> getStatementsInRepository() {
 
-        List<Statement> statemens = new ArrayList<Statement>();
+        List<Statement> statemens = new ArrayList<>();
 
         if (repository != null) {
             try {
@@ -452,7 +451,7 @@ public class LocalRepo {
         final String insertStart = "INSERT {";
         final String insertStop = "} ";
 
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
 
         StringBuilder builder = new StringBuilder();
 
@@ -506,7 +505,7 @@ public class LocalRepo {
      * @param query
      */
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
-        List<String> graphs = new ArrayList<String>();
+        List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphUri);
 
         extractfromSPARQLEndpoint(endpointURL, graphs, query, "", "");
@@ -524,7 +523,7 @@ public class LocalRepo {
      * @param format
      */
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
-        List<String> graphs = new ArrayList<String>();
+        List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphUri);
 
         extractfromSPARQLEndpoint(endpointURL, graphs, query, hostName, password);
@@ -578,10 +577,9 @@ public class LocalRepo {
 
                 }
 
-                InputStreamReader inputStreamReader = new InputStreamReader(httpConnection.getInputStream(), encode);
-
-                connection.add(inputStreamReader, graph, format);
-                inputStreamReader.close();
+                try (InputStreamReader inputStreamReader = new InputStreamReader(httpConnection.getInputStream(), encode)) {
+                    connection.add(inputStreamReader, graph, format);
+                }
             }
 
             connection.close();
@@ -615,7 +613,7 @@ public class LocalRepo {
 
             logger.debug("SPARQL query for transform was executed succesfully");
 
-        } catch (Exception ex) {
+        } catch (RepositoryException | MalformedQueryException | UpdateExecutionException ex) {
             logger.debug(ex.getMessage());
         }
 
@@ -636,6 +634,7 @@ public class LocalRepo {
                 connection.close();
 
             } catch (RepositoryException ex) {
+                logger.debug(ex.getMessage());
             }
 
         }
