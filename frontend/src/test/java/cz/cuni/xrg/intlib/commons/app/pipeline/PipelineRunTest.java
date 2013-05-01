@@ -34,14 +34,14 @@ public class PipelineRunTest {
 
         moduleFacade.start(
 				",com.vaadin.ui" +
-				",com.vaadin.data" +						
+				",com.vaadin.data" +
 				",com.vaadin.data.util" +
 				",com.vaadin.shared.ui.combobox" +
 				",com.vaadin.server" +
 				// OpenRdf
 				",org.openrdf.rio"
 						);
-        
+
         // setup pipeline
         Pipeline pipe = createEmptyPipeline();
         setupTrivialPipelineGraph(pipe.getGraph());
