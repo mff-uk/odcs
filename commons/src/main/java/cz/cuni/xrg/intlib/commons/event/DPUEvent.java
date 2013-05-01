@@ -7,9 +7,9 @@ import org.springframework.context.ApplicationEvent;
  *
  * @author Jiri Tomes
  */
-public abstract class ETLEvent extends ApplicationEvent {
+public abstract class DPUEvent extends ApplicationEvent {
 
-    public ETLEvent(Object source) {
+    public DPUEvent(Object source) {
         super(source);
     }
 }

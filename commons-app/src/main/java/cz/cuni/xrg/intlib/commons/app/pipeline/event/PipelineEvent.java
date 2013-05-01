@@ -2,14 +2,14 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.event;
 
 import cz.cuni.xrg.intlib.commons.event.ETLPipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+import cz.cuni.xrg.intlib.commons.event.DPUEvent;
 
 /**
  * Base class for {@link ETLPipelineImpl} events
  *
  * @author Alex Kreiser (akreiser@gmail.com)
  */
-public abstract class PipelineEvent extends ETLEvent {
+public abstract class PipelineEvent extends DPUEvent {
 
     protected final Pipeline pipeline;
     protected final String id;

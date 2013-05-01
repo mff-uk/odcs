@@ -1,13 +1,13 @@
 package cz.cuni.xrg.intlib.commons.transformer;
 
-import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+import cz.cuni.xrg.intlib.commons.event.DPUEvent;
 /**
  * Base class for {@link Transform} events
  *
  * @see Transform
  * @author Alex Kreiser (akreiser@gmail.com)
  */
-public abstract class TransformEvent extends ETLEvent {
+public abstract class TransformEvent extends DPUEvent {
 
     protected final Transform transformer;
     protected final TransformContext transformContext;

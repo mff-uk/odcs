@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.loader;
 
-import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+import cz.cuni.xrg.intlib.commons.event.DPUEvent;
 
 /**
  * Base class for {@link Load} events.
@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.event.ETLEvent;
  * @see Load
  * @author Alex Kreiser (akreiser@gmail.com)
  */
-public class LoadEvent extends ETLEvent {
+public class LoadEvent extends DPUEvent {
 
     protected final Load loader;
     protected final LoadContext loadContext;
