@@ -6,6 +6,7 @@
 
 	<persistence-unit name="intlib">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			

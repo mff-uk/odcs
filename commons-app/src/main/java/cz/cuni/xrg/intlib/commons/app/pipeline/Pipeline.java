@@ -71,7 +71,7 @@ import org.springframework.context.support.GenericApplicationContext;
  * @author Bogo
  */
 @Entity
-@Table(name = "pipeline_model")
+@Table(name = "ppl_model")
 public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublisherAware {
 
     /**
@@ -80,17 +80,20 @@ public class Pipeline implements ETLPipeline, Resource, ApplicationEventPublishe
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    //private State state;
-    /**
+
+	/**
      * Human-readable pipeline name
      */
     private String name;
+	
     /**
      * Human-readable pipeline description
      */
     private String description;
+	
     @Transient
     private PipelineGraph graph;
+	
     /**
      * Publisher instance responsible for publishing pipeline execution events.
      */
