@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
@@ -74,7 +75,7 @@ public class PipelineRunTest {
         graph.addEdge(eId, lId);
 
         // set configurations
-        Configuration exConfig = new Configuration();
+        Configuration exConfig = new InstanceConfiguration();
 // TODO: set your RDF extractor
 
         exConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql-auth");
@@ -85,7 +86,7 @@ public class PipelineRunTest {
 
         graph.getNodeById(eId).getDpuInstance().setInstanceConfig(exConfig);
 
-        Configuration ldConfig = new Configuration();
+        Configuration ldConfig = new InstanceConfiguration();
         List<String> graphsURI=new LinkedList<String>();
         graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
 

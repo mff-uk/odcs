@@ -39,7 +39,7 @@ public class DPUInstanceFacade {
 	}
 
 	/**
-	 * Creates DPU without persisting it.
+	 * Creates DPUInstance without persisting it.
 	 * @return
 	 */
 	public DPUInstance createDPUInstance(DPU dpu) {
@@ -48,8 +48,8 @@ public class DPUInstanceFacade {
 	}
 
 	/**
-	 * Returns list of all DPUs currently persisted in database.
-	 * @return DPU list
+	 * Returns list of all DPUInstances currently persisted in database.
+	 * @return DPUInstance list
 	 */
 	public List<DPUInstance> getAllDPUInstances() {
 
@@ -63,7 +63,7 @@ public class DPUInstanceFacade {
 	}
 
 	/**
-	 * Find DPU in database by ID and return it.
+	 * Find DPUInstance in database by ID and return it.
 	 * @param id
 	 * @return
 	 */
@@ -72,7 +72,7 @@ public class DPUInstanceFacade {
 	}
 
 	/**
-	 * Saves any modifications made to the DPU into the database.
+	 * Saves any modifications made to the DPUInstance into the database.
 	 * @param dpu
 	 */
 	public void save(DPUInstance dpu) {
@@ -90,7 +90,7 @@ public class DPUInstanceFacade {
 	}
 
 	/**
-	 * Deletes DPU from the database.
+	 * Deletes DPUInstance from the database.
 	 * @param dpu
 	 */
 	public void delete(DPUInstance dpu) {

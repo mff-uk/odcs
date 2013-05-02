@@ -29,21 +29,18 @@ public class File_loader implements GraphicalLoader {
     /**
      * DPU configuration.
      */
-    private Configuration config = new Configuration();
+    private Configuration config = null;
 
     public File_loader() {
-        // set initial configuration
-        /**
-         * TODO Set default (possibly empty but better valid) configuration for
-         * your DPU.
-         */
-        //this.config.setValue(Config.NameDPU.name(), "");
-        //this.config.setValue(Config.Description.name(), "");
-        this.config.setValue(Config.FileName.name(), "");
-        this.config.setValue(Config.DirectoryPath.name(), "");
-        this.config.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);
     }
 
+    @Override
+    public void fillDefaultConfiguration(Configuration configuration) {
+    	configuration.setValue(Config.FileName.name(), "");
+    	configuration.setValue(Config.DirectoryPath.name(), "");
+    	configuration.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);   	
+    }      
+    
     @Override
     public Type getType() {
         return Type.LOADER;
@@ -51,12 +48,12 @@ public class File_loader implements GraphicalLoader {
     }
 
     @Override
-    public CustomComponent getConfigurationComponent() {
+    public CustomComponent getConfigurationComponent(Configuration configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
             this.configDialog = new ConfigDialog();
-            this.configDialog.setConfiguration(this.config);
+            this.configDialog.setConfiguration(configuration);
         }
         return this.configDialog;
     }

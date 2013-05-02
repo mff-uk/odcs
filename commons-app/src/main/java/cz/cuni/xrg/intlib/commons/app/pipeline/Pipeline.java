@@ -71,6 +71,11 @@ public class Pipeline implements Resource {
     public Pipeline() {
     }
 
+	/**
+	 * Constructor with given pipeline name and description.
+	 * @param name
+	 * @param description
+	 */
     public Pipeline(String name, String description) {
         this.name = name;
         this.description = description;
