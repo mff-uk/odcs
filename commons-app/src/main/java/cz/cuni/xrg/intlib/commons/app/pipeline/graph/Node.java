@@ -17,12 +17,16 @@ public class Node {
     private DPUInstance dpuInstance;
 
     private Position position;
-    
+
     /**
      * Empty constructor for Hibernate.
      */
     public Node() {}
 
+	/**
+	 * Constructor with corresponding DPUInstance
+	 * @param dpuInstance
+	 */
     public Node(DPUInstance dpuInstance) {
         this.dpuInstance = dpuInstance;
     }
@@ -47,8 +51,12 @@ public class Node {
         return id;
     }
 
-    void setId(int GetUniqueDpuInstanceId) {
-        id = GetUniqueDpuInstanceId;
+	/**
+	 * Temporary solution of id generation.
+	 * @param GetUniqueDpuInstanceId
+	 */
+    void setId(int getUniqueDpuInstanceId) {
+        id = getUniqueDpuInstanceId;
     }
 
 }

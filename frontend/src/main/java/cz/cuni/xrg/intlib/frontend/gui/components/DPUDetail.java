@@ -29,6 +29,11 @@ public class DPUDetail extends Window {
 	private TextField dpuName;
 	private TextArea dpuDescription;
 
+
+	/**
+	 * Basic constructor, takes DPUInstance which detail should be showed.
+	 * @param dpu
+	 */
 	public DPUDetail(DPUInstance dpu) {
 
 		this.setResizable(false);
@@ -143,6 +148,10 @@ public class DPUDetail extends Window {
 		setSizeUndefined();
 	}
 
+	/**
+	 * Saves configuration of DPU Instance which was set in detail dialog.
+	 * @return
+	 */
 	protected boolean saveDPUInstance() {
 
 		try {

@@ -1,9 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -12,7 +10,6 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.MouseEventDetails;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -21,8 +18,6 @@ import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
-import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
-import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -30,7 +25,7 @@ import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import java.util.List;
 
 /**
- * Page for creating new/editing pipeline.
+ * Page for creating new pipeline or editing existing pipeline.
  *
  * @author Bogo
  */
@@ -43,10 +38,17 @@ public class PipelineEdit extends CustomComponent implements View {
 	private Pipeline pipeline = null;
 	PipelineCanvas pc;
 
+	/**
+	 * Empty constructor.
+	 */
 	public PipelineEdit() {
 		// put init code into enter method
 	}
 
+	/**
+	 * Builds main layout of the page.
+	 * @return
+	 */
 	private VerticalLayout buildMainLayout() {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
@@ -203,6 +205,12 @@ public class PipelineEdit extends CustomComponent implements View {
 		return mainLayout;
 	}
 
+	/**
+	 * Builds part of layout with pipeline settings.
+	 * @return
+	 * @throws com.vaadin.ui.GridLayout.OverlapsException
+	 * @throws com.vaadin.ui.GridLayout.OutOfBoundsException
+	 */
 	private GridLayout buildPipelineSettingsLayout() throws OverlapsException, OutOfBoundsException {
 
 		GridLayout pipelineSettingsLayout = new GridLayout(2, 3);
@@ -290,6 +298,10 @@ public class PipelineEdit extends CustomComponent implements View {
 		return pipelineSettingsLayout;
 	}
 
+	/**
+	 * Fills tree with available DPUs.
+	 * @param tree
+	 */
 	private void fillTree(Tree tree) {
 
 		DPU rootExtractor = new DPU("Extractors", null);
@@ -343,7 +355,7 @@ public class PipelineEdit extends CustomComponent implements View {
 	}
 
 	/**
-	 * Load pipeline with given id from database.
+	 * Loads pipeline with given id from database.
 	 *
 	 * @param id
 	 * @return
@@ -357,7 +369,7 @@ public class PipelineEdit extends CustomComponent implements View {
 	}
 
 	/**
-	 * Load pipeline to edit/create. Pipeline entity is loaded into this.entity.
+	 * Loads pipeline to edit or create. Pipeline entity is loaded into this.entity.
 	 * If /New parameter is passed in url, create just representation for
 	 * pipeline.
 	 *
@@ -388,7 +400,7 @@ public class PipelineEdit extends CustomComponent implements View {
 	}
 
 	/**
-	 * Save loaded pipeline ie. this.entity.
+	 * Saves loaded pipeline.
 	 */
 	protected void savePipeline() {
 		if(!pipelineName.isValid()) {

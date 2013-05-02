@@ -103,6 +103,11 @@ public class Pipeline implements Resource, ApplicationEventPublisherAware {
         this.eventPublisher = new GenericApplicationContext();
     }
 
+	/**
+	 * Constructor with given pipeline name and description.
+	 * @param name
+	 * @param description
+	 */
     public Pipeline(String name, String description) {
         this.name = name;
         this.description = description;
