@@ -1,7 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -29,7 +27,7 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformException;
  * @author Jiri Tomes
  * @author Jan Vojt
  */
-public class PipelineExecution implements Runnable/*, ApplicationEventPublisherAware*/ {
+public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
 
     /**
      * Unique run identification.
@@ -97,7 +95,6 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
     /**
      * Runs the pipeline.
      */
-    @Override
     public void run() {
 
 //        long pipelineStart = System.currentTimeMillis();
@@ -183,7 +180,8 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
 //            eventPublisher.publishEvent(
 //            	new ExtractFailedEvent(ex, extractor, ctx, this)
 //            );
-            ex.printStackTrace();
+            ex.fillInStackTrace();
+
         }
     }
 
@@ -208,7 +206,7 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
 //            eventPublisher.publishEvent(
 //            	new TransformFailedEvent(ex, transformer, ctx, this)
 //            );
-            ex.printStackTrace();
+            ex.fillInStackTrace();
         }
     }
 
@@ -232,17 +230,7 @@ public class PipelineExecution implements Runnable/*, ApplicationEventPublisherA
 //            eventPublisher.publishEvent(
 //            	new LoadFailedEvent(ex, loader, ctx, this)
 //            );
-            ex.printStackTrace();
+            ex.fillInStackTrace();
         }
-    }
-
-    /**
-     * Repository initialization
-     *
-     * @return
-     */
-    private LocalRepo createRdfRepository() {
-        String file = "/tmp/intlib-rdf-repo.dat";
-        return new LocalRepo(file);
     }
 }

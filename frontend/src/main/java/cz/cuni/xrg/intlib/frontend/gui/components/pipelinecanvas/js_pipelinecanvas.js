@@ -209,10 +209,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         writeMessage(messageLayer, 'initialized');
 
 		addConnectionIcon = new Image();
-		addConnectionIcon.src = "http://" + window.location.host + window.location.pathname + "VAADIN/themes/IntLibTheme/img/arrow_right_32.png"; //'http://i50.tinypic.com/2qjykb5.jpg';
+		var basePath = "http://" + window.location.host + window.location.pathname;
+		if(basePath.charAt(basePath.length - 1) != '/') {
+			basePath = basePath + '/';
+		}
+		addConnectionIcon.src = basePath + "VAADIN/themes/IntLibTheme/img/arrow_right_32.png"; //'http://i50.tinypic.com/2qjykb5.jpg';
 
 		removeConnectionIcon = new Image();
-		removeConnectionIcon.src = "http://" + window.location.host + window.location.pathname + "VAADIN/themes/IntLibTheme/img/recyclebin32x32.png";
+		removeConnectionIcon.src = basePath + "VAADIN/themes/IntLibTheme/img/recyclebin32x32.png";
     }
 
 	/** Updates text in DPU visualization

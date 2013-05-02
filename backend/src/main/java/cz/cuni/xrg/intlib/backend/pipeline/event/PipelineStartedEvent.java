@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.cuni.xrg.intlib.commons.app.pipeline.event;
+package cz.cuni.xrg.intlib.backend.pipeline.event;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 

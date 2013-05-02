@@ -372,8 +372,8 @@ public class PipelineEdit extends CustomComponent implements View {
 			this.pipeline = App.getApp().getPipelines().createPipeline();
 			pipeline.setName("empty pipeline");
 			pipeline.setDescription("empty pipeline description");
-			pipelineName.setInputPrompt("empty pipeline");
-			pipelineDescription.setInputPrompt("empty pipeline description");
+			pipelineName.setInputPrompt("Insert pipeline name");
+			pipelineDescription.setInputPrompt("Insert pipeline description");
 		} else if (isInteger(pipeIdstr)) {
 			// use pipeIdstr as id
 			this.pipeline = loadPipeline(pipeIdstr);

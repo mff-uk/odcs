@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.extractor;
 
-import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+import cz.cuni.xrg.intlib.commons.event.DPUEvent;
 
 /**
  * Base class for {@link Extract} events
@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.event.ETLEvent;
  * @see Extract
  * @author Alex Kreiser (akreiser@gmail.com)
  */
-public abstract class ExtractEvent extends ETLEvent {
+public abstract class ExtractEvent extends DPUEvent {
 
     protected final Extract extractor;
     protected final ExtractContext extractContext;

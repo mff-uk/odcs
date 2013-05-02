@@ -1,15 +1,14 @@
-package cz.cuni.xrg.intlib.commons.app.pipeline.event;
+package cz.cuni.xrg.intlib.backend.pipeline.event;
 
-import cz.cuni.xrg.intlib.commons.event.ETLPipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.event.ETLEvent;
+import cz.cuni.xrg.intlib.commons.event.DPUEvent;
 
 /**
  * Base class for {@link ETLPipelineImpl} events
  *
  * @author Alex Kreiser (akreiser@gmail.com)
  */
-public abstract class PipelineEvent extends ETLEvent {
+public abstract class PipelineEvent extends DPUEvent {
 
     protected final Pipeline pipeline;
     protected final String id;
@@ -21,18 +20,18 @@ public abstract class PipelineEvent extends ETLEvent {
     }
 
     /**
-     * Returns the {@link ETLPipelineImpl} associated to this event.
+     * Returns the pipeline, where event is registred.
      *
      * @return
      */
-    public ETLPipeline getPipeline() {
+    public Pipeline getPipeline() {
         return pipeline;
     }
 
     /**
      * Returns the unique identifier of this event (!= pipeline id)
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getId() {
         return id;
