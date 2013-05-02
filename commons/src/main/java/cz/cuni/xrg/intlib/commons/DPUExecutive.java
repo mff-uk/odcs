@@ -20,6 +20,12 @@ public interface DPUExecutive {
     public Type getType();
 
     /**
+     * Store default (empty) DPU's configuration into given configuration instance. 
+     * @param configuration Configuration instance in which store empty configuration.
+     */
+    public void fillDefaultConfiguration(Configuration configuration);
+    
+    /**
      * Return current DPU settings. If the configuration dialog for DPU is open
      * then settings from dialog must be saved as current setting first.
      * Function can throw if the setting dialog is open and the setting in the
