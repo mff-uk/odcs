@@ -130,7 +130,7 @@ public class PipelineWorker extends Thread {
         switch (dpuType) {
             case EXTRACTOR: {
                 Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
-                extractor.setSettings(configuration);
+                extractor.saveConfiguration(configuration);
                 extractor.setLocalRepo(repo);
                 ExtractContext ctx = new ExtractContext(runId, new HashMap<String, Object>());
                 runExtractor(extractor, ctx);
@@ -138,7 +138,7 @@ public class PipelineWorker extends Thread {
             }
             case TRANSFORMER: {
                 Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
-                transformer.setSettings(configuration);
+                transformer.saveConfiguration(configuration);
                 transformer.setLocalRepo(repo);
                 TransformContext ctx = new TransformContext(runId, new HashMap<String, Object>());
                 runTransformer(transformer, ctx);
@@ -146,7 +146,7 @@ public class PipelineWorker extends Thread {
             }
             case LOADER: {
                 Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
-                loader.setSettings(configuration);
+                loader.saveConfiguration(configuration);
                 loader.setLocalRepo(repo);
                 LoadContext ctx = new LoadContext(runId, new HashMap<String, Object>());
                 runLoader(loader, ctx);

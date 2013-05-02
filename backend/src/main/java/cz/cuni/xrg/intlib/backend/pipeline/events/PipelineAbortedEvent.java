@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.backend.pipeline.events;
 
+import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
 
 //import at.punkt.lodms.impl.ETLPipelineImpl;
 
