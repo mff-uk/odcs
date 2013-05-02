@@ -99,7 +99,7 @@ public class DPUDetail extends Window {
 				if (conf == null) {
 					// create new default configuration
 					conf = new InstanceConfiguration();
-					dpuExec.fillDefaultConfiguration(conf);
+					dpuExec.saveConfigurationDefault(conf);
 				}				
 				
 				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
@@ -165,7 +165,9 @@ public class DPUDetail extends Window {
 
 		try {
 			if(dpuExec != null) {
-				Configuration conf = dpuExec.getSettings();
+				// TODO: Used configuration from DPUInstance instead creating new one? 
+				Configuration conf = new InstanceConfiguration();
+				dpuExec.saveConfiguration(conf);
 				dpu.setInstanceConfig(conf);
 			}
 			dpu.setName(dpuName.getValue());
