@@ -1,4 +1,9 @@
-/** Function name according to Vaadin specification **/
+/**
+ * Javacript part of graph canvas.
+ * Function name according to Vaadin specification
+ *
+ * @author Bogo
+ * **/
 cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = function() {
 
     //remainder from JsLabel

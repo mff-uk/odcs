@@ -23,6 +23,11 @@ public class DPU {
     public DPU() {
     }
 
+	/**
+	 * Constructor with name and type of DPU.
+	 * @param name
+	 * @param type
+	 */
     public DPU(String name, Type type) {
         //this.id = id;
         this.name = name;
@@ -54,6 +59,10 @@ public class DPU {
         return id;
     }
 
+	/**
+	 * Gets DPU type.
+	 * @return DPU type
+	 */
     public Type getType() {
         return type;
     }

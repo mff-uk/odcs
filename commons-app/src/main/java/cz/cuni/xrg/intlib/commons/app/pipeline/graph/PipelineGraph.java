@@ -48,7 +48,12 @@ public class PipelineGraph {
     public void setEdges(Set<Edge> edges) {
         this.edges = edges;
     }
-    
+
+	/**
+	 * Adds new DPU to graph.
+	 * @param dpu
+	 * @return
+	 */
     public int addDpu(DPU dpu) {
 		DPUInstance dpuInstance = new DPUInstance(dpu);
 		Node node = new Node(dpuInstance);
@@ -57,6 +62,11 @@ public class PipelineGraph {
 		return node.getId();
 	}
 
+	/**
+	 * Removes DPU from graph.
+	 * @param dpuId
+	 * @return
+	 */
 	public boolean removeDpu(int dpuId) {
 		Node node = getNodeById(dpuId);
 		if(node != null) {
@@ -64,7 +74,7 @@ public class PipelineGraph {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Adds a single edge into pipeline graph, unless it exists already.
 	 * @param from source DPU
@@ -79,6 +89,12 @@ public class PipelineGraph {
 		return added ? e : null;
 	}
 
+	/**
+	 * Duplicate methdod from adding edge to graph. Probably only one shall remain.
+	 * @param fromId
+	 * @param toId
+	 * @return
+	 */
 	public int addEdge(int fromId, int toId) {
 		Node dpuFrom = getNodeById(fromId);
 		Node dpuTo = getNodeById(toId);
@@ -96,6 +112,11 @@ public class PipelineGraph {
 		return edge.getId();
 	}
 
+	/**
+	 * Removes edge from graph.
+	 * @param pcId
+	 * @return
+	 */
 	public boolean removeEdge(int pcId) {
 		Edge pc = getEdgeById(pcId);
 		if(pc != null) {
@@ -104,6 +125,11 @@ public class PipelineGraph {
 		return false;
 	}
 
+	/**
+	 * Gets edge with given id.
+	 * @param id
+	 * @return
+	 */
 	private Edge getEdgeById(int id) {
 		for(Edge el : edges) {
 			if(el.getId() == id) {
@@ -113,6 +139,11 @@ public class PipelineGraph {
 		return null;
 	}
 
+	/**
+	 * Gets node with given id.
+	 * @param id
+	 * @return
+	 */
 	public Node getNodeById(int id) {
 		for(Node el : nodes) {
 			if(el.getId() == id) {

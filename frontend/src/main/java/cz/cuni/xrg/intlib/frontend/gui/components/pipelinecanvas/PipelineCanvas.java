@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 
 import com.vaadin.annotations.JavaScript;
-import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
@@ -30,6 +29,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	private PipelineGraph graph;
 
+	/**
+	 * Initial constructor with registering of server side RPC.
+	 */
 	public PipelineCanvas() {
 
 		this.setId("container");
@@ -77,6 +79,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		});
 	}
 
+	/**
+	 * Method initializing client side RPC.
+	 */
 	public void init() {
         getRpcProxy(PipelineCanvasClientRpc.class).init();
     }
@@ -85,16 +90,31 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		graph.moveNode(dpuId, newX, newY);
 	}
 
+	/**
+	 * Adds new DPU to graph canvas.
+	 * @param dpu
+	 * @param x
+	 * @param y
+	 */
 	public void addDpu(DPU dpu, int x, int y) {
 		int dpuInstanceId = graph.addDpu(dpu);
 		getRpcProxy(PipelineCanvasClientRpc.class).addNode(dpuInstanceId, dpu.getName(), dpu.getDescription(), x, y);
 	}
 
+	/**
+	 * Adds new edge to graph canvas.
+	 * @param dpuFrom
+	 * @param dpuTo
+	 */
 	public void addConnection(int dpuFrom, int dpuTo) {
 		int connectionId = graph.addEdge(dpuFrom, dpuTo);
 		getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
 	}
 
+	/**
+	 * Shows given pipeline on graph canvas.
+	 * @param pipeline
+	 */
 	public void showPipeline(Pipeline pipeline) {
 		this.graph = pipeline.getGraph();
 		for(Node node : graph.getNodes()) {
@@ -105,6 +125,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 	}
 
+	/**
+	 * Saves graph from graph canvas.
+	 * @param pipeline
+	 */
 	public void saveGraph(Pipeline pipeline) {
 //		for(DpuInstance dpu : pipeline.getDpus()) {
 //			int[] position = getRpcProxy(PipelineCanvasClientRpc.class).getDpuPosition(dpu.Id);
@@ -138,6 +162,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			}
 		});
         App.getApp().addWindow(detailDialog);
-		
+
     }
 }
