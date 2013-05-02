@@ -7,6 +7,8 @@ import java.util.Set;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import javax.persistence.*;
 
 /**
  * Oriented acyclic graph representation of pipeline.
@@ -17,17 +19,35 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
  * @author Jan Vojt <jan@vojt.net>
  *
  */
+@Entity
+@Table(name = "ppl_graph")
 public class PipelineGraph {
+
+    /**
+     * Primary key of graph stored in db
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+	
+	/**
+	 * Pipeline this graph belongs to
+	 */
+	@OneToOne
+	@JoinColumn(name="pipeline_id", unique=true, nullable=false)
+	private Pipeline pipeline;
 
 	/**
 	 * List of nodes which represent DPUs
 	 */
-    private List<Node> nodes = new ArrayList<Node>();
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph")
+    private List<Node> nodes = new ArrayList<>();
 
     /**
      * Set of edges which represent data flow between DPUs.
      */
-    private Set<Edge> edges = new HashSet<Edge>();
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph")
+    private Set<Edge> edges = new HashSet<>();
 
     public void addNode(Node node) {
         nodes.add(node);
@@ -145,11 +165,14 @@ public class PipelineGraph {
 		node.setPosition(new Position(newX, newY));
 	}
 
-        /** Hack for IDs for Nodes and Edges - replace with IDs from db ASAP */
+    /** TODO remove Hack for IDs for Nodes and Edges - replace with IDs from db ASAP */
+	@Transient
     private int dpuCounter = 0;
 
+	@Transient
 	private int connectionCounter = 0;
 
+	@Transient
 	private int CONNECTION_SEED = 1000;
 
 	public int getCONNECTION_SEED() {

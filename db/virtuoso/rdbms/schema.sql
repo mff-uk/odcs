@@ -6,3 +6,71 @@ CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
   "description" VARCHAR(255),
   PRIMARY KEY ("id")
 );
+
+DROP TABLE "DB"."INTLIB"."PPL_GRAPH";
+CREATE TABLE "DB"."INTLIB"."PPL_GRAPH"
+(
+  "id" INTEGER IDENTITY,
+  "pipeline_id" INTEGER,
+  PRIMARY KEY ("id")
+);
+
+DROP TABLE "DB"."INTLIB"."PPL_NODE";
+CREATE TABLE "DB"."INTLIB"."PPL_NODE"
+(
+  "id" INTEGER IDENTITY,
+  "graph_id" INTEGER,
+  "instance_id" INTEGER,
+  "position_id" INTEGER,
+  PRIMARY KEY ("id")
+);
+
+DROP TABLE "DB"."INTLIB"."PPL_EDGE";
+CREATE TABLE "DB"."INTLIB"."PPL_EDGE"
+(
+  "id" INTEGER IDENTITY,
+  "graph_id" INTEGER,
+  "node_from_id" INTEGER,
+  "node_to_id" INTEGER,
+  PRIMARY KEY ("id")
+);
+
+DROP TABLE "DB"."INTLIB"."PPL_POSITION";
+CREATE TABLE "DB"."INTLIB"."PPL_POSITION"
+(
+  "id" INTEGER IDENTITY,
+  "node_id" INTEGER,
+  "pos_x" INTEGER,
+  "pos_y" INTEGER,
+  PRIMARY KEY ("id")
+);
+
+DROP TABLE "DB"."INTLIB"."DPU_INSTANCE";
+CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
+(
+  "id" INTEGER IDENTITY,
+  "name" VARCHAR(45),
+  "description" VARCHAR(255),
+  "dpu_id" INTEGER,
+  PRIMARY KEY ("id")
+);
+
+DROP TABLE "DB"."INTLIB"."DPU_CONFIG";
+CREATE TABLE "DB"."INTLIB"."DPU_CONFIG"
+(
+  "id" INTEGER IDENTITY,
+  "instance_id" INTEGER,
+  "data" BLOB,
+  PRIMARY KEY ("id")
+);
+
+DROP TABLE "DB"."INTLIB"."DPU_MODEL";
+CREATE TABLE "DB"."INTLIB"."DPU_MODEL"
+(
+  "id" INTEGER IDENTITY,
+  "name" VARCHAR(45),
+  "description" VARCHAR(255),
+  "jar_path" VARCHAR(255),
+  PRIMARY KEY ("id")
+);
+

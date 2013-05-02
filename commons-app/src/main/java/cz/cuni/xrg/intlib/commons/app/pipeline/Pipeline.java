@@ -83,14 +83,16 @@ public class Pipeline implements Resource, ApplicationEventPublisherAware {
 	/**
      * Human-readable pipeline name
      */
+	@Column
     private String name;
 	
     /**
      * Human-readable pipeline description
      */
+	@Column
     private String description;
 	
-    @Transient
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="pipeline")
     private PipelineGraph graph;
 	
     /**

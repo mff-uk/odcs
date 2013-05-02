@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.Type;
+import javax.persistence.*;
 
 /**
  * Represent imported DPUExecution in database.
@@ -9,19 +10,31 @@ import cz.cuni.xrg.intlib.commons.Type;
  * @author Bogo
  *
  */
+@Entity
+@Table(name="dpu_model")
 public class DPU {
 
+    /**
+     * Primary key of graph stored in db
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+	
     private String name;
-    private String description = "";
-    private Type type;
-    private String jarPath;
+    
+	private String description;
+    
+	@Transient
+	private Type type;
+    
+	@Column(name="jar_path")
+	private String jarPath;
 
     /**
-     * Allow empty constructor.
+     * Allow empty constructor for JPA.
      */
-    public DPU() {
-    }
+    public DPU() {}
 
     public DPU(String name, Type type) {
         //this.id = id;

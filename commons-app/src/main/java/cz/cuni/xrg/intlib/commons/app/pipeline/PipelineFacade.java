@@ -85,11 +85,11 @@ public class PipelineFacade {
 			tx.begin();
 		}
 		
-		if (pipeline.getId() == 0) {
+//		if (pipeline.getId() == 0) {
 			em.persist(pipeline);
-		} else {
-			em.merge(pipeline);
-		}
+//		} else {
+//			em.merge(pipeline);
+//		}
 		
 		tx.commit();
 	}

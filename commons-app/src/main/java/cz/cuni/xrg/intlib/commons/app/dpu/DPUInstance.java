@@ -1,22 +1,29 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import javax.persistence.*;
 
 /**
  * For representing concrete DPU component in the pipeline.
  *
  * @author Jiri Tomes
  */
+@Entity
+@Table(name="dpu_instance")
 public class DPUInstance {
 
-	/**
-	 * Primary key
-	 */
+    /**
+     * Primary key of graph stored in db
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     
     /**
-     * DPU
+     * Data Processing Unit
      */
+	@ManyToOne(optional=false)
+	@JoinColumn(name="dpu_id", nullable=false)
     private DPU dpu;
 
     /**
@@ -37,11 +44,18 @@ public class DPUInstance {
     /**
      * Configuration setting for this component.
      */
+//	@OneToOne(mappedBy="dpuInstance")
+	@Transient
     private Configuration instanceConfig;
 
     private String name;
 
     private String description;
+	
+	/**
+	 * No-arg constructor for JPA
+	 */
+	public DPUInstance() {}
 
     public DPUInstance(DPU dpu) {
         this.dpu = dpu;
