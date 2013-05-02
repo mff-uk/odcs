@@ -29,7 +29,7 @@ public class File_extractor implements GraphicalExtractor {
     }
 
     @Override
-    public void fillDefaultConfiguration(Configuration configuration) {
+    public void saveConfigurationDefault(Configuration configuration) {
     	configuration.setValue(Config.OnlyThisText.name(), "");
     	configuration.setValue(Config.FileSuffix.name(), ".rdf");
     	configuration.setValue(Config.Path.name(), "");
@@ -52,24 +52,19 @@ public class File_extractor implements GraphicalExtractor {
         return this.configDialog;
     }
 
-    @Override
-    public Configuration getSettings() throws ConfigurationException {
+	@Override
+	public void loadConfiguration(Configuration configuration)
+			throws ConfigurationException {
+		// 
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
-            Configuration conf = this.configDialog.getConfiguration();
-            if (conf == null) {
-                // in dialog is invalid configuration .. 
-                return null;
-            } else {
-                this.config = conf;
-            }
+            this.configDialog.getConfiguration(configuration);
         }
-        return this.config;
-    }
-
+	}    
+    
     @Override
-    public void setSettings(Configuration configuration) {
+    public void saveConfiguration(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
         } else {
@@ -120,4 +115,5 @@ public class File_extractor implements GraphicalExtractor {
     public void setLocalRepo(LocalRepo localRepo) {
         repository = localRepo;
     }
+
 }

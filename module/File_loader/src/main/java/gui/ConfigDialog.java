@@ -10,17 +10,13 @@ import cz.cuni.xrg.intlib.commons.repository.RDFFormatType;
 /**
  * Configuration dialog.
  *
- * @author Petyr
+ * @author Maria
  *
  */
 public class ConfigDialog extends CustomComponent {
 
     private static final long serialVersionUID = 1L;
-    /**
-     * TODO Implement your own configuration component. You can use vaadin
-     * visual editor if you like. Just remember don't use vaddin classes the ere
-     * not located directly in package com.vaadi.ui;
-     */
+
     private GridLayout mainLayout;
     private TabSheet tabSheet;
     private VerticalLayout verticalLayoutDetails;
@@ -60,20 +56,11 @@ public class ConfigDialog extends CustomComponent {
      *
      * @return current configuration or null
      */
-    public Configuration getConfiguration() {
-        Configuration config = new Configuration();
-        /**
-         * TODO Gather data from you dialog and store them into configuration.
-         * You can use enum Config to make sure that you don't miss spell the
-         * ids of values. Also remember that you can return null in case of
-         * invalid configuration in dialog.
-         */
-        config.setValue(Config.DiffName.name(), checkBoxDiffName.getValue());
+    public void getConfiguration(Configuration config) {
+    	config.setValue(Config.DiffName.name(), checkBoxDiffName.getValue());
         config.setValue(Config.DirectoryPath.name(), textFieldDir.getValue());
         config.setValue(Config.FileName.name(), textFieldFileName.getValue());
         config.setValue(Config.RDFFileFormat.name(), (RDFFormatType) comboBoxFormat.getValue());
-
-        return config;
     }
 
     /**
@@ -83,12 +70,6 @@ public class ConfigDialog extends CustomComponent {
      * @param conf
      */
     public void setConfiguration(Configuration conf) {
-        /**
-         * TODO Load configuration from conf into dialog components. You can use
-         * enum Config to make sure that you don't miss spell the ids of values.
-         * The ConfigurationException can be thrown in case of invalid
-         * configuration.
-         */
         try {
         	checkBoxDiffName.setValue((Boolean) conf.getValue(Config.DiffName.name()));
             textFieldDir.setValue((String) conf.getValue(Config.DirectoryPath.name()));
