@@ -13,7 +13,7 @@ public class DPU {
 
     private int id;
     private String name;
-    private String description = "";
+    private String description;
     private Type type;
     private String jarPath;
 
@@ -21,17 +21,20 @@ public class DPU {
      * Allow empty constructor.
      */
     public DPU() {
+        this.description = "";
     }
 
-	/**
-	 * Constructor with name and type of DPU.
-	 * @param name
-	 * @param type
-	 */
+    /**
+     * Constructor with name and type of DPU.
+     *
+     * @param name
+     * @param type
+     */
     public DPU(String name, Type type) {
         //this.id = id;
         this.name = name;
         this.type = type;
+        this.description = "";
     }
 
     @Override
@@ -59,10 +62,11 @@ public class DPU {
         return id;
     }
 
-	/**
-	 * Gets DPU type.
-	 * @return DPU type
-	 */
+    /**
+     * Gets DPU type.
+     *
+     * @return DPU type
+     */
     public Type getType() {
         return type;
     }
@@ -74,5 +78,5 @@ public class DPU {
     public String getJarPath() {
         return HACK_basePath + jarPath;
     }
-    public static String HACK_basePath = "file:///C:/MyGit/intlib/";
+    public static String HACK_basePath = "file:///C:/MyGit/intlib/module/";
 }

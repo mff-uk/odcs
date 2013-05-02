@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 
 /**
- * Node represents DPU on the pipeline and holds information
- * about its position on the Pipeline canvas.
+ * Node represents DPU on the pipeline and holds information about its position
+ * on the Pipeline canvas.
  *
  * @author Jiri Tomes
  * @author Bogo
@@ -13,20 +13,20 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 public class Node {
 
     private int id;
-
     private DPUInstance dpuInstance;
-
     private Position position;
 
     /**
      * Empty constructor for Hibernate.
      */
-    public Node() {}
+    public Node() {
+    }
 
-	/**
-	 * Constructor with corresponding DPUInstance
-	 * @param dpuInstance
-	 */
+    /**
+     * Constructor with corresponding DPUInstance
+     *
+     * @param dpuInstance
+     */
     public Node(DPUInstance dpuInstance) {
         this.dpuInstance = dpuInstance;
     }
@@ -51,12 +51,12 @@ public class Node {
         return id;
     }
 
-	/**
-	 * Temporary solution of id generation.
-	 * @param GetUniqueDpuInstanceId
-	 */
+    /**
+     * Temporary solution of id generation.
+     *
+     * @param GetUniqueDpuInstanceId
+     */
     void setId(int getUniqueDpuInstanceId) {
         id = getUniqueDpuInstanceId;
     }
-
 }

@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.commons.app;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,329 +21,323 @@ import javax.persistence.TemporalType;
 
 public class InMemoryEntityManager implements EntityManager {
 
-	/**
-	 * Entities are saved in here
-	 */
-	private Map<Object, Object> repo = new HashMap<Object, Object>();
+    /**
+     * Entities are saved in here
+     */
+    private Map<Object, Object> repo = new HashMap<>();
+    private boolean isOpen = true;
+    private EntityTransaction tx = new EntityTransactionStub();
+    private static int nextId = 1;
 
-	private boolean isOpen = true;
+    @Override
+    public void clear() {
+        repo.clear();
+    }
 
-	private EntityTransaction tx = new EntityTransactionStub();
+    @Override
+    public void close() {
+        isOpen = false;
+    }
 
-	private static int nextId = 1;
+    @Override
+    public boolean contains(Object arg0) {
+        return repo.containsValue(arg0);
+    }
 
-	@Override
-	public void clear() {
-		repo.clear();
-	}
+    @Override
+    public Query createNamedQuery(String arg0) {
+        return new QueryStub();
+    }
 
-	@Override
-	public void close() {
-		isOpen = false;
-	}
+    @Override
+    public Query createNativeQuery(String arg0) {
+        return new QueryStub();
+    }
 
-	@Override
-	public boolean contains(Object arg0) {
-		return repo.containsValue(arg0);
-	}
+    @Override
+    public Query createNativeQuery(String arg0, String arg1) {
+        return new QueryStub();
+    }
 
-	@Override
-	public Query createNamedQuery(String arg0) {
-		return new QueryStub();
-	}
+    @Override
+    public Query createNativeQuery(String sqlString,
+            @SuppressWarnings("rawtypes") Class resultClass) {
+        return new QueryStub();
+    }
 
-	@Override
-	public Query createNativeQuery(String arg0) {
-		return new QueryStub();
-	}
+    @Override
+    public Query createQuery(String arg0) {
+        return new QueryStub(arg0);
+    }
 
-	@Override
-	public Query createNativeQuery(String arg0, String arg1) {
-		return new QueryStub();
-	}
+    @Override
+    public <T> T find(Class<T> arg0, Object key) {
+        return arg0.cast(repo.get(key));
+    }
 
-	@Override
-	public Query createNativeQuery(String sqlString,
-			@SuppressWarnings("rawtypes") Class resultClass) {
-		return new QueryStub();
-	}
+    @Override
+    public void flush() {
+        // do nothing
+    }
 
-	@Override
-	public Query createQuery(String arg0) {
-		return new QueryStub(arg0);
-	}
+    @Override
+    public Object getDelegate() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public <T> T find(Class<T> arg0, Object key) {
-		return arg0.cast(repo.get(key));
-	}
+    @Override
+    public FlushModeType getFlushMode() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void flush() {
-		// do nothing
-	}
+    @Override
+    public <T> T getReference(Class<T> arg0, Object arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public Object getDelegate() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public EntityTransaction getTransaction() {
+        return tx;
+    }
 
-	@Override
-	public FlushModeType getFlushMode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean isOpen() {
+        return isOpen;
+    }
 
-	@Override
-	public <T> T getReference(Class<T> arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void joinTransaction() {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public EntityTransaction getTransaction() {
-		return tx;
-	}
+    @Override
+    public void lock(Object arg0, LockModeType arg1) {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public boolean isOpen() {
-		return isOpen;
-	}
+    @Override
+    public <T> T merge(T arg0) {
 
-	@Override
-	public void joinTransaction() {
-		// TODO Auto-generated method stub
+        @SuppressWarnings("unchecked")
+        T e = (T) repo.get(getId(arg0));
 
-	}
+        if (e == null) {
+            return arg0;
+        } else {
+            persist(e);
+            return e;
+        }
+    }
 
-	@Override
-	public void lock(Object arg0, LockModeType arg1) {
-		// TODO Auto-generated method stub
+    @Override
+    public void persist(Object o) {
+        setId(o, getNextId());
+        repo.put(getId(o), o);
+    }
 
-	}
+    /**
+     * Retrieves ID of entity
+     *
+     * @param o
+     * @return
+     */
+    private Integer getId(Object o) {
 
-	@Override
-	public <T> T merge(T arg0) {
+        int id = 0;
 
-		@SuppressWarnings("unchecked")
-		T e = (T) repo.get(getId(arg0));
+        try {
+            Method m = o.getClass().getMethod("getId");
+            id = (Integer) m.invoke(o);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.fillInStackTrace();
+        }
 
-		if (e == null) {
-			return arg0;
-		} else {
-			persist(e);
-			return e;
-		}
-	}
+        return new Integer(id);
+    }
 
-	@Override
-	public void persist(Object o) {
-		setId(o, getNextId());
-		repo.put(getId(o), o);
-	}
+    /**
+     * Set ID to entity Uses reflections to modify private fields to mimic JPA
+     * behaviour
+     *
+     * @param o
+     * @param id
+     */
+    private void setId(Object o, Integer id) {
+        try {
+            Field idField = o.getClass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(o, id.intValue());
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            e.fillInStackTrace();
+        }
+    }
 
-	/**
-	 * Retrieves ID of entity
-	 * @param o
-	 * @return
-	 */
-	private Integer getId(Object o) {
+    /**
+     * Unique ID generator
+     *
+     * @return
+     */
+    private synchronized Integer getNextId() {
+        int id = nextId++;
+        return new Integer(id);
+    }
 
-		int id = 0;
+    @Override
+    public void refresh(Object arg0) {
+        // TODO Auto-generated method stub
+    }
 
-		try {
-			Method m = o.getClass().getMethod("getId");
-			id = (Integer) m.invoke(o);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    @Override
+    public void remove(Object arg0) {
+        repo.remove(getId(arg0));
+    }
 
-		return new Integer(id);
-	}
+    @Override
+    public void setFlushMode(FlushModeType arg0) {
+        // TODO Auto-generated method stub
+    }
 
-	/**
-	 * Set ID to entity
-	 * Uses reflections to modify private fields to mimic JPA behaviour
-	 * @param o
-	 * @param id
-	 */
-	private void setId(Object o, Integer id) {
-		try {
-			Field idField = o.getClass().getDeclaredField("id");
-			idField.setAccessible(true);
-			idField.set(o, id.intValue());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    /**
+     * Stub to immitate transaction in tests.
+     *
+     * @author Jan Vojt <jan@vojt.net>
+     */
+    private class EntityTransactionStub implements EntityTransaction {
 
-	/**
-	 * Unique ID generator
-	 * @return
-	 */
-	private synchronized Integer getNextId() {
-		int id = nextId++;
-		return new Integer(id);
-	}
+        private boolean inTransaction = false;
 
-	@Override
-	public void refresh(Object arg0) {
-		// TODO Auto-generated method stub
-	}
+        @Override
+        public void begin() {
+            inTransaction = true;
+        }
 
-	@Override
-	public void remove(Object arg0) {
-		repo.remove(getId(arg0));
-	}
+        @Override
+        public void commit() {
+            inTransaction = false;
+        }
 
-	@Override
-	public void setFlushMode(FlushModeType arg0) {
-		// TODO Auto-generated method stub
+        @Override
+        public void rollback() {
+            inTransaction = false;
+        }
 
-	}
+        @Override
+        public void setRollbackOnly() {
+            // TODO Auto-generated method stub
+        }
 
-	/**
-	 * Stub to immitate transaction in tests.
-	 * @author Jan Vojt <jan@vojt.net>
-	 */
-	private class EntityTransactionStub implements EntityTransaction {
+        @Override
+        public boolean getRollbackOnly() {
+            // TODO Auto-generated method stub
+            return false;
+        }
 
-		private boolean inTransaction = false;
+        @Override
+        public boolean isActive() {
+            return inTransaction;
+        }
+    }
 
-		@Override
-		public void begin() {
-			inTransaction = true;
-		}
-
-		@Override
-		public void commit() {
-			inTransaction = false;
-		}
-
-		@Override
-		public void rollback() {
-			inTransaction = false;
-		}
-
-		@Override
-		public void setRollbackOnly() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public boolean getRollbackOnly() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean isActive() {
-			return inTransaction;
-		}
-
-	}
-
-	/**
-	 * Stub to immitate qeuries in tests..
-	 * @author Jan Vojt <jan@vojt.net>
-	 */
-	private class QueryStub implements Query {
+    /**
+     * Stub to immitate qeuries in tests..
+     *
+     * @author Jan Vojt <jan@vojt.net>
+     */
+    private class QueryStub implements Query {
 
         private String classString;
 
         private QueryStub() {
-
         }
 
         private QueryStub(String arg0) {
-            if(arg0.contains("DPU")) {
+            if (arg0.contains("DPU")) {
                 classString = "DPU";
-            } else if(arg0.contains("Pipeline")) {
+            } else if (arg0.contains("Pipeline")) {
                 classString = "Pipeline";
             }
         }
 
-		@Override
-		public List<Object> getResultList() {
-            List<Object> result = new ArrayList<Object>();
-            for(Object o : repo.values()) {
-                if(classString.equals("DPU") && o.getClass() == DPU.class) {
+        @Override
+        public List<Object> getResultList() {
+            List<Object> result = new ArrayList<>();
+            for (Object o : repo.values()) {
+                if (classString.equals("DPU") && o.getClass() == DPU.class) {
                     result.add(o);
-                } else if(classString.equals("Pipeline") && o.getClass() == Pipeline.class) {
+                } else if (classString.equals("Pipeline") && o.getClass() == Pipeline.class) {
                     result.add(o);
                 }
             }
-			return result;
-		}
+            return result;
+        }
 
-		@Override
-		public Object getSingleResult() {
-			// not supported, use EntityManager#find instead
-			return null;
-		}
+        @Override
+        public Object getSingleResult() {
+            // not supported, use EntityManager#find instead
+            return null;
+        }
 
-		@Override
-		public int executeUpdate() {
-			return 0;
-		}
+        @Override
+        public int executeUpdate() {
+            return 0;
+        }
 
-		@Override
-		public Query setMaxResults(int maxResult) {
-			return this;
-		}
+        @Override
+        public Query setMaxResults(int maxResult) {
+            return this;
+        }
 
-		@Override
-		public Query setFirstResult(int startPosition) {
-			return this;
-		}
+        @Override
+        public Query setFirstResult(int startPosition) {
+            return this;
+        }
 
-		@Override
-		public Query setHint(String hintName, Object value) {
-			return this;
-		}
+        @Override
+        public Query setHint(String hintName, Object value) {
+            return this;
+        }
 
-		@Override
-		public Query setParameter(String name, Object value) {
-			return this;
-		}
+        @Override
+        public Query setParameter(String name, Object value) {
+            return this;
+        }
 
-		@Override
-		public Query setParameter(String name, Date value,
-				TemporalType temporalType) {
-			return this;
-		}
+        @Override
+        public Query setParameter(String name, Date value,
+                TemporalType temporalType) {
+            return this;
+        }
 
-		@Override
-		public Query setParameter(String name, Calendar value,
-				TemporalType temporalType) {
-			return this;
-		}
+        @Override
+        public Query setParameter(String name, Calendar value,
+                TemporalType temporalType) {
+            return this;
+        }
 
-		@Override
-		public Query setParameter(int position, Object value) {
-			return this;
-		}
+        @Override
+        public Query setParameter(int position, Object value) {
+            return this;
+        }
 
-		@Override
-		public Query setParameter(int position, Date value,
-				TemporalType temporalType) {
-			return this;
-		}
+        @Override
+        public Query setParameter(int position, Date value,
+                TemporalType temporalType) {
+            return this;
+        }
 
-		@Override
-		public Query setParameter(int position, Calendar value,
-				TemporalType temporalType) {
-			return this;
-		}
+        @Override
+        public Query setParameter(int position, Calendar value,
+                TemporalType temporalType) {
+            return this;
+        }
 
-		@Override
-		public Query setFlushMode(FlushModeType flushMode) {
-			return this;
-		}
-
-	}
+        @Override
+        public Query setFlushMode(FlushModeType flushMode) {
+            return this;
+        }
+    }
 }

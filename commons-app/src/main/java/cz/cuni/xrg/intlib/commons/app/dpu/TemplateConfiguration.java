@@ -13,13 +13,14 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
  */
 public class TemplateConfiguration implements Configuration {
 
-	private Map<String, Object> config = new HashMap<String, Object>();
+	private Map<String, Object> config = new HashMap<>();
 	
 	/**
 	 * Return value for given id.
 	 * @param parameter id
 	 * @return null if there is not object stored under given id
 	 */
+        @Override
 	public Object getValue(String parameter) {
 		return this.config.get(parameter);
 	}
@@ -30,6 +31,7 @@ public class TemplateConfiguration implements Configuration {
 	 * @param parameter object id
 	 * @param value object to store
 	 */
+        @Override
 	public void setValue(String parameter, Object value) {
 		this.config.put(parameter, value);
 	}	
