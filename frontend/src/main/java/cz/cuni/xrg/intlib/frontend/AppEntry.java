@@ -125,7 +125,6 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.navigator.addView(ViewNames.PipelineEdit.getUrl(), new PipelineEdit());
         this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());
         // TODO: remove !
-        this.navigator.addView("expDialog", new DPUDialog());
         this.navigator.addView(ViewNames.OSGiSupport.getUrl(), new OSGiSupport());
 
         /* You can create new views dynamically using a view provider

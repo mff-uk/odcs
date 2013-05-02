@@ -14,6 +14,7 @@ import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ModuleDialogGetter;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
@@ -89,15 +90,21 @@ public class DPUDetail extends Window {
 
 		try {
 			dpuExec = App.getApp().getModules().getInstance(jarPath);
+			
+			// get configuration from dpu
+			Configuration conf = dpu.getInstanceConfig();			
+			if (conf == null) {
+				// create new default configuration
+				conf = new InstanceConfiguration();
+				dpuExec.fillDefaultConfiguration(conf);
+			}			
+			
 			if (dpuExec != null) {
-				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec);
+				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
 				dpuConfigurationDialog.setWidth("100%");
 				mainLayout.addComponent(dpuConfigurationDialog);
 			}
-			Configuration conf = dpu.getInstanceConfig();
-			if (conf != null) {
-				dpuExec.setSettings(conf);
-			}
+			
 		} catch (ModuleException me) {
 			//TODO: Show info about failed load of custom part of dialog
 			Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);

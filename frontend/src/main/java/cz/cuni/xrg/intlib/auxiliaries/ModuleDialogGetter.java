@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.auxiliaries;
 import com.vaadin.ui.CustomComponent;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.web.GraphicalExtractor;
 import cz.cuni.xrg.intlib.commons.web.GraphicalLoader;
 import cz.cuni.xrg.intlib.commons.web.GraphicalTransformer;
@@ -26,23 +27,24 @@ public class ModuleDialogGetter {
 	/**
 	 * Return configuration dialog for given DPU. 
 	 * @param dpuExewcutive
+	 * @param configuration 
 	 * @return configuration dialog or null
 	 */
-	public static CustomComponent getDialog(DPUExecutive dpuExewcutive) {
+	public static CustomComponent getDialog(DPUExecutive dpuExewcutive, Configuration config) {
 		CustomComponent confComponent = null;
 		// get DPU type, recast, get configuration component and return it
 		switch(dpuExewcutive.getType()) {
 		case EXTRACTOR:
 			GraphicalExtractor graphExtract = (GraphicalExtractor)dpuExewcutive;
-			confComponent = graphExtract.getConfigurationComponent();
+			confComponent = graphExtract.getConfigurationComponent(config);
 			break;
 		case LOADER:
 			GraphicalLoader graphLoader = (GraphicalLoader)dpuExewcutive;
-			confComponent = graphLoader.getConfigurationComponent();
+			confComponent = graphLoader.getConfigurationComponent(config);
 			break;
 		case TRANSFORMER:
 			GraphicalTransformer graphTrans = (GraphicalTransformer)dpuExewcutive;
-			confComponent = graphTrans.getConfigurationComponent();
+			confComponent = graphTrans.getConfigurationComponent(config);
 			break;
 		default:
 			confComponent = null;
