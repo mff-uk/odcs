@@ -23,7 +23,7 @@ public interface TransformContext extends ProcessingContext {
 	 * Return list of output data units.
 	 * @return
 	 */
-	public List<DataUnit> getOutput();
+	public List<DataUnit> getOutputs();
 	
 	/**
 	 * Add data unit to output data list.
