@@ -1,4 +1,8 @@
-package cz.cuni.xrg.intlib.commons.extractor;
+package cz.cuni.xrg.intlib.backend.extractor.events;
+
+import cz.cuni.xrg.intlib.commons.extractor.Extract;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 
 /**
  * Event is published when an {@link Extract} could not complete because an error occurred.

@@ -1,6 +1,8 @@
-package cz.cuni.xrg.intlib.commons.extractor;
+package cz.cuni.xrg.intlib.backend.extractor.events;
 
 import cz.cuni.xrg.intlib.commons.event.DPUEvent;
+import cz.cuni.xrg.intlib.commons.extractor.Extract;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 
 /**
  * Base class for {@link Extract} events

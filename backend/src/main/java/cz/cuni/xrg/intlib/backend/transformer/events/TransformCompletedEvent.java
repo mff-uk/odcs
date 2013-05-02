@@ -1,4 +1,7 @@
-package cz.cuni.xrg.intlib.commons.transformer;
+package cz.cuni.xrg.intlib.backend.transformer.events;
+
+import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
+import cz.cuni.xrg.intlib.commons.transformer.Transform;
 
 /**
  * Event is published when a {@link Transform} completed successfully.

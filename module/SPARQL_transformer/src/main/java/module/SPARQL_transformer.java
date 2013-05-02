@@ -8,8 +8,8 @@ import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.backend.transformer.events.TransformContext;
+import cz.cuni.xrg.intlib.backend.transformer.events.TransformException;
 import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
 /**

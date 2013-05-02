@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.backend.pipeline.event;
+package cz.cuni.xrg.intlib.backend.pipeline.events;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
