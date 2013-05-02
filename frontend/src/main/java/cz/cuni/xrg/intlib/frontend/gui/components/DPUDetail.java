@@ -93,13 +93,15 @@ public class DPUDetail extends Window {
 			
 			// get configuration from dpu
 			Configuration conf = dpu.getInstanceConfig();			
-			if (conf == null) {
-				// create new default configuration
-				conf = new InstanceConfiguration();
-				dpuExec.fillDefaultConfiguration(conf);
-			}			
 			
 			if (dpuExec != null) {
+				
+				if (conf == null) {
+					// create new default configuration
+					conf = new InstanceConfiguration();
+					dpuExec.fillDefaultConfiguration(conf);
+				}				
+				
 				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
 				dpuConfigurationDialog.setWidth("100%");
 				mainLayout.addComponent(dpuConfigurationDialog);
