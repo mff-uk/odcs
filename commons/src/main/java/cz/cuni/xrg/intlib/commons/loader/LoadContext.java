@@ -1,20 +1,22 @@
 package cz.cuni.xrg.intlib.commons.loader;
 
-import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Context used by {@link Load}s for the loading process.
  *
  * @see Load
- * @author Alex Kreiser (akreiser@gmail.com)
+ * @author Petyr
  */
-public class LoadContext extends ProcessingContext {
+public interface LoadContext extends ProcessingContext {
 
-	// Repository repository, URI graph,
-	
-    public LoadContext(String ID, Map<String, Object> customData) {
-        super(ID, customData);
-    }
+	/**
+	 * Return list of input data units.
+	 * @return
+	 */
+	public List<DataUnit> getInputs();
+		
 }
