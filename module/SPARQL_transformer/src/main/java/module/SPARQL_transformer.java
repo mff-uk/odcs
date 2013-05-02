@@ -12,10 +12,6 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
-/**
- * TODO Change super class to desired one, you can choose from the following:
- * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
- */
 public class SPARQL_transformer implements GraphicalTransformer {
 
     private LocalRepo repository = null;
@@ -26,17 +22,16 @@ public class SPARQL_transformer implements GraphicalTransformer {
     /**
      * DPU configuration.
      */
-    private Configuration config = new Configuration();
+    private Configuration config = null;
 
     public SPARQL_transformer() {
-        // set initial configuration
-        /**
-         * TODO Set default (possibly empty but better valid) configuration for
-         * your DPU.
-         */
-        this.config.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");
     }
 
+    @Override
+    public void saveConfigurationDefault(Configuration configuration) {
+    	configuration.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");  	
+    }     
+    
     @Override
     public Type getType() {
         return Type.TRANSFORMER;
@@ -44,34 +39,29 @@ public class SPARQL_transformer implements GraphicalTransformer {
     }
 
     @Override
-    public CustomComponent getConfigurationComponent() {
+    public CustomComponent getConfigurationComponent(Configuration configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
             this.configDialog = new ConfigDialog();
-            this.configDialog.setConfiguration(this.config);
+            this.configDialog.setConfiguration(configuration);
         }
         return this.configDialog;
     }
 
-    @Override
-    public Configuration getSettings() throws ConfigurationException {
+	@Override
+	public void loadConfiguration(Configuration configuration)
+			throws ConfigurationException {
+		// 
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
-            Configuration conf = this.configDialog.getConfiguration();
-            if (conf == null) {
-                // in dialog is invalid configuration .. 
-                return null;
-            } else {
-                this.config = conf;
-            }
+            this.configDialog.getConfiguration(configuration);
         }
-        return this.config;
-    }
+	} 
 
     @Override
-    public void setSettings(Configuration configuration) {
+    public void saveConfiguration(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
         } else {

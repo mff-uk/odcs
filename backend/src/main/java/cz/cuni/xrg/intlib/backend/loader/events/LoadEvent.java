@@ -1,6 +1,8 @@
-package cz.cuni.xrg.intlib.commons.loader;
+package cz.cuni.xrg.intlib.backend.loader.events;
 
 import cz.cuni.xrg.intlib.commons.event.DPUEvent;
+import cz.cuni.xrg.intlib.commons.loader.Load;
+import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 
 /**
  * Base class for {@link Load} events.

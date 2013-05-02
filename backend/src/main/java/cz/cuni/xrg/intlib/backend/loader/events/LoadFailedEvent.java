@@ -1,4 +1,8 @@
-package cz.cuni.xrg.intlib.commons.loader;
+package cz.cuni.xrg.intlib.backend.loader.events;
+
+import cz.cuni.xrg.intlib.commons.loader.Load;
+import cz.cuni.xrg.intlib.commons.loader.LoadContext;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
 
 /**
  * Published when a {@link Load} could not complete because an error occurred.

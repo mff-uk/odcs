@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import javax.persistence.*;
@@ -42,15 +38,28 @@ public class Edge {
 	 */
 	public Edge() {}
 
+	/**
+	 * Constructor with specification of connecting nodes.
+	 * @param from
+	 * @param to
+	 */
     public Edge(Node from, Node to) {
         this.from = from;
         this.to = to;
     }
 
+	/**
+	 * Returns start node of edge
+	 * @return
+	 */
     public Node getFrom() {
         return from;
     }
 
+	/**
+	 * Returns end node of edge
+	 * @return
+	 */
     public Node getTo() {
         return to;
     }
@@ -75,8 +84,12 @@ public class Edge {
         return id;
     }
 
-    void setId(int GetUniquePipelineConnectionId) {
-        id = GetUniquePipelineConnectionId;
+	/**
+	 * Temporary solution of id generation.
+	 * @param getUniquePipelineConnectionId
+	 */
+    void setId(int getUniquePipelineConnectionId) {
+        id = getUniquePipelineConnectionId;
     }
 
 }

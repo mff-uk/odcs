@@ -16,10 +16,6 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * TODO Change super class to desired one, you can choose from the following:
- * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
- */
 public class RDF_loader implements GraphicalLoader {
 
     private LocalRepo repository = null;
@@ -30,20 +26,19 @@ public class RDF_loader implements GraphicalLoader {
     /**
      * DPU configuration.
      */
-    private Configuration config = new Configuration();
+    private Configuration config = null;
 
     public RDF_loader() {
-        // set initial configuration
-        /**
-         * TODO Set default (possibly empty but better valid) configuration for
-         * your DPU.
-         */
-        this.config.setValue(Config.SPARQL_endpoint.name(), "http://");
-        this.config.setValue(Config.Host_name.name(), "");
-        this.config.setValue(Config.Password.name(), "");
-        this.config.setValue(Config.GraphsUri.name(), new LinkedList<String>());
     }
 
+    @Override
+    public void saveConfigurationDefault(Configuration configuration) {
+    	configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
+    	configuration.setValue(Config.Host_name.name(), "");
+    	configuration.setValue(Config.Password.name(), "");
+    	configuration.setValue(Config.GraphsUri.name(), new LinkedList<String>());  	
+    }       
+    
     @Override
     public Type getType() {
         return Type.LOADER;
@@ -51,34 +46,29 @@ public class RDF_loader implements GraphicalLoader {
     }
 
     @Override
-    public CustomComponent getConfigurationComponent() {
+    public CustomComponent getConfigurationComponent(Configuration configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
             this.configDialog = new ConfigDialog();
-            this.configDialog.setConfiguration(this.config);
+            this.configDialog.setConfiguration(configuration);
         }
         return this.configDialog;
     }
 
-    @Override
-    public Configuration getSettings() throws ConfigurationException {
+	@Override
+	public void loadConfiguration(Configuration configuration)
+			throws ConfigurationException {
+		// 
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
-            Configuration conf = this.configDialog.getConfiguration();
-            if (conf == null) {
-                // in dialog is invalid configuration .. 
-                return null;
-            } else {
-                this.config = conf;
-            }
+            this.configDialog.getConfiguration(configuration);
         }
-        return this.config;
-    }
+	} 
 
     @Override
-    public void setSettings(Configuration configuration) {
+    public void saveConfiguration(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
         } else {

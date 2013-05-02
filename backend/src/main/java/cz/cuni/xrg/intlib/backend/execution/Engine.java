@@ -1,7 +1,6 @@
-package cz.cuni.xrg.intlib.backend.engine;
+package cz.cuni.xrg.intlib.backend.execution;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineWorker;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -81,7 +80,7 @@ public class Engine {
     private boolean addWorkers(int n) {
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {
-                PipelineWorker pw = new PipelineWorker(getJob());
+                PipelineWorker pw = new PipelineWorker(this);
                 threads[i] = pw;
                 pw.start();
                 if ((--n) <= 0) {

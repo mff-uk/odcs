@@ -1,19 +1,33 @@
 package cz.cuni.xrg.intlib.commons.transformer;
 
-import cz.cuni.xrg.intlib.commons.event.ProcessingContext;
-import java.util.Map;
+import cz.cuni.xrg.intlib.commons.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
+
+import java.util.List;
 
 /**
  * Context used by {@link Transform}s for the transformation process.
  *
  * @see Transform
- * @author Alex Kreiser (akreiser@gmail.com)
+ * @author Petyr
  */
-public class TransformContext extends ProcessingContext {
+public interface TransformContext extends ProcessingContext {
 
-	//Repository repository, URI graph
+	/**
+	 * Return list of input data units.
+	 * @return
+	 */
+	public List<DataUnit> getInputs();	
 	
-    public TransformContext(String id, Map<String, Object> customData) {
-        super(id, customData);
-    }
+	/**
+	 * Return list of output data units.
+	 * @return
+	 */
+	public List<DataUnit> getOutputs();
+	
+	/**
+	 * Add data unit to output data list.
+	 * @param dataUnit
+	 */
+	public void addOutputDataUnit(DataUnit dataUnit);
 }

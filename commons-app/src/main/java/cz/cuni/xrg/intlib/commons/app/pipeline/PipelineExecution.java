@@ -1,25 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import java.util.HashMap;
-import java.util.UUID;
-
-import cz.cuni.xrg.intlib.commons.Type;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.loader.LoadContext;
-import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
-import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 
 /**
  * Information about executed pipeline and their states.
@@ -29,10 +10,6 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformException;
  */
 public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
 
-    /**
-     * Unique run identification.
-     */
-    private String runId = UUID.randomUUID().toString();
     /**
      * Actual status for executed pipeline.
      */
@@ -82,6 +59,14 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
     }
 
     /**
+     *
+     * @return moduleFacade
+     */
+    public ModuleFacade getModuleFacade() {
+        return moduleFacade;
+    }
+
+    /**
      * @param moduleFacade the moduleFacade to set
      */
     public void setModuleFacade(ModuleFacade moduleFacade) {
@@ -95,31 +80,32 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
     /**
      * Runs the pipeline.
      */
-    public void run() {
+    /*
+     public void run() {
 
-//        long pipelineStart = System.currentTimeMillis();
-        DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-//        eventPublisher.publishEvent(new PipelineStartedEvent(pipeline, runId, this));
+     long pipelineStart = System.currentTimeMillis();
+     DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
+     eventPublisher.publishEvent(new PipelineStartedEvent(pipeline, runId, this));
 
-        LocalRepo repository = LocalRepo.createLocalRepo();
-        repository.cleanAllRepositoryData();
+     LocalRepo repository = LocalRepo.createLocalRepo();
+     repository.cleanAllRepositoryData();
 
-        for (Node node : dependencyGraph) {
-            runNode(node, repository);
-        }
+     for (Node node : dependencyGraph) {
+     runNode(node, repository);
+     }
 
-// long duration = System.currentTimeMillis() - pipelineStart;
-//        eventPublisher.publishEvent(
-//        	new PipelineCompletedEvent(duration, pipeline, runId, this)
-//        );
-    }
-
+     long duration = System.currentTimeMillis() - pipelineStart;
+     eventPublisher.publishEvent(
+     new PipelineCompletedEvent(duration, pipeline, runId, this)
+     );
+     }*/
     /**
      * Executes a general node (ETL) in pipeline graph.
      *
      * @param node
      * @param repo
      */
+    /*
     private void runNode(Node node, LocalRepo repo) {
 
         DPUInstance dpuInstance = node.getDpuInstance();
@@ -157,7 +143,7 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
             default:
                 throw new RuntimeException("Unknown DPU type.");
         }
-    }
+    }*/
 
     /**
      * Runs a single extractor DPU module.
@@ -165,6 +151,7 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
      * @param extractor
      * @param ctx
      */
+    /*
     private void runExtractor(Extract extractor, ExtractContext ctx) {
 
         try {
@@ -184,13 +171,14 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
 
         }
     }
-
+    */
     /**
      * Runs a single Transformer DPU module.
      *
      * @param transformer
      * @param ctx
      */
+    /*
     private void runTransformer(Transform transformer, TransformContext ctx) {
 
         try {
@@ -208,7 +196,7 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
 //            );
             ex.fillInStackTrace();
         }
-    }
+    }*/
 
     /**
      * Runs a single Loader DPU module.
@@ -216,6 +204,7 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
      * @param loader
      * @param ctx
      */
+    /*
     private void runLoader(Load loader, LoadContext ctx) {
 
         try {
@@ -232,5 +221,5 @@ public class PipelineExecution /*, ApplicationEventPublisherAware*/ {
 //            );
             ex.fillInStackTrace();
         }
-    }
+    }*/
 }

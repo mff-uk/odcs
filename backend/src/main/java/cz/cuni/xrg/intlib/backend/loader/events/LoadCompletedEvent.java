@@ -1,4 +1,7 @@
-package cz.cuni.xrg.intlib.commons.loader;
+package cz.cuni.xrg.intlib.backend.loader.events;
+
+import cz.cuni.xrg.intlib.commons.loader.Load;
+import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 
 /**
  * Event is published when a {@link Load} completed successfully.

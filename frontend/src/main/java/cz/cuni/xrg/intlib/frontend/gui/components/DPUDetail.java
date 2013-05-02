@@ -14,6 +14,7 @@ import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ModuleDialogGetter;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
@@ -29,6 +30,11 @@ public class DPUDetail extends Window {
 	private TextField dpuName;
 	private TextArea dpuDescription;
 
+
+	/**
+	 * Basic constructor, takes DPUInstance which detail should be showed.
+	 * @param dpu
+	 */
 	public DPUDetail(DPUInstance dpu) {
 
 		this.setResizable(false);
@@ -84,15 +90,23 @@ public class DPUDetail extends Window {
 
 		try {
 			dpuExec = App.getApp().getModules().getInstance(jarPath);
+			
+			// get configuration from dpu
+			Configuration conf = dpu.getInstanceConfig();			
+			
 			if (dpuExec != null) {
-				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec);
+				
+				if (conf == null) {
+					// create new default configuration
+					conf = new InstanceConfiguration();
+					dpuExec.saveConfigurationDefault(conf);
+				}				
+				
+				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
 				dpuConfigurationDialog.setWidth("100%");
 				mainLayout.addComponent(dpuConfigurationDialog);
 			}
-			Configuration conf = dpu.getInstanceConfig();
-			if (conf != null) {
-				dpuExec.setSettings(conf);
-			}
+			
 		} catch (ModuleException me) {
 			//TODO: Show info about failed load of custom part of dialog
 			Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);
@@ -143,11 +157,17 @@ public class DPUDetail extends Window {
 		setSizeUndefined();
 	}
 
+	/**
+	 * Saves configuration of DPU Instance which was set in detail dialog.
+	 * @return
+	 */
 	protected boolean saveDPUInstance() {
 
 		try {
 			if(dpuExec != null) {
-				Configuration conf = dpuExec.getSettings();
+				// TODO: Used configuration from DPUInstance instead creating new one? 
+				Configuration conf = new InstanceConfiguration();
+				dpuExec.saveConfiguration(conf);
 				dpu.setInstanceConfig(conf);
 			}
 			dpu.setName(dpuName.getValue());

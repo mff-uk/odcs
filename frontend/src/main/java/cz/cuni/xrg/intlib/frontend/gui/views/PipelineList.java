@@ -47,10 +47,11 @@ public class PipelineList extends CustomComponent implements View {
 	        this.pipeline = pipeline;
 	    }
 
+            @Override
 	    public void run() {
 	    	PipelineExecution pipelineExec = new PipelineExecution(pipeline);
 	    	pipelineExec.setModuleFacade( App.getApp().getModules() );
-			pipelineExec.run();
+			//TODO SOLVE PROBLEM !!! pipelineExec.run();
 	    }
 	}
 	
