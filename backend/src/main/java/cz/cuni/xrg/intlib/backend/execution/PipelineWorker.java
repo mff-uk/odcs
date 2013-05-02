@@ -13,17 +13,20 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
+import cz.cuni.xrg.intlib.backend.extractor.events.ExtractContextImpl;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadCompletedEvent;
+import cz.cuni.xrg.intlib.backend.loader.events.LoadContextImpl;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
+import cz.cuni.xrg.intlib.backend.transformer.events.TransformContextImpl;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
@@ -132,7 +135,7 @@ public class PipelineWorker extends Thread {
                 Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
                 extractor.saveConfiguration(configuration);
                 extractor.setLocalRepo(repo);
-                ExtractContext ctx = new ExtractContext(runId, new HashMap<String, Object>());
+                ExtractContext ctx = new ExtractContextImpl(runId, new HashMap<String, Object>());
                 runExtractor(extractor, ctx);
                 break;
             }
@@ -140,7 +143,7 @@ public class PipelineWorker extends Thread {
                 Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
                 transformer.saveConfiguration(configuration);
                 transformer.setLocalRepo(repo);
-                TransformContext ctx = new TransformContext(runId, new HashMap<String, Object>());
+                TransformContext ctx = new TransformContextImpl(runId, new HashMap<String, Object>()) {};
                 runTransformer(transformer, ctx);
                 break;
             }
@@ -148,7 +151,7 @@ public class PipelineWorker extends Thread {
                 Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
                 loader.saveConfiguration(configuration);
                 loader.setLocalRepo(repo);
-                LoadContext ctx = new LoadContext(runId, new HashMap<String, Object>());
+                LoadContext ctx = new LoadContextImpl(runId, new HashMap<String, Object>());
                 runLoader(loader, ctx);
                 break;
             }
