@@ -12,13 +12,10 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
-/**
- * TODO Change super class to desired one, you can choose from the following:
- * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
- */
 public class File_extractor implements GraphicalExtractor {
 
     private LocalRepo repository = null;
+    
     /**
      * Configuration component.
      */
@@ -26,36 +23,31 @@ public class File_extractor implements GraphicalExtractor {
     /**
      * DPU configuration.
      */
-    private Configuration config = new Configuration();
+    private Configuration config = null;
 
     public File_extractor() {
-        // set initial configuration
-        /**
-         * TODO Set default (possibly empty but better valid) configuration for
-         * your DPU.
-         */
-        //this.config.setValue(Config.NameDPU.name(), "");
-       // this.config.setValue(Config.Description.name(), "");
-        // ...
-        this.config.setValue(Config.OnlyThisText.name(), "");
-        this.config.setValue(Config.FileSuffix.name(), ".rdf");
-        this.config.setValue(Config.Path.name(), "");
-        this.config.setValue(Config.OnlyThisSuffix.name(), false);
-        
     }
 
+    @Override
+    public void fillDefaultConfiguration(Configuration configuration) {
+    	configuration.setValue(Config.OnlyThisText.name(), "");
+    	configuration.setValue(Config.FileSuffix.name(), ".rdf");
+    	configuration.setValue(Config.Path.name(), "");
+    	configuration.setValue(Config.OnlyThisSuffix.name(), false);    	
+    }    
+    
     @Override
     public Type getType() {
         return Type.EXTRACTOR;
     }
 
     @Override
-    public CustomComponent getConfigurationComponent() {
+    public CustomComponent getConfigurationComponent(Configuration configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
             this.configDialog = new ConfigDialog();
-            this.configDialog.setConfiguration(this.config);
+            this.configDialog.setConfiguration(configuration);
         }
         return this.configDialog;
     }

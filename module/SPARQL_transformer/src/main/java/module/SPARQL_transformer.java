@@ -12,10 +12,6 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
-/**
- * TODO Change super class to desired one, you can choose from the following:
- * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
- */
 public class SPARQL_transformer implements GraphicalTransformer {
 
     private LocalRepo repository = null;
@@ -26,17 +22,16 @@ public class SPARQL_transformer implements GraphicalTransformer {
     /**
      * DPU configuration.
      */
-    private Configuration config = new Configuration();
+    private Configuration config = null;
 
     public SPARQL_transformer() {
-        // set initial configuration
-        /**
-         * TODO Set default (possibly empty but better valid) configuration for
-         * your DPU.
-         */
-        this.config.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");
     }
 
+    @Override
+    public void fillDefaultConfiguration(Configuration configuration) {
+    	configuration.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");  	
+    }     
+    
     @Override
     public Type getType() {
         return Type.TRANSFORMER;
@@ -44,12 +39,12 @@ public class SPARQL_transformer implements GraphicalTransformer {
     }
 
     @Override
-    public CustomComponent getConfigurationComponent() {
+    public CustomComponent getConfigurationComponent(Configuration configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
             this.configDialog = new ConfigDialog();
-            this.configDialog.setConfiguration(this.config);
+            this.configDialog.setConfiguration(configuration);
         }
         return this.configDialog;
     }
