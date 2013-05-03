@@ -100,8 +100,8 @@ public class PipelineWorker extends Thread {
 
         long pipelineStart = System.currentTimeMillis();
         DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-        eventPublisher.publishEvent(
-                new PipelineStartedEvent(pipeline, runId, this));
+//        eventPublisher.publishEvent(
+//                new PipelineStartedEvent(pipeline, runId, this));
 
         LocalRepo repository = LocalRepo.createLocalRepo();
         repository.cleanAllRepositoryData();
@@ -111,8 +111,8 @@ public class PipelineWorker extends Thread {
         }
 
         long duration = System.currentTimeMillis() - pipelineStart;
-        eventPublisher.publishEvent(
-                new PipelineCompletedEvent(duration, pipeline, runId, this));
+//        eventPublisher.publishEvent(
+//                new PipelineCompletedEvent(duration, pipeline, runId, this));
     }
 
     /**
@@ -173,12 +173,12 @@ public class PipelineWorker extends Thread {
 
             extractor.extract(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-                    new ExtractCompletedEvent(extractor, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new ExtractCompletedEvent(extractor, ctx, this));
 
         } catch (ExtractException ex) {
-            eventPublisher.publishEvent(
-                    new ExtractFailedEvent(ex, extractor, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new ExtractFailedEvent(ex, extractor, ctx, this));
             ex.fillInStackTrace();
 
         }
@@ -197,12 +197,12 @@ public class PipelineWorker extends Thread {
 
             transformer.transform(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-                    new TransformCompletedEvent(transformer, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new TransformCompletedEvent(transformer, ctx, this));
 
         } catch (TransformException ex) {
-            eventPublisher.publishEvent(
-                    new TransformFailedEvent(ex, transformer, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new TransformFailedEvent(ex, transformer, ctx, this));
             ex.fillInStackTrace();
         }
     }
@@ -220,11 +220,11 @@ public class PipelineWorker extends Thread {
 
             loader.load(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-                    new LoadCompletedEvent(loader, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new LoadCompletedEvent(loader, ctx, this));
         } catch (LoadException ex) {
-            eventPublisher.publishEvent(
-                    new LoadFailedEvent(ex, loader, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new LoadFailedEvent(ex, loader, ctx, this));
             ex.fillInStackTrace();
         }
     }
