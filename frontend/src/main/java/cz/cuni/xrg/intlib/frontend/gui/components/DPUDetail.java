@@ -172,8 +172,8 @@ public class DPUDetail extends Window {
 			}
 			dpu.setName(dpuName.getValue());
 			dpu.setDescription(dpuDescription.getValue());
-
 		} catch (ConfigurationException ce) {
+			Notification.show("ConfigurationException:", ce.getMessage(), Type.ERROR_MESSAGE);			
 			//TODO: Inform about invalid settings and do not close detail dialog
 			return false;
 		}
