@@ -53,7 +53,7 @@ public class File_loader implements GraphicalLoader {
         if (this.configDialog == null) {
             // create it
             this.configDialog = new ConfigDialog();
-            this.configDialog.getConfiguration(configuration);
+            this.configDialog.setConfiguration(configuration);
         }
         return this.configDialog;
     }
@@ -75,7 +75,7 @@ public class File_loader implements GraphicalLoader {
         if (this.configDialog == null) {
         } else {
             // also set configuration for dialog
-            this.configDialog.setConfiguration(this.config);
+            this.configDialog.getConfiguration(this.config);
         }
     }
 
