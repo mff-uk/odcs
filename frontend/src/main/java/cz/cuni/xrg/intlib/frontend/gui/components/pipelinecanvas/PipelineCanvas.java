@@ -76,6 +76,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onLogMessage(String message) {
 				//TODO: Log JS messages
 			}
+
+			@Override
+			public void onDebugRequested(int dpuId) {
+				//TODO: Debug
+			}
 		});
 	}
 

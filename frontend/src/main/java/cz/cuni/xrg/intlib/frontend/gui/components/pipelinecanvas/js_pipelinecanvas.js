@@ -116,11 +116,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
     /** Writes message on given message layer **/
     function writeMessage(messageLayer, message) {
-        //var context = messageLayer.getContext();
-        //messageLayer.clear();
-        //context.font = '18pt Calibri';
-        //context.fillStyle = 'black';
-        //context.fillText(message, 10, 25);
+//        var context = messageLayer.getContext();
+//        messageLayer.clear();
+//        context.font = '18pt Calibri';
+//        context.fillStyle = 'black';
+//        context.fillText(message, 10, 25);
 
 		rpcProxy.onLogMessage(message);
     }
@@ -136,6 +136,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 	var addConnectionIcon = null;
 	var removeConnectionIcon = null;
+	var debugIcon = null;
 
     /** Init function which builds entire stage for pipeline */
     function init() {
@@ -213,15 +214,22 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         stage.add(messageLayer);
         writeMessage(messageLayer, 'initialized');
 
-		addConnectionIcon = new Image();
+
 		var basePath = "http://" + window.location.host + window.location.pathname;
 		if(basePath.charAt(basePath.length - 1) != '/') {
 			basePath = basePath + '/';
 		}
-		addConnectionIcon.src = basePath + "VAADIN/themes/IntLibTheme/img/arrow_right_32.png"; //'http://i50.tinypic.com/2qjykb5.jpg';
+		var imgPath = "VAADIN/themes/IntLibTheme/img/";
+		basePath = basePath + imgPath;
+
+		addConnectionIcon = new Image();
+		addConnectionIcon.src = basePath + "arrow_right_32.png";
 
 		removeConnectionIcon = new Image();
-		removeConnectionIcon.src = basePath + "VAADIN/themes/IntLibTheme/img/recyclebin32x32.png";
+		removeConnectionIcon.src = basePath + "TrashFull.png";
+
+		debugIcon = new Image();
+		debugIcon.src = basePath + "Gear.png";
     }
 
 	/** Updates text in DPU visualization
@@ -299,17 +307,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         // New Connection command
-		/*
-        var cmdConnection = new Kinetic.Rect({
-            x: 0,
-            y: 0,
-            width: 32,
-            height: 32,
-            stroke: '#f00',
-            strokeWidth: 3,
-            fill : '#a00'
-        });
-		*/
 		var cmdConnection = new Kinetic.Image({
 			x: 0,
 			y: 0,
@@ -338,32 +335,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
         actionBar.add(cmdConnection);
 
-
-        // DPU Detail command
-/*        var cmdDetail = new Kinetic.Rect({
-            x: 0,
-            y: 32,
-            width: 32,
-            height: 32,
-            fill: '#00f'
-        });
-
-        cmdDetail.on('click', function(evt) {
-            writeMessage(messageLayer, 'Detail requested');
-            rpcProxy.onDetailRequested(dpu.id);
-            evt.cancelBubble = true;
-        });
-
-        actionBar.add(cmdDetail);
-*/
         // DPU Remove command
-/*        var cmdRemove = new Kinetic.Rect({
-            x: 0,
-            y: 64,
-            width: 32,
-            height: 32,
-            fill: '#0f0'
-        });
+        var cmdRemove = new Kinetic.Image({
+			x: 0,
+            y: 32,
+			image: removeConnectionIcon,
+			width: 32,
+			height: 32,
+			startScale: 1
+		});
 
         cmdRemove.on('click', function(evt) {
             writeMessage(messageLayer, 'DPU removed');
@@ -373,7 +353,26 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         actionBar.add(cmdRemove);
-*/
+
+		// Debug command
+        var cmdDebug = new Kinetic.Image({
+			x: 0,
+            y: 64,
+			image: debugIcon,
+			width: 32,
+			height: 32,
+			startScale: 1
+		});
+
+        cmdDebug.on('click', function(evt) {
+            writeMessage(messageLayer, 'Debug requested');
+            rpcProxy.onDebugRequested(dpu.id);
+            evt.cancelBubble = true;
+        });
+
+        actionBar.add(cmdDebug);
+
+
 
         group.add(rect);
         group.add(complexText);
@@ -409,6 +408,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             writeMessage(messageLayer, 'dragstart');
             isDragging = true;
             dragId = id;
+			actionBar.setVisible(false);
         });
         group.on('dragend', function(evt) {
             writeMessage(messageLayer, 'dragend');
@@ -422,6 +422,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 evt.cancelBubble = true;
             } else {
 				rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y));
+				actionBar.setVisible(true);
+				dpuLayer.draw();
 			}
         });
 
