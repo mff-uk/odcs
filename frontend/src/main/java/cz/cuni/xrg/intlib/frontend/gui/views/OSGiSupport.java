@@ -119,7 +119,7 @@ public class OSGiSupport extends CustomComponent implements View {
 				txtOutput.setValue("");
 				try {
 					DPUExecutive executive = frame.loadDPU(txtUri.getValue());
-					configComponenet = ModuleDialogGetter.getDialog(executive);
+					//configComponenet = ModuleDialogGetter.getDialog(executive);
 				} catch (ModuleException e) {
 					txtOutput.setValue(e.getTraceMessage());
 				} catch(Exception e) {
