@@ -15,6 +15,7 @@ public class DPU {
     private String name;
     private String description;
     private Type type;
+    private String visibility;
     private String jarPath;
 
     /**
@@ -56,6 +57,14 @@ public class DPU {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 
     public int getId() {
