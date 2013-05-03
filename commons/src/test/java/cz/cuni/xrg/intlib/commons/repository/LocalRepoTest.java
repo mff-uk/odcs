@@ -381,6 +381,19 @@ public class LocalRepoTest {
     }
 
     @Test
+    public void SecondUpdateQueryTest() {
+
+        String updateQuery = "prefix s: <http://schema.org/>"
+                + "DELETE {?s s:streetAddress ?o}"
+                + "INSERT {?s s:streetAddress ?x}"
+                + "WHERE {"
+                + "{SELECT ?s ?o ?x"
+                + "WHERE {{?s s:streetAddress ?o}}} FILTER (BOUND(?x))}";
+
+        localRepo.transformUsingSPARQL(updateQuery);
+    }
+
+    @Test
     public void isRepositoryEmpty() {
         localRepo.cleanAllRepositoryData();
         assertEquals(0, localRepo.getTripleCountInRepository());
