@@ -52,6 +52,11 @@ public class PipelineList extends CustomComponent implements View {
 	    	PipelineExecution pipelineExec = new PipelineExecution(pipeline);
 	    	pipelineExec.setModuleFacade( App.getApp().getModules() );
 			//TODO SOLVE PROBLEM !!! pipelineExec.run();
+	    	
+	    	// Bridge .. 
+	    	cz.cuni.xrg.intlib.backend.execution.Engine engine =
+	    			new cz.cuni.xrg.intlib.backend.execution.Engine(1);
+	    	engine.run(pipelineExec);
 	    }
 	}
 	
