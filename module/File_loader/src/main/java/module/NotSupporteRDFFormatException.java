@@ -1,10 +1,12 @@
 package module;
 
+import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+
 /**
  *
  * @author Jiri Tomes
  */
-public class NotSupporteRDFFormatException extends Exception {
+public class NotSupporteRDFFormatException extends ConfigurationException {
 
     private final String message = "This RDF format is not supported.";
 

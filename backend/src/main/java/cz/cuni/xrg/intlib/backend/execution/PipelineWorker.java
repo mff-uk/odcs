@@ -13,17 +13,20 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
+import cz.cuni.xrg.intlib.backend.extractor.events.ExtractContextImpl;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadCompletedEvent;
+import cz.cuni.xrg.intlib.backend.loader.events.LoadContextImpl;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
+import cz.cuni.xrg.intlib.backend.transformer.events.TransformContextImpl;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
@@ -97,8 +100,8 @@ public class PipelineWorker extends Thread {
 
         long pipelineStart = System.currentTimeMillis();
         DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-        eventPublisher.publishEvent(
-                new PipelineStartedEvent(pipeline, runId, this));
+//        eventPublisher.publishEvent(
+//                new PipelineStartedEvent(pipeline, runId, this));
 
         LocalRepo repository = LocalRepo.createLocalRepo();
         repository.cleanAllRepositoryData();
@@ -108,8 +111,8 @@ public class PipelineWorker extends Thread {
         }
 
         long duration = System.currentTimeMillis() - pipelineStart;
-        eventPublisher.publishEvent(
-                new PipelineCompletedEvent(duration, pipeline, runId, this));
+//        eventPublisher.publishEvent(
+//                new PipelineCompletedEvent(duration, pipeline, runId, this));
     }
 
     /**
@@ -132,7 +135,7 @@ public class PipelineWorker extends Thread {
                 Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
                 extractor.saveConfiguration(configuration);
                 extractor.setLocalRepo(repo);
-                ExtractContext ctx = new ExtractContext(runId, new HashMap<String, Object>());
+                ExtractContext ctx = new ExtractContextImpl(runId, new HashMap<String, Object>());
                 runExtractor(extractor, ctx);
                 break;
             }
@@ -140,7 +143,7 @@ public class PipelineWorker extends Thread {
                 Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
                 transformer.saveConfiguration(configuration);
                 transformer.setLocalRepo(repo);
-                TransformContext ctx = new TransformContext(runId, new HashMap<String, Object>());
+                TransformContext ctx = new TransformContextImpl(runId, new HashMap<String, Object>()) {};
                 runTransformer(transformer, ctx);
                 break;
             }
@@ -148,7 +151,7 @@ public class PipelineWorker extends Thread {
                 Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
                 loader.saveConfiguration(configuration);
                 loader.setLocalRepo(repo);
-                LoadContext ctx = new LoadContext(runId, new HashMap<String, Object>());
+                LoadContext ctx = new LoadContextImpl(runId, new HashMap<String, Object>());
                 runLoader(loader, ctx);
                 break;
             }
@@ -170,12 +173,12 @@ public class PipelineWorker extends Thread {
 
             extractor.extract(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-                    new ExtractCompletedEvent(extractor, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new ExtractCompletedEvent(extractor, ctx, this));
 
         } catch (ExtractException ex) {
-            eventPublisher.publishEvent(
-                    new ExtractFailedEvent(ex, extractor, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new ExtractFailedEvent(ex, extractor, ctx, this));
             ex.fillInStackTrace();
 
         }
@@ -194,12 +197,12 @@ public class PipelineWorker extends Thread {
 
             transformer.transform(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-                    new TransformCompletedEvent(transformer, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new TransformCompletedEvent(transformer, ctx, this));
 
         } catch (TransformException ex) {
-            eventPublisher.publishEvent(
-                    new TransformFailedEvent(ex, transformer, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new TransformFailedEvent(ex, transformer, ctx, this));
             ex.fillInStackTrace();
         }
     }
@@ -217,11 +220,11 @@ public class PipelineWorker extends Thread {
 
             loader.load(ctx);
             ctx.setDuration(System.currentTimeMillis() - start);
-            eventPublisher.publishEvent(
-                    new LoadCompletedEvent(loader, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new LoadCompletedEvent(loader, ctx, this));
         } catch (LoadException ex) {
-            eventPublisher.publishEvent(
-                    new LoadFailedEvent(ex, loader, ctx, this));
+//            eventPublisher.publishEvent(
+//                    new LoadFailedEvent(ex, loader, ctx, this));
             ex.fillInStackTrace();
         }
     }

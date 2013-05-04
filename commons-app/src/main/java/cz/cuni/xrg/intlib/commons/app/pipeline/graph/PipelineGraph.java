@@ -11,8 +11,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import javax.persistence.*;
 
 /**
- * Oriented acyclic graph representation of pipeline.
- * Each Node represents a DPU instance, and each edge represents data flow.
+ * Oriented acyclic graph representation of pipeline. Each Node represents a DPU
+ * instance, and each edge represents data flow.
  *
  * @author Jiri Tomes
  * @author Bogo
@@ -69,109 +69,115 @@ public class PipelineGraph {
         this.edges = edges;
     }
 
-	/**
-	 * Adds new DPU to graph.
-	 * @param dpu
-	 * @return
-	 */
+    /**
+     * Adds new DPU to graph.
+     *
+     * @param dpu
+     * @return
+     */
     public int addDpu(DPU dpu) {
-		DPUInstance dpuInstance = new DPUInstance(dpu);
-		Node node = new Node(dpuInstance);
-        node.setId(GetUniqueDpuInstanceId());
+        DPUInstance dpuInstance = new DPUInstance(dpu);
+        Node node = new Node(dpuInstance);
         nodes.add(node);
-		return node.getId();
-	}
+        return node.hashCode();
+    }
 
-	/**
-	 * Removes DPU from graph.
-	 * @param dpuId
-	 * @return
-	 */
-	public boolean removeDpu(int dpuId) {
-		Node node = getNodeById(dpuId);
-		if(node != null) {
-			return nodes.remove(node);
-		}
-		return false;
-	}
+    /**
+     * Removes DPU from graph.
+     *
+     * @param dpuId
+     * @return
+     */
+    public boolean removeDpu(int dpuId) {
+        Node node = getNodeById(dpuId);
+        if (node != null) {
+            return nodes.remove(node);
+        }
+        return false;
+    }
 
-	/**
-	 * Adds a single edge into pipeline graph, unless it exists already.
-	 * @param from source DPU
-	 * @param to target DPU
-	 * @return newly created edge or null
-	 * TODO find and return edge even if it was present before
-	 */
-	public Edge addEdge(Node from, Node to) {
-		Edge e = new Edge(from, to);
-		// adds unless it is present already
-		boolean added = edges.add(e);
-		return added ? e : null;
-	}
+    /**
+     * Adds a single edge into pipeline graph, unless it exists already.
+     *
+     * @param from source DPU
+     * @param to target DPU
+     * @return newly created edge or null TODO find and return edge even if it
+     * was present before
+     */
+    public Edge addEdge(Node from, Node to) {
+        Edge e = new Edge(from, to);
+        // adds unless it is present already
+        boolean added = edges.add(e);
+        return added ? e : null;
+    }
 
-	/**
-	 * Duplicate methdod from adding edge to graph. Probably only one shall remain.
-	 * @param fromId
-	 * @param toId
-	 * @return
-	 */
-	public int addEdge(int fromId, int toId) {
-		Node dpuFrom = getNodeById(fromId);
-		Node dpuTo = getNodeById(toId);
+    /**
+     * Duplicate methdod from adding edge to graph. Probably only one shall
+     * remain.
+     *
+     * @param fromId
+     * @param toId
+     * @return
+     */
+    public int addEdge(int fromId, int toId) {
+        Node dpuFrom = getNodeById(fromId);
+        Node dpuTo = getNodeById(toId);
 
-		//TODO: Check if same connection doesn't exist already!
-		//If it does - add to Set fails and returns false
-		//TODO: 2. Find Id of equal existing connection
+        //TODO: Check if same connection doesn't exist already!
+        //If it does - add to Set fails and returns false
+        //TODO: 2. Find Id of equal existing connection
 
-		Edge edge = new Edge(dpuFrom, dpuTo);
-        edge.setId(GetUniquePipelineConnectionId());
-		boolean newElement = edges.add(edge);
-		if(!newElement) {
-			return 0;
-		}
-		return edge.getId();
-	}
+        Edge edge = new Edge(dpuFrom, dpuTo);
+        boolean newElement = edges.add(edge);
+        if (!newElement) {
+            return 0;
+        }
+        return edge.hashCode();
+    }
 
-	/**
-	 * Removes edge from graph.
-	 * @param pcId
-	 * @return
-	 */
-	public boolean removeEdge(int pcId) {
-		Edge pc = getEdgeById(pcId);
-		if(pc != null) {
-			return edges.remove(pc);
-		}
-		return false;
-	}
+    /**
+     * Removes edge from graph.
+     *
+     * @param pcId
+     * @return
+     */
+    public boolean removeEdge(int pcId) {
+        Edge pc = getEdgeById(pcId);
+        if (pc != null) {
+            return edges.remove(pc);
+        }
+        return false;
+    }
 
-	/**
-	 * Gets edge with given id.
-	 * @param id
-	 * @return
-	 */
-	private Edge getEdgeById(int id) {
-		for(Edge el : edges) {
-			if(el.getId() == id) {
-				return el;
-			}
-		}
-		return null;
-	}
+    /**
+     * Gets edge with given id.
+     *
+     * @param id
+     * @return
+     */
+    private Edge getEdgeById(int id) {
+        for (Edge el : edges) {
+            if (el.hashCode() == id) {
+                return el;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Gets node with given id.
-	 * @param id
-	 * @return
-	 */
-	public Node getNodeById(int id) {
-		for(Node el : nodes) {
-			if(el.getId() == id) {
-				return el;
-			}
-		}
-		return null;
-	}
+    /**
+     * Gets node with given id.
+     *
+     * @param id
+     * @return
+     */
+    public Node getNodeById(int id) {
+        for (Node el : nodes) {
+            if (el.hashCode() == id) {
+                return el;
+            }
+        }
+        return null;
+    }
 
 //    /**
 //     * Gets DPUInstance of Node with given ID
@@ -211,12 +217,13 @@ public class PipelineGraph {
 	}
 
     public int GetUniqueDpuInstanceId() {
-		return ++dpuCounter;
-	}
+        return ++dpuCounter;
+    }
 
-	public int GetUniquePipelineConnectionId() {
-		return ++connectionCounter + CONNECTION_SEED;
-	}
-
-    /** End of hack */
+    public int GetUniquePipelineConnectionId() {
+        return ++connectionCounter + CONNECTION_SEED;
+    }
+    /**
+     * End of hack
+     */
 }

@@ -38,58 +38,61 @@ public class Edge {
 	 */
 	public Edge() {}
 
-	/**
-	 * Constructor with specification of connecting nodes.
-	 * @param from
-	 * @param to
-	 */
+    /**
+     * Constructor with specification of connecting nodes.
+     *
+     * @param from
+     * @param to
+     */
     public Edge(Node from, Node to) {
         this.from = from;
         this.to = to;
     }
 
-	/**
-	 * Returns start node of edge
-	 * @return
-	 */
+    /**
+     * Returns start node of edge
+     *
+     * @return
+     */
     public Node getFrom() {
         return from;
     }
 
-	/**
-	 * Returns end node of edge
-	 * @return
-	 */
+    /**
+     * Returns end node of edge
+     *
+     * @return
+     */
     public Node getTo() {
         return to;
     }
 
     @Override
-	public boolean equals(Object other) {
-		if(other.getClass() != Edge.class) {
-			return false;
-		}
-		Edge o = (Edge)other;
-		if(this.id == o.id) {
-			return true;
-		} else if(this.from.getId() == o.from.getId()
-				&& this.to.getId() == o.to.getId()) {
-			return true;
-		} else {
-			return this.from == o.from && this.to == o.to;
-		}
-	}
-
-    public int getId() {
-        return id;
+    public boolean equals(Object other) {
+        if (other.getClass() != Edge.class) {
+            return false;
+        }
+        Edge o = (Edge) other;
+        if (this.id == o.id) {
+            return true;
+        } else if (this.from.hashCode() == o.from.hashCode()
+                && this.to.hashCode() == o.to.hashCode()) {
+            return true;
+        } else {
+            return this.from == o.from && this.to == o.to;
+        }
     }
 
-	/**
-	 * Temporary solution of id generation.
-	 * @param getUniquePipelineConnectionId
-	 */
-    void setId(int getUniquePipelineConnectionId) {
-        id = getUniquePipelineConnectionId;
-    }
+//    public int getId() {
+//        return id;
+//    }
 
+    /**
+     * Temporary solution of id generation.
+     *
+     * @param getUniquePipelineConnectionId
+     */
+//    void setId(int getUniquePipelineConnectionId) {
+//        id = getUniquePipelineConnectionId;
+//    }
 }

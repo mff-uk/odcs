@@ -23,7 +23,11 @@ public class DPU {
 	
     private String name;
     
-	private String description;
+	private String description = "";
+	
+	 /** TODO change to boolean/enum and persist */
+	@Transient
+    private String visibility;
     
 	@Transient
 	private Type type;
@@ -36,11 +40,12 @@ public class DPU {
      */
     public DPU() {}
 
-	/**
-	 * Constructor with name and type of DPU.
-	 * @param name
-	 * @param type
-	 */
+    /**
+     * Constructor with name and type of DPU.
+     *
+     * @param name
+     * @param type
+     */
     public DPU(String name, Type type) {
         //this.id = id;
         this.name = name;
@@ -67,15 +72,24 @@ public class DPU {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
+    }
 
     public int getId() {
         return id;
     }
 
-	/**
-	 * Gets DPU type.
-	 * @return DPU type
-	 */
+    /**
+     * Gets DPU type.
+     *
+     * @return DPU type
+     */
     public Type getType() {
         return type;
     }
@@ -87,5 +101,5 @@ public class DPU {
     public String getJarPath() {
         return HACK_basePath + jarPath;
     }
-    public static String HACK_basePath = "file:///C:/MyGit/intlib/";
+    public static String HACK_basePath = "file:///C:/MyGit/intlib/module/";
 }

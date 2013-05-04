@@ -4,8 +4,8 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import javax.persistence.*;
 
 /**
- * Node represents DPU on the pipeline and holds information
- * about its position on the Pipeline canvas.
+ * Node represents DPU on the pipeline and holds information about its position
+ * on the Pipeline canvas.
  *
  * @author Jiri Tomes
  * @author Bogo
@@ -39,12 +39,14 @@ public class Node {
     /**
      * Empty constructor for JPA.
      */
-    public Node() {}
+    public Node() {
+    }
 
-	/**
-	 * Constructor with corresponding DPUInstance
-	 * @param dpuInstance
-	 */
+    /**
+     * Constructor with corresponding DPUInstance
+     *
+     * @param dpuInstance
+     */
     public Node(DPUInstance dpuInstance) {
         this.dpuInstance = dpuInstance;
     }
@@ -65,16 +67,16 @@ public class Node {
         this.position = newPosition;
     }
 
-    public int getId() {
-        return id;
-    }
+//    public int getId() {
+//        return id;
+//    }
 
-	/**
-	 * Temporary solution of id generation.
-	 * @param GetUniqueDpuInstanceId
-	 */
-    void setId(int getUniqueDpuInstanceId) {
-        id = getUniqueDpuInstanceId;
-    }
-
+    /**
+     * Temporary solution of id generation.
+     *
+     * @param GetUniqueDpuInstanceId
+     */
+//    void setId(int getUniqueDpuInstanceId) {
+//        id = getUniqueDpuInstanceId;
+//    }
 }

@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.commons.app.user;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Holds user data (his account).
  *
@@ -15,7 +14,7 @@ public final class User implements RoleHolder, Resource {
     private String email;
     private String name;
     private String password;
-    private List<Role> roles = new ArrayList<Role>();
+    private List<Role> roles = new ArrayList<>();
 
     public User(String name, String password, String email) {
         this.name = name;
@@ -47,14 +46,17 @@ public final class User implements RoleHolder, Resource {
         password = newPassword;
     }
 
+    @Override
     public void addRole(Role role) {
         roles.add(role);
     }
 
+    @Override
     public List<Role> getRoles() {
         return roles;
     }
 
+    @Override
     public void setRoles(List<Role> newRoles) {
         roles = newRoles;
     }
@@ -63,9 +65,8 @@ public final class User implements RoleHolder, Resource {
         return id;
     }
 
-	@Override
-	public String getResourceId() {
-		return User.class.toString();
-	}
-
+    @Override
+    public String getResourceId() {
+        return User.class.toString();
+    }
 }

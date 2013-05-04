@@ -76,6 +76,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onLogMessage(String message) {
 				//TODO: Log JS messages
 			}
+
+			@Override
+			public void onDebugRequested(int dpuId) {
+				//TODO: Debug
+			}
 		});
 	}
 
@@ -118,10 +123,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	public void showPipeline(Pipeline pipeline) {
 		this.graph = pipeline.getGraph();
 		for(Node node : graph.getNodes()) {
-			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.getId(), node.getDpuInstance().getName(), node.getDpuInstance().getDescription(), node.getPosition().getX(), node.getPosition().getY());
+			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), node.getDpuInstance().getName(), node.getDpuInstance().getDescription(), node.getPosition().getX(), node.getPosition().getY());
 		}
 		for(Edge edge : graph.getEdges()) {
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.getId(), edge.getFrom().getId(), edge.getTo().getId());
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode());
 		}
 	}
 
@@ -158,7 +163,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void windowClose(CloseEvent e) {
-				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.getId(), dpu.getName(), dpu.getDescription());
+				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
 		});
         App.getApp().addWindow(detailDialog);
