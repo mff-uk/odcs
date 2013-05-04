@@ -47,16 +47,16 @@ public class Node {
         this.position = newPosition;
     }
 
-    public int getId() {
-        return id;
-    }
+//    public int getId() {
+//        return id;
+//    }
 
     /**
      * Temporary solution of id generation.
      *
      * @param GetUniqueDpuInstanceId
      */
-    void setId(int getUniqueDpuInstanceId) {
-        id = getUniqueDpuInstanceId;
-    }
+//    void setId(int getUniqueDpuInstanceId) {
+//        id = getUniqueDpuInstanceId;
+//    }
 }

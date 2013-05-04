@@ -48,24 +48,24 @@ public class Edge {
         Edge o = (Edge) other;
         if (this.id == o.id) {
             return true;
-        } else if (this.from.getId() == o.from.getId()
-                && this.to.getId() == o.to.getId()) {
+        } else if (this.from.hashCode() == o.from.hashCode()
+                && this.to.hashCode() == o.to.hashCode()) {
             return true;
         } else {
             return this.from == o.from && this.to == o.to;
         }
     }
 
-    public int getId() {
-        return id;
-    }
+//    public int getId() {
+//        return id;
+//    }
 
     /**
      * Temporary solution of id generation.
      *
      * @param getUniquePipelineConnectionId
      */
-    void setId(int getUniquePipelineConnectionId) {
-        id = getUniquePipelineConnectionId;
-    }
+//    void setId(int getUniquePipelineConnectionId) {
+//        id = getUniquePipelineConnectionId;
+//    }
 }

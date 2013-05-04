@@ -57,9 +57,8 @@ public class PipelineGraph {
     public int addDpu(DPU dpu) {
         DPUInstance dpuInstance = new DPUInstance(dpu);
         Node node = new Node(dpuInstance);
-        node.setId(GetUniqueDpuInstanceId());
         nodes.add(node);
-        return node.getId();
+        return node.hashCode();
     }
 
     /**
@@ -108,12 +107,11 @@ public class PipelineGraph {
         //TODO: 2. Find Id of equal existing connection
 
         Edge edge = new Edge(dpuFrom, dpuTo);
-        edge.setId(GetUniquePipelineConnectionId());
         boolean newElement = edges.add(edge);
         if (!newElement) {
             return 0;
         }
-        return edge.getId();
+        return edge.hashCode();
     }
 
     /**
@@ -138,7 +136,7 @@ public class PipelineGraph {
      */
     private Edge getEdgeById(int id) {
         for (Edge el : edges) {
-            if (el.getId() == id) {
+            if (el.hashCode() == id) {
                 return el;
             }
         }
@@ -153,7 +151,7 @@ public class PipelineGraph {
      */
     public Node getNodeById(int id) {
         for (Node el : nodes) {
-            if (el.getId() == id) {
+            if (el.hashCode() == id) {
                 return el;
             }
         }
