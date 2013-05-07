@@ -13,11 +13,36 @@ import cz.cuni.xrg.intlib.commons.VisibilityType;
  */
 public class DPU {
 
+	/**
+	 * DPU id. 
+	 */
     private int id;
+    
+    /**
+     * DPU name, provided by user.
+     */
     private String name;
+    
+    /**
+     * DPU description, provided by user.
+     */
     private String description;
+    
+    /**
+     * DPU type, determined by associated jar file.
+     */
     private Type type;
+    
+    /**
+     * VIsibility.
+     */
     private VisibilityType visibility;
+    
+    /**
+     * Path to the jar file. The path is relative to the 
+     * AppConfiguration.dpuDirectory.
+     * @see AppConfiguration
+     */
     private String jarPath;
 
     /**
@@ -73,11 +98,6 @@ public class DPU {
         return id;
     }
 
-    /**
-     * Gets DPU type.
-     *
-     * @return DPU type
-     */
     public Type getType() {
         return type;
     }
@@ -87,7 +107,6 @@ public class DPU {
     }
 
     public String getJarPath() {
-        return HACK_basePath + jarPath;
+        return jarPath;
     }
-    public static String HACK_basePath = "file:///C:/MyGit/intlib/module/";
 }

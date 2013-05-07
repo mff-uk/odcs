@@ -28,7 +28,7 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.Type;
-import cz.cuni.xrg.intlib.commons.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 
 import java.util.List;
 
