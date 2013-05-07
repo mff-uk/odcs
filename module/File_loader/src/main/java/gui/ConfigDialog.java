@@ -142,16 +142,16 @@ public class ConfigDialog extends CustomComponent {
         textFieldDir.setImmediate(false);
         textFieldDir.setWidth("100%");
         textFieldDir.setHeight("-1px");
-        textFieldDir.setInputPrompt("C:/ted/");
+        textFieldDir.setInputPrompt("C:\\ted\\");
         verticalLayoutCore.addComponent(textFieldDir);
 
         // textFieldFileName
         textFieldFileName = new TextField();
-        textFieldFileName.setCaption("File name (no extension):");
+        textFieldFileName.setCaption("File name:");
         textFieldFileName.setImmediate(false);
         textFieldFileName.setWidth("100%");
         textFieldFileName.setHeight("-1px");
-        textFieldFileName.setInputPrompt("test-ted");
+        textFieldFileName.setInputPrompt("test-ted.ttl");
         verticalLayoutCore.addComponent(textFieldFileName);
 
         // checkBoxDiffName
