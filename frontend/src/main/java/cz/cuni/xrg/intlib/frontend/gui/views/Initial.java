@@ -53,7 +53,7 @@ public class Initial extends CustomComponent implements View {
 				"<p>Linked Data management tool is a joint effort of <a href=\"http://xrg.ksi.ms.mff.cuni.cz/\">XRG Research Group</a> of Charles University in Prague " +
 				"and Semantic Web Company, Vienna. <br/>The tool is build on the idea of <a href=\"http://sourceforge.net/p/odcleanstore/home/Home/\">ODCleanStore</a> " +
 				"(developed by Charles University in Prague) and LDM tools (developed by Semantic Web Company, Vienna). <br/>" +
-				"For more information and latest version, please visit the <a href=\"https://github.com/mff-uk/intlib\"> website of the tool </a>. ");
+				"For more information and latest version, please visit the <a href=\"https://github.com/mff-uk/intlib\"> website of the tool </a>. </p><p> For description of iteration 1 features and acceptance tests (examples of use), see <a href=\"https://grips.semantic-web.at/display/LOD2/1.+iteration\"> (requires access to confluence) </p>");
 						
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label, "top:40.0px;left:80.0px;");

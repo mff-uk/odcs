@@ -147,7 +147,7 @@ public class ConfigDialog extends CustomComponent {
 
         // textFieldFileName
         textFieldFileName = new TextField();
-        textFieldFileName.setCaption("File name (no extension):");
+        textFieldFileName.setCaption("File name:");
         textFieldFileName.setImmediate(false);
         textFieldFileName.setWidth("100%");
         textFieldFileName.setHeight("-1px");
