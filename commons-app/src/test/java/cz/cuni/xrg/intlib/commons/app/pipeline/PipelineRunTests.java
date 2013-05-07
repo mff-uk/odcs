@@ -19,7 +19,7 @@ public class PipelineRunTests {
 	 */
 //	@Test
 	public void testTrivialRun() {
-		moduleFacade = new ModuleFacade();
+		//moduleFacade = new ModuleFacade();
 		
 		moduleFacade.start(
 				",com.vaadin,com.vaadin.ui," +

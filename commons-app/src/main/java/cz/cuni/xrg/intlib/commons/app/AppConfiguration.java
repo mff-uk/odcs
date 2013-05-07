@@ -10,7 +10,7 @@ public class AppConfiguration {
 	/**
 	 * Path to the dpu directory folder.
 	 */
-	private String dpuDirectory = "path to the project root directory";
+	private String dpuDirectory = "file:///C:/MyGit/intlib/module/";
 	
 	public String getDpuDirectory() {
 		return this.dpuDirectory;
