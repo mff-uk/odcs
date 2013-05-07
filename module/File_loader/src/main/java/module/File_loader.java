@@ -81,11 +81,16 @@ public class File_loader implements GraphicalLoader {
 
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
-
-    	//RDFFormatType enumFormatType = RDFFormatType.RDFXML;
-
+        
         switch (enumFormatType) {
-            case AUTO:
+            case AUTO: {
+                String fileName=getFileName();
+                
+                RDFFormat format= RDFFormat.forFileName(fileName);
+                if (format==null) format= RDFFormat.RDFXML;
+                                
+                return format;
+            }
             case RDFXML: {
                 return RDFFormat.RDFXML;
             }
@@ -95,9 +100,11 @@ public class File_loader implements GraphicalLoader {
             case TRIG: {
                 return RDFFormat.TRIG;
             }
+                
             case TTL: {
                 return RDFFormat.TURTLE;
             }
+                
         }
 
         throw new NotSupporteRDFFormatException();
