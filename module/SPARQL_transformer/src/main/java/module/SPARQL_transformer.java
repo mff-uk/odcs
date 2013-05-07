@@ -29,7 +29,7 @@ public class SPARQL_transformer implements GraphicalTransformer {
 
     @Override
     public void saveConfigurationDefault(Configuration configuration) {
-    	configuration.setValue(Config.SPARQL_Update_Query.name(), "SELECT {?s ?p ?o} where {?s ?p ?o}");  	
+    	configuration.setValue(Config.SPARQL_Update_Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");  	
     }     
     
     @Override
