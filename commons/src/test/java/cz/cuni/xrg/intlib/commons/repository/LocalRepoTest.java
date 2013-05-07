@@ -91,10 +91,12 @@ public class LocalRepoTest {
 
         String fileName = "RDF_output.rdf";
         RDFFormat format = RDFFormat.RDFXML;
+        boolean canBeOverWriten=true;
+        boolean isNameUnique=false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, true);
+                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -106,10 +108,12 @@ public class LocalRepoTest {
 
         String fileName = "N3_output.n3";
         RDFFormat format = RDFFormat.N3;
+        boolean canBeOverWriten=true;
+        boolean isNameUnique=false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, true);
+                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -121,10 +125,12 @@ public class LocalRepoTest {
 
         String fileName = "TRIG_output.trig";
         RDFFormat format = RDFFormat.TRIG;
+        boolean canBeOverWriten=true;
+        boolean isNameUnique=false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, true);
+                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -136,10 +142,12 @@ public class LocalRepoTest {
 
         String fileName = "TURTLE_output.ttl";
         RDFFormat format = RDFFormat.TURTLE;
+        boolean canBeOverWriten=true;
+        boolean isNameUnique=false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, true);
+                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -201,10 +209,12 @@ public class LocalRepoTest {
 
         String fileName = "AllData_output.rdf";
         RDFFormat format = RDFFormat.RDFXML;
+        boolean canBeOverWriten=true;
+        boolean isNameUnique=false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, true);
+                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -358,10 +368,12 @@ public class LocalRepoTest {
 
         String fileName = "output-ted-test.ttl";
         RDFFormat format = RDFFormat.TURTLE;
+        boolean canBeOverWriten=true;
+        boolean isNameUnique=false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, true);
+                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());

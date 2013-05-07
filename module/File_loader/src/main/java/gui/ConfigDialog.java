@@ -1,5 +1,7 @@
 package gui;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import module.Config;
 
 import com.vaadin.ui.*;
@@ -16,7 +18,6 @@ import cz.cuni.xrg.intlib.commons.repository.RDFFormatType;
 public class ConfigDialog extends CustomComponent {
 
     private static final long serialVersionUID = 1L;
-
     private GridLayout mainLayout;
     private TabSheet tabSheet;
     private VerticalLayout verticalLayoutDetails;
@@ -28,13 +29,11 @@ public class ConfigDialog extends CustomComponent {
     private TextField textFieldFileName; // FileName
     private TextField textFieldDir;	//Directory
 
-    //private Map<String, RDFFormatType> map = new HashMap<String, RDFFormatType>();
     public ConfigDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
         mapData();
     }
-
 
     private void mapData() {
 
@@ -47,7 +46,7 @@ public class ConfigDialog extends CustomComponent {
 
         comboBoxFormat.setValue(RDFFormatType.TTL);
 
-  
+
     }
 
     /**
@@ -57,7 +56,7 @@ public class ConfigDialog extends CustomComponent {
      * @return current configuration or null
      */
     public void getConfiguration(Configuration config) {
-    	config.setValue(Config.DiffName.name(), checkBoxDiffName.getValue());
+        config.setValue(Config.DiffName.name(), checkBoxDiffName.getValue());
         config.setValue(Config.DirectoryPath.name(), textFieldDir.getValue());
         config.setValue(Config.FileName.name(), textFieldFileName.getValue());
         config.setValue(Config.RDFFileFormat.name(), (RDFFormatType) comboBoxFormat.getValue());
@@ -71,12 +70,12 @@ public class ConfigDialog extends CustomComponent {
      */
     public void setConfiguration(Configuration conf) {
         try {
-        	checkBoxDiffName.setValue((Boolean) conf.getValue(Config.DiffName.name()));
+            checkBoxDiffName.setValue((Boolean) conf.getValue(Config.DiffName.name()));
             textFieldDir.setValue((String) conf.getValue(Config.DirectoryPath.name()));
             textFieldFileName.setValue((String) conf.getValue(Config.FileName.name()));
             comboBoxFormat.setValue((RDFFormatType) conf.getValue(Config.RDFFileFormat.name()));
 
-        } catch (Exception ex) {
+        } catch (Property.ReadOnlyException | Converter.ConversionException ex) {
             // throw setting exception
             throw new ConfigurationException();
         }
@@ -142,16 +141,16 @@ public class ConfigDialog extends CustomComponent {
         textFieldDir.setImmediate(false);
         textFieldDir.setWidth("100%");
         textFieldDir.setHeight("-1px");
-        textFieldDir.setInputPrompt("C:/ted/");
+        textFieldDir.setInputPrompt("C:\\ted\\");
         verticalLayoutCore.addComponent(textFieldDir);
 
         // textFieldFileName
         textFieldFileName = new TextField();
-        textFieldFileName.setCaption("File name (no extension):");
+        textFieldFileName.setCaption("File name:");
         textFieldFileName.setImmediate(false);
         textFieldFileName.setWidth("100%");
         textFieldFileName.setHeight("-1px");
-        textFieldFileName.setInputPrompt("test-ted");
+        textFieldFileName.setInputPrompt("test-ted.ttl");
         verticalLayoutCore.addComponent(textFieldFileName);
 
         // checkBoxDiffName

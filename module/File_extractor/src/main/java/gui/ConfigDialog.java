@@ -96,11 +96,11 @@ public class ConfigDialog extends CustomComponent {
 
         // textFieldPath
         textFieldPath = new TextField();
-        textFieldPath.setCaption("Path to file or directory:");
+        textFieldPath.setCaption("HTTP URL/Path to file or directory on the server:");
         textFieldPath.setImmediate(false);
         textFieldPath.setWidth("100%");
         textFieldPath.setHeight("-1px");
-        textFieldPath.setInputPrompt("C:/ted/ted1.ttl");
+        textFieldPath.setInputPrompt("http://example.org/test.ttl");
         mainLayout.addComponent(textFieldPath, 0, 0);
 
 
@@ -127,9 +127,9 @@ public class ConfigDialog extends CustomComponent {
         // labelOnly
         labelOnly = new Label();
         labelOnly.setImmediate(false);
-        labelOnly.setWidth("181px");
+        labelOnly.setWidth("240px");
         labelOnly.setHeight("-1px");
-        labelOnly.setValue("Process only files with extension:");
+        labelOnly.setValue("If directory, process only files with extension:");
         horizontalLayoutOnly.addComponent(labelOnly);
 
         // textFieldOnly

@@ -60,7 +60,7 @@ public class DPU {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public VisibilityType getVisibility() {
         return visibility;
     }
