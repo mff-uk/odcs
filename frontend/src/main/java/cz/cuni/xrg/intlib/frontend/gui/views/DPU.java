@@ -28,6 +28,8 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.VisibilityType;
+
 import java.util.List;
 
 /**
@@ -240,7 +242,7 @@ public class DPU extends CustomComponent implements View {
 					tabSheet.setVisible(true);
 					String selectedDpuName = selectedDpu.getName();
 					String selecteDpuDescription = selectedDpu.getDescription();
-					String selecteDpuVisibility = selectedDpu.getVisibility();
+					VisibilityType selecteDpuVisibility = selectedDpu.getVisibility();
 					Type selectedDpuType = selectedDpu.getType();
 					dpuName.setValue(selectedDpuName);
 					dpuDescription.setValue(selecteDpuDescription);
@@ -316,8 +318,8 @@ public class DPU extends CustomComponent implements View {
 
 		groupVisibility = new OptionGroup();
 		groupVisibility.addStyleName("horizontalgroup");
-		groupVisibility.addItem("Private");
-		groupVisibility.addItem("Public");
+		groupVisibility.addItem(VisibilityType.PRIVATE);
+		groupVisibility.addItem(VisibilityType.PUBLIC);
 
 		dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
@@ -404,7 +406,7 @@ public class DPU extends CustomComponent implements View {
 							selectedDpu.setName(dpuName.getValue());
 							selectedDpu.setDescription(dpuDescription
 									.getValue());
-							selectedDpu.setVisibility((String) groupVisibility
+							selectedDpu.setVisibility((VisibilityType)groupVisibility
 									.getValue());
 
 						}

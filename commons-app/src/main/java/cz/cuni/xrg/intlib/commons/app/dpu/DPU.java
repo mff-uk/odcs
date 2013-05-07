@@ -1,12 +1,14 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.VisibilityType;
 
 /**
  * Represent imported DPUExecution in database.
  *
  * @author Petyr
  * @author Bogo
+ * @author Maria Kukhar
  *
  */
 public class DPU {
@@ -15,7 +17,7 @@ public class DPU {
     private String name;
     private String description;
     private Type type;
-    private String visibility;
+    private VisibilityType visibility;
     private String jarPath;
 
     /**
@@ -59,11 +61,11 @@ public class DPU {
         this.description = description;
     }
     
-    public String getVisibility() {
+    public VisibilityType getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(String visibility) {
+    public void setVisibility(VisibilityType visibility) {
         this.visibility = visibility;
     }
 
