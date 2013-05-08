@@ -24,7 +24,17 @@ public class UniqueNameGenerator {
 
         }
 
-        String newName = name + "-" + String.valueOf(value);
+        String[]nameParts=name.split("\\.");
+        
+        String newName;
+        if(nameParts.length>1)
+        {
+            newName=nameParts[0]+"-"+String.valueOf(value)+"."+nameParts[1];
+        }
+        else
+        {
+            newName=name + "-" + String.valueOf(value);
+        }
 
         return newName;
     }
