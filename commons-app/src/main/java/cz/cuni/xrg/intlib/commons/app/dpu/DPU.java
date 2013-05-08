@@ -1,21 +1,48 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 
 /**
  * Represent imported DPUExecution in database.
  *
  * @author Petyr
  * @author Bogo
+ * @author Maria Kukhar
  *
  */
 public class DPU {
 
+	/**
+	 * DPU id. 
+	 */
     private int id;
+    
+    /**
+     * DPU name, provided by user.
+     */
     private String name;
+    
+    /**
+     * DPU description, provided by user.
+     */
     private String description;
+    
+    /**
+     * DPU type, determined by associated jar file.
+     */
     private Type type;
-    private String visibility;
+    
+    /**
+     * VIsibility.
+     */
+    private VisibilityType visibility;
+    
+    /**
+     * Path to the jar file. The path is relative to the 
+     * AppConfiguration.dpuDirectory.
+     * @see AppConfiguration
+     */
     private String jarPath;
 
     /**
@@ -58,12 +85,12 @@ public class DPU {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    public String getVisibility() {
+
+    public VisibilityType getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(String visibility) {
+    public void setVisibility(VisibilityType visibility) {
         this.visibility = visibility;
     }
 
@@ -71,11 +98,6 @@ public class DPU {
         return id;
     }
 
-    /**
-     * Gets DPU type.
-     *
-     * @return DPU type
-     */
     public Type getType() {
         return type;
     }
@@ -85,7 +107,6 @@ public class DPU {
     }
 
     public String getJarPath() {
-        return HACK_basePath + jarPath;
+        return jarPath;
     }
-    public static String HACK_basePath = "file:///C:/MyGit/intlib/module/";
 }

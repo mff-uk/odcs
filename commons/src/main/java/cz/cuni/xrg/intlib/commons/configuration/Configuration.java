@@ -1,9 +1,9 @@
 package cz.cuni.xrg.intlib.commons.configuration;
 
 /**
- * Class for basic configuration.
+ * Interface for dpu's configuration.
+ * 
  * @author Petyr
- *
  */
 public interface Configuration {
 		

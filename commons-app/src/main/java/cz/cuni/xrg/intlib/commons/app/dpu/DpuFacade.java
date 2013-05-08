@@ -110,11 +110,11 @@ public class DpuFacade {
 
     private void prefillDPUs() {
 
-		DPU basicEx = new DPU("RDF Extractor", Type.EXTRACTOR);
+		DPU basicEx = new DPU("SPARQL Extractor", Type.EXTRACTOR);
 		basicEx.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
 		this.save(basicEx);
 
-		DPU sparqlEx = new DPU("File Extractor", Type.EXTRACTOR);
+		DPU sparqlEx = new DPU("RDF File Extractor", Type.EXTRACTOR);
 		sparqlEx.setJarPath("File_extractor/target/File_extractor-0.0.1.jar");
 		this.save(sparqlEx);
 
@@ -122,11 +122,11 @@ public class DpuFacade {
 		genericTr.setJarPath("SPARQL_transformer/target/SPARQL_transformer-0.0.1.jar");
 		save(genericTr);
 
-		DPU rdfLo = new DPU("RDF Loader", Type.LOADER);
+		DPU rdfLo = new DPU("SPARQL Loader", Type.LOADER);
 		rdfLo.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
 		save(rdfLo);
 
-		DPU sparqlLo = new DPU("File Loader", Type.LOADER);
+		DPU sparqlLo = new DPU("RDF File Loader", Type.LOADER);
 		sparqlLo.setJarPath("File_loader/target/File_loader-0.0.1.jar");
 		save(sparqlLo);
     }
