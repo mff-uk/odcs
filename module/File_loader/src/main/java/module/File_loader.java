@@ -124,10 +124,11 @@ public class File_loader implements GraphicalLoader {
         return fileName;
     }
 
-    private boolean hasUniqueName() {
+    private Boolean hasUniqueName() {
         Boolean isNameUnique = (Boolean) config.getValue(Config.DiffName.name());
 
-        return isNameUnique;
+        if (isNameUnique==null) return Boolean.FALSE;
+        else return isNameUnique;
     }
 
     /**
@@ -141,7 +142,7 @@ public class File_loader implements GraphicalLoader {
             String directoryPath = getDirectoryPath();
             String fileName = getFileName();
             RDFFormat format = getRDFFormat();
-            boolean isNameUnique = hasUniqueName();
+            boolean isNameUnique = hasUniqueName().booleanValue();
             boolean canFileOverwritte = true;
 
             repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte, isNameUnique);

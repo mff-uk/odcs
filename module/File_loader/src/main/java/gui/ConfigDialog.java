@@ -70,7 +70,7 @@ public class ConfigDialog extends CustomComponent {
      */
     public void setConfiguration(Configuration conf) {
         try {
-            checkBoxDiffName.setValue((Boolean) conf.getValue(Config.DiffName.name()));
+            checkBoxDiffName.setValue((Boolean)conf.getValue(Config.DiffName.name()));
             textFieldDir.setValue((String) conf.getValue(Config.DirectoryPath.name()));
             textFieldFileName.setValue((String) conf.getValue(Config.FileName.name()));
             comboBoxFormat.setValue((RDFFormatType) conf.getValue(Config.RDFFileFormat.name()));
@@ -160,6 +160,7 @@ public class ConfigDialog extends CustomComponent {
         checkBoxDiffName.setImmediate(false);
         checkBoxDiffName.setWidth("-1px");
         checkBoxDiffName.setHeight("-1px");
+        checkBoxDiffName.setValue(Boolean.FALSE);
         verticalLayoutCore.addComponent(checkBoxDiffName);
 
         // horizontalLayoutFormat

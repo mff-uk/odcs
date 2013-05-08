@@ -91,7 +91,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 				",com.vaadin.shared.ui.combobox" +
 				",com.vaadin.server" +
 				// OpenRdf
-				",org.openrdf.rio"
+				",org.openrdf.rio" +
+                                ",com.vaadin.data.util.converter"
 						);
 				
 		// TODO: set module relative path .. ? 
