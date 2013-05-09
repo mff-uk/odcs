@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.configuration;
 
+import java.io.Serializable;
+
 /**
  * Interface for dpu's configuration.
  * 
@@ -20,5 +22,5 @@ public interface Configuration {
 	 * @param parameter object id
 	 * @param value object to store
 	 */
-	public void setValue(String parameter, Object value);
+	public void setValue(String parameter, Serializable value);
 }

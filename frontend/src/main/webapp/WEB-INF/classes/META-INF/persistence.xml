@@ -8,6 +8,8 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPU</class>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance</class>
+		<class>cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration</class>
+		<class>cz.cuni.xrg.intlib.commons.app.dpu.TemplateConfiguration</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node</class>

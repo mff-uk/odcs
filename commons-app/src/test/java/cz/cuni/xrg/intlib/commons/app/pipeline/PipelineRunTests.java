@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import cz.cuni.xrg.intlib.commons.DpuType;
+import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
@@ -19,7 +20,8 @@ public class PipelineRunTests {
 	 */
 //	@Test
 	public void testTrivialRun() {
-		moduleFacade = new ModuleFacade();
+		
+		moduleFacade = new ModuleFacade(new AppConfiguration());
 		
 		moduleFacade.start(
 				",com.vaadin,com.vaadin.ui," +
