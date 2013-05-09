@@ -119,6 +119,19 @@ public class LocalRepo {
         return graph;
     }
 
+    private void createNewFile(File file) {
+
+        if (file == null) {
+            return;
+        }
+        try {
+            file.createNewFile();
+        } catch (IOException ex) {
+            logger.debug(ex.getMessage());
+        }
+
+    }
+
     private Statement createNewStatement(String namespace, String subjectName, String predicateName, String objectName) {
 
         ValueFactory valueFaktory = repository.getValueFactory();
@@ -258,7 +271,7 @@ public class LocalRepo {
      * @throws CannotOverwriteFileException
      */
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException {
-        loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false);
+        loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false, false);
     }
 
     /**
@@ -270,7 +283,8 @@ public class LocalRepo {
      * @param canFileOverWrite
      * @throws CannotOverwriteFileException
      */
-    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format, boolean canFileOverWrite) throws CannotOverwriteFileException {
+    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
+            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException {
 
         final String slash = File.separator;
 
@@ -287,18 +301,26 @@ public class LocalRepo {
 
             File dataFile = new File(directoryPath + fileName);
 
-            if (!dataFile.exists() || canFileOverWrite) {
-                try {
-                    dataFile.createNewFile();
-                } catch (IOException ex) {
-                    logger.debug(ex.getMessage());
-                }
+            if (!dataFile.exists()) {
+                createNewFile(dataFile);
 
             } else {
-                logger.debug("File existed and cannot be overwritten");
-                throw new CannotOverwriteFileException();
+                if (isNameUnique) {
+
+                    String uniqueFileName = UniqueNameGenerator.getNextName(fileName);
+
+                    dataFile = new File(directoryPath + uniqueFileName);
+                    createNewFile(dataFile);
+
+                } else if (canFileOverWrite) {
+                    createNewFile(dataFile);
+                } else {
+                    logger.debug("File existed and cannot be overwritten");
+                    throw new CannotOverwriteFileException();
+                }
 
             }
+
 
             OutputStreamWriter os;
             try {

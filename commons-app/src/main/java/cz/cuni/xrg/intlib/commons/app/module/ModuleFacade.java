@@ -6,6 +6,7 @@ import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
+import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.osgi.*;
 
 /**
@@ -22,10 +23,17 @@ public class ModuleFacade {
 	private Framework framework;
 	
 	/**
-	 * Base ctor.
+	 * Application configuration.
 	 */
-	public ModuleFacade() {
+	private AppConfiguration appConfiguration;
+	
+	/**
+	 * Base ctor.
+	 * @param appConfiguration application configuration
+	 */
+	public ModuleFacade(AppConfiguration appConfiguration) {
 		this.framework = new Framework();
+		this.appConfiguration = appConfiguration;
 	}
 	
 	/**
@@ -47,13 +55,13 @@ public class ModuleFacade {
 	}
 	
 	/**
-	 * Try to load DPUExecutive from given uri.
-	 * @param uri uri to module file
+	 * Try to load DPUExecutive from given path.
+	 * @param path path to bundle (jar file) relative to dpu's directory
 	 * @return loaded module
 	 * @throws ModuleException
 	 */
-	public DPUExecutive getInstance(String uri) throws ModuleException {
-		return this.framework.loadDPU(uri);
+	public DPUExecutive getInstance(String path) throws ModuleException {
+		return this.framework.loadDPU(appConfiguration.getDpuDirectory() + path);
 	}
 	
 	/**
@@ -93,7 +101,7 @@ public class ModuleFacade {
 	 */
 	public void installDirectory(String directoryPath) {
 		String message = "";
-		
+// TODO: Propagate exceptions to application ..		
 		File directory = new File( directoryPath );
 		File[] fList = directory.listFiles();
 		for (File file : fList){

@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
-
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.Window;
@@ -14,19 +13,19 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
-
+import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 
 /**
  * Component for visualization of the pipeline.
+ *
  * @author Bogo
  */
 @SuppressWarnings("serial")
-@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.4.3.min.js", "jquery-2.0.0.min.js" })
+@JavaScript({"js_pipelinecanvas.js", "kinetic-v4.4.3.min.js", "jquery-2.0.0.min.js"})
 public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	int dpuCount = 0;
 	int connCount = 0;
-
 	private PipelineGraph graph;
 
 	/**
@@ -45,10 +44,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDetailRequested(int dpuId) {
 				// TODO Auto-generated method stub
 				// propably publish event one level higher
-                Node node = graph.getNodeById(dpuId);
-                if(node != null) {
-                    showDPUDetail(node);
-                }
+				Node node = graph.getNodeById(dpuId);
+				if (node != null) {
+					showDPUDetail(node);
+				}
 			}
 
 			@Override
@@ -79,17 +78,29 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onDebugRequested(int dpuId) {
-				//TODO: Debug
+				showDebugWindow();
 			}
 		});
+	}
+
+	private void showDebugWindow() throws IllegalArgumentException, NullPointerException {
+		//TODO: Debug
+		DebuggingView dv = new DebuggingView();
+		dv.addCloseListener(new Window.CloseListener() {
+
+			@Override
+			public void windowClose(CloseEvent e) {
+			}
+		});
+		App.getApp().addWindow(dv);
 	}
 
 	/**
 	 * Method initializing client side RPC.
 	 */
 	public void init() {
-        getRpcProxy(PipelineCanvasClientRpc.class).init();
-    }
+		getRpcProxy(PipelineCanvasClientRpc.class).init();
+	}
 
 	private void dpuMoved(int dpuId, int newX, int newY) {
 		graph.moveNode(dpuId, newX, newY);
@@ -97,6 +108,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Adds new DPU to graph canvas.
+	 *
 	 * @param dpu
 	 * @param x
 	 * @param y
@@ -108,6 +120,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Adds new edge to graph canvas.
+	 *
 	 * @param dpuFrom
 	 * @param dpuTo
 	 */
@@ -118,20 +131,22 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Shows given pipeline on graph canvas.
+	 *
 	 * @param pipeline
 	 */
 	public void showPipeline(Pipeline pipeline) {
 		this.graph = pipeline.getGraph();
-		for(Node node : graph.getNodes()) {
+		for (Node node : graph.getNodes()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), node.getDpuInstance().getName(), node.getDpuInstance().getDescription(), node.getPosition().getX(), node.getPosition().getY());
 		}
-		for(Edge edge : graph.getEdges()) {
+		for (Edge edge : graph.getEdges()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode());
 		}
 	}
 
 	/**
 	 * Saves graph from graph canvas.
+	 *
 	 * @param pipeline
 	 */
 	public void saveGraph(Pipeline pipeline) {
@@ -147,18 +162,18 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	@Override
-	  protected PipelineCanvasState getState() {
-	    return (PipelineCanvasState) super.getState();
-	  }
+	protected PipelineCanvasState getState() {
+		return (PipelineCanvasState) super.getState();
+	}
 
-    /**
-     * Shows detail of given DPUInstance in new sub-window
-     *
-     * @param dpu
-     */
-    public void showDPUDetail(final Node node) {
+	/**
+	 * Shows detail of given DPUInstance in new sub-window
+	 *
+	 * @param dpu
+	 */
+	public void showDPUDetail(final Node node) {
 		final DPUInstance dpu = node.getDpuInstance();
-        DPUDetail detailDialog = new DPUDetail(dpu);
+		DPUDetail detailDialog = new DPUDetail(dpu);
 		detailDialog.addCloseListener(new Window.CloseListener() {
 
 			@Override
@@ -166,7 +181,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
 		});
-        App.getApp().addWindow(detailDialog);
+		App.getApp().addWindow(detailDialog);
 
-    }
+	}
 }

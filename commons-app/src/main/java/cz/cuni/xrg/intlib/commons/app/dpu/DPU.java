@@ -2,12 +2,14 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.DpuType;
 import javax.persistence.*;
+import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 
 /**
  * Represent imported DPUExecution in database.
  *
  * @author Petyr
  * @author Bogo
+ * @author Maria Kukhar
  *
  */
 @Entity
@@ -20,20 +22,36 @@ public class DPU {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-	
+    
+    /**
+     * DPU name, provided by user.
+     */
     private String name;
     
-	private String description = "";
-	
-	 /** TODO change to boolean/enum and persist */
-	@Transient
-    private String visibility;
+    /**
+     * DPU description, provided by user.
+     */
+    private String description;
     
+    /**
+     * DPU type, determined by associated jar file.
+     */
 	@Enumerated(EnumType.STRING)
-	private DpuType type;
+    private DpuType type;
     
+    /**
+     * VIsibility.
+     */
+	@Transient
+    private VisibilityType visibility;
+    
+    /**
+     * Path to the jar file. The path is relative to the 
+     * AppConfiguration.dpuDirectory.
+     * @see AppConfiguration
+     */
 	@Column(name="jar_path")
-	private String jarPath;
+    private String jarPath;
 
     /**
      * Allow empty constructor for JPA.
@@ -72,12 +90,12 @@ public class DPU {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    public String getVisibility() {
+
+    public VisibilityType getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(String visibility) {
+    public void setVisibility(VisibilityType visibility) {
         this.visibility = visibility;
     }
 
@@ -99,7 +117,6 @@ public class DPU {
     }
 
     public String getJarPath() {
-        return HACK_basePath + jarPath;
+        return jarPath;
     }
-    public static String HACK_basePath = "file:///C:/MyGit/intlib/module/";
 }

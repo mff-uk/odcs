@@ -36,11 +36,11 @@ public class File_loader implements GraphicalLoader {
 
     @Override
     public void saveConfigurationDefault(Configuration configuration) {
-    	configuration.setValue(Config.FileName.name(), "");
-    	configuration.setValue(Config.DirectoryPath.name(), "");
-    	configuration.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);   	
-    }      
-    
+        configuration.setValue(Config.FileName.name(), "");
+        configuration.setValue(Config.DirectoryPath.name(), "");
+        configuration.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);
+    }
+
     @Override
     public DpuType getType() {
         return DpuType.LOADER;
@@ -58,16 +58,16 @@ public class File_loader implements GraphicalLoader {
         return this.configDialog;
     }
 
-	@Override
-	public void loadConfiguration(Configuration configuration)
-			throws ConfigurationException {
-		// 
+    @Override
+    public void loadConfiguration(Configuration configuration)
+            throws ConfigurationException {
+        // 
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
             this.configDialog.setConfiguration(configuration);
         }
-	} 
+    }
 
     @Override
     public void saveConfiguration(Configuration configuration) {
@@ -82,10 +82,17 @@ public class File_loader implements GraphicalLoader {
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
 
-    	//RDFFormatType enumFormatType = RDFFormatType.RDFXML;
-
         switch (enumFormatType) {
-            case AUTO:
+            case AUTO: {
+                String fileName = getFileName();
+
+                RDFFormat format = RDFFormat.forFileName(fileName);
+                if (format == null) {
+                    format = RDFFormat.RDFXML;
+                }
+
+                return format;
+            }
             case RDFXML: {
                 return RDFFormat.RDFXML;
             }
@@ -95,9 +102,11 @@ public class File_loader implements GraphicalLoader {
             case TRIG: {
                 return RDFFormat.TRIG;
             }
+
             case TTL: {
                 return RDFFormat.TURTLE;
             }
+
         }
 
         throw new NotSupporteRDFFormatException();
@@ -115,6 +124,12 @@ public class File_loader implements GraphicalLoader {
         return fileName;
     }
 
+    private boolean hasUniqueName() {
+        Boolean isNameUnique = (Boolean) config.getValue(Config.DiffName.name());
+
+        return isNameUnique;
+    }
+
     /**
      * Implementation of module functionality here.
      *
@@ -126,9 +141,10 @@ public class File_loader implements GraphicalLoader {
             String directoryPath = getDirectoryPath();
             String fileName = getFileName();
             RDFFormat format = getRDFFormat();
+            boolean isNameUnique = hasUniqueName();
             boolean canFileOverwritte = true;
 
-            repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte);
+            repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             System.err.println(ex.getMessage());
