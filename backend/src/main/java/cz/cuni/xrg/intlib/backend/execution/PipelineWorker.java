@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.backend.execution;
 
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStartedEvent;
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -126,7 +126,7 @@ public class PipelineWorker extends Thread {
         DPUInstance dpuInstance = node.getDpuInstance();
         DPU dpu = dpuInstance.getDpu();
 
-        Type dpuType = dpu.getType();
+        DpuType dpuType = dpu.getType();
         String dpuJarPath = dpu.getJarPath();
         Configuration configuration = dpuInstance.getInstanceConfig();
 

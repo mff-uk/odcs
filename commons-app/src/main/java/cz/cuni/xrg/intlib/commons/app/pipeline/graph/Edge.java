@@ -67,6 +67,14 @@ public class Edge {
         return to;
     }
 
+	public PipelineGraph getGraph() {
+		return graph;
+	}
+
+	public void setGraph(PipelineGraph graph) {
+		this.graph = graph;
+	}
+	
     @Override
     public boolean equals(Object other) {
         if (other.getClass() != Edge.class) {

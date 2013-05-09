@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import javax.persistence.*;
 
 /**
@@ -29,8 +29,8 @@ public class DPU {
 	@Transient
     private String visibility;
     
-	@Transient
-	private Type type;
+	@Enumerated(EnumType.STRING)
+	private DpuType type;
     
 	@Column(name="jar_path")
 	private String jarPath;
@@ -46,7 +46,7 @@ public class DPU {
      * @param name
      * @param type
      */
-    public DPU(String name, Type type) {
+    public DPU(String name, DpuType type) {
         //this.id = id;
         this.name = name;
         this.type = type;
@@ -90,7 +90,7 @@ public class DPU {
      *
      * @return DPU type
      */
-    public Type getType() {
+    public DpuType getType() {
         return type;
     }
 

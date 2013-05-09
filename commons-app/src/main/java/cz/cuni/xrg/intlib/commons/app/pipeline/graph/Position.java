@@ -36,13 +36,6 @@ public class Position {
     private int y;
 	
 	/**
-	 * Positioned node
-	 */
-	@OneToOne(optional=false)
-	@JoinColumn(name="node_id", unique=true)
-	private Node node;
-	
-	/**
 	 * No-arg constructor for JPA
 	 */
 	public Position() {}

@@ -5,7 +5,7 @@ import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
@@ -42,8 +42,8 @@ public class File_loader implements GraphicalLoader {
     }      
     
     @Override
-    public Type getType() {
-        return Type.LOADER;
+    public DpuType getType() {
+        return DpuType.LOADER;
 
     }
 

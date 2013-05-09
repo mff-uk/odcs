@@ -4,7 +4,7 @@ import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
@@ -37,8 +37,8 @@ public class File_extractor implements GraphicalExtractor {
     }    
     
     @Override
-    public Type getType() {
-        return Type.EXTRACTOR;
+    public DpuType getType() {
+        return DpuType.EXTRACTOR;
     }
 
     @Override

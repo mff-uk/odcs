@@ -1,13 +1,10 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 import java.util.Collections;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-
-import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 
 /**
  * Facade for working with DPUs.
@@ -16,7 +13,6 @@ import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
  */
 public class DpuFacade {
 
-	private static boolean initialized = false;
 	/**
 	 * Entity manager for accessing database with persisted objects.
 	 * @todo autowire through Spring and remove setter and constructor
@@ -27,7 +23,7 @@ public class DpuFacade {
 	 * Constructs facade and its dependencies.
 	 */
 	public DpuFacade() {
-		this(IntlibEntityManagerFactory.getImem());
+		this(IntlibEntityManagerFactory.getEm());
 	}
 
 	/**
@@ -36,11 +32,6 @@ public class DpuFacade {
 	 */
 	public DpuFacade(EntityManager em) {
 		this.em = em;
-
-		if(!initialized) {
-			this.prefillDPUs();
-			initialized = true;
-		}
 	}
 
 	/**
@@ -107,28 +98,4 @@ public class DpuFacade {
 
 		tx.commit();
 	}
-
-    private void prefillDPUs() {
-
-		DPU basicEx = new DPU("RDF Extractor", Type.EXTRACTOR);
-		basicEx.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
-		this.save(basicEx);
-
-		DPU sparqlEx = new DPU("File Extractor", Type.EXTRACTOR);
-		sparqlEx.setJarPath("File_extractor/target/File_extractor-0.0.1.jar");
-		this.save(sparqlEx);
-
-		DPU genericTr = new DPU("SPARQL Transformer", Type.TRANSFORMER);
-		genericTr.setJarPath("SPARQL_transformer/target/SPARQL_transformer-0.0.1.jar");
-		save(genericTr);
-
-		DPU rdfLo = new DPU("RDF Loader", Type.LOADER);
-		rdfLo.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
-		save(rdfLo);
-
-		DPU sparqlLo = new DPU("File Loader", Type.LOADER);
-		sparqlLo.setJarPath("File_loader/target/File_loader-0.0.1.jar");
-		save(sparqlLo);
-    }
-
 }

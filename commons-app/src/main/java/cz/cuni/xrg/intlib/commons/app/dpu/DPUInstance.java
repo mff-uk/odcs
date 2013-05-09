@@ -22,7 +22,7 @@ public class DPUInstance {
 	/**
      * Data Processing Unit
      */
-	@ManyToOne(optional=false)
+	@ManyToOne(optional=false, cascade=CascadeType.ALL)
 	@JoinColumn(name="dpu_id", nullable=false)
     private DPU dpu;
     /**

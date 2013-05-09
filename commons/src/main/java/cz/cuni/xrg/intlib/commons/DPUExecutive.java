@@ -17,7 +17,7 @@ public interface DPUExecutive {
      *
      * @return DPU' type
      */
-    public Type getType();
+    public DpuType getType();
 
     /**
      * Load default (empty) configuration into given Configuration instance class. 

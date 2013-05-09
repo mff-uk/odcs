@@ -20,13 +20,15 @@ public class Node {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+	@SuppressWarnings("unused")
     private int id;
 
 	@OneToOne(optional=false, cascade=CascadeType.ALL)
 	@JoinColumn(name="instance_id", unique=true, nullable=false)
     private DPUInstance dpuInstance;
 
-	@OneToOne(optional=false, mappedBy="node", cascade=CascadeType.ALL)
+	@OneToOne(optional=false, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinColumn(name="position_id", unique=true)
     private Position position;
 	
 	/**
@@ -63,10 +65,18 @@ public class Node {
         this.dpuInstance = dpuInstance;
     }
 
-    public void setPosition(Position newPosition) {
-        this.position = newPosition;
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
+	public PipelineGraph getGraph() {
+		return graph;
+	}
+
+	public void setGraph(PipelineGraph graph) {
+		this.graph = graph;
+	}
+	
 //    public int getId() {
 //        return id;
 //    }

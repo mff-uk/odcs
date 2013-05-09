@@ -66,14 +66,13 @@ public class Pipeline implements Resource {
 	@Column
     private String description;
 	
-    @OneToOne(cascade=CascadeType.ALL, mappedBy="pipeline")
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="pipeline", fetch= FetchType.EAGER)
     private PipelineGraph graph;
 
     /**
      * Default constructor for JPA
      */
-    public Pipeline() {
-    }
+    public Pipeline() {}
 
 	/**
 	 * Constructor with given pipeline name and description.
@@ -118,6 +117,7 @@ public class Pipeline implements Resource {
 
     public void setGraph(PipelineGraph graph) {
         this.graph = graph;
+		graph.setPipeline(this);
     }
 
     public int getId() {

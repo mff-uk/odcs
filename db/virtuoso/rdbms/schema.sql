@@ -39,7 +39,6 @@ DROP TABLE "DB"."INTLIB"."PPL_POSITION";
 CREATE TABLE "DB"."INTLIB"."PPL_POSITION"
 (
   "id" INTEGER IDENTITY,
-  "node_id" INTEGER,
   "pos_x" INTEGER,
   "pos_y" INTEGER,
   PRIMARY KEY ("id")
@@ -60,7 +59,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_CONFIG"
 (
   "id" INTEGER IDENTITY,
   "instance_id" INTEGER,
-  "data" BLOB,
+  "data" LONG VARBINARY,
   PRIMARY KEY ("id")
 );
 
@@ -70,6 +69,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_MODEL"
   "id" INTEGER IDENTITY,
   "name" VARCHAR(45),
   "description" VARCHAR(255),
+  "type" VARCHAR(11),
   "jar_path" VARCHAR(255),
   PRIMARY KEY ("id")
 );

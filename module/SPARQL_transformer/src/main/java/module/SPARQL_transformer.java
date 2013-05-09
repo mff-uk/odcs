@@ -4,7 +4,7 @@ import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.web.*;
@@ -33,8 +33,8 @@ public class SPARQL_transformer implements GraphicalTransformer {
     }     
     
     @Override
-    public Type getType() {
-        return Type.TRANSFORMER;
+    public DpuType getType() {
+        return DpuType.TRANSFORMER;
 
     }
 
