@@ -27,8 +27,8 @@
 		</repository>
 
 		<repository> <!-- Virtuoso JDBC -->
-	        <id>Vojt</id>
-	        <url>http://asgard.vojt.net:8080/maven2</url>
+	        <id>intlib-thirdparty</id>
+	        <url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty</url>
 	    </repository>
 
 		<repository> <!-- spring repository -->
