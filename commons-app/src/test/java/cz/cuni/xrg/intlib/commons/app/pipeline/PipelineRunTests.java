@@ -20,7 +20,7 @@ public class PipelineRunTests {
 	 */
 //	@Test
 	public void testTrivialRun() {
-		moduleFacade = new ModuleFacade(new AppConfiguration());
+		/*moduleFacade = new ModuleFacade(new AppConfiguration());
 
 		moduleFacade.start(
 				",com.vaadin,com.vaadin.ui," +
@@ -41,7 +41,7 @@ public class PipelineRunTests {
 		//TODO solve execution.run();
 
 		moduleFacade.stop();
-		moduleFacade = null;
+		moduleFacade = null;*/
 	}
 
 	/**
