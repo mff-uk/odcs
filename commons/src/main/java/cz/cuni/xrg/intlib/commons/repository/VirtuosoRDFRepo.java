@@ -18,8 +18,19 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
     /**
      * Construct a VirtuosoRepository with a specified parameters.
-     * 
-     * 
+     *
+     * @param URL_Host_List the Virtuoso JDBC URL connection string or hostlist
+     * for poolled connection.
+     *
+     * @param user the database user on whose behalf the connection is being
+     * made.
+     *
+     * @param password the user's password.
+     *
+     * @param defaultGraph a default Graph name, used for Sesame calls, when
+     * contexts list is empty, exclude exportStatements, hasStatement,
+     * getStatements methods.
+     *
      */
     public static VirtuosoRDFRepo createVirtuosoRDFRepo(String URL_Host_List, String user, String password, String defaultGraph) {
         if (virtuosoRepo == null) {
