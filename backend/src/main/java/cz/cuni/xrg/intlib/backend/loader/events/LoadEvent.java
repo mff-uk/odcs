@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend.loader.events;
 
-import cz.cuni.xrg.intlib.commons.event.DPUEvent;
+import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 
@@ -13,6 +13,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 public class LoadEvent extends DPUEvent {
 
     protected final Load loader;
+    
     protected final LoadContext loadContext;
 
     public LoadEvent(Load loader, LoadContext loadContext, Object source) {
