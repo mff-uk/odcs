@@ -1,93 +1,92 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
+import cz.cuni.xrg.intlib.backend.communication.ServerEvent;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.ApplicationListener;
 
 /**
  * Responsible for running and supervision queue of PipelineExecution tasks.
  *
- * @author Jiri Tomes
- * @author Jan Vojt
+ * @author Petyr
  */
-public class Engine {
-
+public class Engine implements ApplicationListener<ServerEvent>, ApplicationEventPublisherAware  {
+	
     /**
-     * Thread pool of workers.
-     */
-    private PipelineWorker[] threads;
-    /**
-     * Maximum number of concurrent pipeline runs = threads.
-     */
-    private int size;
-    private Queue<PipelineExecution> queue = new LinkedList<>();
-
-    public Engine(int size) {
-        this.size = size;
-        this.threads = new PipelineWorker[size];
+     * Provide access to DPU implementation.
+     */	
+	protected ModuleFacade moduleFacade;
+	
+	/**
+	 * Thread pool. 
+	 */
+	protected ExecutorService executorService;
+	
+	/**
+     * Publisher instance.
+     */	
+	protected ApplicationEventPublisher eventPublisher;
+	
+	public Engine(ModuleFacade moduleFacade) {
+		this.moduleFacade = moduleFacade;
+    	this.executorService = Executors.newCachedThreadPool();
     }
 
-    public void complete() {
-    }
-
-    public void kill() {
-        for (int i = 0; i < size; i++) {
-            threads[i].kill();
-        }
-    }
-
+	public Engine(ModuleFacade moduleFacade, ExecutorService executorService) {
+		this.moduleFacade = moduleFacade;
+    	this.executorService = executorService;
+    }	
+	
     /**
-     * Puts pipeline run into internal queue to be processed by workers.
+     * Ask executorService to run the pipeline.
      *
-     * @param exec
+     * @param pipelineExecution
      */
-    public void run(PipelineExecution exec) {
-        queue.add(exec);
-        optimizeWorkers();
+    private void run(PipelineExecution pipelineExecution) {
+    	this.executorService.execute(
+    			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher));
     }
 
     /**
-     * Optimizes number of workers according to current size of queue.
+     * Check database for new task (PipelineExecutions to run).
+     * Can run concurrently.
      */
-    public void optimizeWorkers() {
-        if (queue.isEmpty()) {
-            for (int i = 0; i < threads.length; i++) {
-                if (threads[i] != null && !threads[i].isWorking()) {
-                    threads[i].kill();
-                    threads[i] = null;
-                }
-            }
-        } else {
-            addWorkers(queue.size());
-        }
+    private synchronized void checkDatabase() {
+    	List<PipelineExecution> toExecute = null;
+    	
+    	System.out.println("Engine: checking the database");
+    	
+    	// run pipeline executions ..   
+    	//for (PipelineExecution item : toExecute) {
+    	//	run(item);
+    	//}
     }
+    
+	@Override
+	public void onApplicationEvent(ServerEvent event) {
+		// react on message from server
+		switch(event.getMessage()) {
+		case CheckDatabase:
+			checkDatabase();
+			break;
+		case Uknown:
+		default:
+			// do nothing
+			break;
+		}
+		
+	}
 
-    /**
-     * Interface where worker can obtain a job.
-     *
-     * @return
-     */
-    public synchronized PipelineExecution getJob() {
-        return queue.isEmpty() ? null : queue.remove();
-    }
+	@Override
+	public void setApplicationEventPublisher(
+			ApplicationEventPublisher applicationEventPublisher) {
+		this.eventPublisher = applicationEventPublisher;		
+	}
 
-    /**
-     * Try to create more Workers in the thread pool, respects pool size.
-     *
-     * @param n
-     * @return
-     */
-    private boolean addWorkers(int n) {
-        for (int i = 0; i < threads.length; i++) {
-            if (threads[i] == null) {
-                PipelineWorker pw = new PipelineWorker(this);
-                threads[i] = pw;
-                pw.start();
-                if ((--n) <= 0) {
-                    break;
-                }
-            }
-        }
-        return n == 0;
-    }
 }
