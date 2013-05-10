@@ -25,6 +25,11 @@ public class PipelineExecution  {
     private Pipeline pipeline;
     
     /**
+     * Run in debug mode?
+     */
+    private boolean isDebugging;
+    
+    /**
      * Constructor
      *
      * @param pipeline
@@ -52,5 +57,13 @@ public class PipelineExecution  {
     public void setPipeline(Pipeline pipeline) {
         this.pipeline = pipeline;
     }
+
+	public boolean isDebugging() {
+		return isDebugging;
+	}
+
+	public void setDebugging(boolean isDebugging) {
+		this.isDebugging = isDebugging;
+	}
 
 }
