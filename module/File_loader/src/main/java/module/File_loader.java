@@ -1,6 +1,6 @@
 package module;
 
-import cz.cuni.xrg.intlib.commons.repository.RDFFormatType;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
