@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
-import cz.cuni.xrg.intlib.commons.ExecutionMessage;
 import cz.cuni.xrg.intlib.commons.RDFTriple;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
 /**
@@ -56,8 +56,8 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static Container CreateExecutionMessages(List<ExecutionMessage> data) {
-		BeanContainer<Integer, ExecutionMessage> container = new BeanContainer<Integer, ExecutionMessage>( ExecutionMessage.class);
+	public static Container CreateExecutionMessages(List<Record> data) {
+		BeanContainer<Integer, Record> container = new BeanContainer<Integer, Record>( Record.class);
 		container.setBeanIdProperty("id");
 		container.addAll(data);
 
