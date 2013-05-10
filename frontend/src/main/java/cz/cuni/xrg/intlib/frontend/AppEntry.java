@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import info.aduna.app.AppVersion;
+
 import java.io.File;
 import java.util.Enumeration;
 
@@ -11,7 +13,7 @@ import com.vaadin.ui.Panel;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
-import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
@@ -52,7 +54,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	/**
 	 * Facade interface providing services for managing DPUs.
 	 */
-	private DpuFacade dpus;
+	private DPUFacade dpus;
 
     /**
      * Add url-view association into navigator.
@@ -121,7 +123,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}} );
 
 		this.pipelines = new PipelineFacade();
-		this.dpus = new DpuFacade();
+		this.dpus = new DPUFacade();
 		this.appConfig = new AppConfiguration();
 
 		initNavigator();
@@ -155,7 +157,15 @@ public class AppEntry extends com.vaadin.ui.UI {
      * Return facade, which provide services for manipulating with DPUs.
      * @return dpus facade
      */
-    public DpuFacade getDPUs() {
+    public DPUFacade getDPUs() {
         return this.dpus;
     }	
+    
+    /**
+     * Return application configuration class.
+     * @return
+     */
+    public AppConfiguration getAppConfiguration() {
+    	return appConfig;
+    }
 }
