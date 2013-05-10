@@ -36,11 +36,11 @@ public interface ProcessingContext {
     public void storeDataForResult(String id, Object object);
 
     /**
-     * Return unique pipeline id.
+     * Return unique pipeline execution id.
      *
      * @return
      */
-    public String getId();
+    public int getId();
 
     /**
      * Return access to custom data.
