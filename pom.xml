@@ -9,6 +9,11 @@
 	<name>intlib</name>
 	<description />
 
+	<properties>
+		<!-- specify java build version for commons?, backend and frontend -->
+		<project.java.version>1.7</project.java.version>
+	</properties>
+
 	<modules>
 		<module>commons</module>
 		<module>commons-app</module>
@@ -59,13 +64,12 @@
 	<build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                	<!-- specify java build version for whole project -->
+                <plugin>                	
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>${project.java.version}</source>
+                        <target>${project.java.version}</target>
                     </configuration>
                 </plugin>
             </plugins>
