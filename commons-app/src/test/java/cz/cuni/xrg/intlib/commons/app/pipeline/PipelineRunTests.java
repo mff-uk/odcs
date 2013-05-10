@@ -18,60 +18,60 @@ public class PipelineRunTests {
      * {@link ModuleFacade#start(String)}??
      */
 //	@Test
-    public void testTrivialRun() {
+	public void testTrivialRun() {
+		/*moduleFacade = new ModuleFacade(new AppConfiguration());
 
-        moduleFacade = new ModuleFacade(new AppConfiguration());
+		moduleFacade.start(
+				",com.vaadin,com.vaadin.ui," +
+				"com.vaadin.data,com.vaadin.data.Property,com.vaadin.data.util," +
+				"com.vaadin.event.FieldEvents," +
+				"com.vaadin.shared.ui.combobox," +
+				// OpenRdf
+				"org.openrdf.rio"
+				);
 
-        moduleFacade.start(
-                ",com.vaadin,com.vaadin.ui,"
-                + "com.vaadin.data,com.vaadin.data.Property,com.vaadin.data.util,"
-                + "com.vaadin.event.FieldEvents,"
-                + "com.vaadin.shared.ui.combobox,"
-                + // OpenRdf
-                "org.openrdf.rio");
+		// setup pipeline
+		Pipeline pipe = createEmptyPipeline();
+		setupTrivialPipelineGraph(pipe.getGraph());
 
-        // setup pipeline
-        Pipeline pipe = createEmptyPipeline();
-        setupTrivialPipelineGraph(pipe.getGraph());
+		// create run model and run it
+		PipelineExecution execution = new PipelineExecution(pipe);
+		execution.setModuleFacade(moduleFacade);
+		//TODO solve execution.run();
 
-        // create run model and run it
-        PipelineExecution execution = new PipelineExecution(pipe);
-        execution.setModuleFacade(moduleFacade);
-        //TODO solve execution.run();
+		moduleFacade.stop();
+		moduleFacade = null;*/
+	}
 
-        moduleFacade.stop();
-        moduleFacade = null;
-    }
+	/**
+	 * Create minimal pipeline graph
+	 * Scenario: E -> L
+	 * @param graph
+	 */
+	private void setupTrivialPipelineGraph(PipelineGraph graph) {
 
-    /**
-     * Create minimal pipeline graph Scenario: E -> L
-     *
-     * @param graph
-     */
-    private void setupTrivialPipelineGraph(PipelineGraph graph) {
+		DPU extractor = new DPU("RDF Extractor", Type.EXTRACTOR);
+		DPU loader = new DPU("RDF Loader", Type.LOADER);
 
-        DPU extractor = new DPU("RDF Extractor", Type.EXTRACTOR);
-        DPU loader = new DPU("RDF Loader", Type.LOADER);
+		extractor.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
+		loader.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
 
-        extractor.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
-        loader.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
+		int eId = graph.addDpu(extractor);
+		int lId = graph.addDpu(loader);
 
-        int eId = graph.addDpu(extractor);
-        int lId = graph.addDpu(loader);
+		graph.addEdge(eId, lId);
+	}
 
-        graph.addEdge(eId, lId);
-    }
+	/**
+	 * Emtpy pipeline factory
+	 * @return empty pipeline
+	 */
+	private Pipeline createEmptyPipeline() {
+		Pipeline pipe = new Pipeline();
+		PipelineGraph graph = new PipelineGraph();
+		pipe.setGraph(graph);
 
-    /**
-     * Emtpy pipeline factory
-     *
-     * @return empty pipeline
-     */
-    private Pipeline createEmptyPipeline() {
-        Pipeline pipe = new Pipeline();
-        PipelineGraph graph = new PipelineGraph();
-        pipe.setGraph(graph);
+		return pipe;
+	}
 
-        return pipe;
-    }
 }

@@ -1,9 +1,9 @@
-package cz.cuni.xrg.intlib.commons.event;
+package cz.cuni.xrg.intlib.backend.dpu.event;
 
 import org.springframework.context.ApplicationEvent;
 
 /**
- * Class for the DPU event. 
+ * Base abstract class for the DPU event. 
  *
  * @author Jiri Tomes
  */

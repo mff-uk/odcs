@@ -14,7 +14,7 @@ import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
  * @author Jan Vojt <jan@vojt.net>
  *
  */
-public class DpuFacade {
+public class DPUFacade {
 
 	private static boolean initialized = false;
 	/**
@@ -26,7 +26,7 @@ public class DpuFacade {
 	/**
 	 * Constructs facade and its dependencies.
 	 */
-	public DpuFacade() {
+	public DPUFacade() {
 		this(IntlibEntityManagerFactory.getImem());
 	}
 
@@ -34,7 +34,7 @@ public class DpuFacade {
 	 * Construct with given Entity Manager
 	 * @param em
 	 */
-	public DpuFacade(EntityManager em) {
+	public DPUFacade(EntityManager em) {
 		this.em = em;
 
 		if(!initialized) {

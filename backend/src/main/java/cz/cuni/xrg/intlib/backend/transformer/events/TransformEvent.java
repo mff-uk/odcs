@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.backend.transformer.events;
 
+import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
-import cz.cuni.xrg.intlib.commons.event.DPUEvent;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 /**
  * Base class for {@link Transform} events
@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.transformer.Transform;
 public abstract class TransformEvent extends DPUEvent {
 
     protected final Transform transformer;
+    
     protected final TransformContext transformContext;
 
     public TransformEvent(Transform transformer, TransformContext transformContext, Object source) {

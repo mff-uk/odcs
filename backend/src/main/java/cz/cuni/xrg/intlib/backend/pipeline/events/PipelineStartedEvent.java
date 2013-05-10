@@ -1,18 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.backend.pipeline.events;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  *
- * @author Alex Kreiser
+ * @author Petyr
  */
 public class PipelineStartedEvent extends PipelineEvent {
 
-    public PipelineStartedEvent(Pipeline pipeline, String runId, Object source) {
-        super(pipeline, runId, source);
+    public PipelineStartedEvent(PipelineExecution pipelineExec, Object source) {
+        super(pipelineExec, source);
     }
 }
