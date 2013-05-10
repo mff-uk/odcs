@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import org.junit.Test;
 
 import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -31,7 +32,8 @@ public class PipelineRunTest {
      */
    // @Test
     public void testTrivialRun() {
-        //moduleFacade = new ModuleFacade();
+
+        moduleFacade = new ModuleFacade(new AppConfiguration());
 
         moduleFacade.start(
 				",com.vaadin.ui" +

@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
+import cz.cuni.xrg.intlib.commons.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -179,25 +180,104 @@ public class PipelineGraph {
         Node node = getNodeById(dpuId);
         node.setPosition(new Position(newX, newY));
     }
-    /**
-     * Hack for IDs for Nodes and Edges - replace with IDs from db ASAP
-     */
-    private int dpuCounter = 0;
-    private int connectionCounter = 0;
-    private int CONNECTION_SEED = 1000;
-
-    public int getCONNECTION_SEED() {
-        return CONNECTION_SEED;
-    }
-
-    public int GetUniqueDpuInstanceId() {
-        return ++dpuCounter;
-    }
-
-    public int GetUniquePipelineConnectionId() {
-        return ++connectionCounter + CONNECTION_SEED;
-    }
-    /**
+//    /**
+//     * Hack for IDs for Nodes and Edges - replace with IDs from db ASAP
+//     */
+//    private int dpuCounter = 0;
+//    private int connectionCounter = 0;
+//    private int CONNECTION_SEED = 1000;
+//
+//    public int getCONNECTION_SEED() {
+//        return CONNECTION_SEED;
+//    }
+//
+//    public int GetUniqueDpuInstanceId() {
+//        return ++dpuCounter;
+//    }
+//
+//    public int GetUniquePipelineConnectionId() {
+//        return ++connectionCounter + CONNECTION_SEED;
+//    }
+	    /**
      * End of hack
      */
+
+	/**
+	 * Validates new edge in graph.
+	 * @param fromId
+	 * @param toId
+	 * @return null on success, error message otherwise
+	 */
+	public String validateNewEdge(int fromId, int toId) {
+		Node from = getNodeById(fromId);
+        Node to = getNodeById(toId);
+
+		//Rules validation with corresponding error messages.
+		if(to.getDpuInstance().getDpu().getType() == Type.EXTRACTOR) {
+			return "Extractor cannot have an input edge!";
+		}
+		if(from.getDpuInstance().getDpu().getType() == Type.LOADER) {
+			return "Loader cannot have an output edge!";
+		}
+		if(from.equals(to)) {
+			return "Loops are not allowed!";
+		}
+
+		//Same edge, other direction check
+		for(Edge e : edges) {
+			if(e.getFrom().equals(to) && e.getTo().equals(from)) {
+				return "Two-way edges are not allowed!";
+			}
+		}
+
+		//Cycle check
+		Edge newEdge = new Edge(from, to);
+		if(newEdgeCreateCycle(newEdge)) {
+			return "Cycles are not allowed!";
+		}
+
+		return null;
+	}
+
+	private boolean newEdgeCreateCycle(Edge newEdge) {
+		List<Node> v = new ArrayList<>(nodes);
+        List<Edge> e = new ArrayList<>(edges);
+		e.add(newEdge);
+
+		while(!v.isEmpty()) {
+			Node candidate = null;
+			//Find vertex with no out edges
+			for(Node vertex : v) {
+				boolean hasOutEdge = false;
+				for(Edge edge : e) {
+					if(edge.getFrom().equals(vertex)) {
+						hasOutEdge = true;
+						break;
+					}
+				}
+				if(!hasOutEdge) {
+					candidate = vertex;
+					break;
+				}
+			}
+
+			if(candidate == null) {
+				return true;
+			}
+
+			//Remove candidate and edges with candidate
+			v.remove(candidate);
+			for (int i = 0; i < e.size();) {
+				Edge edge = e.get(i);
+				if(edge.getTo().equals(candidate)) {
+					e.remove(i);
+				} else {
+					++i;
+				}
+
+			}
+		}
+		return false;
+	}
+
 }
