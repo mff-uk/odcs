@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 
 /**
  * Basic executive interface of each DPU component.
@@ -49,12 +49,12 @@ public interface DPUExecutive {
      * @return LocalRDFRepo
      */
     @Deprecated
-    public LocalRDFRepo getLocalRepo();
+    public RDFDataRepository getRDFRepo();
 
     /**
      * Set repository as goal of local storage RDF data.
-     * @param localRepo
+     * @param newRepo
      */
     @Deprecated
-    public void setLocalRepo(LocalRDFRepo localRepo);
+    public void setRDFRepo(RDFDataRepository newRepo);
 }

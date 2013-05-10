@@ -30,7 +30,7 @@ import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
-import java.util.HashMap;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -79,7 +79,7 @@ public class PipelineWorker implements Runnable {
                 
         // get repository
         // TODO: Use context .. 
-        LocalRDFRepo repository = LocalRDFRepo.createLocalRepo();
+        RDFDataRepository repository = LocalRDFRepo.createLocalRepo();
         repository.cleanAllRepositoryData();
         
         // get dependency graph -> determine run order
@@ -102,7 +102,7 @@ public class PipelineWorker implements Runnable {
      * @param node
      * @param repo
      */
-    private void runNode(Node node, LocalRDFRepo repo, ModuleFacade moduleFacade) {
+    private void runNode(Node node, RDFDataRepository repo, ModuleFacade moduleFacade) {
 
         DPUInstance dpuInstance = node.getDpuInstance();
         DPU dpu = dpuInstance.getDpu();
@@ -115,7 +115,7 @@ public class PipelineWorker implements Runnable {
             case EXTRACTOR: {
                 Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
                 extractor.saveConfiguration(configuration);
-                extractor.setLocalRepo(repo);
+                extractor.setRDFRepo(repo);
                 ExtractContext ctx = new ExtractContextImpl(execution, dpuInstance);
                 runExtractor(extractor, ctx);
                 break;
@@ -123,7 +123,7 @@ public class PipelineWorker implements Runnable {
             case TRANSFORMER: {
                 Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
                 transformer.saveConfiguration(configuration);
-                transformer.setLocalRepo(repo);
+                transformer.setRDFRepo(repo);
                 TransformContext ctx = new TransformContextImpl(execution, dpuInstance);
                 runTransformer(transformer, ctx);
                 break;
@@ -131,7 +131,7 @@ public class PipelineWorker implements Runnable {
             case LOADER: {
                 Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
                 loader.saveConfiguration(configuration);
-                loader.setLocalRepo(repo);
+                loader.setRDFRepo(repo);
                 LoadContext ctx = new LoadContextImpl(execution, dpuInstance);
                 runLoader(loader, ctx);
                 break;

@@ -12,7 +12,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
-import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -21,7 +21,7 @@ import org.openrdf.rio.RDFFormat;
  */
 public class File_loader implements GraphicalLoader {
 
-    private LocalRDFRepo repository = null; // LocalRDFRepo.createLocalRepo();
+    private RDFDataRepository repository = null; // LocalRDFRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -154,12 +154,12 @@ public class File_loader implements GraphicalLoader {
     }
 
     @Override
-    public LocalRDFRepo getLocalRepo() {
+    public RDFDataRepository getRDFRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRDFRepo localRepo) {
-        repository = localRepo;
+    public void setRDFRepo(RDFDataRepository newRepo) {
+        repository = newRepo;
     }
 }

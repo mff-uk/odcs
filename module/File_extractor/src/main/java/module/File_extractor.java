@@ -7,14 +7,14 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
 
 public class File_extractor implements GraphicalExtractor {
 
-    private LocalRDFRepo repository = null;
+    private RDFDataRepository repository = null;
     
     /**
      * Configuration component.
@@ -107,13 +107,13 @@ public class File_extractor implements GraphicalExtractor {
     }
 
     @Override
-    public LocalRDFRepo getLocalRepo() {
+    public RDFDataRepository getRDFRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRDFRepo localRepo) {
-        repository = localRepo;
+    public void setRDFRepo(RDFDataRepository newRepo) {
+        repository = newRepo;
     }
 
 }
