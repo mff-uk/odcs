@@ -10,11 +10,11 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
 
 public class SPARQL_transformer implements GraphicalTransformer {
 
-    private LocalRepo repository = null;
+    private LocalRDFRepo repository = null;
     /**
      * Configuration component.
      */
@@ -89,12 +89,12 @@ public class SPARQL_transformer implements GraphicalTransformer {
     }
 
     @Override
-    public LocalRepo getLocalRepo() {
+    public LocalRDFRepo getLocalRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRepo localRepo) {
+    public void setLocalRepo(LocalRDFRepo localRepo) {
         repository = localRepo;
     }
 }

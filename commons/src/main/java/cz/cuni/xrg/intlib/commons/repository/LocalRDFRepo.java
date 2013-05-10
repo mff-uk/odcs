@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.repository;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.data.RDFDataRepository;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,26 +47,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jiri Tomes
  */
-public class LocalRepo {
+public class LocalRDFRepo implements RDFDataRepository {
 
-    private static LocalRepo localrepo = null;
+    private static LocalRDFRepo localrepo = null;
     /**
      * Logging information about execution of method using openRDF.
      */
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRepo.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
     /**
      * How many triples is possible to add to SPARQL endpoind at once.
      */
     private static final int STATEMENTS_COUNT = 10;
     private final String encode = "UTF-8";
-    private Repository repository = null;
+    /**
+     * RDF data storage component.
+     */
+    protected Repository repository = null;
 
     /**
      * Create local repository in default path.
      *
      * @return
      */
-    public static LocalRepo createLocalRepo() {
+    public static LocalRDFRepo createLocalRepo() {
 
         Path repo = null;
         try {
@@ -73,7 +78,7 @@ public class LocalRepo {
             throw new RuntimeException(e.getMessage());
         }
 
-        return LocalRepo.createLocalRepo(repo.toString());
+        return LocalRDFRepo.createLocalRepo(repo.toString());
     }
 
     /**
@@ -82,12 +87,18 @@ public class LocalRepo {
      * @param path
      * @return
      */
-    public static LocalRepo createLocalRepo(String path) {
+    public static LocalRDFRepo createLocalRepo(String path) {
         if (localrepo == null) {
-            localrepo = new LocalRepo(path);
+            localrepo = new LocalRDFRepo(path);
         }
 
         return localrepo;
+    }
+
+    /**
+     * Empty constructor - used only for inheritance.
+     */
+    public LocalRDFRepo() {
     }
 
     /**
@@ -95,7 +106,7 @@ public class LocalRepo {
      *
      * @param repositoryPath
      */
-    public LocalRepo(String repositoryPath) {
+    public LocalRDFRepo(String repositoryPath) {
 
         long timeToStart = 1000L;
         File dataDir = new File(repositoryPath);
@@ -153,6 +164,7 @@ public class LocalRepo {
      * @param predicateName
      * @param objectName
      */
+    @Override
     public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName) {
 
         Statement statement = createNewStatement(namespace, subjectName, predicateName, objectName);
@@ -185,6 +197,7 @@ public class LocalRepo {
      * @param baseURI
      * @param useSuffix
      */
+    @Override
     public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
 
         final String aceptedSuffix = suffix.toUpperCase();
@@ -270,6 +283,7 @@ public class LocalRepo {
      * @param format
      * @throws CannotOverwriteFileException
      */
+    @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException {
         loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false, false);
     }
@@ -283,6 +297,7 @@ public class LocalRepo {
      * @param canFileOverWrite
      * @throws CannotOverwriteFileException
      */
+    @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
             boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException {
 
@@ -353,6 +368,7 @@ public class LocalRepo {
      * @param endpointURL
      * @param defaultGraphURI
      */
+    @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
         List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphURI);
@@ -369,6 +385,7 @@ public class LocalRepo {
      * @param name
      * @param password
      */
+    @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password) {
         List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphURI);
@@ -385,6 +402,7 @@ public class LocalRepo {
      * @param userName
      * @param password
      */
+    @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> defaultGraphsURI, String userName, String password) {
         try {
 
@@ -526,6 +544,7 @@ public class LocalRepo {
      * @param defaultGraphUri
      * @param query
      */
+    @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
         List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphUri);
@@ -544,6 +563,7 @@ public class LocalRepo {
      * @param password
      * @param format
      */
+    @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
         List<String> graphs = new ArrayList<>();
         graphs.add(defaultGraphUri);
@@ -562,6 +582,7 @@ public class LocalRepo {
      * @param password
      * @param format
      */
+    @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, List<String> defaultGraphsUri, String query, String hostName, String password) {
         try {
 
@@ -620,6 +641,7 @@ public class LocalRepo {
      *
      * @param updateQuery
      */
+    @Override
     public void transformUsingSPARQL(String updateQuery) {
 
         try {
@@ -646,6 +668,7 @@ public class LocalRepo {
      *
      * @return size of triples in repository.
      */
+    @Override
     public long getTripleCountInRepository() {
         long size = 0;
 
@@ -672,6 +695,7 @@ public class LocalRepo {
      * @param objectName
      * @return
      */
+    @Override
     public boolean isTripleInRepository(String namespace, String subjectName, String predicateName, String objectName) {
         boolean hasTriple = false;
         if (repository.isInitialized()) {
@@ -690,6 +714,7 @@ public class LocalRepo {
     /**
      * Removes all RDF data from repository.
      */
+    @Override
     public void cleanAllRepositoryData() {
         try {
             RepositoryConnection connection = repository.getConnection();
@@ -706,6 +731,7 @@ public class LocalRepo {
      *
      * @param targetRepository
      */
+    @Override
     public void copyAllDataToTargetRepository(Repository targetRepository) {
         try {
             RepositoryConnection sourceConnection = repository.getConnection();
@@ -727,5 +753,10 @@ public class LocalRepo {
             logger.debug(ex.getMessage());
         }
 
+    }
+
+    @Override
+    public DataUnitType getType() {
+        return DataUnitType.RDF;
     }
 }
