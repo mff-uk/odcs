@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.repository;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.commons.data.RDFDataRepository;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
