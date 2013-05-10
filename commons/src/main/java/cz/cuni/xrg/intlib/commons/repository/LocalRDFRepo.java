@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.repository;
 
+import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import java.io.BufferedReader;

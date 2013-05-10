@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.repository;
+package cz.cuni.xrg.intlib.commons.data.rdf;
 
 import java.io.IOException;
 

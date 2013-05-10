@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.repository.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
 import org.openrdf.rio.RDFFormat;
 
