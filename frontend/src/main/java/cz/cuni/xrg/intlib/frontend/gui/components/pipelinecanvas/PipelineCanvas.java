@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
@@ -125,8 +127,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param dpuTo
 	 */
 	public void addConnection(int dpuFrom, int dpuTo) {
-		int connectionId = graph.addEdge(dpuFrom, dpuTo);
-		getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
+		String result = graph.validateNewEdge(dpuFrom, dpuTo);
+		if(result == null) {
+			int connectionId = graph.addEdge(dpuFrom, dpuTo);
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
+		} else {
+			 Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
+		}
+
 	}
 
 	/**

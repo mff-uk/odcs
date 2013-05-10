@@ -32,18 +32,18 @@ public class QueryView extends CustomComponent {
 
 		TextArea queryText = new TextArea("SPARQL Query:");
 		queryText.setWidth("100%");
-		queryText.setHeight("200px");
+		queryText.setHeight("30%");
 		mainLayout.addComponent(queryText);
 
 		//TODO: Change to table - resolve container issue
 		TextArea resultText = new TextArea("Result:");
 		resultText.setWidth("100%");
-		resultText.setHeight("300px");
+		resultText.setHeight("60%");
 		mainLayout.addComponent(resultText);
 
 		//Table resultTable = new Table("Result:");
 
-
+		mainLayout.setSizeFull();
 		setCompositionRoot(mainLayout);
 	}
 

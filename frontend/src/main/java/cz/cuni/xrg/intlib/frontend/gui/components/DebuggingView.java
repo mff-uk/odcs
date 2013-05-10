@@ -29,12 +29,13 @@ public class DebuggingView extends Window {
 		mainLayout = new VerticalLayout();
 
 		RecordsTable executionRecordsTable = new RecordsTable(buildStubMessageData());
-		executionRecordsTable.setHeight("150px");
+		executionRecordsTable.setWidth("100%");
+		executionRecordsTable.setHeight("100px");
 
 		mainLayout.addComponent(executionRecordsTable);
 
 		TabSheet tabs = new TabSheet();
-		tabs.setHeight("300px");
+		tabs.setHeight("500px");
 
 		//Table with data
 		BrowserTable browserTable = new BrowserTable(buildStubRDFData());
@@ -43,12 +44,15 @@ public class DebuggingView extends Window {
 
 		//RecordsTable with different data source
 		RecordsTable fullRecordsTable = new RecordsTable(buildStubFullData());
+		fullRecordsTable.setWidth("100%");
+		fullRecordsTable.setHeight("100%");
 		tabs.addTab(fullRecordsTable, "Log");
 
 		//Query View
 		QueryView queryView = new QueryView();
 		tabs.addTab(queryView, "Query");
 
+		mainLayout.setSizeUndefined();
 		mainLayout.setWidth("600px");
 		mainLayout.addComponent(tabs);
 

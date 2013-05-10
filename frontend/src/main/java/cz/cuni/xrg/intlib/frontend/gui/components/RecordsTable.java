@@ -18,6 +18,7 @@ public class RecordsTable extends CustomComponent {
 	public RecordsTable(List<ExecutionMessage> data ) {
 
 		loadMessageTable(data);
+		messageTable.setSizeFull();
 		setCompositionRoot(messageTable);
 	}
 
