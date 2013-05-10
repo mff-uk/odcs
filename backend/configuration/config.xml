@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties> 
+	<entry key="dpuDirectory">e:/Data/Knowledge/MatFyz/IntLib/intlib/module/</entry>
+	<entry key="backendAddress">127.0.0.1</entry>
+	<entry key="backendPort">5010</entry>
+</properties>

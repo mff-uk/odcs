@@ -6,7 +6,7 @@
 	xmlns:context="http://www.springframework.org/schema/context">
 	<context:annotation-config />
 
-	<bean id="server" class="cz.cuni.xrg.intlib.commons.app.communication.Server">
+	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server">
 	    <constructor-arg ref="configuration"/>
 	</bean>
 	
@@ -19,7 +19,6 @@
 	</bean>
 	
 	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.AppConfiguration">
-	    <!-- setup configuration -->
 	</bean>
 	
 	<!-- print all event in application -->

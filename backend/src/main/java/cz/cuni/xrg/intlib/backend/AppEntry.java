@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -10,6 +11,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import cz.cuni.xrg.intlib.backend.communication.Server;
+import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
@@ -34,11 +36,25 @@ public class AppEntry {
 		//Logger logger = LoggerFactory.getLogger(AppEntry.class);		
 		//logger.info("Init spring context from :'" + springConfigFile + "'");
 		
+		// get configuration file location 
+		String configFileLocation = System.getProperty("config");
+		if (configFileLocation == null) {
+			System.out.println("Property config must be specified. Use param -Dconfig=path_to_config.xml");
+			return;
+		}
+		
 		// load spring
 		AbstractApplicationContext context = new ClassPathXmlApplicationContext(springConfigFile);
 		context.registerShutdownHook();
 		
-		// load configuration ? x do in spring
+		// load configuration
+		AppConfiguration appConfig = (AppConfiguration)context.getBean("configuration");
+		try {
+			appConfig.Load(configFileLocation);
+		} catch(IOException | RuntimeException e) {
+			System.out.println("Can't read configuration file: " + e.getMessage());
+			return;
+		}
 		
 		// set JLog
 		
@@ -60,6 +76,9 @@ public class AppEntry {
 		InputStreamReader converter = new InputStreamReader(System.in);
 		BufferedReader in = new BufferedReader(converter);
 		
+		// print some information ..
+		System.out.println("DPU durectory:" + appConfig.getDpuDirectory());
+		System.out.println("Listening on port:" + appConfig.getBackendPort());
 		System.out.println("Running ...");
 		
 		while (true) {
@@ -71,9 +90,8 @@ public class AppEntry {
 				e.printStackTrace();
 				continue;
 			}			
-			// decide what to do based on input (line) ..  
-			
+			// ...
 		}
-
+		
 	}
 }
