@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.repository;
+package cz.cuni.xrg.intlib.backend.repository;
 
 import java.util.HashMap;
 import java.util.Map;

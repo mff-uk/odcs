@@ -24,7 +24,7 @@ import cz.cuni.xrg.intlib.backend.loader.events.LoadCompletedEvent;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadFailedEvent;
-import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
+import cz.cuni.xrg.intlib.backend.repository.LocalRDFRepo;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
