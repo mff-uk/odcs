@@ -10,11 +10,11 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
 
 public class File_extractor implements GraphicalExtractor {
 
-    private LocalRepo repository = null;
+    private LocalRDFRepo repository = null;
     
     /**
      * Configuration component.
@@ -107,12 +107,12 @@ public class File_extractor implements GraphicalExtractor {
     }
 
     @Override
-    public LocalRepo getLocalRepo() {
+    public LocalRDFRepo getLocalRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRepo localRepo) {
+    public void setLocalRepo(LocalRDFRepo localRepo) {
         repository = localRepo;
     }
 

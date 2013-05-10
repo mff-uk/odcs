@@ -8,6 +8,7 @@ package cz.cuni.xrg.intlib.commons.app.data.rdf;
  * Stub class for representing RDF Triple for browsing in frontend.
  *
  * @author Bogo
+ * @author Jiri Tomes
  */
 public class RDFTriple {
 
@@ -19,11 +20,11 @@ public class RDFTriple {
 
 	private String object;
 
-	public RDFTriple(int i, String s, String p, String o) {
-		id = i;
-		subject = s;
-		predicate = p;
-		object = o;
+	public RDFTriple(int id, String subject, String predicate, String object) {
+		this.id = id;
+		this.subject = subject;
+		this.predicate = predicate;
+		this.object = object;
 	}
 
 	/**

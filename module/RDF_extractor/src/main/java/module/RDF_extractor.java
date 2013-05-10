@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.repository.LocalRDFRepo;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RDF_extractor implements GraphicalExtractor {
 
-    private LocalRepo repository = null;
+    private LocalRDFRepo repository = null;
     /**
      * Configuration component.
      */
@@ -127,12 +127,12 @@ public class RDF_extractor implements GraphicalExtractor {
     }
 
     @Override
-    public LocalRepo getLocalRepo() {
+    public LocalRDFRepo getLocalRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRepo localRepo) {
+    public void setLocalRepo(LocalRDFRepo localRepo) {
         repository = localRepo;
     }
 }

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jiri Tomes
  */
-public class LocalRepoTest {
+public class LocalRDFRepoTest {
 
     /**
      * Path to test repository
@@ -33,20 +33,20 @@ public class LocalRepoTest {
     /**
      * Local repository
      */
-    private LocalRepo localRepo;
-    private static final Logger logger = LoggerFactory.getLogger(LocalRepoTest.class);
+    private LocalRDFRepo localRepo;
+    private static final Logger logger = LoggerFactory.getLogger(LocalRDFRepoTest.class);
 
     @Before
     public void setUp() {
         try {
             pathRepo = Files.createTempDirectory("intlib-repo");
             outDir = Files.createTempDirectory("intlib-out");
-            testFileDir = LocalRepoTest.class.getResource("/repository").getPath();
+            testFileDir = LocalRDFRepoTest.class.getResource("/repository").getPath();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
 
-        localRepo = LocalRepo.createLocalRepo(pathRepo.toString());
+        localRepo = LocalRDFRepo.createLocalRepo(pathRepo.toString());
     }
 
     @Test

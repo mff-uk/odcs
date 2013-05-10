@@ -8,16 +8,15 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 
 public class PipelineRunTests {
 
-	/**
-	 * Facade for loading modules given as jar files
-	 */
-	private ModuleFacade moduleFacade = null;
+    /**
+     * Facade for loading modules given as jar files
+     */
+    private ModuleFacade moduleFacade = null;
 
-
-	/**
-	 * Setup OSGi
-	 * TODO What are exported packages in {@link ModuleFacade#start(String)}??
-	 */
+    /**
+     * Setup OSGi TODO What are exported packages in
+     * {@link ModuleFacade#start(String)}??
+     */
 //	@Test
 	public void testTrivialRun() {
 		/*moduleFacade = new ModuleFacade(new AppConfiguration());
