@@ -17,6 +17,8 @@ import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
+import cz.cuni.xrg.intlib.commons.app.communication.Client;
+import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -30,29 +32,24 @@ public class PipelineList extends CustomComponent implements View {
 	private Table tablePipelines;
 
 	private Button btnCreatePipeline;
-
-	/**
-	 * Class used to run pipelines.
-	 * @author Petyr
-	 *
-	 */
-	public class RunPipeline implements Runnable {
-
-		/**
-		 * Pipeline to run.
-		 */
-	    private Pipeline pipeline;
-
-	    public RunPipeline(Pipeline pipeline) {
-	        this.pipeline = pipeline;
-	    }
-
-            @Override
-	    public void run() {
-	    	PipelineExecution pipelineExec = new PipelineExecution(pipeline);
-	    	
-			//TODO Run pipeline execution	    	
-	    }
+	
+	public void runPipeline(Pipeline pipeline) {
+		PipelineExecution pipelineExec = new PipelineExecution(pipeline);
+		// store into DB
+		
+		Client client = new Client(App.getApp().getAppConfiguration());
+		// send message to backend
+		try {
+			client.checkDatabase();
+		} catch (CommunicationException e) {
+			Notification.show("Error", "Can't connect to backend. Exception: " + e.getCause().getMessage(),
+					Type.ERROR_MESSAGE);
+			return;
+		}
+		
+		// show message about action
+		Notification.show("pipeline execution started ..",
+				Type.HUMANIZED_MESSAGE);
 	}
 	
 	/**
@@ -108,14 +105,7 @@ public class PipelineList extends CustomComponent implements View {
 							// navigate to PipelineEdit/New
 							Pipeline pipeline = item.getBean();
 
-							// start pipeline in othre thread
-							RunPipeline pipelineRun = new RunPipeline(pipeline);
-					        Thread t = new Thread(pipelineRun);
-					        t.start();
-														
-							// show message about action
-							Notification.show("pipeline execution started ..",
-									Type.HUMANIZED_MESSAGE);
+							runPipeline(pipeline);
 						}
 					});
 			layout.addComponent(runButton);
