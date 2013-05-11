@@ -243,8 +243,6 @@ public class Framework {
                 // store loaded class
                 this.loadedClassCtors.put(uri, loaderClass);
             } catch (ClassNotFoundException ex) {
-                System.out.println("Ex:" + ex.getMessage());
-
                 // uninstall bundle and throw
                 uninstallBundle(bundle);
                 throw new OSGiException("Failed to load class from bundle.", ex);

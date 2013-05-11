@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.data;
 
+import java.io.File;
+
 /**
  * Basic data unit interface. The data unit should be passed in context 
  * between modules and should carry the main information.
@@ -13,9 +15,9 @@ public interface DataUnit {
 	 * Create new context with given id. The context
 	 * must not be read only.
 	 * @param id unique identification
-	 * @param directoryPath path to the directory where DataUnit can store files.
+	 * @param workingDirectory Path to the directory where DataUnit can store files.
 	 */
-	public void createNew(String id, String directoryPath);
+	public void createNew(String id, File workingDirectory);
 	
 	/**
 	 * Return read only copy of data unit. This copy will be used as a input for next DPU.

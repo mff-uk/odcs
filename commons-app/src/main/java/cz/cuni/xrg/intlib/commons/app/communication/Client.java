@@ -45,7 +45,7 @@ public class Client {
 	 */
 	public void checkDatabase() throws CommunicationException {
 		// do we know backend address ?
-		if (backendAddress == null) {
+		if (chacedAddress == null) {
 			// no -> translate backend address
 			try {
 				chacedAddress = InetAddress.getByName(backendAddress);
@@ -54,7 +54,7 @@ public class Client {
 			}		
 		}
 		// connect to backend
-		Socket socket;		
+		Socket socket;
 		try {
 			socket = new Socket(chacedAddress, port);
 		} catch (IOException e) {
