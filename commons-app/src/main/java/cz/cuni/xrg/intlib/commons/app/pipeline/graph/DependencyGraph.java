@@ -55,6 +55,16 @@ public class DependencyGraph implements Iterable<Node> {
     }
 
     /**
+     * Return all direct precedents to the given node.
+     * @param node
+     * @return
+     */
+    public List<Node> getPrecedents(Node node) {
+    	//TODO: implement
+    	return null;
+    }
+    
+    /**
      * Finds extractors in the dependency graph. Always call after dependency
      * graph is built!
      */
