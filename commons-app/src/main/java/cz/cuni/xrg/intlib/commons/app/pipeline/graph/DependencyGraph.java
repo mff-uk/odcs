@@ -55,11 +55,11 @@ public class DependencyGraph implements Iterable<Node> {
     }
 
     /**
-     * Return all direct precedents to the given node.
+     * Return all direct ancestors to the given node.
      * @param node
      * @return
      */
-    public List<Node> getPrecedents(Node node) {
+    public List<Node> getAncestors(Node node) {
     	//TODO: implement
     	return null;
     }
