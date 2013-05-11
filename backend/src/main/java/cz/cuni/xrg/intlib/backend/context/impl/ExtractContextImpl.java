@@ -1,11 +1,13 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ExtractContext;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -51,6 +53,11 @@ public class ExtractContextImpl implements ExtractContext {
 	 */
 	private ApplicationEventPublisher eventPublisher;
 	
+	/**
+	 * Used factory.
+	 */
+	private DataUnitFactoryImpl dataUnitFactory;
+	
 	public ExtractContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
 		this.outputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
@@ -58,6 +65,7 @@ public class ExtractContextImpl implements ExtractContext {
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
 		this.eventPublisher = eventPublisher;
+		this.dataUnitFactory = new DataUnitFactoryImpl();
 	}
 	
 	@Override
@@ -115,6 +123,11 @@ public class ExtractContextImpl implements ExtractContext {
 	@Override
 	public DPUInstance getDPUInstance() {
 		return dpuInstance;
+	}
+
+	@Override
+	public DataUnitFactory getDataUnitFactory() {
+		return dataUnitFactory;
 	}
 
 }

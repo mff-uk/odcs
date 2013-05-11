@@ -2,12 +2,14 @@ package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.LoadContext;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,6 +55,11 @@ public class LoadContextImpl implements LoadContext {
 	 */
 	private ApplicationEventPublisher eventPublisher;	
 	
+	/**
+	 * Used factory.
+	 */
+	private DataUnitFactoryImpl dataUnitFactory;
+	
 	public LoadContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
 		this.intputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
@@ -60,6 +67,7 @@ public class LoadContextImpl implements LoadContext {
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
 		this.eventPublisher = eventPublisher;
+		this.dataUnitFactory = new DataUnitFactoryImpl();
 	}
 
 	@Override
@@ -115,7 +123,13 @@ public class LoadContextImpl implements LoadContext {
 	}
 
 	@Override
+	public DataUnitFactory getDataUnitFactory() {
+		return dataUnitFactory;
+	}	
+	
+	@Override
 	public void addSource(ProcessingContext context) throws ContextException {
 		// TODO Auto-generated method stub		
-	}    
+	}
+
 }

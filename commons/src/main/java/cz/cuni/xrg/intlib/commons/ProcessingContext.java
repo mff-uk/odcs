@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.commons;
 
 import java.util.Map;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
+
 /**
  * Base context class.
  *
@@ -66,4 +68,10 @@ public interface ProcessingContext {
      * @return
      */
     public Map<String, Object> getCustomData();    
+    
+    /**
+     * Return DataUnitFactory, that can be used to create new DataUnits.
+     * @return
+     */
+    public DataUnitFactory getDataUnitFactory();
 }

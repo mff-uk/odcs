@@ -2,12 +2,14 @@ package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.TransformContext;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,6 +60,11 @@ public class TransformContextImpl implements TransformContext {
 	 */
 	private ApplicationEventPublisher eventPublisher;	
 	
+	/**
+	 * Used factory.
+	 */
+	private DataUnitFactoryImpl dataUnitFactory;
+	
 	public TransformContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
 		this.intputs = new LinkedList<DataUnit>();
 		this.outputs = new LinkedList<DataUnit>();
@@ -66,6 +73,7 @@ public class TransformContextImpl implements TransformContext {
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
 		this.eventPublisher = eventPublisher;
+		this.dataUnitFactory = new DataUnitFactoryImpl();
 	}
 
 	@Override
@@ -131,7 +139,13 @@ public class TransformContextImpl implements TransformContext {
 	}
 
 	@Override
+	public DataUnitFactory getDataUnitFactory() {
+		return dataUnitFactory;
+	} 	
+	
+	@Override
 	public void addSource(ProcessingContext context) throws ContextException {
 		// TODO Auto-generated method stub		
-	}       
+	}
+      
 }
