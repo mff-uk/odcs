@@ -1,16 +1,16 @@
 package cz.cuni.xrg.intlib.backend;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import cz.cuni.xrg.intlib.backend.communication.Server;
+import cz.cuni.xrg.intlib.backend.execution.Engine;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
@@ -57,29 +57,37 @@ public class AppEntry {
 		
 		// set JLog
 		
+		// set engine
+		System.out.println("Configuring engine ...");
+		Engine engine = (Engine)context.getBean("engine");
+		engine.setup(appConfig);
+		
+		// set module facade
+		System.out.println("Configuring dynamic module worker ...");
 		ModuleFacade modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
 		modeleFacade.start("");
 		
+		// set TCP/IP server
+		System.out.println("Starting TCP/IP server ...");
 		Server server = (Server)context.getBean("server");
-		// init server
 		try {
 			server.init();
 		} catch (CommunicationException e1) {
 			System.out.println("Fatal error: Can't start server");
+			context.close();
 			return;
 		}
 		// start server in another thread
 		Thread serverThread = new Thread(server);
 		serverThread.start();
-		
-		InputStreamReader converter = new InputStreamReader(System.in);
-		BufferedReader in = new BufferedReader(converter);
-		
+				
 		// print some information ..
 		System.out.println("DPU durectory:" + appConfig.getModuleFacadeConfiguration().getDpuFolder());
 		System.out.println("Listening on port:" + appConfig.getBackendPort());
 		System.out.println("Running ...");
-		
+				
+		InputStreamReader converter = new InputStreamReader(System.in);
+		BufferedReader in = new BufferedReader(converter);		
 		while (true) {
 			// read line from input
 			String line = "";

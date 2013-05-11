@@ -23,6 +23,11 @@ public class AppConfiguration {
 	 */
 	private Integer backendPort = 5010;
 	
+	/**
+	 * Working directory.
+	 */
+	private String workingDirectory;
+	
 	public AppConfiguration() {
 		this.moduleConfiguration = new ModuleFacadeConfiguration();
 	}
@@ -61,6 +66,7 @@ public class AppConfiguration {
 		} catch (NumberFormatException e) {
 			throw new RuntimeException("Can't parse port number.", e);
 		}
+		workingDirectory = prop.getProperty("workingDirectory");
 	}
 	
 	public ModuleFacadeConfiguration getModuleFacadeConfiguration() {
@@ -73,5 +79,9 @@ public class AppConfiguration {
 	
 	public void setModuleFacadeConfiguration(ModuleFacadeConfiguration moduleConfiguration) {
 		this.moduleConfiguration = moduleConfiguration;
+	}
+
+	public String getWorkingDirectory() {
+		return workingDirectory;
 	}
 }
