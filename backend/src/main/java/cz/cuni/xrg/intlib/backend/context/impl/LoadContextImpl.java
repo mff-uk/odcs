@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.LoadContext;
+import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
@@ -12,6 +13,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  *
@@ -45,12 +48,18 @@ public class LoadContextImpl implements LoadContext {
 	 */
 	private DPUInstance dpuInstance;    
     
-	public LoadContextImpl(PipelineExecution execution, DPUInstance dpuInstance) {
+	/**
+	 * Application event publisher used to publish messages from DPU.
+	 */
+	private ApplicationEventPublisher eventPublisher;	
+	
+	public LoadContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
 		this.intputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -72,12 +81,12 @@ public class LoadContextImpl implements LoadContext {
 
 	@Override
 	public void sendMessage(Type type, String shortMessage) {
-		// TODO Auto-generated method stub		
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );		
 	}
 
 	@Override
 	public void sendMessage(Type type, String shortMessage, String fullMessage) {
-		// TODO Auto-generated method stub		
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
 	}
 
 	@Override

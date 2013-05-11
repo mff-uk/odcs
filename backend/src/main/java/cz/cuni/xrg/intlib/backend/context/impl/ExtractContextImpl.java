@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ExtractContext;
+import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -10,6 +11,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  *
@@ -43,17 +46,23 @@ public class ExtractContextImpl implements ExtractContext {
 	 */
 	private DPUInstance dpuInstance;
 	
-	@Override
-	public List<DataUnit> getOutputs() {		
-		return outputs;
-	}
-
-	public ExtractContextImpl(PipelineExecution execution, DPUInstance dpuInstance) {
+	/**
+	 * Application event publisher used to publish messages from DPU.
+	 */
+	private ApplicationEventPublisher eventPublisher;
+	
+	public ExtractContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
 		this.outputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
+		this.eventPublisher = eventPublisher;
+	}
+	
+	@Override
+	public List<DataUnit> getOutputs() {		
+		return outputs;
 	}
 	
 	@Override
@@ -75,12 +84,12 @@ public class ExtractContextImpl implements ExtractContext {
 
 	@Override
 	public void sendMessage(Type type, String shortMessage) {
-		// TODO Auto-generated method stub		
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );
 	}
 
 	@Override
 	public void sendMessage(Type type, String shortMessage, String fullMessage) {
-		// TODO Auto-generated method stub		
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );
 	}
 
 	@Override
