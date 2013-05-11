@@ -102,15 +102,6 @@ public class Pipeline implements Resource {
         description = newDescription;
     }
 
-    /*
-     public State getState() {
-     return state;
-     }
-
-     public void setState(State newState) {
-     state = newState;
-     }
-     */
     public PipelineGraph getGraph() {
         return graph;
     }
@@ -123,93 +114,7 @@ public class Pipeline implements Resource {
     public int getId() {
         return id;
     }
-
-    /**
-     * Runs the pipeline.
-     */
-    /*
-     public void run() {
-
-     long pipelineStart = System.currentTimeMillis();
-     String runId = UUID.randomUUID().toString();
-     final Map<String, Object> customData = new HashMap<>();
-
-     DependencyGraph dependencyGraph = new DependencyGraph(graph);
-     GraphIterator iterator = new GraphIterator(dependencyGraph);
-
-     //eventPublisher.publishEvent(new PipelineStartedEvent(this, runId, this));
-
-     while (iterator.hasNext()) {
-
-     Node node = iterator.next();
-     DPUInstance dpuInstance = node.getDpuInstance();
-     DPU dpu = dpuInstance.getDpu();
-
-     Type dpuType = dpu.getType();
-     String dpuJarPath = dpu.getJarPath();
-
-     Configuration configuration = dpuInstance.getInstanceConfig();
-     ModuleFacade moduleFacade = new ModuleFacade();
-
-     switch (dpuType) {
-
-     case EXTRACTOR: {
-
-     Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
-     extractor.setSettings(configuration);
-
-     ExtractContext context = new ExtractContext(runId, customData);
-
-     try {
-     long start = System.currentTimeMillis();
-
-     extractor.extract(context);
-     context.setDuration(System.currentTimeMillis() - start);
-     eventPublisher.publishEvent(new ExtractCompletedEvent(extractor, context, this));
-
-     } catch (ExtractException ex) {
-     eventPublisher.publishEvent(new ExtractFailedEvent(ex, extractor, context, this));
-     }
-     }
-
-     case TRANSFORMER: {
-     Transform transformer = moduleFacade.getInstanceTransform(dpuJarPath);
-     transformer.setSettings(configuration);
-
-     TransformContext context = new TransformContext(runId, customData);
-
-     try {
-     long start = System.currentTimeMillis();
-
-     transformer.transform(context);
-     context.setDuration(System.currentTimeMillis() - start);
-     eventPublisher.publishEvent(new TransformCompletedEvent(transformer, context, this));
-
-     } catch (TransformException ex) {
-     eventPublisher.publishEvent(new TransformFailedEvent(ex, transformer, context, this));
-     }
-     }
-
-     case LOADER: {
-     Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
-     loader.setSettings(configuration);
-
-     LoadContext context = new LoadContext(runId, customData);
-     try {
-     long start = System.currentTimeMillis();
-
-     loader.load(context);
-     context.setDuration(System.currentTimeMillis() - start);
-     eventPublisher.publishEvent(new LoadCompletedEvent(loader, context, this));
-     } catch (LoadException ex) {
-     eventPublisher.publishEvent(new LoadFailedEvent(ex, loader, context, this));
-     }
-     }
-     }
-     }
-
-     //eventPublisher.publishEvent(new PipelineCompletedEvent((System.currentTimeMillis() - pipelineStart), this, runId, this));
-     }*/
+	
     @Override
     public String getResourceId() {
         return Pipeline.class.toString();
