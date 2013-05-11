@@ -14,6 +14,7 @@ import com.vaadin.ui.Panel;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -51,6 +52,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private PipelineFacade pipelines;
 
 	/**
+	 * Facade interface providing services for managing pipeline executions.
+	 */
+	private PipelineExecutionFacade pipelineExecutions;
+	
+	/**
 	 * Facade interface providing services for managing DPUs.
 	 */
 	private DPUFacade dpus;
@@ -68,8 +74,6 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.navigator.addView(ViewNames.PipelineList.getUrl(), new PipelineList());
         this.navigator.addView(ViewNames.PipelineEdit.getUrl(), new PipelineEdit());
         this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());
-        // TODO: remove !
-        this.navigator.addView(ViewNames.OSGiSupport.getUrl(), new OSGiSupport());
 
         /* You can create new views dynamically using a view provider
          * that implements the  ViewProvider interface.
@@ -122,6 +126,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}} );
 
 		this.pipelines = new PipelineFacade();
+		this.pipelineExecutions = new PipelineExecutionFacade();
 		this.dpus = new DPUFacade();
 		this.appConfig = new AppConfiguration();
 
@@ -132,10 +137,18 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Returns facade, which provides services for managing pipelines.
 	 * @return pipeline facade
 	 */
-		public PipelineFacade getPipelines() {
+	public PipelineFacade getPipelines() {
 		return pipelines;
 	}
 
+	/**
+	 * Returns facade, which provides services for managing pipeline executions.
+	 * @return pipeline executions facade
+	 */
+	public PipelineExecutionFacade getPipeliExecutions() {
+		return pipelineExecutions;
+	}	
+	
 	/**
 	 * Return application navigator.
 	 * @return application navigator

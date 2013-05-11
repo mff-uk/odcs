@@ -30,12 +30,15 @@ public class PipelineExecution  {
     private boolean isDebugging;
     
     /**
-     * Constructor
+     * Constructor. Create pipeline which will be run 
+     * as soon as possible in non-debug mode.
      *
      * @param pipeline
      */
-    public PipelineExecution(Pipeline pipeline) {
+    public PipelineExecution(Pipeline pipeline) {        
+        this.status = ExecutionStatus.SCHEDULED;
         this.pipeline = pipeline;
+        this.isDebugging = false;
     }
 
     public int getId() {

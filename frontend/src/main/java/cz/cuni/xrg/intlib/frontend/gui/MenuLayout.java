@@ -81,8 +81,6 @@ public class MenuLayout extends CustomComponent {
 		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DataBrowser.getUrl()) );
 		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.Scheduler.getUrl()) );
 		menuBar.addItem("Administrator", new NavigateToCommand(ViewNames.Administrator.getUrl()) );
-		// TODO Remove
-		menuBar.addItem("OSGi Support", new NavigateToCommand(ViewNames.OSGiSupport.getUrl()) );
 	}
 
 	private VerticalLayout buildMainLayout() {
