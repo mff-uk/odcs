@@ -64,8 +64,8 @@ public class AppEntry {
 		
 		// set module facade
 		System.out.println("Configuring dynamic module worker ...");
-		ModuleFacade modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
-		modeleFacade.start("");
+		ModuleFacade moduleFacade = (ModuleFacade)context.getBean("moduleFacade");
+		moduleFacade.start();
 		
 		// set TCP/IP server
 		System.out.println("Starting TCP/IP server ...");
