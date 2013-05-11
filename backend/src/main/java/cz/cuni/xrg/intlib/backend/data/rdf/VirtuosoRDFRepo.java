@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.backend.repository;
+package cz.cuni.xrg.intlib.backend.data.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.repository.RepositoryException;

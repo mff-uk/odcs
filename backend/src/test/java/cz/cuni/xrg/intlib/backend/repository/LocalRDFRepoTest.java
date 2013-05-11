@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.backend.repository;
 
+import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDFRepo;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import java.io.File;
 import java.io.IOException;

@@ -1,6 +1,7 @@
-package cz.cuni.xrg.intlib.backend.repository;
+package cz.cuni.xrg.intlib.backend.data.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import java.io.BufferedReader;
@@ -760,4 +761,28 @@ public class LocalRDFRepo implements RDFDataRepository {
     public DataUnitType getType() {
         return DataUnitType.RDF;
     }
+
+	@Override
+	public void createNew(String id, String directoryPath) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public DataUnit createReadOnlyCopy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void merge(DataUnit unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
