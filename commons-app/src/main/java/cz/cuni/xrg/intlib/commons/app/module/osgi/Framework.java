@@ -49,18 +49,7 @@ public class Framework {
         config.put("osgi.noShutdown", "true");
         // export packages
         config.put(org.osgi.framework.Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                // commons
-                "cz.cuni.xrg.intlib.commons,"
-                + "cz.cuni.xrg.intlib.commons.configuration,"
-                + "cz.cuni.xrg.intlib.commons.event,"
-                + "cz.cuni.xrg.intlib.commons.extractor,"
-                + "cz.cuni.xrg.intlib.commons.loader,"
-                + "cz.cuni.xrg.intlib.commons.transformer,"
-                + // commons-web
-                "cz.cuni.xrg.intlib.commons.web,"
-                + // commons-module
-                "cz.cuni.xrg.intlib.commons.repository"
-                + exportedPackages);
+               exportedPackages);
         return config;
     }
     /*
@@ -243,8 +232,6 @@ public class Framework {
                 // store loaded class
                 this.loadedClassCtors.put(uri, loaderClass);
             } catch (ClassNotFoundException ex) {
-                System.out.println("Ex:" + ex.getMessage());
-
                 // uninstall bundle and throw
                 uninstallBundle(bundle);
                 throw new OSGiException("Failed to load class from bundle.", ex);
@@ -264,27 +251,4 @@ public class Framework {
         return dpu;
     }
 
-    @Deprecated
-    public void HACK_startBundle(String uri) throws ModuleException {
-        // has bundle been already loaded?
-        if (this.loadedBundles.containsKey(uri)) {
-            try {
-                this.loadedBundles.get(uri).start();
-            } catch (org.osgi.framework.BundleException e) {
-                throw new ModuleException("Can't start bundle: ", e);
-            }
-        } else {
-            throw new RuntimeException("Can't find bundle.");
-        }
-    }
-
-    @Deprecated
-    public org.osgi.framework.launch.Framework HACK_getFramework() {
-        return this.framework;
-    }
-
-    @Deprecated
-    public java.util.Map<String, Bundle> HACK_installed() {
-        return this.loadedBundles;
-    }
 }

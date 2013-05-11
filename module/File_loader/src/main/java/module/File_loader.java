@@ -1,6 +1,6 @@
 package module;
 
-import cz.cuni.xrg.intlib.commons.repository.RDFFormatType;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
@@ -11,8 +11,8 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.repository.CannotOverwriteFileException;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
+import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -21,7 +21,7 @@ import org.openrdf.rio.RDFFormat;
  */
 public class File_loader implements GraphicalLoader {
 
-    private LocalRepo repository = null; // LocalRepo.createLocalRepo();
+    private RDFDataRepository repository = null; // LocalRDFRepo.createLocalRepo();
     /**
      * Configuration component.
      */
@@ -154,12 +154,12 @@ public class File_loader implements GraphicalLoader {
     }
 
     @Override
-    public LocalRepo getLocalRepo() {
+    public RDFDataRepository getRDFRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRepo localRepo) {
-        repository = localRepo;
+    public void setRDFRepo(RDFDataRepository newRepo) {
+        repository = newRepo;
     }
 }

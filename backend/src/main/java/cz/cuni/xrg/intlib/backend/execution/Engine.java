@@ -1,93 +1,167 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
+import cz.cuni.xrg.intlib.backend.AppConfiguration;
+import cz.cuni.xrg.intlib.backend.communication.ServerEvent;
+import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+
+import java.io.File;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.ApplicationListener;
 
 /**
  * Responsible for running and supervision queue of PipelineExecution tasks.
  *
- * @author Jiri Tomes
- * @author Jan Vojt
+ * @author Petyr
  */
-public class Engine {
-
+public class Engine implements ApplicationListener<ServerEvent>, ApplicationEventPublisherAware  {
+	
     /**
-     * Thread pool of workers.
-     */
-    private PipelineWorker[] threads;
-    /**
-     * Maximum number of concurrent pipeline runs = threads.
-     */
-    private int size;
-    private Queue<PipelineExecution> queue = new LinkedList<>();
-
-    public Engine(int size) {
-        this.size = size;
-        this.threads = new PipelineWorker[size];
+     * Provide access to DPU implementation.
+     */	
+	protected ModuleFacade moduleFacade;
+	
+	/**
+	 * Thread pool. 
+	 */
+	protected ExecutorService executorService;
+	
+	/**
+     * Publisher instance.
+     */	
+	protected ApplicationEventPublisher eventPublisher;
+	
+	/**
+	 * Working directory.
+	 */
+	protected File workingDirectory;
+	
+	public Engine(ModuleFacade moduleFacade) {
+		this.moduleFacade = moduleFacade;
+    	this.executorService = Executors.newCachedThreadPool();
     }
 
-    public void complete() {
+	public Engine(ModuleFacade moduleFacade, ExecutorService executorService) {
+		this.moduleFacade = moduleFacade;
+    	this.executorService = executorService;
     }
-
-    public void kill() {
-        for (int i = 0; i < size; i++) {
-            threads[i].kill();
-        }
-    }
-
+	
+	/**
+	 * Setup engine from given configuration.
+	 * @param config
+	 */
+	public void setup(AppConfiguration config) {
+		workingDirectory = new File( config.getWorkingDirectory() );
+		// make sure that the directory exist
+		if (workingDirectory.isDirectory()) {
+			workingDirectory.mkdirs();
+		}
+		// ..
+		
+	}
+	
     /**
-     * Puts pipeline run into internal queue to be processed by workers.
+     * Ask executorService to run the pipeline.
      *
-     * @param exec
+     * @param pipelineExecution
      */
-    public void run(PipelineExecution exec) {
-        queue.add(exec);
-        optimizeWorkers();
+    private void run(PipelineExecution pipelineExecution) {
+    	// prepare working directory for execution
+    	File directory = new File(workingDirectory, "ex" + pipelineExecution.getId() );
+    	
+    	this.executorService.execute(
+    			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, directory));
     }
 
     /**
-     * Optimizes number of workers according to current size of queue.
+     * Check database for new task (PipelineExecutions to run).
+     * Can run concurrently.
      */
-    public void optimizeWorkers() {
-        if (queue.isEmpty()) {
-            for (int i = 0; i < threads.length; i++) {
-                if (threads[i] != null && !threads[i].isWorking()) {
-                    threads[i].kill();
-                    threads[i] = null;
-                }
-            }
-        } else {
-            addWorkers(queue.size());
-        }
-    }
+    private synchronized void checkDatabase() {
+    	List<PipelineExecution> toExecute = new LinkedList<PipelineExecution>();
+    	System.out.println("Engine: checking the database ...");
 
-    /**
-     * Interface where worker can obtain a job.
-     *
-     * @return
-     */
-    public synchronized PipelineExecution getJob() {
-        return queue.isEmpty() ? null : queue.remove();
+    	// add test pipeline
+    	toExecute.add( createTest() );
+    	
+    	// run pipeline executions ..   
+    	for (PipelineExecution item : toExecute) {
+    		run(item);
+    	}
     }
+    
+    public PipelineExecution createTest() {
+    	Pipeline pipe = new Pipeline();
+        PipelineGraph graph = new PipelineGraph();
+        pipe.setGraph(graph);
+    	
+        DPU extractor = new DPU("RDF Extractor", Type.EXTRACTOR);
+        DPU loader = new DPU("RDF Loader", Type.LOADER);
 
-    /**
-     * Try to create more Workers in the thread pool, respects pool size.
-     *
-     * @param n
-     * @return
-     */
-    private boolean addWorkers(int n) {
-        for (int i = 0; i < threads.length; i++) {
-            if (threads[i] == null) {
-                PipelineWorker pw = new PipelineWorker(this);
-                threads[i] = pw;
-                pw.start();
-                if ((--n) <= 0) {
-                    break;
-                }
-            }
-        }
-        return n == 0;
+        extractor.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
+        loader.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
+
+        int eId = graph.addDpu(extractor);
+        int lId = graph.addDpu(loader);
+
+        graph.addEdge(eId, lId);
+
+        // set configurations
+        Configuration exConfig = new InstanceConfiguration();
+
+        exConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql-auth");
+        exConfig.setValue("Host_name", "SPARQL");
+        exConfig.setValue("Password", "nejlepsipaper");
+        exConfig.setValue("GraphsUri", new LinkedList<String>());
+        exConfig.setValue("SPARQL_query", "select * where {?s ?o ?p} LIMIT 10");
+
+        graph.getNodeById(eId).getDpuInstance().setInstanceConfig(exConfig);
+
+        Configuration ldConfig = new InstanceConfiguration();
+        List<String> graphsURI=new LinkedList<String>();
+        graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
+
+        ldConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql");
+        ldConfig.setValue("Host_name", "SPARQL");
+        ldConfig.setValue("Password", "nejlepsipaper");
+        ldConfig.setValue("GraphsUri", graphsURI);
+
+        graph.getNodeById(lId).getDpuInstance().setInstanceConfig(ldConfig);
+        
+        return new PipelineExecution(pipe);
     }
+    
+	@Override
+	public void onApplicationEvent(ServerEvent event) {
+		// react on message from server
+		switch(event.getMessage()) {
+		case CheckDatabase:
+			checkDatabase();
+			break;
+		case Uknown:
+		default:
+			// do nothing
+			break;
+		}
+		
+	}
+
+	@Override
+	public void setApplicationEventPublisher(
+			ApplicationEventPublisher applicationEventPublisher) {
+		this.eventPublisher = applicationEventPublisher;		
+	}
+
 }

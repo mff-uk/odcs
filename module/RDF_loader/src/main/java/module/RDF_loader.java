@@ -7,10 +7,10 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RDF_loader implements GraphicalLoader {
 
-    private LocalRepo repository = null;
+    private RDFDataRepository repository = null;
     /**
      * Configuration component.
      */
@@ -118,12 +118,12 @@ public class RDF_loader implements GraphicalLoader {
     }
 
     @Override
-    public LocalRepo getLocalRepo() {
+    public RDFDataRepository getRDFRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRepo localRepo) {
-        repository = localRepo;
+    public void setRDFRepo(RDFDataRepository newRepo) {
+        repository = newRepo;
     }
 }

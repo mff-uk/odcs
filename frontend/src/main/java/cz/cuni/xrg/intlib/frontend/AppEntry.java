@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import info.aduna.app.AppVersion;
+
 import java.io.File;
 import java.util.Enumeration;
 
@@ -10,9 +12,9 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Panel;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
-import cz.cuni.xrg.intlib.commons.app.dpu.DpuFacade;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -50,9 +52,14 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private PipelineFacade pipelines;
 
 	/**
+	 * Facade interface providing services for managing pipeline executions.
+	 */
+	private PipelineExecutionFacade pipelineExecutions;
+	
+	/**
 	 * Facade interface providing services for managing DPUs.
 	 */
-	private DpuFacade dpus;
+	private DPUFacade dpus;
 
     /**
      * Add url-view association into navigator.
@@ -67,8 +74,6 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.navigator.addView(ViewNames.PipelineList.getUrl(), new PipelineList());
         this.navigator.addView(ViewNames.PipelineEdit.getUrl(), new PipelineEdit());
         this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());
-        // TODO: remove !
-        this.navigator.addView(ViewNames.OSGiSupport.getUrl(), new OSGiSupport());
 
         /* You can create new views dynamically using a view provider
          * that implements the  ViewProvider interface.
@@ -96,18 +101,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		
         this.appConfig = new AppConfiguration();
         
-		this.modules = new ModuleFacade(appConfig);
+		this.modules = new ModuleFacade(appConfig.getModuleFacadeConfiguration());
 		// add vaadin to export package list
-		this.modules.start(
-				",com.vaadin.ui" +
-				",com.vaadin.data" +
-				",com.vaadin.data.util" +
-				",com.vaadin.data.util.converter" +
-				",com.vaadin.shared.ui.combobox" +
-				",com.vaadin.server" +
-				// OpenRdf
-				",org.openrdf.rio"
-						);
+		this.modules.start();
 		
 		// TODO: set module relative path .. ? 
 //		this.modules.installDirectory(App.getWebAppDirectory() + "/OSGI/libs/");
@@ -121,7 +117,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}} );
 
 		this.pipelines = new PipelineFacade();
-		this.dpus = new DpuFacade();
+		this.pipelineExecutions = new PipelineExecutionFacade();
+		this.dpus = new DPUFacade();
 		this.appConfig = new AppConfiguration();
 
 		initNavigator();
@@ -131,10 +128,18 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Returns facade, which provides services for managing pipelines.
 	 * @return pipeline facade
 	 */
-		public PipelineFacade getPipelines() {
+	public PipelineFacade getPipelines() {
 		return pipelines;
 	}
 
+	/**
+	 * Returns facade, which provides services for managing pipeline executions.
+	 * @return pipeline executions facade
+	 */
+	public PipelineExecutionFacade getPipeliExecutions() {
+		return pipelineExecutions;
+	}	
+	
 	/**
 	 * Return application navigator.
 	 * @return application navigator
@@ -155,7 +160,15 @@ public class AppEntry extends com.vaadin.ui.UI {
      * Return facade, which provide services for manipulating with DPUs.
      * @return dpus facade
      */
-    public DpuFacade getDPUs() {
+    public DPUFacade getDPUs() {
         return this.dpus;
     }	
+    
+    /**
+     * Return application configuration class.
+     * @return
+     */
+    public AppConfiguration getAppConfiguration() {
+    	return appConfig;
+    }
 }

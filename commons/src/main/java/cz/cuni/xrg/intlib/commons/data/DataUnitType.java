@@ -9,6 +9,7 @@ package cz.cuni.xrg.intlib.commons.data;
 public enum DataUnitType {
 	/**
 	 * RDF data unit type.
+	 * see @{link RDFDataRepository}
 	 */
 	RDF
 }

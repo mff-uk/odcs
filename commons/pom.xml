@@ -20,41 +20,18 @@
             <id>JBoss Thirdparty Releases</id>
             <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
         </repository>
-
-        <repository>
-            <id>com.springsource.repository.bundles.external</id>
-            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/external</url>
-        </repository>
         
     </repositories>
 
     <dependencies>
-    
-        <!-- spring dependency -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>3.1.2.RELEASE</version>
-            <type>jar</type>
-        </dependency>
-    
+       
         <dependency> <!--  JUnit dependency -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-        
-        <!-- OSGi dependency -->
-        <!--
-        <dependency> 
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        -->
-        
+
         <dependency> <!--  JUL to SLF4J bridge -->
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>

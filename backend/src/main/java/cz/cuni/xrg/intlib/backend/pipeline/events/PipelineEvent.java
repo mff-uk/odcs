@@ -1,39 +1,33 @@
 package cz.cuni.xrg.intlib.backend.pipeline.events;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.event.DPUEvent;
+import org.springframework.context.ApplicationEvent;
+
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
- * Base class for {@link ETLPipelineImpl} events
+ * Base class for Pipeline events.
  *
- * @author Alex Kreiser (akreiser@gmail.com)
+ * @author Petyr
  */
-public abstract class PipelineEvent extends DPUEvent {
+public abstract class PipelineEvent extends ApplicationEvent {
 
-    protected final Pipeline pipeline;
-    protected final String id;
+	/**
+	 * Associated pipeline execution.
+	 */
+    protected final PipelineExecution execution;
 
-    public PipelineEvent(Pipeline pipeline, String runId, Object source) {
+    public PipelineEvent(PipelineExecution execution, Object source) {
         super(source);
-        this.pipeline = pipeline;
-        this.id = runId;
+        this.execution = execution;
     }
 
     /**
-     * Returns the pipeline, where event is registred.
+     * Returns the associated PipelineExecution.
      *
      * @return
      */
-    public Pipeline getPipeline() {
-        return pipeline;
+    public PipelineExecution getPipelineExecution() {
+        return execution;
     }
 
-    /**
-     * Returns the unique identifier of this event (!= pipeline id)
-     *
-     * @return
-     */
-    public String getId() {
-        return id;
-    }
 }

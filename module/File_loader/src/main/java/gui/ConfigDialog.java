@@ -7,7 +7,7 @@ import module.Config;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.repository.RDFFormatType;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 
 /**
  * Configuration dialog.

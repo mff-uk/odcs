@@ -1,12 +1,11 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import com.vaadin.data.Container;
 import com.vaadin.ui.*;
-import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
-import cz.cuni.xrg.intlib.commons.ExecutionMessage;
-import cz.cuni.xrg.intlib.commons.MessageType;
-import cz.cuni.xrg.intlib.commons.RDFTriple;
-import java.util.AbstractList;
+
+import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.RecordType;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,12 +28,13 @@ public class DebuggingView extends Window {
 		mainLayout = new VerticalLayout();
 
 		RecordsTable executionRecordsTable = new RecordsTable(buildStubMessageData());
-		executionRecordsTable.setHeight("150px");
+		executionRecordsTable.setWidth("100%");
+		executionRecordsTable.setHeight("100px");
 
 		mainLayout.addComponent(executionRecordsTable);
 
 		TabSheet tabs = new TabSheet();
-		tabs.setHeight("300px");
+		tabs.setHeight("500px");
 
 		//Table with data
 		BrowserTable browserTable = new BrowserTable(buildStubRDFData());
@@ -43,12 +43,15 @@ public class DebuggingView extends Window {
 
 		//RecordsTable with different data source
 		RecordsTable fullRecordsTable = new RecordsTable(buildStubFullData());
+		fullRecordsTable.setWidth("100%");
+		fullRecordsTable.setHeight("100%");
 		tabs.addTab(fullRecordsTable, "Log");
 
 		//Query View
 		QueryView queryView = new QueryView();
 		tabs.addTab(queryView, "Query");
 
+		mainLayout.setSizeUndefined();
 		mainLayout.setWidth("600px");
 		mainLayout.addComponent(tabs);
 
@@ -58,22 +61,26 @@ public class DebuggingView extends Window {
 
 
 
-	private List<ExecutionMessage> buildStubMessageData() {
-		List<ExecutionMessage> stubList = new ArrayList<ExecutionMessage>();
-		ExecutionMessage m = new ExecutionMessage(1, new Date(), MessageType.OK, null, "Test message", "Long test message");
+	private List<Record> buildStubMessageData() {
+		List<Record> stubList = new ArrayList<Record>();
+		Record m = new Record(new Date(), RecordType.Info, null, "Test message", "Long test message");
+		m.setId(1);
 		stubList.add(m);
-		ExecutionMessage m2 = new ExecutionMessage(2, new Date(), MessageType.Warning, null, "Test warning", "Long test warning message");
+		Record m2 = new Record(new Date(), RecordType.Warning, null, "Test warning", "Long test warning message");
+		m2.setId(2);
 		stubList.add(m2);
 
 		return stubList;
 	}
 
-	private List<ExecutionMessage> buildStubFullData() {
-		List<ExecutionMessage> fullList = buildStubMessageData();
+	private List<Record> buildStubFullData() {
+		List<Record> fullList = buildStubMessageData();
 
-		ExecutionMessage m = new ExecutionMessage(3, new Date(), MessageType.Log, null, "Test log message", "Long test log message");
+		Record m = new Record(new Date(), RecordType.Log, null, "Test log message", "Long test log message");
+		m.setId(3);
 		fullList.add(1, m);
-		ExecutionMessage m2 = new ExecutionMessage(4, new Date(), MessageType.Log, null, "Another test log message", "Bla bla Long test warning message");
+		Record m2 = new Record(new Date(), RecordType.Log, null, "Another test log message", "Bla bla Long test warning message");
+		m2.setId(4);
 		fullList.add(m2);
 
 		return fullList;

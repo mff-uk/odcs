@@ -7,14 +7,14 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
-import cz.cuni.xrg.intlib.commons.repository.LocalRepo;
 
 public class SPARQL_transformer implements GraphicalTransformer {
 
-    private LocalRepo repository = null;
+    private RDFDataRepository repository = null;
     /**
      * Configuration component.
      */
@@ -89,12 +89,12 @@ public class SPARQL_transformer implements GraphicalTransformer {
     }
 
     @Override
-    public LocalRepo getLocalRepo() {
+    public RDFDataRepository getRDFRepo() {
         return repository;
     }
 
     @Override
-    public void setLocalRepo(LocalRepo localRepo) {
-        repository = localRepo;
+    public void setRDFRepo(RDFDataRepository newRepo) {
+        repository = newRepo;
     }
 }

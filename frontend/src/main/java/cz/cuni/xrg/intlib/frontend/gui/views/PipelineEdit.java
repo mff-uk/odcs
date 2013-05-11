@@ -404,6 +404,7 @@ public class PipelineEdit extends CustomComponent implements View {
 	 */
 	protected void savePipeline() {
 		if(!pipelineName.isValid()) {
+			Notification.show("Error saving pipeline", "Pipeline name is required!", Notification.Type.ERROR_MESSAGE);
 			return;
 		}
 		this.pipeline.setName(pipelineName.getValue());

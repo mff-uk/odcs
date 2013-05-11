@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	xmlns:context="http://www.springframework.org/schema/context">
+	<context:annotation-config />
+
+	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server">
+	    <constructor-arg ref="configuration"/>
+	</bean>
+	
+	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine">
+	    <constructor-arg ref="moduleFacade"/>
+	</bean>
+	
+	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade">
+	    <constructor-arg ref="moduleFacadeConfiguration"/>
+	</bean>
+	
+	<bean id="configuration" class="cz.cuni.xrg.intlib.backend.AppConfiguration">
+	    <constructor-arg ref="moduleFacadeConfiguration"/>
+	</bean>
+
+	<bean id="moduleFacadeConfiguration" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration">
+	</bean>	
+		
+	<!-- print all event in application -->
+	<bean class="cz.cuni.xrg.intlib.backend.EventReporter"/>
+	
+	<!-- <context:component-scan base-package="com.test"/>  -->
+</beans>
