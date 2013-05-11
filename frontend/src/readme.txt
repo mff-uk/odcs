@@ -13,7 +13,3 @@ Developing notes:
 - to redirect on some view (page) use AppEntry.getNavigator().navigateTo(ulr .. ) 
   as URL use value from gui.ViewNames.
 - serialization on Tomcat Restart is turned off, because we have non-serializable class in session
-
-2013-04-19:
-	- before compile:
-		- change HACK_basePath : commons-app.dpu.DPU.java to the root of project 
