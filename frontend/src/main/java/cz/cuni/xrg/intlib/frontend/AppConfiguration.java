@@ -14,7 +14,7 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration;
 public class AppConfiguration {
 
 	/**
-	 * ModuleFacade configuration.
+	 * ModuleFacade configuration. 
 	 */
 	private ModuleFacadeConfiguration moduleConfiguration = new ModuleFacadeConfiguration();
 	
@@ -27,7 +27,35 @@ public class AppConfiguration {
 	 * Port for communicating with backend.
 	 */
 	private Integer backendPort = 5010;
+	
+	public AppConfiguration() {
+		// init moduleConfiguration		
+		moduleConfiguration.setPackagesToExpose(
+			// commons
+            "cz.cuni.xrg.intlib.commons"
+            + ",cz.cuni.xrg.intlib.commons.configuration"
+            + ",cz.cuni.xrg.intlib.commons.data"
+            + ",cz.cuni.xrg.intlib.commons.data.rdf"
+            + ",cz.cuni.xrg.intlib.commons.event"
+            + ",cz.cuni.xrg.intlib.commons.extractor"
+            + ",cz.cuni.xrg.intlib.commons.loader"
+            + ",cz.cuni.xrg.intlib.commons.message"
+            + ",cz.cuni.xrg.intlib.commons.transformer"
+            // commons-web
+            + ",cz.cuni.xrg.intlib.commons.web"
+            // vaadin    
+			+ ",com.vaadin.ui"
+			+ ",com.vaadin.data"
+			+ ",com.vaadin.data.util"
+			+ ",com.vaadin.data.util.converter"
+			+ ",com.vaadin.shared.ui.combobox"
+			+ ",com.vaadin.server"
+			// OpenRdf
+			+ ",org.openrdf.rio"
+		);
 		
+	}
+	
 	/**
 	 * Load configuration from given properties file.
 	 * @param fileName
@@ -73,7 +101,4 @@ public class AppConfiguration {
 		return this.backendPort;
 	}
 	
-	public void setModuleFacadeConfiguration(ModuleFacadeConfiguration moduleConfiguration) {
-		this.moduleConfiguration = moduleConfiguration;
-	}
 }

@@ -10,7 +10,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
-import cz.cuni.xrg.intlib.frontend.gui.views.OSGiSupport;
 
 /**
  * Class represent main application component.

@@ -39,11 +39,10 @@ public class ModuleFacade {
 	
 	/**
 	 * Start framework. Must be called as a first method after ctor.
-	 * @param exportedPackages names of additional packages to export started and separated by comma
 	 */
-	public void start(String exportedPackages) throws ModuleException {
+	public void start() throws ModuleException {
 		// start
-		this.framework.start(exportedPackages);
+		this.framework.start(configuration.getPackagesToExpose());
 	}
 	
 	/**
@@ -124,14 +123,5 @@ public class ModuleFacade {
 			}
 		}
 	}
-	
-	/**
-	 * Return framework that is used to work with bundles.
-	 * @return
-	 */
-	@Deprecated
-	public cz.cuni.xrg.intlib.commons.app.module.osgi.Framework HACK_getFramework() {
-		return this.framework;
-	}
-	
+		
 }
