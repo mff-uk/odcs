@@ -164,7 +164,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
 					executorService.execute(communicator);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				// TODO How to react on server IOException, not it's ignored
 				e.printStackTrace();
 			}
 		}

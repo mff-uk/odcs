@@ -16,7 +16,7 @@ public class PipelineAbortedEvent extends PipelineEvent {
 
     private final String message;
 
-    public PipelineAbortedEvent(String message, PipelineExecution pipelineExec, String id, Object source) {
+    public PipelineAbortedEvent(String message, PipelineExecution pipelineExec, Object source) {
         super(pipelineExec, source);
         this.message = message;
     }
