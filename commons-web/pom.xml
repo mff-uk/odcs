@@ -8,6 +8,7 @@
 	<artifactId>commons-web</artifactId>
 	<name>commons-web</name>
   	<description></description>
+  	<packaging>${packaging.type}</packaging>
   	
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,6 +47,7 @@
             <artifactId>vaadin-themes</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -53,5 +55,58 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>  
+  
+	<profiles>
+	
+		<profile>
+			<!-- default profile create a jar file -->
+	        <id>defaultProfile</id>
+	        <activation>
+	            <activeByDefault>true</activeByDefault>
+	        </activation>
+			<properties>
+                <packaging.type>jar</packaging.type>
+            </properties>		        
+	    </profile>	
+	
+		<profile>
+			<!-- create an osgi bundle that exports code from this project -->
+			<id>CreateBundle</id>
+			<properties>
+                <packaging.type>bundle</packaging.type>
+            </properties>			
+			<build>			
+				<finalName>${project.artifactId}-${project.version}-bundle</finalName>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>${project.java.version}</source>
+							<target>${project.java.version}</target>
+						</configuration>
+					</plugin>					
+					<plugin> <!-- generate manifest file -->
+						<groupId>org.apache.felix</groupId>
+						<artifactId>maven-bundle-plugin</artifactId>
+						<version>2.3.7</version>
+						<extensions>true</extensions>
+						<configuration>
+							<instructions>
+								<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+								<Bundle-Name>${project.artifactId}</Bundle-Name>
+								<Bundle-Version>${project.version}</Bundle-Version>
+								<!-- export just packages under cz.cuni.xrg.intlib.commons.web -->
+								<Export-Package>cz.cuni.xrg.intlib.commons.web.*;version="${project.version}"</Export-Package>
+								<!-- import commons and vaadin -->
+								<Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}"</Import-Package>
+								<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+							</instructions>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>  
   
 </project>
