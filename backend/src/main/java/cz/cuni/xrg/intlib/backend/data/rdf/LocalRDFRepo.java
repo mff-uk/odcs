@@ -763,12 +763,6 @@ public class LocalRDFRepo implements RDFDataRepository {
     }
 
 	@Override
-	public void createNew(String id, String directoryPath) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public DataUnit createReadOnlyCopy() {
 		// TODO Auto-generated method stub
 		return null;
@@ -784,5 +778,11 @@ public class LocalRDFRepo implements RDFDataRepository {
 	public boolean isReadOnly() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void createNew(String id, File workingDirectory) {
+		// TODO Auto-generated method stub
+		
 	}
 }

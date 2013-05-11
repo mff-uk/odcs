@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,11 @@ import org.springframework.context.ApplicationEventPublisher;
  */
 public class LoadContextImpl implements LoadContext {
 
+	/**
+	 * Unique context id.
+	 */
+	private String id;	
+	
 	/**
 	 * Context input data units.
 	 */
@@ -60,14 +66,21 @@ public class LoadContextImpl implements LoadContext {
 	 */
 	private DataUnitFactoryImpl dataUnitFactory;
 	
-	public LoadContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
+	/**
+	 * Path to the directory that can be used by this context.
+	 */
+	private File contextDirectory;
+	
+	public LoadContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
+			ApplicationEventPublisher eventPublisher, File contextDirectory) {
+		this.id = id;
 		this.intputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
 		this.eventPublisher = eventPublisher;
-		this.dataUnitFactory = new DataUnitFactoryImpl();
+		this.dataUnitFactory = new DataUnitFactoryImpl(this.id, new File(contextDirectory, "DataUnits") );
 	}
 
 	@Override

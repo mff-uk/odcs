@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,11 @@ import org.springframework.context.ApplicationEventPublisher;
  */
 public class ExtractContextImpl implements ExtractContext {
 
+	/**
+	 * Unique context id.
+	 */
+	private String id;
+	
 	/**
 	 * Context output data units.
 	 */
@@ -58,14 +64,22 @@ public class ExtractContextImpl implements ExtractContext {
 	 */
 	private DataUnitFactoryImpl dataUnitFactory;
 	
-	public ExtractContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
+	/**
+	 * Path to the directory that can be used by this context.
+	 */
+	private File contextDirectory;
+	
+	public ExtractContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
+			ApplicationEventPublisher eventPublisher, File contextDirectory) {
+		this.id = id;
 		this.outputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
-		this.eventPublisher = eventPublisher;
-		this.dataUnitFactory = new DataUnitFactoryImpl();
+		this.eventPublisher = eventPublisher;		
+		this.dataUnitFactory = new DataUnitFactoryImpl(this.id, new File(contextDirectory, "DataUnits") );
+		this.contextDirectory = contextDirectory;
 	}
 	
 	@Override

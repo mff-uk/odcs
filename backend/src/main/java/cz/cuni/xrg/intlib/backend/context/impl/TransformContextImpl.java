@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,11 @@ import org.springframework.context.ApplicationEventPublisher;
  */
 public class TransformContextImpl implements TransformContext {
 
+	/**
+	 * Unique context id.
+	 */
+	private String id;	
+	
 	/**
 	 * Context input data units.
 	 */
@@ -65,7 +71,14 @@ public class TransformContextImpl implements TransformContext {
 	 */
 	private DataUnitFactoryImpl dataUnitFactory;
 	
-	public TransformContextImpl(PipelineExecution execution, DPUInstance dpuInstance, ApplicationEventPublisher eventPublisher) {
+	/**
+	 * Path to the directory that can be used by this context.
+	 */
+	private File contextDirectory;
+	
+	public TransformContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
+			ApplicationEventPublisher eventPublisher, File contextDirectory) {
+		this.id = id;
 		this.intputs = new LinkedList<DataUnit>();
 		this.outputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
@@ -73,7 +86,7 @@ public class TransformContextImpl implements TransformContext {
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
 		this.eventPublisher = eventPublisher;
-		this.dataUnitFactory = new DataUnitFactoryImpl();
+		this.dataUnitFactory = new DataUnitFactoryImpl(this.id, new File(contextDirectory, "DataUnits") );
 	}
 
 	@Override

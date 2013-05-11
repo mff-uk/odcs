@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -61,12 +63,25 @@ public class PipelineWorker implements Runnable {
 	private Map<Node, ProcessingContext> contexts;
 	// TODO: Add come id to the node ?
 	
-	public PipelineWorker(PipelineExecution execution,
-			ModuleFacade moduleFacade, ApplicationEventPublisher eventPublisher) {
+	/**
+	 * Working directory for this execution.
+	 */
+	private File workDirectory;
+	
+	/**
+	 * 
+	 * @param execution The pipeline execution record to run.
+	 * @param moduleFacade Module facade for obtaining DPUs instances.
+	 * @param eventPublisher Application event publisher.
+	 * @param workDirectory Working directory for this execution.
+	 */
+	public PipelineWorker(PipelineExecution execution, ModuleFacade moduleFacade, 
+			ApplicationEventPublisher eventPublisher, File workDirectory) {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
 		this.contexts = new HashMap<Node, ProcessingContext>();
+		this.workDirectory = workDirectory;
 	}
 
 	/**
@@ -89,7 +104,18 @@ public class PipelineWorker implements Runnable {
 			try {
 				runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
-				// quit execution				
+				// quit execution
+				System.out.println("Context exception:");
+				e.printStackTrace();
+				return;
+			} catch (ModuleException e) {
+				System.out.print("Module exception:");
+				System.out.println(e.getMessage());
+				System.out.println("Trace message: " + e.getTraceMessage());
+				return;
+			} catch (Exception e) {
+				System.out.println("Exception:");
+				e.printStackTrace();
 				return;
 			}
 		}
@@ -110,16 +136,23 @@ public class PipelineWorker implements Runnable {
 	 */
 	private ProcessingContext getContextForNode(DPUInstance dpuInstance, Type type, List<Node> ancestors) throws ContextException {
 		ProcessingContext ctx = null;
+		String contextId = "ex" + execution.getId() + "_dpuIns" + dpuInstance.getId();
+		File contextDirectory = new File(workDirectory, "_dpuIns" + dpuInstance.getId() );
+		// create directory
+		contextDirectory.mkdirs();
+		
 		switch (type) {
 			case EXTRACTOR: {
 				cz.cuni.xrg.intlib.backend.context.ExtractContext extractContext;
-				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.ExtractContextImpl(execution, dpuInstance, eventPublisher);
+				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.ExtractContextImpl
+						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
 				break;
 			}
 			case TRANSFORMER: {
 				cz.cuni.xrg.intlib.backend.context.TransformContext extractContext;
-				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.TransformContextImpl(execution, dpuInstance, eventPublisher);
+				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.TransformContextImpl
+						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
 				for (Node item : ancestors) {
 					if (contexts.containsKey(item)) {
@@ -132,7 +165,8 @@ public class PipelineWorker implements Runnable {
 			}
 			case LOADER: {
 				cz.cuni.xrg.intlib.backend.context.LoadContext extractContext;
-				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.LoadContextImpl(execution, dpuInstance, eventPublisher);
+				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.LoadContextImpl
+						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
 				for (Node item : ancestors) {
 					if (contexts.containsKey(item)) {
