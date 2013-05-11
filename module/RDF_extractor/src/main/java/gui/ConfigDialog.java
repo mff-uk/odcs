@@ -14,6 +14,7 @@ import com.vaadin.data.*;
 import com.vaadin.data.util.*;
 import com.vaadin.event.FieldEvents.*;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import java.io.Serializable;
 
 /**
  * Configuration dialog.
@@ -64,7 +65,7 @@ public class ConfigDialog extends CustomComponent {
         config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
         config.setValue(Config.Password.name(), passwordFieldPass.getValue());
         config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
-        config.setValue(Config.GraphsUri.name(), griddata);
+        config.setValue(Config.GraphsUri.name(), (Serializable) griddata);
         config.setValue(Config.ExtractFail.name(), checkBoxFail.getValue());
     }
 

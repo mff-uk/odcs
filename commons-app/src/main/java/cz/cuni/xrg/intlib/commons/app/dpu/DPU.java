@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.DpuType;
 import javax.persistence.*;
-import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 
 /**
  * Represent imported DPUExecution in database.
@@ -52,6 +51,14 @@ public class DPU {
      */
 	@Column(name="jar_path")
     private String jarPath;
+	
+	/**
+	 * Default configuration for this DPU.
+	 * When {@link DPUInstance} is created, its {@link InstanceConfiguration} is
+	 * automatically created as an exact copy of {@link TemplateConfiguration}.
+	 */
+	@OneToOne(mappedBy = "dpu", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private TemplateConfiguration templateConfiguration;
 
     /**
      * Allow empty constructor for JPA.
@@ -119,4 +126,14 @@ public class DPU {
     public String getJarPath() {
         return jarPath;
     }
+
+	public TemplateConfiguration getTemplateConfiguration() {
+		return templateConfiguration;
+	}
+
+	public void setTemplateConfiguration(TemplateConfiguration templateConfiguration) {
+		templateConfiguration.setDpu(this);
+		this.templateConfiguration = templateConfiguration;
+	}
+	
 }

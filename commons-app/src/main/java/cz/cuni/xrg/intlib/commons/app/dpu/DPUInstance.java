@@ -136,6 +136,7 @@ public class DPUInstance {
 	 * @param instanceConfig the instanceConfig to set
 	 */
 	public void setInstanceConfig(InstanceConfiguration instanceConfig) {
+		instanceConfig.setDpuInstance(this);
 		this.instanceConfig = instanceConfig;
 	}
 

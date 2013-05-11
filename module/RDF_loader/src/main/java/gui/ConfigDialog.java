@@ -9,6 +9,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -63,8 +64,8 @@ public class ConfigDialog extends CustomComponent {
         config.setValue(Config.SPARQL_endpoint.name(), (String)comboBoxSparql.getValue());
 		config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
 		config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-		config.setValue(Config.Options.name(), optionGroupDetail.getValue());
-		config.setValue(Config.GraphsUri.name(), griddata);
+		config.setValue(Config.Options.name(), (Serializable) optionGroupDetail.getValue());
+		config.setValue(Config.GraphsUri.name(), (Serializable) griddata);
 	}
 
 	/**

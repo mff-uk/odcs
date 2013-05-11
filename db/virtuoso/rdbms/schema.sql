@@ -76,7 +76,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_ICONFIG_PAIRS"
   "conf_id" INTEGER IDENTITY,
   "c_property" VARCHAR(255),
   "c_value" LONG VARBINARY,
-  PRIMARY KEY ("conf_id")
+  PRIMARY KEY ("conf_id", "c_property")
 );
 
 DROP TABLE "DB"."INTLIB"."DPU_TCONFIG_PAIRS";
@@ -85,7 +85,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_TCONFIG_PAIRS"
   "conf_id" INTEGER IDENTITY,
   "c_property" VARCHAR(255),
   "c_value" LONG VARBINARY,
-  PRIMARY KEY ("conf_id")
+  PRIMARY KEY ("conf_id", "c_property")
 );
 
 DROP TABLE "DB"."INTLIB"."DPU_MODEL";
