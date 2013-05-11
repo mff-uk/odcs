@@ -16,8 +16,7 @@ import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.rio.RDFFormat;
 
 /**
- * TODO Change super class to desired one, you can choose from the following:
- * GraphicalExtractor, GraphicalLoader, GraphicalTransformer
+ * @author Jiri Tomes
  */
 public class File_loader implements GraphicalLoader {
 

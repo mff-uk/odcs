@@ -20,8 +20,6 @@ import cz.cuni.xrg.intlib.auxiliaries.App;
 
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Validator;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.TextChangeEvent;

@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.Type;
-import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 
 /**
  * Represent imported DPUExecution in database.

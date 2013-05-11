@@ -90,7 +90,7 @@ public class PipelineRunTest {
         graph.getNodeById(eId).getDpuInstance().setInstanceConfig(exConfig);
 
         Configuration ldConfig = new InstanceConfiguration();
-        List<String> graphsURI=new LinkedList<String>();
+        List<String> graphsURI=new LinkedList<>();
         graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
 
 // TODO: set your RDF loader

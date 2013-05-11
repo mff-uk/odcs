@@ -1,17 +1,9 @@
 package cz.cuni.xrg.intlib.frontend;
 
-import info.aduna.app.AppVersion;
-
-import java.io.File;
-import java.util.Enumeration;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Panel;
 
-import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionFacade;
@@ -144,6 +136,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return application navigator.
 	 * @return application navigator
 	 */
+        @Override
 	public Navigator getNavigator() {
 		return this.navigator;
 	}

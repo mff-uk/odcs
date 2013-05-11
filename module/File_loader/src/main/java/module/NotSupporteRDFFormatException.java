@@ -3,6 +3,8 @@ package module;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 
 /**
+ * This exception is thrown, when selected data format is not supported by basic
+ * RDF format types.
  *
  * @author Jiri Tomes
  */

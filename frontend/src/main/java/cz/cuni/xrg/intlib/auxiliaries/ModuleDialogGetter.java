@@ -31,7 +31,7 @@ public class ModuleDialogGetter {
 	 * @return configuration dialog or null
 	 */
 	public static CustomComponent getDialog(DPUExecutive dpuExewcutive, Configuration config) {
-		CustomComponent confComponent = null;
+		CustomComponent confComponent;
 		// get DPU type, recast, get configuration component and return it
 		switch(dpuExewcutive.getType()) {
 		case EXTRACTOR:
