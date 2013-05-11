@@ -12,7 +12,6 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Panel;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
@@ -98,7 +97,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		
         this.appConfig = new AppConfiguration();
         
-		this.modules = new ModuleFacade(appConfig);
+		this.modules = new ModuleFacade(appConfig.getModuleFacadeConfiguration());
 		// add vaadin to export package list
 		this.modules.start(
 				",com.vaadin.ui" +

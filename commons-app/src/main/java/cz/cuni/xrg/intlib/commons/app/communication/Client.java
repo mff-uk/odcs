@@ -6,7 +6,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 
 /**
  * Client part of communication between frontend and backend over
@@ -18,18 +17,25 @@ import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 public class Client {
 
 	/**
-	 * Application configuration.
+	 * Backend address.
 	 */
-	AppConfiguration appConfiguration;
+	private String backendAddress;
 	
 	/**
-	 * Address of backend.
+	 * Port for communication.
 	 */
-	InetAddress address;
+	private int port; 
 	
-	public Client(AppConfiguration appConfiguration) {
-		this.appConfiguration = appConfiguration;
-		this.address = null;
+	/**
+	 * Address of backend in InetAdress format.
+	 * Used as a cache.
+	 */
+	private InetAddress chacedAddress;
+	
+	public Client(String backendAddress, int port) {
+		this.backendAddress = backendAddress;
+		this.port = port;
+		this.chacedAddress = null;
 	}
 	
 	/**
@@ -39,10 +45,10 @@ public class Client {
 	 */
 	public void checkDatabase() throws CommunicationException {
 		// do we know backend address ?
-		if (address == null) {
+		if (backendAddress == null) {
 			// no -> translate backend address
 			try {
-				address = InetAddress.getByName(appConfiguration.getBackendAddress());
+				chacedAddress = InetAddress.getByName(backendAddress);
 			} catch (UnknownHostException e) {
 				throw new CommunicationException("Can't resolve host name.", e);
 			}		
@@ -50,7 +56,7 @@ public class Client {
 		// connect to backend
 		Socket socket;		
 		try {
-			socket = new Socket(address, appConfiguration.getBackendPort());
+			socket = new Socket(chacedAddress, port);
 		} catch (IOException e) {
 			throw new CommunicationException("Can't connect to backend.", e);
 		}

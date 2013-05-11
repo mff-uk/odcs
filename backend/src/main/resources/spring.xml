@@ -15,12 +15,16 @@
 	</bean>
 	
 	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade">
-	    <constructor-arg ref="configuration"/>
+	    <constructor-arg ref="moduleFacadeConfiguration"/>
 	</bean>
 	
-	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.AppConfiguration">
+	<bean id="configuration" class="cz.cuni.xrg.intlib.backend.AppConfiguration">
+	    <constructor-arg ref="moduleFacadeConfiguration"/>
 	</bean>
-	
+
+	<bean id="moduleFacadeConfiguration" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration">
+	</bean>	
+		
 	<!-- print all event in application -->
 	<bean class="cz.cuni.xrg.intlib.backend.EventReporter"/>
 	

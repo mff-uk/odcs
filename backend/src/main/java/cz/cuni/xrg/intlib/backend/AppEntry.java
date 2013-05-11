@@ -11,7 +11,6 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import cz.cuni.xrg.intlib.backend.communication.Server;
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
@@ -77,7 +76,7 @@ public class AppEntry {
 		BufferedReader in = new BufferedReader(converter);
 		
 		// print some information ..
-		System.out.println("DPU durectory:" + appConfig.getDpuDirectory());
+		System.out.println("DPU durectory:" + appConfig.getModuleFacadeConfiguration().getDpuFolder());
 		System.out.println("Listening on port:" + appConfig.getBackendPort());
 		System.out.println("Running ...");
 		

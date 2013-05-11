@@ -6,7 +6,6 @@ import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.osgi.*;
 
 /**
@@ -23,18 +22,20 @@ public class ModuleFacade {
 	private Framework framework;
 	
 	/**
-	 * Application configuration.
+	 * Configuration.
 	 */
-	private AppConfiguration appConfiguration;
-	
+	private ModuleFacadeConfiguration configuration;
+		
 	/**
-	 * Base ctor.
-	 * @param appConfiguration application configuration
+	 * Base ctor. The configuration is not used until some other 
+	 * method is called. So is not necessary to have all configuration
+	 * fully set when passing to the ctor.
+	 * @param configuration
 	 */
-	public ModuleFacade(AppConfiguration appConfiguration) {
+	public ModuleFacade(ModuleFacadeConfiguration configuration) {
 		this.framework = new Framework();
-		this.appConfiguration = appConfiguration;
-	}
+		this.configuration = configuration;
+	}	
 	
 	/**
 	 * Start framework. Must be called as a first method after ctor.
@@ -61,7 +62,7 @@ public class ModuleFacade {
 	 * @throws ModuleException
 	 */
 	public DPUExecutive getInstance(String path) throws ModuleException {
-		return this.framework.loadDPU(appConfiguration.getDpuDirectory() + path);
+		return this.framework.loadDPU(configuration.getDpuFolder() + path);
 	}
 	
 	/**

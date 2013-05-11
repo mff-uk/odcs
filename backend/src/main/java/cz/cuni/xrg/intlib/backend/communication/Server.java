@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.communication.Messages;
+import cz.cuni.xrg.intlib.backend.AppConfiguration;
 
 /**
  * Server part of communication between frontend and backend over

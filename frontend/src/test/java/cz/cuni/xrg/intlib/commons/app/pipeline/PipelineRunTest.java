@@ -3,12 +3,13 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import org.junit.Test;
 
 import cz.cuni.xrg.intlib.commons.Type;
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.frontend.AppConfiguration;
+
 import java.util.LinkedList;
 import java.util.List;
 

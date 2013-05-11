@@ -1,31 +1,36 @@
-package cz.cuni.xrg.intlib.commons.app;
+package cz.cuni.xrg.intlib.backend;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration;
+
 /**
- * Contains application configuration.
+ * Class with backend application configuration.
  * 
  * @author Petyr
+ *
  */
 public class AppConfiguration {
-
 	/**
-	 * Path to the dpu directory folder.
+	 * ModuleFacade configuration.
 	 */
-	private String dpuDirectory = "./";
-	
-	/**
-	 * Backend instance IP address.
-	 */
-	private String backendAddress = "127.0.0.1";
+	private ModuleFacadeConfiguration moduleConfiguration = null;
 	
 	/**
 	 * Port for communicating with backend.
 	 */
 	private Integer backendPort = 5010;
-		
+	
+	public AppConfiguration() {
+		this.moduleConfiguration = new ModuleFacadeConfiguration();
+	}
+	
+	public AppConfiguration(ModuleFacadeConfiguration moduleConfiguration) {
+		this.moduleConfiguration = moduleConfiguration;
+	}
+	
 	/**
 	 * Load configuration from given properties file.
 	 * @param fileName
@@ -50,8 +55,7 @@ public class AppConfiguration {
 		Properties prop = new Properties();
 		
 		prop.loadFromXML(stream);
-		dpuDirectory = prop.getProperty("dpuDirectory");
-		backendAddress = prop.getProperty("backendAddress");
+		moduleConfiguration.setDpuFolder( prop.getProperty("dpuDirectory") );
 		try {
 			backendPort = Integer.parseInt( prop.getProperty("backendPort") );
 		} catch (NumberFormatException e) {
@@ -59,19 +63,15 @@ public class AppConfiguration {
 		}
 	}
 	
-	public String getDpuDirectory() {
-		return this.dpuDirectory;
-	}
-	
-	public String getBackendAddress() {
-		return this.backendAddress;
+	public ModuleFacadeConfiguration getModuleFacadeConfiguration() {
+		return this.moduleConfiguration;
 	}
 	
 	public Integer getBackendPort() {
 		return this.backendPort;
 	}
 	
-	public void setDpuDirectory(String dpuDirectory) {
-		this.dpuDirectory = dpuDirectory;
+	public void setModuleFacadeConfiguration(ModuleFacadeConfiguration moduleConfiguration) {
+		this.moduleConfiguration = moduleConfiguration;
 	}
 }

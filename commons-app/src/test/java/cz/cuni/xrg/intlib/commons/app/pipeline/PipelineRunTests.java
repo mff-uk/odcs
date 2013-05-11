@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import cz.cuni.xrg.intlib.commons.Type;
-import cz.cuni.xrg.intlib.commons.app.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
