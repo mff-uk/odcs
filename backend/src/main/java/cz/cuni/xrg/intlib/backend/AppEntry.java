@@ -57,7 +57,7 @@ public class AppEntry {
 		
 		// check if 'config' parameter has been provided
 		if (configFileLocation == null) {
-			logger.error("Property config must be specified. Use param -config=path_to_config.xml");
+			logger.error("Property config must be specified. Use param -config path_to_config.xml");
 			return;
 		}
 		
