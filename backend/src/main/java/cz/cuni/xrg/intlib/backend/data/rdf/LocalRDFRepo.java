@@ -55,16 +55,25 @@ public class LocalRDFRepo implements RDFDataRepository {
     /**
      * Logging information about execution of method using openRDF.
      */
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
+    protected static org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
     /**
      * How many triples is possible to add to SPARQL endpoind at once.
      */
     private static final int STATEMENTS_COUNT = 10;
+    /**
+     * Default name for temp directory, where this repository is placed.
+     */
+    private final static String repoDirName = "intlib-repo";
     private final String encode = "UTF-8";
     /**
      * RDF data storage component.
      */
     protected Repository repository = null;
+    
+    /**
+     * If the repository is used only for reading data or not.
+     */
+    protected boolean isReadOnly;
 
     /**
      * Create local repository in default path.
@@ -73,14 +82,19 @@ public class LocalRDFRepo implements RDFDataRepository {
      */
     public static LocalRDFRepo createLocalRepo() {
 
-        Path repo = null;
+        return LocalRDFRepo.createLocalRepoInDirectory(repoDirName);
+    }
+
+    public static LocalRDFRepo createLocalRepoInDirectory(String dirName) {
+        Path repoPath = null;
+
         try {
-            repo = Files.createTempDirectory("intlib-repo");
+            repoPath = Files.createTempDirectory(dirName);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
 
-        return LocalRDFRepo.createLocalRepo(repo.toString());
+        return LocalRDFRepo.createLocalRepo(repoPath.toString());
     }
 
     /**
@@ -90,9 +104,7 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @return
      */
     public static LocalRDFRepo createLocalRepo(String path) {
-        if (localrepo == null) {
-            localrepo = new LocalRDFRepo(path);
-        }
+        localrepo = new LocalRDFRepo(path);
 
         return localrepo;
     }
@@ -109,6 +121,8 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param repositoryPath
      */
     public LocalRDFRepo(String repositoryPath) {
+
+        this.isReadOnly = false;
 
         long timeToStart = 1000L;
         File dataDir = new File(repositoryPath);
@@ -728,6 +742,28 @@ public class LocalRDFRepo implements RDFDataRepository {
         }
     }
 
+    @Override
+    public void mergeRepositoryData(Repository secondRepository) {
+        try {
+            RepositoryConnection sourceConnection = secondRepository.getConnection();
+
+            if (!sourceConnection.isEmpty()) {
+
+                List<Statement> sourceStatemens = sourceConnection.getStatements(null, null, null, true).asList();
+
+                RepositoryConnection targetConnection = repository.getConnection();
+                if (targetConnection != null) {
+
+                    for (Statement nextStatement : sourceStatemens) {
+                        targetConnection.add(nextStatement);
+                    }
+                }
+            }
+        } catch (RepositoryException ex) {
+            logger.debug(ex.getMessage());
+        }
+    }
+
     /**
      * Add all data from repository to targetRepository.
      *
@@ -762,27 +798,41 @@ public class LocalRDFRepo implements RDFDataRepository {
         return DataUnitType.RDF;
     }
 
-	@Override
-	public DataUnit createReadOnlyCopy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public DataUnit createReadOnlyCopy() {
+        String nextDirName=UniqueNameGenerator.getNextName(repoDirName);
+        LocalRDFRepo copy = LocalRDFRepo.createLocalRepoInDirectory(nextDirName);
+        copy.setReadOnly(true);
+        copyAllDataToTargetRepository(copy.getDataRepository());
 
-	@Override
-	public void merge(DataUnit unit) {
-		// TODO Auto-generated method stub
-		
-	}
+        return copy;
+    }
 
-	@Override
-	public boolean isReadOnly() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void merge(DataUnit unit) {
+        if (unit != null) {
+            Repository UnitRepository = unit.getDataRepository();
+            mergeRepositoryData(UnitRepository);
+        }
+    }
 
-	@Override
-	public void createNew(String id, File workingDirectory) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    @Override
+    public void setReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
+    }
+
+    /*@Override
+     public void createNew(String id, File workingDirectory) {
+     // TODO Auto-generated method stub
+     }*/
+    @Override
+    public Repository getDataRepository() {
+        return repository;
+
+    }
 }
