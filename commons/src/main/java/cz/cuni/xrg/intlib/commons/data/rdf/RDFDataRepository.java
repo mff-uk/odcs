@@ -45,4 +45,6 @@ public interface RDFDataRepository extends DataUnit {
     public void cleanAllRepositoryData();
 
     public void copyAllDataToTargetRepository(Repository targetRepository);
+    
+    public void mergeRepositoryData(Repository secondRepository);
 }
