@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.backend.data.rdf;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
@@ -11,25 +12,35 @@ import org.slf4j.LoggerFactory;
 public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
     private static VirtuosoRDFRepo virtuosoRepo = null;
-    /**
-     * Logging information about execution of method using openRDF.
-     */
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-
+    
+    private String URL_Host_List;
+    private String user;
+    private String password;
+    private String defaultGraph;
+    
+    static
+    {
+        logger=LoggerFactory.getLogger(VirtuosoRDFRepo.class);
+    }
+    
     public static VirtuosoRDFRepo createVirtuosoRDFRepo()
     {
         final String hostName="localhost";
         final String port="1111";
-        final String JDBC="jdbc:virtuoso://"+hostName+":"+port;
-        
         final String user="dba";
         final String password="dba";
         final String defautGraph="";
         
-        virtuosoRepo=createVirtuosoRDFRepo(JDBC,user, password, defautGraph);
+        return createVirtuosoRDFRepo(hostName,port,user, password, defautGraph);
         
-        return virtuosoRepo;
     }
+    
+    public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,String port,String user,String password,String defaultGraph)
+    {
+        final String JDBC="jdbc:virtuoso://"+hostName+":"+port;
+        return createVirtuosoRDFRepo(JDBC, user, password, defaultGraph);
+    }
+        
     /**
      * Construct a VirtuosoRepository with a specified parameters.
      *
@@ -70,6 +81,11 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
      */
     public VirtuosoRDFRepo(String URL_Host_List, String user, String password, String defaultGraph) {
 
+        this.URL_Host_List=URL_Host_List;
+        this.user=user;
+        this.password=password;
+        this.defaultGraph=defaultGraph;
+        
         //repository = new VirtuosoRepository(URL_Host_List, user, password,defaultGraph);
 
         try {
@@ -81,5 +97,68 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
         }
     }
+
+    /**
+     * 
+     * @return the Virtuoso JDBC URL connection string or hostlist
+     * for poolled connection.
+     */
+    public String getURL_Host_List() {
+        return URL_Host_List;
+    }
+
+    /**
+     * 
+     * @return User name to Virtuoso connection. 
+     */
+    public String getUser() {
+        return user;
+    }
+    
+    /**
+     * 
+     * @return Password to virtuoso connection.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * 
+     * @return Default graph name
+     */
+    public String getDefaultGraph() {
+        return defaultGraph;
+    }
+    
+    private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory()
+    {
+        VirtuosoRDFRepo copy=new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
+        copyAllDataToTargetRepository(copy.getDataRepository());
+        
+        return copy;
+    }
+
+    
+    /**
+     * Creates read only copy of instance Virtuoso repository.
+     */
+    @Override
+    public DataUnit createReadOnlyCopy() {
+       VirtuosoRDFRepo newCopy=getCopyOfVirtuosoReposiotory();
+       newCopy.setReadOnly(true);
+       
+       return newCopy;
+    }
+    
+
+   
+    
+    
+    
+    
+    
+    
+    
     
 }
