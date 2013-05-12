@@ -69,14 +69,6 @@
 			<type>jar</type>
 		</dependency>
 		
-		<!-- TODO: remove -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>backend</artifactId>
-			<version>0.0.1</version>
-			<type>jar</type>
-		</dependency>
-
 	</dependencies>
 
 	<build>
