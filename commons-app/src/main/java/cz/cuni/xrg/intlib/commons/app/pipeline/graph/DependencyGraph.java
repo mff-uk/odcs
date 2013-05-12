@@ -102,7 +102,7 @@ public class DependencyGraph implements Iterable<Node> {
             sNode.addDependant(tNode);
 			
 			// cache ancestors
-			cacheAncestor(sNode, tNode);
+			cacheAncestor(e.getFrom(), e.getTo());
         }
     }
 	
@@ -114,13 +114,13 @@ public class DependencyGraph implements Iterable<Node> {
 	 * @param sNode
 	 * @param tNode 
 	 */
-	private void cacheAncestor(DependencyNode sNode, DependencyNode tNode) {
-		Set<Node> nodes = cacheAncestors.get(tNode.getNode());
+	private void cacheAncestor(Node sNode, Node tNode) {
+		Set<Node> nodes = cacheAncestors.get(tNode);
 		if (nodes == null) {
 			nodes = new HashSet<>();
-			cacheAncestors.put(tNode.getNode(), nodes);
+			cacheAncestors.put(tNode, nodes);
 		}
-		nodes.add(sNode.getNode());
+		nodes.add(sNode);
 	}
 
     /**
