@@ -7,8 +7,8 @@ import java.util.Map;
 
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStartedEvent;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
@@ -134,7 +134,7 @@ public class PipelineWorker implements Runnable {
 	 * @return
 	 * @throws ContextException 
 	 */
-	private ProcessingContext getContextForNode(DPUInstance dpuInstance, Type type, List<Node> ancestors) throws ContextException {
+	private ProcessingContext getContextForNode(DPUInstance dpuInstance, DpuType type, List<Node> ancestors) throws ContextException {
 		ProcessingContext ctx = null;
 		String contextId = "ex" + execution.getId() + "_dpuIns" + dpuInstance.getId();
 		File contextDirectory = new File(workDirectory, "_dpuIns" + dpuInstance.getId() );
@@ -193,7 +193,7 @@ public class PipelineWorker implements Runnable {
 		// prepare what we need to start the execution
 		DPUInstance dpuInstance = node.getDpuInstance();
 		DPU dpu = dpuInstance.getDpu();
-		Type dpuType = dpu.getType();
+		DpuType dpuType = dpu.getType();
 		String dpuJarPath = dpu.getJarPath();
 		Configuration configuration = dpuInstance.getInstanceConfig();
 		// get context ..

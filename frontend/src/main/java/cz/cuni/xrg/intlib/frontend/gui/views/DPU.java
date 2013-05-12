@@ -25,9 +25,8 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
-
 import java.util.List;
 
 /**
@@ -241,7 +240,7 @@ public class DPU extends CustomComponent implements View {
 					String selectedDpuName = selectedDpu.getName();
 					String selecteDpuDescription = selectedDpu.getDescription();
 					VisibilityType selecteDpuVisibility = selectedDpu.getVisibility();
-					Type selectedDpuType = selectedDpu.getType();
+					DpuType selectedDpuType = selectedDpu.getType();
 					dpuName.setValue(selectedDpuName);
 					dpuDescription.setValue(selecteDpuDescription);
 					groupType.setValue(selectedDpuType);
@@ -264,6 +263,7 @@ public class DPU extends CustomComponent implements View {
 	}
 
 	private VerticalLayout buildVerticalLayoutData() {
+
 		// common part: create layout
 		verticalLayoutData = new VerticalLayout();
 		verticalLayoutData.setImmediate(false);
@@ -326,9 +326,9 @@ public class DPU extends CustomComponent implements View {
 
 		groupType = new OptionGroup();
 		groupType.addStyleName("horizontalgroup");
-		groupType.addItem(Type.EXTRACTOR);
-		groupType.addItem(Type.TRANSFORMER);
-		groupType.addItem(Type.LOADER);
+		groupType.addItem(DpuType.EXTRACTOR);
+		groupType.addItem(DpuType.TRANSFORMER);
+		groupType.addItem(DpuType.LOADER);
 
 		groupType.setEnabled(false);
 

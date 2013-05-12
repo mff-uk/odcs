@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +8,8 @@ import java.util.Set;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import javax.persistence.*;
 
 /**
  * Oriented acyclic graph representation of pipeline. Each Node represents a DPU
@@ -18,20 +20,52 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
  * @author Jan Vojt <jan@vojt.net>
  *
  */
+@Entity
+@Table(name = "ppl_graph")
 public class PipelineGraph {
 
     /**
-     * List of nodes which represent DPUs
+     * Primary key of graph stored in db
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	@SuppressWarnings("unused")
+    private int id;
+	
+	/**
+	 * Pipeline this graph belongs to
+	 */
+	@OneToOne
+	@JoinColumn(name="pipeline_id", unique=true, nullable=false)
+	private Pipeline pipeline;
+
+	/**
+	 * List of nodes which represent DPUs
+	 */
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch=FetchType.EAGER)
     private List<Node> nodes = new ArrayList<>();
+
     /**
      * Set of edges which represent data flow between DPUs.
      */
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch= FetchType.EAGER)
     private Set<Edge> edges = new HashSet<>();
 
     public void addNode(Node node) {
         nodes.add(node);
+		node.setGraph(this);
     }
+	
+	/**
+	 * Removes node from graph.
+	 * 
+	 * @param node
+	 * @return <tt>true</tt> if graph contained given node
+	 */
+	public boolean removeNode(Node node) {
+		node.setGraph(null);
+		return nodes.remove(node);
+	}
 
     public List<Node> getNodes() {
         return nodes;
@@ -39,6 +73,9 @@ public class PipelineGraph {
 
     public void setNodes(List<Node> newNodes) {
         nodes = newNodes;
+		for (Node node : nodes) {
+			node.setGraph(this);
+		}
     }
 
     public Set<Edge> getEdges() {
@@ -47,6 +84,9 @@ public class PipelineGraph {
 
     public void setEdges(Set<Edge> edges) {
         this.edges = edges;
+		for (Edge edge : edges) {
+			edge.setGraph(this);
+		}
     }
 
     /**
@@ -58,7 +98,7 @@ public class PipelineGraph {
     public int addDpu(DPU dpu) {
         DPUInstance dpuInstance = new DPUInstance(dpu);
         Node node = new Node(dpuInstance);
-        nodes.add(node);
+        addNode(node);
         return node.hashCode();
     }
 
@@ -85,11 +125,19 @@ public class PipelineGraph {
      * was present before
      */
     public Edge addEdge(Node from, Node to) {
-        Edge e = new Edge(from, to);
+        Edge edge = new Edge(from, to);
         // adds unless it is present already
-        boolean added = edges.add(e);
-        return added ? e : null;
+        boolean added = edges.add(edge);
+		edge.setGraph(this);
+
+        //TODO Find existing edge for this connection
+        return added ? edge : null;
     }
+	
+	public boolean removeEdge(Edge edge) {
+		edge.setGraph(null);
+		return edges.remove(edge);
+	}
 
     /**
      * Duplicate methdod from adding edge to graph. Probably only one shall
@@ -103,28 +151,20 @@ public class PipelineGraph {
         Node dpuFrom = getNodeById(fromId);
         Node dpuTo = getNodeById(toId);
 
-        //TODO: Check if same connection doesn't exist already!
-        //If it does - add to Set fails and returns false
-        //TODO: 2. Find Id of equal existing connection
-
-        Edge edge = new Edge(dpuFrom, dpuTo);
-        boolean newElement = edges.add(edge);
-        if (!newElement) {
-            return 0;
-        }
-        return edge.hashCode();
+        Edge edge = addEdge(dpuFrom, dpuTo);
+        return edge == null ? 0 : edge.hashCode();
     }
 
     /**
      * Removes edge from graph.
      *
-     * @param pcId
+     * @param edgeId
      * @return
      */
-    public boolean removeEdge(int pcId) {
-        Edge pc = getEdgeById(pcId);
-        if (pc != null) {
-            return edges.remove(pc);
+    public boolean removeEdge(int edgeId) {
+        Edge edge = getEdgeById(edgeId);
+        if (edge != null) {
+            return removeEdge(edge);
         }
         return false;
     }
@@ -169,39 +209,27 @@ public class PipelineGraph {
 //        Node node = getNodeById(id);
 //        return (node == null) ? null : node.getDpuInstance();
 //    }
-    /**
-     * Updates Node position in graph.
-     *
-     * @param dpuId
-     * @param newX
-     * @param newY
-     */
-    public void moveNode(int dpuId, int newX, int newY) {
-        Node node = getNodeById(dpuId);
-        node.setPosition(new Position(newX, newY));
-    }
-//    /**
-//     * Hack for IDs for Nodes and Edges - replace with IDs from db ASAP
-//     */
-//    private int dpuCounter = 0;
-//    private int connectionCounter = 0;
-//    private int CONNECTION_SEED = 1000;
-//
-//    public int getCONNECTION_SEED() {
-//        return CONNECTION_SEED;
-//    }
-//
-//    public int GetUniqueDpuInstanceId() {
-//        return ++dpuCounter;
-//    }
-//
-//    public int GetUniquePipelineConnectionId() {
-//        return ++connectionCounter + CONNECTION_SEED;
-//    }
-	    /**
-     * End of hack
-     */
 
+	/**
+	 * Updates Node position in graph.
+	 *
+	 * @param dpuId
+	 * @param newX
+	 * @param newY
+	 */
+	public void moveNode(int dpuId, int newX, int newY) {
+		Node node = getNodeById(dpuId);
+		node.setPosition(new Position(newX, newY));
+	}
+
+	public Pipeline getPipeline() {
+		return pipeline;
+	}
+
+	public void setPipeline(Pipeline pipeline) {
+		this.pipeline = pipeline;
+	}
+	
 	/**
 	 * Validates new edge in graph.
 	 * @param fromId
@@ -213,10 +241,10 @@ public class PipelineGraph {
         Node to = getNodeById(toId);
 
 		//Rules validation with corresponding error messages.
-		if(to.getDpuInstance().getDpu().getType() == Type.EXTRACTOR) {
+		if(to.getDpuInstance().getDpu().getType() == DpuType.EXTRACTOR) {
 			return "Extractor cannot have an input edge!";
 		}
-		if(from.getDpuInstance().getDpu().getType() == Type.LOADER) {
+		if(from.getDpuInstance().getDpu().getType() == DpuType.LOADER) {
 			return "Loader cannot have an output edge!";
 		}
 		if(from.equals(to)) {

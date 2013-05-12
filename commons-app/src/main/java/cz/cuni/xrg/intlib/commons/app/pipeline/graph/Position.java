@@ -5,21 +5,44 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import java.awt.Point;
+import javax.persistence.*;
 
 /**
  * Represent coordinates of object in system (on canvas).
  *
  * @author Jiri Tomes
  */
+@Entity
+@Table(name="ppl_position")
 public class Position {
 
+    /**
+     * Primary key of graph stored in db
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
+
+	/**
+	 * X coordinate in pixels
+	 */
+	@Column(name="pos_x")
     private int x;
+	
+	/**
+	 * Y coordinate in pixels
+	 */
+	@Column(name="pos_y")
     private int y;
+	
+	/**
+	 * No-arg constructor for JPA
+	 */
+	public Position() {}
 
     public Position(int x, int y) {
         this.x = x;
         this.y = y;
-
     }
 
     public void changePosition(int newX, int newY) {

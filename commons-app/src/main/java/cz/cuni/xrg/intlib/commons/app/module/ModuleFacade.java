@@ -25,7 +25,7 @@ public class ModuleFacade {
 	 * Configuration.
 	 */
 	private ModuleFacadeConfiguration configuration;
-		
+	
 	/**
 	 * Base ctor. The configuration is not used until some other 
 	 * method is called. So is not necessary to have all configuration
@@ -43,6 +43,8 @@ public class ModuleFacade {
 	public void start() throws ModuleException {
 		// start
 		this.framework.start(configuration.getPackagesToExpose());
+		// load libs
+		installDirectory(configuration.getDpuLibsFolder());
 	}
 	
 	/**
@@ -99,11 +101,17 @@ public class ModuleFacade {
 	 * file is *.jar then load id as a bundle.
 	 * @param directoryPath system path to directory. Not url.
 	 */
-	public void installDirectory(String directoryPath) {
+	private void installDirectory(String directoryPath) {
 		String message = "";
-// TODO: Propagate exceptions to application ..		
+// TODO: Propagate exceptions to application .. in some way ?		
 		File directory = new File( directoryPath );
 		File[] fList = directory.listFiles();
+		if (fList == null ){
+			// invalid directory
+			// TODO: send message?
+			return;
+		}
+		
 		for (File file : fList){
 			if (file.isFile()){
 				if (file.getName().contains("jar")) {
@@ -114,9 +122,9 @@ public class ModuleFacade {
 					try {
 						framework.installBundle( path );
 					} catch (OSGiException e) {
-						message += e.getMessage() + " > " + e.getOriginal().getMessage() + "\n";
+						message = e.getMessage() + " > " + e.getOriginal().getMessage() + "\n";
 					} catch(Exception e) {
-						message += "Exception: " + e.getMessage() + "\n";
+						message = "Exception: " + e.getMessage() + "\n";
 					}							
 				}
 				

@@ -16,7 +16,7 @@
 
     <repositories>
 
-        <repository>
+		<repository>
             <id>JBoss Thirdparty Releases</id>
             <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
         </repository>
@@ -260,5 +260,6 @@
             <version>${sesame.version}</version>
             <type>jar</type>
         </dependency>
+        
     </dependencies>
 </project>

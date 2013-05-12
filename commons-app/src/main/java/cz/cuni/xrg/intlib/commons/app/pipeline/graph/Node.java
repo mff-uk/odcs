@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import javax.persistence.*;
 
 /**
  * Node represents DPU on the pipeline and holds information about its position
@@ -10,14 +11,35 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
  * @author Bogo
  * @author Jan Vojt <jan@vojt.net>
  */
+@Entity
+@Table(name="ppl_node")
 public class Node {
 
-    private int id;
-    private DPUInstance dpuInstance;
-    private Position position;
-
     /**
-     * Empty constructor for Hibernate.
+     * Primary key of graph stored in db
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	@SuppressWarnings("unused")
+    private int id;
+
+	@OneToOne(optional=false, cascade=CascadeType.ALL)
+	@JoinColumn(name="instance_id", unique=true, nullable=false)
+    private DPUInstance dpuInstance;
+
+	@OneToOne(optional=false, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinColumn(name="position_id", unique=true)
+    private Position position;
+	
+	/**
+	 * Reference to owning graph
+	 */
+	@ManyToOne
+	@JoinColumn(name="graph_id")
+	private PipelineGraph graph;
+    
+    /**
+     * Empty constructor for JPA.
      */
     public Node() {
     }
@@ -43,10 +65,18 @@ public class Node {
         this.dpuInstance = dpuInstance;
     }
 
-    public void setPosition(Position newPosition) {
-        this.position = newPosition;
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
+	public PipelineGraph getGraph() {
+		return graph;
+	}
+
+	public void setGraph(PipelineGraph graph) {
+		this.graph = graph;
+	}
+	
 //    public int getId() {
 //        return id;
 //    }

@@ -2,12 +2,13 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import org.junit.Test;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import java.io.Serializable;
 import cz.cuni.xrg.intlib.frontend.AppConfiguration;
 
 import java.util.LinkedList;
@@ -34,7 +35,6 @@ public class PipelineRunTest {
    // @Test
     public void testTrivialRun() {
   /*      moduleFacade = new ModuleFacade(new AppConfiguration());
-
 
         moduleFacade.start(
 				",com.vaadin.ui" +
@@ -66,8 +66,8 @@ public class PipelineRunTest {
      */
     private void setupTrivialPipelineGraph(PipelineGraph graph) {
 
-        DPU extractor = new DPU("RDF Extractor", Type.EXTRACTOR);
-        DPU loader = new DPU("RDF Loader", Type.LOADER);
+        DPU extractor = new DPU("RDF Extractor", DpuType.EXTRACTOR);
+        DPU loader = new DPU("RDF Loader", DpuType.LOADER);
 
         extractor.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
         loader.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
@@ -78,7 +78,7 @@ public class PipelineRunTest {
         graph.addEdge(eId, lId);
 
         // set configurations
-        Configuration exConfig = new InstanceConfiguration();
+        InstanceConfiguration exConfig = new InstanceConfiguration();
 // TODO: set your RDF extractor
 
         exConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql-auth");
@@ -89,7 +89,8 @@ public class PipelineRunTest {
 
         graph.getNodeById(eId).getDpuInstance().setInstanceConfig(exConfig);
 
-        Configuration ldConfig = new InstanceConfiguration();
+
+        InstanceConfiguration ldConfig = new InstanceConfiguration();
         List<String> graphsURI=new LinkedList<>();
         graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
 
@@ -97,7 +98,7 @@ public class PipelineRunTest {
         ldConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql");
         ldConfig.setValue("Host_name", "SPARQL");
         ldConfig.setValue("Password", "nejlepsipaper");
-        ldConfig.setValue("GraphsUri", graphsURI);
+        ldConfig.setValue("GraphsUri", (Serializable) graphsURI);
 
         graph.getNodeById(lId).getDpuInstance().setInstanceConfig(ldConfig);
 

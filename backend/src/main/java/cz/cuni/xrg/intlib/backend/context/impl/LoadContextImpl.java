@@ -5,7 +5,7 @@ import cz.cuni.xrg.intlib.backend.context.LoadContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
@@ -101,12 +101,12 @@ public class LoadContextImpl implements LoadContext {
 	}
 
 	@Override
-	public void sendMessage(Type type, String shortMessage) {
+	public void sendMessage(DpuType type, String shortMessage) {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );		
 	}
 
 	@Override
-	public void sendMessage(Type type, String shortMessage, String fullMessage) {
+	public void sendMessage(DpuType type, String shortMessage, String fullMessage) {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
 	}
 

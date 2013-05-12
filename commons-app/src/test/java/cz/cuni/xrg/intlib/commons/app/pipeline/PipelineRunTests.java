@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
@@ -48,9 +48,9 @@ public class PipelineRunTests {
 	 * @param graph
 	 */
 	private void setupTrivialPipelineGraph(PipelineGraph graph) {
-
-		DPU extractor = new DPU("RDF Extractor", Type.EXTRACTOR);
-		DPU loader = new DPU("RDF Loader", Type.LOADER);
+		
+		DPU extractor = new DPU("RDF Extractor", DpuType.EXTRACTOR);
+		DPU loader = new DPU("RDF Loader", DpuType.LOADER);
 
 		extractor.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
 		loader.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");

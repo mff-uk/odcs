@@ -166,7 +166,7 @@ public class DPUDetail extends Window {
 		try {
 			if(dpuExec != null) {
 				// TODO: Used configuration from DPUInstance instead creating new one? 
-				Configuration conf = new InstanceConfiguration();
+				InstanceConfiguration conf = new InstanceConfiguration();
 				dpuExec.saveConfiguration(conf);
 				dpu.setInstanceConfig(conf);
 			}

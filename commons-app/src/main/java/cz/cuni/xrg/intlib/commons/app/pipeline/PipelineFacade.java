@@ -1,13 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
+import java.util.Collections;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 /**
  * Facade providing actions with pipelines.
@@ -29,8 +27,7 @@ public class PipelineFacade {
 	 * Constructs facade and its dependencies.
 	 */
 	public PipelineFacade() {
-//		this(IntlibEntityManagerFactory.getEm());
-		this(IntlibEntityManagerFactory.getImem());
+		this(IntlibEntityManagerFactory.getEm());
 	}
 	
 	/**
@@ -84,13 +81,15 @@ public class PipelineFacade {
 	public void save(Pipeline pipeline) {
 		
 		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-		
-		if (pipeline.getId() == 0) {
-			em.persist(pipeline);
-		} else {
-			em.merge(pipeline);
+		if (!tx.isActive()) {
+			tx.begin();
 		}
+		
+//		if (pipeline.getId() == 0) {
+			em.persist(pipeline);
+//		} else {
+//			em.merge(pipeline);
+//		}
 		
 		tx.commit();
 	}
@@ -102,7 +101,9 @@ public class PipelineFacade {
 	public void delete(Pipeline pipeline) {
 		
 		EntityTransaction tx = em.getTransaction();
-		tx.begin();
+		if (!tx.isActive()) {
+			tx.begin();
+		}
 
 		em.remove(pipeline);
 		

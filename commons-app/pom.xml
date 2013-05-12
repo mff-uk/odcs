@@ -20,12 +20,17 @@
 	        <layout>default</layout>
 	        <url>http://repository.jboss.org/maven2</url>
 	    </repository>
-	    
+
 		<repository>
 			<id>maven-eclipse</id> <!-- repository for org.eclipse.tycho -->
 			<url>http://maven.eclipse.org/nexus/content/repositories/testing</url>
 		</repository>
-		
+
+		<repository> <!-- Virtuoso JDBC -->
+	        <id>intlib-thirdparty</id>
+	        <url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty</url>
+	    </repository>
+
 		<repository> <!-- spring repository -->
             <id>com.springsource.repository.bundles.release</id>
             <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
@@ -60,12 +65,6 @@
 		   <artifactId>persistence-api</artifactId>
 		   <version>1.0.2</version>
 		</dependency>
-
-		<dependency> <!-- mysql connector -->
-	      <groupId>mysql</groupId>
-	      <artifactId>mysql-connector-java</artifactId>
-	      <version>5.1.10</version>
-	    </dependency>
 	    
         <!-- spring dependency -->
         <dependency>
@@ -102,7 +101,16 @@
             <artifactId>hibernate-validator</artifactId>
             <version>4.2.0.Final</version>
         </dependency>
-            
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>virtuoso</groupId>
+			<artifactId>jdbc-driver</artifactId>
+			<version>4</version>
+		</dependency>
 	</dependencies>  
   
 </project>

@@ -34,7 +34,7 @@ public interface ProcessingContext {
      * @param type Type of message.
      * @param shortMessage Short message, should not be more than 50 chars.
      */
-    public void sendMessage(Type type, String shortMessage);
+    public void sendMessage(DpuType type, String shortMessage);
     
     /**
      * Send message about execution.
@@ -43,7 +43,7 @@ public interface ProcessingContext {
      * @param shortMessage Short message, should not be more than 50 chars.
      * @param fullMessage
      */
-    public void sendMessage(Type type, String shortMessage, String fullMessage);
+    public void sendMessage(DpuType type, String shortMessage, String fullMessage);
     
     /**
      * Store data under id in pipeline summary execution storage. These data

@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.backend.execution;
 
 import cz.cuni.xrg.intlib.backend.AppConfiguration;
 import cz.cuni.xrg.intlib.backend.communication.ServerEvent;
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -107,8 +108,8 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
         PipelineGraph graph = new PipelineGraph();
         pipe.setGraph(graph);
     	
-        DPU extractor = new DPU("RDF Extractor", Type.EXTRACTOR);
-        DPU loader = new DPU("RDF Loader", Type.LOADER);
+        DPU extractor = new DPU("RDF Extractor", DpuType.EXTRACTOR);
+        DPU loader = new DPU("RDF Loader", DpuType.LOADER);
 
         extractor.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
         loader.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
@@ -119,7 +120,7 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
         graph.addEdge(eId, lId);
 
         // set configurations
-        Configuration exConfig = new InstanceConfiguration();
+        InstanceConfiguration exConfig = new InstanceConfiguration();
 
         exConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql-auth");
         exConfig.setValue("Host_name", "SPARQL");
@@ -129,14 +130,14 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
 
         graph.getNodeById(eId).getDpuInstance().setInstanceConfig(exConfig);
 
-        Configuration ldConfig = new InstanceConfiguration();
-        List<String> graphsURI=new LinkedList<String>();
+        InstanceConfiguration ldConfig = new InstanceConfiguration();
+        List<String> graphsURI = new LinkedList<>();
         graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
 
         ldConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql");
         ldConfig.setValue("Host_name", "SPARQL");
         ldConfig.setValue("Password", "nejlepsipaper");
-        ldConfig.setValue("GraphsUri", graphsURI);
+        ldConfig.setValue("GraphsUri", (Serializable) graphsURI);
 
         graph.getNodeById(lId).getDpuInstance().setInstanceConfig(ldConfig);
         

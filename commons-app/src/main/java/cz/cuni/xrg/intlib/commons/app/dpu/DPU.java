@@ -1,6 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import cz.cuni.xrg.intlib.commons.Type;
+import cz.cuni.xrg.intlib.commons.DpuType;
+import javax.persistence.*;
+
 
 /**
  * Represent imported DPUExecution in database.
@@ -10,11 +12,15 @@ import cz.cuni.xrg.intlib.commons.Type;
  * @author Maria Kukhar
  *
  */
+@Entity
+@Table(name="dpu_model")
 public class DPU {
 
-	/**
-	 * DPU id. 
-	 */
+    /**
+     * Primary key of graph stored in db
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     
     /**
@@ -30,11 +36,13 @@ public class DPU {
     /**
      * DPU type, determined by associated jar file.
      */
-    private Type type;
+	@Enumerated(EnumType.STRING)
+    private DpuType type;
     
     /**
      * VIsibility.
      */
+	@Transient
     private VisibilityType visibility;
     
     /**
@@ -42,14 +50,21 @@ public class DPU {
      * AppConfiguration.dpuDirectory.
      * @see AppConfiguration
      */
+	@Column(name="jar_path")
     private String jarPath;
+	
+	/**
+	 * Default configuration for this DPU.
+	 * When {@link DPUInstance} is created, its {@link InstanceConfiguration} is
+	 * automatically created as an exact copy of {@link TemplateConfiguration}.
+	 */
+	@OneToOne(mappedBy = "dpu", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private TemplateConfiguration templateConfiguration;
 
     /**
-     * Allow empty constructor.
+     * Allow empty constructor for JPA.
      */
-    public DPU() {
-        this.description = "";
-    }
+    public DPU() {}
 
     /**
      * Constructor with name and type of DPU.
@@ -57,11 +72,10 @@ public class DPU {
      * @param name
      * @param type
      */
-    public DPU(String name, Type type) {
+    public DPU(String name, DpuType type) {
         //this.id = id;
         this.name = name;
         this.type = type;
-        this.description = "";
     }
 
     @Override
@@ -97,7 +111,12 @@ public class DPU {
         return id;
     }
 
-    public Type getType() {
+    /**
+     * Gets DPU type.
+     *
+     * @return DPU type
+     */
+    public DpuType getType() {
         return type;
     }
 
@@ -108,4 +127,14 @@ public class DPU {
     public String getJarPath() {
         return jarPath;
     }
+
+	public TemplateConfiguration getTemplateConfiguration() {
+		return templateConfiguration;
+	}
+
+	public void setTemplateConfiguration(TemplateConfiguration templateConfiguration) {
+		templateConfiguration.setDpu(this);
+		this.templateConfiguration = templateConfiguration;
+	}
+	
 }
