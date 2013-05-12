@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStartedEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
@@ -155,15 +156,23 @@ public class PipelineWorker implements Runnable {
 			} catch (ContextException e) {
 				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, execution, this));				
 				logger.error("Context exception: " + e.getMessage());
+			e.printStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			} catch (ModuleException e) {
 				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, execution, this));
 				logger.error("Module exception: " + e.getMessage());
+			e.printStackTrace();
 				executionFailed(e.getMessage());
 				return;
+			} catch (StructureException e) {
+				eventPublisher.publishEvent(new PipelineStructureError(e, execution, this));
+				logger.error("Structure exception: " + e.getMessage());
+				executionFailed(e.getMessage());
+				return;				
 			} catch (Exception e) {
 				logger.error("Exception: " + e.getMessage());
+			e.printStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			}
@@ -191,8 +200,9 @@ public class PipelineWorker implements Runnable {
 	 * @param ancestors Ancestors of the given node.
 	 * @return
 	 * @throws ContextException 
+	 * @throws StructureException 
 	 */
-	private ProcessingContext getContextForNode(DPUInstance dpuInstance, DpuType type, List<Node> ancestors) throws ContextException {
+	private ProcessingContext getContextForNode(DPUInstance dpuInstance, DpuType type, List<Node> ancestors) throws ContextException, StructureException {
 		ProcessingContext ctx = null;
 		String contextId = "ex" + execution.getId() + "_dpuIns" + dpuInstance.getId();
 		File contextDirectory = new File(workDirectory, "_dpuIns" + dpuInstance.getId() );
@@ -212,11 +222,16 @@ public class PipelineWorker implements Runnable {
 				extractContext = new ExtendedTransformContextImpl
 						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
+				if (ancestors.isEmpty()) {
+					// no ancestors ? -> error
+					throw new StructureException("No inputs.");
+				}					
 				for (Node item : ancestors) {
 					if (contexts.containsKey(item)) {
 						extractContext.addSource( contexts.get(item) ); 
 					} else {
 						// can't find context ..
+						throw new StructureException("Can't find context.");
 					}
 				}
 				break;
@@ -226,11 +241,16 @@ public class PipelineWorker implements Runnable {
 				extractContext = new ExtendedLoadContextImpl
 						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
+				if (ancestors.isEmpty()) {
+					// no ancestors ? -> error
+					throw new StructureException("No inputs.");
+				}				
 				for (Node item : ancestors) {
 					if (contexts.containsKey(item)) {
 						extractContext.addSource( contexts.get(item) ); 
 					} else {
 						// can't find context ..
+						throw new StructureException("Can't find context.");
 					}
 				}				
 				break;
@@ -246,8 +266,9 @@ public class PipelineWorker implements Runnable {
 	 * @param ancestors Ancestors of the given node.
 	 * @return false if execution failed
 	 * @throws ContextException 
+	 * @throws StructureException 
 	 */
-	private boolean runNode(Node node, List<Node> ancestors) throws ContextException {
+	private boolean runNode(Node node, List<Node> ancestors) throws ContextException, StructureException {
 		// prepare what we need to start the execution
 		DPUInstance dpuInstance = node.getDpuInstance();
 		DPU dpu = dpuInstance.getDpu();

@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class DependencyGraph implements Iterable<Node> {
      */
     public List<Node> getAncestors(Node node) {
     	//TODO: implement
-    	return null;
+    	return new LinkedList<Node>();
     }
     
     /**
