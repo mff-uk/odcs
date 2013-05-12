@@ -7,18 +7,25 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 
+/**
+ * @author Jiri Tomes
+ * @author Petyr
+ */
 public class SPARQL_transformer implements GraphicalTransformer {
-
-    private RDFDataRepository repository = null;
+    
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
+    
     /**
      * DPU configuration.
      */
@@ -82,19 +89,26 @@ public class SPARQL_transformer implements GraphicalTransformer {
 
     @Override
     public void transform(TransformContext context) throws TransformException {
-
+    	RDFDataRepository intputRepository = null;
+    	RDFDataRepository outputRepository = null;
+    	
+    	// get intput repository
+    	if (context.getInputs().isEmpty()) {
+    		throw new TransformException("Missing inputs!");
+    	}    	
+    	DataUnit dataUnit = context.getInputs().get(0);
+    	if (dataUnit.getType() == DataUnitType.RDF) {
+    		intputRepository = (RDFDataRepository) dataUnit;
+    	} else {
+    		// wrong input ..
+    		throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
+    	}
+    	// create output repository
+    	outputRepository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
+    	context.addOutputDataUnit(outputRepository);    	
+    	    	
         final String updateQuery = getUpdateQuery();
-
-        repository.transformUsingSPARQL(updateQuery);
-    }
-
-    @Override
-    public RDFDataRepository getRDFRepo() {
-        return repository;
-    }
-
-    @Override
-    public void setRDFRepo(RDFDataRepository newRepo) {
-        repository = newRepo;
+        //repository.transformUsingSPARQL(updateQuery);
+// TODO: Jirka, ask Petyr for more detail        
     }
 }

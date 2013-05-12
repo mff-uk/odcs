@@ -7,6 +7,8 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
@@ -16,13 +18,17 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author Jiri Tomes
+ * @author Petyr
+ */
 public class RDF_loader implements GraphicalLoader {
-
-    private RDFDataRepository repository = null;
+    
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
+    
     /**
      * DPU configuration.
      */
@@ -81,6 +87,7 @@ public class RDF_loader implements GraphicalLoader {
      * Implementation of module functionality here.
      *
      */
+    
     private String getSPARQLEndpointURLAsString() {
         String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
         return endpoint;
@@ -103,6 +110,19 @@ public class RDF_loader implements GraphicalLoader {
 
     @Override
     public void load(LoadContext context) throws LoadException {
+    	RDFDataRepository repository = null;
+    	// get repository
+    	if (context.getInputs().isEmpty()) {
+    		throw new LoadException("Missing inputs!");
+    	}    	
+    	DataUnit dataUnit = context.getInputs().get(0);
+    	if (dataUnit.getType() == DataUnitType.RDF) {
+    		repository = (RDFDataRepository) dataUnit;
+    	} else {
+    		// wrong input ..
+    		throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
+    	}    	
+    	
         final String endpoint = getSPARQLEndpointURLAsString();
         try {
             final URL endpointURL = new URL(endpoint);
@@ -115,15 +135,5 @@ public class RDF_loader implements GraphicalLoader {
             System.err.println("This URL not exists");
             System.err.println(ex.getMessage());
         }
-    }
-
-    @Override
-    public RDFDataRepository getRDFRepo() {
-        return repository;
-    }
-
-    @Override
-    public void setRDFRepo(RDFDataRepository newRepo) {
-        repository = newRepo;
     }
 }

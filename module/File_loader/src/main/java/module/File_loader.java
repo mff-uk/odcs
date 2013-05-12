@@ -1,5 +1,7 @@
 package module;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 import gui.ConfigDialog;
 
@@ -17,14 +19,15 @@ import org.openrdf.rio.RDFFormat;
 
 /**
  * @author Jiri Tomes
+ * @author Petyr
  */
 public class File_loader implements GraphicalLoader {
-
-    private RDFDataRepository repository = null; // LocalRDFRepo.createLocalRepo();
+    
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
+    
     /**
      * DPU configuration.
      */
@@ -78,6 +81,11 @@ public class File_loader implements GraphicalLoader {
         }
     }
 
+    /**
+     * Implementation of module functionality here.
+     *
+     */    
+    
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
 
@@ -129,14 +137,22 @@ public class File_loader implements GraphicalLoader {
         return isNameUnique;
     }
 
-    /**
-     * Implementation of module functionality here.
-     *
-     */
     @Override
     public void load(LoadContext context) throws LoadException {
+    	RDFDataRepository repository = null;
+    	// get repository
+    	if (context.getInputs().isEmpty()) {
+    		throw new LoadException("Missing inputs!");
+    	}    	
+    	DataUnit dataUnit = context.getInputs().get(0);
+    	if (dataUnit.getType() == DataUnitType.RDF) {
+    		repository = (RDFDataRepository) dataUnit;
+    	} else {
+    		// wrong input ..
+    		throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
+    	}
+    	
         try {
-
             String directoryPath = getDirectoryPath();
             String fileName = getFileName();
             RDFFormat format = getRDFFormat();
@@ -152,13 +168,4 @@ public class File_loader implements GraphicalLoader {
         }
     }
 
-    @Override
-    public RDFDataRepository getRDFRepo() {
-        return repository;
-    }
-
-    @Override
-    public void setRDFRepo(RDFDataRepository newRepo) {
-        repository = newRepo;
-    }
 }

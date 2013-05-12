@@ -7,6 +7,7 @@ import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -16,13 +17,18 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 
+ * @author Jiri Tomes
+ * @author Petyr
+ */
 public class RDF_extractor implements GraphicalExtractor {
-
-    private RDFDataRepository repository = null;
+    
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
+    
     /**
      * DPU configuration.
      */
@@ -78,6 +84,11 @@ public class RDF_extractor implements GraphicalExtractor {
         }
     }
 
+    /**
+     * Implementation of module functionality here.
+     *
+     */    
+    
     private String getSPARQLEndpoinURLAsString() {
         String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
         return endpoint;
@@ -102,14 +113,14 @@ public class RDF_extractor implements GraphicalExtractor {
         String query = (String) config.getValue(Config.SPARQL_query.name());
         return query;
     }
-
-    /**
-     * Implementation of module functionality here.
-     *
-     */
+    
     @Override
     public void extract(ExtractContext context) throws ExtractException {
-
+    	RDFDataRepository repository = null;
+    	// create repository
+    	repository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
+    	context.addOutputDataUnit(repository);    	
+    	
         final String endpoint = getSPARQLEndpoinURLAsString();
         try {
             final URL endpointURL = new URL(endpoint);
@@ -124,15 +135,5 @@ public class RDF_extractor implements GraphicalExtractor {
             System.err.println("This URL not exists.");
             System.err.println(ex.getMessage());
         }
-    }
-
-    @Override
-    public RDFDataRepository getRDFRepo() {
-        return repository;
-    }
-
-    @Override
-    public void setRDFRepo(RDFDataRepository newRepo) {
-        repository = newRepo;
     }
 }
