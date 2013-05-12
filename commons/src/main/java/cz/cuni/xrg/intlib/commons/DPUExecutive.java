@@ -43,18 +43,4 @@ public interface DPUExecutive {
      * @throws ConfigurationException
      */
     public void loadConfiguration(Configuration configuration) throws ConfigurationException;
-
-    /**
-     * Get repository where RDF data are stored.
-     * @return LocalRDFRepo
-     */
-    @Deprecated
-    public RDFDataRepository getRDFRepo();
-
-    /**
-     * Set repository as goal of local storage RDF data.
-     * @param newRepo
-     */
-    @Deprecated
-    public void setRDFRepo(RDFDataRepository newRepo);
 }
