@@ -13,6 +13,7 @@ import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.Engine;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 
 /**
  * Backend entry point.
@@ -42,6 +43,10 @@ public class AppEntry {
 			return;
 		}
 		
+		PipelineFacade pipelines = new PipelineFacade();
+		System.out.println("Pipelines count: " + pipelines.getAllPipelines().size() );
+		
+		/*
 		// load spring
 		AbstractApplicationContext context = new ClassPathXmlApplicationContext(springConfigFile);
 		context.registerShutdownHook();
@@ -54,9 +59,7 @@ public class AppEntry {
 			System.out.println("Can't read configuration file: " + e.getMessage());
 			return;
 		}
-		
-		// set JLog
-		
+
 		// set engine
 		System.out.println("Configuring engine ...");
 		Engine engine = (Engine)context.getBean("engine");
@@ -83,7 +86,7 @@ public class AppEntry {
 		serverThread.start();
 				
 		// print some information ..
-		System.out.println("DPU durectory:" + appConfig.getModuleFacadeConfiguration().getDpuFolder());
+		System.out.println("DPU directory:" + appConfig.getModuleFacadeConfiguration().getDpuFolder());
 		System.out.println("Listening on port:" + appConfig.getBackendPort());
 		System.out.println("Running ...");
 				
@@ -99,7 +102,7 @@ public class AppEntry {
 				continue;
 			}			
 			// ...
-		}
+		}*/
 		
 	}
 }

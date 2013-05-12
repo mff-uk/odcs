@@ -6,6 +6,7 @@ import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
@@ -79,6 +80,9 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
      * @param pipelineExecution
      */
     private void run(PipelineExecution pipelineExecution) {
+    	// mark pipeline execution as Started ..
+    	pipelineExecution.setExecutionStatus(ExecutionStatus.RUNNING);
+    	
     	// prepare working directory for execution
     	File directory = new File(workingDirectory, "ex" + pipelineExecution.getId() );
     	
@@ -90,60 +94,20 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
      * Check database for new task (PipelineExecutions to run).
      * Can run concurrently.
      */
-    private synchronized void checkDatabase() {
+    public synchronized void checkDatabase() {
     	List<PipelineExecution> toExecute = new LinkedList<PipelineExecution>();
-    	System.out.println("Engine: checking the database ...");
 
     	// add test pipeline
-    	toExecute.add( createTest() );
     	
     	// run pipeline executions ..   
     	for (PipelineExecution item : toExecute) {
-    		run(item);
+    		if (item.getExecutionStatus() == ExecutionStatus.SCHEDULED) {
+    			// run scheduled pipeline
+    			run(item);
+    		}
     	}
     }
-    
-    public PipelineExecution createTest() {
-    	Pipeline pipe = new Pipeline();
-        PipelineGraph graph = new PipelineGraph();
-        pipe.setGraph(graph);
-    	
-        DPU extractor = new DPU("RDF Extractor", DpuType.EXTRACTOR);
-        DPU loader = new DPU("RDF Loader", DpuType.LOADER);
-
-        extractor.setJarPath("RDF_extractor/target/RDF_extractor-0.0.1.jar");
-        loader.setJarPath("RDF_loader/target/RDF_loader-0.0.1.jar");
-
-        int eId = graph.addDpu(extractor);
-        int lId = graph.addDpu(loader);
-
-        graph.addEdge(eId, lId);
-
-        // set configurations
-        InstanceConfiguration exConfig = new InstanceConfiguration();
-
-        exConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql-auth");
-        exConfig.setValue("Host_name", "SPARQL");
-        exConfig.setValue("Password", "nejlepsipaper");
-        exConfig.setValue("GraphsUri", new LinkedList<String>());
-        exConfig.setValue("SPARQL_query", "select * where {?s ?o ?p} LIMIT 10");
-
-        graph.getNodeById(eId).getDpuInstance().setInstanceConfig(exConfig);
-
-        InstanceConfiguration ldConfig = new InstanceConfiguration();
-        List<String> graphsURI = new LinkedList<>();
-        graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
-
-        ldConfig.setValue("SPARQL_endpoint", "http://ld.opendata.cz:8894/sparql");
-        ldConfig.setValue("Host_name", "SPARQL");
-        ldConfig.setValue("Password", "nejlepsipaper");
-        ldConfig.setValue("GraphsUri", (Serializable) graphsURI);
-
-        graph.getNodeById(lId).getDpuInstance().setInstanceConfig(ldConfig);
-        
-        return new PipelineExecution(pipe);
-    }
-    
+     
 	@Override
 	public void onApplicationEvent(ServerEvent event) {
 		// react on message from server
