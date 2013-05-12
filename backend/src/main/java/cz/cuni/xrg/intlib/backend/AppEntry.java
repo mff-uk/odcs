@@ -4,8 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -33,13 +38,26 @@ public class AppEntry {
 	 */
 	public static void main(String[] args) {
 		// start with logger
-		//Logger logger = LoggerFactory.getLogger(AppEntry.class);		
-		//logger.info("Init spring context from :'" + springConfigFile + "'");
+		Logger logger = LoggerFactory.getLogger(AppEntry.class);		
 		
-		// get configuration file location 
-		String configFileLocation = System.getProperty("config");
+		String configFileLocation = null;
+		
+		// define args
+		Options options = new Options();
+		options.addOption("", "config", true, "path to the configuration file");
+		// parse args
+		CommandLineParser parser = new org.apache.commons.cli.BasicParser();
+		try {
+			CommandLine cmd = parser.parse( options, args);
+			// read args ..
+			configFileLocation = cmd.getOptionValue("config");
+		} catch (ParseException e) {			
+			logger.error("Unexpected exception:" + e.getMessage());
+		}
+		
+		// check if 'config' parameter has been provided
 		if (configFileLocation == null) {
-			System.out.println("Property config must be specified. Use param -Dconfig=path_to_config.xml");
+			logger.error("Property config must be specified. Use param -config=path_to_config.xml");
 			return;
 		}
 		
@@ -56,28 +74,28 @@ public class AppEntry {
 		try {
 			appConfig.Load(configFileLocation);
 		} catch(IOException | RuntimeException e) {
-			System.out.println("Can't read configuration file: " + e.getMessage());
+			logger.error("Can't read configuration file: " + e.getMessage());
 			return;
 		}
 
 		// set engine
-		System.out.println("Configuring engine ...");
+		logger.info("Configuring engine ...");
 		Engine engine = (Engine)context.getBean("engine");
 		engine.setup(appConfig);
 		
 		// set module facade
-		System.out.println("Configuring dynamic module worker ...");
+		logger.info("Configuring dynamic module worker ...");
 
 		ModuleFacade modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
 		modeleFacade.start();
 		
 		// set TCP/IP server
-		System.out.println("Starting TCP/IP server ...");
+		logger.info("Starting TCP/IP server ...");
 		Server server = (Server)context.getBean("server");
 		try {
 			server.init();
 		} catch (CommunicationException e1) {
-			System.out.println("Fatal error: Can't start server");
+			logger.info("Fatal error: Can't start server");
 			context.close();
 			return;
 		}
@@ -86,9 +104,9 @@ public class AppEntry {
 		serverThread.start();
 				
 		// print some information ..
-		System.out.println("DPU directory:" + appConfig.getModuleFacadeConfiguration().getDpuFolder());
-		System.out.println("Listening on port:" + appConfig.getBackendPort());
-		System.out.println("Running ...");
+		logger.info("DPU directory:" + appConfig.getModuleFacadeConfiguration().getDpuFolder());
+		logger.info("Listening on port:" + appConfig.getBackendPort());
+		logger.info("Running ...");
 				
 		InputStreamReader converter = new InputStreamReader(System.in);
 		BufferedReader in = new BufferedReader(converter);		
