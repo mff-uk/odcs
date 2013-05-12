@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -130,7 +132,12 @@ public class PipelineWorker implements Runnable {
 	 * Do cleanup work after pipeline execution.
 	 */
 	private void cleanUp() {
-		
+		// delete working folder
+		try {
+			FileUtils.deleteDirectory(workDirectory);
+		} catch (IOException e) {
+			logger.error("Can't delete directory after execution: " + execution.getId() + " exception: " + e.getMessage());
+		}
 	}
 	
 	/**

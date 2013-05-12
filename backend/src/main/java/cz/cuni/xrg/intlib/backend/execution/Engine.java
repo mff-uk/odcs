@@ -139,7 +139,7 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
     	List<PipelineExecution> toExecute = new LinkedList<PipelineExecution>();
 
     	// add test pipeline
-    	toExecute.add(testExec());
+    	// toExecute.add(testExec());
     	
     	// run pipeline executions ..   
     	for (PipelineExecution item : toExecute) {

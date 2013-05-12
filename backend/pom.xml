@@ -49,6 +49,13 @@
 			<type>jar</type>
 		</dependency>
 
+		<dependency> <!-- apache.commons : delete folder recursive -->
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<type>jar</type>
+		</dependency>		            
+
 	</dependencies>
 		
 	<pluginRepositories>
