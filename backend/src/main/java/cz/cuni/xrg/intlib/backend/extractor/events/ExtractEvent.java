@@ -32,7 +32,7 @@ public abstract class ExtractEvent extends DPUEvent {
     }
 
     /**
-     * Returns the {@link ExtractContext} of this execution.
+     * Returns the {@link ExtendedExtractContext} of this execution.
      *
      * @return
      */

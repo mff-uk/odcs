@@ -23,15 +23,24 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
+import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
+import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
+import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
+import cz.cuni.xrg.intlib.backend.context.impl.ExtendedExtractContextImpl;
+import cz.cuni.xrg.intlib.backend.context.impl.ExtendedLoadContextImpl;
+import cz.cuni.xrg.intlib.backend.context.impl.ExtendedTransformContextImpl;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
+import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadCompletedEvent;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
+import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
@@ -192,15 +201,15 @@ public class PipelineWorker implements Runnable {
 		
 		switch (type) {
 			case EXTRACTOR: {
-				cz.cuni.xrg.intlib.backend.context.ExtractContext extractContext;
-				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.ExtractContextImpl
+				ExtendedExtractContext extractContext;
+				extractContext = new ExtendedExtractContextImpl
 						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
 				break;
 			}
 			case TRANSFORMER: {
-				cz.cuni.xrg.intlib.backend.context.TransformContext extractContext;
-				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.TransformContextImpl
+				ExtendedTransformContext extractContext;
+				extractContext = new ExtendedTransformContextImpl
 						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
 				for (Node item : ancestors) {
@@ -213,8 +222,8 @@ public class PipelineWorker implements Runnable {
 				break;
 			}
 			case LOADER: {
-				cz.cuni.xrg.intlib.backend.context.LoadContext extractContext;
-				extractContext = new cz.cuni.xrg.intlib.backend.context.impl.LoadContextImpl
+				ExtendedLoadContext extractContext;
+				extractContext = new ExtendedLoadContextImpl
 						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 				ctx = extractContext;
 				for (Node item : ancestors) {
@@ -252,18 +261,18 @@ public class PipelineWorker implements Runnable {
 			case EXTRACTOR: {
 				Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
 				extractor.saveConfiguration(configuration);
-				return runExtractor(extractor, (cz.cuni.xrg.intlib.commons.extractor.ExtractContext) ctx);
+				return runExtractor(extractor, (ExtractContext) ctx);
 			}
 			case TRANSFORMER: {
 				Transform transformer = moduleFacade
 						.getInstanceTransform(dpuJarPath);
 				transformer.saveConfiguration(configuration);
-				return runTransformer(transformer, (cz.cuni.xrg.intlib.commons.transformer.TransformContext) ctx);
+				return runTransformer(transformer, (TransformContext) ctx);
 			}
 			case LOADER: {
 				Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
 				loader.saveConfiguration(configuration);
-				return runLoader(loader, (cz.cuni.xrg.intlib.commons.loader.LoadContext) ctx);
+				return runLoader(loader, (LoadContext) ctx);
 			}
 			default:
 				throw new RuntimeException("Unknown DPU type.");
@@ -277,7 +286,7 @@ public class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 */
-	private boolean runExtractor(Extract extractor, cz.cuni.xrg.intlib.commons.extractor.ExtractContext ctx) {
+	private boolean runExtractor(Extract extractor,ExtractContext ctx) {
 
 		try {
 			extractor.extract(ctx);
@@ -298,7 +307,7 @@ public class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 */
-	private boolean runTransformer(Transform transformer, cz.cuni.xrg.intlib.commons.transformer.TransformContext ctx) {
+	private boolean runTransformer(Transform transformer, TransformContext ctx) {
 
 		try {
 			transformer.transform(ctx);
@@ -319,7 +328,7 @@ public class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 */
-	private boolean runLoader(Load loader, cz.cuni.xrg.intlib.commons.loader.LoadContext ctx) {
+	private boolean runLoader(Load loader, LoadContext ctx) {
 
 		try {
 			loader.load(ctx);

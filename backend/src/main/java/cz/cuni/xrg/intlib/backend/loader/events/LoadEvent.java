@@ -32,7 +32,7 @@ public class LoadEvent extends DPUEvent {
     }
 
     /**
-     * Returns the {@link LoadContext} of this execution.
+     * Returns the {@link ExtendedLoadContext} of this execution.
      *
      * @return
      */

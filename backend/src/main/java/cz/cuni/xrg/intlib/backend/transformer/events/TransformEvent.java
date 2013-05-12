@@ -31,7 +31,7 @@ public abstract class TransformEvent extends DPUEvent {
     }
 
     /**
-     * Returns the {@link TransformContext} of this execution.
+     * Returns the {@link ExtendedTransformContext} of this execution.
      *
      * @return
      */

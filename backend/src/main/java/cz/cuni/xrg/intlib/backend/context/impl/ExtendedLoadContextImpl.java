@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
-import cz.cuni.xrg.intlib.backend.context.TransformContext;
+import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationEventPublisher;
  *
  * @author Petyr
  */
-public class TransformContextImpl implements TransformContext {
+public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 
 	/**
 	 * Unique context id.
@@ -36,14 +36,9 @@ public class TransformContextImpl implements TransformContext {
     private List<DataUnit> intputs = new LinkedList<DataUnit>();
     
     /**
-     * Context output data units.
+     * Storage for custom information.
      */
-    private List<DataUnit> outputs = new LinkedList<DataUnit>();
-    
-    /**
-     * Custom data holder.
-     */
-    private Map<String, Object> customData;
+    private Map<String, Object> customData = null;
 
     /**
      * True id the related DPU should be run in debug mode.
@@ -59,7 +54,7 @@ public class TransformContextImpl implements TransformContext {
 	/**
 	 * Instance of DPU for which is this context.
 	 */
-	private DPUInstance dpuInstance;
+	private DPUInstance dpuInstance;    
     
 	/**
 	 * Application event publisher used to publish messages from DPU.
@@ -76,11 +71,10 @@ public class TransformContextImpl implements TransformContext {
 	 */
 	private File contextDirectory;
 	
-	public TransformContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
+	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
 			ApplicationEventPublisher eventPublisher, File contextDirectory) {
 		this.id = id;
 		this.intputs = new LinkedList<DataUnit>();
-		this.outputs = new LinkedList<DataUnit>();
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
 		this.execution = execution;
@@ -90,18 +84,8 @@ public class TransformContextImpl implements TransformContext {
 	}
 
 	@Override
-	public List<DataUnit> getInputs() {
-		return intputs;
-	}
-
-	@Override
-	public List<DataUnit> getOutputs() {
-		return outputs;
-	}
-
-	@Override
-	public void addOutputDataUnit(DataUnit dataUnit) {
-		outputs.add(dataUnit);
+	public List<DataUnit> getInputs() {		
+		return this.intputs;
 	}
 
 	@Override
@@ -118,7 +102,7 @@ public class TransformContextImpl implements TransformContext {
 
 	@Override
 	public void sendMessage(DpuType type, String shortMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );		
 	}
 
 	@Override
@@ -154,11 +138,11 @@ public class TransformContextImpl implements TransformContext {
 	@Override
 	public DataUnitFactory getDataUnitFactory() {
 		return dataUnitFactory;
-	} 	
+	}	
 	
 	@Override
 	public void addSource(ProcessingContext context) throws ContextException {
 		// TODO Auto-generated method stub		
 	}
-      
+
 }
