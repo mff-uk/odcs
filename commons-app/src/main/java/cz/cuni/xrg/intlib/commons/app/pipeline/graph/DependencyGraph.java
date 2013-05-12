@@ -2,9 +2,10 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Graph of DPU dependencies.
@@ -27,6 +28,11 @@ public class DependencyGraph implements Iterable<Node> {
      * List of Extractor nodes - nodes without dependencies
      */
     private List<DependencyNode> extractors = new ArrayList<>();
+	
+	/**
+	 * Cache used for fast searching of node ancestors.
+	 */
+	private Map<Node, Set<Node>> cacheAncestors = new HashMap<>();
 
     /**
      * Constructs dependency graph from given pipeline graph.
@@ -58,11 +64,10 @@ public class DependencyGraph implements Iterable<Node> {
     /**
      * Return all direct ancestors to the given node.
      * @param node
-     * @return
+     * @return set of ancestors
      */
-    public List<Node> getAncestors(Node node) {
-    	//TODO: implement
-    	return new LinkedList<Node>();
+    public Set<Node> getAncestors(Node node) {
+		return cacheAncestors.get(node);
     }
     
     /**
@@ -95,8 +100,28 @@ public class DependencyGraph implements Iterable<Node> {
             // add the dependency
             tNode.addDependency(sNode);
             sNode.addDependant(tNode);
+			
+			// cache ancestors
+			cacheAncestor(sNode, tNode);
         }
     }
+	
+	/**
+	 * Adds a single source node to cache indexed by target nodes.
+	 * Used during build process to create a cache for fast searching of
+	 * {@link Node}s direct ancestors.
+	 * 
+	 * @param sNode
+	 * @param tNode 
+	 */
+	private void cacheAncestor(DependencyNode sNode, DependencyNode tNode) {
+		Set<Node> nodes = cacheAncestors.get(tNode.getNode());
+		if (nodes == null) {
+			nodes = new HashSet<>();
+			cacheAncestors.put(tNode.getNode(), nodes);
+		}
+		nodes.add(sNode.getNode());
+	}
 
     /**
      * Adds a dependency into dependency graph and returns it. If dependency
