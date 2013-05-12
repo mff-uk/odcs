@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu.execution;
 
-import cz.cuni.xrg.intlib.commons.message.Type;
+import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 /**
  * Types for execution.record.
@@ -9,28 +9,28 @@ import cz.cuni.xrg.intlib.commons.message.Type;
  * 
  */
 public enum RecordType {
-	Debug
-	,Log
-	,Info
-	,Warning
-	,Error;
+	DEBUG
+	,LOG
+	,INFO
+	,WARNING
+	,ERROR;
 	
 	
 	/**
 	 * Convert message.Type to RecordType.
 	 */
-	public static RecordType fromMessageType(Type type) {
+	public static RecordType fromMessageType(MessageType type) {
 		switch(type) {
-		case Debug:
-			return RecordType.Debug;
-		case Info:
-			return RecordType.Info;
-		case Warning:
-			return RecordType.Warning;
-		case Error:
-			return RecordType.Error;
+		case DEBUG:
+			return RecordType.DEBUG;
+		case INFO:
+			return RecordType.INFO;
+		case WARNING:
+			return RecordType.WARNING;
+		case ERROR:
+			return RecordType.ERROR;
 		default:
-			return RecordType.Info;
+			return RecordType.INFO;
 		}		
 	}
 }

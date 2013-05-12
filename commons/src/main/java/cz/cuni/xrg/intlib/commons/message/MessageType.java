@@ -8,23 +8,23 @@ package cz.cuni.xrg.intlib.commons.message;
  * @author Petyr
  *
  */
-public enum Type {
+public enum MessageType {
 	/**
 	 * Debug messages will be stored only if the DPU is running in debug mode.
 	 */
-	Debug
+	DEBUG
 	/**
 	 * Information messages can be used to inform about DPU
 	 * execution progress. 
 	 */
-	,Info
+	,INFO
 	/**
 	 * Warning messages.
 	 */
-	,Warning	
+	,WARNING	
 	/**
 	 * Error messages can be used to report
 	 * non fatal error during the DPU execution. 
 	 */
-	,Error
+	,ERROR
 }
