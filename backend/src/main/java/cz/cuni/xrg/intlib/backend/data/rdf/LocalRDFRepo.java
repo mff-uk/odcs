@@ -826,10 +826,11 @@ public class LocalRDFRepo implements RDFDataRepository {
         this.isReadOnly = isReadOnly;
     }
 
-    /*@Override
-     public void createNew(String id, File workingDirectory) {
-     // TODO Auto-generated method stub
-     }*/
+    @Override
+    public void createNew(String id, File workingDirectory) {
+    	// TODO Auto-generated method stub
+    }
+     
     @Override
     public Repository getDataRepository() {
         return repository;

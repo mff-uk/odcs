@@ -43,12 +43,17 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	
 	@Override
 	public DataUnit create(DataUnitType type) {
-		// If we need to use storageDirectory make sure it exist first
-		
+		// prepare path to the working directory		
+		File workingDirectory = new File(storageDirectory, Integer.toString(counter));
+		// increase counter
+		++counter;
+		// based on type ..
 		switch(type) {
-		case RDF:
-			// TODO: Add some unique parameters ?
-			return new LocalRDFRepo();
+			case RDF: {
+				LocalRDFRepo repository = new LocalRDFRepo();
+				repository.createNew(id, workingDirectory);			
+				return repository;
+			}
 		}
 		return null;
 	}
