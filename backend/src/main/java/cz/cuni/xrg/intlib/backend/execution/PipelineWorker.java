@@ -5,7 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cz.cuni.xrg.intlib.backend.AppEntry;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineFailedEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStartedEvent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
@@ -31,6 +35,9 @@ import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -69,6 +76,11 @@ public class PipelineWorker implements Runnable {
 	private File workDirectory;
 	
 	/**
+	 * Logger class.
+	 */
+	private Logger logger;
+	
+	/**
 	 * 
 	 * @param execution The pipeline execution record to run.
 	 * @param moduleFacade Module facade for obtaining DPUs instances.
@@ -82,8 +94,35 @@ public class PipelineWorker implements Runnable {
 		this.eventPublisher = eventPublisher;
 		this.contexts = new HashMap<Node, ProcessingContext>();
 		this.workDirectory = workDirectory;
+		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 	}
 
+	/**
+	 * Called in case that the execution failed.
+	 * @param message Cause of failure. 
+	 */
+	private void executionFailed(String message) {
+		// send event
+		eventPublisher.publishEvent(new PipelineFailedEvent(message, execution, this));
+		// and do clean up
+		cleanUp();
+	}
+	
+	/**
+	 * Called in case of successful execution.
+	 */
+	private void executionSuccessful() {
+		// and do clean up
+		cleanUp();		
+	}
+	
+	/**
+	 * Do cleanup work after pipeline execution.
+	 */
+	private void cleanUp() {
+		
+	}
+	
 	/**
 	 * Implementation of workers activity. Worker constantly keeps asking engine
 	 * for jobs to run, until it is killed.
@@ -101,21 +140,30 @@ public class PipelineWorker implements Runnable {
 
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
+			boolean result;
 			try {
-				runNode(node, dependencyGraph.getAncestors(node));
+				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
-				// quit execution
-				System.out.println("Context exception:");
-				e.printStackTrace();
+				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, execution, this));				
+				logger.error("Context exception: " + e.getMessage());
+				executionFailed(e.getMessage());
 				return;
 			} catch (ModuleException e) {
-				System.out.print("Module exception:");
-				System.out.println(e.getMessage());
-				System.out.println("Trace message: " + e.getTraceMessage());
+				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, execution, this));
+				logger.error("Module exception: " + e.getMessage());
+				executionFailed(e.getMessage());
 				return;
 			} catch (Exception e) {
-				System.out.println("Exception:");
-				e.printStackTrace();
+				logger.error("Exception: " + e.getMessage());
+				executionFailed(e.getMessage());
+				return;
+			}
+			
+			if (result) {
+				// DPU executed successfully
+			} else {
+				// error -> end pipeline
+				executionFailed("DPU execution failed.");
 				return;
 			}
 		}
@@ -123,14 +171,15 @@ public class PipelineWorker implements Runnable {
 		long duration = System.currentTimeMillis() - pipelineStart;
 		eventPublisher.publishEvent(new PipelineCompletedEvent(duration,
 				execution, this));
+		
+		executionSuccessful();
 	}
 
 	/**
 	 * Return context that should be used when executing given DPU.
 	 * 
 	 * @param node
-	 * @param ancestors
-	 *            Ancestors of the given node.
+	 * @param ancestors Ancestors of the given node.
 	 * @return
 	 * @throws ContextException 
 	 */
@@ -180,16 +229,16 @@ public class PipelineWorker implements Runnable {
 		}
 		return ctx;
 	}
-
 	
 	/**
 	 * Executes a single DPU associated with given Node.
 	 * 
 	 * @param node
 	 * @param ancestors Ancestors of the given node.
+	 * @return false if execution failed
 	 * @throws ContextException 
 	 */
-	private void runNode(Node node, List<Node> ancestors) throws ContextException {
+	private boolean runNode(Node node, List<Node> ancestors) throws ContextException {
 		// prepare what we need to start the execution
 		DPUInstance dpuInstance = node.getDpuInstance();
 		DPU dpu = dpuInstance.getDpu();
@@ -203,21 +252,18 @@ public class PipelineWorker implements Runnable {
 			case EXTRACTOR: {
 				Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
 				extractor.saveConfiguration(configuration);
-				runExtractor(extractor, (cz.cuni.xrg.intlib.commons.extractor.ExtractContext) ctx);
-				break;
+				return runExtractor(extractor, (cz.cuni.xrg.intlib.commons.extractor.ExtractContext) ctx);
 			}
 			case TRANSFORMER: {
 				Transform transformer = moduleFacade
 						.getInstanceTransform(dpuJarPath);
 				transformer.saveConfiguration(configuration);
-				runTransformer(transformer, (cz.cuni.xrg.intlib.commons.transformer.TransformContext) ctx);
-				break;
+				return runTransformer(transformer, (cz.cuni.xrg.intlib.commons.transformer.TransformContext) ctx);
 			}
 			case LOADER: {
 				Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
 				loader.saveConfiguration(configuration);
-				runLoader(loader, (cz.cuni.xrg.intlib.commons.loader.LoadContext) ctx);
-				break;
+				return runLoader(loader, (cz.cuni.xrg.intlib.commons.loader.LoadContext) ctx);
 			}
 			default:
 				throw new RuntimeException("Unknown DPU type.");
@@ -229,20 +275,20 @@ public class PipelineWorker implements Runnable {
 	 * 
 	 * @param extractor
 	 * @param ctx
+	 * @return false if execution failed
 	 */
-	private void runExtractor(Extract extractor, cz.cuni.xrg.intlib.commons.extractor.ExtractContext ctx) {
+	private boolean runExtractor(Extract extractor, cz.cuni.xrg.intlib.commons.extractor.ExtractContext ctx) {
 
 		try {
-			// long start = System.currentTimeMillis();
 			extractor.extract(ctx);
-			// ctx.setDuration(System.currentTimeMillis() - start);
 			eventPublisher.publishEvent(new ExtractCompletedEvent(extractor,
 					ctx, this));
 		} catch (ExtractException ex) {
 			eventPublisher.publishEvent(new ExtractFailedEvent(ex, extractor,
 					ctx, this));
-			ex.fillInStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -250,20 +296,20 @@ public class PipelineWorker implements Runnable {
 	 * 
 	 * @param transformer
 	 * @param ctx
+	 * @return false if execution failed
 	 */
-	private void runTransformer(Transform transformer, cz.cuni.xrg.intlib.commons.transformer.TransformContext ctx) {
+	private boolean runTransformer(Transform transformer, cz.cuni.xrg.intlib.commons.transformer.TransformContext ctx) {
 
 		try {
-			// long start = System.currentTimeMillis();
 			transformer.transform(ctx);
-			// ctx.setDuration(System.currentTimeMillis() - start);
 			eventPublisher.publishEvent(new TransformCompletedEvent(
 					transformer, ctx, this));
 		} catch (TransformException ex) {
 			eventPublisher.publishEvent(new TransformFailedEvent(ex,
 					transformer, ctx, this));
-			ex.fillInStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -271,19 +317,19 @@ public class PipelineWorker implements Runnable {
 	 * 
 	 * @param loader
 	 * @param ctx
+	 * @return false if execution failed
 	 */
-	private void runLoader(Load loader, cz.cuni.xrg.intlib.commons.loader.LoadContext ctx) {
+	private boolean runLoader(Load loader, cz.cuni.xrg.intlib.commons.loader.LoadContext ctx) {
 
 		try {
-			// long start = System.currentTimeMillis();
 			loader.load(ctx);
-			// ctx.setDuration(System.currentTimeMillis() - start);
 			eventPublisher.publishEvent(new LoadCompletedEvent(loader, ctx,
 					this));
 		} catch (LoadException ex) {
 			eventPublisher.publishEvent(new LoadFailedEvent(ex, loader, ctx,
 					this));
-			ex.fillInStackTrace();
+			return false;
 		}
+		return true;
 	}
 }
