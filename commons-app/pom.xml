@@ -58,12 +58,6 @@
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 			<version>3.8.1.v20120830-144521</version>
-		</dependency>			
-		
-		<dependency> <!-- javax.persistence -->
-		   <groupId>javax.persistence</groupId>
-		   <artifactId>persistence-api</artifactId>
-		   <version>1.0.2</version>
 		</dependency>
 	    
         <!-- spring dependency -->
