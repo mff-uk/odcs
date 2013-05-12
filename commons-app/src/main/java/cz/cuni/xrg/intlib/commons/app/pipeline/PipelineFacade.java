@@ -10,7 +10,7 @@ import javax.persistence.EntityTransaction;
 /**
  * Facade providing actions with pipelines.
  * 
- * @author Jan Vojt <jan@vojt.net>
+ * @author Jan Vojt
  * 
  * TODO	Refactor transactions to be able to perform multiple actions
  * 			per one transaction.
@@ -19,7 +19,7 @@ public class PipelineFacade {
 	
 	/**
 	 * Entity manager for accessing database with persisted objects
-	 * @todo autowire through Spring and remove setter and constructor
+	 * TODO autowire through Spring and remove setter and constructor
 	 */
 	private EntityManager em;
 	
@@ -38,8 +38,13 @@ public class PipelineFacade {
 		this.em = em;
 	}
 	
+	/* ******************* Methods for managing Pipeline ******************** */
+	
 	/**
-	 * Pipeline factory
+	 * Pipeline factory.
+	 * Created instance is not yet managed by {@link EntityManager}, thus needs
+	 * to be saved with {@link #save(Pipeline)} method.
+	 * 
 	 * @return newly created pipeline
 	 */
 	public Pipeline createPipeline() {
@@ -51,6 +56,7 @@ public class PipelineFacade {
 	
 	/**
 	 * Returns list of all pipelines persisted in the database.
+	 * 
 	 * @return list of pipelines
 	 */
 	public List<Pipeline> getAllPipelines() {
@@ -66,6 +72,7 @@ public class PipelineFacade {
 
 	/**
 	 * Find pipeline in database by ID and return it.
+	 * 
 	 * @param id of Pipeline
 	 * @return Pipeline
 	 */
@@ -76,6 +83,7 @@ public class PipelineFacade {
 	
 	/**
 	 * Saves any modifications made to the pipeline into the database.
+	 * 
 	 * @param pipeline
 	 */
 	public void save(Pipeline pipeline) {
@@ -85,17 +93,14 @@ public class PipelineFacade {
 			tx.begin();
 		}
 		
-//		if (pipeline.getId() == 0) {
-			em.persist(pipeline);
-//		} else {
-//			em.merge(pipeline);
-//		}
+		em.persist(pipeline);
 		
 		tx.commit();
 	}
 	
 	/**
 	 * Deletes pipeline from database.
+	 * 
 	 * @param pipeline
 	 */
 	public void delete(Pipeline pipeline) {
@@ -106,6 +111,72 @@ public class PipelineFacade {
 		}
 
 		em.remove(pipeline);
+		
+		tx.commit();
+	}
+	
+	/* ******************** Methods for managing PipelineExecutions ********* */
+	
+	/**
+	 * Creates a new {@link PipelineExecution}, which represents a pipeline run.
+	 * Created instance is not yet managed by {@link EntityManager}, thus needs
+	 * to be saved with {@link #save(PipelineExecution)} method.
+	 * 
+	 * @param pipeline
+	 * @return 
+	 */
+	public PipelineExecution createExecution(Pipeline pipeline) {
+		PipelineExecution execution = new PipelineExecution(pipeline);
+		return execution;
+	}
+
+	/**
+	 * Fetches all {@link PipelineExecution}s from database.
+	 * 
+	 * @return list of executions
+	 */
+	public List<PipelineExecution> getAllExecutions() {
+		
+		@SuppressWarnings("unchecked")
+		List<PipelineExecution> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM PipelineExecution e").getResultList(),
+				PipelineExecution.class
+		);
+		
+		return resultList;
+	}
+
+	/**
+	 * Persists new {@link PipelineExecution} or updates it if it was already
+	 * persisted before.
+	 * 
+	 * @param exec 
+	 */
+	public void save(PipelineExecution exec) {
+		
+		EntityTransaction tx = em.getTransaction();
+		if (!tx.isActive()) {
+			tx.begin();
+		}
+		
+		em.persist(exec);
+		
+		tx.commit();
+	}
+	
+	/**
+	 * Deletes pipeline from database.
+	 * 
+	 * @param exec
+	 */
+	public void delete(PipelineExecution exec) {
+		
+		EntityTransaction tx = em.getTransaction();
+		if (!tx.isActive()) {
+			tx.begin();
+		}
+
+		em.remove(exec);
 		
 		tx.commit();
 	}

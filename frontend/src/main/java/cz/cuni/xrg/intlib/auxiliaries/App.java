@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.auxiliaries;
 import com.vaadin.ui.UI;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
 
@@ -29,7 +28,7 @@ public class App {
 	 * Return instance of current AppEntry class.
 	 * @return
 	 */
-	public static cz.cuni.xrg.intlib.frontend.AppEntry getApp() {
+	public static AppEntry getApp() {
 		return (AppEntry)UI.getCurrent();
 	}
 	
@@ -48,12 +47,4 @@ public class App {
 	public static DPUFacade getDPUs() {
 		return getApp().getDPUs();
 	}	
-	
-	/**
-	 * Returns facade, which provides services for managing pipeline executions.
-	 * @return pipeline execution facade
-	 */	
-	public static PipelineExecutionFacade getPipelineExecutions() {
-		return getApp().getPipeliExecutions();
-	}		
 }

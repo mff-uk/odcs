@@ -35,13 +35,13 @@ public class PipelineList extends CustomComponent implements View {
 	private Button btnCreatePipeline;
 	
 	public void runPipeline(Pipeline pipeline) {
-		PipelineExecution pipelineExec =  App.getPipelineExecutions().createPipelineExecution(pipeline);
+		PipelineExecution pipelineExec =  App.getPipelines().createExecution(pipeline);
 		// do some settings here
 		
 		// TODO Setup pipelineExecution
 		
 		// store into DB
-		App.getPipelineExecutions().save(pipelineExec);
+		App.getPipelines().save(pipelineExec);
 		AppConfiguration config = App.getApp().getAppConfiguration();
 		Client client = new Client(config.getBackendAddress(), config.getBackendPort());
 		// send message to backend

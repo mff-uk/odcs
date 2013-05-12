@@ -6,7 +6,6 @@ import com.vaadin.ui.Panel;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -42,11 +41,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Facade interface providing services for managing pipelines.
 	 */
 	private PipelineFacade pipelines;
-
-	/**
-	 * Facade interface providing services for managing pipeline executions.
-	 */
-	private PipelineExecutionFacade pipelineExecutions;
 	
 	/**
 	 * Facade interface providing services for managing DPUs.
@@ -109,7 +103,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}} );
 
 		this.pipelines = new PipelineFacade();
-		this.pipelineExecutions = new PipelineExecutionFacade();
 		this.dpus = new DPUFacade();
 		this.appConfig = new AppConfiguration();
 
@@ -123,14 +116,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	public PipelineFacade getPipelines() {
 		return pipelines;
 	}
-
-	/**
-	 * Returns facade, which provides services for managing pipeline executions.
-	 * @return pipeline executions facade
-	 */
-	public PipelineExecutionFacade getPipeliExecutions() {
-		return pipelineExecutions;
-	}	
 	
 	/**
 	 * Return application navigator.
