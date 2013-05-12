@@ -62,7 +62,7 @@ public class DebuggingView extends Window {
 
 
 	private List<Record> buildStubMessageData() {
-		List<Record> stubList = new ArrayList<Record>();
+		List<Record> stubList = new ArrayList<>();
 		Record m = new Record(new Date(), RecordType.Info, null, "Test message", "Long test message");
 		m.setId(1);
 		stubList.add(m);
@@ -87,7 +87,7 @@ public class DebuggingView extends Window {
 	}
 
 	private List<RDFTriple> buildStubRDFData() {
-		List<RDFTriple> rdfTripleList = new ArrayList<RDFTriple>();
+		List<RDFTriple> rdfTripleList = new ArrayList<>();
 
 		rdfTripleList.add(new RDFTriple(1, "rdf:Description", "rdf:about", "http://www.recshop.fake/cd/Empire Burlesque"));
 		rdfTripleList.add(new RDFTriple(2, "rdf:Description", "cd:artist", "Bob Dylan"));

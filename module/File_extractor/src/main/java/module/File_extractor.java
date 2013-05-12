@@ -12,6 +12,10 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 
+/**
+ * 
+ * @author Jiri Tomes
+ */
 public class File_extractor implements GraphicalExtractor {
 
     private RDFDataRepository repository = null;

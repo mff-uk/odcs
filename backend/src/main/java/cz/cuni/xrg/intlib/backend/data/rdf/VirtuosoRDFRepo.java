@@ -16,6 +16,20 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
      */
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
 
+    public static VirtuosoRDFRepo createVirtuosoRDFRepo()
+    {
+        final String hostName="localhost";
+        final String port="1111";
+        final String JDBC="jdbc:virtuoso://"+hostName+":"+port;
+        
+        final String user="dba";
+        final String password="dba";
+        final String defautGraph="";
+        
+        virtuosoRepo=createVirtuosoRDFRepo(JDBC,user, password, defautGraph);
+        
+        return virtuosoRepo;
+    }
     /**
      * Construct a VirtuosoRepository with a specified parameters.
      *
@@ -67,4 +81,5 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
         }
     }
+    
 }

@@ -12,7 +12,7 @@ public class PipelineExecutionFacade {
 
 	// Dummy impl
 	public List<PipelineExecution> getAllPipelines() {
-		return new LinkedList<PipelineExecution>();
+		return new LinkedList<>();
 	}
 	
 	// Dummy impl

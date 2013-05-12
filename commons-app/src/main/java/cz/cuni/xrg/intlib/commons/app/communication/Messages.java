@@ -49,7 +49,7 @@ public enum Messages {
 	public static Messages getEnum(Integer id) {
 		if (idToMessages == null) {
 			// construct map
-			idToMessages = new HashMap<Integer, Messages>();
+			idToMessages = new HashMap<>();
 			// create mapping
 			for (Messages item : Messages.class.getEnumConstants()) {
 				idToMessages.put(item.getMessage(), item);

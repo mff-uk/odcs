@@ -7,6 +7,7 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import java.io.Serializable;
@@ -89,16 +90,16 @@ public class ConfigDialog extends CustomComponent {
             try {
             	griddata = (List<String>)conf.getValue(Config.GraphsUri.name());
             	if (griddata == null) {
-            		griddata = new LinkedList<String>();
+            		griddata = new LinkedList<>();
             		}
             	}
             catch (Exception e) { 
-                griddata = new LinkedList<String>();
+                griddata = new LinkedList<>();
                 }
             refreshNamedGraphData();
             }
             
-		catch(Exception ex) {
+		catch(UnsupportedOperationException | Property.ReadOnlyException ex) {
 			// throw setting exception
 			throw new ConfigurationException();
 			}
@@ -230,6 +231,7 @@ public class ConfigDialog extends CustomComponent {
 
 			comboBoxSparql.setNewItemHandler(new AbstractSelect.NewItemHandler() {
 	           
+                    @Override
 	            public void addNewItem(final String newItemCaption) {
 	                boolean newItem = true;
 	                for (final Object itemId : comboBoxSparql.getItemIds()) {
@@ -305,7 +307,7 @@ public class ConfigDialog extends CustomComponent {
 		private  List<String> griddata = initializeGridData();
 		private static List<String> initializeGridData()
 		{
-			List<String> result = new LinkedList<String>(); 
+			List<String> result = new LinkedList<>(); 
 			result.add("");
 		
 			return result;
@@ -334,7 +336,7 @@ public class ConfigDialog extends CustomComponent {
 		
 		private void saveEditedTexts()
 		{
-			griddata = new LinkedList<String>();
+			griddata = new LinkedList<>();
 			for (TextField editText : listedEditText) {
 				griddata.add(editText.getValue());
 			}
@@ -344,7 +346,7 @@ public class ConfigDialog extends CustomComponent {
 		{
 			gridLayoutGraph.removeAllComponents();
 			int row = 0;
-			listedEditText = new ArrayList<TextField>();
+			listedEditText = new ArrayList<>();
 			if(griddata.size()<1){
 				griddata.add("");
 			}
@@ -364,6 +366,7 @@ public class ConfigDialog extends CustomComponent {
 				buttonGraphRem.addClickListener(new Button.ClickListener() {
 
 					
+                                        @Override
 					public void buttonClick(Button.ClickEvent event) {
 						saveEditedTexts();
 						Button senderButton = event.getButton();
@@ -378,13 +381,14 @@ public class ConfigDialog extends CustomComponent {
 				row++;
 			}
 			
-	        Button buttonGraphAdd = new Button();
+	        buttonGraphAdd = new Button();
 	        buttonGraphAdd.setCaption("+");
 	        buttonGraphAdd.setImmediate(true);
 	        buttonGraphAdd.setWidth("55px");
 	        buttonGraphAdd.setHeight("-1px");
 	        buttonGraphAdd.addListener(new Button.ClickListener() {
 
+                @Override
         	public void buttonClick(Button.ClickEvent event) {
         		saveEditedTexts();
         		addDataToGridData(" ");

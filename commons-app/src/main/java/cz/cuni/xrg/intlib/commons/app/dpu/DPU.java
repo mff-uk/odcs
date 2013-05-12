@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import javax.persistence.*;
 
+
 /**
  * Represent imported DPUExecution in database.
  *

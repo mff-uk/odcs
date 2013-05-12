@@ -30,7 +30,7 @@ public class ContainerFactory {
 	 * @return
 	 */
 	public static Container CreatePipelines(List<Pipeline> data) {
-		BeanContainer<Integer, Pipeline> container = new BeanContainer<Integer, Pipeline>( Pipeline.class );
+		BeanContainer<Integer, Pipeline> container = new BeanContainer<>( Pipeline.class );
 		// set container id
 		container.setBeanIdProperty("id");
 
@@ -46,7 +46,7 @@ public class ContainerFactory {
 	 * @return
 	 */
 	public static Container CreateDPUs(List<DPU> data) {
-		BeanContainer<Integer, DPU> container = new BeanContainer<Integer, DPU>( DPU.class );
+		BeanContainer<Integer, DPU> container = new BeanContainer<>( DPU.class );
 		// set container id
 		container.setBeanIdProperty("id");
 
@@ -57,7 +57,7 @@ public class ContainerFactory {
 	}
 
 	public static Container CreateExecutionMessages(List<Record> data) {
-		BeanContainer<Integer, Record> container = new BeanContainer<Integer, Record>( Record.class);
+		BeanContainer<Integer, Record> container = new BeanContainer<>( Record.class);
 		container.setBeanIdProperty("id");
 		container.addAll(data);
 
@@ -65,7 +65,7 @@ public class ContainerFactory {
 	}
 
 	public static Container CreateRDFData(List<RDFTriple> data) {
-		BeanContainer<Integer, RDFTriple> container = new BeanContainer<Integer, RDFTriple> (RDFTriple.class);
+		BeanContainer<Integer, RDFTriple> container = new BeanContainer<> (RDFTriple.class);
 		container.setBeanIdProperty("id");
 		container.addAll(data);
 

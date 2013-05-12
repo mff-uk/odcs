@@ -5,11 +5,9 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.AppEntry;
 
 /**
  * Class represent main application component.
@@ -49,6 +47,7 @@ public class MenuLayout extends CustomComponent {
 			this.url = url;
 		}
 
+                @Override
 		public void menuSelected(MenuItem selectedItem) {
 			App.getApp().getNavigator().navigateTo(this.url);
 		}

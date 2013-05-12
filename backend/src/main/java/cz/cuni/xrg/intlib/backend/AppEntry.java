@@ -64,6 +64,7 @@ public class AppEntry {
 		
 		// set module facade
 		System.out.println("Configuring dynamic module worker ...");
+
 		ModuleFacade modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
 		modeleFacade.start();
 		

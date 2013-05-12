@@ -63,8 +63,7 @@ public class AppConfiguration {
 	 * @throws RuntimeException
 	 */
 	public void Load(String fileName) throws IOException, RuntimeException {
-		FileInputStream stream;
-		
+		FileInputStream stream;		
 		stream = new FileInputStream(fileName);
 		Load(stream);
 		stream.close();
@@ -77,10 +76,11 @@ public class AppConfiguration {
 	 * @throws RuntimeException 
 	 */
 	public void Load(FileInputStream stream) throws IOException, RuntimeException {
-		Properties prop = new Properties();
-		
+		Properties prop = new Properties();		
 		prop.loadFromXML(stream);
-		moduleConfiguration.setDpuFolder( prop.getProperty("dpuDirectory") );
+		
+		moduleConfiguration.load(prop);
+		
 		backendAddress = prop.getProperty("backendAddress");
 		try {
 			backendPort = Integer.parseInt( prop.getProperty("backendPort") );

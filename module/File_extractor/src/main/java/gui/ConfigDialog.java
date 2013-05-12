@@ -2,7 +2,6 @@ package gui;
 
 import module.Config;
 
-import com.vaadin.data.Item;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
