@@ -1,23 +1,16 @@
 package cz.cuni.xrg.intlib.backend.context;
 
-import cz.cuni.xrg.intlib.commons.ProcessingContext;
-
 /**
  * Extended load context.
  * 
  * @author Petyr
  *
  */
-public interface ExtendedLoadContext extends cz.cuni.xrg.intlib.commons.loader.LoadContext, ExtendedContext {
+public interface ExtendedLoadContext extends cz.cuni.xrg.intlib.commons.loader.LoadContext, ExtendedContext, MergableContext {
 	
 	/**
-	 * Add information from given context to the actual context.
-	 * Can be called multiple times with different contexts.
-	 * If context can be added or error occur throws.
-	 * 
-	 * @param context Source context, do not change!
-	 * @throws ContextException
+	 * Made inputs read only. It's called just before it's passed to the DPU.
 	 */
-	public void addSource(ProcessingContext context) throws ContextException;
-	
+	public void sealInputs();		
+		
 }

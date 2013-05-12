@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cz.cuni.xrg.intlib.backend.AppEntry;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
@@ -27,12 +28,15 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
+import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
+import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.context.impl.ExtendedExtractContextImpl;
 import cz.cuni.xrg.intlib.backend.context.impl.ExtendedLoadContextImpl;
 import cz.cuni.xrg.intlib.backend.context.impl.ExtendedTransformContextImpl;
+import cz.cuni.xrg.intlib.backend.context.impl.PrimitiveDataUniteMerger;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractFailedEvent;
@@ -93,6 +97,11 @@ public class PipelineWorker implements Runnable {
 	private Logger logger;
 	
 	/**
+	 * Used data unit merger.
+	 */
+	private DataUnitMerger dataUnitMerger; 
+	
+	/**
 	 * 
 	 * @param execution The pipeline execution record to run.
 	 * @param moduleFacade Module facade for obtaining DPUs instances.
@@ -107,6 +116,7 @@ public class PipelineWorker implements Runnable {
 		this.contexts = new HashMap<Node, ProcessingContext>();
 		this.workDirectory = workDirectory;
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
+		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 	}
 
 	/**
@@ -132,6 +142,15 @@ public class PipelineWorker implements Runnable {
 	 * Do cleanup work after pipeline execution.
 	 */
 	private void cleanUp() {
+		// release all contexts 
+		for (ProcessingContext item : contexts.values()) {
+			if (item instanceof ExtendedContext) {
+				ExtendedContext exCtx = (ExtendedContext)item;
+				exCtx.release();
+			} else {
+				logger.error("Unexpected ProcessingContext instance. Can't call release().");
+			}	
+		}
 		// delete working folder
 		try {
 			FileUtils.deleteDirectory(workDirectory);
@@ -209,7 +228,7 @@ public class PipelineWorker implements Runnable {
 	 * @throws ContextException 
 	 * @throws StructureException 
 	 */
-	private ProcessingContext getContextForNode(DPUInstance dpuInstance, DpuType type, List<Node> ancestors) throws ContextException, StructureException {
+	private ProcessingContext getContextForNode(DPUInstance dpuInstance, DpuType type, Set<Node> ancestors) throws ContextException, StructureException {
 		ProcessingContext ctx = null;
 		String contextId = "ex" + execution.getId() + "_dpuIns" + dpuInstance.getId();
 		File contextDirectory = new File(workDirectory, "_dpuIns" + dpuInstance.getId() );
@@ -225,43 +244,47 @@ public class PipelineWorker implements Runnable {
 				break;
 			}
 			case TRANSFORMER: {
-				ExtendedTransformContext extractContext;
-				extractContext = new ExtendedTransformContextImpl
+				ExtendedTransformContext transformContext;
+				transformContext = new ExtendedTransformContextImpl
 						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
-				ctx = extractContext;
+				ctx = transformContext;
 				if (ancestors.isEmpty()) {
 					// no ancestors ? -> error
 					throw new StructureException("No inputs.");
 				}					
 				for (Node item : ancestors) {
 					if (contexts.containsKey(item)) {
-						extractContext.addSource( contexts.get(item) ); 
+						transformContext.addSource(contexts.get(item), dataUnitMerger); 
 					} else {
 						// can't find context ..
 						throw new StructureException("Can't find context.");
 					}
 				}
+				transformContext.sealInputs();
 				break;
 			}
 			case LOADER: {
-				ExtendedLoadContext extractContext;
-				extractContext = new ExtendedLoadContextImpl
+				ExtendedLoadContext loadContext;
+				loadContext = new ExtendedLoadContextImpl
 						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
-				ctx = extractContext;
+				ctx = loadContext;
 				if (ancestors.isEmpty()) {
 					// no ancestors ? -> error
 					throw new StructureException("No inputs.");
 				}				
 				for (Node item : ancestors) {
 					if (contexts.containsKey(item)) {
-						extractContext.addSource( contexts.get(item) ); 
+						loadContext.addSource(contexts.get(item), dataUnitMerger); 
 					} else {
 						// can't find context ..
 						throw new StructureException("Can't find context.");
 					}
-				}				
+				}	
+				loadContext.sealInputs();
 				break;
 			}
+			default:
+				throw new StructureException("Unknown DPU type: " + type.toString());
 		}
 		return ctx;
 	}
@@ -275,7 +298,7 @@ public class PipelineWorker implements Runnable {
 	 * @throws ContextException 
 	 * @throws StructureException 
 	 */
-	private boolean runNode(Node node, List<Node> ancestors) throws ContextException, StructureException {
+	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException {
 		// prepare what we need to start the execution
 		DPUInstance dpuInstance = node.getDpuInstance();
 		DPU dpu = dpuInstance.getDpu();
@@ -284,6 +307,8 @@ public class PipelineWorker implements Runnable {
 		Configuration configuration = dpuInstance.getInstanceConfig();
 		// get context ..
 		ProcessingContext ctx = getContextForNode(dpuInstance, dpuType, ancestors);
+		// store context
+		contexts.put(node, ctx);		
 		// now based on DPU type ..
 		switch (dpuType) {
 			case EXTRACTOR: {

@@ -20,25 +20,35 @@ public interface DataUnit {
      * @param id unique identification
      * @param workingDirectory Path to the directory where DataUnit can store files.
      */
-    // TODO: Jirka I thing its not in Repository - we will speak about practive of this using.
+    // TODO: Jirka I thing its not in Repository - we will speak about practice of this using.
     public void createNew(String id, File workingDirectory);
+    
     /**
-     * Return read only copy of data unit. This copy will be used as a input for
+     * Made this DataUnit read only. This copy will be used as a input for
      * next DPU. The copy can be used multiple times. It's guaranteed that the
      * original class will not be used anymore after this call.
-     *
-     * @return
+	 *
      */
-    public DataUnit createReadOnlyCopy();
+    public void madeReadOnly();
 
     /**
-     * Merge (add) data from given DataUnit into this DataUnit.
+     * Merge (add) data from given DataUnit into this DataUnit. If the
+     * unit has wrong type then the IllegalArgumentException should be thrown.
+     * The method must not modify the content parameter (unit). The
+     * parameter(unit) can be in read only state.
      *
      * @param unit
      * @return DataUnit
+     * @throws IllegalArgumentException In case of unsupported unit type.
      */
-    public void merge(DataUnit unit);
-
+    public void merge(DataUnit unit) throws IllegalArgumentException;
+    
+    /**
+     * Create exact copy of DataUnit.
+     * @return
+     */
+    public DataUnit createCopy();
+    
     /**
      * Return type of data unit interface implementation.
      *
@@ -52,16 +62,26 @@ public interface DataUnit {
      * @return
      */
     public boolean isReadOnly();
-
+    
+    /**
+     * Release all lock, prepare for being deleted.
+     * Can be called even when the DataUnit is in read only 
+     * mode.
+     */
+    public void release();    
+    
     /**
      * Set value, if this DataUnit is in read only state.
      * @param isReadOnly 
      */
-    public void setReadOnly(boolean isReadOnly);
+    //public void setReadOnly(boolean isReadOnly);
+    // TODO: Petyr -> Jirka : no way .. 
+    
     /**
      * Return data storage repository for this type.
      *
      * @return
      */
-    public Repository getDataRepository();
+    //public Repository getDataRepository();
+    // TODO: Petyr -> Jirka : why should this be here ?
 }

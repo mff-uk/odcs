@@ -1,7 +1,10 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
+import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
+import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
+import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
@@ -126,6 +129,11 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	}
 
 	@Override
+	public DataUnitFactory getDataUnitFactory() {
+		return dataUnitFactory;
+	}	
+	
+	@Override
 	public PipelineExecution getPipelineExecution() {
 		return execution;
 	}
@@ -134,15 +142,41 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	public DPUInstance getDPUInstance() {
 		return dpuInstance;
 	}
-
+	
 	@Override
-	public DataUnitFactory getDataUnitFactory() {
-		return dataUnitFactory;
+	public void release() {
+		for (DataUnit item : intputs) {
+			item.release();
+		}		
 	}	
 	
 	@Override
-	public void addSource(ProcessingContext context) throws ContextException {
-		// TODO Auto-generated method stub		
+	public void sealInputs() {
+		for (DataUnit inputDataUnit : intputs) {
+			inputDataUnit.madeReadOnly();
+		}
+	}		
+	
+	@Override
+	public void addSource(ProcessingContext context, DataUnitMerger merger) throws ContextException {
+		// merge custom data
+		try {
+			this.customData.putAll(context.getCustomData());
+		} catch(Exception e) {
+			throw new ContextException("Error while merging custom data.", e);
+		}
+		// now based on context type ..
+		if (context instanceof ExtendedExtractContext) {
+			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
+			// primitive merge .. 
+			merger.merger(intputs, extractContext.getOutputs() );
+		} else if (context instanceof ExtendedTransformContext) {
+			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
+			// primitive merge .. 
+			merger.merger(intputs, transformContext.getOutputs() );
+		} else {
+			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
+		}
 	}
 
 }

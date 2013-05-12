@@ -7,5 +7,5 @@ package cz.cuni.xrg.intlib.backend.context;
  *
  */
 public interface ExtendedExtractContext extends cz.cuni.xrg.intlib.commons.extractor.ExtractContext, ExtendedContext {
-
+	
 }

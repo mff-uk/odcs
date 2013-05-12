@@ -125,10 +125,15 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	}
 
 	@Override
-	public Map<String, Object> getCustomData() {		
+	public Map<String, Object> getCustomData() {
 		return customData;
 	}
 
+	@Override
+	public DataUnitFactory getDataUnitFactory() {
+		return dataUnitFactory;
+	}	
+	
 	@Override
 	public PipelineExecution getPipelineExecution() {		
 		return execution;
@@ -140,8 +145,10 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	}
 
 	@Override
-	public DataUnitFactory getDataUnitFactory() {
-		return dataUnitFactory;
+	public void release() {
+		for (DataUnit item : outputs) {
+			item.release();
+		}		
 	}
-
+		
 }

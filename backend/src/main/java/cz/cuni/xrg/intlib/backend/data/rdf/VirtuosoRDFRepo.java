@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.backend.data.rdf;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
@@ -144,11 +143,12 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
      * Creates read only copy of instance Virtuoso repository.
      */
     @Override
-    public DataUnit createReadOnlyCopy() {
-       VirtuosoRDFRepo newCopy=getCopyOfVirtuosoReposiotory();
-       newCopy.setReadOnly(true);
-       
-       return newCopy;
+    public void madeReadOnly() {
+    	// TODO: Jirka: check this please
+        //VirtuosoRDFRepo newCopy=getCopyOfVirtuosoReposiotory();
+        //newCopy.setReadOnly(true);
+        //return newCopy;
+    	setReadOnly(true);
     }
     
 

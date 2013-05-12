@@ -117,7 +117,6 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
 
         graph.getNodeById(eId).getDpuInstance().setInstanceConfig(exConfig);
 
-
         InstanceConfiguration ldConfig = new InstanceConfiguration();
         List<String> graphsURI=new LinkedList<>();
         graphsURI.add("http://ld.opendata.cz/resource/myGraph/001");
@@ -139,7 +138,7 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
     	List<PipelineExecution> toExecute = new LinkedList<PipelineExecution>();
 
     	// add test pipeline
-    	// toExecute.add(testExec());
+    	toExecute.add(testExec());
     	
     	// run pipeline executions ..   
     	for (PipelineExecution item : toExecute) {

@@ -799,21 +799,26 @@ public class LocalRDFRepo implements RDFDataRepository {
     }
 
     @Override
-    public DataUnit createReadOnlyCopy() {
-        String nextDirName=UniqueNameGenerator.getNextName(repoDirName);
-        LocalRDFRepo copy = LocalRDFRepo.createLocalRepoInDirectory(nextDirName);
-        copy.setReadOnly(true);
-        copyAllDataToTargetRepository(copy.getDataRepository());
-
-        return copy;
+    public void madeReadOnly() {
+    	// TODO: Jirka: check this please
+        //String nextDirName=UniqueNameGenerator.getNextName(repoDirName);
+    	setReadOnly(true);        
+        //LocalRDFRepo copy = LocalRDFRepo.createLocalRepoInDirectory(nextDirName);
+        //copyAllDataToTargetRepository(copy.getDataRepository());
+        //return copy;
     }
 
     @Override
     public void merge(DataUnit unit) {
-        if (unit != null) {
-            Repository UnitRepository = unit.getDataRepository();
-            mergeRepositoryData(UnitRepository);
-        }
+    	if (unit instanceof LocalRDFRepo) {
+    		LocalRDFRepo localRDFRepo = (LocalRDFRepo)unit;
+            if (unit != null) {
+                Repository UnitRepository = localRDFRepo.getDataRepository();
+                mergeRepositoryData(UnitRepository);
+            }    		
+    	} else {
+    		throw new IllegalArgumentException();
+    	}
     }
 
     @Override
@@ -821,19 +826,48 @@ public class LocalRDFRepo implements RDFDataRepository {
         return isReadOnly;
     }
 
-    @Override
-    public void setReadOnly(boolean isReadOnly) {
+    protected void setReadOnly(boolean isReadOnly) {
         this.isReadOnly = isReadOnly;
     }
 
     @Override
     public void createNew(String id, File workingDirectory) {
     	// TODO Auto-generated method stub
+        this.isReadOnly = false;
+
+        long timeToStart = 1000L;
+        File dataDir = workingDirectory;
+        MemoryStore memStore = new MemoryStore(dataDir);
+        memStore.setSyncDelay(timeToStart);
+
+        repository = new SailRepository(memStore);
+
+        try {
+            repository.initialize();
+            logger.info("Repository incicialized");
+
+        } catch (RepositoryException ex) {
+            logger.debug(ex.getMessage());
+
+        }    	
     }
      
-    @Override
     public Repository getDataRepository() {
         return repository;
-
     }
+
+	@Override
+	public DataUnit createCopy() {
+		// TODO: Jirka check this please
+		String nextDirName=UniqueNameGenerator.getNextName(repoDirName);
+		LocalRDFRepo copy = LocalRDFRepo.createLocalRepoInDirectory(nextDirName);
+		copyAllDataToTargetRepository(copy.getDataRepository());
+		return copy;
+	}
+
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		cleanAllRepositoryData();
+	}
 }

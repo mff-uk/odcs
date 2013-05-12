@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.backend.context;
 
-import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
@@ -25,5 +24,10 @@ public interface ExtendedContext {
 	 * @return
 	 */
 	public DPUInstance getDPUInstance();
-
+	
+    /**
+     * Release all locks from context and DataUnits. 
+     * Prepare for being deleted.
+     */
+    public void release();	
 }
