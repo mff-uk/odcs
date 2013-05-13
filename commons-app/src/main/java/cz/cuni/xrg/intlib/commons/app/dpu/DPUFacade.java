@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,7 @@ public class DPUFacade {
 	 * Creates DPU without persisting it.
 	 * @return
 	 */
+	@Deprecated
 	public DPU createDpu() {
 		DPU dpu = new DPU();
 		return dpu;
@@ -78,11 +80,7 @@ public class DPUFacade {
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 
-		if (dpu.getId() == 0) {
-			em.persist(dpu);
-		} else {
-			em.merge(dpu);
-		}
+		em.persist(dpu);
 
 		tx.commit();
 	}
@@ -108,6 +106,7 @@ public class DPUFacade {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public DPUInstance createDPUInstance(DPU dpu) {
 		DPUInstance dpuInstance = new DPUInstance(dpu);
 		return dpuInstance;
@@ -148,11 +147,7 @@ public class DPUFacade {
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 
-		if (dpu.getId() == 0) {
-			em.persist(dpu);
-		} else {
-			em.merge(dpu);
-		}
+		em.persist(dpu);
 
 		tx.commit();
 	}
@@ -167,6 +162,83 @@ public class DPUFacade {
 		tx.begin();
 
 		em.remove(dpu);
+
+		tx.commit();
+	}
+	
+	/* **************** Methods for DPU Record management ***************** */
+
+	/**
+	 * Returns list of all DPURecords currently persisted in database.
+	 * 
+	 * @return DPURecord list
+	 */
+	public List<DPURecord> getAllDPURecords() {
+
+		@SuppressWarnings("unchecked")
+		List<DPURecord> resultList = Collections.checkedList(
+			em.createQuery("SELECT e FROM DPURecord e").getResultList(),
+			DPURecord.class
+		);
+
+		return resultList;
+	}
+	
+	/**
+	 * Fetches all DPURecords emitted by given DPUInstance.
+	 * 
+	 * @param dpuInstance
+	 * @return 
+	 */
+	public List<DPURecord> getAllDPURecords(DPUInstance dpuInstance) {
+
+		@SuppressWarnings("unchecked")
+		List<DPURecord> resultList = Collections.checkedList(
+			em.createQuery("SELECT r FROM DPURecord r WHERE r.dpuInstance = :ins")
+				.setParameter("ins", dpuInstance)
+				.getResultList(),
+			DPURecord.class
+		);
+
+		return resultList;
+	}
+
+	/**
+	 * Find DPURecord in database by ID and return it.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public DPURecord getDPURecord(int id) {
+		return em.find(DPURecord.class, id);
+	}
+
+	/**
+	 * Saves any modifications made to the DPURecord into the database.
+	 * 
+	 * @param record
+	 */
+	public void save(DPURecord record) {
+
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
+
+		em.persist(record);
+
+		tx.commit();
+	}
+
+	/**
+	 * Deletes DPURecord from the database.
+	 * 
+	 * @param record
+	 */
+	public void delete(DPURecord record) {
+
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
+
+		em.remove(record);
 
 		tx.commit();
 	}
