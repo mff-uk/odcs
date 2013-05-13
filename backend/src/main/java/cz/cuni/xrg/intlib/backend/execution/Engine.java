@@ -95,10 +95,9 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
     	// store workingDirectory
     	pipelineExecution.setWorkingDirectory(directory.getAbsolutePath());
     	
-    	// save updated record into DB
-    	//database.getExecution().save(pipelineExecution);
-    	// TODO: DB
-    	
+    	// update record in DB
+    	database.getPipeline().save(pipelineExecution);
+   	
     	this.executorService.execute(
     			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, directory, database));
     }
@@ -108,10 +107,7 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
      * Can run concurrently.
      */
     public synchronized void checkDatabase() {
-    	List<PipelineExecution> toExecute = new LinkedList<PipelineExecution>();
-    	//database.getExecution().getAllPipelineExecutions();
-    	// TODO: DB
-    			
+    	List<PipelineExecution> toExecute = database.getPipeline().getAllExecutions();
     	// run pipeline executions ..   
     	for (PipelineExecution item : toExecute) {
     		if (item.getExecutionStatus() == ExecutionStatus.SCHEDULED) {

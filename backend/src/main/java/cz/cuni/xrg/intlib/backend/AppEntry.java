@@ -18,7 +18,6 @@ import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.Engine;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 
 /**
  * Backend entry point.
@@ -85,10 +84,7 @@ public class AppEntry {
 
 		ModuleFacade modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
 		modeleFacade.start();
-		
-		engine.checkDatabase();
-		
-		/*
+
 		// set TCP/IP server
 		logger.info("Starting TCP/IP server ...");
 		Server server = (Server)context.getBean("server");
@@ -119,8 +115,9 @@ public class AppEntry {
 				e.printStackTrace();
 				continue;
 			}			
-			// ...			
-		}*/
+			// ...
+		// TODO: interact with user
+		}
 		
 	}
 }
