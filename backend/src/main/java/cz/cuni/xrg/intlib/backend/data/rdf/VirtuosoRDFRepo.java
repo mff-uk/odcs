@@ -59,9 +59,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
      *
      */
     public static VirtuosoRDFRepo createVirtuosoRDFRepo(String URL_Host_List, String user, String password, String defaultGraph) {
-        if (virtuosoRepo == null) {
-            virtuosoRepo = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
-        }
+        virtuosoRepo = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
+        
         return virtuosoRepo;
     }
 
