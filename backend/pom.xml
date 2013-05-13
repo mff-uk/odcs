@@ -10,11 +10,7 @@
     <packaging>jar</packaging>
     <name>intlib backend</name>
     <description></description>
-	
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>	
-		
+
     <repositories>
         <!-- Apache-FUSEKI storage repository-->
         <repository>
