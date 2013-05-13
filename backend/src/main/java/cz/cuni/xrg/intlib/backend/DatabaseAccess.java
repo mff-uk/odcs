@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.backend;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 
 /**

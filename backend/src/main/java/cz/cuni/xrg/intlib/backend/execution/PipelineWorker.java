@@ -3,11 +3,9 @@ package cz.cuni.xrg.intlib.backend.execution;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cz.cuni.xrg.intlib.backend.AppEntry;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
@@ -122,7 +120,7 @@ class PipelineWorker implements Runnable {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
-		this.contexts = new HashMap<Node, ProcessingContext>();
+		this.contexts = new HashMap<>();
 		this.workDirectory = workDirectory;
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
@@ -207,13 +205,13 @@ class PipelineWorker implements Runnable {
 			} catch (ContextException e) {
 				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, execution, this));				
 				logger.error("Context exception: " + e.getMessage());
-			e.printStackTrace();
+			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			} catch (ModuleException e) {
 				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, execution, this));
 				logger.error("Module exception: " + e.getMessage());
-			e.printStackTrace();
+			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			} catch (StructureException e) {
@@ -223,7 +221,7 @@ class PipelineWorker implements Runnable {
 				return;				
 			} catch (Exception e) {
 				logger.error("Exception: " + e.getMessage());
-			e.printStackTrace();
+			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			}
@@ -245,75 +243,101 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
-	 * Return context that should be used when executing given DPU.
+	 * Return context that should be used when executing given Extractor.
+	 * The context is also stored in {@link #contexts }
 	 * 
-	 * @param node
+	 * @param node Node for which DPU the context is.
 	 * @param ancestors Ancestors of the given node.
-	 * @return
+	 * @return Context for the DPU execution.
 	 * @throws ContextException 
 	 * @throws StructureException 
-	 */
-	private ProcessingContext getContextForNode(DPUInstance dpuInstance, DpuType type, Set<Node> ancestors) throws ContextException, StructureException {
-		ProcessingContext ctx = null;
+	 */		
+	private ExtendedExtractContext getContextForNodeExtractor(Node node, 
+			Set<Node> ancestors) throws ContextException, StructureException {
+		DPUInstance dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		File contextDirectory = new File(workDirectory, "dpu-" + dpuInstance.getId() );
-		// create directory
-		contextDirectory.mkdirs();
+		// ...
+		ExtendedExtractContext extractContext;
+		extractContext = new ExtendedExtractContextImpl
+				(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
 		
-		switch (type) {
-			case EXTRACTOR: {
-				ExtendedExtractContext extractContext;
-				extractContext = new ExtendedExtractContextImpl
-						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
-				ctx = extractContext;
-				break;
-			}
-			case TRANSFORMER: {
-				ExtendedTransformContext transformContext;
-				transformContext = new ExtendedTransformContextImpl
-						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
-				ctx = transformContext;
-				if (ancestors.isEmpty()) {
-					// no ancestors ? -> error
-					throw new StructureException("No inputs.");
-				}					
-				for (Node item : ancestors) {
-					if (contexts.containsKey(item)) {
-						transformContext.addSource(contexts.get(item), dataUnitMerger); 
-					} else {
-						// can't find context ..
-						throw new StructureException("Can't find context.");
-					}
-				}
-				transformContext.sealInputs();
-				break;
-			}
-			case LOADER: {
-				ExtendedLoadContext loadContext;
-				loadContext = new ExtendedLoadContextImpl
-						(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
-				ctx = loadContext;
-				if (ancestors.isEmpty()) {
-					// no ancestors ? -> error
-					throw new StructureException("No inputs.");
-				}				
-				for (Node item : ancestors) {
-					if (contexts.containsKey(item)) {
-						loadContext.addSource(contexts.get(item), dataUnitMerger); 
-					} else {
-						// can't find context ..
-						throw new StructureException("Can't find context.");
-					}
-				}	
-				loadContext.sealInputs();
-				break;
-			}
-			default:
-				throw new StructureException("Unknown DPU type: " + type.toString());
-		}
-		return ctx;
+		// store context
+		contexts.put(node, extractContext);		
+		return extractContext;		
 	}
 	
+	/**
+	 * Return context that should be used when executing given Transform.
+	 * The context is also stored in {@link #contexts }
+	 * 
+	 * @param node Node for which DPU the context is.
+	 * @param ancestors Ancestors of the given node.
+	 * @return Context for the DPU execution.
+	 * @throws ContextException 
+	 * @throws StructureException 
+	 */		
+	private ExtendedTransformContext getContextForNodeTransform(Node node,
+			Set<Node> ancestors) throws ContextException, StructureException {
+		DPUInstance dpuInstance = node.getDpuInstance();
+		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
+		File contextDirectory = new File(workDirectory, "dpu-" + dpuInstance.getId() );
+		// ...
+		ExtendedTransformContext transformContext;
+		transformContext = new ExtendedTransformContextImpl
+				(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
+		if (ancestors.isEmpty()) {
+			// no ancestors ? -> error
+			throw new StructureException("No inputs.");
+		}					
+		for (Node item : ancestors) {
+			if (contexts.containsKey(item)) {
+				transformContext.addSource(contexts.get(item), dataUnitMerger); 
+			} else {
+				// can't find context ..
+				throw new StructureException("Can't find context.");
+			}
+		}
+		transformContext.sealInputs();
+		return transformContext;		
+	}
+	
+	/**
+	 * Return context that should be used when executing given Loader.
+	 * The context is also stored in {@link #contexts }
+	 * 
+	 * @param node Node for which DPU the context is.
+	 * @param ancestors Ancestors of the given node.
+	 * @return Context for the DPU execution.
+	 * @throws ContextException 
+	 * @throws StructureException 
+	 */	
+	private ExtendedLoadContext getContextForNodeLoader(Node node, 
+			Set<Node> ancestors) throws ContextException, StructureException {
+		DPUInstance dpuInstance = node.getDpuInstance();
+		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
+		File contextDirectory = new File(workDirectory, "dpu-" + dpuInstance.getId() );
+		// ...
+		ExtendedLoadContext loadContext;
+		loadContext = new ExtendedLoadContextImpl
+				(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
+		if (ancestors.isEmpty()) {
+			// no ancestors ? -> error
+			throw new StructureException("No inputs.");
+		}				
+		for (Node item : ancestors) {
+			if (contexts.containsKey(item)) {
+				loadContext.addSource(contexts.get(item), dataUnitMerger); 
+			} else {
+				// can't find context ..
+				throw new StructureException("Can't find context.");
+			}
+		}	
+		loadContext.sealInputs();
+		return loadContext;
+	}
+	
+
 	/**
 	 * Executes a single DPU associated with given Node.
 	 * 
@@ -330,27 +354,23 @@ class PipelineWorker implements Runnable {
 		DpuType dpuType = dpu.getType();
 		String dpuJarPath = dpu.getJarPath();
 		Configuration configuration = dpuInstance.getInstanceConfig();
-		// get context ..
-		ProcessingContext ctx = getContextForNode(dpuInstance, dpuType, ancestors);
-		// store context
-		contexts.put(node, ctx);
 		// now based on DPU type ..
 		switch (dpuType) {
 			case EXTRACTOR: {
 				Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
 				extractor.saveConfiguration(configuration);
-				return runExtractor(extractor, (ExtractContext) ctx);
+				return runExtractor(extractor, getContextForNodeExtractor(node, ancestors) );
 			}
 			case TRANSFORMER: {
 				Transform transformer = moduleFacade
 						.getInstanceTransform(dpuJarPath);
 				transformer.saveConfiguration(configuration);
-				return runTransformer(transformer, (TransformContext) ctx);
+				return runTransformer(transformer, getContextForNodeTransform(node, ancestors) );
 			}
 			case LOADER: {
 				Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
 				loader.saveConfiguration(configuration);
-				return runLoader(loader, (LoadContext) ctx);
+				return runLoader(loader, getContextForNodeLoader(node, ancestors) );
 			}
 			default:
 				throw new RuntimeException("Unknown DPU type.");
@@ -364,7 +384,7 @@ class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 */
-	private boolean runExtractor(Extract extractor,ExtractContext ctx) {
+	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx) {
 
 		try {
 			extractor.extract(ctx);
@@ -385,7 +405,7 @@ class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 */
-	private boolean runTransformer(Transform transformer, TransformContext ctx) {
+	private boolean runTransformer(Transform transformer, ExtendedTransformContext ctx) {
 
 		try {
 			transformer.transform(ctx);
@@ -406,7 +426,7 @@ class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 */
-	private boolean runLoader(Load loader, LoadContext ctx) {
+	private boolean runLoader(Load loader, ExtendedLoadContext ctx) {
 
 		try {
 			loader.load(ctx);
