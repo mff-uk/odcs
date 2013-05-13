@@ -5,6 +5,8 @@ import java.util.Date;
 import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
@@ -33,7 +35,7 @@ public class DPUMessage extends DPUEvent {
 	/**
 	 * Type of message.
 	 */
-	private DpuType type;
+	private RecordType type;
 	
 	/**
 	 * Related pipeline execution.
@@ -45,7 +47,7 @@ public class DPUMessage extends DPUEvent {
 	 */
 	private DPUInstance dpuInstance;
 	
-	public DPUMessage(String shortMessage, String fullMessage, DpuType type, ExtendedContext context, Object source) {
+	public DPUMessage(String shortMessage, String fullMessage, RecordType type, ExtendedContext context, Object source) {
 		super(source);
 		this.time = new Date();
 		this.shortMessage = shortMessage;
@@ -67,7 +69,7 @@ public class DPUMessage extends DPUEvent {
 		return fullMessage;
 	}
 
-	public DpuType getType() {
+	public RecordType getType() {
 		return type;
 	}
 
