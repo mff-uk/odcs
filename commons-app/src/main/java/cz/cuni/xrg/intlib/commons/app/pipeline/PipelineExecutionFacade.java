@@ -11,7 +11,7 @@ import java.util.List;
 public class PipelineExecutionFacade {
 
 	// Dummy impl
-	public List<PipelineExecution> getAllPipelines() {
+	public List<PipelineExecution> getAllPipelineExecutions() {
 		return new LinkedList<>();
 	}
 	

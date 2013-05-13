@@ -62,10 +62,6 @@ public class AppEntry {
 			return;
 		}
 		
-		//PipelineFacade pipelines = new PipelineFacade();
-		//System.out.println("Pipelines count: " + pipelines.getAllPipelines().size() );		
-		
-/*		
 		// load spring
 		AbstractApplicationContext context = new ClassPathXmlApplicationContext(springConfigFile);
 		context.registerShutdownHook();
@@ -90,7 +86,7 @@ public class AppEntry {
 		ModuleFacade modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
 		modeleFacade.start();
 		
-		engine.checkDatabase();*/
+		engine.checkDatabase();
 		
 		/*
 		// set TCP/IP server
@@ -123,7 +119,7 @@ public class AppEntry {
 				e.printStackTrace();
 				continue;
 			}			
-			// ...
+			// ...			
 		}*/
 		
 	}

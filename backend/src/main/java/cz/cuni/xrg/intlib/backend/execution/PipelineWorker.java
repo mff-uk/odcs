@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.cuni.xrg.intlib.backend.AppEntry;
+import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineFailedEvent;
@@ -20,6 +21,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
@@ -63,7 +65,7 @@ import org.springframework.context.ApplicationEventPublisher;
  * @author Jiri Tomes
  * @author Jan Vojt
  */
-public class PipelineWorker implements Runnable {
+class PipelineWorker implements Runnable {
 
 	/**
 	 * PipelineExecution record, determine pipeline to run.
@@ -102,14 +104,21 @@ public class PipelineWorker implements Runnable {
 	private DataUnitMerger dataUnitMerger; 
 	
 	/**
+	 * Access to the database
+	 */
+	protected DatabaseAccess database;	
+	
+	/**
 	 * 
 	 * @param execution The pipeline execution record to run.
 	 * @param moduleFacade Module facade for obtaining DPUs instances.
 	 * @param eventPublisher Application event publisher.
 	 * @param workDirectory Working directory for this execution.
+	 * @param database Access to database.
 	 */
 	public PipelineWorker(PipelineExecution execution, ModuleFacade moduleFacade, 
-			ApplicationEventPublisher eventPublisher, File workDirectory) {
+			ApplicationEventPublisher eventPublisher, File workDirectory,
+			DatabaseAccess database) {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
@@ -117,6 +126,7 @@ public class PipelineWorker implements Runnable {
 		this.workDirectory = workDirectory;
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
+		this.database = database;
 	}
 
 	/**
@@ -126,6 +136,9 @@ public class PipelineWorker implements Runnable {
 	private void executionFailed(String message) {
 		// send event
 		eventPublisher.publishEvent(new PipelineFailedEvent(message, execution, this));
+		// save new state
+		execution.setExecutionStatus(ExecutionStatus.FAILED);
+		database.getExecution().save(execution);		
 		// and do clean up
 		cleanUp();
 	}
@@ -134,6 +147,9 @@ public class PipelineWorker implements Runnable {
 	 * Called in case of successful execution.
 	 */
 	private void executionSuccessful() {
+		// save new state
+		execution.setExecutionStatus(ExecutionStatus.FINISHED_SUCCESS);
+		database.getExecution().save(execution);
 		// and do clean up
 		cleanUp();		
 	}
@@ -315,7 +331,7 @@ public class PipelineWorker implements Runnable {
 		// get context ..
 		ProcessingContext ctx = getContextForNode(dpuInstance, dpuType, ancestors);
 		// store context
-		contexts.put(node, ctx);		
+		contexts.put(node, ctx);
 		// now based on DPU type ..
 		switch (dpuType) {
 			case EXTRACTOR: {
