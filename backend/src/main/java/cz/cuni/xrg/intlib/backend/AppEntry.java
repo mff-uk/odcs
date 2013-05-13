@@ -33,6 +33,11 @@ public class AppEntry {
 	private final static String springConfigFile = "spring.xml";
 	
 	/**
+	 * Default configuration path.
+	 */
+	private final static String defaultConfigPath = "./conf/config.xml";
+	
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -43,7 +48,7 @@ public class AppEntry {
 		
 		// define args
 		Options options = new Options();
-		options.addOption("", "config", true, "path to the configuration file");
+		options.addOption("c", "config", true, "path to the configuration file");
 		
 		// parse args
 		CommandLineParser parser = new org.apache.commons.cli.BasicParser();
@@ -57,8 +62,9 @@ public class AppEntry {
 		
 		// check if 'config' parameter has been provided
 		if (configFileLocation == null) {
-			logger.error("Property config must be specified. Use param -config path_to_config.xml");
-			return;
+			logger.info("No config specified in argument, trying default from " + defaultConfigPath
+						+ ". Use param --config path_to_config.xml to load custom config.");
+			configFileLocation = defaultConfigPath;
 		}
 		
 		// load spring
@@ -68,7 +74,7 @@ public class AppEntry {
 		// load configuration
 		AppConfiguration appConfig = (AppConfiguration)context.getBean("configuration");
 		try {
-			appConfig.Load(configFileLocation);
+			appConfig.load(configFileLocation);
 		} catch(IOException | RuntimeException e) {
 			logger.error("Can't read configuration file: " + e.getMessage());
 			return;

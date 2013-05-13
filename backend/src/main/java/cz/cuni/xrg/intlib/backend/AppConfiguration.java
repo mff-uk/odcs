@@ -42,10 +42,10 @@ public class AppConfiguration {
 	 * @throws IOException 
 	 * @throws RuntimeException
 	 */
-	public void Load(String fileName) throws IOException, RuntimeException {
+	public void load(String fileName) throws IOException, RuntimeException {
 		FileInputStream stream;		
 		stream = new FileInputStream(fileName);
-		Load(stream);
+		load(stream);
 		stream.close();
 	}
 	
@@ -55,7 +55,7 @@ public class AppConfiguration {
 	 * @throws IOException
 	 * @throws RuntimeException 
 	 */
-	public void Load(FileInputStream stream) throws IOException, RuntimeException {
+	public void load(FileInputStream stream) throws IOException, RuntimeException {
 		Properties prop = new Properties();		
 		prop.loadFromXML(stream);
 		

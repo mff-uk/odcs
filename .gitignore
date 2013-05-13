@@ -1,3 +1,6 @@
+# Local configurations
+*.local.xml
+
 *.class
 
 # Eclipse Project Files #
