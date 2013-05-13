@@ -10,22 +10,21 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
-import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import java.util.List;
 
 /**
  * @author Jiri Tomes
  * @author Petyr
  */
 public class SPARQL_transformer implements GraphicalTransformer {
-    
+
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
-    
     /**
      * DPU configuration.
      */
@@ -36,9 +35,9 @@ public class SPARQL_transformer implements GraphicalTransformer {
 
     @Override
     public void saveConfigurationDefault(Configuration configuration) {
-    	configuration.setValue(Config.SPARQL_Update_Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");  	
-    }     
-    
+        configuration.setValue(Config.SPARQL_Update_Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
+    }
+
     @Override
     public DpuType getType() {
         return DpuType.TRANSFORMER;
@@ -56,16 +55,16 @@ public class SPARQL_transformer implements GraphicalTransformer {
         return this.configDialog;
     }
 
-	@Override
-	public void loadConfiguration(Configuration configuration)
-			throws ConfigurationException {
-		// 
+    @Override
+    public void loadConfiguration(Configuration configuration)
+            throws ConfigurationException {
+        // 
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
             this.configDialog.setConfiguration(configuration);
         }
-	} 
+    }
 
     @Override
     public void saveConfiguration(Configuration configuration) {
@@ -89,26 +88,42 @@ public class SPARQL_transformer implements GraphicalTransformer {
 
     @Override
     public void transform(TransformContext context) throws TransformException {
-    	RDFDataRepository intputRepository = null;
-    	RDFDataRepository outputRepository = null;
-    	
-    	// get intput repository
-    	if (context.getInputs().isEmpty()) {
-    		throw new TransformException("Missing inputs!");
-    	}    	
-    	DataUnit dataUnit = context.getInputs().get(0);
-    	if (dataUnit.getType() == DataUnitType.RDF) {
-    		intputRepository = (RDFDataRepository) dataUnit;
-    	} else {
-    		// wrong input ..
-    		throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
-    	}
-    	// create output repository
-    	outputRepository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
-    	context.addOutputDataUnit(outputRepository);    	
-    	    	
-        final String updateQuery = getUpdateQuery();
-        //repository.transformUsingSPARQL(updateQuery);
-// TODO: Jirka, ask Petyr for more detail        
+
+        if (context != null) {
+
+            List<DataUnit> inputs = context.getInputs();
+            // get intput repository
+            if (inputs.isEmpty()) {
+                throw new TransformException("Missing inputs!");
+            }
+            DataUnit dataUnit = inputs.get(0);
+
+            RDFDataRepository intputRepository = null;
+
+            switch (dataUnit.getType()) {
+                case RDF:
+                    intputRepository = (RDFDataRepository) dataUnit;
+                    break;
+                default:
+                    throw new TransformException("Wrong input type " + dataUnit.getType().toString());
+
+            }
+
+            // create output repository
+            RDFDataRepository outputRepository = (RDFDataRepository) context.getDataUnitFactory().create(DataUnitType.RDF);
+            
+            final String updateQuery = getUpdateQuery();
+            
+            if (intputRepository != null) {
+                
+                intputRepository.copyAllDataToTargetRepository(outputRepository);
+                outputRepository.transformUsingSPARQL(updateQuery);
+            }
+            
+            context.addOutputDataUnit(outputRepository);
+            
+           //repository.transformUsingSPARQL(updateQuery);
+      
+        }
     }
 }
