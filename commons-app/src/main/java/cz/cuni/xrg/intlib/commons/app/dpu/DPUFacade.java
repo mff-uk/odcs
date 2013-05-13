@@ -41,6 +41,7 @@ public class DPUFacade {
 	 * Creates DPU without persisting it.
 	 * @return
 	 */
+	@Deprecated
 	public DPU createDpu() {
 		DPU dpu = new DPU();
 		return dpu;
@@ -105,6 +106,7 @@ public class DPUFacade {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public DPUInstance createDPUInstance(DPU dpu) {
 		DPUInstance dpuInstance = new DPUInstance(dpu);
 		return dpuInstance;

@@ -47,11 +47,9 @@ public class PipelineFacade {
 	 * 
 	 * @return newly created pipeline
 	 */
+	@Deprecated
 	public Pipeline createPipeline() {
-		Pipeline pipe = new Pipeline();
-		pipe.setGraph(new PipelineGraph());
-		
-		return pipe;
+		return new Pipeline();
 	}
 	
 	/**
@@ -125,6 +123,7 @@ public class PipelineFacade {
 	 * @param pipeline
 	 * @return 
 	 */
+	@Deprecated
 	public PipelineExecution createExecution(Pipeline pipeline) {
 		PipelineExecution execution = new PipelineExecution(pipeline);
 		return execution;

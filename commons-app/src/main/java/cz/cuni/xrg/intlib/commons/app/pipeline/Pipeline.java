@@ -72,7 +72,9 @@ public class Pipeline implements Resource {
     /**
      * Default constructor for JPA
      */
-    public Pipeline() {}
+    public Pipeline() {
+		graph = new PipelineGraph();
+	}
 
 	/**
 	 * Constructor with given pipeline name and description.
@@ -80,9 +82,9 @@ public class Pipeline implements Resource {
 	 * @param description
 	 */
     public Pipeline(String name, String description) {
-        this.name = name;
+		this();
+		this.name = name;
         this.description = description;
-
     }
 
     public String getName() {
