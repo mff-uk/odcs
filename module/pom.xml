@@ -1,16 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>cz.cuni.xrg.intlib</groupId>
+	<parent>
+		<groupId>cz.cuni.xrg.intlib</groupId>
+		<artifactId>intlib</artifactId>
+		<version>0.0.1</version>
+	</parent>
 	<artifactId>module_master</artifactId>
-	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<name>Module' parent project.</name>
 	<description>Maven parent project for modules-DPU implementations.</description>
-
-	<properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
-    </properties>
 
 	<modules>
 		<module>File_extractor</module>
@@ -62,18 +61,7 @@
 
 	<build>
 		<plugins>
-
-			<plugin> <!-- set java version for modules -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-
-			<plugin> <!-- generate manifest file -->
+			<plugin> <!-- main build plugin for modules -->
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<version>2.3.7</version>
@@ -100,10 +88,34 @@
 						<!-- dependencies location in output file -->
 						<Embed-Directory>dependency</Embed-Directory>
 						<Embed-StripGroup>false</Embed-StripGroup>
-					</instructions>
+					</instructions>					
 				</configuration>
 			</plugin>
-
+			<plugin> <!-- copy result bundle to outputDirectory -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<!-- here the phase you need -->
+						<phase>install</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}\..\..\${project.output.dpu}</outputDirectory>
+							<resources> <!-- copy just output jar file -->
+								<resource>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>*.jar</include>
+									</includes>							
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
