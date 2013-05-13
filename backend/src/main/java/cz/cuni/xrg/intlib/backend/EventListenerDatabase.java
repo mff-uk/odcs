@@ -1,14 +1,12 @@
 package cz.cuni.xrg.intlib.backend;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
-import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
-import cz.cuni.xrg.intlib.backend.extractor.events.ExtractEvent;
-import cz.cuni.xrg.intlib.backend.loader.events.LoadEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineEvent;
-import cz.cuni.xrg.intlib.backend.transformer.events.TransformEvent;
 import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
 
 /**
@@ -24,6 +22,8 @@ public class EventListenerDatabase implements ApplicationListener {
 	 */
 	private DatabaseAccess database;
 	
+	private Logger logger = LoggerFactory.getLogger(EventListenerDatabase.class);
+	
 	public EventListenerDatabase(DatabaseAccess database) {
 		this.database = database;
 	}
@@ -37,6 +37,7 @@ public class EventListenerDatabase implements ApplicationListener {
 		// publish event into database
 		
 		// TODO: DB
+		logger.info("DPUEvent (source='" + record.getSource().getName() + "',type='" + record.getType() + "',shortMsg='" + record.getShortMessage() + "',lngMsg='" + record.getFullMessage());
 	}
 	
 	/**
@@ -45,6 +46,7 @@ public class EventListenerDatabase implements ApplicationListener {
 	 */	
 	private void onPipelineEvent(PipelineEvent event) {
 		// TODO: DB
+		logger.info("PiepelineEvent: " + event);
 	}
 	
 	@Override

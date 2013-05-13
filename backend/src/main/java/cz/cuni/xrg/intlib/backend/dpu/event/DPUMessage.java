@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 /**
  * Class for representing DPU messages send by ProcessingContext sendMessage.
@@ -37,11 +38,11 @@ public class DPUMessage extends DPUEvent {
 	 */
 	private PipelineExecution execution;
 		
-	public DPUMessage(String shortMessage, String fullMessage, DPURecordType type, ExtendedContext context, Object source) {
+	public DPUMessage(String shortMessage, String fullMessage, MessageType type, ExtendedContext context, Object source) {
 		super(source, context.getDPUInstance(), new Date());
 		this.shortMessage = shortMessage;
 		this.fullMessage = fullMessage;
-		this.type = type;
+		this.type = DPURecordType.fromMessageType(type);
 		this.execution = context.getPipelineExecution();
 	}
 
