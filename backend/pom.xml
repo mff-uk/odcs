@@ -59,28 +59,38 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
             <type>jar</type>
-        </dependency>	
-                
-        <dependency> <!-- Apache-FUSEKI storage repository-->
+        </dependency>
+        
+		<dependency> <!-- because of wrong version used by Apache-fuseki -->
+   			<groupId>xml-apis</groupId>
+   			<artifactId>xml-apis</artifactId>
+  			<version>1.4.01</version>
+		</dependency>        
+        
+        <dependency> <!-- Apache-fuseki storage repository--> 
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-fuseki</artifactId>
             <version>0.2.8-SNAPSHOT</version>
             <type>jar</type>
+			<exclusions> <!-- fix bug: ClassNotFoundException: org.w3c.dom.ElementTraversal after running backend -->
+				<exclusion>
+					<artifactId>xml-apis</artifactId>
+					<groupId>xml-apis</groupId>
+				</exclusion>		
+			</exclusions>            
         </dependency>
-        
         
         <dependency> <!-- Virtuoso dependency -->
             <groupId>com.openlinksw</groupId>
             <artifactId>virt_sesame2</artifactId>
             <version>2.5.1</version>
         </dependency>
-
         <dependency>
             <groupId>com.openlinksw</groupId>
             <artifactId>virtjdbc4</artifactId>
             <version>4</version>
         </dependency>	            
-
+		
     </dependencies>
 		
     <pluginRepositories>
