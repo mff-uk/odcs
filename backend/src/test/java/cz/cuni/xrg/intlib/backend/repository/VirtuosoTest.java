@@ -21,7 +21,7 @@ public class VirtuosoTest {
     private VirtuosoRDFRepo virtuosoRepo;
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoTest.class);
     
-    @Before
+    /*@Before
     public void setUp() {
         virtuosoRepo= VirtuosoRDFRepo.createVirtuosoRDFRepo(HOSTNAME,PORT,USERNAME,PASSWORD,DEFAUTLGRAPH);
     }
@@ -81,5 +81,5 @@ public class VirtuosoTest {
         } else {
             assertEquals(expectedSize, size + 1L);
         }
-    }
+    }*/
 }
