@@ -87,5 +87,5 @@ public class DPU {
     public String getJarPath() {
         return HACK_basePath + jarPath;
     }
-    public static String HACK_basePath = "file:///C:/MyGit/intlib/module/";
+    public static String HACK_basePath = "file:////home/knap/tools/ETL/0.1/intlib/module/";
 }
