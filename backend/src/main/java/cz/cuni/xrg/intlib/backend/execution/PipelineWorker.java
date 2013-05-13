@@ -138,7 +138,7 @@ class PipelineWorker implements Runnable {
 		eventPublisher.publishEvent(new PipelineFailedEvent(message, execution, this));
 		// save new state
 		execution.setExecutionStatus(ExecutionStatus.FAILED);
-		database.getExecution().save(execution);		
+		// TODO: DB		
 		// and do clean up
 		cleanUp();
 	}
@@ -149,7 +149,7 @@ class PipelineWorker implements Runnable {
 	private void executionSuccessful() {
 		// save new state
 		execution.setExecutionStatus(ExecutionStatus.FINISHED_SUCCESS);
-		database.getExecution().save(execution);
+		// TODO: DB
 		// and do clean up
 		cleanUp();		
 	}
