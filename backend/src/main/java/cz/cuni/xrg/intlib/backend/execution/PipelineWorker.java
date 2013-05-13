@@ -3,11 +3,9 @@ package cz.cuni.xrg.intlib.backend.execution;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cz.cuni.xrg.intlib.backend.AppEntry;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
@@ -122,7 +120,7 @@ class PipelineWorker implements Runnable {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
-		this.contexts = new HashMap<Node, ProcessingContext>();
+		this.contexts = new HashMap<>();
 		this.workDirectory = workDirectory;
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
@@ -205,13 +203,13 @@ class PipelineWorker implements Runnable {
 			} catch (ContextException e) {
 				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, execution, this));				
 				logger.error("Context exception: " + e.getMessage());
-			e.printStackTrace();
+			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			} catch (ModuleException e) {
 				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, execution, this));
 				logger.error("Module exception: " + e.getMessage());
-			e.printStackTrace();
+			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			} catch (StructureException e) {
@@ -221,7 +219,7 @@ class PipelineWorker implements Runnable {
 				return;				
 			} catch (Exception e) {
 				logger.error("Exception: " + e.getMessage());
-			e.printStackTrace();
+			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			}

@@ -3,18 +3,11 @@ package cz.cuni.xrg.intlib.backend.execution;
 import cz.cuni.xrg.intlib.backend.AppConfiguration;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.communication.ServerEvent;
-import cz.cuni.xrg.intlib.commons.DpuType;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
-import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -108,7 +101,7 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
      * Can run concurrently.
      */
     public synchronized void checkDatabase() {
-    	List<PipelineExecution> toExecute = new LinkedList<PipelineExecution>();
+    	List<PipelineExecution> toExecute = new LinkedList<>();
     	//database.getExecution().getAllPipelineExecutions();
     	// TODO: DB
     			
