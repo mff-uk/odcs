@@ -171,6 +171,23 @@ public class LocalRDFRepoTest {
             // test passed
         }
     }
+    
+    //@Test 
+    public void extractBigDataFileToRepository()
+    {
+        String suffix = "bigdata.ttl";
+        String baseURI = "";
+        boolean useSuffix = true;
+
+        long size = localRepo.getTripleCountInRepository();
+
+        localRepo.extractRDFfromXMLFileToRepository(
+                testFileDir, suffix, baseURI, useSuffix);
+
+        long newSize = localRepo.getTripleCountInRepository();
+
+        assertTrue(newSize > size);
+    }
 
     @Test
     public void extractRDFFilesToRepository() {
