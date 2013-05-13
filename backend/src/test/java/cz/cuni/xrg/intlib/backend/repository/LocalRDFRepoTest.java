@@ -93,12 +93,12 @@ public class LocalRDFRepoTest {
 
         String fileName = "RDF_output.rdf";
         RDFFormat format = RDFFormat.RDFXML;
-        boolean canBeOverWriten=true;
-        boolean isNameUnique=false;
+        boolean canBeOverWriten = true;
+        boolean isNameUnique = false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
+                    outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -110,12 +110,12 @@ public class LocalRDFRepoTest {
 
         String fileName = "N3_output.n3";
         RDFFormat format = RDFFormat.N3;
-        boolean canBeOverWriten=true;
-        boolean isNameUnique=false;
+        boolean canBeOverWriten = true;
+        boolean isNameUnique = false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
+                    outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -127,12 +127,12 @@ public class LocalRDFRepoTest {
 
         String fileName = "TRIG_output.trig";
         RDFFormat format = RDFFormat.TRIG;
-        boolean canBeOverWriten=true;
-        boolean isNameUnique=false;
+        boolean canBeOverWriten = true;
+        boolean isNameUnique = false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
+                    outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -144,12 +144,12 @@ public class LocalRDFRepoTest {
 
         String fileName = "TURTLE_output.ttl";
         RDFFormat format = RDFFormat.TURTLE;
-        boolean canBeOverWriten=true;
-        boolean isNameUnique=false;
+        boolean canBeOverWriten = true;
+        boolean isNameUnique = false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
+                    outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -170,23 +170,6 @@ public class LocalRDFRepoTest {
         } catch (CannotOverwriteFileException ex) {
             // test passed
         }
-    }
-    
-    //@Test 
-    public void extractBigDataFileToRepository()
-    {
-        String suffix = "bigdata.ttl";
-        String baseURI = "";
-        boolean useSuffix = true;
-
-        long size = localRepo.getTripleCountInRepository();
-
-        localRepo.extractRDFfromXMLFileToRepository(
-                testFileDir, suffix, baseURI, useSuffix);
-
-        long newSize = localRepo.getTripleCountInRepository();
-
-        assertTrue(newSize > size);
     }
 
     @Test
@@ -228,12 +211,12 @@ public class LocalRDFRepoTest {
 
         String fileName = "AllData_output.rdf";
         RDFFormat format = RDFFormat.RDFXML;
-        boolean canBeOverWriten=true;
-        boolean isNameUnique=false;
+        boolean canBeOverWriten = true;
+        boolean isNameUnique = false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
+                    outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -387,12 +370,12 @@ public class LocalRDFRepoTest {
 
         String fileName = "output-ted-test.ttl";
         RDFFormat format = RDFFormat.TURTLE;
-        boolean canBeOverWriten=true;
-        boolean isNameUnique=false;
+        boolean canBeOverWriten = true;
+        boolean isNameUnique = false;
 
         try {
             localRepo.loadRDFfromRepositoryToXMLFile(
-                    outDir.toString(), fileName, format, canBeOverWriten,isNameUnique);
+                    outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
             fail(ex.getMessage());
@@ -473,5 +456,115 @@ public class LocalRDFRepoTest {
             }
         }
         directory.delete();
+    }
+
+    private void extractBigDataFileToRepository() {
+
+        String suffix = "bigdata.ttl";
+        String baseURI = "";
+        boolean useSuffix = true;
+
+        long size = localRepo.getTripleCountInRepository();
+
+        localRepo.extractRDFfromXMLFileToRepository(
+                testFileDir, suffix, baseURI, useSuffix);
+
+        long newSize = localRepo.getTripleCountInRepository();
+
+        logger.debug("EXTRACTING from FILE - OK");
+        logger.debug("EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
+
+    }
+
+    private void BigTransformQuery1() {
+
+        // Dotaz nahrazuje vsechny objekty jejich spravnymi URI
+
+        String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+                + "PREFIX dcterms: <http://purl.org/dc/terms/> "
+                + "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+                + "PREFIX ndf: <http://linked.opendata.cz/ontology/ndfrt/> "
+                + "PREFIX adms: <http://www.w3.org/ns/adms#> "
+                + "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
+                + "DELETE { "
+                + "  ?s ?p ?s1 . } "
+                + "INSERT { "
+                + "  ?s ?p ?s2 . } "
+                + "WHERE { "
+                + "  ?s1 owl:sameAs ?s2 . "
+                + "  ?s ?p ?s1 . }";
+
+        localRepo.transformUsingSPARQL(updateQuery);
+        logger.debug("Transform Query 1 - OK");
+    }
+
+    private void BigTransformQuery2() {
+
+        // Dotaz nahrazuje vsechny subjekty jejich spravnymi URI
+
+        String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+                + "PREFIX dcterms: <http://purl.org/dc/terms/> "
+                + "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+                + "PREFIX ndf: <http://linked.opendata.cz/ontology/ndfrt/> "
+                + "PREFIX adms: <http://www.w3.org/ns/adms#> "
+                + "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
+                + "DELETE { "
+                + "  ?s1 ?p ?o . } "
+                + "INSERT { "
+                + "  ?s2 ?p ?o . } "
+                + "WHERE { "
+                + "  ?s1 owl:sameAs ?s2 . "
+                + "  ?s ?p ?o . }";
+
+        localRepo.transformUsingSPARQL(updateQuery);
+        logger.debug("Transform Query 2 - OK");
+    }
+
+    private void BigTransformQuery3() {
+
+        //Maze same-as na spatne URI
+
+        String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+                + "PREFIX dcterms: <http://purl.org/dc/terms/> "
+                + "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+                + "PREFIX ndf: <http://linked.opendata.cz/ontology/ndfrt/> "
+                + "PREFIX adms: <http://www.w3.org/ns/adms#> "
+                + "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
+                + "DELETE { "
+                + "  ?s1 owl:sameAs ?s2 . } "
+                + "WHERE { "
+                + "  ?s1 owl:sameAs ?s2 . }";
+
+
+        localRepo.transformUsingSPARQL(updateQuery);
+        logger.debug("Transform Query 3 - OK");
+    }
+
+    private void loadBigDataToN3File() {
+
+        String fileName = "BIG_Data.n3";
+        RDFFormat format = RDFFormat.N3;
+        boolean canBeOverWriten = true;
+        boolean isNameUnique = false;
+
+        try {
+            localRepo.loadRDFfromRepositoryToXMLFile(
+                    outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
+
+        } catch (CannotOverwriteFileException ex) {
+            fail(ex.getMessage());
+        }
+
+        logger.debug("LOADING from FILE - OK");
+    }
+
+    //@Test
+    public void BIGDataTest() {
+
+        extractBigDataFileToRepository();
+        BigTransformQuery1();
+        BigTransformQuery2();
+        BigTransformQuery3();
+        loadBigDataToN3File();
     }
 }
