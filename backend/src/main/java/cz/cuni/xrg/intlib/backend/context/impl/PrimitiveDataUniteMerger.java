@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.backend.AppEntry;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 /**
  * Very primitive DataUnits merger.
@@ -21,7 +22,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 public class PrimitiveDataUniteMerger implements DataUnitMerger {
 
 	@Override
-	public void merger(List<DataUnit> left, List<DataUnit> right) throws ContextException {
+	public void merger(List<DataUnit> left, List<DataUnit> right, DataUnitFactory factory) throws ContextException {
 		Iterator<DataUnit> iterLeft = left.iterator();
 		Iterator<DataUnit> iterRight = right.iterator();
 		
@@ -45,9 +46,16 @@ public class PrimitiveDataUniteMerger implements DataUnitMerger {
 					throw new ContextException("Can't merge data units.", e);
 				}				
 			}
-			// add the rest rom right
+			// add the rest from right			
 			int addStart = left.size();
-			left.addAll(addStart, right);
+			while (iterRight.hasNext()) {
+				DataUnit rightDataUnit = iterRight.next();
+				// create new data unit (in context into which we merge)
+				DataUnit newDataUnit = factory.create(rightDataUnit.getType(), true);
+				// and copy the data
+				newDataUnit.merge(rightDataUnit);
+				left.add(newDataUnit);
+			}
 		}
 	}
 

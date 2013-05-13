@@ -800,7 +800,7 @@ public class LocalRDFRepo implements RDFDataRepository {
 
     @Override
     public void madeReadOnly() {
-    	// TODO: Jirka: check this please
+    	// TODO Jirka: check this please
         //String nextDirName=UniqueNameGenerator.getNextName(repoDirName);
     	setReadOnly(true);        
         //LocalRDFRepo copy = LocalRDFRepo.createLocalRepoInDirectory(nextDirName);
@@ -831,12 +831,14 @@ public class LocalRDFRepo implements RDFDataRepository {
     }
 
     @Override
-    public void createNew(String id, File workingDirectory) {
-    	// TODO Auto-generated method stub
+    public void createNew(String id, File workingDirectory, boolean mergePrepare) {
+    	// TODO Jirka: check this please
         this.isReadOnly = false;
 
+        
         long timeToStart = 1000L;
         File dataDir = workingDirectory;
+        dataDir.mkdirs();
         MemoryStore memStore = new MemoryStore(dataDir);
         memStore.setSyncDelay(timeToStart);
 
@@ -857,17 +859,8 @@ public class LocalRDFRepo implements RDFDataRepository {
     }
 
 	@Override
-	public DataUnit createCopy() {
-		// TODO: Jirka check this please
-		String nextDirName=UniqueNameGenerator.getNextName(repoDirName);
-		LocalRDFRepo copy = LocalRDFRepo.createLocalRepoInDirectory(nextDirName);
-		copyAllDataToTargetRepository(copy.getDataRepository());
-		return copy;
-	}
-
-	@Override
 	public void release() {
-		// TODO Auto-generated method stub
+		// TODO Jirka: check this please
 		cleanAllRepositoryData();
 	}
 }

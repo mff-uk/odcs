@@ -169,11 +169,11 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 		if (context instanceof ExtendedExtractContext) {
 			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, extractContext.getOutputs() );
+			merger.merger(intputs, extractContext.getOutputs(), dataUnitFactory);
 		} else if (context instanceof ExtendedTransformContext) {
 			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, transformContext.getOutputs() );
+			merger.merger(intputs, transformContext.getOutputs(), dataUnitFactory);
 		} else {
 			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
 		}

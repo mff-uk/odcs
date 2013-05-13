@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.context;
 import java.util.List;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 /**
  * Basic interface for data merger.
@@ -18,8 +19,9 @@ public interface DataUnitMerger {
 	 * 
 	 * @param left
 	 * @param right
+	 * @param DataUnitFactory Factory used to create new DataUnits.
 	 * @throw ContextException
 	 */
-	public void merger(List<DataUnit> left, List<DataUnit> right) throws ContextException;
+	public void merger(List<DataUnit> left, List<DataUnit> right, DataUnitFactory factory) throws ContextException;
 	
 }

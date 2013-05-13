@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons.data;
 
 import java.io.File;
-import org.openrdf.repository.Repository;
 
 /**
  * Basic data unit interface. The data unit should be passed in context between
@@ -19,9 +18,10 @@ public interface DataUnit {
      *
      * @param id unique identification
      * @param workingDirectory Path to the directory where DataUnit can store files.
+     * @param mergePrepare If true the merge method will be called immediately after this method.
      */
     // TODO: Jirka I thing its not in Repository - we will speak about practice of this using.
-    public void createNew(String id, File workingDirectory);
+    public void createNew(String id, File workingDirectory, boolean mergePrepare);
     
     /**
      * Made this DataUnit read only. This copy will be used as a input for
@@ -33,22 +33,14 @@ public interface DataUnit {
 
     /**
      * Merge (add) data from given DataUnit into this DataUnit. If the
-     * unit has wrong type then the IllegalArgumentException should be thrown.
-     * The method must not modify the content parameter (unit). The
-     * parameter(unit) can be in read only state.
+     * unit has wrong type then the {@link IllegalArgumentException} should be thrown.
+     * The method must not modify the content parameter (unit). 
      *
-     * @param unit
-     * @return DataUnit
-     * @throws IllegalArgumentException In case of unsupported unit type.
+     * @param unit {@link DataUnit} to merge wit
+     * @throws {@link IllegalArgumentException} In case of unsupported unit type.
      */
     public void merge(DataUnit unit) throws IllegalArgumentException;
-    
-    /**
-     * Create exact copy of DataUnit.
-     * @return
-     */
-    public DataUnit createCopy();
-    
+        
     /**
      * Return type of data unit interface implementation.
      *
@@ -58,7 +50,7 @@ public interface DataUnit {
 
     /**
      * Return true if DataUnit is in read only state.
-     *
+     * @see {@link #madeReadOnly}
      * @return
      */
     public boolean isReadOnly();

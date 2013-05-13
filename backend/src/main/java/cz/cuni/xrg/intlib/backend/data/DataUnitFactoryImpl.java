@@ -43,6 +43,11 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	
 	@Override
 	public DataUnit create(DataUnitType type) {
+		return create(type, false);
+	}
+	
+	@Override
+	public DataUnit create(DataUnitType type, boolean mergePrepare) {
 		// prepare path to the working directory		
 		File workingDirectory = new File(storageDirectory, Integer.toString(counter));
 		// increase counter
@@ -51,7 +56,7 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 		switch(type) {
 			case RDF: {
 				LocalRDFRepo repository = new LocalRDFRepo();
-				repository.createNew(id, workingDirectory);			
+				repository.createNew(id, workingDirectory, mergePrepare);			
 				return repository;
 			}
 		}
