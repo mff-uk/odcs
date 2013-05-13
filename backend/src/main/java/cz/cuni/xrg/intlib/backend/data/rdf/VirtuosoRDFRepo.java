@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.data.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
+import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
@@ -12,10 +13,12 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
 public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
     private static VirtuosoRDFRepo virtuosoRepo = null;
+    
     private String URL_Host_List;
     private String user;
     private String password;
     private String defaultGraph;
+    private Resource graph;
 
     static {
         logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
@@ -27,14 +30,14 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
         final String port = "1111";
         final String user = "dba";
         final String password = "dba";
-        final String defautGraph = "";
+        final String defautGraph = "http://default";
 
         return createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
 
     }
 
     public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName, String port, String user, String password, String defaultGraph) {
-        final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port;
+        final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port+"/charset=UTF-8/log_enable=2";
         return createVirtuosoRDFRepo(JDBC, user, password, defaultGraph);
     }
 
@@ -83,6 +86,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
         this.password = password;
         this.defaultGraph = defaultGraph;
 
+        graph=createNewGraph(defaultGraph);
+        
         repository = new VirtuosoRepository(URL_Host_List, user, password, defaultGraph);
 
         try {
@@ -127,6 +132,16 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
     public String getDefaultGraph() {
         return defaultGraph;
     }
+
+    /**
+     * 
+     * @return defaultGraphURI  
+     */
+    public Resource getGraph() {
+        return graph;
+    }
+    
+    
 
     private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
 

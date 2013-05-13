@@ -16,12 +16,12 @@ public class VirtuosoTest {
     public static final String PORT = "1111";
     public static final String USERNAME = "dba";
     public static final String PASSWORD = "dba";
-    public static final String DEFAUTLGRAPH="";
+    public static final String DEFAUTLGRAPH="http://default";
     
-    private VirtuosoRDFRepo virtuosoRepo;
+    private static VirtuosoRDFRepo virtuosoRepo;
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoTest.class);
     
-    /*@Before
+    @BeforeClass
     public void setUp() {
         virtuosoRepo= VirtuosoRDFRepo.createVirtuosoRDFRepo(HOSTNAME,PORT,USERNAME,PASSWORD,DEFAUTLGRAPH);
     }
@@ -31,7 +31,7 @@ public class VirtuosoTest {
         assertNotNull(virtuosoRepo);
     }
     
-    @Test
+    /*@Test
     public void addTripleToRepositoryTest1() {
 
         String namespace = "http://school/catedra/";

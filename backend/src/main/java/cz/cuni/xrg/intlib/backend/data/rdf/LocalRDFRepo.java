@@ -145,7 +145,7 @@ public class LocalRDFRepo implements RDFDataRepository {
         }
     }
 
-    private Resource createNewGraph(String graphURI) {
+    protected Resource createNewGraph(String graphURI) {
         Resource graph = new URIImpl(graphURI);
         return graph;
     }
