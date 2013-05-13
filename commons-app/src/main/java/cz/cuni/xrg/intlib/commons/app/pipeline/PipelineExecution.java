@@ -38,6 +38,13 @@ public class PipelineExecution  {
 	@Column(name = "debug_mode")
     private boolean isDebugging;
 
+	// TODO: Add to database
+	/**
+	 * Path to the pipeline execution working directory.
+	 */
+	@Transient
+	private String workingDirectory;
+	
 	/** No-arg constructor for JPA */
 	public PipelineExecution() {}
     
@@ -69,6 +76,10 @@ public class PipelineExecution  {
         return pipeline;
     }
 
+    public String getWorkingDirectory() {
+        return workingDirectory;
+    }    
+    
     public void setPipeline(Pipeline pipeline) {
         this.pipeline = pipeline;
     }
@@ -81,4 +92,7 @@ public class PipelineExecution  {
 		this.isDebugging = isDebugging;
 	}
 
+    public void setWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
+    } 	
 }

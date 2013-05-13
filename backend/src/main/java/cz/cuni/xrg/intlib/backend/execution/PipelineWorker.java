@@ -140,6 +140,8 @@ public class PipelineWorker implements Runnable {
 	
 	/**
 	 * Do cleanup work after pipeline execution.
+	 * Also delete the worker directory it the pipeline
+	 * is not in debugMode.
 	 */
 	private void cleanUp() {
 		// release all contexts 
@@ -152,10 +154,15 @@ public class PipelineWorker implements Runnable {
 			}	
 		}
 		// delete working folder
-		try {
-			FileUtils.deleteDirectory(workDirectory);
-		} catch (IOException e) {
-			logger.error("Can't delete directory after execution: " + execution.getId() + " exception: " + e.getMessage());
+		if (execution.isDebugging()) {
+			// keep the working directory
+		} else {
+			// try to delete the working directory
+			try {
+				FileUtils.deleteDirectory(workDirectory);
+			} catch (IOException e) {
+				logger.error("Can't delete directory after execution: " + execution.getId() + " exception: " + e.getMessage());
+			}
 		}
 	}
 	
@@ -230,8 +237,8 @@ public class PipelineWorker implements Runnable {
 	 */
 	private ProcessingContext getContextForNode(DPUInstance dpuInstance, DpuType type, Set<Node> ancestors) throws ContextException, StructureException {
 		ProcessingContext ctx = null;
-		String contextId = "ex" + execution.getId() + "_dpuIns" + dpuInstance.getId();
-		File contextDirectory = new File(workDirectory, "_dpuIns" + dpuInstance.getId() );
+		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
+		File contextDirectory = new File(workDirectory, "dpu-" + dpuInstance.getId() );
 		// create directory
 		contextDirectory.mkdirs();
 		

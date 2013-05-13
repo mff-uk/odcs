@@ -66,12 +66,11 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
 	 */
 	public void setup(AppConfiguration config) {
 		workingDirectory = new File( config.getWorkingDirectory() );
-		// make sure that the directory exist
+		// make sure that our working directory exist
 		if (workingDirectory.isDirectory()) {
 			workingDirectory.mkdirs();
 		}
-		// ..
-		
+		// ..		
 	}
 	
     /**
@@ -84,7 +83,9 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
     	pipelineExecution.setExecutionStatus(ExecutionStatus.RUNNING);
     	
     	// prepare working directory for execution
-    	File directory = new File(workingDirectory, "ex" + pipelineExecution.getId() );
+    	File directory = new File(workingDirectory, "execution-" + pipelineExecution.getId() );    	
+    	// store workingDirectory
+    	pipelineExecution.setWorkingDirectory(directory.getAbsolutePath());
     	
     	this.executorService.execute(
     			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, directory));
