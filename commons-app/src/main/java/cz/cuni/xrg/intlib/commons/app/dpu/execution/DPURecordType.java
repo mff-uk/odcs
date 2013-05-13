@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
  * @author Petyr
  * 
  */
-public enum RecordType {
+public enum DPURecordType {
 	DEBUG
 	,LOG
 	,INFO
@@ -17,20 +17,20 @@ public enum RecordType {
 	
 	
 	/**
-	 * Convert message.Type to RecordType.
+	 * Convert message.Type to DPURecordType.
 	 */
-	public static RecordType fromMessageType(MessageType type) {
+	public static DPURecordType fromMessageType(MessageType type) {
 		switch(type) {
 		case DEBUG:
-			return RecordType.DEBUG;
+			return DPURecordType.DEBUG;
 		case INFO:
-			return RecordType.INFO;
+			return DPURecordType.INFO;
 		case WARNING:
-			return RecordType.WARNING;
+			return DPURecordType.WARNING;
 		case ERROR:
-			return RecordType.ERROR;
+			return DPURecordType.ERROR;
 		default:
-			return RecordType.INFO;
+			return DPURecordType.INFO;
 		}		
 	}
 }
