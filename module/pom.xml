@@ -103,7 +103,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}\..\..\${project.output.dpu}</outputDirectory>
+							<outputDirectory>${project.build.directory}\..\..\..\${project.output.dpu}</outputDirectory>
 							<resources> <!-- copy just output jar file -->
 								<resource>
 									<directory>${project.build.directory}</directory>
