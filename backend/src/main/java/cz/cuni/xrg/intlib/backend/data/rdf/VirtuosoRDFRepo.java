@@ -3,6 +3,8 @@ package cz.cuni.xrg.intlib.backend.data.rdf;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
+import virtuoso.sesame2.driver.VirtuosoRepository;
+
 
 /**
  *
@@ -85,8 +87,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
         this.password=password;
         this.defaultGraph=defaultGraph;
         
-        //repository = new VirtuosoRepository(URL_Host_List, user, password,defaultGraph);
-
+        repository = new VirtuosoRepository(URL_Host_List, user, password,defaultGraph);
+        
         try {
             repository.initialize();
             logger.info("Virtuoso repository incicialized");
