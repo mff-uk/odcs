@@ -5,7 +5,6 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
-
 /**
  *
  * @author Jiri Tomes
@@ -13,35 +12,32 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
 public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
     private static VirtuosoRDFRepo virtuosoRepo = null;
-    
     private String URL_Host_List;
     private String user;
     private String password;
     private String defaultGraph;
-    
-    static
-    {
-        logger=LoggerFactory.getLogger(VirtuosoRDFRepo.class);
+
+    static {
+        logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
     }
-    
-    public static VirtuosoRDFRepo createVirtuosoRDFRepo()
-    {
-        final String hostName="localhost";
-        final String port="1111";
-        final String user="dba";
-        final String password="dba";
-        final String defautGraph="";
-        
-        return createVirtuosoRDFRepo(hostName,port,user, password, defautGraph);
-        
+
+    public static VirtuosoRDFRepo createVirtuosoRDFRepo() {
+
+        final String hostName = "localhost";
+        final String port = "1111";
+        final String user = "dba";
+        final String password = "dba";
+        final String defautGraph = "";
+
+        return createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
+
     }
-    
-    public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,String port,String user,String password,String defaultGraph)
-    {
-        final String JDBC="jdbc:virtuoso://"+hostName+":"+port;
+
+    public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName, String port, String user, String password, String defaultGraph) {
+        final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port;
         return createVirtuosoRDFRepo(JDBC, user, password, defaultGraph);
     }
-        
+
     /**
      * Construct a VirtuosoRepository with a specified parameters.
      *
@@ -59,8 +55,9 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
      *
      */
     public static VirtuosoRDFRepo createVirtuosoRDFRepo(String URL_Host_List, String user, String password, String defaultGraph) {
+
         virtuosoRepo = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
-        
+
         return virtuosoRepo;
     }
 
@@ -81,13 +78,13 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
      */
     public VirtuosoRDFRepo(String URL_Host_List, String user, String password, String defaultGraph) {
 
-        this.URL_Host_List=URL_Host_List;
-        this.user=user;
-        this.password=password;
-        this.defaultGraph=defaultGraph;
-        
-        repository = new VirtuosoRepository(URL_Host_List, user, password,defaultGraph);
-        
+        this.URL_Host_List = URL_Host_List;
+        this.user = user;
+        this.password = password;
+        this.defaultGraph = defaultGraph;
+
+        repository = new VirtuosoRepository(URL_Host_List, user, password, defaultGraph);
+
         try {
             repository.initialize();
             logger.info("Virtuoso repository incicialized");
@@ -99,24 +96,24 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
     }
 
     /**
-     * 
-     * @return the Virtuoso JDBC URL connection string or hostlist
-     * for poolled connection.
+     *
+     * @return the Virtuoso JDBC URL connection string or hostlist for poolled
+     * connection.
      */
     public String getURL_Host_List() {
         return URL_Host_List;
     }
 
     /**
-     * 
-     * @return User name to Virtuoso connection. 
+     *
+     * @return User name to Virtuoso connection.
      */
     public String getUser() {
         return user;
     }
-    
+
     /**
-     * 
+     *
      * @return Password to virtuoso connection.
      */
     public String getPassword() {
@@ -124,42 +121,30 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
     }
 
     /**
-     * 
+     *
      * @return Default graph name
      */
     public String getDefaultGraph() {
         return defaultGraph;
     }
-    
-    private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory()
-    {
-        VirtuosoRDFRepo copy=new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
-        copyAllDataToTargetRepository(copy.getDataRepository());
-        
-        return copy;
+
+    private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
+
+        VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
+        copyAllDataToTargetRepository(newCopy);
+
+        return newCopy;
     }
 
-    
     /**
      * Creates read only copy of instance Virtuoso repository.
      */
     @Override
     public void madeReadOnly() {
-    	// TODO: Jirka: check this please
+        // TODO: Jirka: check this please
         //VirtuosoRDFRepo newCopy=getCopyOfVirtuosoReposiotory();
         //newCopy.setReadOnly(true);
         //return newCopy;
-    	setReadOnly(true);
+        setReadOnly(true);
     }
-    
-
-   
-    
-    
-    
-    
-    
-    
-    
-    
 }

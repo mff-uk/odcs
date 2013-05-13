@@ -69,7 +69,6 @@ public class LocalRDFRepo implements RDFDataRepository {
      * RDF data storage component.
      */
     protected Repository repository = null;
-    
     /**
      * If the repository is used only for reading data or not.
      */
@@ -113,6 +112,7 @@ public class LocalRDFRepo implements RDFDataRepository {
      * Empty constructor - used only for inheritance.
      */
     public LocalRDFRepo() {
+        
     }
 
     /**
@@ -122,7 +122,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      */
     public LocalRDFRepo(String repositoryPath) {
 
-        this.isReadOnly = false;
+        callConstructorSetting(repositoryPath);
+    }
+
+    private void callConstructorSetting(String repositoryPath) {
+        setReadOnly(false);
 
         long timeToStart = 1000L;
         File dataDir = new File(repositoryPath);
@@ -133,7 +137,7 @@ public class LocalRDFRepo implements RDFDataRepository {
 
         try {
             repository.initialize();
-            logger.info("Repository incicialized");
+            logger.info("New repository incicialized");
 
         } catch (RepositoryException ex) {
             logger.debug(ex.getMessage());
@@ -664,7 +668,8 @@ public class LocalRDFRepo implements RDFDataRepository {
             RepositoryConnection connection = repository.getConnection();
 
             Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
-            logger.debug("SPARQL query for transform is valid and prepared for execution");
+            logger.debug("This SPARQL query for transform is valid and prepared for execution:");
+            logger.debug(updateQuery);
 
             myupdate.execute();
 
@@ -674,6 +679,7 @@ public class LocalRDFRepo implements RDFDataRepository {
             logger.debug("SPARQL query for transform was executed succesfully");
 
         } catch (RepositoryException | MalformedQueryException | UpdateExecutionException ex) {
+            logger.debug("SPARQL query was not executed !!!");
             logger.debug(ex.getMessage());
         }
 
@@ -770,7 +776,12 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param targetRepository
      */
     @Override
-    public void copyAllDataToTargetRepository(Repository targetRepository) {
+    public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
+        
+        if (targetRepo==null) return;
+        
+        Repository targetRepository=targetRepo.getDataRepository();
+                
         try {
             RepositoryConnection sourceConnection = repository.getConnection();
 
@@ -800,9 +811,9 @@ public class LocalRDFRepo implements RDFDataRepository {
 
     @Override
     public void madeReadOnly() {
-    	// TODO Jirka: check this please
+        // TODO Jirka: check this please
         //String nextDirName=UniqueNameGenerator.getNextName(repoDirName);
-    	setReadOnly(true);        
+        setReadOnly(true);
         //LocalRDFRepo copy = LocalRDFRepo.createLocalRepoInDirectory(nextDirName);
         //copyAllDataToTargetRepository(copy.getDataRepository());
         //return copy;
@@ -810,15 +821,16 @@ public class LocalRDFRepo implements RDFDataRepository {
 
     @Override
     public void merge(DataUnit unit) {
-    	if (unit instanceof LocalRDFRepo) {
-    		LocalRDFRepo localRDFRepo = (LocalRDFRepo)unit;
-            if (unit != null) {
-                Repository UnitRepository = localRDFRepo.getDataRepository();
-                mergeRepositoryData(UnitRepository);
-            }    		
-    	} else {
-    		throw new IllegalArgumentException();
-    	}
+        if (unit != null) {
+            if (unit instanceof RDFDataRepository) {
+                RDFDataRepository rdfRepository = (RDFDataRepository) unit;
+                Repository unitRepository = rdfRepository.getDataRepository();
+                mergeRepositoryData(unitRepository);
+
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
     }
 
     @Override
@@ -832,35 +844,20 @@ public class LocalRDFRepo implements RDFDataRepository {
 
     @Override
     public void createNew(String id, File workingDirectory, boolean mergePrepare) {
-    	// TODO Jirka: check this please
-        this.isReadOnly = false;
+        if (!workingDirectory.exists()) {
+            workingDirectory.mkdirs();
+        }
 
-        
-        long timeToStart = 1000L;
-        File dataDir = workingDirectory;
-        dataDir.mkdirs();
-        MemoryStore memStore = new MemoryStore(dataDir);
-        memStore.setSyncDelay(timeToStart);
-
-        repository = new SailRepository(memStore);
-
-        try {
-            repository.initialize();
-            logger.info("Repository incicialized");
-
-        } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage());
-
-        }    	
+        callConstructorSetting(workingDirectory.getAbsolutePath());
     }
-     
+
+    @Override
     public Repository getDataRepository() {
         return repository;
     }
 
-	@Override
-	public void release() {
-		// TODO Jirka: check this please
-		cleanAllRepositoryData();
-	}
+    @Override
+    public void release() {
+        cleanAllRepositoryData();
+    }
 }
