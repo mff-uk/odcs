@@ -14,7 +14,7 @@
 	<!-- engine itself, take care about executing of PipelineExecution -->
 	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine">
 	    <constructor-arg ref="moduleFacade" index="0" />
-	    <constructor-arg ref="dbAccess" index="1" />    
+	    <constructor-arg ref="dbAccess" index="1" />
 	</bean>
 	
 	<!-- support for loading DPUs -->
@@ -33,8 +33,10 @@
 	<!-- access to database on one place -->
 	<bean id="dbAccess" class="cz.cuni.xrg.intlib.backend.DatabaseAccess" />	
 	
-	<!-- debug: print all event in application -->
-	<bean class="cz.cuni.xrg.intlib.backend.EventReporter" />
+	<!-- store events into database -->
+	<bean class="cz.cuni.xrg.intlib.backend.EventListenerDatabase">
+	    <constructor-arg ref="dbAccess"/>
+	</bean>
 	
 	<!-- <context:component-scan base-package="com.test"/>  -->
 </beans>

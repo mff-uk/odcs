@@ -5,8 +5,8 @@ import java.util.Date;
 import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
@@ -16,11 +16,6 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
  *
  */
 public class DPUMessage extends DPUEvent {
-
-	/**
-	 * Time of creation.
-	 */
-	private Date time;
 	
 	/**
 	 * Short message.
@@ -35,28 +30,26 @@ public class DPUMessage extends DPUEvent {
 	/**
 	 * Type of message.
 	 */
-	private RecordType type;
+	private DPURecordType type;
 	
 	/**
 	 * Related pipeline execution.
 	 */
 	private PipelineExecution execution;
-	
-	/**
-	 * Related dpu instance.
-	 */
-	private DPUInstance dpuInstance;
-	
-	public DPUMessage(String shortMessage, String fullMessage, RecordType type, ExtendedContext context, Object source) {
-		super(source);
-		this.time = new Date();
+		
+	public DPUMessage(String shortMessage, String fullMessage, DPURecordType type, ExtendedContext context, Object source) {
+		super(source, context.getDPUInstance(), new Date());
 		this.shortMessage = shortMessage;
 		this.fullMessage = fullMessage;
 		this.type = type;
 		this.execution = context.getPipelineExecution();
-		this.dpuInstance = context.getDPUInstance();
 	}
 
+	@Override
+	public DPURecord getRecord() {
+		return new DPURecord(time, type, dpuInstance, shortMessage, fullMessage);		
+	}
+	
 	public Date getTime() {
 		return time;
 	}
@@ -69,7 +62,7 @@ public class DPUMessage extends DPUEvent {
 		return fullMessage;
 	}
 
-	public RecordType getType() {
+	public DPURecordType getType() {
 		return type;
 	}
 

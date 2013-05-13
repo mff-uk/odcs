@@ -33,8 +33,10 @@ public class EventListenerDatabase implements ApplicationListener {
 	 * @param event
 	 */
 	private void onDPUEvent(DPUEvent event) {
-		DPURecord record = new DPURecord();
-		// TODO: use database
+		DPURecord record = event.getRecord();
+		// publish event into database
+		
+		// TODO: DB
 	}
 	
 	/**
@@ -42,7 +44,7 @@ public class EventListenerDatabase implements ApplicationListener {
 	 * @param event
 	 */	
 	private void onPipelineEvent(PipelineEvent event) {
-
+		// TODO: DB
 	}
 	
 	@Override

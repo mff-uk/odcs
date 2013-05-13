@@ -1,8 +1,8 @@
 package cz.cuni.xrg.intlib.backend.loader.events;
 
+import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 
 /**
  * Base class for {@link Load} events.
@@ -10,16 +10,16 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
  * @see Load
  * @author Alex Kreiser (akreiser@gmail.com)
  */
-public class LoadEvent extends DPUEvent {
+public abstract class LoadEvent extends DPUEvent {
 
     protected final Load loader;
     
-    protected final LoadContext loadContext;
+    protected final ExtendedLoadContext loadContext;
 
-    public LoadEvent(Load loader, LoadContext loadContext, Object source) {
-        super(source);
+    public LoadEvent(Load loader, ExtendedLoadContext context, Object source) {
+        super(source, context.getDPUInstance());
         this.loader = loader;
-        this.loadContext = loadContext;
+        this.loadContext = context;
     }
 
     /**
@@ -36,7 +36,7 @@ public class LoadEvent extends DPUEvent {
      *
      * @return
      */
-    public LoadContext getLoadContext() {
+    public ExtendedLoadContext getLoadContext() {
         return loadContext;
     }
 }

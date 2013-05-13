@@ -1,8 +1,8 @@
 package cz.cuni.xrg.intlib.backend.extractor.events;
 
+import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 
 /**
  * Base class for {@link Extract} events
@@ -14,10 +14,10 @@ public abstract class ExtractEvent extends DPUEvent {
 
     protected final Extract extractor;
     
-    protected final ExtractContext extractContext;
+    protected final ExtendedExtractContext extractContext;
 
-    public ExtractEvent(Extract extractor, ExtractContext context, Object source) {
-        super(source);
+    public ExtractEvent(Extract extractor, ExtendedExtractContext context, Object source) {
+        super(source, context.getDPUInstance());
         this.extractor = extractor;
         this.extractContext = context;
     }
@@ -36,7 +36,7 @@ public abstract class ExtractEvent extends DPUEvent {
      *
      * @return
      */
-    public ExtractContext getExtractContext() {
+    public ExtendedExtractContext getExtractContext() {
         return extractContext;
     }
 }
