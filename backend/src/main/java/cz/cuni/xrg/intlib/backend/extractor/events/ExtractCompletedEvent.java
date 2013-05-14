@@ -20,6 +20,6 @@ public class ExtractCompletedEvent extends ExtractEvent {
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.INFO, dpuInstance, execution, "Extract completed.", "");
+		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Extract completed.", "");
 	}
 }

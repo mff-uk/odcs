@@ -63,12 +63,12 @@ public class DebuggingView extends Window {
 
 	private List<Record> buildStubMessageData() {
 		List<Record> stubList = new ArrayList<>();
-		Record m = new Record(new Date(), RecordType.INFO, null, "Test message", "Long test message");
+/*		Record m = new Record(new Date(), RecordType.DPUINFO, null, "Test message", "Long test message");
 		m.setId(1);
 		stubList.add(m);
-		Record m2 = new Record(new Date(), RecordType.WARNING, null, "Test warning", "Long test warning message");
+		Record m2 = new Record(new Date(), RecordType.DPUWARNING, null, "Test warning", "Long test warning message");
 		m2.setId(2);
-		stubList.add(m2);
+		stubList.add(m2);*/
 
 		return stubList;
 	}
@@ -76,12 +76,12 @@ public class DebuggingView extends Window {
 	private List<Record> buildStubFullData() {
 		List<Record> fullList = buildStubMessageData();
 
-		Record m = new Record(new Date(), RecordType.LOG, null, "Test log message", "Long test log message");
+/*		Record m = new Record(new Date(), RecordType.DPULOG, null, "Test log message", "Long test log message");
 		m.setId(3);
 		fullList.add(1, m);
-		Record m2 = new Record(new Date(), RecordType.LOG, null, "Another test log message", "Bla bla Long test warning message");
+		Record m2 = new Record(new Date(), RecordType.DPULOG, null, "Another test log message", "Bla bla Long test warning message");
 		m2.setId(4);
-		fullList.add(m2);
+		fullList.add(m2);*/
 
 		return fullList;
 	}

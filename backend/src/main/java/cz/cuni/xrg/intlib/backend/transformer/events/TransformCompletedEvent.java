@@ -20,6 +20,6 @@ public class TransformCompletedEvent extends TransformEvent {
     
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.INFO, dpuInstance, execution, "Transform completed.", "");
+		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Transform completed.", "");
 	}    
 }

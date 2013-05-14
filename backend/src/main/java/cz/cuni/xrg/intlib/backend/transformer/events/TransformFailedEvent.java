@@ -23,7 +23,7 @@ public class TransformFailedEvent extends TransformEvent {
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.INFO, dpuInstance, execution, "Transform failed.", "Exception: " + exception.getMessage());
+		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Transform failed.", "Exception: " + exception.getMessage());
 	}
 	
 }
