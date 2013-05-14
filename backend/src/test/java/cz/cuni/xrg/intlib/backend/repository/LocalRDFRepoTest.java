@@ -295,7 +295,7 @@ public class LocalRDFRepoTest {
 
     }
 
-    @Test
+    //TEST TO DO !!! @Test
     public void transformUsingSPARQLUpdate() {
 
         String namespace = "http://sport/hockey/";
