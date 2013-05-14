@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 import java.util.Collections;
 import java.util.List;
@@ -171,14 +171,14 @@ public class DPUFacade {
 	/**
 	 * Returns list of all DPURecords currently persisted in database.
 	 * 
-	 * @return DPURecord list
+	 * @return Record list
 	 */
-	public List<DPURecord> getAllDPURecords() {
+	public List<Record> getAllDPURecords() {
 
 		@SuppressWarnings("unchecked")
-		List<DPURecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT e FROM DPURecord e").getResultList(),
-			DPURecord.class
+		List<Record> resultList = Collections.checkedList(
+			em.createQuery("SELECT e FROM Record e").getResultList(),
+			Record.class
 		);
 
 		return resultList;
@@ -190,35 +190,35 @@ public class DPUFacade {
 	 * @param dpuInstance
 	 * @return 
 	 */
-	public List<DPURecord> getAllDPURecords(DPUInstance dpuInstance) {
+	public List<Record> getAllDPURecords(DPUInstance dpuInstance) {
 
 		@SuppressWarnings("unchecked")
-		List<DPURecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM DPURecord r WHERE r.dpuInstance = :ins")
+		List<Record> resultList = Collections.checkedList(
+			em.createQuery("SELECT r FROM Record r WHERE r.dpuInstance = :ins")
 				.setParameter("ins", dpuInstance)
 				.getResultList(),
-			DPURecord.class
+			Record.class
 		);
 
 		return resultList;
 	}
 
 	/**
-	 * Find DPURecord in database by ID and return it.
+	 * Find Record in database by ID and return it.
 	 * 
 	 * @param id
 	 * @return
 	 */
-	public DPURecord getDPURecord(int id) {
-		return em.find(DPURecord.class, id);
+	public Record getDPURecord(int id) {
+		return em.find(Record.class, id);
 	}
 
 	/**
-	 * Saves any modifications made to the DPURecord into the database.
+	 * Saves any modifications made to the Record into the database.
 	 * 
 	 * @param record
 	 */
-	public void save(DPURecord record) {
+	public void save(Record record) {
 
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
@@ -229,11 +229,11 @@ public class DPUFacade {
 	}
 
 	/**
-	 * Deletes DPURecord from the database.
+	 * Deletes Record from the database.
 	 * 
 	 * @param record
 	 */
-	public void delete(DPURecord record) {
+	public void delete(Record record) {
 
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();

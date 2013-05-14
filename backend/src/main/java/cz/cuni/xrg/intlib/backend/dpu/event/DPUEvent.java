@@ -5,7 +5,7 @@ import java.util.Date;
 import org.springframework.context.ApplicationEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
 /**
  * Base abstract class for the DPU event. 
@@ -41,5 +41,5 @@ public abstract class DPUEvent extends ApplicationEvent {
      * Record that describe event.
      * @return record
      */
-    public abstract DPURecord getRecord();
+    public abstract Record getRecord();
 }

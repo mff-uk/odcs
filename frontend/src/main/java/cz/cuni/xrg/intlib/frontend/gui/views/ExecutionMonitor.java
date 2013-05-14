@@ -34,8 +34,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.frontend.gui.components.RecordsTable;
 
 /**
@@ -360,13 +360,13 @@ public class ExecutionMonitor extends CustomComponent implements View,
 
 	}
 
-	private List<DPURecord> buildStubMessageData() {
-		List<DPURecord> stubList = new ArrayList<>();
-		DPURecord m = new DPURecord(new Date(), DPURecordType.INFO, null,
+	private List<Record> buildStubMessageData() {
+		List<Record> stubList = new ArrayList<>();
+		Record m = new Record(new Date(), RecordType.INFO, null,
 				"Test message", "Long test message");
 		m.setId(1);
 		stubList.add(m);
-		DPURecord m2 = new DPURecord(new Date(), DPURecordType.WARNING, null,
+		Record m2 = new Record(new Date(), RecordType.WARNING, null,
 				"Test warning", "Long test warning message");
 		m2.setId(2);
 		stubList.add(m2);

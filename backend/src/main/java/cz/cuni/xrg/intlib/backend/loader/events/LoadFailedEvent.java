@@ -1,8 +1,8 @@
 package cz.cuni.xrg.intlib.backend.loader.events;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 
@@ -22,8 +22,8 @@ public class LoadFailedEvent extends LoadEvent {
     }
     
 	@Override
-	public DPURecord getRecord() {		
-		return new DPURecord(time, DPURecordType.INFO, dpuInstance, "Loader failed.", "Exception: " + exception.getMessage());
+	public Record getRecord() {		
+		return new Record(time, RecordType.INFO, dpuInstance, "Loader failed.", "Exception: " + exception.getMessage());
 	}    
     
 }

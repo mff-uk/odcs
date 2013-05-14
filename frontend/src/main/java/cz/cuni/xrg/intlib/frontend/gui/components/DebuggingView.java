@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,25 +61,25 @@ public class DebuggingView extends Window {
 
 
 
-	private List<DPURecord> buildStubMessageData() {
-		List<DPURecord> stubList = new ArrayList<>();
-		DPURecord m = new DPURecord(new Date(), DPURecordType.INFO, null, "Test message", "Long test message");
+	private List<Record> buildStubMessageData() {
+		List<Record> stubList = new ArrayList<>();
+		Record m = new Record(new Date(), RecordType.INFO, null, "Test message", "Long test message");
 		m.setId(1);
 		stubList.add(m);
-		DPURecord m2 = new DPURecord(new Date(), DPURecordType.WARNING, null, "Test warning", "Long test warning message");
+		Record m2 = new Record(new Date(), RecordType.WARNING, null, "Test warning", "Long test warning message");
 		m2.setId(2);
 		stubList.add(m2);
 
 		return stubList;
 	}
 
-	private List<DPURecord> buildStubFullData() {
-		List<DPURecord> fullList = buildStubMessageData();
+	private List<Record> buildStubFullData() {
+		List<Record> fullList = buildStubMessageData();
 
-		DPURecord m = new DPURecord(new Date(), DPURecordType.LOG, null, "Test log message", "Long test log message");
+		Record m = new Record(new Date(), RecordType.LOG, null, "Test log message", "Long test log message");
 		m.setId(3);
 		fullList.add(1, m);
-		DPURecord m2 = new DPURecord(new Date(), DPURecordType.LOG, null, "Another test log message", "Bla bla Long test warning message");
+		Record m2 = new Record(new Date(), RecordType.LOG, null, "Another test log message", "Bla bla Long test warning message");
 		m2.setId(4);
 		fullList.add(m2);
 

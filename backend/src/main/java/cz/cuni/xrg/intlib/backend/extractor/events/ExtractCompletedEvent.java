@@ -1,8 +1,8 @@
 package cz.cuni.xrg.intlib.backend.extractor.events;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 
 /**
@@ -19,7 +19,7 @@ public class ExtractCompletedEvent extends ExtractEvent {
     }
 
 	@Override
-	public DPURecord getRecord() {		
-		return new DPURecord(time, DPURecordType.INFO, dpuInstance, "Extract completed.", "");
+	public Record getRecord() {		
+		return new Record(time, RecordType.INFO, dpuInstance, "Extract completed.", "");
 	}
 }

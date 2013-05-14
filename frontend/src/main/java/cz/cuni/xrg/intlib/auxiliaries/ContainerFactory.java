@@ -7,7 +7,7 @@ import com.vaadin.data.util.BeanContainer;
 
 import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
 /**
@@ -56,8 +56,8 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static Container CreateExecutionMessages(List<DPURecord> data) {
-		BeanContainer<Integer, DPURecord> container = new BeanContainer<>( DPURecord.class);
+	public static Container CreateExecutionMessages(List<Record> data) {
+		BeanContainer<Integer, Record> container = new BeanContainer<>( Record.class);
 		container.setBeanIdProperty("id");
 		container.addAll(data);
 

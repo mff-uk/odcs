@@ -1,8 +1,9 @@
-package cz.cuni.xrg.intlib.commons.app.dpu.execution;
+package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.util.Date;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 import javax.persistence.*;
 
@@ -15,7 +16,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "dpu_record")
-public class DPURecord {
+public class Record {
 
 	/**
 	 * Unique id.
@@ -36,14 +37,22 @@ public class DPURecord {
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "r_type")
-	private DPURecordType type;
+	private RecordType type;
 	
 	/**
 	 * DPU which emmitted the message.
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "dpu_id", nullable = false)
+	// TODO: Enable null values? For messages outside DPU ?
 	private DPUInstance source;
+	
+	
+	/**
+	 * PipelineExecution.
+	 */
+	@Transient
+	private PipelineExecution execution;
 	
 	/**
 	 * Short message, should be under 50 characters.
@@ -60,7 +69,7 @@ public class DPURecord {
 	/**
 	 * No-arg constructor for JPA. Do not use!
 	 */
-	public DPURecord() {}
+	public Record() {}
 	
 	/**
 	 * Constructor.
@@ -70,8 +79,8 @@ public class DPURecord {
 	 * @param shortMessage
 	 * @param fullMessage 
 	 */
-	public DPURecord(Date time,
-					DPURecordType type,
+	public Record(Date time,
+					RecordType type,
 					DPUInstance source,
 					String shortMessage,
 					String fullMessage ) {
@@ -94,7 +103,7 @@ public class DPURecord {
 		return time;
 	}
 
-	public DPURecordType getType() {
+	public RecordType getType() {
 		return type;
 	}
 

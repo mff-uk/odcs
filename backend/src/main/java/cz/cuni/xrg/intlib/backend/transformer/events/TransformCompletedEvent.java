@@ -1,8 +1,8 @@
 package cz.cuni.xrg.intlib.backend.transformer.events;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.execution.DPURecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 
 /**
@@ -19,7 +19,7 @@ public class TransformCompletedEvent extends TransformEvent {
     }
     
 	@Override
-	public DPURecord getRecord() {		
-		return new DPURecord(time, DPURecordType.INFO, dpuInstance, "Transform completed.", "");
+	public Record getRecord() {		
+		return new Record(time, RecordType.INFO, dpuInstance, "Transform completed.", "");
 	}    
 }
