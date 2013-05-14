@@ -127,11 +127,8 @@ class PipelineWorker implements Runnable {
 
 	/**
 	 * Called in case that the execution failed.
-	 * @param message Cause of failure. 
 	 */
-	private void executionFailed(String message) {
-		// send event
-//		eventPublisher.publishEvent(new PipelineFailedEvent(message, execution, this));
+	private void executionFailed() {
 		// set new state
 		execution.setExecutionStatus(ExecutionStatus.FAILED);
 		// save	into database
@@ -200,26 +197,20 @@ class PipelineWorker implements Runnable {
 			try {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
-//				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, execution, this));				
-				logger.error("Context exception: " + e.getMessage());
-			e.fillInStackTrace();
-				executionFailed(e.getMessage());
+				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, node.getDpuInstance(), execution, this));				
+				executionFailed();
 				return;
 			} catch (ModuleException e) {
-//				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, execution, this));
-				logger.error("Module exception: " + e.getMessage());
-			e.fillInStackTrace();
-				executionFailed(e.getMessage());
+				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, node.getDpuInstance(), execution, this));
+				executionFailed();
 				return;
 			} catch (StructureException e) {
-//				eventPublisher.publishEvent(new PipelineStructureError(e, execution, this));
-				logger.error("Structure exception: " + e.getMessage());
-				executionFailed(e.getMessage());
+				eventPublisher.publishEvent(new PipelineStructureError(e, node.getDpuInstance(), execution, this));
+				executionFailed();
 				return;				
 			} catch (Exception e) {
-				logger.error("Exception: " + e.getMessage());
-			e.fillInStackTrace();
-				executionFailed(e.getMessage());
+				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
+				executionFailed();
 				return;
 			}
 			
@@ -227,7 +218,8 @@ class PipelineWorker implements Runnable {
 				// DPU executed successfully
 			} else {
 				// error -> end pipeline
-				executionFailed("DPU execution failed.");
+				eventPublisher.publishEvent(new PipelineFailedEvent("Error in DPU.", node.getDpuInstance(), execution, this));
+				executionFailed();
 				return;
 			}
 		}

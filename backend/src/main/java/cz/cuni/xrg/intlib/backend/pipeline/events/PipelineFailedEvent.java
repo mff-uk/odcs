@@ -13,14 +13,22 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
  */
 public class PipelineFailedEvent extends PipelineEvent {
 
+	private String longMessage;
+	
     public PipelineFailedEvent(String message, DPUInstance dpuInstance, PipelineExecution pipelineExec, Object source) {
         super(dpuInstance, pipelineExec, source);
+        this.longMessage = message;
     }
 
+    public PipelineFailedEvent(Exception ex, DPUInstance dpuInstance, PipelineExecution pipelineExec, Object source) {
+        super(dpuInstance, pipelineExec, source);
+        this.longMessage = ex.getMessage();
+    }    
+    
     @Override
 	public Record getRecord() {
     	return new Record(time, RecordType.PIPELINEERROR, dpuInstance, execution, 
-    			"Pipeline execution failed.", "Pipeline execution terminated because of error in DPU.");
+    			"Pipeline execution failed.", "Pipeline execution terminated because of: " + longMessage);
 	}
 	
 }

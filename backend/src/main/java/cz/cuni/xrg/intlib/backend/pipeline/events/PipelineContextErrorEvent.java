@@ -18,7 +18,7 @@ public class PipelineContextErrorEvent extends PipelineEvent {
     @Override
 	public Record getRecord() {
     	return new Record(time, RecordType.PIPELINEERROR, dpuInstance, execution, 
-    			"Pipeline execution failed.", "Context exception thrown:" + exception.getMessage());
+    			"Pipeline execution failed.", "Failed to prepare Context for DPU because of exception: " + exception.getMessage());
 	}
     
 }
