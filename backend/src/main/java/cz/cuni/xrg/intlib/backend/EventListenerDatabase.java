@@ -1,7 +1,5 @@
 package cz.cuni.xrg.intlib.backend;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
@@ -22,8 +20,6 @@ public class EventListenerDatabase implements ApplicationListener {
 	 */
 	private DatabaseAccess database;
 	
-	private Logger logger = LoggerFactory.getLogger(EventListenerDatabase.class);
-	
 	public EventListenerDatabase(DatabaseAccess database) {
 		this.database = database;
 	}
@@ -37,7 +33,6 @@ public class EventListenerDatabase implements ApplicationListener {
 		// store in database
 		database.getDpu().save(record);
 		// publish event into database
-		//logger.info("DPUEvent (source='" + record.getSource().getName() + "',type='" + record.getType() + "',shortMsg='" + record.getShortMessage() + "',lngMsg='" + record.getFullMessage());
 	}
 	
 	/**
@@ -45,8 +40,9 @@ public class EventListenerDatabase implements ApplicationListener {
 	 * @param event
 	 */	
 	private void onPipelineEvent(PipelineEvent event) {
-		// TODO: DB
-		logger.info("PiepelineEvent: " + event);
+		Record record = event.getRecord();
+		// store in database
+		database.getDpu().save(record);		
 	}
 	
 	@Override

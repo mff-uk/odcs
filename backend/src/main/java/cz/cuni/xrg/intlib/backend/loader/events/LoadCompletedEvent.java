@@ -20,6 +20,6 @@ public class LoadCompletedEvent extends LoadEvent {
     
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.INFO, dpuInstance, execution, "Loader completed.", "");
+		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Loader completed.", "");
 	}     
 }

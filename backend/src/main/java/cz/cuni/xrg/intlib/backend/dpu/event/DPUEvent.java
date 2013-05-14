@@ -46,7 +46,7 @@ public abstract class DPUEvent extends ApplicationEvent {
     }    
     
     /**
-     * Record that describe event.
+     * Record that describes event.
      * @return record
      */
     public abstract Record getRecord();
