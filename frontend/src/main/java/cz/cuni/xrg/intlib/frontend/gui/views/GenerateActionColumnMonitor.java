@@ -31,13 +31,17 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 			if (test.contains("progress"))
 			{
 				Button stopButton = new Button("Stop");
+				stopButton.setData("stop");
 				stopButton.setWidth("120px");
 				box.addComponent(stopButton);
 			}
 			if (test.contains("error"))
 			{
 				Button logButton = new Button("Show log");
+				logButton.setData("showlog");
 				logButton.setWidth("120px");
+				if(this.clickListener!=null)
+					logButton.addListener(this.clickListener);
 				box.addComponent(logButton);
 				
 			}
@@ -45,6 +49,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 			if (test.contains("ok"))
 			{
 				Button debugButton = new Button("Debug data");
+				debugButton.setData("debug");
 				debugButton.setWidth("120px");
 				if(this.clickListener!=null)
 					debugButton.addListener(this.clickListener);
