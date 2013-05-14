@@ -27,9 +27,4 @@ public class VirtuosoTest extends LocalRDFRepoTest {
         rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD, DEFAUTLGRAPH);
 
     }
-
-    @AfterClass
-    public static void cleaning() {
-        rdfRepo.cleanAllRepositoryData();
-    }
 }
