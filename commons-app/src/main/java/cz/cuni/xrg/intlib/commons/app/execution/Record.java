@@ -82,11 +82,13 @@ public class Record {
 	public Record(Date time,
 					RecordType type,
 					DPUInstance source,
+					PipelineExecution execution,
 					String shortMessage,
 					String fullMessage ) {
 		this.time = time;
 		this.type = type;
 		this.source = source;
+		this.execution = execution;
 		this.shortMessage = shortMessage;
 		this.fullMessage = fullMessage;
 	}
@@ -111,6 +113,10 @@ public class Record {
 		return source;
 	}
 
+	public PipelineExecution getExecution() {
+		return execution;
+	}
+	
 	public String getShortMessage() {
 		return shortMessage;
 	}
