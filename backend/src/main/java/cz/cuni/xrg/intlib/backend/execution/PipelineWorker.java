@@ -7,11 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineCompletedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineModuleErrorEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStartedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
@@ -133,7 +131,7 @@ class PipelineWorker implements Runnable {
 	 */
 	private void executionFailed(String message) {
 		// send event
-		eventPublisher.publishEvent(new PipelineFailedEvent(message, execution, this));
+//		eventPublisher.publishEvent(new PipelineFailedEvent(message, execution, this));
 		// set new state
 		execution.setExecutionStatus(ExecutionStatus.FAILED);
 		// save	into database
@@ -191,8 +189,7 @@ class PipelineWorker implements Runnable {
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
 
-		long pipelineStart = System.currentTimeMillis();
-		eventPublisher.publishEvent(new PipelineStartedEvent(execution, this));
+//		eventPublisher.publishEvent(new PipelineStartedEvent(execution, this));
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
@@ -203,19 +200,19 @@ class PipelineWorker implements Runnable {
 			try {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
-				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, execution, this));				
+//				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, execution, this));				
 				logger.error("Context exception: " + e.getMessage());
 			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			} catch (ModuleException e) {
-				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, execution, this));
+//				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, execution, this));
 				logger.error("Module exception: " + e.getMessage());
 			e.fillInStackTrace();
 				executionFailed(e.getMessage());
 				return;
 			} catch (StructureException e) {
-				eventPublisher.publishEvent(new PipelineStructureError(e, execution, this));
+//				eventPublisher.publishEvent(new PipelineStructureError(e, execution, this));
 				logger.error("Structure exception: " + e.getMessage());
 				executionFailed(e.getMessage());
 				return;				
@@ -234,11 +231,6 @@ class PipelineWorker implements Runnable {
 				return;
 			}
 		}
-
-		long duration = System.currentTimeMillis() - pipelineStart;
-		eventPublisher.publishEvent(new PipelineCompletedEvent(duration,
-				execution, this));
-		
 		executionSuccessful();
 	}
 
