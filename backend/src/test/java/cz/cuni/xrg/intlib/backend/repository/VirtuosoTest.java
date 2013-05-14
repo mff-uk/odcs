@@ -31,5 +31,6 @@ public class VirtuosoTest extends LocalRDFRepoTest {
     @AfterClass
     public static void cleaning() {
         rdfRepo.cleanAllRepositoryData();
+
     }
 }
