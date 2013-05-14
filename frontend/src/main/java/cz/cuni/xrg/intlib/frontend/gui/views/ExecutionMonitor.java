@@ -362,14 +362,14 @@ public class ExecutionMonitor extends CustomComponent implements View,
 
 	private List<Record> buildStubMessageData() {
 		List<Record> stubList = new ArrayList<>();
-		Record m = new Record(new Date(), RecordType.DPUINFO, null,
+/*		Record m = new Record(new Date(), RecordType.DPUINFO, null,
 				"Test message", "Long test message");
 		m.setId(1);
 		stubList.add(m);
 		Record m2 = new Record(new Date(), RecordType.DPUWARNING, null,
 				"Test warning", "Long test warning message");
 		m2.setId(2);
-		stubList.add(m2);
+		stubList.add(m2);*/
 
 		return stubList;
 	}
