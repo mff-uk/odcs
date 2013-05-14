@@ -17,7 +17,7 @@ public abstract class LoadEvent extends DPUEvent {
     protected final ExtendedLoadContext loadContext;
 
     public LoadEvent(Load loader, ExtendedLoadContext context, Object source) {
-        super(source, context.getDPUInstance());
+        super(source, context.getDPUInstance(), context.getPipelineExecution());
         this.loader = loader;
         this.loadContext = context;
     }

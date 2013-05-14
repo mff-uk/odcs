@@ -39,7 +39,7 @@ public class DPUMessage extends DPUEvent {
 	private PipelineExecution execution;
 		
 	public DPUMessage(String shortMessage, String fullMessage, MessageType type, ExtendedContext context, Object source) {
-		super(source, context.getDPUInstance(), new Date());
+		super(source, context.getDPUInstance(), context.getPipelineExecution(), new Date());
 		this.shortMessage = shortMessage;
 		this.fullMessage = fullMessage;
 		this.type = RecordType.fromMessageType(type);
@@ -48,7 +48,7 @@ public class DPUMessage extends DPUEvent {
 
 	@Override
 	public Record getRecord() {
-		return new Record(time, type, dpuInstance, shortMessage, fullMessage);		
+		return new Record(time, type, dpuInstance, execution, shortMessage, fullMessage);		
 	}
 	
 	public Date getTime() {

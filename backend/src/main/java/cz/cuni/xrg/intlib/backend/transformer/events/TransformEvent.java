@@ -17,7 +17,7 @@ public abstract class TransformEvent extends DPUEvent {
     protected final ExtendedTransformContext transformContext;
 
     public TransformEvent(Transform transformer, ExtendedTransformContext context, Object source) {
-        super(source, context.getDPUInstance());
+        super(source, context.getDPUInstance(), context.getPipelineExecution());
         this.transformer = transformer;
         this.transformContext = context;
     }

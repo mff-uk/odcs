@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  * Base abstract class for the DPU event. 
@@ -25,16 +26,23 @@ public abstract class DPUEvent extends ApplicationEvent {
 	 */
 	protected DPUInstance dpuInstance;
 	
-    public DPUEvent(Object source, DPUInstance dpuInstance) {
+	/**
+	 * Pipeline execution.
+	 */
+	protected PipelineExecution execution;
+	
+    public DPUEvent(Object source, DPUInstance dpuInstance, PipelineExecution execution) {
         super(source);
-        this.dpuInstance = dpuInstance;
         this.time = new Date();
+        this.dpuInstance = dpuInstance;
+        this.execution = execution;        
     }
     
-    public DPUEvent(Object source, DPUInstance dpuInstance, Date time) {
+    public DPUEvent(Object source, DPUInstance dpuInstance, PipelineExecution execution, Date time) {
         super(source);
-        this.dpuInstance = dpuInstance;
         this.time = time;
+        this.dpuInstance = dpuInstance;
+        this.execution = execution;        
     }    
     
     /**

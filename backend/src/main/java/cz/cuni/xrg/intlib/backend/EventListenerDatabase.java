@@ -34,10 +34,10 @@ public class EventListenerDatabase implements ApplicationListener {
 	 */
 	private void onDPUEvent(DPUEvent event) {
 		Record record = event.getRecord();
+		// store in database
+		database.getDpu().save(record);
 		// publish event into database
-		
-		// TODO: DB
-		logger.info("DPUEvent (source='" + record.getSource().getName() + "',type='" + record.getType() + "',shortMsg='" + record.getShortMessage() + "',lngMsg='" + record.getFullMessage());
+		//logger.info("DPUEvent (source='" + record.getSource().getName() + "',type='" + record.getType() + "',shortMsg='" + record.getShortMessage() + "',lngMsg='" + record.getFullMessage());
 	}
 	
 	/**

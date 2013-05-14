@@ -17,7 +17,7 @@ public abstract class ExtractEvent extends DPUEvent {
     protected final ExtendedExtractContext extractContext;
 
     public ExtractEvent(Extract extractor, ExtendedExtractContext context, Object source) {
-        super(source, context.getDPUInstance());
+        super(source, context.getDPUInstance(), context.getPipelineExecution());
         this.extractor = extractor;
         this.extractContext = context;
     }
