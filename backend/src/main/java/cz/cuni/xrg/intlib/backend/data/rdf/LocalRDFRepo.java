@@ -112,7 +112,6 @@ public class LocalRDFRepo implements RDFDataRepository {
      * Empty constructor - used only for inheritance.
      */
     public LocalRDFRepo() {
-        
     }
 
     /**
@@ -185,18 +184,22 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param objectName
      */
     @Override
-    public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName) {
+    public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName, Resource... graphs) {
 
         Statement statement = createNewStatement(namespace, subjectName, predicateName, objectName);
-        addStatement(statement);
+        addStatement(statement, graphs);
     }
 
-    private void addStatement(Statement statement) {
+    private void addStatement(Statement statement, Resource... graphs) {
 
         try {
 
             RepositoryConnection conection = repository.getConnection();
-            conection.add(statement);
+            if (graphs != null) {
+                conection.add(statement, graphs);
+            } else {
+                conection.add(statement);
+            }
 
             conection.commit();
             conection.close();
@@ -218,7 +221,7 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param useSuffix
      */
     @Override
-    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
+    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix, Resource... graphs) {
 
         final String aceptedSuffix = suffix.toUpperCase();
 
@@ -246,7 +249,12 @@ public class LocalRDFRepo implements RDFDataRepository {
                 RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
 
                 RepositoryConnection connection = repository.getConnection();
-                connection.add(inputStream, baseURI, format);
+                if (graphs != null) {
+                    connection.add(inputStream, baseURI, format, graphs);
+                } else {
+                    connection.add(inputStream, baseURI, format);
+                }
+
 
                 inputStream.close();
 
@@ -270,22 +278,26 @@ public class LocalRDFRepo implements RDFDataRepository {
 
             for (int i = 0; i < files.length; i++) {
                 File nextFile = files[i];
-                addFileToRepository(nextFile, baseURI);
+                addFileToRepository(nextFile, baseURI, graphs);
             }
 
         }
         if (dirFile.isFile()) {
-            addFileToRepository(dirFile, baseURI);
+            addFileToRepository(dirFile, baseURI, graphs);
         }
 
     }
 
-    private void addFileToRepository(File dataFile, String baseURI) {
+    private void addFileToRepository(File dataFile, String baseURI, Resource... graphs) {
         try {
             RDFFormat fileFormat = RDFFormat.forFileName(dataFile.getAbsolutePath(), RDFFormat.RDFXML);
             RepositoryConnection connection = repository.getConnection();
 
-            connection.add(dataFile, baseURI, fileFormat);
+            if (graphs != null) {
+                connection.add(dataFile, baseURI, fileFormat, graphs);
+            } else {
+                connection.add(dataFile, baseURI, fileFormat);
+            }
 
             connection.commit();
             connection.close();
@@ -304,8 +316,10 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @throws CannotOverwriteFileException
      */
     @Override
-    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException {
-        loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false, false);
+    public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName,
+            org.openrdf.rio.RDFFormat format, Resource... graphs) throws CannotOverwriteFileException {
+
+        loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false, false, graphs);
     }
 
     /**
@@ -319,7 +333,7 @@ public class LocalRDFRepo implements RDFDataRepository {
      */
     @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
-            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException {
+            boolean canFileOverWrite, boolean isNameUnique, Resource... graphs) throws CannotOverwriteFileException {
 
         final String slash = File.separator;
 
@@ -364,7 +378,12 @@ public class LocalRDFRepo implements RDFDataRepository {
                 RDFWriter writer = Rio.createWriter(format, os);
 
                 RepositoryConnection connection = repository.getConnection();
-                connection.export(writer);
+                if (graphs != null) {
+                    connection.export(writer, graphs);
+                } else {
+                    connection.export(writer);
+                }
+
 
                 connection.commit();
                 connection.close();
@@ -389,11 +408,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param defaultGraphURI
      */
     @Override
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
-        List<String> graphs = new ArrayList<>();
-        graphs.add(defaultGraphURI);
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, Resource... graphs) {
+        List<String> endpointGraphsURI = new ArrayList<>();
+        endpointGraphsURI.add(defaultGraphURI);
 
-        loadtoSPARQLEndpoint(endpointURL, graphs, "", "");
+        loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "", graphs);
     }
 
     /**
@@ -406,11 +425,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param password
      */
     @Override
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password) {
-        List<String> graphs = new ArrayList<>();
-        graphs.add(defaultGraphURI);
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password, Resource... graphs) {
+        List<String> endpointGraphsURI = new ArrayList<>();
+        endpointGraphsURI.add(defaultGraphURI);
 
-        loadtoSPARQLEndpoint(endpointURL, graphs, name, password);
+        loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password, graphs);
     }
 
     /**
@@ -423,11 +442,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param password
      */
     @Override
-    public void loadtoSPARQLEndpoint(URL endpointURL, List<String> defaultGraphsURI, String userName, String password) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName, String password, Resource... graphs) {
         try {
 
-            final int graphSize = defaultGraphsURI.size();
-            List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT);
+            final int graphSize = endpointGraphsURI.size();
+            List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT, graphs);
             final int partsCount = dataParts.size();
 
             boolean usePassword = (!userName.isEmpty() | !password.isEmpty());
@@ -454,11 +473,11 @@ public class LocalRDFRepo implements RDFDataRepository {
 
                 for (int j = 0; j < partsCount; j++) {
 
-                    final String graph = defaultGraphsURI.get(i).replace(" ", "+");
+                    final String endpointGraph = endpointGraphsURI.get(i).replace(" ", "+");
                     final String query = dataParts.get(j);
                     final String myquery = URLEncoder.encode(query, encode);
 
-                    URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + graph + "&query=" + myquery);
+                    URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery);
 
                     HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
                     httpConnection.setRequestProperty("Content-type", "text/xml");
@@ -490,14 +509,19 @@ public class LocalRDFRepo implements RDFDataRepository {
         }
     }
 
-    private List<Statement> getStatementsInRepository() {
-
+    @Override
+    public List<Statement> getRepositoryStatements(Resource... graphs) {
         List<Statement> statemens = new ArrayList<>();
 
         if (repository != null) {
             try {
                 RepositoryConnection connection = repository.getConnection();
-                statemens = connection.getStatements(null, null, null, true).asList();
+                if (graphs != null) {
+                    statemens = connection.getStatements(null, null, null, true, graphs).asList();
+                } else {
+                    statemens = connection.getStatements(null, null, null, true).asList();
+                }
+
             } catch (RepositoryException ex) {
                 logger.debug(ex.getMessage());
             }
@@ -506,7 +530,7 @@ public class LocalRDFRepo implements RDFDataRepository {
         return statemens;
     }
 
-    private List<String> getInsertPartsTriplesQuery(int sizeSplit) {
+    private List<String> getInsertPartsTriplesQuery(int sizeSplit, Resource... graphs) {
 
         final String insertStart = "INSERT {";
         final String insertStop = "} ";
@@ -515,7 +539,7 @@ public class LocalRDFRepo implements RDFDataRepository {
 
         StringBuilder builder = new StringBuilder();
 
-        List<Statement> statements = getStatementsInRepository();
+        List<Statement> statements = getRepositoryStatements(graphs);
 
         if (!statements.isEmpty()) {
             builder.append(insertStart);
@@ -565,11 +589,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param query
      */
     @Override
-    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
-        List<String> graphs = new ArrayList<>();
-        graphs.add(defaultGraphUri);
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, Resource... graphs) {
+        List<String> endpointGraphsURI = new ArrayList<>();
+        endpointGraphsURI.add(defaultGraphUri);
 
-        extractfromSPARQLEndpoint(endpointURL, graphs, query, "", "");
+        extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "", graphs);
     }
 
     /**
@@ -584,11 +608,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param format
      */
     @Override
-    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
-        List<String> graphs = new ArrayList<>();
-        graphs.add(defaultGraphUri);
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format, Resource... graphs) {
+        List<String> endpointGraphsURI = new ArrayList<>();
+        endpointGraphsURI.add(defaultGraphUri);
 
-        extractfromSPARQLEndpoint(endpointURL, graphs, query, hostName, password);
+        extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, hostName, password, graphs);
     }
 
     /**
@@ -603,11 +627,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param format
      */
     @Override
-    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> defaultGraphsUri, String query, String hostName, String password) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password, Resource... graphs) {
         try {
 
             final RDFFormat format = RDFFormat.N3;
-            final int graphSize = defaultGraphsUri.size();
+            final int graphSize = endpointGraphsURI.size();
             final String myquery = query.replace(" ", "+");
             final String encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
 
@@ -615,9 +639,9 @@ public class LocalRDFRepo implements RDFDataRepository {
 
             for (int i = 0; i < graphSize; i++) {
 
-                final String graph = defaultGraphsUri.get(i).replace(" ", "+");
+                final String endpointGraph = endpointGraphsURI.get(i).replace(" ", "+");
 
-                URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + graph + "&query=" + myquery + "&format=" + encoder);
+                URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
 
                 HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
                 httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
@@ -641,7 +665,11 @@ public class LocalRDFRepo implements RDFDataRepository {
                 }
 
                 try (InputStreamReader inputStreamReader = new InputStreamReader(httpConnection.getInputStream(), encode)) {
-                    connection.add(inputStreamReader, graph, format);
+                    if (graphs != null) {
+                        connection.add(inputStreamReader, endpointGraph, format, graphs);
+                    } else {
+                        connection.add(inputStreamReader, endpointGraph, format);
+                    }
                 }
             }
 
@@ -691,13 +719,17 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @return size of triples in repository.
      */
     @Override
-    public long getTripleCountInRepository() {
+    public long getTripleCountInRepository(Resource... graphs) {
         long size = 0;
 
         if (repository.isInitialized()) {
             try {
                 RepositoryConnection connection = repository.getConnection();
-                size = connection.size();
+                if (graphs != null) {
+                    size = connection.size(graphs);
+                } else {
+                    size = connection.size();
+                }
                 connection.close();
 
             } catch (RepositoryException ex) {
@@ -718,16 +750,24 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @return
      */
     @Override
-    public boolean isTripleInRepository(String namespace, String subjectName, String predicateName, String objectName) {
+    public boolean isTripleInRepository(String namespace, String subjectName,
+            String predicateName, String objectName, Resource... graphs) {
         boolean hasTriple = false;
+
         if (repository.isInitialized()) {
             try {
                 Statement statement = createNewStatement(namespace, subjectName, predicateName, objectName);
                 RepositoryConnection connection = repository.getConnection();
-                hasTriple = connection.hasStatement(statement, true);
+                if (graphs != null) {
+                    hasTriple = connection.hasStatement(statement, true, graphs);
+                } else {
+                    hasTriple = connection.hasStatement(statement, true);
+                }
+
                 connection.close();
 
             } catch (RepositoryException ex) {
+                logger.debug(ex.getMessage());
             }
         }
         return hasTriple;
@@ -737,27 +777,39 @@ public class LocalRDFRepo implements RDFDataRepository {
      * Removes all RDF data from repository.
      */
     @Override
-    public void cleanAllRepositoryData() {
+    public void cleanAllRepositoryData(Resource... graphs) {
         try {
             RepositoryConnection connection = repository.getConnection();
-            connection.clear();
+            if (graphs != null) {
+                connection.clear(graphs);
+            } else {
+                connection.clear();
+            }
             connection.commit();
             connection.close();
         } catch (RepositoryException ex) {
             logger.debug(ex.getMessage());
         }
+
     }
 
     @Override
-    public void mergeRepositoryData(Repository secondRepository) {
+    public void mergeRepositoryData(RDFDataRepository second) {
+
+        if (second == null) {
+            return;
+        }
+        Repository secondRepository = second.getDataRepository();
+
         try {
             RepositoryConnection sourceConnection = secondRepository.getConnection();
 
             if (!sourceConnection.isEmpty()) {
 
-                List<Statement> sourceStatemens = sourceConnection.getStatements(null, null, null, true).asList();
+                List<Statement> sourceStatemens = second.getRepositoryStatements();
 
                 RepositoryConnection targetConnection = repository.getConnection();
+
                 if (targetConnection != null) {
 
                     for (Statement nextStatement : sourceStatemens) {
@@ -777,17 +829,19 @@ public class LocalRDFRepo implements RDFDataRepository {
      */
     @Override
     public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
-        
-        if (targetRepo==null) return;
-        
-        Repository targetRepository=targetRepo.getDataRepository();
-                
+
+        if (targetRepo == null) {
+            return;
+        }
+
+        Repository targetRepository = targetRepo.getDataRepository();
+
         try {
             RepositoryConnection sourceConnection = repository.getConnection();
 
             if (!sourceConnection.isEmpty()) {
 
-                List<Statement> sourceStatemens = sourceConnection.getStatements(null, null, null, true).asList();
+                List<Statement> sourceStatemens = this.getRepositoryStatements();
 
                 if (targetRepository != null) {
 
@@ -824,8 +878,7 @@ public class LocalRDFRepo implements RDFDataRepository {
         if (unit != null) {
             if (unit instanceof RDFDataRepository) {
                 RDFDataRepository rdfRepository = (RDFDataRepository) unit;
-                Repository unitRepository = rdfRepository.getDataRepository();
-                mergeRepositoryData(unitRepository);
+                mergeRepositoryData(rdfRepository);
 
             } else {
                 throw new IllegalArgumentException();
