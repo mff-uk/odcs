@@ -1,7 +1,9 @@
 package cz.cuni.xrg.intlib.backend.data.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
+import java.util.List;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
@@ -13,7 +15,6 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
 public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
     private static VirtuosoRDFRepo virtuosoRepo = null;
-    
     private String URL_Host_List;
     private String user;
     private String password;
@@ -37,30 +38,9 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
     }
 
     public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName, String port, String user, String password, String defaultGraph) {
-        final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port+"/charset=UTF-8/log_enable=2";
-        return createVirtuosoRDFRepo(JDBC, user, password, defaultGraph);
-    }
+        final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port + "/charset=UTF-8/log_enable=2";
 
-    /**
-     * Construct a VirtuosoRepository with a specified parameters.
-     *
-     * @param URL_Host_List the Virtuoso JDBC URL connection string or hostlist
-     * for poolled connection.
-     *
-     * @param user the database user on whose behalf the connection is being
-     * made.
-     *
-     * @param password the user's password.
-     *
-     * @param defaultGraph a default Graph name, used for Sesame calls, when
-     * contexts list is empty, exclude exportStatements, hasStatement,
-     * getStatements methods.
-     *
-     */
-    public static VirtuosoRDFRepo createVirtuosoRDFRepo(String URL_Host_List, String user, String password, String defaultGraph) {
-
-        virtuosoRepo = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
-
+        virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password, defaultGraph);
         return virtuosoRepo;
     }
 
@@ -86,15 +66,16 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
         this.password = password;
         this.defaultGraph = defaultGraph;
 
-        graph=createNewGraph(defaultGraph);
-        
+        graph = createNewGraph(defaultGraph);
+
         repository = new VirtuosoRepository(URL_Host_List, user, password, defaultGraph);
 
         try {
             repository.initialize();
-            logger.info("Virtuoso repository incicialized");
+            logger.info("Virtuoso repository successfully incicialized");
 
         } catch (RepositoryException ex) {
+            logger.warn("Your Virtuoso is maybe turn off.");
             logger.debug(ex.getMessage());
 
         }
@@ -134,14 +115,12 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
     }
 
     /**
-     * 
-     * @return defaultGraphURI  
+     *
+     * @return defaultGraphURI
      */
     public Resource getGraph() {
         return graph;
     }
-    
-    
 
     private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
 
@@ -162,4 +141,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
         //return newCopy;
         setReadOnly(true);
     }
+
+    
 }
