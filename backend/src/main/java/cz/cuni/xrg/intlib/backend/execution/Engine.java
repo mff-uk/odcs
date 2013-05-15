@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
-import cz.cuni.xrg.intlib.backend.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.communication.ServerEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;

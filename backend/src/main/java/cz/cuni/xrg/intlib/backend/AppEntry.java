@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.backend;
 
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,6 +18,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.Engine;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
 /**
@@ -30,12 +32,7 @@ public class AppEntry {
 	/**
 	 * Path to the spring configuration file.
 	 */
-	private final static String springConfigFile = "spring.xml";
-	
-	/**
-	 * Default configuration path.
-	 */
-	private final static String defaultConfigPath = "./conf/config.xml";
+	private final static String springConfigFile = "backend-context.xml";
 	
 	/**
 	 * @param args
@@ -60,11 +57,9 @@ public class AppEntry {
 			logger.error("Unexpected exception:" + e.getMessage());
 		}
 		
-		// check if 'config' parameter has been provided
-		if (configFileLocation == null) {
-			logger.info("No config specified in argument, trying default from " + defaultConfigPath
-						+ ". Use param --config path_to_config.xml to load custom config.");
-			configFileLocation = defaultConfigPath;
+		// override default config path if it has been provided
+		if (configFileLocation != null) {
+			AppConfiguration.confPath = configFileLocation;
 		}
 		
 		// load spring
@@ -73,12 +68,6 @@ public class AppEntry {
 		
 		// load configuration
 		AppConfiguration appConfig = (AppConfiguration)context.getBean("configuration");
-		try {
-			appConfig.load(configFileLocation);
-		} catch(IOException | RuntimeException e) {
-			logger.error("Can't read configuration file: " + e.getMessage());
-			return;
-		}
 
 		// set engine
 		logger.info("Configuring engine ...");
@@ -106,7 +95,7 @@ public class AppEntry {
 		serverThread.start();
 				
 		// print some information ..
-		logger.info("DPU directory:" + appConfig.getModuleFacadeConfiguration().getDpuFolder());
+		logger.info("DPU directory:" + appConfig.getString(ConfProperty.MODULE_PATH));
 		logger.info("Listening on port:" + appConfig.getBackendPort());
 		logger.info("Running ...");
 				

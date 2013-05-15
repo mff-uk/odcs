@@ -3,13 +3,17 @@ package cz.cuni.xrg.intlib.frontend;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Panel;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Frontend application entry point.
@@ -26,6 +30,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Used to resolve url request and select active view.
 	 */
 	private com.vaadin.navigator.Navigator navigator;
+	
+	/**
+	 * Spring application context.
+	 */
+	private ApplicationContext context;
 
 	/**
 	 * Application configuration.
@@ -85,9 +94,10 @@ public class AppEntry extends com.vaadin.ui.UI {
         // create a navigator to control the views
         this.navigator = new com.vaadin.navigator.Navigator(this, main.getViewLayout());		
 		
-        this.appConfig = new AppConfiguration();
+		context = new ClassPathXmlApplicationContext("frontend-context.xml");
+		this.appConfig = (AppConfiguration) getBean("configuration");
         
-		this.modules = new ModuleFacade(appConfig.getModuleFacadeConfiguration());
+		this.modules = new ModuleFacade((ModuleFacadeConfiguration) getBean("moduleFacadeConfiguration"));
 		// add vaadin to export package list
 		this.modules.start();
 		
@@ -149,4 +159,14 @@ public class AppEntry extends com.vaadin.ui.UI {
     public AppConfiguration getAppConfiguration() {
     	return appConfig;
     }
+	
+	/**
+	 * Fetches spring bean.
+	 * 
+	 * @param name
+	 * @return bean
+	 */
+	public Object getBean(String name) {
+		return context.getBean(name);
+	}
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	xmlns:context="http://www.springframework.org/schema/context">
+	
+	<!-- application configuration -->
+	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration" />
+	
+	<!-- support for loading DPUs -->
+	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade">
+	    <constructor-arg ref="moduleFacadeConfiguration" />
+	</bean>
+
+	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
+	<bean id="moduleFacadeConfiguration" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration">
+		<constructor-arg ref="configuration" />
+	</bean>
+
+	<context:annotation-config />
+
+</beans>
