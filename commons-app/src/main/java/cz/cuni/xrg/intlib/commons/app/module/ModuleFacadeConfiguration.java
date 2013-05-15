@@ -4,7 +4,7 @@ import java.util.Properties;
 
 /**
  * Contains settings for ModuleFacade;
- * 
+ *
  * @author Petyr
  *
  */
@@ -13,18 +13,18 @@ public class ModuleFacadeConfiguration {
 	/**
 	 * Folder with dpu to load during execution.
 	 */
-	private String dpuFolder = "FILL YOUR PATH HERE";
-	
+	private String dpuFolder = "file:///C:/Users/Bogo/Documents/NetBeansProjects/intlib/module/";
+
 	/**
 	 * List package that should be expose from application.
 	 */
-	private String packagesToExpose = ""; 
-	
+	private String packagesToExpose = "";
+
 	/**
-	 * Folder with dpu libraries. 
+	 * Folder with dpu libraries.
 	 */
 	private String dpuLibsFolder = "";
-	
+
 	/**
 	 * Load configuration from property file.
 	 * @param prop
@@ -34,7 +34,7 @@ public class ModuleFacadeConfiguration {
 		packagesToExpose = prop.getProperty("packagesToExpose");
 		dpuLibsFolder = prop.getProperty("dpuLibsFolder");
 	}
-	
+
 	public String getDpuFolder() {
 		return dpuFolder;
 	}
@@ -57,5 +57,5 @@ public class ModuleFacadeConfiguration {
 
 	public void setDpuLibsFolder(String dpuLibsFolder) {
 		this.dpuLibsFolder = dpuLibsFolder;
-	}	
+	}
 }

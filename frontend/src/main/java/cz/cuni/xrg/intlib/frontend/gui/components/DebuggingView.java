@@ -1,8 +1,10 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.ui.*;
+import cz.cuni.xrg.intlib.auxiliaries.App;
 
 import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 
@@ -18,16 +20,17 @@ public class DebuggingView extends Window {
 
 	private VerticalLayout mainLayout;
 
-	public DebuggingView() {
+	public DebuggingView(DPUInstance debugDpu) {
 		 setCaption("Debug window");
-		 buildMainLayout();
+		 buildMainLayout(debugDpu);
 		 this.setContent(mainLayout);
 	}
 
-	public final void buildMainLayout() {
+	public final void buildMainLayout(DPUInstance debugDpu) {
 		mainLayout = new VerticalLayout();
 
-		RecordsTable executionRecordsTable = new RecordsTable(buildStubMessageData());
+		List<Record> records = App.getDPUs().getAllDPURecords();//debugDpu);
+		RecordsTable executionRecordsTable = new RecordsTable(records);
 		executionRecordsTable.setWidth("100%");
 		executionRecordsTable.setHeight("100px");
 
@@ -42,7 +45,8 @@ public class DebuggingView extends Window {
 
 
 		//RecordsTable with different data source
-		RecordsTable fullRecordsTable = new RecordsTable(buildStubFullData());
+		List<Record> fullRecords = App.getDPUs().getAllDPURecords();
+		RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
 		fullRecordsTable.setWidth("100%");
 		fullRecordsTable.setHeight("100%");
 		tabs.addTab(fullRecordsTable, "Log");
@@ -61,30 +65,30 @@ public class DebuggingView extends Window {
 
 
 
-	private List<Record> buildStubMessageData() {
-		List<Record> stubList = new ArrayList<>();
-/*		Record m = new Record(new Date(), RecordType.DPUINFO, null, "Test message", "Long test message");
-		m.setId(1);
-		stubList.add(m);
-		Record m2 = new Record(new Date(), RecordType.DPUWARNING, null, "Test warning", "Long test warning message");
-		m2.setId(2);
-		stubList.add(m2);*/
+//	private List<Record> buildStubMessageData() {
+//		List<Record> stubList = new ArrayList<>();
+///*		Record m = new Record(new Date(), RecordType.DPUINFO, null, "Test message", "Long test message");
+//		m.setId(1);
+//		stubList.add(m);
+//		Record m2 = new Record(new Date(), RecordType.DPUWARNING, null, "Test warning", "Long test warning message");
+//		m2.setId(2);
+//		stubList.add(m2);*/
+//
+//		return stubList;
+//	}
 
-		return stubList;
-	}
-
-	private List<Record> buildStubFullData() {
-		List<Record> fullList = buildStubMessageData();
-
-/*		Record m = new Record(new Date(), RecordType.DPULOG, null, "Test log message", "Long test log message");
-		m.setId(3);
-		fullList.add(1, m);
-		Record m2 = new Record(new Date(), RecordType.DPULOG, null, "Another test log message", "Bla bla Long test warning message");
-		m2.setId(4);
-		fullList.add(m2);*/
-
-		return fullList;
-	}
+//	private List<Record> buildStubFullData() {
+//		List<Record> fullList = buildStubMessageData();
+//
+///*		Record m = new Record(new Date(), RecordType.DPULOG, null, "Test log message", "Long test log message");
+//		m.setId(3);
+//		fullList.add(1, m);
+//		Record m2 = new Record(new Date(), RecordType.DPULOG, null, "Another test log message", "Bla bla Long test warning message");
+//		m2.setId(4);
+//		fullList.add(m2);*/
+//
+//		return fullList;
+//	}
 
 	private List<RDFTriple> buildStubRDFData() {
 		List<RDFTriple> rdfTripleList = new ArrayList<>();

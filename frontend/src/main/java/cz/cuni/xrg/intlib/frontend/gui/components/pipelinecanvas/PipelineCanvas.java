@@ -79,14 +79,15 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onDebugRequested(int dpuId) {
-				showDebugWindow();
+				showDebugWindow(dpuId);
 			}
 		});
 	}
 
-	private void showDebugWindow() throws IllegalArgumentException, NullPointerException {
+	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
 		//TODO: Debug
-		DebuggingView dv = new DebuggingView();
+		DPUInstance debugDpu = graph.getNodeById(dpuId).getDpuInstance();
+		DebuggingView dv = new DebuggingView(debugDpu);
 		dv.addCloseListener(new Window.CloseListener() {
 
 			@Override
