@@ -7,7 +7,7 @@ import java.util.Properties;
 
 /**
  * Contains settings for ModuleFacade;
- * 
+ *
  * @author Petyr
  *
  */
@@ -17,21 +17,21 @@ public class ModuleFacadeConfiguration {
 	 * Folder with dpu to load during execution.
 	 */
 	private String dpuFolder;
-	
+
 	/**
 	 * List package that should be expose from application.
 	 */
 	private String packagesToExpose = "";
 	
 	/**
-	 * Folder with dpu libraries. 
+	 * Folder with dpu libraries.
 	 */
 	private String dpuLibsFolder = "";
-	
+
 	/**
 	 * Module configuration is constructed directly from {@link AppConfiguration}.
-	 * 
-	 * @param conf 
+	 *
+	 * @param conf
 	 */
 	public ModuleFacadeConfiguration(AppConfiguration conf, Application app) {
 		dpuFolder = conf.getString(ConfProperty.MODULE_PATH);
@@ -39,7 +39,7 @@ public class ModuleFacadeConfiguration {
 		packagesToExpose = conf.getString(Application.FRONTEND.equals(app)
 			? ConfProperty.MODULE_FRONT_EXPOSE : ConfProperty.MODULE_BACK_EXPOSE);
 	}
-	
+
 	public String getDpuFolder() {
 		return dpuFolder;
 	}
@@ -62,5 +62,5 @@ public class ModuleFacadeConfiguration {
 
 	public void setDpuLibsFolder(String dpuLibsFolder) {
 		this.dpuLibsFolder = dpuLibsFolder;
-	}	
+	}
 }

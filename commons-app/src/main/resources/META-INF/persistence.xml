@@ -18,32 +18,26 @@
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
-			
+
 			<!-- Database connection parameters -->
 			<property name="hibernate.connection.username" value="dba" />
 			<property name="hibernate.connection.password" value="dba" />
 			<property name="hibernate.connection.url" value="jdbc:virtuoso://localhost:1111/" />
-			
+
 			<!-- Determine which element is auto discovered
 			 by Hibernate Entity Manager while parsing the .par archive. -->
-			<property name="hibernate.archive.autodetection" value="class" />
-			
-			<!-- JDBC database driver for hibernate to use -->
-			<property name="hibernate.connection.driver_class" value="virtuoso.jdbc4.Driver" />
-			
-			<!-- SQL dialect -->
-			<property name="hibernate.dialect" value="virtuoso.hibernate.VirtuosoDialect" />
-			
-        	<!-- Echo and format all executed SQL to stdout -->
-			<property name="hibernate.show_sql" value="true" />
-			<property name="hibernate.format_sql" value="true" />
-
-			<!-- Scan for annotated classes automatically -->
-			<!-- works only for classes in the same namespace
+      <property name="hibernate.archive.autodetection" value="class"/>
+      <!-- JDBC database driver for hibernate to use -->
+      <property name="hibernate.connection.driver_class" value="virtuoso.jdbc4.Driver"/>
+      <!-- SQL dialect -->
+      <property name="hibernate.dialect" value="virtuoso.hibernate.VirtuosoDialect"/>
+      <!-- Echo and format all executed SQL to stdout -->
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <!-- Scan for annotated classes automatically -->
+      <!-- works only for classes in the same namespace
 				 as persistence.xml ends up after build -->
-			<!--<property name="hibernate.archive.autodetection" value="class"/>-->
-			
-		</properties>
-	</persistence-unit>
-
+      <!--<property name="hibernate.archive.autodetection" value="class"/>-->
+    </properties>
+  </persistence-unit>
 </persistence>
