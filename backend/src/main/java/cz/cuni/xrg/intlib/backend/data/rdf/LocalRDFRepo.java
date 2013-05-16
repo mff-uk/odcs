@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
+import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,6 +37,7 @@ import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.http.HTTPRepository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -392,11 +394,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param defaultGraphURI
      */
     @Override
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, WriteGraphType graphType) {
         List<String> endpointGraphsURI = new ArrayList<>();
         endpointGraphsURI.add(defaultGraphURI);
 
-        loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "");
+        loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "", graphType);
     }
 
     /**
@@ -409,11 +411,11 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param password
      */
     @Override
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password, WriteGraphType graphType) {
         List<String> endpointGraphsURI = new ArrayList<>();
         endpointGraphsURI.add(defaultGraphURI);
 
-        loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password);
+        loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password, graphType);
     }
 
     /**
@@ -426,12 +428,15 @@ public class LocalRDFRepo implements RDFDataRepository {
      * @param password
      */
     @Override
-    public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName, String password) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
+            String password, WriteGraphType graphType) {
         try {
 
             final int graphSize = endpointGraphsURI.size();
             List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT, this);
             final int partsCount = dataParts.size();
+
+            HTTPRepository endpointRepo = new HTTPRepository(endpointURL.toString(), "");
 
             boolean usePassword = (!userName.isEmpty() | !password.isEmpty());
 
@@ -448,12 +453,56 @@ public class LocalRDFRepo implements RDFDataRepository {
                 };
 
                 Authenticator.setDefault(autentisator);
+                endpointRepo.setUsernameAndPassword(userName, password);
 
+            }
+
+            try {
+                endpointRepo.initialize();
+            } catch (RepositoryException e) {
+                logger.debug("Endpoint reposiotory is failed");
+                logger.debug(e.getMessage());
             }
 
             RepositoryConnection connection = repository.getConnection();
 
             for (int i = 0; i < graphSize; i++) {
+
+                boolean isOK = true;
+                try {
+                    switch (graphType) {
+                        case MERGE:
+                            break;
+                        case OVERRIDE: {
+                            RepositoryConnection endpointGoal = endpointRepo.getConnection();
+                            Resource graphToClear = new URIImpl(endpointGraphsURI.get(i));
+                            endpointGoal.clear(graphToClear);
+                            endpointGoal.close();
+                        }
+                        break;
+                        case FAIL: {
+                            RepositoryConnection endpointGoal = endpointRepo.getConnection();
+                            Resource goalGraph = new URIImpl(endpointGraphsURI.get(i));
+                            boolean sourceNotEmpty = endpointGoal.size(goalGraph) > 0;
+                            endpointGoal.close();
+
+                            if (sourceNotEmpty) {
+                                throw new GraphNotEmptyException("Graph " + goalGraph.toString() + "is not empty");
+                            }
+
+
+                        }
+                        break;
+
+                    }
+                } catch (GraphNotEmptyException | RepositoryException ex) {
+                    logger.debug(ex.getMessage());
+                    isOK = false;
+                }
+
+                if (isOK == false) {
+                    continue;
+                }
 
                 for (int j = 0; j < partsCount; j++) {
 
