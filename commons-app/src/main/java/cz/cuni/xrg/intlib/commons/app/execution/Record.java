@@ -47,11 +47,11 @@ public class Record {
 	@JoinColumn(name = "dpu_id", nullable = false)
 	private DPUInstance dpuInstance;
 	
-	
 	/**
-	 * PipelineExecution.
+	 * Pipeline execution during which message was emitted.
 	 */
-	@Transient
+	@OneToOne(optional = false)
+	@JoinColumn(name = "execution_id")
 	private PipelineExecution execution;
 	
 	/**

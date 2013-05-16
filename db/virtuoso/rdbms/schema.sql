@@ -61,6 +61,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_RECORD"
   "r_time" DATE,
   "r_type" SMALLINT,
   "dpu_id" INTEGER,
+  "execution_id" INTEGER,
   "short_message" LONG VARCHAR,
   "full_message" LONG VARCHAR,
   PRIMARY KEY ("id")
