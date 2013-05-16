@@ -19,9 +19,10 @@ import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import cz.cuni.xrg.intlib.frontend.AppConfiguration;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 
 public class PipelineList extends CustomComponent implements View {
@@ -43,7 +44,11 @@ public class PipelineList extends CustomComponent implements View {
 		// store into DB
 		App.getPipelines().save(pipelineExec);
 		AppConfiguration config = App.getApp().getAppConfiguration();
-		Client client = new Client(config.getBackendAddress(), config.getBackendPort());
+		Client client = new Client(
+			config.getString(ConfProperty.BACKEND_HOST),
+			config.getInteger(ConfProperty.BACKEND_PORT)
+		);
+		
 		// send message to backend
 		try {
 			client.checkDatabase();

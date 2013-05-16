@@ -28,11 +28,11 @@ public class LocalRDFRepoTest {
     /**
      * Path to directory with produced data
      */
-    private Path outDir;
+    protected Path outDir;
     /**
      * Path to directory with test input data
      */
-    private String testFileDir;
+    protected String testFileDir;
     /**
      * Local repository
      */
@@ -295,7 +295,7 @@ public class LocalRDFRepoTest {
 
     }
 
-    //TEST TO DO !!! @Test
+    //*TEST TO DO !!!*/ @Test
     public void transformUsingSPARQLUpdate() {
 
         String namespace = "http://sport/hockey/";
@@ -303,8 +303,8 @@ public class LocalRDFRepoTest {
         String predicateName = "playes_in";
         String objectName = "Dalas_Stars";
 
-        String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
-                + "INSERT { ?who ?what 'Boston_Bruins' }"
+        String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' } "
+                + "INSERT { ?who ?what 'Boston_Bruins' } "
                 + "WHERE { ?who ?what 'Dalas_Stars' }";
 
         rdfRepo.addTripleToRepository(
@@ -445,7 +445,7 @@ public class LocalRDFRepoTest {
      *
      * @param directory
      */
-    private static void deleteDirectory(File directory) {
+    protected static void deleteDirectory(File directory) {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {

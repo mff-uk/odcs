@@ -2,6 +2,10 @@ package cz.cuni.xrg.intlib.backend.repository;
 
 import cz.cuni.xrg.intlib.backend.data.rdf.VirtuosoRDFRepo;
 import static cz.cuni.xrg.intlib.backend.repository.LocalRDFRepoTest.logger;
+import static cz.cuni.xrg.intlib.backend.repository.LocalRDFRepoTest.rdfRepo;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import org.junit.*;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +24,20 @@ public class VirtuosoTest extends LocalRDFRepoTest {
     @BeforeClass
     public static void setUpLogger() {
         logger = LoggerFactory.getLogger(VirtuosoTest.class);
+        rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD, DEFAUTLGRAPH);
+       
+        rdfRepo.cleanAllRepositoryData();
     }
 
-    @Before
-    public void setUpVirtuoso() {
-        rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD, DEFAUTLGRAPH);
+    @Override
+    public void setUp() {
+        try {
+            outDir = Files.createTempDirectory("intlib-out");
+            testFileDir = VirtuosoTest.class.getResource("/repository").getPath();
 
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @AfterClass
@@ -33,4 +45,17 @@ public class VirtuosoTest extends LocalRDFRepoTest {
         rdfRepo.cleanAllRepositoryData();
 
     }
+
+    @Override
+    public void cleanUp() {
+        deleteDirectory(new File(outDir.toString()));
+    }
+
+    //@Test
+    @Override
+    public void BIGDataTest() {
+        super.BIGDataTest(); 
+    }
+    
+    
 }

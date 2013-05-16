@@ -63,7 +63,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onDpuRemoved(int dpuId) {
-				graph.removeDpu(dpuId);
+				Node removedNode = graph.removeDpu(dpuId);
+				App.getDPUs().delete(removedNode.getDpuInstance());
 
 			}
 

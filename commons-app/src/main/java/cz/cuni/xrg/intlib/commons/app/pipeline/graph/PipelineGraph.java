@@ -31,7 +31,7 @@ public class PipelineGraph {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	@SuppressWarnings("unused")
     private int id;
-	
+
 	/**
 	 * Pipeline this graph belongs to
 	 */
@@ -55,10 +55,10 @@ public class PipelineGraph {
         nodes.add(node);
 		node.setGraph(this);
     }
-	
+
 	/**
 	 * Removes node from graph.
-	 * 
+	 *
 	 * @param node
 	 * @return <tt>true</tt> if graph contained given node
 	 */
@@ -108,12 +108,12 @@ public class PipelineGraph {
      * @param dpuId
      * @return
      */
-    public boolean removeDpu(int dpuId) {
+    public Node removeDpu(int dpuId) {
         Node node = getNodeById(dpuId);
         if (node != null) {
-            return nodes.remove(node);
+            nodes.remove(node);
         }
-        return false;
+        return node;
     }
 
     /**
@@ -133,7 +133,7 @@ public class PipelineGraph {
         //TODO Find existing edge for this connection
         return added ? edge : null;
     }
-	
+
 	public boolean removeEdge(Edge edge) {
 		edge.setGraph(null);
 		return edges.remove(edge);
@@ -161,12 +161,12 @@ public class PipelineGraph {
      * @param edgeId
      * @return
      */
-    public boolean removeEdge(int edgeId) {
+    public Edge removeEdge(int edgeId) {
         Edge edge = getEdgeById(edgeId);
         if (edge != null) {
-            return removeEdge(edge);
+            boolean result = removeEdge(edge);
         }
-        return false;
+        return edge;
     }
 
     /**
@@ -229,7 +229,7 @@ public class PipelineGraph {
 	public void setPipeline(Pipeline pipeline) {
 		this.pipeline = pipeline;
 	}
-	
+
 	/**
 	 * Validates new edge in graph.
 	 * @param fromId

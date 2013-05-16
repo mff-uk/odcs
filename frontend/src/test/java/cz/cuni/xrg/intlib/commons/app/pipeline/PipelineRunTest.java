@@ -9,7 +9,6 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import java.io.Serializable;
-import cz.cuni.xrg.intlib.frontend.AppConfiguration;
 
 import java.util.LinkedList;
 import java.util.List;

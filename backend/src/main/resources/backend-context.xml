@@ -4,7 +4,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
 	xmlns:context="http://www.springframework.org/schema/context">
+
 	<context:annotation-config />
+
+	<import resource="classpath:commons-app-context.xml" />
 
 	<!-- TCP/IP server, used to recieve request from frontend -->
 	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server">
@@ -16,20 +19,7 @@
 	    <constructor-arg ref="moduleFacade" index="0" />
 	    <constructor-arg ref="dbAccess" index="1" />
 	</bean>
-	
-	<!-- support for loading DPUs -->
-	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade">
-	    <constructor-arg ref="moduleFacadeConfiguration" />
-	</bean>
-	
-	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.xrg.intlib.backend.AppConfiguration">
-	    <constructor-arg ref="moduleFacadeConfiguration" />
-	</bean>
 
-	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
-	<bean id="moduleFacadeConfiguration" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration" />
-	
 	<!-- access to database on one place -->
 	<bean id="dbAccess" class="cz.cuni.xrg.intlib.backend.DatabaseAccess" />	
 	
@@ -38,5 +28,4 @@
 	    <constructor-arg ref="dbAccess"/>
 	</bean>
 	
-	<!-- <context:component-scan base-package="com.test"/>  -->
 </beans>
