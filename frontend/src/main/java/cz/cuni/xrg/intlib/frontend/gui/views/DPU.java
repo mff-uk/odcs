@@ -47,7 +47,7 @@ public class DPU extends CustomComponent implements View {
 	private Tree dpuTree;
 	private TextField dpuName;
 	private TextArea dpuDescription;
-	private OptionGroup groupType;
+//	private OptionGroup groupType;
 	private TabSheet tabSheet;
 	private cz.cuni.xrg.intlib.commons.app.dpu.DPU selectedDpu;
 	private OptionGroup groupVisibility;
@@ -240,10 +240,10 @@ public class DPU extends CustomComponent implements View {
 					String selectedDpuName = selectedDpu.getName();
 					String selecteDpuDescription = selectedDpu.getDescription();
 					VisibilityType selecteDpuVisibility = selectedDpu.getVisibility();
-					DpuType selectedDpuType = selectedDpu.getType();
+			//		DpuType selectedDpuType = selectedDpu.getType();
 					dpuName.setValue(selectedDpuName);
 					dpuDescription.setValue(selecteDpuDescription);
-					groupType.setValue(selectedDpuType);
+			//		groupType.setValue(selectedDpuType);
 					groupVisibility.setValue(selecteDpuVisibility);
 
 				}
@@ -252,7 +252,7 @@ public class DPU extends CustomComponent implements View {
 					tabSheet.setVisible(false);
 					dpuName.setValue("");
 					dpuDescription.setValue("");
-					groupType.setValue(null);
+				//	groupType.setValue(null);
 					groupVisibility.setValue(null);
 				}
 			}
@@ -321,7 +321,7 @@ public class DPU extends CustomComponent implements View {
 
 		dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
-		Label typeLabel = new Label("Type:");
+	/*	Label typeLabel = new Label("Type:");
 		dpuSettingsLayout.addComponent(typeLabel, 0, 3);
 
 		groupType = new OptionGroup();
@@ -332,7 +332,7 @@ public class DPU extends CustomComponent implements View {
 
 		groupType.setEnabled(false);
 
-		dpuSettingsLayout.addComponent(groupType, 1, 3);
+		dpuSettingsLayout.addComponent(groupType, 1, 3); */
 
 		verticalLayoutData.addComponent(dpuSettingsLayout);
 
