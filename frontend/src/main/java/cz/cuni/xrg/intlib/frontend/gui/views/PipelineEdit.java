@@ -362,7 +362,7 @@ public class PipelineEdit extends CustomComponent implements View {
 	 */
 	protected Pipeline loadPipeline(String id) {
 		// get data from DB ..
-		this.pipeline = App.getApp().getPipelines().getPipeline(Integer.parseInt(id));
+		this.pipeline = App.getApp().getPipelines().getPipeline(Long.parseLong(id));
 		pipelineName.setValue(this.pipeline.getName());
 		pipelineDescription.setValue(this.pipeline.getDescription());
 		return pipeline;

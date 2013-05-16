@@ -46,6 +46,34 @@ public class DPUFacade {
 		DPU dpu = new DPU();
 		return dpu;
 	}
+	
+	/**
+	 * Creates a new DPU with the same properties and configuration as in given
+	 * {@link DPUInstance}. Note that newly created DPU is only returned, but
+	 * not managed by database. To persist it, {@link #save(DPU)} must be called
+	 * explicitly. 
+	 * 
+	 * @param instance
+	 * @return new DPU
+	 */
+	public DPU createDpuFromInstance(DPUInstance instance) {
+		
+		DPU oDpu = instance.getDpu();
+		DPU nDpu = new DPU();
+		
+		// copy properties
+		nDpu.setName(instance.getName());
+		nDpu.setDescription(instance.getDescription());
+		nDpu.setJarPath(oDpu.getJarPath());
+		nDpu.setVisibility(VisibilityType.PRIVATE);
+		
+		// copy configuration
+		TemplateConfiguration conf = new TemplateConfiguration();
+		conf.setValues(instance.getInstanceConfig().getValues());
+		nDpu.setTemplateConfiguration(conf);
+		
+		return nDpu;
+	}
 
 	/**
 	 * Returns list of all DPUs currently persisted in database.
@@ -67,7 +95,7 @@ public class DPUFacade {
 	 * @param id
 	 * @return
 	 */
-	public DPU getDpu(int id) {
+	public DPU getDpu(long id) {
 		return em.find(DPU.class, id);
 	}
 
@@ -134,7 +162,7 @@ public class DPUFacade {
 	 * @param id
 	 * @return
 	 */
-	public DPUInstance getDPUInstance(int id) {
+	public DPUInstance getDPUInstance(long id) {
 		return em.find(DPUInstance.class, id);
 	}
 
@@ -209,7 +237,7 @@ public class DPUFacade {
 	 * @param id
 	 * @return
 	 */
-	public Record getDPURecord(int id) {
+	public Record getDPURecord(long id) {
 		return em.find(Record.class, id);
 	}
 

@@ -37,7 +37,7 @@ public class InstanceConfiguration implements Configuration {
 	 * @return null if there is not object stored under given id
 	 */
 	@Override
-	public Object getValue(String parameter) {
+	public Serializable getValue(String parameter) {
 		return this.config.get(parameter);
 	}
 
@@ -63,5 +63,21 @@ public class InstanceConfiguration implements Configuration {
 	
 	public Long getId() {
 		return id;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, Serializable> getValues() {
+		return config;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setValues(Map<String, Serializable> values) {
+		this.config = values;
 	}
 }

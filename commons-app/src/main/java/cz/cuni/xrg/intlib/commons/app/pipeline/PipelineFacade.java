@@ -74,7 +74,7 @@ public class PipelineFacade {
 	 * @param id of Pipeline
 	 * @return Pipeline
 	 */
-	public Pipeline getPipeline(int id) {
+	public Pipeline getPipeline(long id) {
 		
 		return em.find(Pipeline.class, id);
 	}
