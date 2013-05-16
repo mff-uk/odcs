@@ -16,5 +16,5 @@ public enum Config {
     Host_name, // String
     Password, // String
     GraphsUri, 	// LinkedList<String>
-    Options // String
+    Options // ENUM - WriteGraphType 
 }
