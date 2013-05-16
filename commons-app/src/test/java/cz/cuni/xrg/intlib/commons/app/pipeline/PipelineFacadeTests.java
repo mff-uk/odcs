@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import cz.cuni.xrg.intlib.commons.app.InMemoryEntityManager;
+import cz.cuni.xrg.intlib.commons.app.util.InMemoryEntityManager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

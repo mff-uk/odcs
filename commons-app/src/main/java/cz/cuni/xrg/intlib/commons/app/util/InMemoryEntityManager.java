@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app;
+package cz.cuni.xrg.intlib.commons.app.util;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;

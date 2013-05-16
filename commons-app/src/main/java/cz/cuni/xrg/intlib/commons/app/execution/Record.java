@@ -41,11 +41,11 @@ public class Record {
 	
 	/**
 	 * DPU which emmitted the message.
+	 * TODO: Enable null values? For messages outside DPU ?
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "dpu_id", nullable = false)
-	// TODO: Enable null values? For messages outside DPU ?
-	private DPUInstance source;
+	private DPUInstance dpuInstance;
 	
 	
 	/**
@@ -73,21 +73,22 @@ public class Record {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param time
 	 * @param type
-	 * @param source
+	 * @param dpuInstance
 	 * @param shortMessage
 	 * @param fullMessage 
 	 */
 	public Record(Date time,
 					RecordType type,
-					DPUInstance source,
+					DPUInstance dpuInstance,
 					PipelineExecution execution,
 					String shortMessage,
 					String fullMessage ) {
 		this.time = time;
 		this.type = type;
-		this.source = source;
+		this.dpuInstance = dpuInstance;
 		this.execution = execution;
 		this.shortMessage = shortMessage;
 		this.fullMessage = fullMessage;
@@ -109,8 +110,8 @@ public class Record {
 		return type;
 	}
 
-	public DPUInstance getSource() {
-		return source;
+	public DPUInstance getDpuInstance() {
+		return dpuInstance;
 	}
 
 	public PipelineExecution getExecution() {
