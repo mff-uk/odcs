@@ -5,9 +5,13 @@
  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
 	xmlns:context="http://www.springframework.org/schema/context">
 
-	<context:annotation-config />
-
 	<import resource="classpath:commons-app-context.xml" />
+
+	<!-- Module configuration needs to be defined here,
+		 because it differs from frontend -->
+	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfiguration">
+		<constructor-arg value="BACKEND" />
+	</bean>
 
 	<!-- TCP/IP server, used to recieve request from frontend -->
 	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server">

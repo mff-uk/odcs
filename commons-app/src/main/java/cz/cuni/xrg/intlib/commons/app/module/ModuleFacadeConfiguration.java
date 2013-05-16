@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
+import cz.cuni.xrg.intlib.commons.app.Application;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 import java.util.Properties;
@@ -32,10 +33,11 @@ public class ModuleFacadeConfiguration {
 	 * 
 	 * @param conf 
 	 */
-	public ModuleFacadeConfiguration(AppConfiguration conf) {
+	public ModuleFacadeConfiguration(AppConfiguration conf, Application app) {
 		dpuFolder = conf.getString(ConfProperty.MODULE_PATH);
-		packagesToExpose = conf.getString(ConfProperty.MODULE_EXPOSE);
 		dpuLibsFolder = conf.getString(ConfProperty.MODULE_LIBS);
+		packagesToExpose = conf.getString(Application.FRONTEND.equals(app)
+			? ConfProperty.MODULE_FRONT_EXPOSE : ConfProperty.MODULE_BACK_EXPOSE);
 	}
 	
 	public String getDpuFolder() {

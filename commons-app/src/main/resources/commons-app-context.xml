@@ -14,7 +14,7 @@
 	</bean>
 
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
-	<bean id="moduleFacadeConfiguration" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration">
+	<bean id="abstractModuleFacadeConfiguration" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration">
 		<constructor-arg ref="configuration" />
 	</bean>
 
