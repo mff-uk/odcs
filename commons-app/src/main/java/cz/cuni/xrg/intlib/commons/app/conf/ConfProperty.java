@@ -15,8 +15,8 @@ public enum ConfProperty {
 	
 	MODULE_PATH("module.path"),
 	MODULE_LIBS("module.libs"),
-	MODULE_FRONT_EXPOSE("module.backend.expose"),
-	MODULE_BACK_EXPOSE("module.frontend.expose"),
+	MODULE_FRONT_EXPOSE("module.frontend.expose"),
+	MODULE_BACK_EXPOSE("module.backend.expose"),
 	;
 	
 	private final String property;
