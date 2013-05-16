@@ -41,4 +41,15 @@ public interface ExecutionContextWriter {
 	 */
 	public File getDirForDPUResult(DPUInstance dpuInstance);
 	
+	/**
+	 * Save this context into file in {@link #workingDirectory}.
+	 * @throws Exception 
+	 */
+	public void save() throws Exception;
+
+	/**
+	 * Return path to file where the context can be stored.
+	 * @return
+	 */
+	public File getloadFilePath();
 }

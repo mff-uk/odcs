@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
@@ -16,49 +18,29 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 class DPUContextInfo {
 	
 	/**
-	 * Holds information about single DataUnit' context.
-	 * 
-	 * @author Petyr
-	 *
-	 */
-	private class DataUnitInfo {
-		
-		/**
-		 * Associated directory.
-		 */
-		public File directory;
-		
-		/**
-		 * DataUnit type. 
-		 */
-		public DataUnitType type;
-		
-		public DataUnitInfo(File directory, DataUnitType type) {
-			this.directory = directory;
-			this.type = type;
-		}
-	}
-	
-	/**
 	 * Storage for dataUnits descriptors.
 	 */
+	@XmlElement
 	private Map<Integer, DataUnitInfo> dataUnits = new HashMap<>();
 	
 	/**
 	 * Path to the storage directory or null if the directory
 	 * has't been used yet.
 	 */
+	@XmlElement
 	private File storageDirectory = null;
 	
 	/**
 	 * Path to the result storage directory or null if the directory
 	 * has't been used yet.
 	 */		
+	@XmlElement
 	private File resultDirectory = null;
 	
 	/**
 	 * DPU's root working directory.
 	 */
+	@XmlElement
 	private File rootDirectory = null;
 	
 	/**
@@ -134,4 +116,5 @@ class DPUContextInfo {
 		}
 		return resultDirectory;
 	}		
+
 }
