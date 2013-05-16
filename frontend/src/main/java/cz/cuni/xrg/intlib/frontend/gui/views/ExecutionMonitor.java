@@ -34,8 +34,11 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.xrg.intlib.auxiliaries.App;
+import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.gui.components.RecordsTable;
 
 /**
@@ -204,7 +207,9 @@ public class ExecutionMonitor extends CustomComponent implements View,
 
 		monitorTableLayout.addComponent(filtersLayout);
 
-		tableData = getTableData();
+		tableData = getTableData(App.getApp().getPipelines().getAllExecutions());
+		
+		
 		monitorTable = new Table("");
 		monitorTable.setSelectable(true);
 		monitorTable.setContainerDataSource(tableData);
@@ -257,12 +262,12 @@ public class ExecutionMonitor extends CustomComponent implements View,
 		logLayout.addComponent(infoBar);
 		
 		
-		RecordsTable executionRecordsTable = new RecordsTable(
-				buildStubMessageData());
-		executionRecordsTable.setWidth("100%");
-		executionRecordsTable.setHeight("100px");
+	//	RecordsTable executionRecordsTable = new RecordsTable(
+	//			buildStubMessageData());
+	//	executionRecordsTable.setWidth("100%");
+	//	executionRecordsTable.setHeight("100px");
 
-		logLayout.addComponent(executionRecordsTable);
+	//	logLayout.addComponent(executionRecordsTable);
 		
 
 
@@ -315,7 +320,7 @@ public class ExecutionMonitor extends CustomComponent implements View,
 		return mainLayout;
 	}
 
-	public static IndexedContainer getTableData() {
+	public static IndexedContainer getTableData(List<PipelineExecution> data) {
 
 		String[] date = { "2012.02.12", "2012.02.13", "2012.12.12",
 				"2013.05.13", "2013.01.18", "2012.03.01", "2012.04.30" };
@@ -333,15 +338,32 @@ public class ExecutionMonitor extends CustomComponent implements View,
 
 		int max = getMinLength(date, name, user, status);
 
-		for (int i = 0; i < max; i++) {
+		/*for (int i = 0; i < max; i++) {
 			Object num = result.addItem();
 			result.getContainerProperty(num, "date").setValue(date[i]);
 			result.getContainerProperty(num, "user").setValue(user[i]);
 			result.getContainerProperty(num, "name").setValue(name[i]);
 			result.getContainerProperty(num, "status").setValue(status[i]);
 
+		}*/
+		
+		for (PipelineExecution item : data)
+		{
+			//static String[] visibleCols = new String[] { "date", "name", "user",
+			// "status", "debug", "obsolete", "actions", "report" }; 
+			
+			Object num = result.addItem();
+			result.getContainerProperty(num, "date").setValue(" ");
+			result.getContainerProperty(num, "user").setValue(" ");
+			result.getContainerProperty(num, "name").setValue(item.getPipeline().getName());
+			//String statusStr = item.getExecutionStatus().toString();
+			result.getContainerProperty(num, "status").setValue(item.getExecutionStatus().toString());
+			result.getContainerProperty(num, "debug").setValue((item.isDebugging())?"true":"false");
+						
+			
+				
 		}
-
+ 
 		return result;
 	}
 

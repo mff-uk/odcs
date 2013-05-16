@@ -21,21 +21,20 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 		Property prop = source.getItem(itemId).getItemProperty("status");
 		String test = "---";
 		
-		
 		HorizontalLayout box = new HorizontalLayout();
 		box.setSpacing(true);
 		
 		if (prop.getType().equals(String.class))
 		{
 			test = (String)prop.getValue();
-			if (test.contains("progress"))
+			if (test.contains("SCHEDULED"))
 			{
 				Button stopButton = new Button("Stop");
 				stopButton.setData("stop");
 				stopButton.setWidth("120px");
 				box.addComponent(stopButton);
 			}
-			if (test.contains("error"))
+			if (test.contains("FAILED"))
 			{
 				Button logButton = new Button("Show log");
 				logButton.setData("showlog");
@@ -46,7 +45,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				
 			}
 
-			if (test.contains("ok"))
+			if (test.contains("FINISHED_SUCCESS"))
 			{
 				Button debugButton = new Button("Debug data");
 				debugButton.setData("debug");
