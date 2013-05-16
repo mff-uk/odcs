@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.commons.app.util;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import cz.cuni.xrg.intlib.commons.app.InMemoryEntityManager;
 
 /**
  * EntityManager factory.
