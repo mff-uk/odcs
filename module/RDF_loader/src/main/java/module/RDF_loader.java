@@ -1,5 +1,6 @@
 package module;
 
+import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
@@ -23,12 +24,11 @@ import java.util.List;
  * @author Petyr
  */
 public class RDF_loader implements GraphicalLoader {
-    
+
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
-    
     /**
      * DPU configuration.
      */
@@ -39,12 +39,12 @@ public class RDF_loader implements GraphicalLoader {
 
     @Override
     public void saveConfigurationDefault(Configuration configuration) {
-    	configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
-    	configuration.setValue(Config.Host_name.name(), "");
-    	configuration.setValue(Config.Password.name(), "");
-    	configuration.setValue(Config.GraphsUri.name(), new LinkedList<String>());  	
-    }       
-    
+        configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
+        configuration.setValue(Config.Host_name.name(), "");
+        configuration.setValue(Config.Password.name(), "");
+        configuration.setValue(Config.GraphsUri.name(), new LinkedList<String>());
+    }
+
     @Override
     public DpuType getType() {
         return DpuType.LOADER;
@@ -62,16 +62,16 @@ public class RDF_loader implements GraphicalLoader {
         return this.configDialog;
     }
 
-	@Override
-	public void loadConfiguration(Configuration configuration)
-			throws ConfigurationException {
-		// 
+    @Override
+    public void loadConfiguration(Configuration configuration)
+            throws ConfigurationException {
+        // 
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
             this.configDialog.setConfiguration(configuration);
         }
-	} 
+    }
 
     @Override
     public void saveConfiguration(Configuration configuration) {
@@ -87,7 +87,6 @@ public class RDF_loader implements GraphicalLoader {
      * Implementation of module functionality here.
      *
      */
-    
     private String getSPARQLEndpointURLAsString() {
         String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
         return endpoint;
@@ -108,29 +107,35 @@ public class RDF_loader implements GraphicalLoader {
         return graphs;
     }
 
+    private WriteGraphType getWriteGraphType() {
+        WriteGraphType graphType = (WriteGraphType) config.getValue(Config.Options.name());
+        return graphType;
+    }
+
     @Override
     public void load(LoadContext context) throws LoadException {
-    	RDFDataRepository repository = null;
-    	// get repository
-    	if (context.getInputs().isEmpty()) {
-    		throw new LoadException("Missing inputs!");
-    	}    	
-    	DataUnit dataUnit = context.getInputs().get(0);
-    	if (dataUnit.getType() == DataUnitType.RDF) {
-    		repository = (RDFDataRepository) dataUnit;
-    	} else {
-    		// wrong input ..
-    		throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
-    	}    	
-    	
+        RDFDataRepository repository = null;
+        // get repository
+        if (context.getInputs().isEmpty()) {
+            throw new LoadException("Missing inputs!");
+        }
+        DataUnit dataUnit = context.getInputs().get(0);
+        if (dataUnit.getType() == DataUnitType.RDF) {
+            repository = (RDFDataRepository) dataUnit;
+        } else {
+            // wrong input ..
+            throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
+        }
+
         final String endpoint = getSPARQLEndpointURLAsString();
         try {
             final URL endpointURL = new URL(endpoint);
             final List<String> defaultGraphsURI = getGraphsURI();
             final String hostName = getHostName();
             final String password = getPassword();
+            final WriteGraphType graphType = getWriteGraphType();
 
-            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password);
+            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password, graphType);
         } catch (MalformedURLException ex) {
             System.err.println("This URL not exists");
             System.err.println(ex.getMessage());

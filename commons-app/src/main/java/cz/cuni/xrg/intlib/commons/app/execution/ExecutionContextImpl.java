@@ -1,24 +1,42 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
+@XmlRootElement
 class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextWriter {
 
 	/**
 	 * Store context information for DPUs under
 	 * DPU's id.
 	 */
+	@XmlElement
 	private Map<Long, DPUContextInfo> contexts = new HashMap<>();
 	
 	/**
 	 * Working directory for execution.
 	 */
 	private File workingDirectory = null;
+	
+	/**
+	 * Empty ctor because of JAXB.
+	 */
+	public ExecutionContextImpl() {
+		
+	}
 	
 	/**
 	 * 
@@ -96,5 +114,19 @@ class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextW
 			contexts.put(dpuInstance.getId(), newContext);
 			return newContext;
 		}
+	}
+
+
+	@Override
+	public void save() throws Exception {
+		JAXBContext jc = JAXBContext.newInstance(ExecutionContextImpl.class, DPUContextInfo.class);
+		Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(this, System.out);		
+	}
+	
+	@Override
+	public File getloadFilePath() {
+		return new File(workingDirectory, "context.xml");
 	}
 }

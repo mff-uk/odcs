@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.repository;
 import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDFRepo;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
+import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -285,8 +286,9 @@ public class LocalRDFRepoTest {
             String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
             String name = "SPARQL";
             String password = "nejlepsipaper";
+            WriteGraphType graphType= WriteGraphType.MERGE;
 
-            rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name, password);
+            rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name, password,graphType);
 
 
         } catch (MalformedURLException ex) {
