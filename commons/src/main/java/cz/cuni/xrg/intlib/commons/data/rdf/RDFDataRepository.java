@@ -28,13 +28,13 @@ public interface RDFDataRepository extends DataUnit {
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
             boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException;
 
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI);
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, WriteGraphType graphType);
 
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name,
-            String password);
+            String password, WriteGraphType graphType);
 
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
-            String password);
+            String password, WriteGraphType graphType);
 
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query);
 
