@@ -1,8 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
-import java.util.Collection;
-import java.util.Dictionary;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.launch.FrameworkFactory;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
@@ -14,27 +11,27 @@ public class Framework {
      * Package and class, that will be loaded from bundle into application.
      */
     private final String baseDpuClassName = "module.";
+    
     /**
      * OSGi framework class.
      */
     private org.osgi.framework.launch.Framework framework = null;
+    
     /**
      * OSGi context.
      */
     private org.osgi.framework.BundleContext context = null;
+    
     /**
      * Store loaded bundles. Bundles are store under their name.
      */
-    private java.util.Map<String, Bundle> loadedBundles = new java.util.HashMap<>();
+    private java.util.Map<String, BundleContainer> loadedBundles = new java.util.HashMap<>();
+    
     /**
-     * Store keys for stored bundles in loadedBundles;
+     * Store keys for stored bundles in {@link #loadedBundles}.
      */
     private java.util.Map<Bundle, String> reverseLoadedBundles = new java.util.HashMap<>();
-    /**
-     * Store bundle class.
-     */
-    private java.util.Map<String, Class<?>> loadedClassCtors = new java.util.HashMap<>();
-
+        
     /**
      * Return configuration used to start up OSGi implementation.
      *
@@ -52,21 +49,6 @@ public class Framework {
                exportedPackages);
         return config;
     }
-    /*
-	
-     Export-Package: 
-     module;uses:="cz.cuni.xrg.intlib.commons.web,gui,cz.cuni.xrg.intlib.commons,cz.cuni.xrg.intlib.commons.configuration,cz.cuni.xrg.intlib.commons.repository,cz.cuni.xrg.intlib.commons.extractor,com.vaadin.ui";version="0.0.2",
-     gui;uses:="com.vaadin.data,module,cz.cuni.xrg.intlib.commons.configuration,com.vaadin.ui";version="0.0.2"
-			 
-     Import-Package: 
-     com.vaadin.data,
-     com.vaadin.ui,
-     cz.cuni.xrg.intlib.commons
-     cz.cuni.xrg.intlib.commons.configuration,
-     cz.cuni.xrg.intlib.commons.extractor,
-     cz.cuni.xrg.intlib.commons.web,
-     cz.cuni.xrg.intlib.commons.repository	
-     */
 
     /**
      * Start OSGi framework.
@@ -85,18 +67,18 @@ public class Framework {
             throw new OSGiException("Can't load class FrameworkFactory.", ex);
         }
 
-        this.framework = frameworkFactory.newFramework(prepareSettings(exportedPackages));
-        this.context = null;
+        framework = frameworkFactory.newFramework(prepareSettings(exportedPackages));
+        context = null;
         try {
             // start OSGi container ..
-            this.framework.start();
+            framework.start();
         } catch (org.osgi.framework.BundleException ex) {
             // failed to start/initiate framework
             throw new OSGiException("Failed to start OSGi framework.", ex);
         }
 
         try {
-            this.context = this.framework.getBundleContext();
+            context = framework.getBundleContext();
         } catch (SecurityException ex) {
             // we have to stop framework ..
             stop();
@@ -109,40 +91,41 @@ public class Framework {
      */
     public void stop() {
         try {
-            if (this.framework != null) {
+            if (framework != null) {
                 // stop equinox
-                this.framework.stop();
+                framework.stop();
             }
         } catch (Exception e) {
             // we can't throw here .. 
         }
-        this.framework = null;
-        this.context = null;
+        framework = null;
+        context = null;
     }
 
     /**
      * Install bundle into framework.
      *
      * @param uri Uri to install bundle from.
-     * @return Installed bundle or null.
+     * @return BundleContainer or null.
      * @throws ModuleException
      */
-    public Bundle installBundle(String uri) throws OSGiException {
+    public BundleContainer installBundle(String uri) throws OSGiException {
         // has bundle been already loaded?
-        if (this.loadedBundles.containsKey(uri)) {
-            return this.loadedBundles.get(uri);
+        if (loadedBundles.containsKey(uri)) {
+            return loadedBundles.get(uri);
         }
         // load bundle
-        Bundle bundle = null;
+        BundleContainer bundleContainer = null;
         try {
-            bundle = this.context.installBundle(uri);
-            // add bundle to the loaded bundle list
-            this.loadedBundles.put(uri, bundle);
-            this.reverseLoadedBundles.put(bundle, uri);
+            Bundle bundle = context.installBundle(uri);
+            bundleContainer = new BundleContainer(bundle);
+            // add bundle to the loaded bundle list and reverse list
+            loadedBundles.put(uri, bundleContainer );
+            reverseLoadedBundles.put(bundle, uri);
         } catch (org.osgi.framework.BundleException ex) {
-            throw new OSGiException("Failed to load bundle from uri: " + uri, ex);
+            throw new OSGiException(ex);
         }
-        return bundle;
+        return bundleContainer;
     }
 
     /**
@@ -158,42 +141,15 @@ public class Framework {
             } else {
                 bundle.uninstall();
                 // remove record about bundle
-                String key = this.reverseLoadedBundles.get(bundle);
+                String key = reverseLoadedBundles.get(bundle);
                 // remove records related to bundle
-                this.loadedBundles.remove(key);
-                this.reverseLoadedBundles.remove(bundle);
-                this.loadedClassCtors.remove(key);
+                loadedBundles.remove(key);
+                reverseLoadedBundles.remove(bundle);
             }
         } catch (org.osgi.framework.BundleException ex) {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Uninstall all installed bundles.
-     *
-     * @return False if exception was thrown during uninstallation of any
-     * module.
-     */
-    public boolean uninstallBundles() {
-        boolean result = true;
-
-        Collection<Bundle> toDelete = this.loadedBundles.values();
-        for (Bundle item : toDelete) {
-            try {
-                item.uninstall();
-            } catch (org.osgi.framework.BundleException ex) {
-                // can't throw ..
-            }
-        }
-
-        // clean storages 
-        this.loadedBundles.clear();
-        this.reverseLoadedBundles.clear();
-        this.loadedClassCtors.clear();
-        // ..
-        return result;
     }
 
     /**
@@ -204,48 +160,27 @@ public class Framework {
      */
     public DPUExecutive loadDPU(String uri) throws OSGiException {
         // load bundle
-        Bundle bundle = installBundle(uri);
-        Class<?> loaderClass = null;
-        if (this.loadedClassCtors.containsKey(uri)) {
-            // class already loaded
-            loaderClass = this.loadedClassCtors.get(uri);
-        } else {
-            // load class from bundle
-
-            // we need construct class name
-            String className = this.baseDpuClassName;
-            Dictionary<String, String> header = bundle.getHeaders();
-            String bundleName = header.get("Bundle-Name");
-
-            if (bundleName == null) {
-                // wring size .. 
-                uninstallBundle(bundle);
-                throw new OSGiException(
-                        "Wrong header, can't get Bundle-Name value.", null);
-            } else {
-                className += bundleName;
-            }
-
-            try {
-                // load class from bundle
-                loaderClass = bundle.loadClass(className);
-                // store loaded class
-                this.loadedClassCtors.put(uri, loaderClass);
-            } catch (ClassNotFoundException ex) {
-                // uninstall bundle and throw
-                uninstallBundle(bundle);
-                throw new OSGiException("Failed to load class from bundle.", ex);
-            }
+        BundleContainer bundleContainer = installBundle(uri);
+        
+        String className = (String)
+        		bundleContainer.getBundle().getHeaders().get("Bundle-Name");
+        
+        if (className == null) {
+            throw new OSGiException(
+                    "Wrong header, can't get Bundle-Name value.", null);
         }
+        // prefix with package
+        className = baseDpuClassName + className;
+        // load object
+        Object loadedObject = bundleContainer.loadClass(className);
+        
 
         // dpu store loaded BaseDPU instance
         DPUExecutive dpu = null;
         try {
-            dpu = (DPUExecutive) loaderClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
-            // uninstall bundle and throw
-            uninstallBundle(bundle);
-            throw new OSGiException("Failed to create a instance of class.", ex);
+            dpu = (DPUExecutive) loadedObject;
+        } catch (Exception e) {
+            throw new OSGiException(e);
         }
 
         return dpu;

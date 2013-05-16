@@ -10,11 +10,16 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
  */
 public class OSGiException extends ModuleException {
 
-    /**
-     * @param message Exception message.
-     * @param ex Original exception.
-     */
-    public OSGiException(String message, Exception ex) {
-        super(message, ex);
+    public OSGiException(Throwable cause) {
+        super(cause);
     }
+
+    public OSGiException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public OSGiException(String message) {
+        super(message);
+    }
+    
 }
