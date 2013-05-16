@@ -30,7 +30,7 @@ public class PipelineGraph {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 	@SuppressWarnings("unused")
-    private int id;
+    private Long id;
 
 	/**
 	 * Pipeline this graph belongs to

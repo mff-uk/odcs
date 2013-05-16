@@ -17,7 +17,7 @@ public class DPUInstance {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private Long id;
 
 	/**
 	 * Data Processing Unit
@@ -69,7 +69,7 @@ public class DPUInstance {
 	/**
 	 * @return the id
 	 */
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 

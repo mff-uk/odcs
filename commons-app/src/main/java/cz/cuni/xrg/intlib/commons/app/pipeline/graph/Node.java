@@ -21,7 +21,7 @@ public class Node {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 	@SuppressWarnings("unused")
-    private int id;
+    private Long id;
 
 	@OneToOne(optional=false, cascade=CascadeType.ALL)
 	@JoinColumn(name="instance_id", unique=true, nullable=false)

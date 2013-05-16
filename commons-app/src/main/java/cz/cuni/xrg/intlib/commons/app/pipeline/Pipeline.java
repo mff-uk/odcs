@@ -52,7 +52,7 @@ public class Pipeline implements Resource {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
 	/**
      * Human-readable pipeline name
@@ -113,7 +113,7 @@ public class Pipeline implements Resource {
 		graph.setPipeline(this);
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 	

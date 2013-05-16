@@ -23,7 +23,7 @@ public class Record {
 	 */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private Long id;
 	
 	/**
 	 * Time of creation.
@@ -94,12 +94,8 @@ public class Record {
 		this.fullMessage = fullMessage;
 	}
 	
-	public int getId() {
+	public Long getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public Date getTime() {

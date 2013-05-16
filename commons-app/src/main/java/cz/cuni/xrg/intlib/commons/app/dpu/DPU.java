@@ -21,7 +21,7 @@ public class DPU {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     
     /**
      * DPU name, provided by user.
@@ -107,7 +107,7 @@ public class DPU {
         this.visibility = visibility;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

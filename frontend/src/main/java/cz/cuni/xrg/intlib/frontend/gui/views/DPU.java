@@ -235,7 +235,7 @@ public class DPU extends CustomComponent implements View {
 				// TODO Auto-generated method stub
 				selectedDpu = (cz.cuni.xrg.intlib.commons.app.dpu.DPU) event
 						.getItemId();
-				if ((selectedDpu != null) && (selectedDpu.getId() != 0)) {
+				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
 					tabSheet.setVisible(true);
 					String selectedDpuName = selectedDpu.getName();
 					String selecteDpuDescription = selectedDpu.getDescription();
@@ -400,7 +400,7 @@ public class DPU extends CustomComponent implements View {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-						if ((selectedDpu != null) && (selectedDpu.getId() != 0)) {
+						if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
 							selectedDpu.setName(dpuName.getValue());
 							selectedDpu.setDescription(dpuDescription
 									.getValue());

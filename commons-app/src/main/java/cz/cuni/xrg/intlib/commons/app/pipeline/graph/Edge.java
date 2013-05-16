@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
+import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -16,7 +17,7 @@ public class Edge {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
 	@OneToOne(optional=false)
 	@JoinColumn(name="node_from_id")
@@ -81,7 +82,7 @@ public class Edge {
             return false;
         }
         Edge o = (Edge) other;
-        if (this.id == o.id) {
+        if (this.id != null && this.id.equals(o.getId())) {
             return true;
         } else if (this.from.hashCode() == o.from.hashCode()
                 && this.to.hashCode() == o.to.hashCode()) {
@@ -91,9 +92,17 @@ public class Edge {
         }
     }
 
-//    public int getId() {
-//        return id;
-//    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 97 * hash + Objects.hashCode(this.from);
+		hash = 97 * hash + Objects.hashCode(this.to);
+		return hash;
+	}
+
+    public Long getId() {
+        return id;
+    }
 
     /**
      * Temporary solution of id generation.
