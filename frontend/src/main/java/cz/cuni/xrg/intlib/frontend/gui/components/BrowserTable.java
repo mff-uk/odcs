@@ -5,7 +5,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Table;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
 
 import java.util.List;
 

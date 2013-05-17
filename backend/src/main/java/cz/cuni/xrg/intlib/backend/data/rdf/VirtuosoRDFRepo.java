@@ -1,6 +1,8 @@
 package cz.cuni.xrg.intlib.backend.data.rdf;
 
 import static cz.cuni.xrg.intlib.backend.data.rdf.LocalRDFRepo.logger;
+import cz.cuni.xrg.intlib.commons.app.rdf.GraphNotEmptyException;
+import cz.cuni.xrg.intlib.commons.app.rdf.UniqueNameGenerator;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
