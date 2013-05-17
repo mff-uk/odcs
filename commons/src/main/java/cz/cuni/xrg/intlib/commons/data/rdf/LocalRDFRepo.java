@@ -1,11 +1,7 @@
-package cz.cuni.xrg.intlib.backend.data.rdf;
+package cz.cuni.xrg.intlib.commons.data.rdf;
 
-import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFTriple;
-import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -936,24 +932,24 @@ public class LocalRDFRepo implements RDFDataRepository {
 
     @Override
     public List<RDFTriple> getRDFTriplesInRepository() {
-     
+
      List<RDFTriple> triples=new ArrayList<>();
      List<Statement> statements=getRepositoryStatements();
-     
+
      int count=0;
-     
+
      for (Statement next:statements)
      {
          String subject=next.getSubject().stringValue();
          String predicate=next.getPredicate().stringValue();
          String object=next.getObject().stringValue();
-         
+
          count++;
-         
+
          RDFTriple triple=new RDFTriple(count, subject, predicate, object);
          triples.add(triple);
      }
-     
+
      return triples;
     }
 }

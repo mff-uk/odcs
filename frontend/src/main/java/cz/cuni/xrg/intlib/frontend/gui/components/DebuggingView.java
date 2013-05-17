@@ -7,6 +7,7 @@ import cz.cuni.xrg.intlib.commons.data.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.data.rdf.VirtuosoRDFRepo;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +41,8 @@ public class DebuggingView extends Window {
 		tabs.setHeight("500px");
 
 		//Table with data
+		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
+		//rdfRepo.getRDFTriplesInRepository();
 		BrowserTable browserTable = new BrowserTable(buildStubRDFData());
 		tabs.addTab(browserTable, "Browse");
 

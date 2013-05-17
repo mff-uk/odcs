@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend.repository;
 
-import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDFRepo;
+import cz.cuni.xrg.intlib.commons.data.rdf.LocalRDFRepo;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
