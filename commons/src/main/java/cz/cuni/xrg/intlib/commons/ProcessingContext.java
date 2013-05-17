@@ -14,12 +14,13 @@ public interface ProcessingContext {
 
     /**
      * Store given data object. The object is accessible. to the end of DPU run
-     * under id.
+     * under id. If object can't be stored throw {@link Exception}.
      *
      * @param object Object to store.
      * @return object id
+     * throws Exception
      */
-    public String storeData(Object object);
+    public String storeData(Object object) throws Exception;
 
     /**
      * Load object from repository.
