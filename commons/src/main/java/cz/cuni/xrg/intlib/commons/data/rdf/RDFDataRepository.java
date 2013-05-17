@@ -60,4 +60,6 @@ public interface RDFDataRepository extends DataUnit {
     public Repository getDataRepository();
 
     public List<Statement> getRepositoryStatements();
+    
+    public List<RDFTriple> getRDFTriplesInRepository();
 }
