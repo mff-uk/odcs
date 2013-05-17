@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,8 @@ import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
@@ -24,7 +27,6 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
 import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
@@ -39,12 +41,10 @@ import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadCompletedEvent;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
@@ -77,12 +77,11 @@ class PipelineWorker implements Runnable {
 	 * Provide access to DPU implementation.
 	 */
 	private ModuleFacade moduleFacade;
-
+	
 	/**
 	 * Store context related to Nodes (DPUs).
 	 */
 	private Map<Node, ProcessingContext> contexts;
-	// TODO: Add come id to the node ?
 	
 	/**
 	 * Working directory for this execution.
@@ -105,7 +104,11 @@ class PipelineWorker implements Runnable {
 	protected DatabaseAccess database;	
 	
 	/**
-	 * 
+	 * Manage mapping execution context into {@link #workDirectory}. 
+	 */
+	private ExecutionContextWriter contextWriter;	
+	
+	/**
 	 * @param execution The pipeline execution record to run.
 	 * @param moduleFacade Module facade for obtaining DPUs instances.
 	 * @param eventPublisher Application event publisher.
@@ -123,6 +126,20 @@ class PipelineWorker implements Runnable {
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
+		// try to load the context ..		
+		try {
+			this.contextWriter = ExecutionContextFactory.restoreAsWrite(workDirectory);
+			if (this.contextWriter == null) {
+				// can't load use empty
+				this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
+			} else {
+				// used restored
+			}
+		} catch (FileNotFoundException e) {
+			// exception -> use new one .. 
+			this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
+		}
+		// TODO: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU 
 	}
 
 	/**
@@ -135,6 +152,8 @@ class PipelineWorker implements Runnable {
 		database.getPipeline().save(execution);
 		// and do clean up
 		cleanUp();
+		
+		logger.error("execution failed");
 	}
 	
 	/**
@@ -165,7 +184,7 @@ class PipelineWorker implements Runnable {
 			}	
 		}
 		// delete working folder
-		if (execution.isDebugging()) {
+		/*if (execution.isDebugging()) {
 			// keep the working directory
 		} else {
 			// try to delete the working directory
@@ -174,7 +193,7 @@ class PipelineWorker implements Runnable {
 			} catch (IOException e) {
 				logger.error("Can't delete directory after execution: " + execution.getId() + " exception: " + e.getMessage());
 			}
-		}
+		}*/
 	}
 	
 	/**
@@ -185,8 +204,6 @@ class PipelineWorker implements Runnable {
 	public void run() {
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
-
-//		eventPublisher.publishEvent(new PipelineStartedEvent(execution, this));
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
@@ -240,14 +257,13 @@ class PipelineWorker implements Runnable {
 			Set<Node> ancestors) throws ContextException, StructureException {
 		DPUInstance dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
-		File contextDirectory = new File(workDirectory, "dpu-" + dpuInstance.getId() );
 		// ...
 		ExtendedExtractContext extractContext;
 		extractContext = new ExtendedExtractContextImpl
-				(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
+				(contextId, execution, dpuInstance, eventPublisher, contextWriter);
 		
 		// store context
-		contexts.put(node, extractContext);		
+		contexts.put(node, extractContext);
 		return extractContext;		
 	}
 	
@@ -265,11 +281,10 @@ class PipelineWorker implements Runnable {
 			Set<Node> ancestors) throws ContextException, StructureException {
 		DPUInstance dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
-		File contextDirectory = new File(workDirectory, "dpu-" + dpuInstance.getId() );
 		// ...
 		ExtendedTransformContext transformContext;
 		transformContext = new ExtendedTransformContextImpl
-				(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
+				(contextId, execution, dpuInstance, eventPublisher, contextWriter);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
@@ -300,11 +315,10 @@ class PipelineWorker implements Runnable {
 			Set<Node> ancestors) throws ContextException, StructureException {
 		DPUInstance dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
-		File contextDirectory = new File(workDirectory, "dpu-" + dpuInstance.getId() );
 		// ...
 		ExtendedLoadContext loadContext;
 		loadContext = new ExtendedLoadContextImpl
-				(contextId, execution, dpuInstance, eventPublisher, contextDirectory);
+				(contextId, execution, dpuInstance, eventPublisher, contextWriter);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");

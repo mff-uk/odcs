@@ -3,6 +3,8 @@ package cz.cuni.xrg.intlib.backend.data;
 import java.io.File;
 
 import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDFRepo;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -21,9 +23,14 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	private String id;
 	
 	/**
-	 * Root to storage directory where DataUnit can place their data.
+	 * Manage mapping context into execution's directory. 
 	 */
-	private File storageDirectory;
+	private ExecutionContextWriter contextWriter;
+	
+	/**
+	 * Instance of DPU for which is this DataUnitFactory.
+	 */
+	private DPUInstance dpuInstance;	
 	
 	/**
 	 * Counter, can be use when generating sub folder names for new DataUnits.
@@ -35,9 +42,10 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	 * @param id Unique id (Context id.)
 	 * @param storageDirectory The folder does not have to exist.
 	 */
-	public DataUnitFactoryImpl(String id, File storageDirectory) {
+	public DataUnitFactoryImpl(String id, ExecutionContextWriter contextWriter, DPUInstance dpuInstance) {
 		this.id = id;
-		this.storageDirectory = storageDirectory;
+		this.contextWriter = contextWriter;
+		this.dpuInstance = dpuInstance;
 		this.counter = 0;
 	}
 	
@@ -48,14 +56,14 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	
 	@Override
 	public DataUnit create(DataUnitType type, boolean mergePrepare) {
-		// prepare path to the working directory		
-		File workingDirectory = new File(storageDirectory, Integer.toString(counter));
 		// increase counter
 		++counter;
 		// based on type ..
 		switch(type) {
 			case RDF: {
 				LocalRDFRepo repository = new LocalRDFRepo();
+				// get directory
+				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, type, counter);
 				repository.createNew(id, workingDirectory, mergePrepare);			
 				return repository;
 			}

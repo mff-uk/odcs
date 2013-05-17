@@ -8,17 +8,24 @@ import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.logging.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -28,9 +35,9 @@ import org.springframework.context.ApplicationEventPublisher;
 public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 
 	/**
-	 * Unique context id.
+	 * Provide implementation for some common context methods.
 	 */
-	private String id;	
+	ExtendedCommonImpl extendedImp;
 	
 	/**
 	 * Context input data units.
@@ -41,54 +48,24 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
      * Context output data units.
      */
     private List<DataUnit> outputs = new LinkedList<DataUnit>();
-    
-    /**
-     * Custom data holder.
-     */
-    private Map<String, Object> customData;
-
-    /**
-     * True id the related DPU should be run in debug mode.
-     */
-    private boolean isDebugging = false;
-    
-    /**
-     * PipelineExecution. The one who caused
-     * run of this DPU.
-     */
-	private PipelineExecution execution;
-
-	/**
-	 * Instance of DPU for which is this context.
-	 */
-	private DPUInstance dpuInstance;
-    
+     
 	/**
 	 * Application event publisher used to publish messages from DPU.
 	 */
 	private ApplicationEventPublisher eventPublisher;	
 	
 	/**
-	 * Used factory.
+	 * Counter used to generate unique id for data.
 	 */
-	private DataUnitFactoryImpl dataUnitFactory;
+	private int storeCounter;	
 	
-	/**
-	 * Path to the directory that can be used by this context.
-	 */
-	private File contextDirectory;
-
 	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
-			ApplicationEventPublisher eventPublisher, File contextDirectory) {
-		this.id = id;
+			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
+		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.intputs = new LinkedList<DataUnit>();
 		this.outputs = new LinkedList<DataUnit>();
-		this.customData = new HashMap<String, Object>();
-		this.isDebugging = execution.isDebugging();
-		this.execution = execution;
-		this.dpuInstance = dpuInstance;
 		this.eventPublisher = eventPublisher;
-		this.dataUnitFactory = new DataUnitFactoryImpl(this.id, new File(contextDirectory, "DataUnits") );
+		this.storeCounter = 0;
 	}
 
 	@Override
@@ -107,15 +84,13 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	}
 
 	@Override
-	public String storeData(Object object) {
-		// TODO Auto-generated method stub
-		return null;
+	public String storeData(Object object) throws Exception {
+		return extendedImp.storeData(object);
 	}
 
 	@Override
 	public Object loadData(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return extendedImp.loadData(id);
 	}
 
 	@Override
@@ -134,30 +109,30 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	}
 
 	@Override
-	public boolean isDebugging() {
-		return isDebugging;
+	public boolean isDebugging() {		
+		return extendedImp.isDebugging();
 	}
 
 	@Override
 	public Map<String, Object> getCustomData() {
-		return customData;
+		return extendedImp.getCustomData();
 	}
 
 	@Override
 	public DataUnitFactory getDataUnitFactory() {
-		return dataUnitFactory;
+		return extendedImp.getDataUnitFactory();
 	}	
 	
 	@Override
-	public PipelineExecution getPipelineExecution() {
-		return execution;
+	public PipelineExecution getPipelineExecution() {		
+		return extendedImp.getPipelineExecution();
 	}
 
 	@Override
 	public DPUInstance getDPUInstance() {
-		return dpuInstance;
+		return extendedImp.getDPUInstance();
 	}
-	
+
 	@Override
 	public void release() {
 		for (DataUnit item : intputs) {
@@ -179,7 +154,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	public void addSource(ProcessingContext context, DataUnitMerger merger) throws ContextException {
 		// merge custom data
 		try {
-			this.customData.putAll(context.getCustomData());
+			extendedImp.getCustomData().putAll(context.getCustomData());
 		} catch(Exception e) {
 			throw new ContextException("Error while merging custom data.", e);
 		}
@@ -187,11 +162,11 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 		if (context instanceof ExtendedExtractContext) {
 			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, extractContext.getOutputs(), dataUnitFactory);
+			merger.merger(intputs, extractContext.getOutputs(), extendedImp.getDataUnitFactory());
 		} else if (context instanceof ExtendedTransformContext) {
 			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, transformContext.getOutputs(), dataUnitFactory);
+			merger.merger(intputs, transformContext.getOutputs(), extendedImp.getDataUnitFactory());
 		} else {
 			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
 		}

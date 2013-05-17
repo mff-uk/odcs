@@ -4,17 +4,25 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.logging.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -24,62 +32,25 @@ import org.springframework.context.ApplicationEventPublisher;
 public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 
 	/**
-	 * Unique context id.
+	 * Provide implementation for some common context methods.
 	 */
-	private String id;
-	
+	ExtendedCommonImpl extendedImp;
+		
 	/**
 	 * Context output data units.
 	 */
     private List<DataUnit> outputs;
-    
-    /**
-     * Storage for custom information.
-     */
-    private Map<String, Object> customData;
-
-    /**
-     * True id the related DPU should be run in debug mode.
-     */
-    private boolean isDebugging;
-    
-    /**
-     * PipelineExecution. The one who caused
-     * run of this DPU.
-     */
-	private PipelineExecution execution;
-
-	/**
-	 * Instance of DPU for which is this context.
-	 */
-	private DPUInstance dpuInstance;
-	
+    	
 	/**
 	 * Application event publisher used to publish messages from DPU.
 	 */
 	private ApplicationEventPublisher eventPublisher;
 	
-	/**
-	 * Used factory.
-	 */
-	private DataUnitFactoryImpl dataUnitFactory;
-	
-	/**
-	 * Path to the directory that can be used by this context.
-	 */
-	private File contextDirectory;
-	
 	public ExtendedExtractContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
-			ApplicationEventPublisher eventPublisher, File contextDirectory) {
-		this.id = id;
+			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
+		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.outputs = new LinkedList<DataUnit>();
-		this.customData = new HashMap<String, Object>();
-		this.isDebugging = execution.isDebugging();
-		this.execution = execution;
-		this.dpuInstance = dpuInstance;
 		this.eventPublisher = eventPublisher;		
-		this.dataUnitFactory = new DataUnitFactoryImpl(this.id, new File(contextDirectory, "DataUnits") );
-		this.contextDirectory = contextDirectory;
 	}
 	
 	@Override
@@ -93,15 +64,13 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	}
 
 	@Override
-	public String storeData(Object object) {
-		// TODO Auto-generated method stub
-		return null;
+	public String storeData(Object object) throws Exception {
+		return extendedImp.storeData(object);
 	}
 
 	@Override
 	public Object loadData(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return extendedImp.loadData(id);
 	}
 
 	@Override
@@ -121,27 +90,27 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 
 	@Override
 	public boolean isDebugging() {		
-		return isDebugging;
+		return extendedImp.isDebugging();
 	}
 
 	@Override
 	public Map<String, Object> getCustomData() {
-		return customData;
+		return extendedImp.getCustomData();
 	}
 
 	@Override
 	public DataUnitFactory getDataUnitFactory() {
-		return dataUnitFactory;
+		return extendedImp.getDataUnitFactory();
 	}	
 	
 	@Override
 	public PipelineExecution getPipelineExecution() {		
-		return execution;
+		return extendedImp.getPipelineExecution();
 	}
 
 	@Override
 	public DPUInstance getDPUInstance() {
-		return dpuInstance;
+		return extendedImp.getDPUInstance();
 	}
 
 	@Override
