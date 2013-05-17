@@ -408,9 +408,9 @@ return dpuDetailLayout;
 	private HorizontalLayout buildDPUButtonBur() {
 		
 		buttonDpuBar = new HorizontalLayout();
-		buttonDpuBar.setWidth("100%");
+		buttonDpuBar.setWidth(600, Unit.PIXELS);
 		buttonDpuBar.setHeight("100%");
-		// buttonDpuBar.setSpacing(false);
+		buttonDpuBar.setSpacing(false);
 
 		Button buttonCopyDPU = new Button();
 		buttonCopyDPU.setCaption("Copy DPU");
@@ -424,9 +424,8 @@ return dpuDetailLayout;
 					}
 				});
 		buttonDpuBar.addComponent(buttonCopyDPU);
-		buttonDpuBar.setExpandRatio(buttonCopyDPU, 1.0f);
-		buttonDpuBar
-				.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
+		buttonDpuBar.setExpandRatio(buttonCopyDPU, 0.85f);
+		buttonDpuBar.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
 
 		Button buttonDeleteDPU = new Button();
 		buttonDeleteDPU.setCaption("Delete DPU");
@@ -441,9 +440,8 @@ return dpuDetailLayout;
 					}
 				});
 		buttonDpuBar.addComponent(buttonDeleteDPU);
-		buttonDpuBar.setExpandRatio(buttonDeleteDPU, 1.0f);
-		buttonDpuBar.setComponentAlignment(buttonDeleteDPU,
-				Alignment.BOTTOM_LEFT);
+		buttonDpuBar.setExpandRatio(buttonDeleteDPU, 0.85f);
+		buttonDpuBar.setComponentAlignment(buttonDeleteDPU,		Alignment.BOTTOM_LEFT);
 
 		Button buttonExportDPU = new Button();
 		buttonExportDPU.setCaption("Export DPU");
@@ -459,8 +457,7 @@ return dpuDetailLayout;
 				});
 		buttonDpuBar.addComponent(buttonExportDPU);
 		buttonDpuBar.setExpandRatio(buttonExportDPU, 2.55f);
-		buttonDpuBar.setComponentAlignment(buttonExportDPU,
-				Alignment.BOTTOM_LEFT);
+		buttonDpuBar.setComponentAlignment(buttonExportDPU,		Alignment.BOTTOM_LEFT);
 
 		Button buttonSaveDPU = new Button();
 		buttonSaveDPU.setCaption("Save");
