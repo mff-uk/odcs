@@ -17,11 +17,13 @@ import org.jboss.logging.Logger;
  */
 public class ExecutionContextFactory {
 
+	private ExecutionContextFactory() {}	
+	
 	/**
 	 * Create new context manager and return write access.
 	 * @param directory The root directory of context.
 	 */
-	public ExecutionContextWriter createNew(File directory) {		
+	public static ExecutionContextWriter createNew(File directory) {		
 		return new ExecutionContextImpl(directory);
 	}
 	
@@ -32,8 +34,8 @@ public class ExecutionContextFactory {
 	 * @return Null if the loading failed.
 	 * throws FileNotFoundException
 	 */
-	public ExecutionContextReader restoreAsWrite(File directory) throws FileNotFoundException {
-		ExecutionContextReader context = null;
+	public static ExecutionContextWriter restoreAsWrite(File directory) throws FileNotFoundException {
+		ExecutionContextWriter context = null;
 		
 		try {
 			context = restore(directory);
@@ -51,7 +53,7 @@ public class ExecutionContextFactory {
 	 * @return Null if the loading failed.
 	 * throws FileNotFoundException
 	 */
-	public ExecutionContextReader restoreAsRead(File directory) throws FileNotFoundException {
+	public static ExecutionContextReader restoreAsRead(File directory) throws FileNotFoundException {
 		ExecutionContextReader context = null;
 		
 		try {
@@ -71,7 +73,7 @@ public class ExecutionContextFactory {
 	 * @throws FileNotFoundException
 	 * @throws JAXBException In case of wrong format.
 	 */	
-	private ExecutionContextReader restore(File directory) throws FileNotFoundException, JAXBException {
+	private static ExecutionContextImpl restore(File directory) throws FileNotFoundException, JAXBException {
 		ExecutionContextImpl exec = new ExecutionContextImpl(directory);
 		// get file
 		File file = exec.getloadFilePath();
