@@ -16,7 +16,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons</artifactId>
 			<!-- the version has to be specify -->
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
 

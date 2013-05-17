@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.data;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * Basic data unit interface. The data unit should be passed in context between
@@ -63,17 +64,18 @@ public interface DataUnit {
     public void release();    
     
     /**
-     * Set value, if this DataUnit is in read only state.
-     * @param isReadOnly 
+     * Save DataUnit context into directory.
+     * @param directory
      */
-    //public void setReadOnly(boolean isReadOnly);
-    // TODO: Petyr -> Jirka : no way .. 
+    public void save(File directory);
     
     /**
-     * Return data storage repository for this type.
-     *
-     * @return
+     * Load data unit context from directory. Throw {@link FileNotFoundException}
+     * if some of required file can't be found. And {@link Exception}
+     * in case of any other error.
+     * @param directory
+     * @throws FileNotFoundException
+     * @throws Exception
      */
-    //public Repository getDataRepository();
-    // TODO: Petyr -> Jirka : why should this be here ?
+    public void load(File directory) throws FileNotFoundException, Exception;
 }

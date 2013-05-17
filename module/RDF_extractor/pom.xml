@@ -13,7 +13,7 @@
     
     <properties>       
     	<!-- specify module version -->
-        <module.version>0.0.2</module.version>
+        <module.version>0.0.1</module.version>
     </properties>
  	
 </project>

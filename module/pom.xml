@@ -39,14 +39,14 @@
 		<dependency> <!-- commons-web project -->
 			<groupId>cz.cuni.xrg.intlib</groupId>
 			<artifactId>commons-web</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
 
 		<dependency> <!-- commons-module project -->
 			<groupId>cz.cuni.xrg.intlib</groupId>
 			<artifactId>commons-module</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
 
@@ -77,9 +77,10 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Bundle-Version>${module.version}</Bundle-Version>
-						<Export-Package>module,gui</Export-Package>
-						<Import-Package>*</Import-Package>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package>module;version="${module.version}",gui;version="${module.version}"</Export-Package>
+						<!-- TODO: update version ! -->
+						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}", *</Import-Package>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<!-- dependencies embedding -->
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
