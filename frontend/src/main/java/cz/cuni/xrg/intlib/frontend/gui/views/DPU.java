@@ -26,6 +26,9 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.DpuType;
+import cz.cuni.xrg.intlib.commons.app.communication.Client;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import java.util.List;
 
@@ -244,7 +247,14 @@ public class DPU extends CustomComponent implements View {
 					dpuName.setValue(selectedDpuName);
 					dpuDescription.setValue(selecteDpuDescription);
 			//		groupType.setValue(selectedDpuType);
-					groupVisibility.setValue(selecteDpuVisibility);
+					if (selecteDpuVisibility == VisibilityType.PRIVATE || selecteDpuVisibility == VisibilityType.PUBLIC){
+						groupVisibility.setValue(selecteDpuVisibility);
+						groupVisibility.setEnabled(false);
+					}
+					else{ 
+						groupVisibility.setValue(selecteDpuVisibility);
+						groupVisibility.setEnabled(true);
+					}
 
 				}
 
@@ -406,6 +416,10 @@ public class DPU extends CustomComponent implements View {
 									.getValue());
 							selectedDpu.setVisibility((VisibilityType)groupVisibility
 									.getValue());
+							
+							// store into DB
+							App.getDPUs().save(selectedDpu);
+							
 
 						}
 
