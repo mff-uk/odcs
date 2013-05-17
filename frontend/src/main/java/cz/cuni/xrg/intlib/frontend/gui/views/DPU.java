@@ -18,8 +18,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import cz.cuni.xrg.intlib.auxiliaries.App;
-import cz.cuni.xrg.intlib.auxiliaries.ModuleDialogGetter;
 
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Validator;
@@ -41,6 +39,8 @@ import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.ModuleDialogGetter;
 
 import java.util.List;
 

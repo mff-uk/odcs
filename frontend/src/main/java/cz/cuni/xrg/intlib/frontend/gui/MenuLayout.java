@@ -7,7 +7,7 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.xrg.intlib.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
 /**
  * Class represent main application component.

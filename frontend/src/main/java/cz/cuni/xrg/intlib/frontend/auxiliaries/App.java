@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.auxiliaries;
+package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import com.vaadin.ui.UI;
 

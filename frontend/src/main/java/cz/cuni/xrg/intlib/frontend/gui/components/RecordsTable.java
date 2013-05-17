@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.Container;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Table;
-import cz.cuni.xrg.intlib.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
 import java.util.List;
 
