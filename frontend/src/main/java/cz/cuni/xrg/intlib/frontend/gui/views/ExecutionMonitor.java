@@ -35,7 +35,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.xrg.intlib.auxiliaries.App;
-import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;

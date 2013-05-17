@@ -5,7 +5,7 @@ import java.util.List;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
 
-import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;

@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.auxiliaries.App;
 
-import cz.cuni.xrg.intlib.commons.app.data.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.commons.data.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;

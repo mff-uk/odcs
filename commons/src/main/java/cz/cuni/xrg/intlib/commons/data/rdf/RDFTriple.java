@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.cuni.xrg.intlib.commons.app.data.rdf;
+package cz.cuni.xrg.intlib.commons.data.rdf;
 
 /**
  * Stub class for representing RDF Triple for browsing in frontend.
