@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.data.rdf;
 
-import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import java.net.URL;
 import java.util.List;
@@ -61,6 +60,5 @@ public interface RDFDataRepository extends DataUnit {
     public Repository getDataRepository();
 
     public List<Statement> getRepositoryStatements();
-    
-    public List<RDFTriple> getRDFTriplesInRepository();
+
 }

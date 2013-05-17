@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend.repository;
 
-import cz.cuni.xrg.intlib.backend.data.rdf.VirtuosoRDFRepo;
+import cz.cuni.xrg.intlib.backend.data.rdf.VirtuosoRDF;
 import static cz.cuni.xrg.intlib.backend.repository.LocalRDFRepoTest.logger;
 import static cz.cuni.xrg.intlib.backend.repository.LocalRDFRepoTest.rdfRepo;
 import java.io.File;
@@ -24,7 +24,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
     @BeforeClass
     public static void setUpLogger() {
         logger = LoggerFactory.getLogger(VirtuosoTest.class);
-        rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD, DEFAUTLGRAPH);
+        rdfRepo = VirtuosoRDF.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD, DEFAUTLGRAPH);
        
         rdfRepo.cleanAllRepositoryData();
     }

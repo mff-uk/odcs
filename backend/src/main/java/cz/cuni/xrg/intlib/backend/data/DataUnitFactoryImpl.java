@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.backend.data;
 
 import java.io.File;
 
-import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDFRepo;
+import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
@@ -61,7 +61,7 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 		// based on type ..
 		switch(type) {
 			case RDF: {
-				LocalRDFRepo repository = new LocalRDFRepo();
+				LocalRDF repository = new LocalRDF();
 				// get directory
 				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, type, counter);
 				repository.createNew(id, workingDirectory, mergePrepare);			

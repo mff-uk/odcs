@@ -153,7 +153,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
     private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
 
         VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
-        copyAllDataToTargetRepository(newCopy);
+        copyAllDataToTargetRepository(newCopy.getDataRepository());
 
         return newCopy;
     }

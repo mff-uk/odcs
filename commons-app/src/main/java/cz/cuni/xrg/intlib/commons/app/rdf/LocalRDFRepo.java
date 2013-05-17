@@ -835,13 +835,13 @@ public class LocalRDFRepo {
      *
      * @param targetRepository
      */
-    public void copyAllDataToTargetRepository(LocalRDFRepo targetRepo) {
+    public void copyAllDataToTargetRepository(Repository targetRepo) {
 
         if (targetRepo == null) {
             return;
         }
 
-        Repository targetRepository = targetRepo.getDataRepository();
+        Repository targetRepository = targetRepo; //targetRepo.getDataRepository();
 
         try {
             RepositoryConnection sourceConnection = repository.getConnection();
@@ -869,7 +869,11 @@ public class LocalRDFRepo {
         return repository;
     }    
     
-    protected void setReadOnly(boolean isReadOnly) {
+    public boolean isReadOnly() {
+    	return isReadOnly;
+    }
+    
+    public void setReadOnly(boolean isReadOnly) {
         this.isReadOnly = isReadOnly;
     }
 
