@@ -10,13 +10,16 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.auxiliaries.App;
+import cz.cuni.xrg.intlib.auxiliaries.ModuleDialogGetter;
 
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Validator;
@@ -25,11 +28,20 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
+
+import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
+import cz.cuni.xrg.intlib.commons.app.dpu.TemplateConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+
 import java.util.List;
 
 /**
@@ -54,6 +66,9 @@ public class DPU extends CustomComponent implements View {
 	private TabSheet tabSheet;
 	private cz.cuni.xrg.intlib.commons.app.dpu.DPU selectedDpu;
 	private OptionGroup groupVisibility;
+	private DPUInstance dpu;
+	private DPUExecutive dpuExec;
+	String jarPath;
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -238,6 +253,35 @@ public class DPU extends CustomComponent implements View {
 				// TODO Auto-generated method stub
 				selectedDpu = (cz.cuni.xrg.intlib.commons.app.dpu.DPU) event
 						.getItemId();
+				jarPath = selectedDpu.getJarPath();
+				if (jarPath !=null){
+					try {
+						dpuExec = App.getApp().getModules().getInstance(jarPath);
+						
+				
+						if (dpuExec != null) {
+							
+						
+								Configuration conf = new TemplateConfiguration();
+								dpuExec.saveConfigurationDefault(conf);
+										
+							
+							CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
+							dpuConfigurationDialog.setWidth("100%");
+							verticalLayoutConfigure.removeAllComponents();
+							verticalLayoutConfigure.addComponent(dpuConfigurationDialog);
+						}
+						
+					} catch (ModuleException me) {
+						//TODO: Show info about failed load of custom part of dialog
+						Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);
+					} catch (ConfigurationException ce) {
+						//TODO: Show info about invalid saved config(should not happen -> validity check on save)
+						Notification.show("ConfigurationException: Failed to set configuration for dialog.",
+								ce.getMessage(), Type.ERROR_MESSAGE);
+					} 
+					}
+				
 				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
 					tabSheet.setVisible(true);
 					String selectedDpuName = selectedDpu.getName();
@@ -440,6 +484,8 @@ public class DPU extends CustomComponent implements View {
 		verticalLayoutConfigure.setWidth("100.0%");
 		verticalLayoutConfigure.setHeight("100%");
 		verticalLayoutConfigure.setMargin(true);
+		
+
 
 		return verticalLayoutConfigure;
 	}
