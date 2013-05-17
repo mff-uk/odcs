@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.backend.data.rdf;
+package cz.cuni.xrg.intlib.commons.app.rdf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,10 @@ import java.util.Map;
  * Generates unique name for file name.
  *
  * @author Jiri Tomes
+ * 
+ * Petyr: there should be no need for this class. I see no reason why generate some id base on "nothing".
  */
+@Deprecated
 public class UniqueNameGenerator {
 
     private static Map<String, Integer> map = new HashMap<>();
