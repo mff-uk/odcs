@@ -835,7 +835,7 @@ public class LocalRDFRepo {
      *
      * @param targetRepository
      */
-    public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
+    public void copyAllDataToTargetRepository(LocalRDFRepo targetRepo) {
 
         if (targetRepo == null) {
             return;
@@ -865,6 +865,10 @@ public class LocalRDFRepo {
 
     }
 
+    public Repository getDataRepository() {
+        return repository;
+    }    
+    
     protected void setReadOnly(boolean isReadOnly) {
         this.isReadOnly = isReadOnly;
     }
