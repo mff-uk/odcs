@@ -54,13 +54,13 @@
 			<type>jar</type>
 		</dependency>
 	
-		<dependency> <!-- OSGi impelemention -->  
+		<dependency> <!-- OSGI impelemention -->  
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 			<version>3.8.1.v20120830-144521</version>
 		</dependency>
 	    
-        <!-- spring dependency -->
+        <!-- Spring dependency -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -68,7 +68,18 @@
             <type>jar</type>
         </dependency>
 	    
-	    <!-- hibernate dependencies -->
+        <dependency> <!-- Virtuoso dependency -->
+            <groupId>com.openlinksw</groupId>
+            <artifactId>virt_sesame2</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.openlinksw</groupId>
+            <artifactId>virtjdbc</artifactId>
+            <version>3</version>
+        </dependency>		    
+	    
+	    <!-- Hibernate dependencies -->
         <dependency>
             <groupId>org.hibernate.common</groupId>
             <artifactId>hibernate-commons-annotations</artifactId>

@@ -8,7 +8,7 @@
     </parent>	
     <artifactId>backend</artifactId>
     <packaging>jar</packaging>
-    <name>intlib backend</name>
+    <name>backend</name>
     <description></description>
 
     <repositories>
@@ -30,16 +30,14 @@
         <dependency> <!-- commons project -->
             <groupId>${project.groupId}</groupId>
             <artifactId>commons</artifactId>
-            <!-- the version has to be specify -->
-            <version>0.0.1</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>	
 	
         <dependency> <!-- commons-app project -->
             <groupId>${project.groupId}</groupId>
             <artifactId>commons-app</artifactId>
-            <!-- the version has to be specify -->
-            <version>0.0.1</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -75,18 +73,7 @@
 				</exclusion>		
 			</exclusions>            
         </dependency>
-        
-        <dependency> <!-- Virtuoso dependency -->
-            <groupId>com.openlinksw</groupId>
-            <artifactId>virt_sesame2</artifactId>
-            <version>2.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.openlinksw</groupId>
-            <artifactId>virtjdbc</artifactId>
-            <version>3</version>
-        </dependency>	            
-		
+               
     </dependencies>
 		
     <pluginRepositories>
