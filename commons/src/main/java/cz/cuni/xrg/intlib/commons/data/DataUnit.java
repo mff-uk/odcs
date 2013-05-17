@@ -21,7 +21,6 @@ public interface DataUnit {
      * @param workingDirectory Path to the directory where DataUnit can store files.
      * @param mergePrepare If true the merge method will be called immediately after this method.
      */
-    // TODO: Jirka I thing its not in Repository - we will speak about practice of this using.
     public void createNew(String id, File workingDirectory, boolean mergePrepare);
     
     /**
