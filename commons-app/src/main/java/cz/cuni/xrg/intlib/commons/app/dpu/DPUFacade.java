@@ -130,13 +130,19 @@ public class DPUFacade {
 	/* **************** Methods for DPU Instance management ***************** */
 
 	/**
-	 * Creates DPUInstance without persisting it.
+	 * Creates DPUInstance with configuration copied from template without
+	 * persisting it.
 	 * 
 	 * @return
 	 */
-	@Deprecated
 	public DPUInstance createDPUInstance(DPU dpu) {
 		DPUInstance dpuInstance = new DPUInstance(dpu);
+		
+		// convert template configuration to instance configuration
+		InstanceConfiguration conf = new InstanceConfiguration();
+		conf.setValues(dpu.getTemplateConfiguration().getValues());
+		dpuInstance.setInstanceConfig(conf);
+		
 		return dpuInstance;
 	}
 
