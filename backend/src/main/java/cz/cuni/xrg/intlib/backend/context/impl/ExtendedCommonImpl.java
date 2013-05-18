@@ -118,7 +118,7 @@ class ExtendedCommonImpl {
 	}
 
 	public void storeDataForResult(String id, Object object) {
-		// TODO Auto-generated method stub		
+		extendedImp.storeDataForResult(id, object);	
 	}
 
 	public boolean isDebugging() {

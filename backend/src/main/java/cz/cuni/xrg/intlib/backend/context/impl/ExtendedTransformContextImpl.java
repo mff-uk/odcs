@@ -105,7 +105,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 
 	@Override
 	public void storeDataForResult(String id, Object object) {
-		// TODO Auto-generated method stub		
+		extendedImp.storeDataForResult(id, object);		
 	}
 
 	@Override

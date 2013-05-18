@@ -82,9 +82,8 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
 	}
 
-	@Override
 	public void storeDataForResult(String id, Object object) {
-		// TODO Auto-generated method stub		
+		// TODO Petyr: storeDataForResult		
 	}
 
 	@Override
