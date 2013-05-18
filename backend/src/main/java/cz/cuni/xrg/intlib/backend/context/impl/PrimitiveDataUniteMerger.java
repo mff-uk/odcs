@@ -1,13 +1,8 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import cz.cuni.xrg.intlib.backend.AppEntry;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;

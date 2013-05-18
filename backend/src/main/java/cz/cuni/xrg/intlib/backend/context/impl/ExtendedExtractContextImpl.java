@@ -1,28 +1,18 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
-import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.logging.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**

@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 
 /**
  * Basic executive interface of each DPU component.
