@@ -185,18 +185,17 @@ public class VirtuosoRDF implements RDFDataRepository {
 
 	@Override
 	public void createNew(String id, File workingDirectory, boolean mergePrepare) {
-		// TODO Jirka: Virtuoso.createNew		
+		// TODO Jirka: Virtuoso.createNew
 	}
 
 	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
-		// TODO Jirka: Virtuoso.merge		
+		// TODO Jirka: Virtuoso.merge
 	}
 
 	@Override
 	public DataUnitType getType() {
-		// TODO Petyr return type
-		return null;
+		return DataUnitType.RDF_Virtuoso;
 	}
 
 	@Override

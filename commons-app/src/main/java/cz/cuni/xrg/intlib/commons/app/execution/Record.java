@@ -41,7 +41,6 @@ public class Record {
 	
 	/**
 	 * DPU which emmitted the message.
-	 * TODO: Enable null values? For messages outside DPU ?
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "dpu_id", nullable = false)

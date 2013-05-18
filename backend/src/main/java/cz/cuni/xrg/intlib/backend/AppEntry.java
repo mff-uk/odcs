@@ -96,7 +96,7 @@ public class AppEntry {
 				
 		// print some information ..
 		logger.info("DPU directory:" + appConfig.getString(ConfProperty.MODULE_PATH));
-		logger.info("Listening on port:" + appConfig.getBackendPort());
+		logger.info("Listening on port:" + appConfig.getInteger(ConfProperty.BACKEND_PORT));
 		logger.info("Running ...");
 				
 		InputStreamReader converter = new InputStreamReader(System.in);
@@ -111,7 +111,7 @@ public class AppEntry {
 				continue;
 			}			
 			// ...
-		// TODO: interact with user
+		// TODO Petyr: interact with user
 		}
 		
 	}

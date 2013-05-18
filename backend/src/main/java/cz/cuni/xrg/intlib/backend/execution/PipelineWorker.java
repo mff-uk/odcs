@@ -139,7 +139,7 @@ class PipelineWorker implements Runnable {
 			// exception -> use new one .. 
 			this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
 		}
-		// TODO: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU 
+		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU
 	}
 
 	/**

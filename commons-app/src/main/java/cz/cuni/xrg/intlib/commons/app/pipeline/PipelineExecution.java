@@ -38,7 +38,7 @@ public class PipelineExecution  {
 	@Column(name = "debug_mode")
     private boolean isDebugging;
 
-	// TODO: Add to database
+	// TODO Honza: add this variable to database please
 	/**
 	 * Path to the pipeline execution working directory.
 	 */
