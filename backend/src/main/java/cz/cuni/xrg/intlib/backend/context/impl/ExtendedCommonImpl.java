@@ -118,7 +118,7 @@ class ExtendedCommonImpl {
 	}
 
 	public void storeDataForResult(String id, Object object) {
-		extendedImp.storeDataForResult(id, object);	
+		// TODO Petyr: storeDataForResult	
 	}
 
 	public boolean isDebugging() {
