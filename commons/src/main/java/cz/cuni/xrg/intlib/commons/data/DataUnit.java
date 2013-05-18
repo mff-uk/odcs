@@ -63,10 +63,10 @@ public interface DataUnit {
     public void release();    
     
     /**
-     * Save DataUnit context into directory.
-     * @param directory
+     * Save DataUnit context into workingDirectory.
+     * @see #createNew
      */
-    public void save(File directory);
+    public void save();
     
     /**
      * Load data unit context from directory. Throw {@link FileNotFoundException}

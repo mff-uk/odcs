@@ -312,12 +312,12 @@ public class LocalRDF implements RDFDataRepository {
     }
 
 	@Override
-	public void save(File directory) {
-		// TODO Auto-generated method stub		
+	public void save() {
+		// TODO Jirka, Petyr: save restore data into workingDirectory (passed in createNew)		
 	}
 
 	@Override
 	public void load(File directory) throws FileNotFoundException, Exception {
-		// TODO Auto-generated method stub		
+		// TODO Jirka, Petyr: load data rom given directory 		
 	}
 }
