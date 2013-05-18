@@ -29,7 +29,7 @@ public class RecordsTable extends CustomComponent {
 		messageTable.setContainerDataSource(container);
 
 		// set columns
-		messageTable.setVisibleColumns(new String[]{"time", "type", "source",
+		messageTable.setVisibleColumns(new String[]{"time", "type", "dpuInstance",
 					"shortMessage"});
 	}
 }

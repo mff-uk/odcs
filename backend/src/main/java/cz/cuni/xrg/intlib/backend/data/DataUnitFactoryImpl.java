@@ -12,7 +12,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
  * Implementation of DataUnitFactory.
- *  
+ *
  * @author Petyr
  *
  */
@@ -20,9 +20,9 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 
 	/**
 	 * Related context id, is unique.
-	 */	
+	 */
 	private String id;
-	
+
 	/**
 	 * Manage mapping context into execution's directory. 
 	 */
@@ -37,7 +37,7 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	 * Counter, can be use when generating sub folder names for new DataUnits.
 	 */
 	private int counter;
-	
+
 	/**
 	 * Base constructor..
 	 * @param id Unique id (Context id.)
@@ -49,12 +49,12 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 		this.dpuInstance = dpuInstance;
 		this.counter = 0;
 	}
-	
+
 	@Override
 	public DataUnit create(DataUnitType type) {
 		return create(type, false);
 	}
-	
+
 	@Override
 	public DataUnit create(DataUnitType type, boolean mergePrepare) {
 		// increase counter
