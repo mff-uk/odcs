@@ -30,4 +30,9 @@ public interface ExtendedContext {
      * Prepare for being deleted.
      */
     public void release();	
+    
+    /**
+     * Save all data units into their directories.
+     */
+    public void save();
 }

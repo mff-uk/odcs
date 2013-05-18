@@ -117,7 +117,14 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	public void release() {
 		for (DataUnit item : outputs) {
 			item.release();
-		}		
+		}
+	}
+
+	@Override
+	public void save() {
+		for (DataUnit item : outputs) {
+			item.save();
+		}
 	}
 		
 }

@@ -144,6 +144,16 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	}	
 	
 	@Override
+	public void save() {
+		for (DataUnit item : intputs) {
+			item.save();
+		}
+		for (DataUnit item : outputs) {
+			item.save();
+		}
+	}	
+	
+	@Override
 	public void sealInputs() {
 		for (DataUnit inputDataUnit : intputs) {
 			inputDataUnit.madeReadOnly();

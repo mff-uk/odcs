@@ -119,6 +119,13 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	}	
 	
 	@Override
+	public void save() {
+		for (DataUnit item : intputs) {
+			item.save();
+		}
+	}	
+	
+	@Override
 	public void sealInputs() {
 		for (DataUnit inputDataUnit : intputs) {
 			inputDataUnit.madeReadOnly();
