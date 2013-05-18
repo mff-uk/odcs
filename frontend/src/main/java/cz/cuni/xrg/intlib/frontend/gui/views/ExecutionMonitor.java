@@ -64,6 +64,7 @@ ClickListener {
 	private IndexedContainer tableData;
 	static String filter;
 	private Integer exeId ;
+	private String pipeName;
 
 	static String[] visibleCols = new String[] { "date", "name", "user",
 			"status", "debug", "obsolete", "actions", "report" };
@@ -262,19 +263,25 @@ ClickListener {
 		infoBar.addComponent(new Label("Start: "), 3, 0);
 		infoBar.addComponent(new Label("End: "), 3, 1);
 		
-/*		TextField pipeline = new TextField();
-		pipeline.setEnabled(true);
-		infoBar.addComponent(pipeline, 2, 0);
+
 		
-		TextField user = new TextField();
-		user.setEnabled(true);
+		Label pipeline = new Label();
+		pipeline.setCaption(pipeName);
+		infoBar.addComponent(pipeline,2,0);
+						
+		Label user = new Label();
+		user.setCaption("");
 		infoBar.addComponent(user, 2, 1);
 		
-		DateField start = new DateField();
+		Label start = new Label();
+		start.setCaption("");
 		infoBar.addComponent(start, 4, 0);
 		
-		DateField end = new DateField();
-		infoBar.addComponent(end, 4, 1); */
+		Label end = new Label();
+		end.setCaption("");
+		infoBar.addComponent(end, 4, 1);
+		
+
 		
 		logLayout.addComponent(infoBar);
 		
@@ -411,6 +418,7 @@ ClickListener {
 			Object itemId = senderData.data;
 			
 			exeId = (Integer) tableData.getContainerProperty(itemId,"exeid").getValue();
+			pipeName = (String) tableData.getContainerProperty(itemId, "name").getValue();
 			
 			if (caption.equals("stop")) {
 			} else if (caption.equals("showlog")) {
