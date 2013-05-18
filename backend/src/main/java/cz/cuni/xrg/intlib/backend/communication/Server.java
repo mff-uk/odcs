@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.communication.Messages;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 
 /**
  * Server part of communication between frontend and backend over
@@ -142,7 +143,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
 	public void init() throws CommunicationException {
 		// open socket
 		try {
-			this.socket = new ServerSocket(appConfiguration.getBackendPort());
+			this.socket = new ServerSocket( appConfiguration.getInteger(ConfProperty.BACKEND_PORT) );
 		} catch (IOException e) {
 			throw new CommunicationException(e);
 		}
@@ -164,7 +165,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
 					executorService.execute(communicator);
 				}
 			} catch (IOException e) {
-				// TODO How to react on server IOException, not it's ignored
+				// TODO Petyr: How to react on server IOException, not it's ignored
 				e.printStackTrace();
 			}
 		}
