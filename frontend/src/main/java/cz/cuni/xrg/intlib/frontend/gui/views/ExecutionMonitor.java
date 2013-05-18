@@ -20,6 +20,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -30,6 +31,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -39,6 +41,8 @@ import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.gui.components.BrowserTable;
+import cz.cuni.xrg.intlib.frontend.gui.components.QueryView;
 import cz.cuni.xrg.intlib.frontend.gui.components.RecordsTable;
 
 /**
@@ -299,6 +303,30 @@ ClickListener {
 		
 		
 		logLayout.addComponent(executionRecordsTable);
+		
+		TabSheet tabs = new TabSheet();
+	//	tabs.setHeight("500px");
+
+		//Table with data
+
+		BrowserTable browserTable = new BrowserTable(buildStubRDFData());
+		tabs.addTab(browserTable, "Browse");
+
+
+		//RecordsTable with different data source
+		List<Record> fullRecords = App.getDPUs().getAllDPURecords();
+		RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
+		fullRecordsTable.setWidth("100%");
+		fullRecordsTable.setHeight("100%");
+		Tab logTab = tabs.addTab(fullRecordsTable, "Log");
+
+		//Query View
+		QueryView queryView = new QueryView();
+		tabs.addTab(queryView, "Query");
+		tabs.setSelectedTab(logTab);
+
+
+		logLayout.addComponent(tabs);
 
 		
 		
@@ -372,19 +400,18 @@ ClickListener {
 		return result;
 	}
 
-	private final static int UNDEFINED_LENGTH = -1;
+	
+	private List<RDFTriple> buildStubRDFData() {
+		List<RDFTriple> rdfTripleList = new ArrayList<>();
 
-	public static int getMinLength(String[]... arraysLength) {
-		int min = UNDEFINED_LENGTH;
-		for (int i = 0; i < arraysLength.length; i++) {
-			if (min == UNDEFINED_LENGTH) {
-				min = arraysLength[i].length;
-			} else {
-				min = Math.min(min, arraysLength[i].length);
-			}
-		}
-		return min;
+		rdfTripleList.add(new RDFTriple(1, "rdf:Description", "rdf:about", "http://www.recshop.fake/cd/Empire Burlesque"));
+		rdfTripleList.add(new RDFTriple(2, "rdf:Description", "cd:artist", "Bob Dylan"));
+		rdfTripleList.add(new RDFTriple(3, "rdf:Description", "cd:country", "USA"));
+		rdfTripleList.add(new RDFTriple(4, "rdf:Description", "cd:company", "Columbia"));
+		rdfTripleList.add(new RDFTriple(5, "rdf:Description", "cd:price", "10.90"));
+		rdfTripleList.add(new RDFTriple(6, "rdf:Description", "cd:year", "1985"));
 
+		return rdfTripleList;
 	}
 
 	private List<Record> buildStubMessageData() {
