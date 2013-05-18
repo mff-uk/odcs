@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.communication.ServerEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -65,7 +66,7 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
 	 * @param config
 	 */
 	public void setup(AppConfiguration config) {
-		workingDirectory = new File( config.getWorkingDirectory() );
+		workingDirectory = new File( config.getString(ConfProperty.GENERAL_WORKINGDIR) );
 		// make sure that our working directory exist
 		if (workingDirectory.isDirectory()) {
 			workingDirectory.mkdirs();
@@ -91,7 +92,7 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
     	database.getPipeline().save(pipelineExecution);
    	
     	this.executorService.execute(
-    			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, directory, database));
+    			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, database));
     }
     
     /**

@@ -113,17 +113,16 @@ class PipelineWorker implements Runnable {
 	 * @param execution The pipeline execution record to run.
 	 * @param moduleFacade Module facade for obtaining DPUs instances.
 	 * @param eventPublisher Application event publisher.
-	 * @param workDirectory Working directory for this execution.
 	 * @param database Access to database.
 	 */
 	public PipelineWorker(PipelineExecution execution, ModuleFacade moduleFacade, 
-			ApplicationEventPublisher eventPublisher, File workDirectory,
-			DatabaseAccess database) {
+			ApplicationEventPublisher eventPublisher, DatabaseAccess database) {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
 		this.contexts = new HashMap<>();
-		this.workDirectory = workDirectory;
+		// get working directory from pipelineExecution
+		this.workDirectory = new File( execution.getWorkingDirectory() );
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
