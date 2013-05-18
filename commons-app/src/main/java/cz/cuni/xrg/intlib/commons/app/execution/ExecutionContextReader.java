@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.io.File;
+import java.util.Set;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -21,6 +22,14 @@ public interface ExecutionContextReader {
 	 * @return 
 	 */
 	public boolean containsData(DPUInstance dpuInstance);
+	
+	/**
+	 * Return list of DataUnit indexes for DPU that can be used in {@link #getTypeForDataUnit} 
+	 * and {@link #getDirectoryForDataUnit}
+	 * @param dpuInstance
+	 * @return Set of indexes or null if there is no data for given dpuInstance.
+	 */
+	public Set<Integer> getIndexesForDataUnits(DPUInstance dpuInstance);
 	
 	/**
 	 * Return type of {@link cz.cuni.xrg.intlib.commons.data.DataUnit} used 

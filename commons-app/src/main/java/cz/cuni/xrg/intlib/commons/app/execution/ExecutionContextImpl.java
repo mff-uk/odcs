@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -64,6 +65,15 @@ class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextW
 		return contexts.containsKey(dpuInstance.getId());
 	}
 
+	@Override
+	public Set<Integer> getIndexesForDataUnits(DPUInstance dpuInstance) {
+		if (contexts.containsKey(dpuInstance.getId())) {
+			return null;
+		} else {
+			return contexts.get(dpuInstance.getId()).getIndexForDataUnits();
+		}
+	}
+	
 	@Override
 	public DataUnitType getTypeForDataUnit(DPUInstance dpuInstance, int index) {
 		if (contexts.containsKey(dpuInstance.getId())) {

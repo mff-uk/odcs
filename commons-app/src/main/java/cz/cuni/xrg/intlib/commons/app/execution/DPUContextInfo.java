@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -117,4 +118,11 @@ class DPUContextInfo {
 		return resultDirectory;
 	}		
 
+	/**
+	 * Return set of indexes for stored DataUnits.
+	 * @return
+	 */
+	public Set<Integer> getIndexForDataUnits() {
+		return dataUnits.keySet();
+	}
 }
