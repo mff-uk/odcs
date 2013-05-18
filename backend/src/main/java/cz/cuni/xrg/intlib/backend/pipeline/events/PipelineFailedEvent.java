@@ -1,5 +1,8 @@
 package cz.cuni.xrg.intlib.backend.pipeline.events;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
@@ -20,9 +23,14 @@ public class PipelineFailedEvent extends PipelineEvent {
         this.longMessage = message;
     }
 
-    public PipelineFailedEvent(Exception ex, DPUInstance dpuInstance, PipelineExecution pipelineExec, Object source) {
+    public PipelineFailedEvent(Exception exception, DPUInstance dpuInstance, PipelineExecution pipelineExec, Object source) {
         super(dpuInstance, pipelineExec, source);
-        this.longMessage = ex.getMessage();
+        // get trace message
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        exception.printStackTrace(pw);
+        
+        this.longMessage = sw.toString();
     }    
     
     @Override
