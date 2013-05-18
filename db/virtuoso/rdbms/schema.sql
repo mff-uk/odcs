@@ -51,6 +51,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_EXECUTION"
   "status" INTEGER,
   "pipeline_id" INTEGER,
   "debug_mode" SMALLINT,
+  "execution_directory" VARCHAR(255),
   PRIMARY KEY ("id")
 );
 

@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -119,10 +120,15 @@ class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextW
 
 	@Override
 	public void save() throws Exception {
+		// make sure that the folder exist
+		workingDirectory.mkdirs();
+		// get output file
+		File outputFile = getloadFilePath();
+		
 		JAXBContext jc = JAXBContext.newInstance(ExecutionContextImpl.class, DPUContextInfo.class);
 		Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(this, System.out);		
+        marshaller.marshal(this, new FileOutputStream(outputFile) );		
 	}
 	
 	@Override

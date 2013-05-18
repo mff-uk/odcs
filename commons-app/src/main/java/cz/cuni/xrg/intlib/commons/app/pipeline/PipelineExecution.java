@@ -38,11 +38,10 @@ public class PipelineExecution  {
 	@Column(name = "debug_mode")
     private boolean isDebugging;
 
-	// TODO Honza: add this variable to database please
 	/**
 	 * Path to the pipeline execution working directory.
 	 */
-	@Transient
+	@Column(name = "execution_directory")
 	private String workingDirectory;
 	
 	/** No-arg constructor for JPA */
