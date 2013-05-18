@@ -255,7 +255,7 @@ public class DPU extends CustomComponent implements View {
 					VisibilityType selecteDpuVisibility = selectedDpu.getVisibility();
 					dpuName.setValue(selectedDpuName);
 					dpuDescription.setValue(selecteDpuDescription);
-					if (selecteDpuVisibility == VisibilityType.PRIVATE || selecteDpuVisibility == VisibilityType.PUBLIC){
+					if (selecteDpuVisibility == VisibilityType.PRIVATE){
 						groupVisibility.setValue(selecteDpuVisibility);
 						groupVisibility.setEnabled(false);
 					}
