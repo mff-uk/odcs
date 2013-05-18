@@ -27,7 +27,7 @@ public interface ExecutionContextReader {
 	 * by {@link DPUInstance}
 	 * @param dpuInstance {@link DPUInstance} which worked with {@link cz.cuni.xrg.intlib.commons.data.DataUnit}.
 	 * @param id {@link cz.cuni.xrg.intlib.commons.data.DataUnit}' index.
-	 * @return Type of {@link cz.cuni.xrg.intlib.commons.data.DataUnit}
+	 * @return Type of {@link cz.cuni.xrg.intlib.commons.data.DataUnit} on null if context doesn't exist.
 	 */
 	public DataUnitType getTypeForDataUnit(DPUInstance dpuInstance, int index);
 	
