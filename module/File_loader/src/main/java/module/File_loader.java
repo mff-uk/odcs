@@ -145,7 +145,7 @@ public class File_loader implements GraphicalLoader {
     		throw new LoadException("Missing inputs!");
     	}    	
     	DataUnit dataUnit = context.getInputs().get(0);
-    	if (dataUnit.getType() == DataUnitType.RDF) {
+    	if (dataUnit.getType().canBeCastTo( DataUnitType.RDF ) ) {
     		repository = (RDFDataRepository) dataUnit;
     	} else {
     		// wrong input ..

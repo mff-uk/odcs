@@ -100,13 +100,10 @@ public class SPARQL_transformer implements GraphicalTransformer {
 
             RDFDataRepository intputRepository = null;
 
-            switch (dataUnit.getType()) {
-                case RDF:
-                    intputRepository = (RDFDataRepository) dataUnit;
-                    break;
-                default:
-                    throw new TransformException("Wrong input type " + dataUnit.getType().toString());
-
+            if (dataUnit.getType().canBeCastTo( DataUnitType.RDF) ) {
+            	intputRepository = (RDFDataRepository) dataUnit;
+            } else {
+            	throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " expected RDF.");
             }
 
             // create output repository

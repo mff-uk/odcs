@@ -34,14 +34,13 @@ public enum DataUnitType {
 	}
 	
 	/**
-	 * Check if the source DataUnit sub-type with given can be cast to the 
+	 * Check if the source DataUnit sub-type (this) can be cast to the 
 	 * target DataUnit sub-type.
-	 * @param source Type of source.
 	 * @param target Type of target.
 	 * @return
 	 */
-	public static boolean canCast(DataUnitType source, DataUnitType target) {
-		return source == target || source.group == target.group;
+	public boolean canBeCastTo(DataUnitType target) {
+		return this == target || this.group == target.group;
 	}
 	
 }
