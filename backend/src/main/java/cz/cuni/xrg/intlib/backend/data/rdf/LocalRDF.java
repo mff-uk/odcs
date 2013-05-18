@@ -263,7 +263,7 @@ public class LocalRDF implements RDFDataRepository {
 
     @Override
     public DataUnitType getType() {
-        return DataUnitType.RDF;
+        return DataUnitType.RDF_Local;
     }
 
     @Override

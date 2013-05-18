@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.data;
 import java.io.File;
 
 import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF;
+import cz.cuni.xrg.intlib.backend.data.rdf.VirtuosoRDF;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
@@ -60,13 +61,24 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 		++counter;
 		// based on type ..
 		switch(type) {
-			case RDF: {
+			case RDF:	// as default RDF use local repository
+			case RDF_Local:
+			{
 				LocalRDF repository = new LocalRDF();
 				// get directory
-				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, type, counter);
+				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Local, counter);
 				repository.createNew(id, workingDirectory, mergePrepare);			
 				return repository;
 			}
+			case RDF_Virtuoso:
+			{
+				// TODO: Petyr, Jirka : enable connection outside ctor, add emtpy ctor for factory
+				VirtuosoRDF repository = VirtuosoRDF.createVirtuosoRDFRepo();
+				// get directory
+				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Virtuoso, counter);
+				repository.createNew(id, workingDirectory, mergePrepare);			
+				return repository;
+			}				
 		}
 		return null;
 	}
