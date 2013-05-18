@@ -62,7 +62,8 @@ import org.springframework.context.ApplicationEventPublisher;
  * @author Jan Vojt
  */
 class PipelineWorker implements Runnable {
-
+	// TODO Petyr: release save context before then on the end of the execution
+	
 	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
@@ -126,7 +127,7 @@ class PipelineWorker implements Runnable {
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
-		// try to load the context ..		
+		// try to load the context ..
 		try {
 			this.contextWriter = ExecutionContextFactory.restoreAsWrite(workDirectory);
 			if (this.contextWriter == null) {
@@ -174,6 +175,24 @@ class PipelineWorker implements Runnable {
 	 * is not in debugMode.
 	 */
 	private void cleanUp() {
+		// save context if in debug mode
+		if (execution.isDebugging()) {
+			// save contextWriter
+			try {
+				contextWriter.save();
+			} catch (Exception e) {
+				logger.error("Can't save context: " + execution.getId(), e);
+			}
+			// save DPU's contexts
+			for (ProcessingContext item : contexts.values()) {
+				if (item instanceof ExtendedContext) {
+					ExtendedContext exCtx = (ExtendedContext)item;
+					exCtx.save();
+				} else {
+					logger.error("Unexpected ProcessingContext instance. Can't call release().");
+				}	
+			}
+		}
 		// release all contexts 
 		for (ProcessingContext item : contexts.values()) {
 			if (item instanceof ExtendedContext) {
@@ -184,16 +203,16 @@ class PipelineWorker implements Runnable {
 			}	
 		}
 		// delete working folder
-		/*if (execution.isDebugging()) {
-			// keep the working directory
+		if (execution.isDebugging()) {
+			// do not delete anything
 		} else {
 			// try to delete the working directory
 			try {
 				FileUtils.deleteDirectory(workDirectory);
 			} catch (IOException e) {
-				logger.error("Can't delete directory after execution: " + execution.getId() + " exception: " + e.getMessage());
+				logger.error("Can't delete directory after execution: " + execution.getId(), e);
 			}
-		}*/
+		}
 	}
 	
 	/**
