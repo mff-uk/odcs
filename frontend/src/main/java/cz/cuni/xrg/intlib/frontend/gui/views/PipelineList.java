@@ -36,8 +36,10 @@ public class PipelineList extends CustomComponent implements View {
 	private Button btnCreatePipeline;
 	
 	public void runPipeline(Pipeline pipeline, boolean inDebugMode) {
-		PipelineExecution pipelineExec =  new PipelineExecution();
+		PipelineExecution pipelineExec =  new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
+		// TODO Petyr: leave null value?
+		pipelineExec.setWorkingDirectory("");
 		// do some settings here
 		
 		// store into DB
