@@ -35,11 +35,10 @@ public class PipelineList extends CustomComponent implements View {
 
 	private Button btnCreatePipeline;
 	
-	public void runPipeline(Pipeline pipeline) {
-		PipelineExecution pipelineExec =  App.getPipelines().createExecution(pipeline);
+	public void runPipeline(Pipeline pipeline, boolean inDebugMode) {
+		PipelineExecution pipelineExec =  new PipelineExecution();
+		pipelineExec.setDebugging(inDebugMode);
 		// do some settings here
-		
-		// TODO Setup pipelineExecution
 		
 		// store into DB
 		App.getPipelines().save(pipelineExec);
@@ -115,11 +114,24 @@ public class PipelineList extends CustomComponent implements View {
 						public void buttonClick(ClickEvent event) {
 							// navigate to PipelineEdit/New
 							Pipeline pipeline = item.getBean();
-							runPipeline(pipeline);
+							runPipeline(pipeline, false);
 						}
 					});
 			layout.addComponent(runButton);
 
+			Button runDebugButton = new Button();
+			runDebugButton.setCaption("debug");
+			runDebugButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+						@Override
+						public void buttonClick(ClickEvent event) {
+							// navigate to PipelineEdit/New
+							Pipeline pipeline = item.getBean();
+							runPipeline(pipeline, true);
+						}
+					});
+			layout.addComponent(runDebugButton);			
+			
 			return layout;
 		}
 
