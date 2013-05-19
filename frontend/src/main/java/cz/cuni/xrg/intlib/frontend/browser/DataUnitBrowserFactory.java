@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.browser;
 import java.io.File;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
@@ -26,14 +27,14 @@ public class DataUnitBrowserFactory {
 	static DataUnitBrowser getBrowser(ExecutionContextReader context, DPUInstance dpuInstance, int dataUnitIndex)
 		throws DataUnitNotFoundException, BrowserInitFailedException{
 		// get type and directory
-		DataUnitType type = context.getTypeForDataUnit(dpuInstance, dataUnitIndex);
-		if (type == null) {
+		DataUnitInfo info = context.getDataUnitInfo(dpuInstance, dataUnitIndex);
+		if (info == null) {
 			// the context doesn't exist
 			throw new DataUnitNotFoundException();
 		}		
-		File directory = context.getDirectoryForDataUnit(dpuInstance, dataUnitIndex);
+		File directory = info.getDirectory();
 		// TODO Petyr : return some component like "The data unit context can't be read ... " 
-		switch(type) {
+		switch(info.getType()) {
 		case RDF_Local:
 			DataUnitBrowser localRdfBrowser = new LocalRdfBrowser();			
 			try {
