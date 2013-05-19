@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
+import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -30,17 +31,17 @@ class PipelineList extends ViewComponent {
 
 	private Label label;
 
-	private Table tablePipelines;
+	private PagedTable tablePipelines;
 
 	private Button btnCreatePipeline;
-	
+
 	public void runPipeline(Pipeline pipeline, boolean inDebugMode) {
 		PipelineExecution pipelineExec =  new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
 		// TODO Petyr: leave null value?
 		pipelineExec.setWorkingDirectory("");
 		// do some settings here
-		
+
 		// store into DB
 		App.getPipelines().save(pipelineExec);
 		AppConfiguration config = App.getApp().getAppConfiguration();
@@ -48,7 +49,7 @@ class PipelineList extends ViewComponent {
 			config.getString(ConfProperty.BACKEND_HOST),
 			config.getInteger(ConfProperty.BACKEND_PORT)
 		);
-		
+
 		// send message to backend
 		try {
 			client.checkDatabase();
@@ -57,12 +58,12 @@ class PipelineList extends ViewComponent {
 					Type.ERROR_MESSAGE);
 			return;
 		}
-		
+
 		// show message about action
 		Notification.show("pipeline execution started ..",
 				Type.HUMANIZED_MESSAGE);
 	}
-	
+
 	/**
 	 * Generate column in table with buttons.
 	 * @author Petyr
@@ -131,8 +132,8 @@ class PipelineList extends ViewComponent {
 							runPipeline(pipeline, true);
 						}
 					});
-			layout.addComponent(runDebugButton);			
-			
+			layout.addComponent(runDebugButton);
+
 			return layout;
 		}
 
@@ -160,9 +161,9 @@ class PipelineList extends ViewComponent {
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label);
 
-		tablePipelines = new Table();
+		tablePipelines = new PagedTable();
 		tablePipelines.setWidth("640px");
-		tablePipelines.setHeight("480px");
+		tablePipelines.setPageLength(10);
 		// assign data source
 		Container container = ContainerFactory.CreatePipelines(App.getApp()
 				.getPipelines().getAllPipelines());
@@ -172,6 +173,8 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setVisibleColumns(new String[] { "id", "name",
 				"description" });
 		mainLayout.addComponent(tablePipelines);
+		mainLayout.addComponent(tablePipelines.createControls());
+		tablePipelines.setPageLength(10);
 		// add column
 		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 

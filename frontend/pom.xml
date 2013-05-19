@@ -1,5 +1,6 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>cz.cuni.xrg.intlib</groupId>
@@ -14,9 +15,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-		
+
 		<!-- in tomcat-users.xml <user name="deploy" password="deploy" roles="admin-script,manager-script"/> -->
-		<!-- TODO: use settings.xml instead ? -->		
+		<!-- TODO: use settings.xml instead ? -->
 		<tomcat.deploy.url>http://localhost:8080/manager/text</tomcat.deploy.url>
 		<tomcat.deploy.username>deploy</tomcat.deploy.username>
 		<tomcat.deploy.password>deploy</tomcat.deploy.password>
@@ -30,21 +31,21 @@
 	</repositories>
 
 	<dependencies>
-        <dependency> <!--  JUnit dependency -->
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>	
-	
+		<dependency> <!--  JUnit dependency -->
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons</artifactId>
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
-		</dependency>	
-	
+		</dependency>
+
 		<dependency> <!-- commons-app project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons-app</artifactId>
@@ -68,7 +69,14 @@
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>pagedtable</artifactId>
+			<version>0.6.5</version>
+		 <type>jar</type>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -78,12 +86,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml 
+				<!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml
 					which will be ignored -->
 				<version>2.3</version>
 			</plugin>
 
-			<!-- deploy to Apache tomcat see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html 
+			<!-- deploy to Apache tomcat see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html
 				http://localhost:8080/docs/manager-howto.html use maven cmd: mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
