@@ -113,6 +113,7 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 
 	@Override
 	public void save() {
+		Logger.getLogger(ExtendedExtractContextImpl.class).debug("saving DataUnits");
 		for (DataUnit item : outputs) {		
 			try {
 				item.save();

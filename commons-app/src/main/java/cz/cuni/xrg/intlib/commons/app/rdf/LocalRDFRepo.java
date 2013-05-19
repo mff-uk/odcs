@@ -826,7 +826,7 @@ public class LocalRDFRepo {
                 }
             }
         } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage());
+            logger.error(ex.getMessage());
         }
     }
 
@@ -905,7 +905,9 @@ public class LocalRDFRepo {
      * @throws CannotOverwriteFileException
      */
     public void save(File file) throws CannotOverwriteFileException {
-    	file.mkdirs();
+    	file.getParentFile().mkdirs();
+    	logger.debug("saving directory:" + file.getParent());
+    	logger.debug("saving fileName:" + file.getName());
     	loadRDFfromRepositoryToXMLFile(file.getParent(), file.getName(), RDFFormat.NTRIPLES, true, false);
     }
     

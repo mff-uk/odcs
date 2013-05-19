@@ -112,11 +112,12 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	
 	@Override
 	public void save() {
+		Logger.getLogger(ExtendedExtractContextImpl.class).debug("saving DataUnits");
 		for (DataUnit item : inputs) {		
 			try {
 				item.save();
 			} catch (Exception e) {
-				Logger.getLogger(ExtendedExtractContextImpl.class).error("Can't save DataUnit", e);
+				Logger.getLogger(ExtendedLoadContextImpl.class).error("Can't save DataUnit", e);
 			}
 		}
 	}	
