@@ -233,13 +233,10 @@ class PipelineWorker implements Runnable {
 			logAppender.addFilter(new Filter() {
 				@Override
 				public int decide(LoggingEvent event) {
-					return ACCEPT;
-					/*
 					if (event.getMDC("execution") == pipielineExecutionId) {
 						return ACCEPT;
 					}					
 					return DENY;
-					*/
 				}} );
 			Logger rootLogger = Logger.getRootLogger();
 			rootLogger.addAppender(logAppender);
@@ -254,6 +251,7 @@ class PipelineWorker implements Runnable {
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
 		
+		logger.debug("Started");
 		
 		boolean executionFailed = false;
 		// run DPUs ...
@@ -301,7 +299,9 @@ class PipelineWorker implements Runnable {
 		} else {
 			executionSuccessful();
 		}
-		// clear threads markers
+		
+		logger.debug("Finished");
+		// clear threads markers		
 		MDC.clear();
 		// remove our logger 
 		if (logAppender != null) {

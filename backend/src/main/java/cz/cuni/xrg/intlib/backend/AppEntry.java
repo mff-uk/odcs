@@ -94,6 +94,12 @@ public class AppEntry {
 		Thread serverThread = new Thread(server);
 		serverThread.start();
 				
+		// start heartbeat
+		Heartbeat heartbeat = (Heartbeat)context.getBean("heartbeat");
+		Thread heartbeatThread = new Thread(heartbeat);
+		heartbeatThread.start();
+		logger.info("Heartbeat is running ... ");
+		
 		// print some information ..
 		logger.info("DPU directory:" + appConfig.getString(ConfProperty.MODULE_PATH));
 		logger.info("Listening on port:" + appConfig.getInteger(ConfProperty.BACKEND_PORT));
