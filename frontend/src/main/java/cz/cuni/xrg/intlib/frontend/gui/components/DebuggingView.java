@@ -3,11 +3,28 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
+import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
+import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
+import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,17 +33,28 @@ import java.util.List;
 public class DebuggingView extends Window {
 
 	private VerticalLayout mainLayout;
+	private PipelineExecution pipelineExec;
+	private ExecutionContextReader ctxReader;
+	private DPUInstance debugDpu;
 
-	public DebuggingView(DPUInstance debugDpu) {
-		 setCaption("Debug window");
-		 buildMainLayout(debugDpu);
-		 this.setContent(mainLayout);
+	public DebuggingView(PipelineExecution pipelineExec, DPUInstance debugDpu) {
+		setCaption("Debug window");
+		this.pipelineExec = pipelineExec;
+		this.debugDpu = debugDpu;
+		buildMainLayout();
+		this.setContent(mainLayout);
 	}
 
-	public final void buildMainLayout(DPUInstance debugDpu) {
+	public final void buildMainLayout() {
 		mainLayout = new VerticalLayout();
 
+		boolean loadSuccessful = loadExecutionContextReader(debugDpu);
+		if (!loadSuccessful) {
+			Notification.show("Failed to load execution context!", Notification.Type.ERROR_MESSAGE);
+		}
+
 		List<Record> records = App.getDPUs().getAllDPURecords();//debugDpu);
+		records = filterRecords(records, pipelineExec);
 		RecordsTable executionRecordsTable = new RecordsTable(records);
 		executionRecordsTable.setWidth("100%");
 		executionRecordsTable.setHeight("100px");
@@ -39,16 +67,31 @@ public class DebuggingView extends Window {
 		//Table with data
 		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 		//rdfRepo.getRDFTriplesInRepository();
-		BrowserTable browserTable = new BrowserTable(buildStubRDFData());
-		tabs.addTab(browserTable, "Browse");
+		DataUnitBrowser browser = loadBrowser(false);
+		tabs.addTab(browser, "Browse");
 
 
 		//RecordsTable with different data source
-		List<Record> fullRecords = App.getDPUs().getAllDPURecords();
-		RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
-		fullRecordsTable.setWidth("100%");
-		fullRecordsTable.setHeight("100%");
-		tabs.addTab(fullRecordsTable, "Log");
+		File logFile = ctxReader.getLog4jFile();
+		String logText = "";
+		if(logFile.exists()) {
+			try {
+				Scanner scanner = new Scanner(logFile).useDelimiter("\\A");
+			    if(scanner.hasNext()) {
+					logText = scanner.next();
+				}
+			} catch (FileNotFoundException ex) {
+				Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		TextArea logTextArea = new TextArea("Log from log4j", logText);
+		logTextArea.setSizeFull();
+
+		//List<Record> fullRecords = App.getDPUs().getAllDPURecords();
+		//RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
+		//fullRecordsTable.setWidth("100%");
+		//fullRecordsTable.setHeight("100%");
+		tabs.addTab(logTextArea, "Log");
 
 		//Query View
 		QueryView queryView = new QueryView();
@@ -62,8 +105,6 @@ public class DebuggingView extends Window {
 		//return mainLayout;
 	}
 
-
-
 //	private List<Record> buildStubMessageData() {
 //		List<Record> stubList = new ArrayList<>();
 ///*		Record m = new Record(new Date(), RecordType.DPUINFO, null, "Test message", "Long test message");
@@ -75,7 +116,6 @@ public class DebuggingView extends Window {
 //
 //		return stubList;
 //	}
-
 //	private List<Record> buildStubFullData() {
 //		List<Record> fullList = buildStubMessageData();
 //
@@ -89,17 +129,52 @@ public class DebuggingView extends Window {
 //		return fullList;
 //	}
 
-	private List<RDFTriple> buildStubRDFData() {
-		List<RDFTriple> rdfTripleList = new ArrayList<>();
 
-		rdfTripleList.add(new RDFTriple(1, "rdf:Description", "rdf:about", "http://www.recshop.fake/cd/Empire Burlesque"));
-		rdfTripleList.add(new RDFTriple(2, "rdf:Description", "cd:artist", "Bob Dylan"));
-		rdfTripleList.add(new RDFTriple(3, "rdf:Description", "cd:country", "USA"));
-		rdfTripleList.add(new RDFTriple(4, "rdf:Description", "cd:company", "Columbia"));
-		rdfTripleList.add(new RDFTriple(5, "rdf:Description", "cd:price", "10.90"));
-		rdfTripleList.add(new RDFTriple(6, "rdf:Description", "cd:year", "1985"));
-
-		return rdfTripleList;
+	private boolean loadExecutionContextReader(DPUInstance debugDpu) {
+		File workingDir = new File(pipelineExec.getWorkingDirectory());
+		try {
+			ctxReader = ExecutionContextFactory.restoreAsRead(workingDir);
+		} catch (FileNotFoundException ex) {
+			Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+			return false;
+		}
+		return true;
 	}
 
+	private DataUnitBrowser loadBrowser(boolean showInput) {
+		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+		while (indexes.iterator().hasNext()) {
+			Integer index = indexes.iterator().next();
+			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
+			if (duInfo.isInput() == showInput) {
+				DataUnitBrowser duBrowser;
+				try {
+					duBrowser = DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, index);
+				} catch (		DataUnitNotFoundException | BrowserInitFailedException ex) {
+					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+					return null;
+				}
+				try {
+					duBrowser.loadDataUnit(duInfo.getDirectory());
+				} catch (Exception ex) {
+					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+					return null;
+				}
+				duBrowser.enter();
+				return duBrowser;
+			}
+
+		}
+		return null;
+	}
+
+	private List<Record> filterRecords(List<Record> records, PipelineExecution pipelineExec) {
+		List<Record> filteredRecords = new ArrayList<>();
+		for(Record record : records) {
+			if(record.getExecution().equals(pipelineExec)) {
+				filteredRecords.add(record);
+			}
+		}
+		return filteredRecords;
+	}
 }

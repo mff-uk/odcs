@@ -5,10 +5,15 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
+import cz.cuni.xrg.intlib.commons.app.communication.Client;
+import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
@@ -28,6 +33,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	int dpuCount = 0;
 	int connCount = 0;
 	private PipelineGraph graph;
+
+	//TEMPORARY
+	private Pipeline pip;
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -87,8 +95,15 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
 		//TODO: Debug
+		pip.setGraph(graph);
+		PipelineExecution pExec = runPipeline(pip, true);
+		if(pExec == null) {
+			Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
+			return;
+		}
+
 		DPUInstance debugDpu = graph.getNodeById(dpuId).getDpuInstance();
-		DebuggingView dv = new DebuggingView(debugDpu);
+		DebuggingView dv = new DebuggingView(pExec, debugDpu);
 		dv.addCloseListener(new Window.CloseListener() {
 
 			@Override
@@ -145,6 +160,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void showPipeline(Pipeline pipeline) {
 		this.graph = pipeline.getGraph();
+		this.pip = pipeline;
 		for (Node node : graph.getNodes()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), node.getDpuInstance().getName(), node.getDpuInstance().getDescription(), node.getPosition().getX(), node.getPosition().getY());
 		}
@@ -192,5 +208,36 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		});
 		App.getApp().addWindow(detailDialog);
 
+	}
+
+	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
+		PipelineExecution pipelineExec =  new PipelineExecution(pipeline);
+		pipelineExec.setDebugging(inDebugMode);
+		// TODO Petyr: leave null value?
+		pipelineExec.setWorkingDirectory("");
+		// do some settings here
+
+		// store into DB
+		App.getPipelines().save(pipelineExec);
+		AppConfiguration config = App.getApp().getAppConfiguration();
+		Client client = new Client(
+			config.getString(ConfProperty.BACKEND_HOST),
+			config.getInteger(ConfProperty.BACKEND_PORT)
+		);
+
+		// send message to backend
+		try {
+			client.checkDatabase();
+		} catch (CommunicationException e) {
+			Notification.show("Error", "Can't connect to backend. Exception: " + e.getCause().getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+			return null;
+		}
+
+		// show message about action
+		Notification.show("pipeline execution started ..",
+				Notification.Type.HUMANIZED_MESSAGE);
+
+		return pipelineExec;
 	}
 }

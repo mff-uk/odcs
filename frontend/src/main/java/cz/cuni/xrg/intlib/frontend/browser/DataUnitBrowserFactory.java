@@ -24,7 +24,7 @@ public class DataUnitBrowserFactory {
 	 * @throws DataUnitNotFoundException
 	 * @throws BrowserInitFailedException
 	 */
-	static DataUnitBrowser getBrowser(ExecutionContextReader context, DPUInstance dpuInstance, int dataUnitIndex)
+	public static DataUnitBrowser getBrowser(ExecutionContextReader context, DPUInstance dpuInstance, int dataUnitIndex)
 		throws DataUnitNotFoundException, BrowserInitFailedException{
 		// get type and directory
 		DataUnitInfo info = context.getDataUnitInfo(dpuInstance, dataUnitIndex);
