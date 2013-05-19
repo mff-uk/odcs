@@ -389,7 +389,7 @@ public class LocalRDFRepo {
 
     /**
      * Load RDF data from repository to SPARQL endpointURL to the one URI graph
-     * without endpoint authentisation.
+     * without endpoint authentication.
      *
      * @param endpointURL
      * @param defaultGraphURI
@@ -826,7 +826,7 @@ public class LocalRDFRepo {
                 }
             }
         } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage());
+            logger.error(ex.getMessage());
         }
     }
 
@@ -897,6 +897,26 @@ public class LocalRDFRepo {
      }
      
      return triples;
+    }
+    
+    /**
+     * Save data from repository into given file.
+     * @param file
+     * @throws CannotOverwriteFileException
+     */
+    public void save(File file) throws CannotOverwriteFileException {
+    	file.getParentFile().mkdirs();
+    	logger.debug("saving directory:" + file.getParent());
+    	logger.debug("saving fileName:" + file.getName());
+    	loadRDFfromRepositoryToXMLFile(file.getParent(), file.getName(), RDFFormat.NTRIPLES, true, false);
+    }
+    
+    /**
+     * Load data from given file into repository.
+     * @param file
+     */
+    public void load(File file) {
+    	extractRDFfromXMLFileToRepository(file.getAbsolutePath(), "", "", false);
     }
 }
 

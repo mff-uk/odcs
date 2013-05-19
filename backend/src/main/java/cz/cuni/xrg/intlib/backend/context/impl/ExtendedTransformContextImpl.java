@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -44,19 +45,13 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	 * Application event publisher used to publish messages from DPU.
 	 */
 	private ApplicationEventPublisher eventPublisher;	
-	
-	/**
-	 * Counter used to generate unique id for data.
-	 */
-	private int storeCounter;	
-	
+
 	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.intputs = new LinkedList<DataUnit>();
 		this.outputs = new LinkedList<DataUnit>();
 		this.eventPublisher = eventPublisher;
-		this.storeCounter = 0;
 	}
 
 	@Override
@@ -136,11 +131,21 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	
 	@Override
 	public void save() {
-		for (DataUnit item : intputs) {
-			item.save();
+		Logger.getLogger(ExtendedTransformContextImpl.class).debug("saving DataUnits");
+		for (DataUnit item : intputs) {		
+			try {
+				item.save();
+			} catch (Exception e) {
+				Logger.getLogger(ExtendedTransformContextImpl.class).error("Can't save DataUnit", e);
+			}
 		}
-		for (DataUnit item : outputs) {
-			item.save();
+		
+		for (DataUnit item : outputs) {		
+			try {
+				item.save();
+			} catch (Exception e) {
+				Logger.getLogger(ExtendedTransformContextImpl.class).error("Can't save DataUnit", e);
+			}
 		}
 	}	
 	

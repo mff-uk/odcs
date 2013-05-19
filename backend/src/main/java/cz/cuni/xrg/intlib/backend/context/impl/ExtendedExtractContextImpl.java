@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -112,8 +113,13 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 
 	@Override
 	public void save() {
-		for (DataUnit item : outputs) {
-			item.save();
+		Logger.getLogger(ExtendedExtractContextImpl.class).debug("saving DataUnits");
+		for (DataUnit item : outputs) {		
+			try {
+				item.save();
+			} catch (Exception e) {
+				Logger.getLogger(ExtendedExtractContextImpl.class).error("Can't save DataUnit", e);
+			}
 		}
 	}
 		

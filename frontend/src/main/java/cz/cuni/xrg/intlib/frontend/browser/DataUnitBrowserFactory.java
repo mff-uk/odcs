@@ -28,14 +28,14 @@ public class DataUnitBrowserFactory {
 		throws DataUnitNotFoundException, BrowserInitFailedException{
 		// get type and directory
 		DataUnitInfo info = context.getDataUnitInfo(dpuInstance, dataUnitIndex);
-		DataUnitType type = info.getType();
-		if (type == null) {
+
+		if (info == null) {
 			// the context doesn't exist
 			throw new DataUnitNotFoundException();
 		}
 		File directory = info.getDirectory();
 		// TODO Petyr : return some component like "The data unit context can't be read ... "
-		switch(type) {
+		switch(info.getType()) {
 		case RDF_Local:
 			DataUnitBrowser localRdfBrowser = new LocalRdfBrowser();
 			try {

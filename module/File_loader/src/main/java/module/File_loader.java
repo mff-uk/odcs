@@ -5,6 +5,8 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 import gui.ConfigDialog;
 
+import org.slf4j.Logger;
+
 import com.vaadin.ui.CustomComponent;
 
 import cz.cuni.xrg.intlib.commons.DpuType;
@@ -16,6 +18,7 @@ import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jiri Tomes
@@ -33,6 +36,11 @@ public class File_loader implements GraphicalLoader {
      */
     private Configuration config = null;
 
+    /**
+     * Logger class.
+     */
+    private Logger logger = LoggerFactory.getLogger(File_loader.class);
+    
     public File_loader() {
     }
 
@@ -41,6 +49,7 @@ public class File_loader implements GraphicalLoader {
         configuration.setValue(Config.FileName.name(), "");
         configuration.setValue(Config.DirectoryPath.name(), "");
         configuration.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);
+        configuration.setValue(Config.DiffName.name(), (Boolean)false);
     }
 
     @Override
@@ -64,6 +73,7 @@ public class File_loader implements GraphicalLoader {
     public void loadConfiguration(Configuration configuration)
             throws ConfigurationException {
         // 
+    	logger.debug("Loading configuration..");
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
@@ -88,7 +98,7 @@ public class File_loader implements GraphicalLoader {
     
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
-
+        logger.debug("format: " + enumFormatType.toString());
         switch (enumFormatType) {
             case AUTO: {
                 String fileName = getFileName();
@@ -121,20 +131,25 @@ public class File_loader implements GraphicalLoader {
 
     private String getDirectoryPath() {
         String path = (String) config.getValue(Config.DirectoryPath.name());
-
+        logger.debug("DirectoryPath: " + path);
         return path;
     }
 
     private String getFileName() {
         String fileName = (String) config.getValue(Config.FileName.name());
-
+        logger.debug("FileName: " + fileName);
         return fileName;
     }
 
     private boolean hasUniqueName() {
-        Boolean isNameUnique = (Boolean) config.getValue(Config.DiffName.name());
-
-        return isNameUnique;
+    	if ( config.getValue(Config.DiffName.name()) == null) {
+    		logger.error("DiffName: unset" );
+    		return false;
+    	} else  {    	
+	    	Boolean isNameUnique = (Boolean) config.getValue(Config.DiffName.name());
+	    	logger.debug("DiffName: " + isNameUnique);
+	        return isNameUnique;
+    	}
     }
 
     @Override

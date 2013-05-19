@@ -1,5 +1,8 @@
 package module;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
@@ -30,6 +33,11 @@ public class File_extractor implements GraphicalExtractor {
      */
     private Configuration config = null;
 
+    /**
+     * Logger class.
+     */
+    private Logger logger = LoggerFactory.getLogger(File_extractor.class);    
+    
     public File_extractor() {
     }
 
@@ -61,11 +69,12 @@ public class File_extractor implements GraphicalExtractor {
 	public void loadConfiguration(Configuration configuration)
 			throws ConfigurationException {
 		// 
+		logger.debug("Loading configuration..");
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
             this.configDialog.setConfiguration(configuration);
-        }
+        }        
 	}    
     
     @Override
@@ -85,16 +94,19 @@ public class File_extractor implements GraphicalExtractor {
     
     private String getPath() {
         String path = (String) config.getValue(Config.Path.name());
+        logger.debug("Path: " + path);
         return path;
     }
 
     private String getFileSuffix() {
         String suffix = (String) config.getValue(Config.FileSuffix.name());
+        logger.debug("FileSuffix: " + suffix);
         return suffix;
     }
 
     private boolean isOnlySuffixUsed() {
         boolean useSuffix = (Boolean) config.getValue(Config.OnlyThisSuffix.name());
+        logger.debug("OnlyThisSuffix: " + useSuffix);
         return useSuffix;
     }
 

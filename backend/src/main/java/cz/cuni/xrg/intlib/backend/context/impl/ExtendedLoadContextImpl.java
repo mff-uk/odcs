@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -34,7 +35,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	/**
 	 * Context input data units.
 	 */
-    private List<DataUnit> intputs = new LinkedList<DataUnit>();
+    private List<DataUnit> inputs = new LinkedList<DataUnit>();
         
 	/**
 	 * Application event publisher used to publish messages from DPU.
@@ -44,13 +45,13 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
-		this.intputs = new LinkedList<DataUnit>();
+		this.inputs = new LinkedList<DataUnit>();
 		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
 	public List<DataUnit> getInputs() {		
-		return this.intputs;
+		return this.inputs;
 	}
 
 	@Override
@@ -104,21 +105,26 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	
 	@Override
 	public void release() {
-		for (DataUnit item : intputs) {
+		for (DataUnit item : inputs) {
 			item.release();
 		}		
 	}	
 	
 	@Override
 	public void save() {
-		for (DataUnit item : intputs) {
-			item.save();
+		Logger.getLogger(ExtendedExtractContextImpl.class).debug("saving DataUnits");
+		for (DataUnit item : inputs) {		
+			try {
+				item.save();
+			} catch (Exception e) {
+				Logger.getLogger(ExtendedLoadContextImpl.class).error("Can't save DataUnit", e);
+			}
 		}
 	}	
 	
 	@Override
 	public void sealInputs() {
-		for (DataUnit inputDataUnit : intputs) {
+		for (DataUnit inputDataUnit : inputs) {
 			inputDataUnit.madeReadOnly();
 		}
 	}
@@ -135,11 +141,11 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 		if (context instanceof ExtendedExtractContext) {
 			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, extractContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, extractContext.getOutputs(), extendedImp.getDataUnitFactory());
 		} else if (context instanceof ExtendedTransformContext) {
 			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, transformContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, transformContext.getOutputs(), extendedImp.getDataUnitFactory());
 		} else {
 			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
 		}

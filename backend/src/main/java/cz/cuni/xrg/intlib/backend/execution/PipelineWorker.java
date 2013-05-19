@@ -60,8 +60,6 @@ import org.springframework.util.Log4jConfigurer;
  * Worker responsible for running single PipelineExecution.
  *
  * @author Petyr
- * @author Jiri Tomes
- * @author Jan Vojt
  */
 class PipelineWorker implements Runnable {
 	// TODO Petyr: release save context before then on the end of the execution
@@ -144,7 +142,7 @@ class PipelineWorker implements Runnable {
 		// setup log4j
 		setupLog4j();
 		
-		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU
+		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU (also save .. DataUnits .. )
 	}
 
 	/**
@@ -186,8 +184,10 @@ class PipelineWorker implements Runnable {
 	 * is not in debugMode.
 	 */
 	private void cleanUp() {
+		logger.debug("Clean up");
 		// save context if in debug mode
 		if (execution.isDebugging()) {
+			logger.debug("Saving pipeline execution context");
 			// save contextWriter
 			try {
 				contextWriter.save();
@@ -328,6 +328,8 @@ class PipelineWorker implements Runnable {
 			}
 		}
 		transformContext.sealInputs();
+		// store context
+		contexts.put(node, transformContext);		
 		return transformContext;		
 	}
 	
@@ -362,6 +364,8 @@ class PipelineWorker implements Runnable {
 			}
 		}	
 		loadContext.sealInputs();
+		// store context
+		contexts.put(node, loadContext);		
 		return loadContext;
 	}
 	

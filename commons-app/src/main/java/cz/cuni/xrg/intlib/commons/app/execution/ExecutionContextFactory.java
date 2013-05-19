@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.FileUtils;
 import org.jboss.logging.Logger;
 
 /**
@@ -63,6 +64,15 @@ public class ExecutionContextFactory {
 		}
 		
 		return context;
+	}
+	
+	/**
+	 * Delete context in given directory. In case of any problem throws. 
+	 * @param directory The root directory of context.
+	 * @throws Exception
+	 */
+	public static void delete(File directory) throws Exception {
+		FileUtils.deleteDirectory(directory);		
 	}
 	
 	/**

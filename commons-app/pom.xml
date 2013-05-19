@@ -56,6 +56,13 @@
 			<version>3.8.1.v20120830-144521</version>
 		</dependency>
 	    
+        <dependency> <!-- apache.commons : delete folder recursive -->
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <type>jar</type>
+        </dependency>	    
+	    
         <!-- Spring dependency -->
         <dependency>
             <groupId>org.springframework</groupId>

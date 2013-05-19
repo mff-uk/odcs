@@ -27,7 +27,7 @@ public class DataUnitInfo {
 	/**
 	 * True if the data unit is created as a input.
 	 */
-	@XmlValue
+	@XmlAttribute
 	private boolean isInput;
 	
 	/**
