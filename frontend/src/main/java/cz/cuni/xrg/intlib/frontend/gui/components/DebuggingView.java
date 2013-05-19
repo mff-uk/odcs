@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Bogo
  */
-public class DebuggingView extends Window {
+public class DebuggingView extends CustomComponent {
 
 	private VerticalLayout mainLayout;
 	private PipelineExecution pipelineExec;
@@ -38,22 +38,24 @@ public class DebuggingView extends Window {
 	private DPUInstance debugDpu;
 
 	public DebuggingView(PipelineExecution pipelineExec, DPUInstance debugDpu) {
-		setCaption("Debug window");
+		//setCaption("Debug window");
 		this.pipelineExec = pipelineExec;
 		this.debugDpu = debugDpu;
 		buildMainLayout();
-		this.setContent(mainLayout);
+		setCompositionRoot(mainLayout);
+		//this.setContent(mainLayout);
 	}
 
 	public final void buildMainLayout() {
 		mainLayout = new VerticalLayout();
 
-		boolean loadSuccessful = loadExecutionContextReader(debugDpu);
+		boolean loadSuccessful = loadExecutionContextReader();
 		if (!loadSuccessful) {
-			Notification.show("Failed to load execution context!", Notification.Type.ERROR_MESSAGE);
+			//Notification.show("Failed to load execution context!", Notification.Type.ERROR_MESSAGE);
 		}
 
-		List<Record> records = App.getDPUs().getAllDPURecords();//debugDpu);
+		//List<Record> records = debugDpu == null ? App.getDPUs().getAllDPURecords() : App.getDPUs().getAllDPURecords(debugDpu);
+		List<Record> records = App.getDPUs().getAllDPURecords();
 		records = filterRecords(records, pipelineExec);
 		RecordsTable executionRecordsTable = new RecordsTable(records);
 		executionRecordsTable.setWidth("100%");
@@ -67,31 +69,37 @@ public class DebuggingView extends Window {
 		//Table with data
 		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 		//rdfRepo.getRDFTriplesInRepository();
-		DataUnitBrowser browser = loadBrowser(false);
-		tabs.addTab(browser, "Browse");
+		if (loadSuccessful) {
+
+
+			DataUnitBrowser browser = loadBrowser(false);
+			tabs.addTab(browser, "Browse");
+		}
 
 
 		//RecordsTable with different data source
-		File logFile = ctxReader.getLog4jFile();
-		String logText = "";
-		if(logFile.exists()) {
-			try {
-				Scanner scanner = new Scanner(logFile).useDelimiter("\\A");
-			    if(scanner.hasNext()) {
-					logText = scanner.next();
+		if (loadSuccessful) {
+			File logFile = ctxReader.getLog4jFile();
+			String logText = "";
+			if (logFile.exists()) {
+				try {
+					Scanner scanner = new Scanner(logFile).useDelimiter("\\A");
+					if (scanner.hasNext()) {
+						logText = scanner.next();
+					}
+				} catch (FileNotFoundException ex) {
+					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} catch (FileNotFoundException ex) {
-				Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 			}
-		}
-		TextArea logTextArea = new TextArea("Log from log4j", logText);
-		logTextArea.setSizeFull();
+			TextArea logTextArea = new TextArea("Log from log4j", logText);
+			logTextArea.setSizeFull();
 
-		//List<Record> fullRecords = App.getDPUs().getAllDPURecords();
-		//RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
-		//fullRecordsTable.setWidth("100%");
-		//fullRecordsTable.setHeight("100%");
-		tabs.addTab(logTextArea, "Log");
+			//List<Record> fullRecords = App.getDPUs().getAllDPURecords();
+			//RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
+			//fullRecordsTable.setWidth("100%");
+			//fullRecordsTable.setHeight("100%");
+			tabs.addTab(logTextArea, "Log");
+		}
 
 		//Query View
 		QueryView queryView = new QueryView();
@@ -128,9 +136,7 @@ public class DebuggingView extends Window {
 //
 //		return fullList;
 //	}
-
-
-	private boolean loadExecutionContextReader(DPUInstance debugDpu) {
+	private boolean loadExecutionContextReader() {
 		File workingDir = new File(pipelineExec.getWorkingDirectory());
 		try {
 			ctxReader = ExecutionContextFactory.restoreAsRead(workingDir);
@@ -150,7 +156,7 @@ public class DebuggingView extends Window {
 				DataUnitBrowser duBrowser;
 				try {
 					duBrowser = DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, index);
-				} catch (		DataUnitNotFoundException | BrowserInitFailedException ex) {
+				} catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
@@ -170,8 +176,8 @@ public class DebuggingView extends Window {
 
 	private List<Record> filterRecords(List<Record> records, PipelineExecution pipelineExec) {
 		List<Record> filteredRecords = new ArrayList<>();
-		for(Record record : records) {
-			if(record.getExecution().equals(pipelineExec)) {
+		for (Record record : records) {
+			if (record.getExecution().equals(pipelineExec)) {
 				filteredRecords.add(record);
 			}
 		}
