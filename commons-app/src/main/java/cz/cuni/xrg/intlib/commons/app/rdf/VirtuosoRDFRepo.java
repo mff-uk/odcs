@@ -18,6 +18,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.URIImpl;
@@ -29,7 +31,6 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
-import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
 /**
@@ -50,10 +51,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
     
     private Resource graph;
 
-    static {
-        logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-    }
-
+    private Logger logger = Logger.getLogger(VirtuosoRDFRepo.class);
+    
     public static VirtuosoRDFRepo createVirtuosoRDFRepo() {
     	// TODO: Jirka: load from AppConfiguration .., ask Petyr about more details 
         final String hostName = "localhost";

@@ -50,11 +50,13 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.impl.Log4jLoggerFactory;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.spi.Filter;
+import org.apache.log4j.spi.LoggingEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.util.Log4jConfigurer;
 
 /**
  * Worker responsible for running single PipelineExecution.
@@ -123,7 +125,7 @@ class PipelineWorker implements Runnable {
 		this.contexts = new HashMap<>();
 		// get working directory from pipelineExecution
 		this.workDirectory = new File( execution.getWorkingDirectory() );
-		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
+		this.logger = Logger.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
 		// try to load the context ..
@@ -139,19 +141,9 @@ class PipelineWorker implements Runnable {
 			// exception -> use new one .. 
 			this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
 		}
-		// setup log4j
-		setupLog4j();
-		
 		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU (also save .. DataUnits .. )
 	}
 
-	/**
-	 * Setup log4j for this thread.
-	 */
-	private void setupLog4j() {
-		// http://stackoverflow.com/questions/1172113/how-do-i-setup-log4j-properties-so-that-each-thread-outputs-to-its-own-log-file
-	}
-	
 	/**
 	 * Called in case that the execution failed.
 	 */
@@ -188,12 +180,6 @@ class PipelineWorker implements Runnable {
 		// save context if in debug mode
 		if (execution.isDebugging()) {
 			logger.debug("Saving pipeline execution context");
-			// save contextWriter
-			try {
-				contextWriter.save();
-			} catch (Exception e) {
-				logger.error("Can't save context: " + execution.getId(), e);
-			}
 			// save DPU's contexts
 			for (ProcessingContext item : contexts.values()) {
 				if (item instanceof ExtendedContext) {
@@ -231,13 +217,45 @@ class PipelineWorker implements Runnable {
 	 * for jobs to run, until it is killed.
 	 */
 	@Override
-	public void run() {
+	public void run() {		
+		
+		FileAppender logAppender = null;		
+		try {
+			logAppender = new FileAppender(new PatternLayout("%d %-5p [%c{1}] %m%n"), contextWriter.getLog4jFile().getAbsolutePath());
+		} catch (IOException e) {
+			logger.error("Can't create loggger for execution.", e);
+		}
+		
+		final Object pipielineExecutionId = execution.getId();
+		
+		if (logAppender != null) {
+			// this filter will accept only logs from this thread		
+			logAppender.addFilter(new Filter() {
+				@Override
+				public int decide(LoggingEvent event) {
+					return ACCEPT;
+					/*
+					if (event.getMDC("execution") == pipielineExecutionId) {
+						return ACCEPT;
+					}					
+					return DENY;
+					*/
+				}} );
+			Logger rootLogger = Logger.getRootLogger();
+			rootLogger.addAppender(logAppender);
+		}
+			
+		// add marker to logs from this thread
+		MDC.put("execution", pipielineExecutionId );
+		
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-
+		
+		
+		boolean executionFailed = false;
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
 			boolean result;
@@ -261,16 +279,37 @@ class PipelineWorker implements Runnable {
 				return;
 			}
 			
+			// save contextWriter after every DPU to enable recovery
+			try {
+				contextWriter.save();
+			} catch (Exception e) {
+				logger.error("Can't save context: " + execution.getId(), e);
+			}			
+						
 			if (result) {
 				// DPU executed successfully
 			} else {
 				// error -> end pipeline
+				executionFailed = true;
 				eventPublisher.publishEvent(new PipelineFailedEvent("Error in DPU.", node.getDpuInstance(), execution, this));
-				executionFailed();
-				return;
+				break;
 			}
 		}
-		executionSuccessful();
+		// ending ..
+		if (executionFailed) {
+			executionFailed();
+		} else {
+			executionSuccessful();
+		}
+		// clear threads markers
+		MDC.clear();
+		// remove our logger 
+		if (logAppender != null) {
+			Logger rootLogger = Logger.getRootLogger();
+			rootLogger.removeAppender(logAppender);
+			logAppender.close();
+		}
+		return;
 	}
 
 	/**

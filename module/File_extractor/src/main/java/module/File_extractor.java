@@ -1,7 +1,6 @@
 package module;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import gui.ConfigDialog;
 
@@ -36,7 +35,7 @@ public class File_extractor implements GraphicalExtractor {
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(File_extractor.class);    
+    private Logger logger = Logger.getLogger(File_extractor.class);    
     
     public File_extractor() {
     }

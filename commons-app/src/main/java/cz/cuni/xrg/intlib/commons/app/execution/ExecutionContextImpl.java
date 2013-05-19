@@ -95,7 +95,11 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 		workingDirectory.mkdirs();
 		// get output file
 		File outputFile = getloadFilePath();
-		
+		// delete file if existing ..
+		if (outputFile.exists()) {
+			outputFile.delete();
+		}
+		// now create a new file and write output .. 
 		JAXBContext jc = JAXBContext.newInstance(ExecutionContextImpl.class, DPUContextInfo.class);
 		Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

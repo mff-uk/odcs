@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -44,7 +45,6 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sail.memory.MemoryStore;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -57,7 +57,7 @@ public class LocalRDFRepo {
     /**
      * Logging information about execution of method using openRDF.
      */
-    protected static org.slf4j.Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
+    protected static Logger logger = Logger.getLogger(LocalRDFRepo.class);
     
     /**
      * How many triples is possible to add to SPARQL endpoind at once.

@@ -9,9 +9,8 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jboss.logging.Logger;
+import org.apache.log4j.Logger;
 
-import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
@@ -68,7 +67,12 @@ class ExtendedCommonImpl {
 	 * Counter used to generate unique id for data.
 	 */
 	private int storeCounter;	
-		
+	
+	/**
+	 * Log facade.
+	 */
+	private Logger logger;
+	
 	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
 			ExecutionContextWriter contextWriter) {
 		this.id = id;
@@ -79,6 +83,7 @@ class ExtendedCommonImpl {
 		this.dataUnitFactory = new DataUnitFactoryImpl(this.id, contextWriter, dpuInstance);
 		this.contextWriter = contextWriter;
 		this.storeCounter = 0;
+		this.logger = Logger.getLogger(ExtendedCommonImpl.class); 
 	}	
 	
 	public String storeData(Object object) throws Exception {
@@ -94,8 +99,8 @@ class ExtendedCommonImpl {
 			outStream.writeObject(object);
 			outStream.close();
 			fileOut.close();
-		} catch(IOException i) {
-			Logger.getLogger(ExtendedExtractContextImpl.class).error(i);
+		} catch(IOException e) {
+			logger.error("storeData", e);
 		}				
 		return null;
 	}
@@ -110,9 +115,9 @@ class ExtendedCommonImpl {
 			inStream.close();
 			fileIn.close();
 		} catch (IOException e) {
-			Logger.getLogger(ExtendedExtractContextImpl.class).error(e);
+			logger.error("loadData", e);
 		} catch (ClassNotFoundException e) {
-			Logger.getLogger(ExtendedExtractContextImpl.class).error(e);
+			logger.error("loadData", e);
 		}
 		return result;
 	}

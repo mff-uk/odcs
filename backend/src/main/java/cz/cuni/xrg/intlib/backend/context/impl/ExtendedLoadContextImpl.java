@@ -42,11 +42,17 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	 */
 	private ApplicationEventPublisher eventPublisher;	
 	
+	/**
+	 * Logger class.
+	 */
+	private Logger logger;	
+	
 	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.inputs = new LinkedList<DataUnit>();
 		this.eventPublisher = eventPublisher;
+		this.logger = Logger.getLogger(ExtendedLoadContextImpl.class);
 	}
 
 	@Override
@@ -112,12 +118,12 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	
 	@Override
 	public void save() {
-		Logger.getLogger(ExtendedExtractContextImpl.class).debug("saving DataUnits");
+		logger.debug("saving DataUnits");
 		for (DataUnit item : inputs) {		
 			try {
 				item.save();
 			} catch (Exception e) {
-				Logger.getLogger(ExtendedLoadContextImpl.class).error("Can't save DataUnit", e);
+				logger.error("Can't save DataUnit", e);
 			}
 		}
 	}	

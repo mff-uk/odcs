@@ -37,11 +37,17 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	 */
 	private ApplicationEventPublisher eventPublisher;
 	
+	/**
+	 * Logger class.
+	 */
+	private Logger logger;
+	
 	public ExtendedExtractContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.outputs = new LinkedList<DataUnit>();
-		this.eventPublisher = eventPublisher;		
+		this.eventPublisher = eventPublisher;
+		this.logger = Logger.getLogger(ExtendedExtractContextImpl.class);
 	}
 	
 	@Override
@@ -112,13 +118,12 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	}
 
 	@Override
-	public void save() {
-		Logger.getLogger(ExtendedExtractContextImpl.class).debug("saving DataUnits");
+	public void save() {		
 		for (DataUnit item : outputs) {		
 			try {
 				item.save();
 			} catch (Exception e) {
-				Logger.getLogger(ExtendedExtractContextImpl.class).error("Can't save DataUnit", e);
+				logger.error("Can't save DataUnit", e);
 			}
 		}
 	}

@@ -5,8 +5,6 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 import gui.ConfigDialog;
 
-import org.slf4j.Logger;
-
 import com.vaadin.ui.CustomComponent;
 
 import cz.cuni.xrg.intlib.commons.DpuType;
@@ -18,7 +16,8 @@ import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.rio.RDFFormat;
-import org.slf4j.LoggerFactory;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author Jiri Tomes
@@ -39,7 +38,7 @@ public class File_loader implements GraphicalLoader {
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(File_loader.class);
+    private Logger logger = Logger.getLogger(File_loader.class);
     
     public File_loader() {
     }
