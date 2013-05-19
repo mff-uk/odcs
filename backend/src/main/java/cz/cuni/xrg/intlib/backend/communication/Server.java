@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
+import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
+import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.communication.Messages;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
@@ -21,8 +23,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
  * TCP/IP.
  * 
  * init method must be called before running the main routine (run method)
- * 
- * 
+ *  
  * @author Petyr
  *
  */
@@ -77,7 +78,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
 			case CheckDatabase:
 				// send event to engine to check database
 				// as a source use Server class instance (the one who create us)
-				eventPublisher.publishEvent(new ServerEvent(server, msg));
+				eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, server));
 				break;
 			}			
 		}

@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.backend.execution;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
-import cz.cuni.xrg.intlib.backend.communication.ServerEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -22,7 +21,7 @@ import org.springframework.context.ApplicationListener;
  *
  * @author Petyr
  */
-public class Engine implements ApplicationListener<ServerEvent>, ApplicationEventPublisherAware  {
+public class Engine implements ApplicationListener<EngineEvent>, ApplicationEventPublisherAware  {
 	
     /**
      * Provide access to DPU implementation.
@@ -111,13 +110,12 @@ public class Engine implements ApplicationListener<ServerEvent>, ApplicationEven
     }
      
 	@Override
-	public void onApplicationEvent(ServerEvent event) {
+	public void onApplicationEvent(EngineEvent event) {
 		// react on message from server
-		switch(event.getMessage()) {
+		switch(event.getType()) {
 		case CheckDatabase:
 			checkDatabase();
 			break;
-		case Uknown:
 		default:
 			// do nothing
 			break;
