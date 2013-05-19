@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -136,11 +137,20 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	
 	@Override
 	public void save() {
-		for (DataUnit item : intputs) {
-			item.save();
+		for (DataUnit item : intputs) {		
+			try {
+				item.save();
+			} catch (Exception e) {
+				Logger.getLogger(ExtendedExtractContextImpl.class).error("Can't save DataUnit", e);
+			}
 		}
-		for (DataUnit item : outputs) {
-			item.save();
+		
+		for (DataUnit item : outputs) {		
+			try {
+				item.save();
+			} catch (Exception e) {
+				Logger.getLogger(ExtendedExtractContextImpl.class).error("Can't save DataUnit", e);
+			}
 		}
 	}	
 	

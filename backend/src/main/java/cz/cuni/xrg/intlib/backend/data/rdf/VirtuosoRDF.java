@@ -209,7 +209,7 @@ public class VirtuosoRDF implements RDFDataRepository {
 	}
 
 	@Override
-	public void save() {
+	public void save() throws Exception {
 		// TODO Jirka, Petyr: save restore data into workingDirectory (passed in createNew)		
 	}
 

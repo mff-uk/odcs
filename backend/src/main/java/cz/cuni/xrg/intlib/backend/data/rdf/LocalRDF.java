@@ -23,6 +23,8 @@ public class LocalRDF implements RDFDataRepository {
 
 	private LocalRDFRepo impl;	
 
+	private File workingDirectory;
+	
     public static LocalRDF createLocalRepoInDirectory(String dirName) {
     	LocalRDF result = new LocalRDF();
     	result.impl = LocalRDFRepo.createLocalRepoInDirectory(dirName);
@@ -298,6 +300,8 @@ public class LocalRDF implements RDFDataRepository {
         if (!workingDirectory.exists()) {
             workingDirectory.mkdirs();
         }
+        // we need inforamtion about working directory
+        this.workingDirectory = workingDirectory;
         impl = new LocalRDFRepo(workingDirectory.getAbsolutePath());
     }
 
@@ -312,12 +316,16 @@ public class LocalRDF implements RDFDataRepository {
     }
 
 	@Override
-	public void save() {
-		// TODO Jirka, Petyr: save restore data into workingDirectory (passed in createNew)		
+	public void save() throws Exception {
+		// TODO Jirka, Petyr: save restore data into workingDirectory (passed in createNew)
+		File file = new File(workingDirectory, "dump.dat");		
+		impl.save(file);
 	}
 
 	@Override
 	public void load(File directory) throws FileNotFoundException, Exception {
-		// TODO Jirka, Petyr: load data rom given directory 		
+		// TODO Jirka, Petyr: load data from given directory
+		File file = new File(workingDirectory, "dump.dat");
+		impl.load(file);		 		
 	}
 }
