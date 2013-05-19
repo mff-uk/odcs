@@ -16,22 +16,41 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD) 
-class DataUnitInfo {
+public class DataUnitInfo {
 	
 	/**
 	 * Associated directory.
 	 */
-	@XmlAttribute
-	public File directory;
+	@XmlValue
+	private File directory;
+	
+	/**
+	 * True if the data unit is created as a input.
+	 */
+	@XmlValue
+	private boolean isInput;
 	
 	/**
 	 * DataUnit type. 
 	 */
-	@XmlValue
-	public DataUnitType type;
+	@XmlAttribute
+	private DataUnitType type;
 	
-	public DataUnitInfo(File directory, DataUnitType type) {
+	public DataUnitInfo(File directory, boolean isInput, DataUnitType type) {
 		this.directory = directory;
+		this.isInput = isInput;
 		this.type = type;
+	}
+
+	public File getDirectory() {
+		return directory;
+	}
+
+	public boolean isInput() {
+		return isInput;
+	}
+
+	public DataUnitType getType() {
+		return type;
 	}
 }

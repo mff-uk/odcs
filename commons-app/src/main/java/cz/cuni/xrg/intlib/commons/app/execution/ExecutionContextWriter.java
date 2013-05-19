@@ -19,10 +19,11 @@ public interface ExecutionContextWriter {
 	 * of given id (index) could store it's content.
 	 * @param dpuInstance The {@link DPUInstance} which will work with the {@link cz.cuni.xrg.intlib.commons.data.DataUnit}.
 	 * @param type {@link DataUnitType Type} of data unit.
+	 * @param isInput True if the DataUnit will be used as input.
 	 * @param index DataUnit' index.
 	 * @return The path to the directory, is not guaranteed that the directory exist.
 	 */
-	public File createDirForDataUnit(DPUInstance dpuInstance, DataUnitType type, int index);
+	public File createDirForDataUnit(DPUInstance dpuInstance, DataUnitType type, boolean isInput, int index);
 
 	/**
 	 * Create directory where DPU {@link cz.cuni.xrg.intlib.commons.ProcessingContext} 
@@ -52,4 +53,10 @@ public interface ExecutionContextWriter {
 	 * @return
 	 */
 	public File getloadFilePath();
+	
+	/**
+	 * Return path to the file where the log4j log is stored.
+	 * @return Path or null if no file with log exist. 
+	 */
+	public File getLog4jFile();
 }

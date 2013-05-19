@@ -15,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 @XmlRootElement
-class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextWriter {
+class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWriter {
 
 	/**
 	 * Store context information for DPUs under
@@ -45,11 +45,16 @@ class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextW
 	}
 	
 	@Override
-	public File createDirForDataUnit(DPUInstance dpuInstance,
-			DataUnitType type, int id) {		
-		return getContext(dpuInstance).createDirForDataUnit(type, id);
+	public DataUnitInfo getDataUnitInfo(DPUInstance dpuInstance, int id) {		
+		return getContext(dpuInstance).getDataUnitInfo(id);
 	}
 
+	@Override
+	public File createDirForDataUnit(DPUInstance dpuInstance,
+			DataUnitType type, boolean isInput, int index) {
+		return getContext(dpuInstance).createDirForDataUnit(type, isInput, index);
+	}	
+	
 	@Override
 	public File getDirForDPUStorage(DPUInstance dpuInstance) {
 		return getContext(dpuInstance).getDirForDPUStorage();
@@ -75,26 +80,6 @@ class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextW
 	}
 	
 	@Override
-	public DataUnitType getTypeForDataUnit(DPUInstance dpuInstance, int index) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			return contexts.get(dpuInstance.getId()).getTypeForDataUnit(index);
-		} else {
-			// DPU's context does'n exist
-			return null;
-		}
-	}
-
-	@Override
-	public File getDirectoryForDataUnit(DPUInstance dpuInstance, int index) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			return contexts.get(dpuInstance.getId()).getDirForDataUnit(index);
-		} else {
-			// DPU's context does'n exist
-			return null;
-		}
-	}
-
-	@Override
 	public File getDirectoryForResult(DPUInstance dpuInstance) {
 		if (contexts.containsKey(dpuInstance.getId())) {
 			return contexts.get(dpuInstance.getId()).getDirForDPUResult(false);
@@ -103,26 +88,6 @@ class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextW
 			return null;
 		}
 	}
-
-	/**
-	 * Return {@link DPUContextInfo} for given {@link DPUInstance}
-	 * @param dpuInstance
-	 * @return
-	 */
-	private DPUContextInfo getContext(DPUInstance dpuInstance) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			// context exist 
-			return contexts.get(dpuInstance.getId());
-		} else {
-			// prepare directory
-			File dpuContextDir = new File(workingDirectory, dpuInstance.getId().toString() );
-			// create context
-			DPUContextInfo newContext = new DPUContextInfo(dpuContextDir);
-			contexts.put(dpuInstance.getId(), newContext);
-			return newContext;
-		}
-	}
-
 
 	@Override
 	public void save() throws Exception {
@@ -141,4 +106,28 @@ class ExecutionContextImpl implements ExecutionContextReader , ExecutionContextW
 	public File getloadFilePath() {
 		return new File(workingDirectory, "context.xml");
 	}
+
+	@Override
+	public File getLog4jFile() {
+		return new File(workingDirectory, "log4j.txt");
+	}
+	
+	/**
+	 * Return {@link DPUContextInfo} for given {@link DPUInstance}
+	 * @param dpuInstance
+	 * @return
+	 */
+	private DPUContextInfo getContext(DPUInstance dpuInstance) {
+		if (contexts.containsKey(dpuInstance.getId())) {
+			// context exist 
+			return contexts.get(dpuInstance.getId());
+		} else {
+			// prepare directory
+			File dpuContextDir = new File(workingDirectory, dpuInstance.getId().toString() );
+			// create context
+			DPUContextInfo newContext = new DPUContextInfo(dpuContextDir);
+			contexts.put(dpuInstance.getId(), newContext);
+			return newContext;
+		}
+	}	
 }

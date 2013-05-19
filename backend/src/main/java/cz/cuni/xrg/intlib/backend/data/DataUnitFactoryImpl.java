@@ -66,16 +66,16 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 			{
 				LocalRDF repository = new LocalRDF();
 				// get directory
-				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Local, counter);
+				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Local, mergePrepare, counter);
 				repository.createNew(id, workingDirectory, mergePrepare);			
 				return repository;
 			}
 			case RDF_Virtuoso:
 			{
-				// TODO: Petyr, Jirka : enable connection outside ctor, add emtpy ctor for factory
+				// TODO: Petyr, Jirka : enable connection outside ctor, add empty ctor for factory
 				VirtuosoRDF repository = VirtuosoRDF.createVirtuosoRDFRepo();
 				// get directory
-				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Virtuoso, counter);
+				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Virtuoso, mergePrepare, counter);
 				repository.createNew(id, workingDirectory, mergePrepare);			
 				return repository;
 			}				

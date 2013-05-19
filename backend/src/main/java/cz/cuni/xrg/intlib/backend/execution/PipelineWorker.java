@@ -52,7 +52,9 @@ import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.impl.Log4jLoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.util.Log4jConfigurer;
 
 /**
  * Worker responsible for running single PipelineExecution.
@@ -139,9 +141,19 @@ class PipelineWorker implements Runnable {
 			// exception -> use new one .. 
 			this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
 		}
+		// setup log4j
+		setupLog4j();
+		
 		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU
 	}
 
+	/**
+	 * Setup log4j for this thread.
+	 */
+	private void setupLog4j() {
+		// http://stackoverflow.com/questions/1172113/how-do-i-setup-log4j-properties-so-that-each-thread-outputs-to-its-own-log-file
+	}
+	
 	/**
 	 * Called in case that the execution failed.
 	 */

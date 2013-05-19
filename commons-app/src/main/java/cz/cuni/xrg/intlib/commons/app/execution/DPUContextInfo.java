@@ -53,45 +53,40 @@ class DPUContextInfo {
 	}
 	
 	/**
-	 * Return {@link DataUnitType} for given {@link DataUnit}.
+	 * Return set of indexes for stored DataUnits.
+	 * @return
+	 */
+	public Set<Integer> getIndexForDataUnits() {
+		return dataUnits.keySet();
+	}	
+	
+	/**
+	 * Return {@link DataUnitInfo} for given {@link DataUnit}. 
 	 * @param index Index of {@link DataUnit}.
 	 * @return {@link DataUnitType} or null in case of invalid id.
 	 */
-	public DataUnitType getTypeForDataUnit(int index) {
+	public DataUnitInfo getDataUnitInfo(int index) {
 		if (dataUnits.containsKey(index)) {
-			return dataUnits.get(index).type;
+			return dataUnits.get(index);
 		} else {
 			return null;
 		}
 	}
-	
-	/**
-	 * Return path to the directory associated with given 
-	 * DataUnit
-	 * @param index Index of associated DataUnit.
-	 * @return
-	 */
-	public File getDirForDataUnit(int index) {
-		if (dataUnits.containsKey(index)) {
-			return dataUnits.get(index).directory;
-		} else {
-			return null;
-		}
-	}		
-	
+		
 	/**
 	 * Return path to the directory associated with given. If the path 
 	 * doesn't exist then it's created.
 	 * @param type DataUnit type.
+	 * @param isInput True it the DataUnit is created as a input.
 	 * @param index Index of DataUnit.
 	 * @return The directory or null.
 	 */
-	public File createDirForDataUnit(DataUnitType type, int index) {
+	public File createDirForDataUnit(DataUnitType type, boolean isInput, int index) {
 		if (dataUnits.containsKey(index)) {
-			return dataUnits.get(index).directory;
+			return dataUnits.get(index).getDirectory();
 		} else {
 			File path = new File(rootDirectory, Integer.toString(index) );
-			dataUnits.put(index, new DataUnitInfo(path, type));
+			dataUnits.put(index, new DataUnitInfo(path, isInput, type));
 			return path;
 		}
 	}
@@ -118,11 +113,4 @@ class DPUContextInfo {
 		return resultDirectory;
 	}		
 
-	/**
-	 * Return set of indexes for stored DataUnits.
-	 * @return
-	 */
-	public Set<Integer> getIndexForDataUnits() {
-		return dataUnits.keySet();
-	}
 }
