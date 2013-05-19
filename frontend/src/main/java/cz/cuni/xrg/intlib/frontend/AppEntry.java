@@ -56,19 +56,27 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 */
 	private DPUFacade dpus;
 
+	/**
+	 * Add a single view to {@link #navigator}.
+	 * @param view Name of the view.
+	 */
+	private void initNavigatorAddSingle(ViewNames view) {
+		this.navigator.addView(view.getUrl(), ViewsFactory.create(view));
+	}
+	
     /**
      * Add url-view association into navigator.
      */
-    protected void initNavigator() {
-        this.navigator.addView("", new Initial());
+    private void initNavigator() {
+    	initNavigatorAddSingle(ViewNames.Initial);
         // TODO: check rights !!
-        this.navigator.addView(ViewNames.Administrator.getUrl(), new Administrator());
-        this.navigator.addView(ViewNames.DataBrowser.getUrl(), new DataBrowser());
-        this.navigator.addView(ViewNames.DPU.getUrl(), new DPU());
-        this.navigator.addView(ViewNames.ExecutionMonitor.getUrl(), new ExecutionMonitor());
-        this.navigator.addView(ViewNames.PipelineList.getUrl(), new PipelineList());
-        this.navigator.addView(ViewNames.PipelineEdit.getUrl(), new PipelineEdit());
-        this.navigator.addView(ViewNames.Scheduler.getUrl(), new Scheduler());
+        initNavigatorAddSingle(ViewNames.Administrator);
+        initNavigatorAddSingle(ViewNames.DataBrowser);
+        initNavigatorAddSingle(ViewNames.DPU);
+        initNavigatorAddSingle(ViewNames.ExecutionMonitor);
+        initNavigatorAddSingle(ViewNames.PipelineList);
+        initNavigatorAddSingle(ViewNames.PipelineEdit);
+        initNavigatorAddSingle(ViewNames.Scheduler);
 
         /* You can create new views dynamically using a view provider
          * that implements the  ViewProvider interface.

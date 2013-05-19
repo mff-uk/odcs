@@ -1,13 +1,11 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
 import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -20,6 +18,7 @@ import com.vaadin.ui.TabSheet.Tab;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.List;
  *
  * @author Bogo
  */
-public class PipelineEdit extends CustomComponent implements View {
+class PipelineEdit extends ViewComponent {
 
 	private VerticalLayout mainLayout;
 	private Label label;

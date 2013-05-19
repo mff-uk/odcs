@@ -3,10 +3,12 @@ package cz.cuni.xrg.intlib.frontend.gui;
 /**
  * Store url for views. The enum name should be the same as a class name 
  * of view.
+ * 
  * @author Petyr
  *
  */
 public enum ViewNames {
+	Initial(""),
 	Administrator("Administrator"),
 	DataBrowser("DataBrowser"),
 	DPU("DPU"),
@@ -14,8 +16,7 @@ public enum ViewNames {
 	PipelineList("PipelineList"),
 	PipelineEdit("PipelineEdit"),
 	PipelineEdit_New("PipelineEdit","New"),
-	Scheduler("Scheduler"),
-	OSGiSupport("OSGiSupport");
+	Scheduler("Scheduler");
 	
 	/**
 	 * String for view.
@@ -46,7 +47,7 @@ public enum ViewNames {
 	}
 	
 	/**
-	 * Return view parametr.
+	 * Return view parameter.
 	 * @return
 	 */
 	public String getParametr() {
