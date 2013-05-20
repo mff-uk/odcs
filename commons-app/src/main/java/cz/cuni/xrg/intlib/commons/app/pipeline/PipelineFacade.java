@@ -1,11 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade providing actions with pipelines.
@@ -19,24 +19,9 @@ public class PipelineFacade {
 
 	/**
 	 * Entity manager for accessing database with persisted objects
-	 * TODO autowire through Spring and remove setter and constructor
 	 */
+	@PersistenceContext
 	private EntityManager em;
-
-	/**
-	 * Constructs facade and its dependencies.
-	 */
-	public PipelineFacade() {
-		this(IntlibEntityManagerFactory.getEm());
-	}
-
-	/**
-	 * Construct with given Entity Manager
-	 * @param em
-	 */
-	public PipelineFacade(EntityManager em) {
-		this.em = em;
-	}
 
 	/* ******************* Methods for managing Pipeline ******************** */
 
@@ -47,7 +32,6 @@ public class PipelineFacade {
 	 *
 	 * @return newly created pipeline
 	 */
-	@Deprecated
 	public Pipeline createPipeline() {
 		return new Pipeline();
 	}
@@ -84,16 +68,9 @@ public class PipelineFacade {
 	 *
 	 * @param pipeline
 	 */
+	@Transactional
 	public void save(Pipeline pipeline) {
-
-		EntityTransaction tx = em.getTransaction();
-		if (!tx.isActive()) {
-			tx.begin();
-		}
-
 		em.persist(pipeline);
-
-		tx.commit();
 	}
 
 	/**
@@ -101,16 +78,9 @@ public class PipelineFacade {
 	 *
 	 * @param pipeline
 	 */
+	@Transactional
 	public void delete(Pipeline pipeline) {
-
-		EntityTransaction tx = em.getTransaction();
-		if (!tx.isActive()) {
-			tx.begin();
-		}
-
 		em.remove(pipeline);
-
-		tx.commit();
 	}
 
 	/* ******************** Methods for managing PipelineExecutions ********* */
@@ -123,7 +93,6 @@ public class PipelineFacade {
 	 * @param pipeline
 	 * @return
 	 */
-	@Deprecated
 	public PipelineExecution createExecution(Pipeline pipeline) {
 		PipelineExecution execution = new PipelineExecution(pipeline);
 		return execution;
@@ -138,10 +107,10 @@ public class PipelineFacade {
 
 		@SuppressWarnings("unchecked")
 		List<PipelineExecution> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM PipelineExecution e").getResultList(),
-				PipelineExecution.class
+			em.createQuery("SELECT e FROM PipelineExecution e").getResultList(),
+			PipelineExecution.class
 		);
-
+		
 		return resultList;
 	}
 
@@ -161,16 +130,9 @@ public class PipelineFacade {
 	 *
 	 * @param exec
 	 */
+	@Transactional
 	public void save(PipelineExecution exec) {
-
-		EntityTransaction tx = em.getTransaction();
-		if (!tx.isActive()) {
-			tx.begin();
-		}
-
 		em.persist(exec);
-
-		tx.commit();
 	}
 
 	/**
@@ -178,16 +140,9 @@ public class PipelineFacade {
 	 *
 	 * @param exec
 	 */
+	@Transactional
 	public void delete(PipelineExecution exec) {
-
-		EntityTransaction tx = em.getTransaction();
-		if (!tx.isActive()) {
-			tx.begin();
-		}
-
 		em.remove(exec);
-
-		tx.commit();
 	}
 
 }

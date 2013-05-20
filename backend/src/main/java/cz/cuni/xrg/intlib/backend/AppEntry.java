@@ -17,6 +17,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.Engine;
+import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
+import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -104,6 +106,9 @@ public class AppEntry {
 		logger.info("DPU directory:" + appConfig.getString(ConfProperty.MODULE_PATH));
 		logger.info("Listening on port:" + appConfig.getInteger(ConfProperty.BACKEND_PORT));
 		logger.info("Running ...");
+		
+		// check for any pending jobs published before engine startup
+		context.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, AppEntry.class));
 				
 		InputStreamReader converter = new InputStreamReader(System.in);
 		BufferedReader in = new BufferedReader(converter);		

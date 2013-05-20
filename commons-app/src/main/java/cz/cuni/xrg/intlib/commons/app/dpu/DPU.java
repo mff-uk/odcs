@@ -26,11 +26,13 @@ public class DPU {
     /**
      * DPU name, provided by user.
      */
+	@Column(name="name")
     private String name;
     
     /**
      * DPU description, provided by user.
      */
+	@Column(name="description")
     private String description;
     
     /**

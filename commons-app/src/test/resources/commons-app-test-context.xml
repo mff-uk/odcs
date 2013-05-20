@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/jdbc
+						http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
+
+	<!-- Imports application configuration -->
+	<import resource="classpath:commons-app-context.xml" />
+
+	<!-- Override EntityManager factory with embedde dataSource -->
+	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="intlib"/>
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- Module configuration needs to be defined here,
+		 because it differs from frontend -->
+	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfiguration">
+		<constructor-arg value="BACKEND" />
+	</bean>
+
+<!--	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="org.h2.Driver"/>
+		<property name="url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;CASE_SENSITIVE_COLUMN=FALSE"/>
+		<property name="username" value="sa"/>
+		<property name="password" value=""/>
+	</bean>
+
+	<jdbc:initialize-database data-source="dataSource" ignore-failures="DROPS">
+		<jdbc:script location="classpath:db/schema.sql" />
+	</jdbc:initialize-database>-->
+
+	<!-- Creates an in-memory database populated with test data for fast testing -->
+	<jdbc:embedded-database id="dataSource" type="H2">
+		<jdbc:script location="classpath:db/schema.sql"/>
+	</jdbc:embedded-database>
+
+</beans>

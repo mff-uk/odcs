@@ -1,39 +1,24 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.util.IntlibEntityManagerFactory;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 
 /**
  * Facade for working with DPUs.
- * @author Jan Vojt <jan@vojt.net>
- *
+ * 
+ * @author Jan Vojt
  */
 public class DPUFacade {
 
 	/**
 	 * Entity manager for accessing database with persisted objects.
-	 * @todo autowire through Spring and remove setter and constructor
 	 */
+	@PersistenceContext
 	private EntityManager em;
-
-	/**
-	 * Constructs facade and its dependencies.
-	 */
-	public DPUFacade() {
-		this(IntlibEntityManagerFactory.getEm());
-	}
-
-	/**
-	 * Construct with given Entity Manager
-	 * @param em
-	 */
-	public DPUFacade(EntityManager em) {
-		this.em = em;
-	}
 	
 	/* ******************* Methods for DPU management *********************** */
 
