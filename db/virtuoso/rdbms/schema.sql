@@ -118,7 +118,8 @@ CREATE TABLE "DB"."INTLIB"."DPU_MODEL"
   "id" INTEGER,
   "name" VARCHAR(45),
   "description" VARCHAR(255),
-  "type" VARCHAR(11),
+  "type" SMALLINT,
+  "visibility" SMALLINT,
   "jar_path" VARCHAR(255),
   PRIMARY KEY ("id")
 );

@@ -36,13 +36,13 @@ public class DPU {
     /**
      * DPU type, determined by associated jar file.
      */
-	@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.ORDINAL)
     private DpuType type;
     
     /**
      * VIsibility.
      */
-	@Transient
+	@Enumerated(EnumType.ORDINAL)
     private VisibilityType visibility;
     
     /**
