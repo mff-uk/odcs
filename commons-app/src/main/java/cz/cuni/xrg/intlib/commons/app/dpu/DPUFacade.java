@@ -38,12 +38,13 @@ public class DPUFacade {
 	/* ******************* Methods for DPU management *********************** */
 
 	/**
-	 * Creates DPU without persisting it.
+	 * Creates DPU and its {@link TemplateConfiguration} without persisting it.
+	 * 
 	 * @return
 	 */
-	@Deprecated
 	public DPU createDpu() {
 		DPU dpu = new DPU();
+		dpu.setTemplateConfiguration(new TemplateConfiguration());
 		return dpu;
 	}
 	
