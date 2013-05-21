@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for working with DPUs.
@@ -89,28 +90,22 @@ public class DPUFacade {
 	 * Saves any modifications made to the DPU into the database.
 	 * @param dpu
 	 */
+	@Transactional
 	public void save(DPU dpu) {
-
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-
-		em.persist(dpu);
-
-		tx.commit();
+		if (dpu.getId() == null) {
+			em.persist(dpu);
+		} else {
+			em.merge(dpu);
+		}
 	}
 
 	/**
 	 * Deletes DPU from the database.
 	 * @param dpu
 	 */
+	@Transactional
 	public void delete(DPU dpu) {
-
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-
 		em.remove(dpu);
-
-		tx.commit();
 	}
 	
 	/* **************** Methods for DPU Instance management ***************** */
@@ -162,28 +157,22 @@ public class DPUFacade {
 	 * Saves any modifications made to the DPUInstance into the database.
 	 * @param dpu
 	 */
+	@Transactional
 	public void save(DPUInstance dpu) {
-
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-
-		em.persist(dpu);
-
-		tx.commit();
+		if (dpu.getId() == null) {
+			em.persist(dpu);
+		} else {
+			em.merge(dpu);
+		}
 	}
 
 	/**
 	 * Deletes DPUInstance from the database.
 	 * @param dpu
 	 */
+	@Transactional
 	public void delete(DPUInstance dpu) {
-
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-
 		em.remove(dpu);
-
-		tx.commit();
 	}
 	
 	/* **************** Methods for DPU Record management ***************** */
@@ -238,14 +227,13 @@ public class DPUFacade {
 	 * 
 	 * @param record
 	 */
+	@Transactional
 	public void save(Record record) {
-
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-
-		em.persist(record);
-
-		tx.commit();
+		if (record.getId() == null) {
+			em.persist(record);
+		} else {
+			em.merge(record);
+		}
 	}
 
 	/**
@@ -253,13 +241,8 @@ public class DPUFacade {
 	 * 
 	 * @param record
 	 */
+	@Transactional
 	public void delete(Record record) {
-
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-
 		em.remove(record);
-
-		tx.commit();
 	}
 }

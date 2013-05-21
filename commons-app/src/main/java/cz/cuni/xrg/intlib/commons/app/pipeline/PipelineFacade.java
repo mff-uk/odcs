@@ -66,7 +66,11 @@ public class PipelineFacade {
 	 */
 	@Transactional
 	public void save(Pipeline pipeline) {
-		em.persist(pipeline);
+		if (pipeline.getId() == null) {
+			em.persist(pipeline);
+		} else {
+			em.merge(pipeline);
+		}
 	}
 
 	/**
@@ -128,7 +132,11 @@ public class PipelineFacade {
 	 */
 	@Transactional
 	public void save(PipelineExecution exec) {
-		em.persist(exec);
+		if (exec.getId() == 0) {
+			em.persist(exec);
+		} else {
+			em.merge(exec);
+		}
 	}
 
 	/**

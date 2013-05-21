@@ -15,6 +15,7 @@ public class PipelineExecution  {
 
 	/**
 	 * Unique id of pipeline execution.
+	 * TODO change to Long
 	 */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
