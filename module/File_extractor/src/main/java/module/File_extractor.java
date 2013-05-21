@@ -1,7 +1,5 @@
 package module;
 
-import org.apache.log4j.Logger;
-
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
@@ -14,6 +12,8 @@ import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -35,7 +35,7 @@ public class File_extractor implements GraphicalExtractor {
     /**
      * Logger class.
      */
-    private Logger logger = Logger.getLogger(File_extractor.class);    
+    private Logger logger = LoggerFactory.getLogger(File_extractor.class);    
     
     public File_extractor() {
     }

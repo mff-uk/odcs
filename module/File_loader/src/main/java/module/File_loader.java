@@ -16,8 +16,8 @@ import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import org.openrdf.rio.RDFFormat;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jiri Tomes
@@ -38,7 +38,7 @@ public class File_loader implements GraphicalLoader {
     /**
      * Logger class.
      */
-    private Logger logger = Logger.getLogger(File_loader.class);
+    private Logger logger = LoggerFactory.getLogger(File_loader.class);
     
     public File_loader() {
     }
@@ -98,6 +98,7 @@ public class File_loader implements GraphicalLoader {
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
         logger.debug("format: " + enumFormatType.toString());
+        
         switch (enumFormatType) {
             case AUTO: {
                 String fileName = getFileName();
