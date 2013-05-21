@@ -21,14 +21,14 @@ import org.openrdf.rio.RDFFormat;
  */
 public class LocalRDF implements RDFDataRepository {
 
-	private LocalRDFRepo impl;	
+    private LocalRDFRepo impl;
+    private File workingDirectory;
+    private static String dumpName = "dump_dat.ttl";
 
-	private File workingDirectory;
-	
-    public static LocalRDF createLocalRepoInDirectory(String dirName) {
-    	LocalRDF result = new LocalRDF();
-    	result.impl = LocalRDFRepo.createLocalRepoInDirectory(dirName);
-    	return result;
+    public static LocalRDF createLocalRepoInDirectory(String dirName,String fileName) {
+        LocalRDF result = new LocalRDF();
+        result.impl = LocalRDFRepo.createLocalRepoInDirectory(dirName,fileName);
+        return result;
     }
 
     /**
@@ -37,15 +37,14 @@ public class LocalRDF implements RDFDataRepository {
      * @param path
      * @return
      */
-    public static LocalRDF createLocalRepo(String path) {
-    	LocalRDF result = new LocalRDF();
-    	result.impl = new LocalRDFRepo(path);
-    	return result;
+    public static LocalRDF createLocalRepo(String repoPath,String fileName) {
+        LocalRDF result = new LocalRDF();
+        result.impl = new LocalRDFRepo(repoPath,fileName);
+        return result;
     }
 
     /**
      * Empty constructor - used only for inheritance.
-     * // TODO: Jirka: use protected ?
      */
     public LocalRDF() {
     }
@@ -55,8 +54,8 @@ public class LocalRDF implements RDFDataRepository {
      *
      * @param repositoryPath
      */
-    public LocalRDF(String repositoryPath) {
-        this.impl = new LocalRDFRepo(repositoryPath);
+    public LocalRDF(String repositoryPath,String fileName) {
+        this.impl = new LocalRDFRepo(repositoryPath,fileName);
     }
 
     /**
@@ -69,7 +68,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName) {
-    	impl.addTripleToRepository(namespace, subjectName, predicateName, objectName);
+        impl.addTripleToRepository(namespace, subjectName, predicateName, objectName);
     }
 
     /**
@@ -82,7 +81,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
-    	impl.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+        impl.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
     }
 
     /**
@@ -96,7 +95,7 @@ public class LocalRDF implements RDFDataRepository {
     @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName,
             org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException {
-    	impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format);
+        impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format);
     }
 
     /**
@@ -111,7 +110,7 @@ public class LocalRDF implements RDFDataRepository {
     @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
             boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException {
-    	impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverWrite, isNameUnique);
+        impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverWrite, isNameUnique);
     }
 
     /**
@@ -123,7 +122,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, WriteGraphType graphType) {
-    	impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, graphType);
+        impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, graphType);
     }
 
     /**
@@ -137,7 +136,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password, WriteGraphType graphType) {
-    	impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, name, password, graphType);
+        impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, name, password, graphType);
     }
 
     /**
@@ -152,12 +151,12 @@ public class LocalRDF implements RDFDataRepository {
     @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
             String password, WriteGraphType graphType) {
-    	impl.loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, userName, password, graphType);
+        impl.loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, userName, password, graphType);
     }
 
     @Override
     public List<Statement> getRepositoryStatements() {
-    	return impl.getRepositoryStatements();
+        return impl.getRepositoryStatements();
     }
 
     /**
@@ -170,7 +169,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
-    	impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
+        impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
     }
 
     /**
@@ -186,7 +185,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
-    	impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, hostName, password, format);    	
+        impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, hostName, password, format);
     }
 
     /**
@@ -202,7 +201,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) {
-    	impl.extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, hostName, password);
+        impl.extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, hostName, password);
     }
 
     /**
@@ -212,7 +211,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void transformUsingSPARQL(String updateQuery) {
-    	impl.transformUsingSPARQL(updateQuery);
+        impl.transformUsingSPARQL(updateQuery);
     }
 
     /**
@@ -222,7 +221,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public long getTripleCountInRepository() {
-    	return impl.getTripleCountInRepository();
+        return impl.getTripleCountInRepository();
     }
 
     /**
@@ -245,12 +244,12 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void cleanAllRepositoryData() {
-    	impl.cleanAllRepositoryData();
+        impl.cleanAllRepositoryData();
     }
 
     @Override
     public void mergeRepositoryData(RDFDataRepository second) {
-    	impl.mergeRepositoryData(second);
+        impl.mergeRepositoryData(second);
     }
 
     /**
@@ -260,7 +259,7 @@ public class LocalRDF implements RDFDataRepository {
      */
     @Override
     public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
-    	impl.copyAllDataToTargetRepository( targetRepo.getDataRepository() );
+        impl.copyAllDataToTargetRepository(targetRepo.getDataRepository());
     }
 
     @Override
@@ -292,7 +291,7 @@ public class LocalRDF implements RDFDataRepository {
     }
 
     protected void setReadOnly(boolean isReadOnly) {
-    	impl.setReadOnly(isReadOnly);
+        impl.setReadOnly(isReadOnly);
     }
 
     @Override
@@ -302,7 +301,7 @@ public class LocalRDF implements RDFDataRepository {
         }
         // we need inforamtion about working directory
         this.workingDirectory = workingDirectory;
-        impl = new LocalRDFRepo(workingDirectory.getAbsolutePath());
+        impl = new LocalRDFRepo(workingDirectory.getAbsolutePath(),id);
     }
 
     @Override
@@ -315,17 +314,17 @@ public class LocalRDF implements RDFDataRepository {
         cleanAllRepositoryData();
     }
 
-	@Override
-	public void save() throws Exception {
-		// TODO Jirka, Petyr: save restore data into workingDirectory (passed in createNew)
-		File file = new File(workingDirectory, "dump.dat");		
-		impl.save(file);
-	}
+    @Override
+    public void save() throws Exception {
 
-	@Override
-	public void load(File directory) throws FileNotFoundException, Exception {
-		// TODO Jirka, Petyr: load data from given directory
-		File file = new File(workingDirectory, "dump.dat");
-		impl.load(file);		 		
-	}
+        File file = new File(workingDirectory, dumpName);
+        impl.save(file);
+    }
+
+    @Override
+    public void load(File directory) throws FileNotFoundException, Exception {
+
+        File file = new File(workingDirectory, dumpName);
+        impl.load(file);
+    }
 }
