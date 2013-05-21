@@ -29,7 +29,7 @@ public class PipelineExecution  {
     /**
      * Pipeline being executed.
      */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
     private Pipeline pipeline;
     
     /**
