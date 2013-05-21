@@ -65,7 +65,8 @@ class DPU extends ViewComponent {
 	String jarPath;
 	private GridLayout dpuLayout;
 	private HorizontalLayout buttonDpuBar;
-
+	private Configuration conf;
+	
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
 	/**
@@ -303,18 +304,22 @@ class DPU extends ViewComponent {
 			try {
 				dpuExec = App.getApp().getModules().getInstance(jarPath);
 				
+				// get configuration from dpu
+				conf = selectedDpu.getTemplateConfiguration();				
 		
 				if (dpuExec != null) {
 					
-				
-						Configuration conf = new TemplateConfiguration();
+					if (conf == null) {
+						// create new default configuration
+						conf = new TemplateConfiguration();
 						dpuExec.saveConfigurationDefault(conf);
-								
+					}	
 					
 					CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
 					dpuConfigurationDialog.setWidth("100%");
 					verticalLayoutConfigure.removeAllComponents();
 					verticalLayoutConfigure.addComponent(dpuConfigurationDialog);
+					
 				}
 				
 			} catch (ModuleException me) {
@@ -468,6 +473,8 @@ return dpuDetailLayout;
 							selectedDpu.setVisibility((VisibilityType)groupVisibility
 									.getValue());
 							
+							dpuExec.saveConfiguration(conf);
+														
 							// store into DB
 							App.getDPUs().save(selectedDpu);
 							

@@ -79,7 +79,7 @@ public class ConfigDialog extends CustomComponent {
         try {
             String endp = (String) conf.getValue(Config.SPARQL_endpoint.name());
 
-            if (comboBoxSparql.addItem(endp) != null) {
+            if ((endp!=null)&& (comboBoxSparql.addItem(endp) != null)) {
                 final Item item = comboBoxSparql.getItem(endp);
                 item.getItemProperty("endpoint").setValue(endp);
                 comboBoxSparql.setValue(endp);

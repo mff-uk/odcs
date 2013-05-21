@@ -22,33 +22,29 @@ import org.openrdf.rio.RDFFormat;
  */
 public class VirtuosoRDF implements RDFDataRepository {
 
-	private VirtuosoRDFRepo impl;
-	
+    private VirtuosoRDFRepo impl;
+
     public static VirtuosoRDF createVirtuosoRDFRepo() {
 
-        final String hostName = "localhost";
-        final String port = "1111";
-        final String user = "dba";
-        final String password = "dba";
-        final String defautGraph = "http://default";
+        VirtuosoRDF result = new VirtuosoRDF();
+        result.impl = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 
-        return createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
+        return result;
 
     }
 
     public static VirtuosoRDF createVirtuosoRDFRepo(String hostName, String port, String user, String password, String defaultGraph) {
-    	VirtuosoRDF result = new VirtuosoRDF();
-    	result.impl = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName, port, user, password, defaultGraph);
+        VirtuosoRDF result = new VirtuosoRDF();
+        result.impl = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName, port, user, password, defaultGraph);
         return result;
     }
 
     /**
-     * Private ctor for {@link #createVirtuosoRDFRepo}
+     * Private constuctor for {@link #createVirtuosoRDFRepo}
      */
     private VirtuosoRDF() {
-    	
     }
-    
+
     /**
      * Construct a VirtuosoRepository with a specified parameters.
      *
@@ -65,7 +61,7 @@ public class VirtuosoRDF implements RDFDataRepository {
      * getStatements methods.
      */
     public VirtuosoRDF(String URL_Host_List, String user, String password, String defaultGraph) {
-    	impl = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
+        impl = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
     }
 
     /**
@@ -111,12 +107,12 @@ public class VirtuosoRDF implements RDFDataRepository {
 
     @Override
     public void addTripleToRepository(String namespace, String subjectName, String predicateName, String objectName) {
-    	impl.addTripleToRepository(namespace, subjectName, predicateName, objectName);
+        impl.addTripleToRepository(namespace, subjectName, predicateName, objectName);
     }
 
     @Override
     public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
-    	impl.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
+        impl.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
     }
 
     /**
@@ -131,7 +127,7 @@ public class VirtuosoRDF implements RDFDataRepository {
     @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
             boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException {
-    	impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverWrite, isNameUnique);
+        impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverWrite, isNameUnique);
     }
 
     /**
@@ -146,33 +142,33 @@ public class VirtuosoRDF implements RDFDataRepository {
     @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
             String password, WriteGraphType graphType) {
-    	impl.loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, userName, password, graphType);
+        impl.loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, userName, password, graphType);
     }
 
     @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) {
-    	impl.extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, hostName, password);
+        impl.extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, hostName, password);
     }
 
     @Override
     public long getTripleCountInRepository() {
-    	return impl.getTripleCountInRepository();
+        return impl.getTripleCountInRepository();
     }
 
     @Override
     public void cleanAllRepositoryData() {
-    	impl.cleanAllRepositoryData();
+        impl.cleanAllRepositoryData();
     }
 
     @Override
     public boolean isTripleInRepository(String namespace, String subjectName,
             String predicateName, String objectName) {
-    	return impl.isTripleInRepository(namespace, subjectName, predicateName, objectName);
+        return impl.isTripleInRepository(namespace, subjectName, predicateName, objectName);
     }
 
     @Override
     public List<Statement> getRepositoryStatements() {
-    	return impl.getRepositoryStatements();
+        return impl.getRepositoryStatements();
     }
 
     /**
@@ -180,94 +176,106 @@ public class VirtuosoRDF implements RDFDataRepository {
      */
     @Override
     public void madeReadOnly() {
-    	impl.setReadOnly(true);
+        impl.setReadOnly(true);
     }
 
-	@Override
-	public void createNew(String id, File workingDirectory, boolean mergePrepare) {
-		// TODO Jirka: Virtuoso.createNew
-	}
+    @Override
+    public void createNew(String id, File workingDirectory, boolean mergePrepare) {
+    }
 
-	@Override
-	public void merge(DataUnit unit) throws IllegalArgumentException {
-		// TODO Jirka: Virtuoso.merge
-	}
+    @Override
+    public void merge(DataUnit unit) throws IllegalArgumentException {
+        if (unit != null) {
+            if (unit instanceof RDFDataRepository) {
+                RDFDataRepository rdfRepository = (RDFDataRepository) unit;
+                mergeRepositoryData(rdfRepository);
 
-	@Override
-	public DataUnitType getType() {
-		return DataUnitType.RDF_Virtuoso;
-	}
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+    }
 
-	@Override
-	public boolean isReadOnly() {
-		return impl.isReadOnly();
-	}
+    @Override
+    public DataUnitType getType() {
+        return DataUnitType.RDF_Virtuoso;
+    }
 
-	@Override
-	public void release() {
-		// TODO Jirka: Virtuoso.release
-	}
+    @Override
+    public boolean isReadOnly() {
+        return impl.isReadOnly();
+    }
 
-	@Override
-	public void save() throws Exception {
-		// TODO Jirka, Petyr: save restore data into workingDirectory (passed in createNew)		
-	}
+    @Override
+    public void release() {
+        cleanAllRepositoryData();
+    }
 
-	@Override
-	public void load(File directory) throws FileNotFoundException, Exception {
-		// TODO Jirka, Petyr: load data rom given directory 		
-	}
+    @Override
+    public void save() throws Exception {
+        // TODO Petyr: save restore data into workingDirectory (passed in createNew)
+        
+    }
 
-	@Override
-	public void loadRDFfromRepositoryToXMLFile(String directoryPath,
-			String fileName, RDFFormat format)
-			throws CannotOverwriteFileException {
-		// TODO Jirka		
-	}
+    @Override
+    public void load(File directory) throws FileNotFoundException, Exception {
+        // TODO Petyr: load data rom given directory 		
+    }
 
-	@Override
-	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			WriteGraphType graphType) {
-		// TODO Jirka		
-	}
+    @Override
+    public void loadRDFfromRepositoryToXMLFile(String directoryPath,
+            String fileName, RDFFormat format)
+            throws CannotOverwriteFileException {
 
-	@Override
-	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			String name, String password, WriteGraphType graphType) {
-		// TODO Jirka		
-	}
+        impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format);
+    }
 
-	@Override
-	public void extractfromSPARQLEndpoint(URL endpointURL,
-			String defaultGraphUri, String query) {
-		// TODO Jirka		
-	}
+    @Override
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
+            WriteGraphType graphType) {
 
-	@Override
-	public void extractfromSPARQLEndpoint(URL endpointURL,
-			String defaultGraphUri, String query, String hostName,
-			String password, RDFFormat format) {
-		// TODO Jirka		
-	}
+        impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, graphType);
+    }
 
-	@Override
-	public void transformUsingSPARQL(String updateQuery) {
-		// TODO Jirka		
-	}
+    @Override
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
+            String name, String password, WriteGraphType graphType) {
 
-	@Override
-	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
-		// TODO Jirka		
-	}
+        impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, name, password, graphType);
+    }
 
-	@Override
-	public void mergeRepositoryData(RDFDataRepository second) {
-		// TODO Jirka		
-	}
+    @Override
+    public void extractfromSPARQLEndpoint(URL endpointURL,
+            String defaultGraphUri, String query) {
 
-	@Override
-	public Repository getDataRepository() {
-		// TODO Jirka
-		return null;
-	}
+        impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
+    }
+
+    @Override
+    public void extractfromSPARQLEndpoint(URL endpointURL,
+            String defaultGraphUri, String query, String hostName,
+            String password, RDFFormat format) {
+
+        impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, hostName, password, format);
+    }
+
+    @Override
+    public void transformUsingSPARQL(String updateQuery) {
+        impl.transformUsingSPARQL(updateQuery);
+    }
+
+    @Override
+    public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
+        impl.copyAllDataToTargetRepository(targetRepo.getDataRepository());
+    }
+
+    @Override
+    public void mergeRepositoryData(RDFDataRepository second) {
+        impl.mergeRepositoryData(second);
+    }
+
+    @Override
+    public Repository getDataRepository() {
+        return impl.getDataRepository();
+    }
 }

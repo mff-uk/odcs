@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.rdf;
 
-import cz.cuni.xrg.intlib.commons.app.rdf.GraphNotEmptyException;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
@@ -22,7 +21,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -45,6 +43,8 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sail.memory.MemoryStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -53,29 +53,24 @@ import org.openrdf.sail.memory.MemoryStore;
 public class LocalRDFRepo {
 
     private static LocalRDFRepo localrepo = null;
-    
     /**
      * Logging information about execution of method using openRDF.
      */
-    protected static Logger logger = Logger.getLogger(LocalRDFRepo.class);
-    
+    protected static Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
     /**
      * How many triples is possible to add to SPARQL endpoind at once.
      */
     protected static final int STATEMENTS_COUNT = 10;
-    
     /**
      * Default name for temp directory, where this repository is placed.
      */
     private final static String repoDirName = "intlib-repo";
-    
+    private final static String repoFileName="localRepository";
     protected final String encode = "UTF-8";
-    
     /**
      * RDF data storage component.
      */
     protected Repository repository = null;
-    
     /**
      * If the repository is used only for reading data or not.
      */
@@ -88,10 +83,10 @@ public class LocalRDFRepo {
      */
     public static LocalRDFRepo createLocalRepo() {
 
-        return LocalRDFRepo.createLocalRepoInDirectory(repoDirName);
+        return LocalRDFRepo.createLocalRepoInDirectory(repoDirName,repoFileName);
     }
 
-    public static LocalRDFRepo createLocalRepoInDirectory(String dirName) {
+    public static LocalRDFRepo createLocalRepoInDirectory(String dirName,String fileName) {
         Path repoPath = null;
 
         try {
@@ -100,23 +95,23 @@ public class LocalRDFRepo {
             throw new RuntimeException(e.getMessage());
         }
 
-        return LocalRDFRepo.createLocalRepo(repoPath.toString());
+        return LocalRDFRepo.createLocalRepo(repoPath.toString(),fileName);
     }
 
     /**
      * Create local repository in defined path.
      *
-     * @param path
+     * @param fileRepoPat
      * @return
      */
-    public static LocalRDFRepo createLocalRepo(String path) {
-        localrepo = new LocalRDFRepo(path);
+    public static LocalRDFRepo createLocalRepo(String repoPath,String fileName) {
+        localrepo = new LocalRDFRepo(repoPath,fileName);
         return localrepo;
     }
 
     /**
-     * Empty constructor - used only for inheritance.
-     * TODO: Jirka: if only for inheritance why you have not used protected ?
+     * Empty constructor - used only for inheritance. TODO: Jirka: if only for
+     * inheritance why you have not used protected ?
      */
     public LocalRDFRepo() {
     }
@@ -126,17 +121,17 @@ public class LocalRDFRepo {
      *
      * @param repositoryPath
      */
-    public LocalRDFRepo(String repositoryPath) {
+    public LocalRDFRepo(String repositoryPath,String fileName) {
 
-        callConstructorSetting(repositoryPath);
+        callConstructorSetting(repositoryPath,fileName);
     }
 
-    private void callConstructorSetting(String repositoryPath) {
+    private void callConstructorSetting(String repoPath, String fileName) {
         setReadOnly(false);
 
         long timeToStart = 1000L;
-        File dataDir = new File(repositoryPath);
-        MemoryStore memStore = new MemoryStore(dataDir);
+        File dataFile = new File(repoPath,fileName);
+        MemoryStore memStore = new MemoryStore(dataFile);
         memStore.setSyncDelay(timeToStart);
 
         repository = new SailRepository(memStore);
@@ -835,13 +830,11 @@ public class LocalRDFRepo {
      *
      * @param targetRepository
      */
-    public void copyAllDataToTargetRepository(Repository targetRepo) {
+    public void copyAllDataToTargetRepository(Repository targetRepository) {
 
-        if (targetRepo == null) {
+        if (targetRepository == null) {
             return;
         }
-
-        Repository targetRepository = targetRepo; //targetRepo.getDataRepository();
 
         try {
             RepositoryConnection sourceConnection = repository.getConnection();
@@ -850,14 +843,12 @@ public class LocalRDFRepo {
 
                 List<Statement> sourceStatemens = this.getRepositoryStatements();
 
-                if (targetRepository != null) {
+                RepositoryConnection targetConnection = targetRepository.getConnection();
 
-                    RepositoryConnection targetConnection = targetRepository.getConnection();
-
-                    for (Statement nextStatement : sourceStatemens) {
-                        targetConnection.add(nextStatement);
-                    }
+                for (Statement nextStatement : sourceStatemens) {
+                    targetConnection.add(nextStatement);
                 }
+
             }
         } catch (RepositoryException ex) {
             logger.debug(ex.getMessage());
@@ -867,56 +858,65 @@ public class LocalRDFRepo {
 
     public Repository getDataRepository() {
         return repository;
-    }    
-    
-    public boolean isReadOnly() {
-    	return isReadOnly;
     }
-    
+
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
     public void setReadOnly(boolean isReadOnly) {
         this.isReadOnly = isReadOnly;
     }
 
     public List<RDFTriple> getRDFTriplesInRepository() {
-     
-     List<RDFTriple> triples=new ArrayList<>();
-     List<Statement> statements=getRepositoryStatements();
-     
-     int count=0;
-     
-     for (Statement next:statements)
-     {
-         String subject=next.getSubject().stringValue();
-         String predicate=next.getPredicate().stringValue();
-         String object=next.getObject().stringValue();
-         
-         count++;
-         
-         RDFTriple triple=new RDFTriple(count, subject, predicate, object);
-         triples.add(triple);
-     }
-     
-     return triples;
+
+        List<RDFTriple> triples = new ArrayList<>();
+        List<Statement> statements = getRepositoryStatements();
+
+        int count = 0;
+
+        for (Statement next : statements) {
+            String subject = next.getSubject().stringValue();
+            String predicate = next.getPredicate().stringValue();
+            String object = next.getObject().stringValue();
+
+            count++;
+
+            RDFTriple triple = new RDFTriple(count, subject, predicate, object);
+            triples.add(triple);
+        }
+
+        return triples;
     }
-    
+
     /**
      * Save data from repository into given file.
+     *
      * @param file
      * @throws CannotOverwriteFileException
      */
     public void save(File file) throws CannotOverwriteFileException {
-    	file.getParentFile().mkdirs();
-    	logger.debug("saving directory:" + file.getParent());
-    	logger.debug("saving fileName:" + file.getName());
-    	loadRDFfromRepositoryToXMLFile(file.getParent(), file.getName(), RDFFormat.NTRIPLES, true, false);
+
+        RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+
+        File directory = file.getParentFile();
+
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        logger.debug("saving directory:" + directory.getName());
+        logger.debug("saving fileName:" + file.getName());
+
+        loadRDFfromRepositoryToXMLFile(directory.getName(), file.getName(), format, true, false);
     }
-    
+
     /**
      * Load data from given file into repository.
+     *
      * @param file
      */
     public void load(File file) {
-    	extractRDFfromXMLFileToRepository(file.getAbsolutePath(), "", "", false);
+        extractRDFfromXMLFileToRepository(file.getAbsolutePath(), "", "", false);
     }
 }
-
