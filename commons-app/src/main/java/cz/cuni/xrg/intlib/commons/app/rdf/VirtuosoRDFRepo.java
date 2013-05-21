@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.rdf;
 
-import cz.cuni.xrg.intlib.commons.app.rdf.GraphNotEmptyException;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import java.io.BufferedReader;
@@ -19,7 +18,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.URIImpl;
@@ -31,6 +29,7 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
+import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
 /**
@@ -40,21 +39,19 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
 public class VirtuosoRDFRepo extends LocalRDFRepo {
 
     private static VirtuosoRDFRepo virtuosoRepo = null;
-    
     private String URL_Host_List;
-    
     private String user;
-    
     private String password;
-    
     private String defaultGraph;
-    
     private Resource graph;
 
-    private Logger logger = Logger.getLogger(VirtuosoRDFRepo.class);
-    
+    static {
+
+        logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
+    }
+
     public static VirtuosoRDFRepo createVirtuosoRDFRepo() {
-    	// TODO: Jirka: load from AppConfiguration .., ask Petyr about more details 
+        // TODO: Load from AppConfiguration ... 
         final String hostName = "localhost";
         final String port = "1111";
         final String user = "dba";
@@ -617,5 +614,4 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
 
         return statemens;
     }
-
 }
