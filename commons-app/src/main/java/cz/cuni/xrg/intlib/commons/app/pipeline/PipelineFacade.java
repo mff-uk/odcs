@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Facade providing actions with pipelines.
  *
  * @author Jan Vojt
- *
- * TODO	Refactor transactions to be able to perform multiple actions
- * 			per one transaction.
  */
 public class PipelineFacade {
 

@@ -117,6 +117,8 @@ class PipelineEdit extends ViewComponent {
 					DPU dpu = (DPU) obj;
 					if (App.getApp().getDPUs().getAllDpus().contains(dpu)) {
 						pc.addDpu(dpu, mouse.getClientX() - 261, mouse.getClientY() - 256);
+					} else {
+						// TODO log unknown DPU
 					}
 				}
 
