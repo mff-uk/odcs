@@ -20,7 +20,9 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
+import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.DetailClosedListener;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
+import java.util.EventObject;
 import java.util.List;
 
 /**
@@ -36,6 +38,7 @@ class PipelineEdit extends ViewComponent {
 	private TextArea pipelineDescription;
 	private Pipeline pipeline = null;
 	PipelineCanvas pc;
+	Tree dpuTree;
 
 	/**
 	 * Empty constructor.
@@ -75,6 +78,20 @@ class PipelineEdit extends ViewComponent {
 		pc.setWidth(1060, Unit.PIXELS);
 		pc.setHeight(630, Unit.PIXELS);
 		pc.init();
+		pc.addListener(new DetailClosedListener() {
+
+			@Override
+			public void detailClosed(EventObject e) {
+				fillTree(dpuTree);
+				dpuTree.markAsDirty();
+			}
+
+			@Override
+			public void componentEvent(Event event) {
+
+			}
+
+		});
 
 //        try {
 //            pc.addListener(ActionEvent.class, this, PipelineEdit.class.getMethod("showDPUDetail", new Class[]{DPUInstance.class}));
@@ -136,7 +153,7 @@ class PipelineEdit extends ViewComponent {
 
 		layout.addComponent(tabSheet);
 
-		Tree dpuTree = new Tree("DPUs");
+		dpuTree = new Tree("DPUs");
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setWidth(220, Unit.PIXELS);
 		dpuTree.setDragMode(Tree.TreeDragMode.NODE);
@@ -303,6 +320,8 @@ class PipelineEdit extends ViewComponent {
 	 */
 	private void fillTree(Tree tree) {
 
+		tree.removeAllItems();
+
 		DPU rootExtractor = new DPU("Extractors", null);
 		tree.addItem(rootExtractor);
 		DPU rootTransformer = new DPU("Transformers", null);
@@ -328,6 +347,10 @@ class PipelineEdit extends ViewComponent {
 					throw new IllegalArgumentException();
 			}
 		}
+
+		tree.expandItem(rootExtractor);
+		tree.expandItem(rootTransformer);
+		tree.expandItem(rootLoader);
 	}
 
 	/**

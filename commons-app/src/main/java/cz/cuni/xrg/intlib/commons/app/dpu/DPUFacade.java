@@ -34,12 +34,12 @@ public class DPUFacade {
 	public DPUFacade(EntityManager em) {
 		this.em = em;
 	}
-	
+
 	/* ******************* Methods for DPU management *********************** */
 
 	/**
 	 * Creates DPU and its {@link TemplateConfiguration} without persisting it.
-	 * 
+	 *
 	 * @return
 	 */
 	public DPU createDpu() {
@@ -47,32 +47,31 @@ public class DPUFacade {
 		dpu.setTemplateConfiguration(new TemplateConfiguration());
 		return dpu;
 	}
-	
+
 	/**
 	 * Creates a new DPU with the same properties and configuration as in given
 	 * {@link DPUInstance}. Note that newly created DPU is only returned, but
 	 * not managed by database. To persist it, {@link #save(DPU)} must be called
-	 * explicitly. 
-	 * 
+	 * explicitly.
+	 *
 	 * @param instance
 	 * @return new DPU
 	 */
 	public DPU createDpuFromInstance(DPUInstance instance) {
-		
+
 		DPU oDpu = instance.getDpu();
-		DPU nDpu = new DPU();
-		
+		DPU nDpu = new DPU(instance.getName(), oDpu.getType());
+
 		// copy properties
-		nDpu.setName(instance.getName());
 		nDpu.setDescription(instance.getDescription());
 		nDpu.setJarPath(oDpu.getJarPath());
 		nDpu.setVisibility(VisibilityType.PRIVATE);
-		
+
 		// copy configuration
 		TemplateConfiguration conf = new TemplateConfiguration();
 		conf.setValues(instance.getInstanceConfig().getValues());
 		nDpu.setTemplateConfiguration(conf);
-		
+
 		return nDpu;
 	}
 
@@ -127,29 +126,29 @@ public class DPUFacade {
 
 		tx.commit();
 	}
-	
+
 	/* **************** Methods for DPU Instance management ***************** */
 
 	/**
 	 * Creates DPUInstance with configuration copied from template without
 	 * persisting it.
-	 * 
+	 *
 	 * @return
 	 */
 	public DPUInstance createDPUInstance(DPU dpu) {
 		DPUInstance dpuInstance = new DPUInstance(dpu);
-		
+
 		// convert template configuration to instance configuration
 		InstanceConfiguration conf = new InstanceConfiguration();
 		conf.setValues(dpu.getTemplateConfiguration().getValues());
 		dpuInstance.setInstanceConfig(conf);
-		
+
 		return dpuInstance;
 	}
 
 	/**
 	 * Returns list of all DPUInstances currently persisted in database.
-	 * 
+	 *
 	 * @return DPUInstance list
 	 */
 	public List<DPUInstance> getAllDPUInstances() {
@@ -165,7 +164,7 @@ public class DPUFacade {
 
 	/**
 	 * Find DPUInstance in database by ID and return it.
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -200,12 +199,12 @@ public class DPUFacade {
 
 		tx.commit();
 	}
-	
+
 	/* **************** Methods for DPU Record management ***************** */
 
 	/**
 	 * Returns list of all DPURecords currently persisted in database.
-	 * 
+	 *
 	 * @return Record list
 	 */
 	public List<Record> getAllDPURecords() {
@@ -218,12 +217,12 @@ public class DPUFacade {
 
 		return resultList;
 	}
-	
+
 	/**
 	 * Fetches all DPURecords emitted by given DPUInstance.
-	 * 
+	 *
 	 * @param dpuInstance
-	 * @return 
+	 * @return
 	 */
 	public List<Record> getAllDPURecords(DPUInstance dpuInstance) {
 
@@ -240,7 +239,7 @@ public class DPUFacade {
 
 	/**
 	 * Find Record in database by ID and return it.
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -250,7 +249,7 @@ public class DPUFacade {
 
 	/**
 	 * Saves any modifications made to the Record into the database.
-	 * 
+	 *
 	 * @param record
 	 */
 	public void save(Record record) {
@@ -265,7 +264,7 @@ public class DPUFacade {
 
 	/**
 	 * Deletes Record from the database.
-	 * 
+	 *
 	 * @param record
 	 */
 	public void delete(Record record) {

@@ -20,6 +20,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
+import java.util.Collection;
+import java.util.EventObject;
 
 /**
  * Component for visualization of the pipeline.
@@ -204,6 +206,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void windowClose(CloseEvent e) {
+
 				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
 		});
@@ -241,4 +244,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 		return pipelineExec;
 	}
+
+	protected void fireDetailClosed() {
+    Collection<DetailClosedListener> ls = (Collection<DetailClosedListener>) this.getListeners(DetailClosedListener.class);
+    for (DetailClosedListener l : ls) {
+      l.detailClosed(null);
+    }
+  }
 }
+
+
