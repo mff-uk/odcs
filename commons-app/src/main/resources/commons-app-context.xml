@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
- http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
-	xmlns:context="http://www.springframework.org/schema/context">
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/tx
+						http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 	
 	<!-- application configuration -->
 	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration" />
 	
+	<!-- EntityManager factory -->
+	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="intlib"/>
+	</bean>
+
+	<!-- Manager for database transactions -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="emf" />
+	</bean>
+
 	<!-- support for loading DPUs -->
 	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade">
 	    <constructor-arg ref="moduleFacadeConfiguration" />
 	</bean>
+
+	<!-- Facade for managing pipelines -->
+	<bean id="pipelineFacade" class="cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade" />
+
+	<!-- Facade for managing DPUs -->
+	<bean id="dpuFacade" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade" />
 
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
 	<bean id="abstractModuleFacadeConfiguration" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration">
@@ -19,5 +40,7 @@
 	</bean>
 
 	<context:annotation-config />
+
+	<tx:annotation-driven />
 
 </beans>

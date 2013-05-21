@@ -9,6 +9,11 @@
 	<name>commons-app</name>
 	<description></description>
 
+	<!-- Shared version number properties -->
+	<properties>
+		<org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+	</properties>
+
 	<repositories>
 		<repository> <!-- hibernate -->
 	        <id>JBoss</id>
@@ -63,13 +68,88 @@
             <type>jar</type>
         </dependency>	    
 	    
-        <!-- Spring dependency -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>3.1.2.RELEASE</version>
-            <type>jar</type>
-        </dependency>
+
+		<!-- SPRING DEPENDENCIES -->
+
+		<!--
+			Core utilities used by other modules.
+			Define this if you use Spring Utility APIs (org.springframework.core.*/org.springframework.util.*)
+		-->
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-core</artifactId>
+		  <version>${org.springframework.version}</version>
+		</dependency>	    
+	    
+		<!--
+			Application Context (depends on spring-core, spring-expression, spring-aop, spring-beans)
+			This is the central artifact for Spring's Dependency Injection Container and is generally always defined
+		-->
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-context</artifactId>
+		  <version>${org.springframework.version}</version>
+		</dependency>
+
+		<!--
+			Bean Factory and JavaBeans utilities (depends on spring-core)
+			Define this if you use Spring Bean APIs (org.springframework.beans.*)
+		-->
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-beans</artifactId>
+		  <version>${org.springframework.version}</version>
+		</dependency>
+
+		<!--
+			Transaction Management Abstraction (depends on spring-core, spring-beans, spring-aop, spring-context)
+			Define this if you use Spring Transactions or DAO Exception Hierarchy
+			(org.springframework.transaction.*/org.springframework.dao.*)
+		-->
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-tx</artifactId>
+		  <version>${org.springframework.version}</version>
+		</dependency>
+
+		<!--
+			Object-to-Relation-Mapping (ORM) integration with Hibernate, JPA, and iBatis.
+			(depends on spring-core, spring-beans, spring-context, spring-tx)
+			Define this if you need ORM (org.springframework.orm.*)
+		-->
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-orm</artifactId>
+		  <version>${org.springframework.version}</version>
+		</dependency>
+
+		<!--
+			Support for testing Spring applications with tools such as JUnit and TestNG
+			This artifact is generally always defined with a 'test' scope for the integration testing framework and unit testing stubs
+		-->
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-test</artifactId>
+		  <version>${org.springframework.version}</version>
+		  <scope>test</scope>
+		</dependency>
+
+		<!-- CGLIB is required for proxying classes -->
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.0</version>
+		</dependency>
+
+		<!-- ASM depends on ASM-UTIL, CGLIB depends on ASN, however ASM is
+			 loaded by maven automatically while ASM-UTIL is not... -->
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-util</artifactId>
+			<version>4.0</version>
+		</dependency>
+
+		<!-- END OF SPRING DEPENDENCIES -->
 	    
         <dependency> <!-- Virtuoso dependency -->
             <groupId>com.openlinksw</groupId>
@@ -80,7 +160,14 @@
             <groupId>com.openlinksw</groupId>
             <artifactId>virtjdbc</artifactId>
             <version>3</version>
-        </dependency>		    
+        </dependency>
+
+		<!-- Embedded database used for testing -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.3.171</version>
+		</dependency>	    
 	    
 	    <!-- Hibernate dependencies -->
         <dependency>

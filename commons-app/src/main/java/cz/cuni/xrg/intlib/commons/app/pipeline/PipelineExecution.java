@@ -15,6 +15,7 @@ public class PipelineExecution  {
 
 	/**
 	 * Unique id of pipeline execution.
+	 * TODO change to Long
 	 */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,7 +30,8 @@ public class PipelineExecution  {
     /**
      * Pipeline being executed.
      */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
+	@JoinColumn(name="pipeline_id")
     private Pipeline pipeline;
     
     /**

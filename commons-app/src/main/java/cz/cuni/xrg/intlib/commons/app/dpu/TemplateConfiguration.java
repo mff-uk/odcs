@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -79,6 +80,56 @@ public class TemplateConfiguration implements Configuration {
 	@Override
 	public void setValues(Map<String, Serializable> values) {
 		this.config = values;
+	}
+
+	/**
+	 * Hash code is generated from primary key, if it is available. Otherwise
+	 * it is generated from configuration hash map.
+	 * 
+	 * @return 
+	 */
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		if (this.id == null) {
+			hash = 79 * hash + Objects.hashCode(this.config);
+		} else {
+			hash = 79 * hash + Objects.hashCode(this.id);
+		}
+		return hash;
+	}
+
+	/**
+	 * Compares this configuration to other object. Two
+	 * <code>TemplateConfiguration</code>s are equal, if their primary keys are
+	 * non-null and equal, or if their primary keys are both null and the rest
+	 * of attributes are equal.
+	 *
+	 * @param obj
+	 * @return 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final TemplateConfiguration other = (TemplateConfiguration) obj;
+		
+		// try primary key comparison
+		if (this.id != null && other.id != null) {
+			// both have primary keys
+			return Objects.equals(this.id, other.id);
+		}
+		if (this.id == null ^ other.id == null) {
+			// only one has primary key
+			return false;
+		}
+		
+		// compare attributes
+		return Objects.equals(this.config, other.config);
 	}
 	
 }

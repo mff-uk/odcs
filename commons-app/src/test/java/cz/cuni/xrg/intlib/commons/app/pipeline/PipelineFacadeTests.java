@@ -2,10 +2,14 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import cz.cuni.xrg.intlib.commons.app.util.InMemoryEntityManager;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -13,19 +17,20 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Test suite for pipeline facade interface.
- * @author Jan Vojt <jan@vojt.net>
- *
+ * Each test is run in own transaction, which is rolled back in the end.
+ * 
+ * @author Jan Vojt
  */
+@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+@TransactionConfiguration(defaultRollback=true)
 public class PipelineFacadeTests {
 	
+	@Autowired
 	private PipelineFacade facade;
 	
-	@Before
-	public void setUp() {
-		facade = new PipelineFacade(new InMemoryEntityManager());
-	}
-	
 	@Test
+	@Transactional
 	public void testCreatePipeline() {
 		
 		Pipeline pipe = facade.createPipeline();
@@ -36,6 +41,7 @@ public class PipelineFacadeTests {
 	}
 	
 	@Test
+	@Transactional
 	public void testPersistPipeline() {
 		
 		Pipeline[] pipes = new Pipeline[3];
@@ -50,6 +56,7 @@ public class PipelineFacadeTests {
 	}
 	
 	@Test
+	@Transactional
 	public void testDeletePipeline() {
 		
 		Pipeline[] pipes = new Pipeline[3];
@@ -66,6 +73,7 @@ public class PipelineFacadeTests {
 	}
 	
 	@Test
+	@Transactional
 	public void testPipelineList() {
 		
 		Pipeline[] pipes = new Pipeline[3];

@@ -7,7 +7,6 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -35,26 +34,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Spring application context.
 	 */
 	private ApplicationContext context;
-
-	/**
-	 * Application configuration.
-	 */
-	private AppConfiguration appConfig;		
-	
-	/**
-	 * Provide service to manipulate modules.
-	 */
-	private ModuleFacade modules;
-
-	/**
-	 * Facade interface providing services for managing pipelines.
-	 */
-	private PipelineFacade pipelines;
-	
-	/**
-	 * Facade interface providing services for managing DPUs.
-	 */
-	private DPUFacade dpus;
 
 	/**
 	 * Add a single view to {@link #navigator}.
@@ -102,12 +81,12 @@ public class AppEntry extends com.vaadin.ui.UI {
         // create a navigator to control the views
         this.navigator = new com.vaadin.navigator.Navigator(this, main.getViewLayout());		
 		
+		// create Spring context
 		context = new ClassPathXmlApplicationContext("frontend-context.xml");
-		this.appConfig = (AppConfiguration) getBean("configuration");
         
-		this.modules = new ModuleFacade((ModuleFacadeConfiguration) getBean("moduleFacadeConfiguration"));
 		// add vaadin to export package list
-		this.modules.start();
+		ModuleFacade modules = (ModuleFacade) context.getBean("moduleFacade");
+		modules.start();
 		
 		// TODO: set module relative path .. ? 
 //		this.modules.installDirectory(App.getWebAppDirectory() + "/OSGI/libs/");
@@ -116,13 +95,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
-				modules.stop();
-				modules = null;
+				getModules().stop();
 			}} );
-
-		this.pipelines = new PipelineFacade();
-		this.dpus = new DPUFacade();
-		this.appConfig = new AppConfiguration();
 
 		initNavigator();
 	}
@@ -132,14 +106,14 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * @return pipeline facade
 	 */
 	public PipelineFacade getPipelines() {
-		return pipelines;
+		return (PipelineFacade) context.getBean("pipelineFacade");
 	}
 	
 	/**
 	 * Return application navigator.
 	 * @return application navigator
 	 */
-        @Override
+	@Override
 	public Navigator getNavigator() {
 		return this.navigator;
 	}
@@ -149,7 +123,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * @return  modules facade
 	 */
 	public ModuleFacade getModules() {
-		return this.modules;
+		return (ModuleFacade) context.getBean("moduleFacade");
 	}
 
     /**
@@ -157,7 +131,7 @@ public class AppEntry extends com.vaadin.ui.UI {
      * @return dpus facade
      */
     public DPUFacade getDPUs() {
-        return this.dpus;
+		return (DPUFacade) context.getBean("dpuFacade");
     }	
     
     /**
@@ -165,7 +139,7 @@ public class AppEntry extends com.vaadin.ui.UI {
      * @return
      */
     public AppConfiguration getAppConfiguration() {
-    	return appConfig;
+		return (AppConfiguration) context.getBean("configuration");
     }
 	
 	/**
