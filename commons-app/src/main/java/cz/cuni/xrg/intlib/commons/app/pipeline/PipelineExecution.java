@@ -30,6 +30,7 @@ public class PipelineExecution  {
      * Pipeline being executed.
      */
 	@ManyToOne
+	@JoinColumn(name="pipeline_id")
     private Pipeline pipeline;
     
     /**
