@@ -132,7 +132,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		filtersLayout.setSpacing(true);
 
 		dateFilter = new DateField();
-		dateFilter.setDateFormat("yyyy.MM.dd");
+		dateFilter.setDateFormat("dd/MM/yyyy");
 		dateFilter.setWidth("90%");
 		filtersLayout.addComponent(dateFilter);
 
@@ -347,8 +347,6 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		Label end = new Label();
 		end.setCaption("");
 		infoBar.addComponent(end, 4, 1);
-
-
 
 		logLayout.addComponent(infoBar);
 
