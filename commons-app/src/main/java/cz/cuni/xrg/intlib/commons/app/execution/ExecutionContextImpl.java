@@ -22,29 +22,29 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 	 */
 	@XmlElement
 	private HashMap<Long, DPUContextInfo> contexts = new HashMap<>();
-	
+
 	/**
 	 * Working directory for execution.
 	 */
 	private File workingDirectory = null;
-	
+
 	/**
 	 * Empty ctor because of JAXB.
 	 */
 	public ExecutionContextImpl() {
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param workingDirectory Execution working directory doesn't have to exit.
 	 */
 	public ExecutionContextImpl(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
-	
+
 	@Override
-	public DataUnitInfo getDataUnitInfo(DPUInstance dpuInstance, int id) {		
+	public DataUnitInfo getDataUnitInfo(DPUInstance dpuInstance, int id) {
 		return getContext(dpuInstance).getDataUnitInfo(id);
 	}
 
@@ -52,8 +52,8 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 	public File createDirForDataUnit(DPUInstance dpuInstance,
 			DataUnitType type, boolean isInput, int index) {
 		return getContext(dpuInstance).createDirForDataUnit(type, isInput, index);
-	}	
-	
+	}
+
 	@Override
 	public File getDirForDPUStorage(DPUInstance dpuInstance) {
 		return getContext(dpuInstance).getDirForDPUStorage();
@@ -74,10 +74,12 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 		if (contexts.containsKey(dpuInstance.getId())) {
 			return null;
 		} else {
-			return contexts.get(dpuInstance.getId()).getIndexForDataUnits();
+			Long id = dpuInstance.getId();
+			DPUContextInfo dpuContextInfo = contexts.get(id);
+			return dpuContextInfo.getIndexForDataUnits();
 		}
 	}
-	
+
 	@Override
 	public File getDirectoryForResult(DPUInstance dpuInstance) {
 		if (contexts.containsKey(dpuInstance.getId())) {
@@ -98,13 +100,13 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 		if (outputFile.exists()) {
 			outputFile.delete();
 		}
-		// now create a new file and write output .. 
+		// now create a new file and write output ..
 		JAXBContext jc = JAXBContext.newInstance(ExecutionContextImpl.class, DPUContextInfo.class);
 		Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(this, new FileOutputStream(outputFile) );		
+        marshaller.marshal(this, new FileOutputStream(outputFile) );
 	}
-	
+
 	@Override
 	public File getloadFilePath() {
 		return new File(workingDirectory, "context.xml");
@@ -114,7 +116,7 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 	public File getLog4jFile() {
 		return new File(workingDirectory, "log4j.txt");
 	}
-	
+
 	/**
 	 * Return {@link DPUContextInfo} for given {@link DPUInstance}
 	 * @param dpuInstance
@@ -122,7 +124,7 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 	 */
 	private DPUContextInfo getContext(DPUInstance dpuInstance) {
 		if (contexts.containsKey(dpuInstance.getId())) {
-			// context exist 
+			// context exist
 			return contexts.get(dpuInstance.getId());
 		} else {
 			// prepare directory
@@ -140,5 +142,5 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 
 	public void setWorkingDirectory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
-	}	
+	}
 }

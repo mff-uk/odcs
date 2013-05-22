@@ -90,14 +90,16 @@ public class DebuggingView extends CustomComponent {
 		//rdfRepo.getRDFTriplesInRepository();
 		if (loadSuccessful && isInDebugMode && debugDpu != null) {
 			DataUnitBrowser browser = loadBrowser(false);
-			tabs.addTab(browser, "Browse");
+			if (browser != null) {
+				tabs.addTab(browser, "Browse");
+			}
 		}
 
 
 		//RecordsTable with different data source
 		if (loadSuccessful) {
 			File logFile = ctxReader.getLog4jFile();
-			String logText = "";
+			String logText = "Log file is empty!";
 			if (logFile.exists()) {
 				try {
 					Scanner scanner = new Scanner(logFile).useDelimiter("\\A");
@@ -106,6 +108,7 @@ public class DebuggingView extends CustomComponent {
 					}
 				} catch (FileNotFoundException ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+					logText = "Failed to load log file!";
 				}
 			}
 			TextArea logTextArea = new TextArea("Log from log4j", logText);
@@ -133,6 +136,7 @@ public class DebuggingView extends CustomComponent {
 	}
 
 	private void refreshContent() {
+		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		buildMainLayout();
 	}
 
@@ -172,6 +176,9 @@ public class DebuggingView extends CustomComponent {
 	}
 
 	private DataUnitBrowser loadBrowser(boolean showInput) {
+		if (debugDpu == null) {
+			return null;
+		}
 		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
 		while (indexes.iterator().hasNext()) {
 			Integer index = indexes.iterator().next();
@@ -201,7 +208,7 @@ public class DebuggingView extends CustomComponent {
 	private List<Record> filterRecords(List<Record> records, PipelineExecution pipelineExec) {
 		List<Record> filteredRecords = new ArrayList<>();
 		for (Record record : records) {
-			if (record.getExecution().equals(pipelineExec)) {
+			if (record.getExecution().getId() == pipelineExec.getId()) {
 				filteredRecords.add(record);
 			}
 		}
