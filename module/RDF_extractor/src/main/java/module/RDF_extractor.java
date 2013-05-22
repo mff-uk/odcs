@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.web.GraphicalExtractor;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -126,8 +127,8 @@ public class RDF_extractor implements GraphicalExtractor {
             repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
 
         } catch (MalformedURLException ex) {
-            System.err.println("This URL not exists.");
-            System.err.println(ex.getMessage());
+        	context.sendMessage(MessageType.ERROR, "MalformedURLException: " + ex.getMessage());
+        	throw new ExtractException(ex);
         }
     }
 }
