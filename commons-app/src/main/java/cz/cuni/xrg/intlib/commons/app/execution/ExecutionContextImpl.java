@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -22,7 +21,7 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 	 * DPU's id.
 	 */
 	@XmlElement
-	private Map<Long, DPUContextInfo> contexts = new HashMap<>();
+	private HashMap<Long, DPUContextInfo> contexts = new HashMap<>();
 	
 	/**
 	 * Working directory for execution.
@@ -133,5 +132,13 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 			contexts.put(dpuInstance.getId(), newContext);
 			return newContext;
 		}
+	}
+
+	public File getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(File workingDirectory) {
+		this.workingDirectory = workingDirectory;
 	}	
 }

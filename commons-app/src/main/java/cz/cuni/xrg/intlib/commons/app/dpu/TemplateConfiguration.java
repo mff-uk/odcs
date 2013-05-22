@@ -21,7 +21,7 @@ public class TemplateConfiguration implements Configuration {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name="c_property")
     @Column(name="c_value")
     @CollectionTable(name="dpu_tconfig_pairs", joinColumns=@JoinColumn(name="conf_id"))

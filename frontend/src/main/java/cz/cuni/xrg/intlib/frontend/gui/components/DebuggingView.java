@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
@@ -36,11 +37,13 @@ public class DebuggingView extends CustomComponent {
 	private PipelineExecution pipelineExec;
 	private ExecutionContextReader ctxReader;
 	private DPUInstance debugDpu;
+	private boolean isInDebugMode;
 
-	public DebuggingView(PipelineExecution pipelineExec, DPUInstance debugDpu) {
+	public DebuggingView(PipelineExecution pipelineExec, DPUInstance debugDpu, boolean debug) {
 		//setCaption("Debug window");
 		this.pipelineExec = pipelineExec;
 		this.debugDpu = debugDpu;
+		this.isInDebugMode = debug;
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		//this.setContent(mainLayout);
@@ -66,12 +69,26 @@ public class DebuggingView extends CustomComponent {
 		TabSheet tabs = new TabSheet();
 		tabs.setHeight("500px");
 
+		//Create tab with information about running pipeline and refresh button
+		if (!loadSuccessful && isInDebugMode) {
+			VerticalLayout infoLayout = new VerticalLayout();
+			Label infoLabel = new Label("Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
+			infoLayout.addComponent(infoLabel);
+			Button refreshButton = new Button("Refresh", new Button.ClickListener() {
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					refreshContent();
+				}
+			});
+			infoLayout.addComponent(refreshButton);
+			tabs.addTab(infoLayout, "Info");
+		}
+
 		//Table with data
 		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 		//rdfRepo.getRDFTriplesInRepository();
-		if (loadSuccessful) {
-
-
+		if (loadSuccessful && isInDebugMode && debugDpu != null) {
 			DataUnitBrowser browser = loadBrowser(false);
 			tabs.addTab(browser, "Browse");
 		}
@@ -102,8 +119,10 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Query View
-		QueryView queryView = new QueryView();
-		tabs.addTab(queryView, "Query");
+		if (loadSuccessful && isInDebugMode) {
+			QueryView queryView = new QueryView();
+			tabs.addTab(queryView, "Query");
+		}
 
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth("600px");
@@ -111,6 +130,10 @@ public class DebuggingView extends CustomComponent {
 
 
 		//return mainLayout;
+	}
+
+	private void refreshContent() {
+		buildMainLayout();
 	}
 
 //	private List<Record> buildStubMessageData() {
@@ -137,7 +160,8 @@ public class DebuggingView extends CustomComponent {
 //		return fullList;
 //	}
 	private boolean loadExecutionContextReader() {
-		File workingDir = new File(pipelineExec.getWorkingDirectory());
+		String workingDirPath = pipelineExec.getWorkingDirectory();
+		File workingDir = new File(workingDirPath);
 		try {
 			ctxReader = ExecutionContextFactory.restoreAsRead(workingDir);
 		} catch (FileNotFoundException ex) {

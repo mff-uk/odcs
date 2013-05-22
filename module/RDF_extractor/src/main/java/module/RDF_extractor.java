@@ -11,24 +11,24 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.web.*;
+import cz.cuni.xrg.intlib.commons.web.GraphicalExtractor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
 public class RDF_extractor implements GraphicalExtractor {
-    
+
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
-    
+
     /**
      * DPU configuration.
      */
@@ -38,21 +38,18 @@ public class RDF_extractor implements GraphicalExtractor {
 
     }
 
-    @Override
     public void saveConfigurationDefault(Configuration configuration) {
     	configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
     	configuration.setValue(Config.Host_name.name(), "");
     	configuration.setValue(Config.Password.name(), "");
     	configuration.setValue(Config.GraphsUri.name(), new LinkedList<String>());
-    	configuration.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");   	
-    }     
-    
-    @Override
+    	configuration.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
+    }
+
     public DpuType getType() {
         return DpuType.EXTRACTOR;
     }
 
-    @Override
     public CustomComponent getConfigurationComponent(Configuration configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
@@ -63,18 +60,16 @@ public class RDF_extractor implements GraphicalExtractor {
         return this.configDialog;
     }
 
-	@Override
 	public void loadConfiguration(Configuration configuration)
 			throws ConfigurationException {
-		// 
+		//
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
             this.configDialog.setConfiguration(configuration);
         }
-	} 
+	}
 
-    @Override
     public void saveConfiguration(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
@@ -87,8 +82,8 @@ public class RDF_extractor implements GraphicalExtractor {
     /**
      * Implementation of module functionality here.
      *
-     */    
-    
+     */
+
     private String getSPARQLEndpoinURLAsString() {
         String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
         return endpoint;
@@ -113,14 +108,13 @@ public class RDF_extractor implements GraphicalExtractor {
         String query = (String) config.getValue(Config.SPARQL_query.name());
         return query;
     }
-    
-    @Override
+
     public void extract(ExtractContext context) throws ExtractException {
     	RDFDataRepository repository = null;
     	// create repository
     	repository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
-    	context.addOutputDataUnit(repository);    	
-    	
+    	context.addOutputDataUnit(repository);
+
         final String endpoint = getSPARQLEndpoinURLAsString();
         try {
             final URL endpointURL = new URL(endpoint);

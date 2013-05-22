@@ -8,9 +8,11 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
@@ -90,23 +92,23 @@ public class DPUDetail extends Window {
 
 		try {
 			dpuExec = App.getApp().getModules().getInstance(jarPath);
-			
+
 			// get configuration from dpu
-			Configuration conf = dpu.getInstanceConfig();			
-			
+			Configuration conf = dpu.getInstanceConfig();
+
 			if (dpuExec != null) {
-				
+
 				if (conf == null) {
 					// create new default configuration
 					conf = new InstanceConfiguration();
 					dpuExec.saveConfigurationDefault(conf);
-				}				
-				
+				}
+
 				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
 				dpuConfigurationDialog.setWidth("100%");
 				mainLayout.addComponent(dpuConfigurationDialog);
 			}
-			
+
 		} catch (ModuleException me) {
 			//TODO: Show info about failed load of custom part of dialog
 			Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);
@@ -151,6 +153,17 @@ public class DPUDetail extends Window {
 		});
 		buttonBar.addComponent(cancelButton);
 
+		Button saveAsNewButton = new Button("Save to DPU tree", new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if(saveDpuAsNew()) {
+					close();
+				}
+			}
+		});
+		buttonBar.addComponent(saveAsNewButton);
+
 		mainLayout.addComponent(buttonBar);
 
 		this.setContent(mainLayout);
@@ -165,7 +178,7 @@ public class DPUDetail extends Window {
 
 		try {
 			if(dpuExec != null) {
-				// TODO: Used configuration from DPUInstance instead creating new one? 
+				// TODO: Used configuration from DPUInstance instead creating new one?
 				InstanceConfiguration conf = new InstanceConfiguration();
 				dpuExec.saveConfiguration(conf);
 				dpu.setInstanceConfig(conf);
@@ -173,10 +186,19 @@ public class DPUDetail extends Window {
 			dpu.setName(dpuName.getValue());
 			dpu.setDescription(dpuDescription.getValue());
 		} catch (ConfigurationException ce) {
-			Notification.show("ConfigurationException:", ce.getMessage(), Type.ERROR_MESSAGE);			
+			Notification.show("ConfigurationException:", ce.getMessage(), Type.ERROR_MESSAGE);
 			//TODO: Inform about invalid settings and do not close detail dialog
 			return false;
 		}
 		return true;
+	}
+
+	protected boolean saveDpuAsNew() {
+		if(saveDPUInstance()) {
+			DPU newDPU = App.getDPUs().createDpuFromInstance(dpu);
+			App.getDPUs().save(newDPU);
+			return true;
+		}
+		return false;
 	}
 }

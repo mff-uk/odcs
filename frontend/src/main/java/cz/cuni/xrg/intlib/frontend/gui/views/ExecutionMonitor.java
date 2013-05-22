@@ -132,16 +132,19 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		filtersLayout.setSpacing(true);
 
 		dateFilter = new DateField();
-		dateFilter.setDateFormat("yyyy.MM.dd");
+		dateFilter.setDateFormat("dd/MM/yyyy");
+		dateFilter.setCaption("Date:");
 		dateFilter.setWidth("90%");
 		filtersLayout.addComponent(dateFilter);
+		filtersLayout.setComponentAlignment(dateFilter,Alignment.BOTTOM_CENTER);
 
 		if (tableDataFilter == null) {
 			tableDataFilter = new MonitorTableFilter();
 		}
 		nameFilter = new TextField();
 		nameFilter.setImmediate(true);
-		nameFilter.setInputPrompt("Pipeline Name Filter");
+		nameFilter.setCaption("Pipeline:");
+		nameFilter.setInputPrompt("name of pipeline");
 		nameFilter.setWidth("90%");
 		nameFilter.setTextChangeEventMode(TextChangeEventMode.LAZY);
 		nameFilter.addTextChangeListener(new TextChangeListener() {
@@ -160,9 +163,11 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		});
 
 		filtersLayout.addComponent(nameFilter);
+		filtersLayout.setComponentAlignment(nameFilter,Alignment.BOTTOM_CENTER);
 
 		userFilter = new TextField();
-		userFilter.setInputPrompt("User Filter");
+		userFilter.setCaption("User:");
+		userFilter.setInputPrompt("user name");
 		userFilter.setWidth("90%");
 		userFilter.addTextChangeListener(new TextChangeListener() {
 
@@ -181,11 +186,13 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		});
 
 		filtersLayout.addComponent(userFilter);
+		filtersLayout.setComponentAlignment(userFilter,Alignment.BOTTOM_CENTER);
 
 		statusFilter = new ComboBox();
 		//statusFilter.setNullSelectionAllowed(false);
 		statusFilter.setImmediate(true);
-		statusFilter.setInputPrompt("Status Filter");
+		statusFilter.setCaption("Status:");
+		statusFilter.setInputPrompt("execution status");
 		statusFilter.setWidth("90%");
 
 		statusFilter.addItem("CANCELLED");
@@ -195,7 +202,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		statusFilter.addItem("RUNNING");
 		statusFilter.addItem("SCHEDULED");
 		statusFilter.addValueChangeListener(new ValueChangeListener() {
-			
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -205,7 +212,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 					tableData.removeAllContainerFilters();
 					tableData.addContainerFilter(tableDataFilter);
 					monitorTable.refreshRowCache();
-				
+
 				}
 				else {
 					tableDataFilter.setStatusFilter("");
@@ -216,20 +223,22 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			}
 		});
 		filtersLayout.addComponent(statusFilter);
+		filtersLayout.setComponentAlignment(statusFilter,Alignment.BOTTOM_CENTER);
 
 		debugFilter = new ComboBox();
 		//debugFilter.setNullSelectionAllowed(false);
 		debugFilter.setImmediate(true);
-		debugFilter.setInputPrompt("Debug Filter");
+		debugFilter.setCaption("Debug:");
+		debugFilter.setInputPrompt("true/false");
 		debugFilter.setWidth("90%");
 		debugFilter.addItem("true");
 		debugFilter.addItem("false");
 		debugFilter.addValueChangeListener(new ValueChangeListener() {
-			
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				
+
 				if(event.getProperty().getValue()!=null){
 					tableDataFilter.setDebugFilter(event.getProperty().getValue().toString());
 					tableData.removeAllContainerFilters();
@@ -245,6 +254,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			}
 		});
 		filtersLayout.addComponent(debugFilter);
+		filtersLayout.setComponentAlignment(debugFilter,Alignment.BOTTOM_CENTER);
 
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Delete Filters");
@@ -267,13 +277,13 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 						tableData.removeAllContainerFilters();
 						tableData.addContainerFilter(tableDataFilter);
-					
+
 						monitorTable.refreshRowCache();
-						
+
 					}
 				});
 		filtersLayout.addComponent(buttonDeleteFilters);
-
+		filtersLayout.setComponentAlignment(buttonDeleteFilters,Alignment.BOTTOM_RIGHT);
 		monitorTableLayout.addComponent(filtersLayout);
 
 		tableData = getTableData(App.getApp().getPipelines().getAllExecutions());
@@ -348,12 +358,10 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		end.setCaption("");
 		infoBar.addComponent(end, 4, 1);
 
-
-
 		logLayout.addComponent(infoBar);
 
 		PipelineExecution pipelineExec = App.getApp().getPipelines().getExecution(exeId);
-		DebuggingView debugView = new DebuggingView(pipelineExec, null);
+		DebuggingView debugView = new DebuggingView(pipelineExec, null, false);
 		logLayout.addComponent(debugView);
 
 //		List<Record> records = App.getDPUs().getAllDPURecords();
@@ -557,7 +565,7 @@ class MonitorTableFilter implements Filter {
 		this.userFilter = value.toLowerCase();
 
 	}
-	
+
 	public void setStatusFilter(String value) {
 		this.statusFilter = value.toLowerCase();
 
@@ -588,14 +596,14 @@ class MonitorTableFilter implements Filter {
 			if (objectUser.contains(this.nameFilter) == false)
 				return false;
 		}
-		
+
 		if (stringIsSet(this.statusFilter)) {
 			String objectUser = ((String) item.getItemProperty("status")
 					.getValue()).toLowerCase();
 			if (objectUser.contains(this.statusFilter) == false)
 				return false;
 		}
-		
+
 		if (stringIsSet(this.debugFilter)) {
 			String objectUser = ((String) item.getItemProperty("debug")
 					.getValue()).toLowerCase();

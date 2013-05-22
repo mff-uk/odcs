@@ -50,7 +50,8 @@ public class LocalRDFRepoTest {
             throw new RuntimeException(e.getMessage());
         }
 
-        rdfRepo = LocalRDF.createLocalRepo(pathRepo.toString(),"localRepo");
+       rdfRepo = LocalRDF.createLocalRepo(pathRepo.toString(),"localRepo");
+
     }
 
     @Test

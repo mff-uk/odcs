@@ -20,7 +20,7 @@ public class InstanceConfiguration implements Configuration {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name="c_property")
     @Column(name="c_value")
     @CollectionTable(name="dpu_iconfig_pairs", joinColumns=@JoinColumn(name="conf_id"))
