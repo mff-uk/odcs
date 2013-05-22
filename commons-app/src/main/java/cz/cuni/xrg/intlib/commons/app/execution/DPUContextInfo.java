@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -22,7 +21,7 @@ class DPUContextInfo {
 	 * Storage for dataUnits descriptors.
 	 */
 	@XmlElement
-	private Map<Integer, DataUnitInfo> dataUnits = new HashMap<>();
+	private HashMap<Integer, DataUnitInfo> dataUnits = new HashMap<>();
 	
 	/**
 	 * Path to the storage directory or null if the directory
