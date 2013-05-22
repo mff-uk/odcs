@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -140,29 +141,6 @@ public class DebuggingView extends CustomComponent {
 		buildMainLayout();
 	}
 
-//	private List<Record> buildStubMessageData() {
-//		List<Record> stubList = new ArrayList<>();
-///*		Record m = new Record(new Date(), RecordType.DPUINFO, null, "Test message", "Long test message");
-//		m.setId(1);
-//		stubList.add(m);
-//		Record m2 = new Record(new Date(), RecordType.DPUWARNING, null, "Test warning", "Long test warning message");
-//		m2.setId(2);
-//		stubList.add(m2);*/
-//
-//		return stubList;
-//	}
-//	private List<Record> buildStubFullData() {
-//		List<Record> fullList = buildStubMessageData();
-//
-///*		Record m = new Record(new Date(), RecordType.DPULOG, null, "Test log message", "Long test log message");
-//		m.setId(3);
-//		fullList.add(1, m);
-//		Record m2 = new Record(new Date(), RecordType.DPULOG, null, "Another test log message", "Bla bla Long test warning message");
-//		m2.setId(4);
-//		fullList.add(m2);*/
-//
-//		return fullList;
-//	}
 	private boolean loadExecutionContextReader() {
 		String workingDirPath = pipelineExec.getWorkingDirectory();
 		File workingDir = new File(workingDirPath);
@@ -180,8 +158,10 @@ public class DebuggingView extends CustomComponent {
 			return null;
 		}
 		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
-		while (indexes.iterator().hasNext()) {
-			Integer index = indexes.iterator().next();
+		Iterator<Integer> iter = indexes.iterator();
+		
+		while (iter.hasNext()) {
+			Integer index = iter.next();
 			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
 			if (duInfo.isInput() == showInput) {
 				DataUnitBrowser duBrowser;
@@ -191,12 +171,14 @@ public class DebuggingView extends CustomComponent {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
+				// Already done in DataUnitBrowserFactory
+				/*
 				try {
 					duBrowser.loadDataUnit(duInfo.getDirectory());
 				} catch (Exception ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
-				}
+				}*/
 				duBrowser.enter();
 				return duBrowser;
 			}
