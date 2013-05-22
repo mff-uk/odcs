@@ -152,9 +152,7 @@ class PipelineWorker implements Runnable {
 		execution.setExecutionStatus(ExecutionStatus.FAILED);
 		// save	into database
 		database.getPipeline().save(execution);
-		// and do clean up
-		cleanUp();
-		
+		// 
 		logger.error("execution failed");
 	}
 	
@@ -166,8 +164,6 @@ class PipelineWorker implements Runnable {
 		execution.setExecutionStatus(ExecutionStatus.FINISHED_SUCCESS);
 		// save into database
 		database.getPipeline().save(execution);
-		// and do clean up
-		cleanUp();		
 	}
 	
 	/**
@@ -318,12 +314,17 @@ class PipelineWorker implements Runnable {
 			logAppender.close();
 		}
 		
-		// save contextWriter for the last time ..
-		try {
-			contextWriter.save();
-		} catch (Exception e) {
-			logger.error("Can't save context: " + execution.getId(), e);
-		}			
+		if (execution.isDebugging()) {
+			// save contextWriter for the last time ..
+			try {
+				contextWriter.save();
+			} catch (Exception e) {
+				logger.error("Can't save context: " + execution.getId(), e);
+			}	
+		}
+		
+		// and do clean up
+		cleanUp();			
 		
 		return;
 	}
