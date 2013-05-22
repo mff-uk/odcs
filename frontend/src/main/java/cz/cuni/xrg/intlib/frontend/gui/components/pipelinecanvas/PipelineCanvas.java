@@ -105,7 +105,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 
 		DPUInstance debugDpu = graph.getNodeById(dpuId).getDpuInstance();
-		DebuggingView dv = new DebuggingView(pExec, debugDpu);
+		DebuggingView dv = new DebuggingView(pExec, debugDpu, true);
 		Window debugWindow = new Window("Debug window", dv);
 		debugWindow.addCloseListener(new Window.CloseListener() {
 

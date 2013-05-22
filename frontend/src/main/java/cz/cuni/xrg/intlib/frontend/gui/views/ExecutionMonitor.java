@@ -202,7 +202,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		statusFilter.addItem("RUNNING");
 		statusFilter.addItem("SCHEDULED");
 		statusFilter.addValueChangeListener(new ValueChangeListener() {
-			
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -212,7 +212,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 					tableData.removeAllContainerFilters();
 					tableData.addContainerFilter(tableDataFilter);
 					monitorTable.refreshRowCache();
-				
+
 				}
 				else {
 					tableDataFilter.setStatusFilter("");
@@ -234,11 +234,11 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		debugFilter.addItem("true");
 		debugFilter.addItem("false");
 		debugFilter.addValueChangeListener(new ValueChangeListener() {
-			
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				
+
 				if(event.getProperty().getValue()!=null){
 					tableDataFilter.setDebugFilter(event.getProperty().getValue().toString());
 					tableData.removeAllContainerFilters();
@@ -277,9 +277,9 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 						tableData.removeAllContainerFilters();
 						tableData.addContainerFilter(tableDataFilter);
-					
+
 						monitorTable.refreshRowCache();
-						
+
 					}
 				});
 		filtersLayout.addComponent(buttonDeleteFilters);
@@ -361,7 +361,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		logLayout.addComponent(infoBar);
 
 		PipelineExecution pipelineExec = App.getApp().getPipelines().getExecution(exeId);
-		DebuggingView debugView = new DebuggingView(pipelineExec, null);
+		DebuggingView debugView = new DebuggingView(pipelineExec, null, false);
 		logLayout.addComponent(debugView);
 
 //		List<Record> records = App.getDPUs().getAllDPURecords();
@@ -565,7 +565,7 @@ class MonitorTableFilter implements Filter {
 		this.userFilter = value.toLowerCase();
 
 	}
-	
+
 	public void setStatusFilter(String value) {
 		this.statusFilter = value.toLowerCase();
 
@@ -596,14 +596,14 @@ class MonitorTableFilter implements Filter {
 			if (objectUser.contains(this.nameFilter) == false)
 				return false;
 		}
-		
+
 		if (stringIsSet(this.statusFilter)) {
 			String objectUser = ((String) item.getItemProperty("status")
 					.getValue()).toLowerCase();
 			if (objectUser.contains(this.statusFilter) == false)
 				return false;
 		}
-		
+
 		if (stringIsSet(this.debugFilter)) {
 			String objectUser = ((String) item.getItemProperty("debug")
 					.getValue()).toLowerCase();
