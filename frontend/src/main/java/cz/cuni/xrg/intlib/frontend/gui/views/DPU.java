@@ -27,8 +27,10 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.dpu.TemplateConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
@@ -435,10 +437,24 @@ return dpuDetailLayout;
 					@Override
 					public void buttonClick(ClickEvent event) {
 						
-						App.getApp().getDPUs().delete(selectedDpu);
-						dpuTree.removeAllItems();
-						fillTree(dpuTree);
-
+						List<DPUInstance> instances = App.getDPUs().getAllDPUInstances();
+						int fl=0;
+						for (DPUInstance item : instances){
+							
+							if ((item.getDpu().getId()) == (selectedDpu.getId())) fl=1;
+							
+						}
+						if(fl==0){
+							
+							App.getApp().getDPUs().delete(selectedDpu);
+							dpuTree.removeAllItems();
+							fillTree(dpuTree);
+							dpuDetailLayout.removeAllComponents();
+							Notification.show("DPU was removed", Notification.Type.HUMANIZED_MESSAGE);
+						}
+						else Notification.show("DPU can not be removed because it has been used in Pipeline", Notification.Type.WARNING_MESSAGE);
+													
+															
 					}
 				});
 		buttonDpuBar.addComponent(buttonDeleteDPU);
