@@ -160,7 +160,8 @@ public class DebuggingView extends CustomComponent {
 //		return fullList;
 //	}
 	private boolean loadExecutionContextReader() {
-		File workingDir = new File(pipelineExec.getWorkingDirectory());
+		String workingDirPath = pipelineExec.getWorkingDirectory();
+		File workingDir = new File(workingDirPath);
 		try {
 			ctxReader = ExecutionContextFactory.restoreAsRead(workingDir);
 		} catch (FileNotFoundException ex) {
