@@ -251,6 +251,14 @@ class PipelineWorker implements Runnable {
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
 		
+		
+		// save contextWriter before first DPU
+		try {
+			contextWriter.save();
+		} catch (Exception e) {
+			logger.error("Can't save context: " + execution.getId(), e);
+		}	
+		
 		logger.debug("Started");
 		
 		boolean executionFailed = false;
