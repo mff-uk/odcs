@@ -10,6 +10,9 @@ import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Implementation of browser for {@link cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF}.
  *
@@ -23,11 +26,13 @@ class LocalRdfBrowser extends DataUnitBrowser {
 
 	@Override
 	public void loadDataUnit(File directory) {
-		LocalRDFRepo repository = null;
+		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
+		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());		
+		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), "dump_dat.ttl");		
 		// TODO Petyr, Jirka : load repository from folder ..
 		// get triples
-		//data = repository.getRDFTriplesInRepository();
-		data = buildStubRDFData();
+		data = repository.getRDFTriplesInRepository();
+		//data = buildStubRDFData();
 	}
 
 	@Override
