@@ -95,6 +95,8 @@ public class ExecutionContextFactory {
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		// load ..
 		exec = (ExecutionContextImpl) jaxbUnmarshaller.unmarshal(file);
+		// set working directory (previous was lost)
+		exec.setWorkingDirectory(directory);		
 		return exec;
 	}
 }

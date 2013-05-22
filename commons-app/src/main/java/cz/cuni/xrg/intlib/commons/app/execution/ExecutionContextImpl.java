@@ -132,5 +132,13 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 			contexts.put(dpuInstance.getId(), newContext);
 			return newContext;
 		}
+	}
+
+	public File getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(File workingDirectory) {
+		this.workingDirectory = workingDirectory;
 	}	
 }
