@@ -434,6 +434,10 @@ return dpuDetailLayout;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
+						
+						App.getApp().getDPUs().delete(selectedDpu);
+						dpuTree.removeAllItems();
+						fillTree(dpuTree);
 
 					}
 				});

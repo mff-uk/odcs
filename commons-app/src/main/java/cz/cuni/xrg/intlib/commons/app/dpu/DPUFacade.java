@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -15,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class DPUFacade {
 
+	private static final Logger LOG = LoggerFactory.getLogger(DPUFacade.class);
+	
 	/**
 	 * Entity manager for accessing database with persisted objects.
 	 */
@@ -104,7 +108,15 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void delete(DPU dpu) {
-		em.remove(dpu);
+		// we might be trying to remove detached entity
+		// lets fetch it again and then try to remove
+		// TODO this is just a workaround -> resolve in future release!
+		DPU d = getDpu(dpu.getId());
+		if (d != null) {
+			em.remove(d);
+		} else {
+			LOG.warn("DPU with ID " + dpu.getId() + " was not found and so cannot be deleted!");
+		}
 	}
 
 	/* **************** Methods for DPU Instance management ***************** */
@@ -171,7 +183,15 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void delete(DPUInstance dpu) {
-		em.remove(dpu);
+		// we might be trying to remove detached entity
+		// lets fetch it again and then try to remove
+		// TODO this is just a workaround -> resolve in future release!
+		DPUInstance d = getDPUInstance(dpu.getId());
+		if (d != null) {
+			em.remove(d);
+		} else {
+			LOG.warn("DPU instance with ID " + dpu.getId() + " was not found and so cannot be deleted!");
+		}
 	}
 
 	/* **************** Methods for DPU Record management ***************** */

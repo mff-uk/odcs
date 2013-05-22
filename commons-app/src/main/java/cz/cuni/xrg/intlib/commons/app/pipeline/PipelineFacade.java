@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -13,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class PipelineFacade {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
+	
 	/**
 	 * Entity manager for accessing database with persisted objects
 	 */
@@ -80,7 +84,15 @@ public class PipelineFacade {
 	 */
 	@Transactional
 	public void delete(Pipeline pipeline) {
-		em.remove(pipeline);
+		// we might be trying to remove detached entity
+		// lets fetch it again and then try to remove
+		// TODO this is just a workaround -> resolve in future release!
+		Pipeline p = getPipeline(pipeline.getId());
+		if (p != null) {
+			em.remove(p);
+		} else {
+			LOG.warn("Pipeline with ID " + pipeline.getId() + " was not found and so cannot be deleted!");
+		}
 	}
 
 	/* ******************** Methods for managing PipelineExecutions ********* */
@@ -146,7 +158,15 @@ public class PipelineFacade {
 	 */
 	@Transactional
 	public void delete(PipelineExecution exec) {
-		em.remove(exec);
+		// we might be trying to remove detached entity
+		// lets fetch it again and then try to remove
+		// TODO this is just a workaround -> resolve in future release!
+		PipelineExecution e = getExecution(exec.getId());
+		if (e != null) {
+			em.remove(e);
+		} else {
+			LOG.warn("Pipeline execution with ID " + exec.getId() + " was not found and so cannot be deleted!");
+		}
 	}
 
 }
