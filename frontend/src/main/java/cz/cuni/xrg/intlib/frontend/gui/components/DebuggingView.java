@@ -69,21 +69,7 @@ public class DebuggingView extends CustomComponent {
 		TabSheet tabs = new TabSheet();
 		tabs.setHeight("500px");
 
-		//Create tab with information about running pipeline and refresh button
-		if (!loadSuccessful && isInDebugMode) {
-			VerticalLayout infoLayout = new VerticalLayout();
-			Label infoLabel = new Label("Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
-			infoLayout.addComponent(infoLabel);
-			Button refreshButton = new Button("Refresh", new Button.ClickListener() {
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					refreshContent();
-				}
-			});
-			infoLayout.addComponent(refreshButton);
-			tabs.addTab(infoLayout, "Info");
-		}
 
 		//Table with data
 		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
@@ -92,7 +78,10 @@ public class DebuggingView extends CustomComponent {
 			DataUnitBrowser browser = loadBrowser(false);
 			if (browser != null) {
 				tabs.addTab(browser, "Browse");
+			} else {
+				loadSuccessful = false;
 			}
+
 		}
 
 
@@ -131,6 +120,22 @@ public class DebuggingView extends CustomComponent {
 		mainLayout.setWidth("600px");
 		mainLayout.addComponent(tabs);
 
+		//Create tab with information about running pipeline and refresh button
+		if (!loadSuccessful && isInDebugMode) {
+			VerticalLayout infoLayout = new VerticalLayout();
+			Label infoLabel = new Label("Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
+			infoLayout.addComponent(infoLabel);
+			Button refreshButton = new Button("Refresh", new Button.ClickListener() {
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					refreshContent();
+				}
+			});
+			infoLayout.addComponent(refreshButton);
+			tabs.addTab(infoLayout, "Info");
+		}
+
 
 		//return mainLayout;
 	}
@@ -138,6 +143,7 @@ public class DebuggingView extends CustomComponent {
 	private void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		buildMainLayout();
+		setCompositionRoot(mainLayout);
 	}
 
 //	private List<Record> buildStubMessageData() {
@@ -180,6 +186,9 @@ public class DebuggingView extends CustomComponent {
 			return null;
 		}
 		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+		if(indexes == null) {
+			return null;
+		}
 		while (indexes.iterator().hasNext()) {
 			Integer index = indexes.iterator().next();
 			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
