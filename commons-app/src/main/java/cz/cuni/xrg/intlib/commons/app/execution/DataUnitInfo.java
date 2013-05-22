@@ -36,6 +36,13 @@ public class DataUnitInfo {
 	@XmlAttribute
 	private DataUnitType type;
 	
+	/**
+	 * Empty ctor because of JAXB.
+	 */	
+	public DataUnitInfo() {
+		
+	}
+	
 	public DataUnitInfo(File directory, boolean isInput, DataUnitType type) {
 		this.directory = directory;
 		this.isInput = isInput;

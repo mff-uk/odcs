@@ -45,6 +45,13 @@ class DPUContextInfo {
 	private File rootDirectory = null;
 	
 	/**
+	 * Empty ctor because of JAXB.
+	 */
+	public DPUContextInfo() {
+		
+	}
+	
+	/**
 	 * 
 	 * @param rootDirectory DPU's root directory doesn't have to exit.
 	 */

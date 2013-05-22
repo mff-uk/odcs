@@ -269,28 +269,21 @@ class PipelineWorker implements Runnable {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
 				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, node.getDpuInstance(), execution, this));				
-				executionFailed();
-				return;
+				executionFailed = true;
+				break;
 			} catch (ModuleException e) {
 				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, node.getDpuInstance(), execution, this));
-				executionFailed();
-				return;
+				executionFailed = true;
+				break;
 			} catch (StructureException e) {
 				eventPublisher.publishEvent(new PipelineStructureError(e, node.getDpuInstance(), execution, this));
-				executionFailed();
-				return;				
+				executionFailed = true;
+				break;			
 			} catch (Exception e) {
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
-				executionFailed();
-				return;
-			}
-			
-			// save contextWriter after every DPU to enable recovery
-			try {
-				contextWriter.save();
-			} catch (Exception e) {
-				logger.error("Can't save context: " + execution.getId(), e);
-			}			
+				executionFailed = true;
+				break;
+			}					
 						
 			if (result) {
 				// DPU executed successfully
@@ -300,6 +293,13 @@ class PipelineWorker implements Runnable {
 				eventPublisher.publishEvent(new PipelineFailedEvent("Error in DPU.", node.getDpuInstance(), execution, this));
 				break;
 			}
+			
+			// save contextWriter after every DPU to enable recovery
+			try {
+				contextWriter.save();
+			} catch (Exception e) {
+				logger.error("Can't save context: " + execution.getId(), e);
+			}				
 		}
 		// ending ..
 		if (executionFailed) {
@@ -317,6 +317,14 @@ class PipelineWorker implements Runnable {
 			rootLogger.removeAppender(logAppender);
 			logAppender.close();
 		}
+		
+		// save contextWriter for the last time ..
+		try {
+			contextWriter.save();
+		} catch (Exception e) {
+			logger.error("Can't save context: " + execution.getId(), e);
+		}			
+		
 		return;
 	}
 
@@ -415,7 +423,6 @@ class PipelineWorker implements Runnable {
 		contexts.put(node, loadContext);		
 		return loadContext;
 	}
-	
 
 	/**
 	 * Executes a single DPU associated with given Node.
