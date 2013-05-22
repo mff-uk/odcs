@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -70,13 +72,13 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 	}
 
 	@Override
-	public Set<Integer> getIndexesForDataUnits(DPUInstance dpuInstance) {
+	public Set<Integer> getIndexesForDataUnits(DPUInstance dpuInstance) {		
 		if (contexts.containsKey(dpuInstance.getId())) {
-			return null;
-		} else {
 			Long id = dpuInstance.getId();
 			DPUContextInfo dpuContextInfo = contexts.get(id);
 			return dpuContextInfo.getIndexForDataUnits();
+		} else {
+			return null;
 		}
 	}
 
