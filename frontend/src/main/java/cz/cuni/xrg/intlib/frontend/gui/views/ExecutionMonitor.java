@@ -534,6 +534,12 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 
 			} else if (caption.equals("debug")) {
+
+				logLayout = buildlogLayout();
+				hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+				hsplit.setSecondComponent(logLayout);
+				//hsplit.setHeight("960px");
+				hsplit.setLocked(false);
 			}
 
 		}

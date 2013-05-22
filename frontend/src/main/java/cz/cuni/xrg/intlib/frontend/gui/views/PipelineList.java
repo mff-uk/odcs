@@ -147,10 +147,11 @@ class PipelineList extends ViewComponent {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
+		mainLayout.setSpacing(true);
 
 		// top-level component properties
-		setWidth("600px");
-		setHeight("800px");
+		setWidth("100%");
+		setHeight("100%");
 
 		// label
 		label = new Label();
@@ -162,7 +163,7 @@ class PipelineList extends ViewComponent {
 		mainLayout.addComponent(label);
 
 		tablePipelines = new PagedTable();
-		tablePipelines.setWidth("640px");
+		tablePipelines.setWidth("99%");
 		tablePipelines.setPageLength(10);
 		// assign data source
 		Container container = ContainerFactory.CreatePipelines(App.getApp()
