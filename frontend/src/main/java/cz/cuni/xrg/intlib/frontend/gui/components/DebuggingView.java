@@ -88,7 +88,7 @@ public class DebuggingView extends CustomComponent {
 		//Table with data
 		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 		//rdfRepo.getRDFTriplesInRepository();
-		if (loadSuccessful && isInDebugMode) {
+		if (loadSuccessful && isInDebugMode && debugDpu != null) {
 			DataUnitBrowser browser = loadBrowser(false);
 			tabs.addTab(browser, "Browse");
 		}
