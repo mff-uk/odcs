@@ -194,17 +194,20 @@ public class DebuggingView extends CustomComponent {
 			if (duInfo.isInput() == showInput) {
 				DataUnitBrowser duBrowser;
 				try {
-					duBrowser = DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, index);
+					String dumpDirName = "ex" + pipelineExec.getId() + "_dpu-" + index;
+					duBrowser = DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, index, dumpDirName);
 				} catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
+				/*
 				try {
 					duBrowser.loadDataUnit(duInfo.getDirectory());
 				} catch (Exception ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
+				*/
 				duBrowser.enter();
 				return duBrowser;
 			}

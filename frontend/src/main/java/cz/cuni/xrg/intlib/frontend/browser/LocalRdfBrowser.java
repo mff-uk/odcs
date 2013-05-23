@@ -25,12 +25,14 @@ class LocalRdfBrowser extends DataUnitBrowser {
 	private Table dataTable;
 
 	@Override
-	public void loadDataUnit(File directory) {
+	public void loadDataUnit(File directory, String dumpDirName) {
 		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());		
-		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), "dump_dat.ttl");		
+		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());
+		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), dumpDirName);
 		// TODO Petyr, Jirka : load repository from folder ..
 		// get triples
+		File dumpFile = new File(directory, "dump_dat.ttl");
+		repository.load(dumpFile);
 		data = repository.getRDFTriplesInRepository();
 		//data = buildStubRDFData();
 	}
@@ -62,6 +64,17 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		rdfTripleList.add(new RDFTriple(6, "rdf:Description", "cd:year", "1985"));
 
 		return rdfTripleList;
+	}
+
+	@Override
+	public void loadDataUnit(File directory) throws Exception {
+		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
+		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());
+		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), "dump_dat.ttl");
+		// TODO Petyr, Jirka : load repository from folder ..
+		// get triples
+		data = repository.getRDFTriplesInRepository();
+		//data = buildStubRDFData();
 	}
 
 }

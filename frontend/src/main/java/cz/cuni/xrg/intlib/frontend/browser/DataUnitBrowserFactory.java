@@ -24,10 +24,11 @@ public class DataUnitBrowserFactory {
 	 * @throws DataUnitNotFoundException
 	 * @throws BrowserInitFailedException
 	 */
-	public static DataUnitBrowser getBrowser(ExecutionContextReader context, DPUInstance dpuInstance, int dataUnitIndex)
+	public static DataUnitBrowser getBrowser(ExecutionContextReader context, DPUInstance dpuInstance, int dataUnitIndex, String dumpDirName)
 		throws DataUnitNotFoundException, BrowserInitFailedException{
 		// get type and directory
 		DataUnitInfo info = context.getDataUnitInfo(dpuInstance, dataUnitIndex);
+
 
 		if (info == null) {
 			// the context doesn't exist
@@ -39,7 +40,7 @@ public class DataUnitBrowserFactory {
 		case RDF_Local:
 			DataUnitBrowser localRdfBrowser = new LocalRdfBrowser();
 			try {
-				localRdfBrowser.loadDataUnit(directory);
+				localRdfBrowser.loadDataUnit(directory, dumpDirName);
 			} catch (Exception e) {
 				throw new BrowserInitFailedException(e);
 			}
