@@ -905,10 +905,10 @@ public class LocalRDFRepo {
             directory.mkdirs();
         }
 
-        logger.debug("saving directory:" + directory.getName());
+        logger.debug("saving directory:" + directory.toString());
         logger.debug("saving fileName:" + file.getName());
 
-        loadRDFfromRepositoryToXMLFile(directory.getName(), file.getName(), format, true, false);
+        loadRDFfromRepositoryToXMLFile(directory.toString(), file.getName(), format, true, false);
     }
 
     /**

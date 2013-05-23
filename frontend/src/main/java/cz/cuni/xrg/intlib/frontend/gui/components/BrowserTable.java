@@ -1,12 +1,9 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
 import java.util.List;
@@ -17,7 +14,7 @@ import java.util.List;
  */
 public class BrowserTable extends CustomComponent {
 
-	private PagedTable dataTable;
+	private IntlibPagedTable dataTable;
 	private VerticalLayout mainLayout;
 
 	public BrowserTable(List<RDFTriple> data) {
@@ -33,7 +30,7 @@ public class BrowserTable extends CustomComponent {
 	}
 
 	private void loadBrowserTable(List<RDFTriple> data) {
-		dataTable = new PagedTable();
+		dataTable = new IntlibPagedTable();
 		Container container = ContainerFactory.CreateRDFData(data);
 		dataTable.setContainerDataSource(container);
 

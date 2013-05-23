@@ -74,7 +74,13 @@
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>pagedtable</artifactId>
 			<version>0.6.5</version>
-		 <type>jar</type>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-push</artifactId>
+			<version>${vaadin.version}</version>
 		</dependency>
 
 	</dependencies>

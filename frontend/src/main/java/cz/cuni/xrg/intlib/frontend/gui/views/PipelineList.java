@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
-import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -24,6 +23,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
+import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 
 class PipelineList extends ViewComponent {
 
@@ -31,7 +31,7 @@ class PipelineList extends ViewComponent {
 
 	private Label label;
 
-	private PagedTable tablePipelines;
+	private IntlibPagedTable tablePipelines;
 
 	private Button btnCreatePipeline;
 
@@ -162,7 +162,7 @@ class PipelineList extends ViewComponent {
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label);
 
-		tablePipelines = new PagedTable();
+		tablePipelines = new IntlibPagedTable();
 		tablePipelines.setWidth("99%");
 		tablePipelines.setPageLength(10);
 		// assign data source

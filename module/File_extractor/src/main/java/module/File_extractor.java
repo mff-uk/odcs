@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.web.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,6 +115,10 @@ public class File_extractor implements GraphicalExtractor {
     	RDFDataRepository repository = null;
     	// create repository
     	repository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
+    	if (repository == null) {
+    		throw new ExtractException("DataUnitFactory returned null.");
+    	}
+    	
     	context.addOutputDataUnit(repository);
     	
         final String baseURI = "";

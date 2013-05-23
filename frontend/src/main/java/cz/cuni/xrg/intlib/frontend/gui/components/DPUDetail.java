@@ -196,6 +196,7 @@ public class DPUDetail extends Window {
 	protected boolean saveDpuAsNew() {
 		if(saveDPUInstance()) {
 			DPU newDPU = App.getDPUs().createDpuFromInstance(dpu);
+			dpu.setDpu(newDPU);
 			App.getDPUs().save(newDPU);
 			return true;
 		}

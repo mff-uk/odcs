@@ -84,6 +84,7 @@ class PipelineEdit extends ViewComponent {
 			public void detailClosed(EventObject e) {
 				fillTree(dpuTree);
 				dpuTree.markAsDirty();
+				App.getApp().push();
 			}
 
 			@Override

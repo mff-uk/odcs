@@ -206,7 +206,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void windowClose(CloseEvent e) {
-
+				fireDetailClosed();
 				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
 		});

@@ -10,6 +10,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
@@ -99,8 +100,7 @@ public class SPARQL_transformer implements GraphicalTransformer {
             DataUnit dataUnit = inputs.get(0);
 
             RDFDataRepository intputRepository = null;
-
-            if (dataUnit.getType().canBeCastTo( DataUnitType.RDF) ) {
+            if (dataUnit instanceof RDFDataRepository) {
             	intputRepository = (RDFDataRepository) dataUnit;
             } else {
             	throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " expected RDF.");
@@ -108,18 +108,17 @@ public class SPARQL_transformer implements GraphicalTransformer {
 
             // create output repository
             RDFDataRepository outputRepository = (RDFDataRepository) context.getDataUnitFactory().create(DataUnitType.RDF);
-            
-            final String updateQuery = getUpdateQuery();
-            
-            if (intputRepository != null) {
-                
-                intputRepository.copyAllDataToTargetRepository(outputRepository);
-                outputRepository.transformUsingSPARQL(updateQuery);
+            if (outputRepository == null) {
+            	throw new TransformException("DataUnitFactory returned null.");
             }
             
-            context.addOutputDataUnit(outputRepository);
+            final String updateQuery = getUpdateQuery();
+  
+            // intputRepository != null because otherwise in wont pas the instanceof test
+            intputRepository.copyAllDataToTargetRepository(outputRepository);
+            outputRepository.transformUsingSPARQL(updateQuery);
             
-           //repository.transformUsingSPARQL(updateQuery);
+            context.addOutputDataUnit(outputRepository);
       
         }
     }

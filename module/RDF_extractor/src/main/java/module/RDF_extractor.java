@@ -11,11 +11,15 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.web.GraphicalExtractor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,6 +38,11 @@ public class RDF_extractor implements GraphicalExtractor {
      */
     private Configuration config = null;
 
+    /**
+     * Logger class.
+     */
+    private Logger logger = LoggerFactory.getLogger(RDF_extractor.class);    
+    
     public RDF_extractor() {
 
     }
@@ -113,6 +122,10 @@ public class RDF_extractor implements GraphicalExtractor {
     	RDFDataRepository repository = null;
     	// create repository
     	repository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
+    	if (repository == null) {
+    		throw new ExtractException("DataUnitFactory returned null.");
+    	}
+    	
     	context.addOutputDataUnit(repository);
 
         final String endpoint = getSPARQLEndpoinURLAsString();
@@ -123,11 +136,15 @@ public class RDF_extractor implements GraphicalExtractor {
             final List<String> defaultGraphsUri = getGraphsURI();
             final String query = getQuery();
 
+            logger.debug("configuration:");
+            logger.debug("endpointURL: " + endpointURL.toString());
+            logger.debug("hostName: " + hostName);
+            
             repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
 
         } catch (MalformedURLException ex) {
-            System.err.println("This URL not exists.");
-            System.err.println(ex.getMessage());
+        	context.sendMessage(MessageType.ERROR, "MalformedURLException: " + ex.getMessage());
+        	throw new ExtractException(ex);
         }
     }
 }

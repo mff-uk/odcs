@@ -20,10 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -189,8 +186,10 @@ public class DebuggingView extends CustomComponent {
 		if(indexes == null) {
 			return null;
 		}
-		while (indexes.iterator().hasNext()) {
-			Integer index = indexes.iterator().next();
+
+		Iterator<Integer> iter = indexes.iterator();
+		while (iter.hasNext()) {
+			Integer index = iter.next();
 			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
 			if (duInfo.isInput() == showInput) {
 				DataUnitBrowser duBrowser;

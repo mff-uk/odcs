@@ -1,7 +1,9 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Panel;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 
@@ -22,6 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author Petyr
  *
  */
+@Push(PushMode.MANUAL)
 @Theme("IntLibTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
@@ -29,7 +32,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Used to resolve url request and select active view.
 	 */
 	private com.vaadin.navigator.Navigator navigator;
-	
+
 	/**
 	 * Spring application context.
 	 */
@@ -42,7 +45,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private void initNavigatorAddSingle(ViewNames view) {
 		this.navigator.addView(view.getUrl(), ViewsFactory.create(view));
 	}
-	
+
     /**
      * Add url-view association into navigator.
      */
@@ -67,9 +70,9 @@ public class AppEntry extends com.vaadin.ui.UI {
          * and adding it to a Navigator. When a view change occurs, a listener receives
          * a ViewChangeEvent object, which has references to the old and the activated view,
          * the name of the activated view, as well as the fragment parameters.
-         */    	
+         */
     }
-    
+
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
 		// create main application uber-view and set it as app. content
@@ -79,16 +82,16 @@ public class AppEntry extends com.vaadin.ui.UI {
 		setContent(mainPanel);
 
         // create a navigator to control the views
-        this.navigator = new com.vaadin.navigator.Navigator(this, main.getViewLayout());		
-		
+        this.navigator = new com.vaadin.navigator.Navigator(this, main.getViewLayout());
+
 		// create Spring context
 		context = new ClassPathXmlApplicationContext("frontend-context.xml");
-        
+
 		// add vaadin to export package list
 		ModuleFacade modules = (ModuleFacade) context.getBean("moduleFacade");
 		modules.start();
-		
-		// TODO: set module relative path .. ? 
+
+		// TODO: set module relative path .. ?
 //		this.modules.installDirectory(App.getWebAppDirectory() + "/OSGI/libs/");
 //		cz.cuni.xrg.intlib.commons.app.dpu.DPU.HACK_basePath = App.getWebAppDirectory() + "/OSGI";
 
@@ -100,7 +103,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 		initNavigator();
 	}
-	
+
 	/**
 	 * Returns facade, which provides services for managing pipelines.
 	 * @return pipeline facade
@@ -108,7 +111,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	public PipelineFacade getPipelines() {
 		return (PipelineFacade) context.getBean("pipelineFacade");
 	}
-	
+
 	/**
 	 * Return application navigator.
 	 * @return application navigator
@@ -132,8 +135,8 @@ public class AppEntry extends com.vaadin.ui.UI {
      */
     public DPUFacade getDPUs() {
 		return (DPUFacade) context.getBean("dpuFacade");
-    }	
-    
+    }
+
     /**
      * Return application configuration class.
      * @return
@@ -141,10 +144,10 @@ public class AppEntry extends com.vaadin.ui.UI {
     public AppConfiguration getAppConfiguration() {
 		return (AppConfiguration) context.getBean("configuration");
     }
-	
+
 	/**
 	 * Fetches spring bean.
-	 * 
+	 *
 	 * @param name
 	 * @return bean
 	 */
