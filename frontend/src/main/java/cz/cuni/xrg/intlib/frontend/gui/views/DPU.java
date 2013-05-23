@@ -32,6 +32,8 @@ import cz.cuni.xrg.intlib.commons.app.dpu.TemplateConfiguration;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -438,11 +440,33 @@ return dpuDetailLayout;
 					public void buttonClick(ClickEvent event) {
 						
 						List<DPUInstance> instances = App.getDPUs().getAllDPUInstances();
-						int fl=0;
+						List<Pipeline>  pipelines = App.getApp().getPipelines().getAllPipelines();
+						 
+		
+
+						int fl=0, i=0; int j = 0;
+						String[] pipeName = new String[100];
 						for (DPUInstance item : instances){
 							
-							if ((item.getDpu().getId()) == (selectedDpu.getId())) fl=1;
+							if (item.getDpu().getId() == selectedDpu.getId()){
+								fl=1;
 							
+								for (Pipeline pitem : pipelines){
+									
+									List<Node> nodes = pitem.getGraph().getNodes();
+										
+									for (Node nitem : nodes){
+										
+										if(nitem.getDpuInstance().getDpu().getId()==item.getDpu().getId()){
+											pipeName[j]=pitem.getName().toString();
+											j++;
+										}
+									}
+								
+								}
+								break;
+							}
+
 						}
 						if(fl==0){
 							
@@ -452,8 +476,23 @@ return dpuDetailLayout;
 							dpuDetailLayout.removeAllComponents();
 							Notification.show("DPU was removed", Notification.Type.HUMANIZED_MESSAGE);
 						}
-						else Notification.show("DPU can not be removed because it has been used in Pipeline", Notification.Type.WARNING_MESSAGE);
-													
+						else{ 
+							String names="";
+							
+							for(i=0; i<j; i++){
+								if(i!=j-1)
+									names =names + " " + pipeName[i]+ ",";
+								else 
+									names =names + " " + pipeName[i]+ ".";
+								
+							}
+							
+							if(j>1)
+								Notification.show("DPU can not be removed because it has been used in Pipelines: ", names, Notification.Type.WARNING_MESSAGE);
+							else
+								Notification.show("DPU can not be removed because it has been used in Pipeline: ", names, Notification.Type.WARNING_MESSAGE);
+							
+						}				
 															
 					}
 				});
