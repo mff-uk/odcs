@@ -176,9 +176,7 @@ public class File_loader implements GraphicalLoader {
             
             repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
-        	throw new LoadException(ex);
-        } catch (NotSupporteRDFFormatException ex) {
+        } catch (CannotOverwriteFileException | NotSupporteRDFFormatException ex) {
         	throw new LoadException(ex);
         }
     }
