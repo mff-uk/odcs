@@ -160,7 +160,7 @@ public class File_loader implements GraphicalLoader {
     		throw new LoadException("Missing inputs!");
     	}    	
     	DataUnit dataUnit = context.getInputs().get(0);
-    	if (dataUnit.getType().canBeCastTo( DataUnitType.RDF ) ) {
+    	if (dataUnit instanceof RDFDataRepository ) {
     		repository = (RDFDataRepository) dataUnit;
     	} else {
     		// wrong input ..
@@ -173,13 +173,13 @@ public class File_loader implements GraphicalLoader {
             RDFFormat format = getRDFFormat();
             boolean isNameUnique = hasUniqueName();
             boolean canFileOverwritte = true;
-
+            
             repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte, isNameUnique);
 
         } catch (CannotOverwriteFileException ex) {
-            System.err.println(ex.getMessage());
+        	throw new LoadException(ex);
         } catch (NotSupporteRDFFormatException ex) {
-            System.err.println(ex.getMessage());
+        	throw new LoadException(ex);
         }
     }
 

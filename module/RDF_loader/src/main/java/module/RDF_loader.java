@@ -120,7 +120,7 @@ public class RDF_loader implements GraphicalLoader {
             throw new LoadException("Missing inputs!");
         }
         DataUnit dataUnit = context.getInputs().get(0);
-        if (dataUnit.getType().canBeCastTo( DataUnitType.RDF) ) {
+        if (dataUnit instanceof RDFDataRepository) {
             repository = (RDFDataRepository) dataUnit;
         } else {
             // wrong input ..
@@ -137,8 +137,7 @@ public class RDF_loader implements GraphicalLoader {
 
             repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password, graphType);
         } catch (MalformedURLException ex) {
-            System.err.println("This URL not exists");
-            System.err.println(ex.getMessage());
+        	throw new LoadException(ex);
         }
     }
 }

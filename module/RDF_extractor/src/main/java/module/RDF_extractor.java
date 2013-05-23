@@ -18,6 +18,9 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author Jiri Tomes
@@ -35,6 +38,11 @@ public class RDF_extractor implements GraphicalExtractor {
      */
     private Configuration config = null;
 
+    /**
+     * Logger class.
+     */
+    private Logger logger = LoggerFactory.getLogger(RDF_extractor.class);    
+    
     public RDF_extractor() {
 
     }
@@ -114,6 +122,10 @@ public class RDF_extractor implements GraphicalExtractor {
     	RDFDataRepository repository = null;
     	// create repository
     	repository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
+    	if (repository == null) {
+    		throw new ExtractException("DataUnitFactory returned null.");
+    	}
+    	
     	context.addOutputDataUnit(repository);
 
         final String endpoint = getSPARQLEndpoinURLAsString();
@@ -124,6 +136,10 @@ public class RDF_extractor implements GraphicalExtractor {
             final List<String> defaultGraphsUri = getGraphsURI();
             final String query = getQuery();
 
+            logger.debug("configuration:");
+            logger.debug("endpointURL: " + endpointURL.toString());
+            logger.debug("hostName: " + hostName);
+            
             repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
 
         } catch (MalformedURLException ex) {
