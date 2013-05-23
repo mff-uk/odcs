@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalRDFRepo {
 
-    private static LocalRDFRepo localrepo = null;
     /**
      * Logging information about execution of method using openRDF.
      */
@@ -83,7 +82,7 @@ public class LocalRDFRepo {
      */
     public static LocalRDFRepo createLocalRepo() {
 
-        return LocalRDFRepo.createLocalRepoInDirectory(repoDirName, repoFileName);
+        return LocalRDFRepo.createLocalRepoInTempDirectory(repoDirName, repoFileName);
     }
 
     /**
@@ -94,7 +93,7 @@ public class LocalRDFRepo {
      * @param fileName
      * @return
      */
-    public static LocalRDFRepo createLocalRepoInDirectory(String dirName, String fileName) {
+    public static LocalRDFRepo createLocalRepoInTempDirectory(String dirName, String fileName) {
         Path repoPath = null;
 
         try {
@@ -111,17 +110,17 @@ public class LocalRDFRepo {
      * 'fileName', where is repository stored.
      *
      * @param repoPath String path to directory where can be repository stored.
-     * @param fileName String file name, where is repository in directory stored.
+     * @param fileName String file name, where is repository in directory
+     * stored.
      * @return
      */
     public static LocalRDFRepo createLocalRepo(String repoPath, String fileName) {
-        localrepo = new LocalRDFRepo(repoPath, fileName);
+        LocalRDFRepo localrepo = new LocalRDFRepo(repoPath, fileName);
         return localrepo;
     }
 
     /**
-     * Empty constructor - used only for inheritance. TODO: Jirka: if only for
-     * inheritance why you have not used protected ?
+     * Empty constructor - used only for inheritance.
      */
     protected LocalRDFRepo() {
     }
