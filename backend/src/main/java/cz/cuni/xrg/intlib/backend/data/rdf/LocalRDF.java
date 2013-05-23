@@ -312,6 +312,7 @@ public class LocalRDF implements RDFDataRepository {
     @Override
     public void release() {
         cleanAllRepositoryData();
+        impl.shutDown();
     }
 
     @Override

@@ -930,4 +930,19 @@ public class LocalRDFRepo {
     public void load(File file) {
         extractRDFfromXMLFileToRepository(file.getAbsolutePath(), "", "", false);
     }
+
+    /**
+     * Definitely destroy repository - use after all working in repository.
+     * Another repository using cause exception. For other using you have to
+     * create new instance.
+     */
+    public void shutDown() {
+        try {
+            repository.shutDown();
+            logger.debug("Repository destroyed SUCCESSFULL");
+        } catch (RepositoryException ex) {
+            logger.debug("Repository was not destroyed - potencial problems with locks ");
+            logger.debug(ex.getMessage());
+        }
+    }
 }
