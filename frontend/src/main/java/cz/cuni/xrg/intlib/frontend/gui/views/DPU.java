@@ -57,6 +57,7 @@ class DPU extends ViewComponent {
 	private VerticalLayout mainLayout;
 	private VerticalLayout verticalLayoutData;
 	private VerticalLayout verticalLayoutConfigure;
+	private VerticalLayout verticalLayoutInfo;
 	private VerticalLayout dpuDetailLayout;
 	private Tree dpuTree;
 	private TextField dpuName;
@@ -335,6 +336,31 @@ class DPU extends ViewComponent {
 						ce.getMessage(), Type.ERROR_MESSAGE);
 				} 
 			}
+		
+		//DPU details: Info Tab
+		verticalLayoutInfo = new VerticalLayout();
+		verticalLayoutInfo.setImmediate(false);
+		verticalLayoutInfo.setWidth("100.0%");
+		verticalLayoutInfo.setMargin(true);
+		verticalLayoutInfo.setSpacing(true);
+		tabSheet.addTab(verticalLayoutInfo, "Info");
+		
+		//JAR path
+		HorizontalLayout jarPathLayout = new HorizontalLayout();
+		jarPathLayout.setImmediate(false);
+		jarPathLayout.setSpacing(true);
+		jarPathLayout.setHeight("100%");
+		
+		Label jPath = new Label();
+		jPath.setCaption(jarPath);
+		
+		jarPathLayout.addComponent(new Label("JAR path:"));
+		jarPathLayout.addComponent(jPath);
+		
+	
+		verticalLayoutInfo.addComponent(jarPathLayout);
+		verticalLayoutInfo.addComponent(new Label("Description of JAR:"));
+		
 		
 		buttonDpuBar = buildDPUButtonBur();
 		dpuDetailLayout.addComponent(buttonDpuBar);
