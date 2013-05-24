@@ -4,13 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Generates unique name for file name.
+ * Generates unique file name for each pipeline run.
  *
  * @author Jiri Tomes
- * 
- * Petyr: there should be no need for this class. I see no reason why generate some id base on "nothing".
+ *
+ *
  */
-@Deprecated
 public class UniqueNameGenerator {
 
     private static Map<String, Integer> map = new HashMap<>();
@@ -27,8 +26,17 @@ public class UniqueNameGenerator {
 
         }
 
-        String newName = name + "-" + String.valueOf(value);
+        int lastBot = name.lastIndexOf(".");
 
-        return newName;
+        if (lastBot == -1) {
+            return name + "-" + String.valueOf(value);
+        } else {
+
+            String first = name.substring(0, lastBot);
+            String second = name.substring(lastBot + 1, name.length());
+
+
+            return first + "-" + String.valueOf(value) + "." + second;
+        }
     }
 }

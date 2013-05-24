@@ -27,7 +27,7 @@ public class LocalRDF implements RDFDataRepository {
 
     public static LocalRDF createLocalRepoInDirectory(String dirName,String fileName) {
         LocalRDF result = new LocalRDF();
-        result.impl = LocalRDFRepo.createLocalRepoInDirectory(dirName,fileName);
+        result.impl = LocalRDFRepo.createLocalRepoInTempDirectory(dirName,fileName);
         return result;
     }
 
@@ -44,7 +44,7 @@ public class LocalRDF implements RDFDataRepository {
     }
 
     /**
-     * Empty constructor - used only for inheritance.
+     * Empty constructor
      */
     public LocalRDF() {
     }
@@ -312,6 +312,7 @@ public class LocalRDF implements RDFDataRepository {
     @Override
     public void release() {
         cleanAllRepositoryData();
+        impl.shutDown();
     }
 
     @Override

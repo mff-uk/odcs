@@ -28,9 +28,8 @@ class LocalRdfBrowser extends DataUnitBrowser {
 	public void loadDataUnit(File directory, String dumpDirName) {
 		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
 		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());
-		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), dumpDirName);
-		// TODO Petyr, Jirka : load repository from folder ..
-		// get triples
+		
+                LocalRDFRepo repository = new LocalRDFRepo(directory.getAbsolutePath(), dumpDirName);
 		File dumpFile = new File(directory, "dump_dat.ttl");
 		repository.load(dumpFile);
 		data = repository.getRDFTriplesInRepository();

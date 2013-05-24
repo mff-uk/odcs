@@ -94,7 +94,9 @@ class PipelineList extends ViewComponent {
 			// get item
 			final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
 
-			Button deleteButton = new Button();
+			
+			// TODO Petyr, Maria, Bohuslav, Honza: Pipeline delete
+/*			Button deleteButton = new Button();
 			deleteButton.setCaption("delete");
 			deleteButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -106,7 +108,7 @@ class PipelineList extends ViewComponent {
 							source.removeItem(itemId);
 						}
 					});
-			layout.addComponent(deleteButton);
+			layout.addComponent(deleteButton);*/
 
 			Button runButton = new Button();
 			runButton.setCaption("run");

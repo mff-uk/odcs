@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalRDFRepo {
 
-    private static LocalRDFRepo localrepo = null;
     /**
      * Logging information about execution of method using openRDF.
      */
@@ -65,7 +64,7 @@ public class LocalRDFRepo {
      * Default name for temp directory, where this repository is placed.
      */
     private final static String repoDirName = "intlib-repo";
-    private final static String repoFileName="localRepository";
+    private final static String repoFileName = "localRepository";
     protected final String encode = "UTF-8";
     /**
      * RDF data storage component.
@@ -83,10 +82,18 @@ public class LocalRDFRepo {
      */
     public static LocalRDFRepo createLocalRepo() {
 
-        return LocalRDFRepo.createLocalRepoInDirectory(repoDirName,repoFileName);
+        return LocalRDFRepo.createLocalRepoInTempDirectory(repoDirName, repoFileName);
     }
 
-    public static LocalRDFRepo createLocalRepoInDirectory(String dirName,String fileName) {
+    /**
+     * Create temp directory "dirName", in this directory create file with
+     * "fileName" a there is repository stored.
+     *
+     * @param dirName
+     * @param fileName
+     * @return
+     */
+    public static LocalRDFRepo createLocalRepoInTempDirectory(String dirName, String fileName) {
         Path repoPath = null;
 
         try {
@@ -95,42 +102,46 @@ public class LocalRDFRepo {
             throw new RuntimeException(e.getMessage());
         }
 
-        return LocalRDFRepo.createLocalRepo(repoPath.toString(),fileName);
+        return LocalRDFRepo.createLocalRepo(repoPath.toString(), fileName);
     }
 
     /**
-     * Create local repository in defined path.
+     * Create local repository in string path 'repoPath' in the file named
+     * 'fileName', where is repository stored.
      *
-     * @param fileRepoPat
+     * @param repoPath String path to directory where can be repository stored.
+     * @param fileName String file name, where is repository in directory
+     * stored.
      * @return
      */
-    public static LocalRDFRepo createLocalRepo(String repoPath,String fileName) {
-        localrepo = new LocalRDFRepo(repoPath,fileName);
+    public static LocalRDFRepo createLocalRepo(String repoPath, String fileName) {
+        LocalRDFRepo localrepo = new LocalRDFRepo(repoPath, fileName);
         return localrepo;
     }
 
     /**
-     * Empty constructor - used only for inheritance. TODO: Jirka: if only for
-     * inheritance why you have not used protected ?
+     * Empty constructor - used only for inheritance.
      */
-    public LocalRDFRepo() {
+    protected LocalRDFRepo() {
     }
 
     /**
-     * Public constructor - create new instance of repository in defined path.
+     * Public constructor - create new instance of repository in defined
+     * repository Path.
      *
      * @param repositoryPath
+     * @param fileName
      */
-    public LocalRDFRepo(String repositoryPath,String fileName) {
+    public LocalRDFRepo(String repositoryPath, String fileName) {
 
-        callConstructorSetting(repositoryPath,fileName);
+        callConstructorSetting(repositoryPath, fileName);
     }
 
     private void callConstructorSetting(String repoPath, String fileName) {
         setReadOnly(false);
 
         long timeToStart = 1000L;
-        File dataFile = new File(repoPath,fileName);
+        File dataFile = new File(repoPath, fileName);
         MemoryStore memStore = new MemoryStore(dataFile);
         memStore.setSyncDelay(timeToStart);
 
@@ -918,5 +929,20 @@ public class LocalRDFRepo {
      */
     public void load(File file) {
         extractRDFfromXMLFileToRepository(file.getAbsolutePath(), "", "", false);
+    }
+
+    /**
+     * Definitely destroy repository - use after all working in repository.
+     * Another repository using cause exception. For other using you have to
+     * create new instance.
+     */
+    public void shutDown() {
+        try {
+            repository.shutDown();
+            logger.debug("Repository destroyed SUCCESSFULL");
+        } catch (RepositoryException ex) {
+            logger.debug("Repository was not destroyed - potencial problems with locks ");
+            logger.debug(ex.getMessage());
+        }
     }
 }

@@ -38,7 +38,6 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
  */
 public class VirtuosoRDFRepo extends LocalRDFRepo {
 
-    private static VirtuosoRDFRepo virtuosoRepo = null;
     private String URL_Host_List;
     private String user;
     private String password;
@@ -64,7 +63,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
     public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName, String port, String user, String password, String defaultGraph) {
         final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port + "/charset=UTF-8/log_enable=2";
 
-        virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password, defaultGraph);
+        VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password, defaultGraph);
         return virtuosoRepo;
     }
 
