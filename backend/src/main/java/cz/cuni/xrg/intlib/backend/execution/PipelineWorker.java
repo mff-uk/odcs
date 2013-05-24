@@ -326,7 +326,7 @@ class PipelineWorker implements Runnable {
 		// and do clean up
 		cleanUp();			
 		
-		return;
+		
 	}
 
 	/**

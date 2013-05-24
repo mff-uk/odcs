@@ -26,15 +26,25 @@ class LocalRdfBrowser extends DataUnitBrowser {
 
 	@Override
 	public void loadDataUnit(File directory, String dumpDirName) {
-		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());
+		Logger logger = LoggerFactory.getLogger(LocalRdfBrowser.class);
 		
-                LocalRDFRepo repository = new LocalRDFRepo(directory.getAbsolutePath(), dumpDirName);
+		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
+		logger.debug("Create LocalRDFRepo in directory={} dumpDirname={}", directory.toString(), dumpDirName);
+		
+        LocalRDFRepo repository = new LocalRDFRepo(directory.getAbsolutePath(), dumpDirName);
 		File dumpFile = new File(directory, "dump_dat.ttl");
 		repository.load(dumpFile);
 		data = repository.getRDFTriplesInRepository();
-		
+	
+                logger.debug("Number of triples: {}", data.size());
+                
                 repository.shutDown();
+
+		//data = buildStubRDFData();
+		
+		
+		
+
 	}
 
 	@Override
@@ -54,16 +64,18 @@ class LocalRdfBrowser extends DataUnitBrowser {
 	}
 
 	private List<RDFTriple> buildStubRDFData() {
+		
 		List<RDFTriple> rdfTripleList = new ArrayList<>();
-
+/*
 		rdfTripleList.add(new RDFTriple(1, "rdf:Description", "rdf:about", "http://www.recshop.fake/cd/Empire Burlesque"));
 		rdfTripleList.add(new RDFTriple(2, "rdf:Description", "cd:artist", "Bob Dylan"));
 		rdfTripleList.add(new RDFTriple(3, "rdf:Description", "cd:country", "USA"));
 		rdfTripleList.add(new RDFTriple(4, "rdf:Description", "cd:company", "Columbia"));
 		rdfTripleList.add(new RDFTriple(5, "rdf:Description", "cd:price", "10.90"));
 		rdfTripleList.add(new RDFTriple(6, "rdf:Description", "cd:year", "1985"));
-
+*/
 		return rdfTripleList;
+		
 	}
 
 	@Override
