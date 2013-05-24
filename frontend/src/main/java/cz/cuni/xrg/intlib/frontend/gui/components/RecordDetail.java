@@ -19,10 +19,10 @@ public class RecordDetail extends CustomComponent {
 
 
 	public RecordDetail(Record record) {
-		GridLayout mainLayout = new GridLayout(2, 30);
+		GridLayout mainLayout = new GridLayout(2, 20);
 		mainLayout.setSpacing(true);
 		mainLayout.setWidth("600px");
-		mainLayout.setHeight("800px");
+		mainLayout.setHeight("400px");
 
 		Label pipelineExecutionLabel = new Label("Pipeline execution:");
 		mainLayout.addComponent(pipelineExecutionLabel, 0, 0);
@@ -46,7 +46,7 @@ public class RecordDetail extends CustomComponent {
 
 		TextArea fullMessageContent = new TextArea("Full Message:", record.getFullMessage());
 		fullMessageContent.setSizeFull();
-		mainLayout.addComponent(fullMessageContent, 0, 4, 1, 29);
+		mainLayout.addComponent(fullMessageContent, 0, 4, 1, 19);
 
 		setCompositionRoot(mainLayout);
 
