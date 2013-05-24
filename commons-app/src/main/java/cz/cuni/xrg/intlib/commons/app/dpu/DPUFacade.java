@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DPUFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DPUFacade.class);
-	
+
 	/**
 	 * Entity manager for accessing database with persisted objects.
 	 */
@@ -224,6 +225,25 @@ public class DPUFacade {
 		List<Record> resultList = Collections.checkedList(
 			em.createQuery("SELECT r FROM Record r WHERE r.dpuInstance = :ins")
 				.setParameter("ins", dpuInstance)
+				.getResultList(),
+			Record.class
+		);
+
+		return resultList;
+	}
+
+	/**
+	 * Fetches all DPURecords emitted by given PipelineExecution.
+	 *
+	 * @param pipelineExec
+	 * @return
+	 */
+	public List<Record> getAllDPURecords(PipelineExecution pipelineExec) {
+
+		@SuppressWarnings("unchecked")
+		List<Record> resultList = Collections.checkedList(
+			em.createQuery("SELECT r FROM Record r WHERE r.execution = :ins")
+				.setParameter("ins", pipelineExec)
 				.getResultList(),
 			Record.class
 		);

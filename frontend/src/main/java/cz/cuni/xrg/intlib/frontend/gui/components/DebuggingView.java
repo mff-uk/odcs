@@ -71,6 +71,9 @@ public class DebuggingView extends CustomComponent {
 		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
 			dpuSelector.addItem(node.getDpuInstance());
 		}
+		if(debugDpu != null) {
+			dpuSelector.select(debugDpu);
+		}
 		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
@@ -106,8 +109,8 @@ public class DebuggingView extends CustomComponent {
 		boolean loadSuccessful = loadExecutionContextReader();
 
 		//List<Record> records = debugDpu == null ? App.getDPUs().getAllDPURecords() : App.getDPUs().getAllDPURecords(debugDpu);
-		List<Record> records = App.getDPUs().getAllDPURecords();
-		records = filterRecords(records, pipelineExec);
+		List<Record> records = App.getDPUs().getAllDPURecords(pipelineExec);
+		//records = filterRecords(records, pipelineExec);
 		executionRecordsTable.setDataSource(records);
 
 		boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
