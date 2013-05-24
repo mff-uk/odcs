@@ -9,6 +9,7 @@
 .classpath
 # Netbeans files #
 nbactions.xml
+nb-configuration.xml
 
 # Build Directories #
 target/
