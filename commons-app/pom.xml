@@ -12,6 +12,7 @@
 	<!-- Shared version number properties -->
 	<properties>
 		<org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+		<logback.version>1.0.13</logback.version>
 	</properties>
 
 	<repositories>
@@ -53,6 +54,18 @@
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
+		</dependency>
+
+		<dependency> <!-- logback as implementation org.slf4j -->
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
 		</dependency>
 	
 		<dependency> <!-- OSGI impelemention -->  

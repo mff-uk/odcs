@@ -11,6 +11,7 @@
 
     <properties>
 		<sesame.version>2.7.0-beta1</sesame.version>
+		<slf4j.version>1.7.5</slf4j.version>
 	</properties>
 
     <repositories>
@@ -29,11 +30,29 @@
             <scope>test</scope>
         </dependency>
 
-		<dependency> <!-- log4j -->
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>	
+		<dependency> <!-- slf4j -->
+		  	<groupId>org.slf4j</groupId>
+		  	<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		
+		<dependency> <!-- bridge from log4j to slf4j -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		           
+		<!-- Bridge from java.uttil.logging
+		 	http://www.slf4j.org/legacy.html:
+		 		 j.u.l. to SLF4J translation can seriously increase the cost of disabled 
+		 		 logging statements (60 fold or 6000%) and measurably impact the performance 
+		 		 of enabled log statements (20% overall increase).
+		 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
 
         <dependency> <!-- openRDF dependency-->
             <groupId>org.openrdf.sesame</groupId>
