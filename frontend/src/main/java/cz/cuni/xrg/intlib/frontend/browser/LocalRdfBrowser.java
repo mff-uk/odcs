@@ -33,7 +33,8 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		File dumpFile = new File(directory, "dump_dat.ttl");
 		repository.load(dumpFile);
 		data = repository.getRDFTriplesInRepository();
-		//data = buildStubRDFData();
+		
+                repository.shutDown();
 	}
 
 	@Override
@@ -73,6 +74,8 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		// TODO Petyr, Jirka : load repository from folder ..
 		// get triples
 		data = repository.getRDFTriplesInRepository();
+                
+                repository.shutDown();
 		//data = buildStubRDFData();
 	}
 
