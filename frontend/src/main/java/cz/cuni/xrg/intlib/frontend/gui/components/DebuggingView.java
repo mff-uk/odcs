@@ -65,7 +65,9 @@ public class DebuggingView extends CustomComponent {
 		mainLayout.addComponent(executionRecordsTable);
 
 		TabSheet tabs = new TabSheet();
-		tabs.setHeight("500px");
+		tabs.setSizeFull();
+		//tabs.setWidth("100%");
+		//tabs.setHeight("500px");
 
 		boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
 
@@ -114,8 +116,7 @@ public class DebuggingView extends CustomComponent {
 			tabs.addTab(queryView, "Query");
 		}
 
-		mainLayout.setSizeUndefined();
-		mainLayout.setWidth("600px");
+		mainLayout.setSizeFull();
 		mainLayout.addComponent(tabs);
 
 		//Create tab with information about running pipeline and refresh button
@@ -123,6 +124,10 @@ public class DebuggingView extends CustomComponent {
 			VerticalLayout infoLayout = new VerticalLayout();
 			Label infoLabel = new Label(isRunFinished ? "Pipeline context failed to load!" : "Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
 			infoLayout.addComponent(infoLabel);
+			if(!isRunFinished) {
+				Label infoLabelWaiting = new Label("Saving debug information and data takes time in this version. Please wait...(approximately 30s)");
+				infoLayout.addComponent(infoLabelWaiting);
+			}
 			Button refreshButton = new Button("Refresh", new Button.ClickListener() {
 
 				@Override
