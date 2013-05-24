@@ -298,11 +298,6 @@ class PipelineWorker implements Runnable {
 			}				
 		}
 		// ending ..
-		if (executionFailed) {
-			executionFailed();
-		} else {
-			executionSuccessful();
-		}
 		
 		logger.debug("Finished");
 		// clear threads markers		
@@ -324,7 +319,13 @@ class PipelineWorker implements Runnable {
 		}
 		
 		// and do clean up
-		cleanUp();			
+		cleanUp();
+                
+                if (executionFailed) {
+			executionFailed();
+		} else {
+			executionSuccessful();
+		}
 		
 		
 	}
