@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -66,12 +67,12 @@ public class DebuggingView extends CustomComponent {
 		TabSheet tabs = new TabSheet();
 		tabs.setHeight("500px");
 
-
+		boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
 
 		//Table with data
 		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 		//rdfRepo.getRDFTriplesInRepository();
-		if (loadSuccessful && isInDebugMode && debugDpu != null) {
+		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
 			DataUnitBrowser browser = loadBrowser(false);
 			if (browser != null) {
 				tabs.addTab(browser, "Browse");
@@ -83,7 +84,7 @@ public class DebuggingView extends CustomComponent {
 
 
 		//RecordsTable with different data source
-		if (loadSuccessful) {
+		if (loadSuccessful && isRunFinished) {
 			File logFile = ctxReader.getLog4jFile();
 			String logText = "Log file is empty!";
 			if (logFile.exists()) {
@@ -108,7 +109,7 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Query View
-		if (loadSuccessful && isInDebugMode) {
+		if (loadSuccessful && isInDebugMode && isRunFinished) {
 			QueryView queryView = new QueryView();
 			tabs.addTab(queryView, "Query");
 		}
@@ -118,9 +119,9 @@ public class DebuggingView extends CustomComponent {
 		mainLayout.addComponent(tabs);
 
 		//Create tab with information about running pipeline and refresh button
-		if (!loadSuccessful && isInDebugMode) {
+		if (!loadSuccessful && isInDebugMode || !isRunFinished) {
 			VerticalLayout infoLayout = new VerticalLayout();
-			Label infoLabel = new Label("Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
+			Label infoLabel = new Label(isRunFinished ? "Pipeline context failed to load!" : "Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
 			infoLayout.addComponent(infoLabel);
 			Button refreshButton = new Button("Refresh", new Button.ClickListener() {
 
