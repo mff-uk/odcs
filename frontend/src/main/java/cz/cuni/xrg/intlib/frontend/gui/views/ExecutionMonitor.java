@@ -354,7 +354,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		logLayout.addComponent(infoBar);
 
 		PipelineExecution pipelineExec = App.getApp().getPipelines().getExecution(exeId);
-		DebuggingView debugView = new DebuggingView(pipelineExec, null, false);
+		DebuggingView debugView = new DebuggingView(pipelineExec, null, pipelineExec.isDebugging());
 		logLayout.addComponent(debugView);
 
 //		List<Record> records = App.getDPUs().getAllDPURecords();

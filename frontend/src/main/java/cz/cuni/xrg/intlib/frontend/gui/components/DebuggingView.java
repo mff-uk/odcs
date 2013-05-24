@@ -1,7 +1,9 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
@@ -10,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -36,6 +39,13 @@ public class DebuggingView extends CustomComponent {
 	private ExecutionContextReader ctxReader;
 	private DPUInstance debugDpu;
 	private boolean isInDebugMode;
+	private RecordsTable executionRecordsTable;
+	private Tab browseTab;
+	private Tab logTab;
+	private Tab queryTab;
+	private Tab infoTab;
+	private TabSheet tabs;
+	private TextArea logTextArea;
 
 	public DebuggingView(PipelineExecution pipelineExec, DPUInstance debugDpu, boolean debug) {
 		//setCaption("Debug window");
@@ -50,42 +60,75 @@ public class DebuggingView extends CustomComponent {
 	public final void buildMainLayout() {
 		mainLayout = new VerticalLayout();
 
-		boolean loadSuccessful = loadExecutionContextReader();
-		if (!loadSuccessful) {
-			//Notification.show("Failed to load execution context!", Notification.Type.ERROR_MESSAGE);
-		}
-
-		//List<Record> records = debugDpu == null ? App.getDPUs().getAllDPURecords() : App.getDPUs().getAllDPURecords(debugDpu);
-		List<Record> records = App.getDPUs().getAllDPURecords();
-		records = filterRecords(records, pipelineExec);
-		RecordsTable executionRecordsTable = new RecordsTable(records);
+		executionRecordsTable = new RecordsTable();
 		executionRecordsTable.setWidth("100%");
 		executionRecordsTable.setHeight("100px");
 
 		mainLayout.addComponent(executionRecordsTable);
 
-		TabSheet tabs = new TabSheet();
+		ComboBox dpuSelector = new ComboBox("Select DPU:");
+		dpuSelector.setImmediate(true);
+		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
+			dpuSelector.addItem(node.getDpuInstance());
+		}
+		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				Object value = event.getProperty().getValue();
+				if (value != null && value.getClass() == DPUInstance.class) {
+					debugDpu = (DPUInstance) value;
+					refreshContent();
+				}
+			}
+		});
+		mainLayout.addComponent(dpuSelector);
+
+		tabs = new TabSheet();
 		tabs.setSizeFull();
-		//tabs.setWidth("100%");
-		//tabs.setHeight("500px");
+
+		browseTab = tabs.addTab(new Label("Browser"), "Browse");
+
+		logTextArea = new TextArea("Log from log4j", "Log file content");
+		logTextArea.setSizeFull();
+		logTab = tabs.addTab(logTextArea, "Log");
+
+		QueryView queryView = new QueryView();
+		queryTab = tabs.addTab(queryView, "Query");
+
+		mainLayout.setSizeFull();
+		mainLayout.addComponent(tabs);
+
+		fillContent();
+
+	}
+
+	public void fillContent() {
+		boolean loadSuccessful = loadExecutionContextReader();
+
+		//List<Record> records = debugDpu == null ? App.getDPUs().getAllDPURecords() : App.getDPUs().getAllDPURecords(debugDpu);
+		List<Record> records = App.getDPUs().getAllDPURecords();
+		records = filterRecords(records, pipelineExec);
+		executionRecordsTable.setDataSource(records);
 
 		boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
 
 		//Table with data
-		//VirtuosoRDFRepo rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo();
-		//rdfRepo.getRDFTriplesInRepository();
 		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
 			DataUnitBrowser browser = loadBrowser(false);
 			if (browser != null) {
-				tabs.addTab(browser, "Browse");
+				tabs.removeTab(browseTab);
+				browseTab = tabs.addTab(browser, "Browse");
+				browseTab.setEnabled(true);
+				tabs.setSelectedTab(browseTab);
 			} else {
+				browseTab.setEnabled(false);
 				loadSuccessful = false;
 			}
-
+		} else {
+			browseTab.setEnabled(false);
 		}
 
-
-		//RecordsTable with different data source
+		//Content of text log file
 		if (loadSuccessful && isRunFinished) {
 			File logFile = ctxReader.getLog4jFile();
 			String logText = "Log file is empty!";
@@ -99,53 +142,49 @@ public class DebuggingView extends CustomComponent {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					logText = "Failed to load log file!";
 				}
+			} else {
+				logText = "Log file doesn't exist!";
 			}
-			TextArea logTextArea = new TextArea("Log from log4j", logText);
-			logTextArea.setSizeFull();
-
-			//List<Record> fullRecords = App.getDPUs().getAllDPURecords();
-			//RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
-			//fullRecordsTable.setWidth("100%");
-			//fullRecordsTable.setHeight("100%");
-			tabs.addTab(logTextArea, "Log");
+			logTextArea.setValue(logText);
+			logTab.setEnabled(true);
+		} else {
+			logTab.setEnabled(false);
 		}
 
 		//Query View
-		if (loadSuccessful && isInDebugMode && isRunFinished) {
-			QueryView queryView = new QueryView();
-			tabs.addTab(queryView, "Query");
+		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
+			queryTab.setEnabled(true);
+		} else {
+			queryTab.setEnabled(false);
 		}
 
-		mainLayout.setSizeFull();
-		mainLayout.addComponent(tabs);
-
 		//Create tab with information about running pipeline and refresh button
+		if(infoTab != null) {
+			tabs.removeTab(infoTab);
+		}
 		if (!loadSuccessful && isInDebugMode || !isRunFinished) {
 			VerticalLayout infoLayout = new VerticalLayout();
 			Label infoLabel = new Label(isRunFinished ? "Pipeline context failed to load!" : "Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
 			infoLayout.addComponent(infoLabel);
-			if(!isRunFinished) {
+			if (!isRunFinished) {
 				Label infoLabelWaiting = new Label("Saving debug information and data takes time in this version. Please wait...(approximately 30s)");
 				infoLayout.addComponent(infoLabelWaiting);
 			}
 			Button refreshButton = new Button("Refresh", new Button.ClickListener() {
-
 				@Override
 				public void buttonClick(ClickEvent event) {
 					refreshContent();
 				}
 			});
 			infoLayout.addComponent(refreshButton);
-			tabs.addTab(infoLayout, "Info");
+			infoTab = tabs.addTab(infoLayout, "Info");
+			tabs.setSelectedTab(infoTab);
 		}
-
-
-		//return mainLayout;
 	}
 
 	private void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
-		buildMainLayout();
+		fillContent();
 		setCompositionRoot(mainLayout);
 	}
 
@@ -189,7 +228,7 @@ public class DebuggingView extends CustomComponent {
 			return null;
 		}
 		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
-		if(indexes == null) {
+		if (indexes == null) {
 			return null;
 		}
 
@@ -197,7 +236,7 @@ public class DebuggingView extends CustomComponent {
 		while (iter.hasNext()) {
 			Integer index = iter.next();
 			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
-			if (duInfo.isInput() == showInput) {
+			if (indexes.size() == 1 || duInfo.isInput() == showInput) {
 				DataUnitBrowser duBrowser;
 				try {
 					String dumpDirName = "ex" + pipelineExec.getId() + "_dpu-" + index;
@@ -207,13 +246,13 @@ public class DebuggingView extends CustomComponent {
 					return null;
 				}
 				/*
-				try {
-					duBrowser.loadDataUnit(duInfo.getDirectory());
-				} catch (Exception ex) {
-					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
-					return null;
-				}
-				*/
+				 try {
+				 duBrowser.loadDataUnit(duInfo.getDirectory());
+				 } catch (Exception ex) {
+				 Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+				 return null;
+				 }
+				 */
 				duBrowser.enter();
 				return duBrowser;
 			}
