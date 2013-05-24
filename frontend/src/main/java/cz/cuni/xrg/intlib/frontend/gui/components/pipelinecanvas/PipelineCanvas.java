@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
@@ -248,7 +249,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	protected void fireDetailClosed() {
-    Collection<DetailClosedListener> ls = (Collection<DetailClosedListener>) this.getListeners(DetailClosedListener.class);
+    Collection<DetailClosedListener> ls = (Collection<DetailClosedListener>) this.getListeners(Component.Event.class);
     for (DetailClosedListener l : ls) {
       l.detailClosed(null);
     }
