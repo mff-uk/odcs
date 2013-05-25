@@ -47,7 +47,7 @@ public class DebuggingView extends CustomComponent {
 		//this.setContent(mainLayout);
 	}
 
-	public final void buildMainLayout() {
+	private void buildMainLayout() {
 		mainLayout = new VerticalLayout();
 
 		boolean loadSuccessful = loadExecutionContextReader();
