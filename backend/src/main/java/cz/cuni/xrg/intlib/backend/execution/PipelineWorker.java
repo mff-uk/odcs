@@ -211,32 +211,12 @@ class PipelineWorker implements Runnable {
 	 */
 	@Override
 	public void run() {		
-		/*
-		FileAppender logAppender = null;		
-		try {
-			logAppender = new FileAppender(new PatternLayout("%d %-5p [%c{1}] %m%n"), contextWriter.getLog4jFile().getAbsolutePath());
-		} catch (IOException e) {
-			logger.error("Can't create loggger for execution.", e);
-		}
-		*/
 		final String pipielineExecutionId = Integer.toString( execution.getId() );
-		/*
-		if (logAppender != null) {
-			// this filter will accept only logs from this thread		
-			logAppender.addFilter(new Filter() {
-				@Override
-				public int decide(LoggingEvent event) {
-					if (event.getMDC("execution") == pipielineExecutionId) {
-						return ACCEPT;
-					}					
-					return DENY;
-				}} );
-			Logger rootLogger = Logger.getRootLogger();
-			rootLogger.addAppender(logAppender);
-		}
-		*/	
-		// add marker to logs from this thread
+
+		// add marker to logs from this thread -> both must be specified !!
 		MDC.put("execution", pipielineExecutionId );
+		// set "file" to full path to the log file
+		MDC.put("file", contextWriter.getLog4jFile().toString() );
 		
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
@@ -299,15 +279,7 @@ class PipelineWorker implements Runnable {
 		logger.debug("Finished");
 		// clear threads markers		
 		MDC.clear();
-		// remove our logger 
-		/*
-		if (logAppender != null) {
-			Logger rootLogger = Logger.getRootLogger();
-			rootLogger.removeAppender(logAppender);
-			logAppender.close();
-		}
-		*/
-		
+	
 		if (execution.isDebugging()) {
 			// save contextWriter for the last time ..
 			try {
