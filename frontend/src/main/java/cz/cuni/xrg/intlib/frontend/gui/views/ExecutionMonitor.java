@@ -250,7 +250,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		filtersLayout.setComponentAlignment(debugFilter,Alignment.BOTTOM_CENTER);
 
 		Button buttonDeleteFilters = new Button();
-		buttonDeleteFilters.setCaption("Delete Filters");
+		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
 		buttonDeleteFilters.setWidth("100%");
 		buttonDeleteFilters
