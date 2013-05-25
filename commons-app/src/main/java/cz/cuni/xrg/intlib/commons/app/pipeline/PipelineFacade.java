@@ -87,7 +87,8 @@ public class PipelineFacade {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
 		// TODO this is just a workaround -> resolve in future release!
-		Pipeline p = getPipeline(pipeline.getId());
+		Pipeline p = pipeline.getId() == null
+			? pipeline : getPipeline(pipeline.getId());
 		if (p != null) {
 			em.remove(p);
 		} else {
@@ -161,7 +162,8 @@ public class PipelineFacade {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
 		// TODO this is just a workaround -> resolve in future release!
-		PipelineExecution e = getExecution(exec.getId());
+		PipelineExecution e = exec.getId() == 0
+				? exec : getExecution(exec.getId());
 		if (e != null) {
 			em.remove(e);
 		} else {
