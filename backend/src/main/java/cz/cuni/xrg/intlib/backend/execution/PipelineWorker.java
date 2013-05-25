@@ -50,12 +50,9 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -125,7 +122,7 @@ class PipelineWorker implements Runnable {
 		this.contexts = new HashMap<>();
 		// get working directory from pipelineExecution
 		this.workDirectory = new File( execution.getWorkingDirectory() );
-		this.logger = Logger.getLogger(PipelineWorker.class);
+		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
 		// try to load the context ..
@@ -214,32 +211,12 @@ class PipelineWorker implements Runnable {
 	 */
 	@Override
 	public void run() {		
-		
-		FileAppender logAppender = null;		
-		try {
-			logAppender = new FileAppender(new PatternLayout("%d %-5p [%c{1}] %m%n"), contextWriter.getLog4jFile().getAbsolutePath());
-		} catch (IOException e) {
-			logger.error("Can't create loggger for execution.", e);
-		}
-		
-		final Object pipielineExecutionId = execution.getId();
-		
-		if (logAppender != null) {
-			// this filter will accept only logs from this thread		
-			logAppender.addFilter(new Filter() {
-				@Override
-				public int decide(LoggingEvent event) {
-					if (event.getMDC("execution") == pipielineExecutionId) {
-						return ACCEPT;
-					}					
-					return DENY;
-				}} );
-			Logger rootLogger = Logger.getRootLogger();
-			rootLogger.addAppender(logAppender);
-		}
-			
-		// add marker to logs from this thread
+		final String pipielineExecutionId = Integer.toString( execution.getId() );
+
+		// add marker to logs from this thread -> both must be specified !!
 		MDC.put("execution", pipielineExecutionId );
+		// set "file" to full path to the log file
+		MDC.put("file", contextWriter.getLogFile().toString() );
 		
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
@@ -302,13 +279,7 @@ class PipelineWorker implements Runnable {
 		logger.debug("Finished");
 		// clear threads markers		
 		MDC.clear();
-		// remove our logger 
-		if (logAppender != null) {
-			Logger rootLogger = Logger.getRootLogger();
-			rootLogger.removeAppender(logAppender);
-			logAppender.close();
-		}
-		
+	
 		if (execution.isDebugging()) {
 			// save contextWriter for the last time ..
 			try {
@@ -321,7 +292,7 @@ class PipelineWorker implements Runnable {
 		// and do clean up
 		cleanUp();
                 
-                if (executionFailed) {
+        if (executionFailed) {
 			executionFailed();
 		} else {
 			executionSuccessful();

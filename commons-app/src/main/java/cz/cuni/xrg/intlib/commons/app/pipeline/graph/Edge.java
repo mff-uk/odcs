@@ -19,11 +19,11 @@ public class Edge {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-	@OneToOne(optional=false)
+	@ManyToOne(optional=false)
 	@JoinColumn(name="node_from_id")
     private Node from;
 
-	@OneToOne(optional=false)
+	@ManyToOne(optional=false)
 	@JoinColumn(name="node_to_id")
     private Node to;
 	

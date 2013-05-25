@@ -1,10 +1,10 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DPUFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DPUFacade.class);
-	
+
 	/**
 	 * Entity manager for accessing database with persisted objects.
 	 */
@@ -111,7 +111,8 @@ public class DPUFacade {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
 		// TODO this is just a workaround -> resolve in future release!
-		DPU d = getDpu(dpu.getId());
+		DPU d = dpu.getId() == null
+				? dpu : getDpu(dpu.getId());
 		if (d != null) {
 			em.remove(d);
 		} else {
@@ -186,7 +187,8 @@ public class DPUFacade {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
 		// TODO this is just a workaround -> resolve in future release!
-		DPUInstance d = getDPUInstance(dpu.getId());
+		DPUInstance d = dpu.getId() == null
+				? dpu : getDPUInstance(dpu.getId());
 		if (d != null) {
 			em.remove(d);
 		} else {
@@ -224,6 +226,25 @@ public class DPUFacade {
 		List<Record> resultList = Collections.checkedList(
 			em.createQuery("SELECT r FROM Record r WHERE r.dpuInstance = :ins")
 				.setParameter("ins", dpuInstance)
+				.getResultList(),
+			Record.class
+		);
+
+		return resultList;
+	}
+
+	/**
+	 * Fetches all DPURecords emitted by given PipelineExecution.
+	 *
+	 * @param pipelineExec
+	 * @return
+	 */
+	public List<Record> getAllDPURecords(PipelineExecution pipelineExec) {
+
+		@SuppressWarnings("unchecked")
+		List<Record> resultList = Collections.checkedList(
+			em.createQuery("SELECT r FROM Record r WHERE r.execution = :ins")
+				.setParameter("ins", pipelineExec)
 				.getResultList(),
 			Record.class
 		);

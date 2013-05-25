@@ -250,7 +250,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		filtersLayout.setComponentAlignment(debugFilter,Alignment.BOTTOM_CENTER);
 
 		Button buttonDeleteFilters = new Button();
-		buttonDeleteFilters.setCaption("Delete Filters");
+		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
 		buttonDeleteFilters.setWidth("100%");
 		buttonDeleteFilters
@@ -354,7 +354,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		logLayout.addComponent(infoBar);
 
 		PipelineExecution pipelineExec = App.getApp().getPipelines().getExecution(exeId);
-		DebuggingView debugView = new DebuggingView(pipelineExec, null, false);
+		DebuggingView debugView = new DebuggingView(pipelineExec, null, pipelineExec.isDebugging());
 		logLayout.addComponent(debugView);
 
 //		List<Record> records = App.getDPUs().getAllDPURecords();

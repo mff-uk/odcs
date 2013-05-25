@@ -55,8 +55,8 @@ public interface ExecutionContextWriter {
 	public File getloadFilePath();
 	
 	/**
-	 * Return path to the file where the log4j log is stored.
+	 * Return path to the file where the log is stored.
 	 * @return Path or null if no file with log exist. 
 	 */
-	public File getLog4jFile();
+	public File getLogFile();
 }

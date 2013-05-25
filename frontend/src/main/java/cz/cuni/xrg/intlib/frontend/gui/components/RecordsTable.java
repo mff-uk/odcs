@@ -20,9 +20,8 @@ public class RecordsTable extends CustomComponent {
 
 	private Table messageTable;
 
-	public RecordsTable(List<Record> data) {
-
-		loadMessageTable(data);
+	public RecordsTable() {
+		messageTable = new Table();
 		messageTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
@@ -38,8 +37,12 @@ public class RecordsTable extends CustomComponent {
 		setCompositionRoot(messageTable);
 	}
 
+	public void setDataSource(List<Record> data) {
+		loadMessageTable(data);
+	}
+
 	private void loadMessageTable(List<Record> data) {
-		messageTable = new Table();
+
 		Container container = ContainerFactory.CreateExecutionMessages(data);
 		messageTable.setContainerDataSource(container);
 

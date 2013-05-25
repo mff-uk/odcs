@@ -1,0 +1,41 @@
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+	    
+	    <!-- requiredKey must by in MDC to pass this filter -->	    
+		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcFilter">
+		   <requiredKey>execution</requiredKey>
+		</filter>
+		
+		<discriminator>
+		    <key>file</key>
+		    <defaultValue>unassigned.log</defaultValue>
+		</discriminator>
+		
+		<sift>
+			<appender name="FILE ${execution}" class="ch.qos.logback.core.FileAppender">
+				<file>${file}</file>
+				<append>false</append>
+				<layout class="ch.qos.logback.classic.PatternLayout">
+					<pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
+				</layout>
+			</appender>
+		</sift>
+	</appender>
+
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="SIFT" />
+	</root>
+
+
+
+</configuration>
