@@ -216,7 +216,7 @@ class PipelineWorker implements Runnable {
 		// add marker to logs from this thread -> both must be specified !!
 		MDC.put("execution", pipielineExecutionId );
 		// set "file" to full path to the log file
-		MDC.put("file", contextWriter.getLog4jFile().toString() );
+		MDC.put("file", contextWriter.getLogFile().toString() );
 		
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();

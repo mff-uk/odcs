@@ -133,7 +133,7 @@ public class DebuggingView extends CustomComponent {
 
 		//Content of text log file
 		if (loadSuccessful && isRunFinished) {
-			File logFile = ctxReader.getLog4jFile();
+			File logFile = ctxReader.getLogFile();
 			String logText = "Log file is empty!";
 			if (logFile.exists()) {
 				try {

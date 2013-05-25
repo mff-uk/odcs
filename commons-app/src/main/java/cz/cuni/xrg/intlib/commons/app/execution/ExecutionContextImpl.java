@@ -115,8 +115,8 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 	}
 
 	@Override
-	public File getLog4jFile() {
-		return new File(workingDirectory, "log4j.txt");
+	public File getLogFile() {
+		return new File(workingDirectory, "log.txt");
 	}
 
 	/**
