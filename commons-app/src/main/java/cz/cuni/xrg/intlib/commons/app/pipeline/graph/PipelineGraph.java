@@ -42,13 +42,13 @@ public class PipelineGraph {
 	/**
 	 * List of nodes which represent DPUs
 	 */
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch=FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch=FetchType.EAGER, orphanRemoval = true)
     private List<Node> nodes = new ArrayList<>();
 
     /**
      * Set of edges which represent data flow between DPUs.
      */
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch= FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch= FetchType.EAGER, orphanRemoval = true)
     private Set<Edge> edges = new HashSet<>();
 
     public void addNode(Node node) {
