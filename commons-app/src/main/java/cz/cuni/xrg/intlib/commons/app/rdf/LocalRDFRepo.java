@@ -19,7 +19,10 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -28,8 +31,13 @@ import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.Binding;
+import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.Repository;
@@ -944,5 +952,63 @@ public class LocalRDFRepo {
             logger.debug("Repository was not destroyed - potencial problems with locks ");
             logger.debug(ex.getMessage());
         }
+    }
+
+    /**
+     * Make query over repository data and return tables as result.
+     *
+     * @param query String representation of query
+     * @return Map<String,List<String>> as table, where map key is columm name
+     * and List<String> are string values in this column. When query is invalid,
+     * return empty Map.
+     *
+     */
+    public Map<String, List<String>> makeQueryOverRepository(String query) {
+
+        Map<String, List<String>> map = new HashMap<>();
+
+        try {
+            RepositoryConnection connection = repository.getConnection();
+
+            TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
+
+            logger.debug("Query " + query + " is valid.");
+
+            TupleQueryResult result = tupleQuery.evaluate();
+
+            logger.debug("Query " + query + " has not null result.");
+
+            List<String> names = result.getBindingNames();
+
+            for (String name : names) {
+                map.put(name, new LinkedList<String>());
+            }
+
+            List<BindingSet> listBindings = result.asList();
+
+            for (BindingSet bindingNextSet : listBindings) {
+                for (Binding next : bindingNextSet) {
+
+                    String name = next.getName();
+                    String value = next.getValue().stringValue();
+
+                    if (map.containsKey(name)) {
+                        map.get(name).add(value);
+                    }
+
+                }
+            }
+
+
+
+            result.close();
+            connection.close();
+
+        } catch (MalformedQueryException | RepositoryException | QueryEvaluationException ex) {
+            logger.debug("This query is probably not valid");
+            logger.debug(ex.getMessage());
+        }
+
+        return map;
     }
 }
