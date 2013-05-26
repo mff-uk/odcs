@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.data.rdf;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
@@ -60,5 +61,7 @@ public interface RDFDataRepository extends DataUnit {
     public Repository getDataRepository();
 
     public List<Statement> getRepositoryStatements();
+    
+    public Map<String, List<String>> makeQueryOverRepository(String query); 
 
 }
