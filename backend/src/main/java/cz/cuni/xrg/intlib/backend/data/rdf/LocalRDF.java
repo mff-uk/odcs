@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.openrdf.model.Statement;
 import org.openrdf.repository.Repository;
@@ -250,6 +251,12 @@ public class LocalRDF implements RDFDataRepository {
     @Override
     public void mergeRepositoryData(RDFDataRepository second) {
         impl.mergeRepositoryData(second);
+    }
+    
+    @Override
+    public Map<String,List<String>> makeQueryOverRepository(String query)
+    {
+        return impl.makeQueryOverRepository(query);
     }
 
     /**

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -215,7 +216,6 @@ public class VirtuosoRDF implements RDFDataRepository {
     @Override
     public void save() throws Exception {
         // TODO Petyr: save restore data into workingDirectory (passed in createNew)
-        
     }
 
     @Override
@@ -278,5 +278,10 @@ public class VirtuosoRDF implements RDFDataRepository {
     @Override
     public Repository getDataRepository() {
         return impl.getDataRepository();
+    }
+
+    @Override
+    public Map<String, List<String>> makeQueryOverRepository(String query) {
+        return impl.makeQueryOverRepository(query);
     }
 }
