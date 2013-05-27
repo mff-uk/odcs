@@ -299,6 +299,15 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTableLayout.addComponent(monitorTable.createControls());
 		monitorTable.setPageLength(10);
 
+		Button refreshButton = new Button("Refresh", new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				refreshData();
+			}
+		});
+		monitorTableLayout.addComponent(refreshButton);
+
 
 
 		hsplit.setFirstComponent(monitorTableLayout);
@@ -309,6 +318,13 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.refreshRowCache();
 
 		return mainLayout;
+	}
+
+	private void refreshData() {
+		int page = monitorTable.getCurrentPage();
+		tableData = getTableData(App.getApp().getPipelines().getAllExecutions());
+		monitorTable.setContainerDataSource(tableData);
+		monitorTable.setCurrentPage(page);
 	}
 
 
