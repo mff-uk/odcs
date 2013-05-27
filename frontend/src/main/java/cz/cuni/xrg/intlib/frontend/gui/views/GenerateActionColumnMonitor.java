@@ -45,7 +45,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				
 				
 			}
-			if (test.contains("FAILED"))
+			if ((test.contains("FAILED"))|| (test.contains("FINISHED_SUCCESS")))
 			{
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog",itemId));
@@ -59,7 +59,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				
 			}
 
-			if (test.contains("FINISHED_SUCCESS"))
+		/*	if (test.contains("FINISHED_SUCCESS"))
 			{
 				Button debugButton = new Button("Debug data");
 				
@@ -71,8 +71,8 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				
 				box.addComponent(debugButton);
 				
-			}
-		
+			}*/
+					
 		}		
 		
 		
