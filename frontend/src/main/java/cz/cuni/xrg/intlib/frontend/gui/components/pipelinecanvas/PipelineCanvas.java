@@ -126,8 +126,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param y
 	 */
 	public void addDpu(DPU dpu, int x, int y) {
-		int dpuInstanceId = graph.addDpu(dpu);
-		getRpcProxy(PipelineCanvasClientRpc.class).addNode(dpuInstanceId, dpu.getName(), dpu.getDescription(), x, y);
+		DPUInstance dpuInstance = App.getDPUs().createDPUInstance(dpu);
+		Node node = graph.addDpuInstance(dpuInstance);
+		getRpcProxy(PipelineCanvasClientRpc.class)
+				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), x, y);
 	}
 
 	/**

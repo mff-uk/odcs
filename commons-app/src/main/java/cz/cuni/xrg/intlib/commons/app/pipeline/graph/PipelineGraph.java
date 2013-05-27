@@ -95,12 +95,25 @@ public class PipelineGraph {
      * @param dpu
      * @return
      */
+	@Deprecated
     public int addDpu(DPU dpu) {
         DPUInstance dpuInstance = new DPUInstance(dpu);
         Node node = new Node(dpuInstance);
         addNode(node);
         return node.hashCode();
     }
+	
+	/**
+	 * Adds a new node created from given DPUInstance.
+	 * 
+	 * @param dpuInstance
+	 * @return node instance
+	 */
+	public Node addDpuInstance(DPUInstance dpuInstance) {
+        Node node = new Node(dpuInstance);
+		addNode(node);
+		return node;
+	} 
 
     /**
      * Removes DPU from graph.
