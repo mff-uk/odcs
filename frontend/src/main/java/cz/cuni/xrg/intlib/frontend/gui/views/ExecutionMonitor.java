@@ -351,7 +351,8 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		end.setCaption("");
 		infoBar.addComponent(end, 4, 1);
 
-		logLayout.addComponent(infoBar);
+		//TODO: Possibly remove infoBar completely
+		//logLayout.addComponent(infoBar);
 
 		PipelineExecution pipelineExec = App.getApp().getPipelines().getExecution(exeId);
 		DebuggingView debugView = new DebuggingView(pipelineExec, null, pipelineExec.isDebugging());
