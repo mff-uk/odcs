@@ -563,6 +563,7 @@ return dpuDetailLayout;
 							// store into DB
 							App.getDPUs().save(selectedDpu);
 							
+							fillTree(dpuTree);
 
 						}
 
