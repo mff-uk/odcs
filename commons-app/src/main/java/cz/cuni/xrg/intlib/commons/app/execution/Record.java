@@ -28,7 +28,7 @@ public class Record {
 	/**
 	 * Time of creation.
 	 */
-	@Temporal(javax.persistence.TemporalType.DATE)
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
 	@Column(name = "r_time")
 	private Date time;
 	

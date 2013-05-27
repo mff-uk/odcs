@@ -68,7 +68,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_EXECUTION"
 CREATE TABLE "DB"."INTLIB"."DPU_RECORD"
 (
   "id" INTEGER IDENTITY,
-  "r_time" DATE,
+  "r_time" TIMESTAMP,
   "r_type" SMALLINT,
   "dpu_id" INTEGER,
   "execution_id" INTEGER,
