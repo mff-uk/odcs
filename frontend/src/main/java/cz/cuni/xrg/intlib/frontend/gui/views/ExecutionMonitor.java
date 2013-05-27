@@ -514,25 +514,23 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 			exeId = (Integer) tableData.getContainerProperty(itemId,"exeid").getValue();
 			pipeName = (String) tableData.getContainerProperty(itemId, "name").getValue();
-
-			if (caption.equals("stop")) {
-			} else if (caption.equals("showlog")) {
-
-				logLayout = buildlogLayout();
-				hsplit.setSplitPosition(55, Unit.PERCENTAGE);
-				hsplit.setSecondComponent(logLayout);
-				//hsplit.setHeight("960px");
-				hsplit.setLocked(false);
-
-
-
-			} else if (caption.equals("debug")) {
-
-				logLayout = buildlogLayout();
-				hsplit.setSplitPosition(55, Unit.PERCENTAGE);
-				hsplit.setSecondComponent(logLayout);
-				//hsplit.setHeight("960px");
-				hsplit.setLocked(false);
+			switch (caption) {
+				case "stop":
+					break;
+				case "showlog":
+					logLayout = buildlogLayout();
+					hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+					hsplit.setSecondComponent(logLayout);
+					//hsplit.setHeight("960px");
+					hsplit.setLocked(false);
+					break;
+				case "debug":
+					logLayout = buildlogLayout();
+					hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+					hsplit.setSecondComponent(logLayout);
+					//hsplit.setHeight("960px");
+					hsplit.setLocked(false);
+					break;
 			}
 
 		}

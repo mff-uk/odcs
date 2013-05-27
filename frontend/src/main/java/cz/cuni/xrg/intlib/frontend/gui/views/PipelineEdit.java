@@ -17,10 +17,14 @@ import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
+import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.DetailClosedListener;
+import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.ShowDebugListener;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import java.util.EventObject;
 import java.util.List;
@@ -37,6 +41,7 @@ class PipelineEdit extends ViewComponent {
 	private TextField pipelineName;
 	private TextArea pipelineDescription;
 	private Pipeline pipeline = null;
+	private VerticalSplitPanel verticalSplit;
 	PipelineCanvas pc;
 	Tree dpuTree;
 
@@ -49,9 +54,13 @@ class PipelineEdit extends ViewComponent {
 
 	/**
 	 * Builds main layout of the page.
+	 *
 	 * @return
 	 */
-	private VerticalLayout buildMainLayout() {
+	private VerticalSplitPanel buildMainLayout() {
+
+		verticalSplit = new VerticalSplitPanel();
+
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
@@ -79,7 +88,6 @@ class PipelineEdit extends ViewComponent {
 		pc.setHeight(630, Unit.PIXELS);
 		pc.init();
 		pc.addListener(new DetailClosedListener() {
-
 			@Override
 			public void detailClosed(EventObject e) {
 				fillTree(dpuTree);
@@ -89,9 +97,18 @@ class PipelineEdit extends ViewComponent {
 
 			@Override
 			public void componentEvent(Event event) {
-
+			}
+		});
+		pc.addListener(new ShowDebugListener() {
+			@Override
+			public void showDebug(PipelineExecution execution, DPUInstance instance) {
+				DebuggingView dv = new DebuggingView(execution, instance, true);
+				openDebug(dv);
 			}
 
+			@Override
+			public void componentEvent(Event event) {
+			}
 		});
 
 //        try {
@@ -117,7 +134,6 @@ class PipelineEdit extends ViewComponent {
 		dadWrapper.setWidth(1060, Unit.PIXELS);
 		dadWrapper.setHeight(630, Unit.PIXELS);
 		dadWrapper.setDropHandler(new DropHandler() {
-
 			@Override
 			public AcceptCriterion getAcceptCriterion() {
 				return AcceptAll.get();
@@ -127,7 +143,7 @@ class PipelineEdit extends ViewComponent {
 			public void drop(DragAndDropEvent event) {
 				Transferable t = (Transferable) event.getTransferable();
 				DragAndDropWrapper.WrapperTargetDetails details = (DragAndDropWrapper.WrapperTargetDetails) event.getTargetDetails();
-				MouseEventDetails mouse =  details.getMouseEvent();
+				MouseEventDetails mouse = details.getMouseEvent();
 
 				Object obj = t.getData("itemId");
 
@@ -177,7 +193,6 @@ class PipelineEdit extends ViewComponent {
 		buttonRevert.setHeight("25px");
 		buttonRevert.setWidth("150px");
 		buttonRevert.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-
 			@Override
 			public void buttonClick(ClickEvent event) {
 			}
@@ -189,7 +204,6 @@ class PipelineEdit extends ViewComponent {
 		buttonCommit.setHeight("25px");
 		buttonCommit.setWidth("150px");
 		buttonCommit.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
@@ -203,7 +217,6 @@ class PipelineEdit extends ViewComponent {
 		button.setHeight("25px");
 		button.setWidth("150px");
 		button.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
@@ -220,12 +233,41 @@ class PipelineEdit extends ViewComponent {
 //			}
 //		});
 //		layout.addComponent(button);
+		verticalSplit.setFirstComponent(mainLayout);
+		verticalSplit.setSecondComponent(null);
+		verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
+		verticalSplit.setLocked(true);
 
-		return mainLayout;
+		return verticalSplit;
+	}
+
+	private void closeDebug() {
+		verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
+		verticalSplit.setSecondComponent(null);
+		verticalSplit.setLocked(true);
+	}
+
+	private void openDebug(DebuggingView debug) {
+		//verticalSplit.setSplitPosition(50, Unit.PERCENTAGE);
+
+		Window debugWindow = new Window("Debug window", debug);
+				debugWindow.setWidth("600px");
+				debugWindow.setHeight("620px");
+				debugWindow.addCloseListener(new Window.CloseListener() {
+					@Override
+					public void windowClose(Window.CloseEvent e) {
+						//closeDebug();
+					}
+				});
+				App.getApp().addWindow(debugWindow);
+
+		//verticalSplit.setSecondComponent(debug);
+		//verticalSplit.setLocked(false);
 	}
 
 	/**
 	 * Builds part of layout with pipeline settings.
+	 *
 	 * @return
 	 * @throws com.vaadin.ui.GridLayout.OverlapsException
 	 * @throws com.vaadin.ui.GridLayout.OutOfBoundsException
@@ -243,10 +285,9 @@ class PipelineEdit extends ViewComponent {
 		pipelineName.setWidth("200px");
 		pipelineName.setHeight("-1px");
 		pipelineName.addValidator(new Validator() {
-
 			@Override
 			public void validate(Object value) throws InvalidValueException {
-				if(value.getClass() == String.class && !((String)value).isEmpty()) {
+				if (value.getClass() == String.class && !((String) value).isEmpty()) {
 					return;
 				}
 				throw new InvalidValueException("Name must be filled!");
@@ -319,6 +360,7 @@ class PipelineEdit extends ViewComponent {
 
 	/**
 	 * Fills tree with available DPUs.
+	 *
 	 * @param tree
 	 */
 	private void fillTree(Tree tree) {
@@ -394,9 +436,9 @@ class PipelineEdit extends ViewComponent {
 	}
 
 	/**
-	 * Loads pipeline to edit or create. Pipeline entity is loaded into this.entity.
-	 * If /New parameter is passed in url, create just representation for
-	 * pipeline.
+	 * Loads pipeline to edit or create. Pipeline entity is loaded into
+	 * this.entity. If /New parameter is passed in url, create just
+	 * representation for pipeline.
 	 *
 	 * @param event
 	 * @return Loaded pipeline class instance or null.
@@ -428,7 +470,7 @@ class PipelineEdit extends ViewComponent {
 	 * Saves loaded pipeline.
 	 */
 	protected void savePipeline() {
-		if(!pipelineName.isValid()) {
+		if (!pipelineName.isValid()) {
 			Notification.show("Error saving pipeline", "Pipeline name is required!", Notification.Type.ERROR_MESSAGE);
 			return;
 		}
@@ -444,7 +486,7 @@ class PipelineEdit extends ViewComponent {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
-		setCompositionRoot(mainLayout);
+		setCompositionRoot(verticalSplit);
 		// ..
 		this.loadPipeline(event);
 		// or use this.entity.getEntity();

@@ -36,7 +36,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	int dpuCount = 0;
 	int connCount = 0;
 	private PipelineGraph graph;
-
 	//TEMPORARY
 	private Pipeline pip;
 
@@ -51,7 +50,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		this.setStyleName("pipelineContainer");
 
 		registerRpc(new PipelineCanvasServerRpc() {
-
 			@Override
 			public void onDetailRequested(int dpuId) {
 				// TODO Auto-generated method stub
@@ -100,23 +98,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		//TODO: Debug
 		pip.setGraph(graph);
 		PipelineExecution pExec = runPipeline(pip, true);
-		if(pExec == null) {
+		if (pExec == null) {
 			Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
 			return;
 		}
 
 		DPUInstance debugDpu = graph.getNodeById(dpuId).getDpuInstance();
-		DebuggingView dv = new DebuggingView(pExec, debugDpu, true);
-		Window debugWindow = new Window("Debug window", dv);
-		debugWindow.setWidth("600px");
-		debugWindow.setHeight("620px");
-		debugWindow.addCloseListener(new Window.CloseListener() {
-
-			@Override
-			public void windowClose(CloseEvent e) {
-			}
-		});
-		App.getApp().addWindow(debugWindow);
+		fireShowDebug(pExec, debugDpu);
 	}
 
 	/**
@@ -150,11 +138,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void addConnection(int dpuFrom, int dpuTo) {
 		String result = graph.validateNewEdge(dpuFrom, dpuTo);
-		if(result == null) {
+		if (result == null) {
 			int connectionId = graph.addEdge(dpuFrom, dpuTo);
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
 		} else {
-			 Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
+			Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
 		}
 
 	}
@@ -206,7 +194,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		final DPUInstance dpu = node.getDpuInstance();
 		DPUDetail detailDialog = new DPUDetail(dpu);
 		detailDialog.addCloseListener(new Window.CloseListener() {
-
 			@Override
 			public void windowClose(CloseEvent e) {
 				fireDetailClosed();
@@ -218,7 +205,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
-		PipelineExecution pipelineExec =  new PipelineExecution(pipeline);
+		PipelineExecution pipelineExec = new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
 		// TODO Petyr: leave null value?
 		pipelineExec.setWorkingDirectory("");
@@ -228,9 +215,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		App.getPipelines().save(pipelineExec);
 		AppConfiguration config = App.getApp().getAppConfiguration();
 		Client client = new Client(
-			config.getString(ConfProperty.BACKEND_HOST),
-			config.getInteger(ConfProperty.BACKEND_PORT)
-		);
+				config.getString(ConfProperty.BACKEND_HOST),
+				config.getInteger(ConfProperty.BACKEND_PORT));
 
 		// send message to backend
 		try {
@@ -249,11 +235,26 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	protected void fireDetailClosed() {
-    Collection<DetailClosedListener> ls = (Collection<DetailClosedListener>) this.getListeners(Component.Event.class);
-    for (DetailClosedListener l : ls) {
-      l.detailClosed(null);
-    }
-  }
+		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
+		for (Listener l : ls) {
+			try {
+				DetailClosedListener dcl = (DetailClosedListener) l;
+				dcl.detailClosed(null);
+			} catch (Exception ex) {
+				//TODO: Solve better!
+			}
+		}
+	}
+
+	protected void fireShowDebug(PipelineExecution execution, DPUInstance instance) {
+		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
+		for (Listener l : ls) {
+			try {
+				ShowDebugListener sdl = (ShowDebugListener) l;
+				sdl.showDebug(execution, instance);
+			} catch (Exception ex) {
+				//TODO: Solve better!
+			}
+		}
+	}
 }
-
-

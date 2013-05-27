@@ -88,6 +88,7 @@ public class DebuggingView extends CustomComponent {
 		browseTab = tabs.addTab(new Label("Browser"), "Browse");
 
 		logTextArea = new TextArea("Log from log4j", "Log file content");
+		logTextArea.setRows(20);
 		logTextArea.setSizeFull();
 		logTab = tabs.addTab(logTextArea, "Log");
 
