@@ -92,7 +92,7 @@ public class DebuggingView extends CustomComponent {
 		logTextArea.setSizeFull();
 		logTab = tabs.addTab(logTextArea, "Log");
 
-		QueryView queryView = new QueryView();
+		QueryView queryView = new QueryView(this);
 		queryTab = tabs.addTab(queryView, "Query");
 
 		mainLayout.setSizeFull();
@@ -269,5 +269,45 @@ public class DebuggingView extends CustomComponent {
 			}
 		}
 		return filteredRecords;
+	}
+
+	String getRepositoryPath(boolean onInputGraph) {
+		if (debugDpu == null) {
+			return null;
+		}
+		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+		if (indexes == null) {
+			return null;
+		}
+
+		Iterator<Integer> iter = indexes.iterator();
+		while (iter.hasNext()) {
+			Integer index = iter.next();
+			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
+			if (indexes.size() == 1 || duInfo.isInput() == onInputGraph) {
+				return "ex" + pipelineExec.getId() + "_dpu-" + index;
+			}
+		}
+		return null;
+	}
+
+	File getRepositoryDirectory(boolean onInputGraph) {
+		if (debugDpu == null) {
+			return null;
+		}
+		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+		if (indexes == null) {
+			return null;
+		}
+
+		Iterator<Integer> iter = indexes.iterator();
+		while (iter.hasNext()) {
+			Integer index = iter.next();
+			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
+			if (indexes.size() == 1 || duInfo.isInput() == onInputGraph) {
+				return duInfo.getDirectory();
+			}
+		}
+		return null;
 	}
 }
