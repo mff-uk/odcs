@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import java.util.Date;
 import javax.persistence.*;
 
 /**
@@ -39,6 +40,20 @@ public class PipelineExecution  {
      */
 	@Column(name = "debug_mode")
     private boolean isDebugging;
+	
+	/**
+	 * Timestamp when this execution started, or null.
+	 */
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name = "t_start")
+	private Date start;
+	
+	/**
+	 * Timestamp when this execution started, or null.
+	 */
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name = "t_end")
+	private Date end;
 
 	/**
 	 * Path to the pipeline execution working directory.
@@ -93,6 +108,22 @@ public class PipelineExecution  {
 		this.isDebugging = isDebugging;
 	}
 
+	public Date getStart() {
+		return start;
+	}
+
+	public void setStart(Date start) {
+		this.start = start;
+	}
+
+	public Date getEnd() {
+		return end;
+	}
+
+	public void setEnd(Date end) {
+		this.end = end;
+	}
+	
     public void setWorkingDirectory(String workingDirectory) {
         this.workingDirectory = workingDirectory;
     } 	
