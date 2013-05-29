@@ -1,0 +1,153 @@
+
+<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<style>
+			.code		{background-color: #f6f9f6;}
+			.comment	{color:green}
+			h1			{color:darkblue}
+			h2			{color:darkblue}
+		</style>	
+	
+	</head>
+	<body>
+		<h1>DPU implementation tutorial</h1>		
+		<div>This tutorial will give you brief overview about implementing new DPU into project Intlib. But before you start
+			coding there are few thing which for sure deserve your attention.</div>
+	
+		<h2>Logging</h2>
+		<div>To log use slf4j. The log for each DPU is stored and accessible to the user. Using sl4j is simple. If you are not familiar with sl4j
+			the following example show the basics.<br/>
+			<div class="code"> <pre> <code>
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class DPU_Template implements GraphicalExtractor {
+	private Logger = LoggerFactory.getLogger(DPU_Template.class);
+...
+			</code> </pre> </div>
+			Then when you want to log something just call:<br/>
+			<div class="code"><pre><code>logger.debug("Some message .. ");</code></pre></div>
+		</div>
+	
+		<h2>Configuration concept</h2>
+		<div>Each DPU has possibility to store configuration that can configure DPU execution. User can edit the configuration
+			through the configuration dialog which is also provided by DPU implementation. You can store any serializable object into
+			configuration.</div>
+	
+		<h2>Data unit</h2>
+		<div>Data between DPUs are passed in containers that are called DataUnit. The DataUnit from programmer point of view is interface
+			that do not offer much functionality. For practical use more specific interface is provided. Currently only one interface 
+			is available: <i>RDFDataRepository</i>. The DataUnit (ie. RDFDataRepository) can't be created directly. 
+			To create DataUnit use DataUnitFactory ,which is accessible via Context.</div>
+		
+		<h2>Context</h2>
+		<div>Each DPU has execution context. It's main interface is ProcessingContext located in commons. The DPU it self (extract/transform/load)
+			use more special type of Context ie. ExtractContext, TransformContext or LoadContext. 
+			The context provide ability to send messages that are stored and accessible to the user. <br/>
+			Context also manager access to the input/output DataUnits. The following example demonstrate this functionality for transformer: <br/>
+			<div class="code"><pre><code>
+<span class="comment">// get input DataUnits</span>
+List&lt;DataUnit&gt;inputs = context.getInputs();
+<span class="comment">// check if we have some inputs</span>
+if (inputs.isEmpty()) {
+	throw new TransformException("Missing inputs!");
+}
+<span class="comment">// use first input and ignore the rest</span>
+DataUnit dataUnit = inputs.get(0);
+<span class="comment">// cast input dataUnit to inputRepository, to check if we can cast we use 'instanceof'</span>
+RDFDataRepository intputRepository = null;
+if (dataUnit instanceof RDFDataRepository) {
+	intputRepository = (RDFDataRepository) dataUnit;
+} else {
+	throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " expected RDF.");
+}
+<span class="comment">// now, create output repository
+// we have to specify type, in this case DataUnitType.RDF</span>
+RDFDataRepository outputRepository = (RDFDataRepository) context.getDataUnitFactory().create(DataUnitType.RDF);
+<span class="comment">// now we just check that we the object has been successfully created</span>
+if (outputRepository == null) {
+	throw new TransformException("DataUnitFactory returned null.");
+}
+			</code></pre></div>
+		</div>
+	
+		<h2>DPU implementation</h2>
+		<div>It the following sections we will go through file prepared in DPU template project. For each file we explain purpose and list the mandatory and optionally changes that need to be done in order to implement DPU.</div>
+		
+		<h3>pom.xml</h3>
+		<div>The pom.xml file contains Maven configuration. If you are not familiar with Maven then just ignore everything except several TODOs. 
+			TODOs have assigned number to make it easy to refer on them. In next few lines we go through all of them and give brief comment to each of them.
+			<ul>
+				<li><b>1.</b> The Maven's artifact should be provided here. 
+					Maven use this name to identify the output jar file. For common usage you can just use name of your DPU. 
+					This value should contains only a-z, A-Z, 0-9 and _ as whitespace. 
+					This value also determine the name of main module class. So mark this value as <div>module_name</div></li>				
+				<li><b>2.</b> The DPU name, this value will be stored in manifest.mf file. 
+					This name can be presented to the user when you DPU is being imported into Intlib.</li>
+				<li><b>3.</b> In most common scenarios you can leave the default value here. This value is stored in manifest.mf file as "version of DPU". 
+					It correspond with Bundle-Version in manifest.mf. </li>
+				<li><b>4.</b> Module's description is visible to the users. Provide all necessary information about your DPU usage here. 
+					Also it could be nice to provide contact on you as on the DPU's author.</li>
+			</ul>
+		</div>
+
+		<h3>DPU_Template.java</h3>
+		<div>This file contains the DPU main class. The name of this file and the name of class in it must be the same as <div>module_name</div>. 
+			So your first step should be renaming this file and class in it. One important thing is that the package for this class
+			must be <b>module</b>. Done? Great, now lets see the class. As in pom.xml the TODOs are 
+			prepared here for you. So just go through them
+			<ul>
+				<li><b>1.</b> First of all we need to change the implemented interface of DPU implementation. 
+					There are following interfaces for DPU in Intlib that you can use: 
+					<ul>
+						<li><b>GraphicalExtractor</b></li>
+						<li><b>GraphicalTransformer</b></li>
+						<li><b>GraphicalLoader</b></li>
+					</ul> The names correspond with the purpose. Just change the name of the name of interface. 
+					Each of these interfaces contains unique method that has to be implemented. We return to this later.</li>
+				<li><b>2.</b> Method <i>getType</i> return type of DPU. So based on implemented interface return one of the following values:
+					<ul>
+				  		<li><b>DpuType.EXTRACTOR</b></li>
+				  		<li><b>DpuType.TRANSFORMER</b></li>
+				  		<li><b>DpuType.LOADER</b></li>
+				  	</ul> So just change the <i>DpuType.EXTRACTOR</i> to one of those according implemented interface.</li>
+				<li><b>3.</b> Here you should store default configuration of your DPU into configuration (the function parameter). 
+				  	For more information about configuration please refer "Configuration concept" section. <br/>
+				  	The examples how to store integer and string to database are presented in the function. </li>
+				<li><b>4.</b> Here you should load the current DPU configuration from given variable. 
+				  	But to not make it so easy if configuration dialog is open then you should load the configuration to the configuration dialog as well.
+				  	If the configuration is invalid you should throw <i>ConfigurationException</i>.
+				  	<b>You can use the default implementation here.</b> </li>
+				<li><b>5.</b> Here you should save the current DPU configuration into given variable. 
+				  	Also you should save the configuration from the configuration dialog if it's open.
+				  	If the configuration dialog contains invalid configuration you should throw <i>ConfigurationException</i>.
+				  	<b>You can leave the default implementation here.</b> </li> 
+				<li><b>6.</b> Every DPU can have configuration dialog, that enable user to configure the DPU. In this method the DPU
+				  	should create and return instance of this configuration dialog. The configuration dialog can exist as "the singleton". 
+				  	For common usage you <b>can use the default implementation here.</b></li>
+				<li><b>7.</b> Based on implemented interface (selected in 1.) you have to provide implementation
+				  	of one method. If you are using either Eclipse or Netbeas they already probably alarm you that not all abstract methods
+				  	are has been implemented. If you are not using any IDE just add following method based on implemented interface:
+				  	<ul>
+				  		<li><b>public extract(ExtractContext context) throws ExtractException</b> for <b>GraphicalExtractor</b></li>				  			
+				  		<li><b>public void transform(TransformContext context) throws TransformException</b> for <b>GraphicalTransformer</b></li>
+				  		<li><b>public void load(LoadContext context) throws LoadException</b> for <b>GraphicalLoader</b></li>
+				  	</ul> If you are using some IDE it would be probably add the unimplemented methods to class for your.
+				  	The implementation of this method is discussed in "extract/transform/load implementation" section.</li>
+			</ul>
+		</div>
+		
+		<h3>ConfigDialog.java</h3>
+		<div>This file contains implementation of DPU's configuration dialog. 
+			For more information about configuration dialog refer to <a href="www.vaadin.com">Vaadin</a>. To preserve compatibility with 
+			DPU_Template.java default implementation the methods <i>getConfiguration</i> and <i>setConfiguration</i> must be preserved.
+			</div>
+		
+		<h3>extract/transform/load implementation</h3>		
+		<div>In this method the real work should be done. All that DPU may need is stored in Contex, which is passed as variable to the method. 
+			To get more information to the Context pleas refer to the Context section above.</div>		
+	</body>
+</html>
+ 
+
