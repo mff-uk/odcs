@@ -9,7 +9,6 @@ import cz.cuni.xrg.intlib.commons.loader.Load;
  * Event is published when a {@link Load} completed successfully.
  *
  * @author Petyr
- * @author Alex Kreiser (akreiser@gmail.com)
  * 
  */
 public class LoadCompletedEvent extends LoadEvent {

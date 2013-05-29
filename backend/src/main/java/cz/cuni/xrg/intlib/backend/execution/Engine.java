@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationListener;
  * Responsible for running and supervision queue of PipelineExecution tasks.
  *
  * @author Petyr
+ * 
  */
 public class Engine implements ApplicationListener<EngineEvent>, ApplicationEventPublisherAware  {
 	

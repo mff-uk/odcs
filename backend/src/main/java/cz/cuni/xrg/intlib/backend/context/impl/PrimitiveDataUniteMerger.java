@@ -42,7 +42,6 @@ public class PrimitiveDataUniteMerger implements DataUnitMerger {
 				}				
 			}
 			// add the rest from right			
-			int addStart = left.size();
 			while (iterRight.hasNext()) {
 				DataUnit rightDataUnit = iterRight.next();
 				// create new data unit (in context into which we merge)

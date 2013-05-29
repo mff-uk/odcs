@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineFailedEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineModuleErrorEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStructureError;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineContextErrorEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
@@ -62,6 +62,7 @@ import org.springframework.context.ApplicationEventPublisher;
  * Worker responsible for running single PipelineExecution.
  *
  * @author Petyr
+ * 
  */
 class PipelineWorker implements Runnable {
 	// TODO Petyr: release save context before then on the end of the execution

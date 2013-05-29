@@ -9,7 +9,6 @@ import cz.cuni.xrg.intlib.commons.extractor.Extract;
  * Event is published when an {@link Extract} completed successfully.
  *
  * @author Petyr
- * @author Alex Kreiser (akreiser@gmail.com)
  * 
  */
 public class ExtractCompletedEvent extends ExtractEvent {

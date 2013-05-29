@@ -8,7 +8,6 @@ import cz.cuni.xrg.intlib.commons.extractor.Extract;
  * Base class for {@link Extract} events
  *
  * @see Extract
- * @author Alex Kreiser (akreiser@gmail.com)
  */
 public abstract class ExtractEvent extends DPUEvent {
 

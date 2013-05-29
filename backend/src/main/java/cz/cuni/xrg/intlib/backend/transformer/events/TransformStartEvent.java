@@ -6,8 +6,8 @@ import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 
 /**
+ * Event is published when a {@link Transform} execution starts.
  *
- * @see Extract
  * @author Petyr
  */
 public class TransformStartEvent extends TransformEvent {
@@ -18,6 +18,6 @@ public class TransformStartEvent extends TransformEvent {
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Loader started.", "");
+		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Transformer started.", "");
 	}
 }

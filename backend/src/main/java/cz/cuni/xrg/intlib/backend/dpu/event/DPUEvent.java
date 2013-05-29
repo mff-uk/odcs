@@ -11,8 +11,9 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 /**
  * Base abstract class for the DPU event. 
  *
- * @author Jiri Tomes
  * @author Petyr
+ * @author Jiri Tomes 
+ * 
  */
 public abstract class DPUEvent extends ApplicationEvent {
 

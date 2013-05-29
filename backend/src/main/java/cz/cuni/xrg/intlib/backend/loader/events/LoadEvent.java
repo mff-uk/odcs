@@ -8,7 +8,8 @@ import cz.cuni.xrg.intlib.commons.loader.Load;
  * Base class for {@link Load} events.
  *
  * @see Load
- * @author Alex Kreiser (akreiser@gmail.com)
+ * @author Petyr
+ * 
  */
 public abstract class LoadEvent extends DPUEvent {
 
