@@ -1,14 +1,12 @@
 package cz.cuni.xrg.intlib.commons.loader;
 
-import cz.cuni.xrg.intlib.commons.DPUExecutive;
-
 /**
  * Is responsible for loading the RDF data.
  * 
  * 
  * @author Jiri Tomes
  */
-public interface Load extends DPUExecutive {
+public interface Load {
 
     /**
      * Loads the RDF data of an completed extract and transform cycle to a data

@@ -1,7 +1,5 @@
 package cz.cuni.xrg.intlib.commons.transformer;
 
-import cz.cuni.xrg.intlib.commons.DPUExecutive;
-
 /**
  * Is responsible for transforming- cleaning or enriching RDF data.
  * 
@@ -15,7 +13,7 @@ import cz.cuni.xrg.intlib.commons.DPUExecutive;
  * 
  * @author Jiri Tomes
  */
-public interface Transform extends DPUExecutive {
+public interface Transform {
 
     /**
      * Transforms the cached RDF data in the repository.
