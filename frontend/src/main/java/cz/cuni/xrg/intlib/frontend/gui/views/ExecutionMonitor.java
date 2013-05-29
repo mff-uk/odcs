@@ -129,7 +129,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		filtersLayout.setSpacing(true);
 
 		dateFilter = new DateField();
-		dateFilter.setDateFormat("yyyy-MM-dd");
+		dateFilter.setDateFormat("dd/MM/yyyy");
 		dateFilter.setImmediate(true);
 		dateFilter.setCaption("Date:");
 		dateFilter.setWidth("90%");
@@ -140,7 +140,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				// TODO Auto-generated method stub
 										
 				if(event.getProperty().getValue()!=null){
-					Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+					Format formatter = new SimpleDateFormat("dd/MM/yyyy");
 					String s = formatter.format(event.getProperty().getValue());
 					
 					tableDataFilter.setDateFilter(s);
@@ -504,11 +504,12 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 
 		for (PipelineExecution item : data)
-		{
-			String b = item.getStart().toString();
+		{	Format formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		    String s = formatter.format(item.getStart());
+
 			Object num = result.addItem();
 			result.getContainerProperty(num, "exeid").setValue(item.getId());
-			result.getContainerProperty(num, "date").setValue(item.getStart().toString());
+			result.getContainerProperty(num, "date").setValue(s);
 			result.getContainerProperty(num, "user").setValue(" ");
 			result.getContainerProperty(num, "name").setValue(item.getPipeline().getName());
 			result.getContainerProperty(num, "status").setValue(item.getExecutionStatus().toString());
