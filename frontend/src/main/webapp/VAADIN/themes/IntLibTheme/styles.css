@@ -17,6 +17,14 @@
 	background-color: #dddddd;
 }
 
+.dpuTreeLayout {
+	padding-left: 30px;
+	background-color: #dddddd;
+}
+.dpuDetailLayout{
+	background-color: #fbfbfb;
+}
+
 .viewLayout {
 	background-color: #eeeeee;
 }
