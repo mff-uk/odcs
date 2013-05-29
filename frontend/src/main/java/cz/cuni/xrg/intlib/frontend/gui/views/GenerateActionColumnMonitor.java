@@ -23,18 +23,21 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
-		Property prop = source.getItem(itemId).getItemProperty("status");
-		String test = "---";
+		Property prop1 = source.getItem(itemId).getItemProperty("status");
+		Property prop2 = source.getItem(itemId).getItemProperty("debug");
+		String testStatus = "---";
+		String testDebug = "---";
 		//execID=itemId;
 		execID=itemId;
 		
 		HorizontalLayout box = new HorizontalLayout();
 		box.setSpacing(true);
 		
-		if (prop.getType().equals(String.class))
+		if ((prop1.getType().equals(String.class)) || (prop2.getType().equals(String.class)) )
 		{
-			test = (String)prop.getValue();
-			if (test.contains("SCHEDULED"))
+			testStatus = (String)prop1.getValue();
+			testDebug = (String)prop2.getValue();
+			if ((testStatus.contains("SCHEDULED"))&&(testDebug.contains("false")))
 			{
 				Button stopButton = new Button("Stop");
 				stopButton.setData(new ActionButtonData("stop",itemId));
@@ -45,7 +48,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				
 				
 			}
-			if ((test.contains("FAILED"))|| (test.contains("FINISHED_SUCCESS")))
+			if (((testStatus.contains("FAILED"))|| (testStatus.contains("FINISHED_SUCCESS")))&&(testDebug.contains("false")))
 			{
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog",itemId));
@@ -59,7 +62,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				
 			}
 
-		/*	if (test.contains("FINISHED_SUCCESS"))
+			if (testDebug.contains("true"))
 			{
 				Button debugButton = new Button("Debug data");
 				
@@ -71,7 +74,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				
 				box.addComponent(debugButton);
 				
-			}*/
+			}
 					
 		}		
 		

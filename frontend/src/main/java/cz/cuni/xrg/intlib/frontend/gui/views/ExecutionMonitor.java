@@ -105,7 +105,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 		// label
 
-		label = new Label();
+/*		label = new Label();
 		label.setImmediate(false);
 		label.setWidth("-1px");
 		label.setHeight("-1px");
@@ -116,7 +116,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		Label filtersLabel = new Label();
 		filtersLabel.setCaption("Filters:");
 		filtersLabel.setWidth("100px");
-		monitorTableLayout.addComponent(filtersLabel);
+		monitorTableLayout.addComponent(filtersLabel);*/
 
 		filter = new String();
 
