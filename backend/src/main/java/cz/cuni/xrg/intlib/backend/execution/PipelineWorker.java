@@ -216,6 +216,7 @@ class PipelineWorker implements Runnable {
 	@Override
 	public void run() {		
 		final String pipielineExecutionId = Integer.toString( execution.getId() );
+		final String MDCDpuInstanceKey = "dpuInstance";
 
 		// add marker to logs from this thread -> both must be specified !!
 		MDC.put("execution", pipielineExecutionId );
@@ -227,8 +228,7 @@ class PipelineWorker implements Runnable {
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-		
-		
+				
 		// save contextWriter before first DPU
 		try {
 			contextWriter.save();
@@ -242,6 +242,9 @@ class PipelineWorker implements Runnable {
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
 			boolean result;
+			
+			// put dpuInstance id to MDC
+			MDC.put(MDCDpuInstanceKey, Long.toString(node.getDpuInstance().getId()) );
 			try {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
@@ -260,7 +263,8 @@ class PipelineWorker implements Runnable {
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
 				executionFailed = true;
 				break;
-			}					
+			}
+			MDC.remove(MDCDpuInstanceKey);
 						
 			if (result) {
 				// DPU executed successfully
@@ -281,7 +285,7 @@ class PipelineWorker implements Runnable {
 		// ending ..
 		
 		logger.debug("Finished");
-		// clear threads markers		
+		// clear all threads markers		
 		MDC.clear();
 	
 		if (execution.isDebugging()) {
