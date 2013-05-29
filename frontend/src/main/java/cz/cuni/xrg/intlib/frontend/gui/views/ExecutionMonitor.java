@@ -297,7 +297,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 		monitorTableLayout.addComponent(monitorTable);
 		monitorTableLayout.addComponent(monitorTable.createControls());
-		monitorTable.setPageLength(10);
+		monitorTable.setPageLength(20);
 
 		Button refreshButton = new Button("Refresh", new ClickListener() {
 

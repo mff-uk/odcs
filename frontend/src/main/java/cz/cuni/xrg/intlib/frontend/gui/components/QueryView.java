@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
+import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
 import java.io.File;
@@ -32,8 +33,9 @@ public class QueryView extends CustomComponent {
 		HorizontalLayout topLine = new HorizontalLayout();
 
 		graphSelect = new NativeSelect("Graph:");
-		graphSelect.addItem("Input Graph");
-		graphSelect.addItem("Output Graph");
+		graphSelect.setImmediate(true);
+//		graphSelect.addItem("Input Graph");
+//		graphSelect.addItem("Output Graph");
 		topLine.addComponent(graphSelect);
 
 		Button queryButton = new Button("Query");
@@ -46,6 +48,8 @@ public class QueryView extends CustomComponent {
 			}
 		});
 		topLine.addComponent(queryButton);
+		topLine.setComponentAlignment(queryButton, Alignment.BOTTOM_RIGHT);
+		topLine.setSpacing(true);
 		mainLayout.addComponent(topLine);
 
 		queryText = new TextArea("SPARQL Query:");
@@ -116,5 +120,15 @@ public class QueryView extends CustomComponent {
 		}
 
 		return result;
+	}
+
+	public void setGraphs(DpuType type) {
+		graphSelect.removeAllItems();
+		if(type != DpuType.EXTRACTOR) {
+			graphSelect.addItem("Input Graph");
+		}
+		if(type != DpuType.LOADER) {
+			graphSelect.addItem("Output Graph");
+		}
 	}
 }
