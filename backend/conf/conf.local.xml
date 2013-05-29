@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-	<entry key="dpuFolder">file:///c:/IntLib/dpu/</entry> <!-- for easy use set path to: ${pathToProject}/target/dpu/ -->
+	<entry key="dpuFolder">file:////Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/target/dpu/</entry> <!-- for easy use set path to: ${pathToProject}/target/dpu/ -->
 	<entry key="packagesToExpose">cz.cuni.xrg.intlib.commons;version="0.0.1",cz.cuni.xrg.intlib.commons.configuration;version="0.0.1",cz.cuni.xrg.intlib.commons.data;version="0.0.1",cz.cuni.xrg.intlib.commons.data.rdf;version="0.0.1",cz.cuni.xrg.intlib.commons.event;version="0.0.1",cz.cuni.xrg.intlib.commons.extractor;version="0.0.1",cz.cuni.xrg.intlib.commons.loader;version="0.0.1",cz.cuni.xrg.intlib.commons.message;version="0.0.1",cz.cuni.xrg.intlib.commons.transformer;version="0.0.1",org.openrdf.rio</entry>
-	<entry key="dpuLibsFolder">c:/Intlib/lib/</entry> <!-- for easy use set path to: ${pathToProject}/target/lib/ -->
+	<entry key="dpuLibsFolder">file:////Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/target/lib/</entry> <!-- for easy use set path to: ${pathToProject}/target/lib/ -->
 	<entry key="backendAddress">127.0.0.1</entry>
 	<entry key="backendPort">5010</entry>
-	<entry key="workingDirectory">c:/Intlib/backend/working/</entry>
+	<entry key="workingDirectory">file:////Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/backend/working/</entry>
 </properties>
