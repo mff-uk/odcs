@@ -11,12 +11,18 @@
 	<name>Module' parent project.</name>
 	<description>Maven parent project for modules-DPU implementations.</description>
 
+	<properties>
+		<module.version>0.0.0</module.version>
+		<module.description>No description is available for this module.</module.description>
+	</properties>
+
 	<modules>
 		<module>File_extractor</module>
 		<module>File_loader</module>
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>
 		<module>SPARQL_transformer</module>
+		<module>DPU_Template</module>
 	</modules>
 
     <repositories>
@@ -78,7 +84,8 @@
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>module;version="${module.version}",gui;version="${module.version}"</Export-Package>
+						<Bundle-Description>${module.description}</Bundle-Description>
+						<Export-Package>module;version="${module.version}",gui;version="${module.version}"</Export-Package>						
 						<!-- TODO: update version ! -->
 						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}", *</Import-Package>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
