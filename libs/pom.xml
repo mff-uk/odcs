@@ -89,6 +89,12 @@
                                     <artifactId>commons-web</artifactId>
                                     <version>${project.version}</version>
                                 </dependency>								            								
+
+                                <dependency> <!-- commons-module project -->
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>commons-module</artifactId>
+                                    <version>${project.version}</version>
+                                </dependency>										
 								
                                 <dependency> <!-- dependency for com.vaadin.vaadin-server -->
                                     <groupId>javax.servlet</groupId>

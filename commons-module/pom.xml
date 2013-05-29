@@ -15,6 +15,7 @@
 	</properties>
 
 	<dependencies>
+	
 		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons</artifactId>
@@ -32,5 +33,30 @@
 		</dependency>		
 
 	</dependencies>
+
+	<build>
+        <!-- create bundle -->
+        <plugins>
+            <plugin> <!-- generate manifest file -->
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>				
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <!-- export just packages under cz.cuni.xrg.intlib.commons.web -->
+                        <Export-Package>cz.cuni.xrg.intlib.commons.module.*;version="${project.version}"</Export-Package>
+                        <!-- import vaadin, commons and web -->
+                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}",cz.cuni.xrg.intlib.commons.web.*;version="${project.version}"</Import-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>						
+                    </instructions>
+                </configuration>
+            </plugin>
+				
+        </plugins>
+    </build>
 
 </project>
