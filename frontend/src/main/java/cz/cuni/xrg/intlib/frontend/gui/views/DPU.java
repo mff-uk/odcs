@@ -43,7 +43,7 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import java.util.List;
 
 /**
- * @author Maria Kukhar 
+ * @author Maria Kukhar
  */
 
 class DPU extends ViewComponent {
@@ -62,7 +62,6 @@ class DPU extends ViewComponent {
 	private Tree dpuTree;
 	private TextField dpuName;
 	private TextArea dpuDescription;
-//	private OptionGroup groupType;
 	private TabSheet tabSheet;
 	private cz.cuni.xrg.intlib.commons.app.dpu.DPU selectedDpu;
 	private OptionGroup groupVisibility;
@@ -71,7 +70,8 @@ class DPU extends ViewComponent {
 	private GridLayout dpuLayout;
 	private HorizontalLayout buttonDpuBar;
 	private Configuration conf;
-	
+	private HorizontalLayout layoutInfo;
+
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
 	/**
@@ -97,35 +97,13 @@ class DPU extends ViewComponent {
 		mainLayout.setStyleName("mainLayout");
 
 		// top-level component properties
-		setSizeUndefined();
+	//	setSizeUndefined();
+		setWidth("100%");
+		setHeight("100%");
 
-		/*
-		 * // label label = new Label(); label.setImmediate(false);
-		 * label.setWidth("-1px"); label.setHeight("-1px");
-		 * label.setValue("<h1>DPUs</h>");
-		 * label.setContentMode(ContentMode.HTML);
-		 * mainLayout.addComponent(label, "top:30.0px;left:80.0px;");
-		 * 
-		 * lblUri = new Label(); lblUri.setValue("uri:");
-		 * mainLayout.addComponent(lblUri, "top:100.0px;left:80.0px;");
-		 * 
-		 * txtUri = new TextField(); txtUri.setWidth("480px");
-		 * txtUri.setHeight("25px"); mainLayout.addComponent(txtUri,
-		 * "top:120.0px;left:80.0px;");
-		 * 
-		 * btnOpenDialog = new Button();
-		 * btnOpenDialog.setCaption("show dialog");
-		 * btnOpenDialog.setWidth("100px"); btnOpenDialog.setHeight("25px");
-		 * btnOpenDialog.addClickListener(new ClickListener() {
-		 * 
-		 * @Override public void buttonClick(ClickEvent event) {
-		 * App.getApp().getNavigator().navigateTo( "expDialog/" +
-		 * txtUri.getValue() ); } }); mainLayout.addComponent(btnOpenDialog,
-		 * "top:170.0px;left:200.0px;");
-		 */
-
+		// Buttons on the top: "Create DPU", "Import DPU", "Export All"
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("100%");
+	//	buttonBar.setWidth("100%");
 
 		Button buttonCreateDPU = new Button();
 		buttonCreateDPU.setCaption("Create DPU");
@@ -167,24 +145,38 @@ class DPU extends ViewComponent {
 					}
 				});
 		buttonBar.addComponent(buttonExportAll);
-		mainLayout.addComponent(buttonBar);
 
+		mainLayout.addComponent(buttonBar);
+	
 		GridLayout dpuLayout = buildDpuLayout();
 		mainLayout.addComponent(dpuLayout);
 
 		return mainLayout;
 	}
 
+	/**
+	 * Building layout contains DPU tree and DPU details.
+	 */
 	@SuppressWarnings({ "serial", "deprecation" })
 	private GridLayout buildDpuLayout() {
-		// TODO Auto-generated method stub
-		dpuLayout = new GridLayout(2, 2);
+
+		dpuLayout = new GridLayout(3, 1);
 		dpuLayout.setSpacing(true);
-		dpuLayout.setWidth("100%");
-		dpuLayout.setHeight("100%");
+	//	dpuLayout.setWidth("100%");
+	//	dpuLayout.setHeight("100%");
+		dpuLayout.setHeight(630, Unit.PIXELS);
 		dpuLayout.setRowExpandRatio(0, 0.01f);
 		dpuLayout.setRowExpandRatio(1, 0.99f);
-
+		
+		VerticalLayout layoutTree = new VerticalLayout();
+		layoutTree.setSpacing(true);
+		layoutTree.setImmediate(true);
+		layoutTree.setHeight("100%");
+		layoutTree.setMargin(true);
+		layoutTree.setStyleName("dpuTreeLayout");
+		
+		
+		// DPU tree filters
 		HorizontalLayout filterBar = new HorizontalLayout();
 		filterBar.setSpacing(true);
 
@@ -194,7 +186,7 @@ class DPU extends ViewComponent {
 
 		Label labelFilter = new Label();
 		labelFilter.setContentMode(ContentMode.HTML);
-		labelFilter.setValue("<span style=padding-left:28px>Filter:</span>");
+		labelFilter.setValue("<span style=padding-left:5px>Filter:</span>");
 		filterBar.addComponent(labelFilter);
 
 		TextField treeFilter = new TextField();
@@ -213,25 +205,38 @@ class DPU extends ViewComponent {
 				if (filter != null)
 					f.removeContainerFilter(filter);
 
-				// Set new filter 
-				filter = new SimpleTreeFilter( event.getText(), true, false);
+				// Set new filter
+				filter = new SimpleTreeFilter(event.getText(), true, false);
 				f.addContainerFilter(filter);
 
 			}
 		});
 
-
 		filterBar.addComponent(treeFilter);
+		layoutTree.addComponent(filterBar);
+		layoutTree.setExpandRatio(filterBar, 0.05f);
+		
+		layoutInfo = new HorizontalLayout();
+		layoutInfo.setHeight("100%");
+		layoutInfo.setWidth("100%");
+		Label infoLabel = new Label();
+		infoLabel.setImmediate(false);
+		infoLabel.setWidth("-1px");
+		infoLabel.setHeight("-1px");
+		infoLabel.setValue("<br><br><br><h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select DPU from DPU tree for displaying it's details</h>");
+		infoLabel.setContentMode(ContentMode.HTML);
+		layoutInfo.addComponent(infoLabel);
+		
+		
 
-		dpuLayout.addComponent(filterBar, 0, 0);
-
+		// DPU tree 
 		dpuTree = new Tree("DPUs");
 		dpuTree.setImmediate(true);
-		dpuTree.setHeight(630, Unit.PIXELS);
-
+		dpuTree.setHeight("100%");
+	//	dpuTree.setHeight(600, Unit.PIXELS);
 		dpuTree.setStyleName("dpuTree");
 		fillTree(dpuTree);
-		for (Object itemId: dpuTree.rootItemIds())
+		for (Object itemId : dpuTree.rootItemIds())
 			dpuTree.expandItemsRecursively(itemId);
 		dpuTree.addItemClickListener(new ItemClickListener() {
 
@@ -242,25 +247,25 @@ class DPU extends ViewComponent {
 						.getItemId();
 				jarPath = selectedDpu.getJarPath();
 
-				
 				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
-					
+
 					dpuLayout.removeComponent(dpuDetailLayout);
+					dpuLayout.removeComponent(layoutInfo);
 					dpuDetailLayout = buildDPUDetailLayout();
-					dpuLayout.addComponent(dpuDetailLayout, 1, 0, 1, 1);
+					dpuLayout.addComponent(dpuDetailLayout, 1, 0);
 
 					String selectedDpuName = selectedDpu.getName();
 					String selecteDpuDescription = selectedDpu.getDescription();
-					VisibilityType selecteDpuVisibility = selectedDpu.getVisibility();
+					VisibilityType selecteDpuVisibility = selectedDpu
+							.getVisibility();
 					dpuName.setValue(selectedDpuName);
 					dpuDescription.setValue(selecteDpuDescription);
 					groupVisibility.setValue(selecteDpuVisibility);
 					groupVisibility.setEnabled(true);
-					if (selecteDpuVisibility == VisibilityType.PUBLIC){
+					if (selecteDpuVisibility == VisibilityType.PUBLIC) {
 						groupVisibility.setValue(selecteDpuVisibility);
 						groupVisibility.setEnabled(false);
-					}
-					else{ 
+					} else {
 						groupVisibility.setValue(selecteDpuVisibility);
 						groupVisibility.setEnabled(true);
 					}
@@ -269,26 +274,32 @@ class DPU extends ViewComponent {
 
 				else {
 					dpuLayout.removeComponent(dpuDetailLayout);
-					
+					dpuLayout.removeComponent(layoutInfo);
+					dpuLayout.addComponent(layoutInfo, 2, 0);
+
 				}
 			}
 		});
-		
-			
-		dpuLayout.addComponent(dpuTree, 0, 1);
+
+		layoutTree.addComponent(dpuTree);
+		layoutTree.setComponentAlignment(dpuTree, Alignment.TOP_LEFT);
+		layoutTree.setExpandRatio(dpuTree, 0.95f);
+		dpuLayout.addComponent(layoutTree,0,0);
+		dpuLayout.addComponent(layoutInfo, 2, 0);
 
 		return dpuLayout;
 	}
-	
+
 	private VerticalLayout buildDPUDetailLayout() {
-		
+
 		dpuDetailLayout = new VerticalLayout();
-		dpuDetailLayout.setImmediate(false);
+		dpuDetailLayout.setImmediate(true);
+		dpuDetailLayout.setStyleName("dpuDetailLayout");
 		dpuDetailLayout.setWidth("100.0%");
 		dpuDetailLayout.setHeight("100%");
+	//	dpuDetailLayout.setHeight(630, Unit.PIXELS);
 		dpuDetailLayout.setMargin(true);
-		
-		
+
 		tabSheet = new TabSheet();
 		verticalLayoutData = buildVerticalLayoutData();
 		Tab dataTab = tabSheet.addTab(verticalLayoutData, "Data");
@@ -303,72 +314,75 @@ class DPU extends ViewComponent {
 
 		tabSheet.setWidth(600, Unit.PIXELS);
 		tabSheet.setHeight(400, Unit.PIXELS);
-		
-		
+
 		dpuDetailLayout.addComponent(tabSheet);
-		
-		if (jarPath !=null){
+
+		if (jarPath != null) {
 			try {
 				dpuExec = App.getApp().getModules().getInstance(jarPath);
-				
+
 				// get configuration from dpu
-				conf = selectedDpu.getTemplateConfiguration();				
-		
+				conf = selectedDpu.getTemplateConfiguration();
+
 				if (dpuExec != null) {
-					
+
 					if (conf == null) {
 						// create new default configuration
 						conf = new TemplateConfiguration();
 						dpuExec.saveConfigurationDefault(conf);
-					}	
-					
-					CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
+					}
+
+					CustomComponent dpuConfigurationDialog = ModuleDialogGetter
+							.getDialog(dpuExec, conf);
 					dpuConfigurationDialog.setWidth("100%");
 					verticalLayoutConfigure.removeAllComponents();
-					verticalLayoutConfigure.addComponent(dpuConfigurationDialog);
-					
+					verticalLayoutConfigure
+							.addComponent(dpuConfigurationDialog);
+
 				}
-				
+
 			} catch (ModuleException me) {
-				//TODO: Show info about failed load of custom part of dialog
-				Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);
+				// TODO: Show info about failed load of custom part of dialog
+				Notification.show(
+						"ModuleException:Failed to load configuration dialog.",
+						me.getTraceMessage(), Type.ERROR_MESSAGE);
 			} catch (ConfigurationException ce) {
-				//TODO: Show info about invalid saved config(should not happen -> validity check on save)
-				Notification.show("ConfigurationException: Failed to set configuration for dialog.",
-						ce.getMessage(), Type.ERROR_MESSAGE);
-				} 
+				// TODO: Show info about invalid saved config(should not happen
+				// -> validity check on save)
+				Notification
+						.show("ConfigurationException: Failed to set configuration for dialog.",
+								ce.getMessage(), Type.ERROR_MESSAGE);
 			}
-		
-		//DPU details: Info Tab
+		}
+
+		// DPU details: Info Tab
 		verticalLayoutInfo = new VerticalLayout();
 		verticalLayoutInfo.setImmediate(false);
 		verticalLayoutInfo.setWidth("100.0%");
 		verticalLayoutInfo.setMargin(true);
 		verticalLayoutInfo.setSpacing(true);
 		tabSheet.addTab(verticalLayoutInfo, "Info");
-		
-		//JAR path
+
+		// JAR path
 		HorizontalLayout jarPathLayout = new HorizontalLayout();
 		jarPathLayout.setImmediate(false);
 		jarPathLayout.setSpacing(true);
 		jarPathLayout.setHeight("100%");
-		
+
 		Label jPath = new Label();
 		jPath.setCaption(jarPath);
-		
+
 		jarPathLayout.addComponent(new Label("JAR path:"));
 		jarPathLayout.addComponent(jPath);
-		
-	
+
 		verticalLayoutInfo.addComponent(jarPathLayout);
 		verticalLayoutInfo.addComponent(new Label("Description of JAR:"));
-		
-		
+
 		buttonDpuBar = buildDPUButtonBur();
 		dpuDetailLayout.addComponent(buttonDpuBar);
 
-return dpuDetailLayout;
-}	
+		return dpuDetailLayout;
+	}
 
 	private VerticalLayout buildVerticalLayoutData() {
 
@@ -429,14 +443,13 @@ return dpuDetailLayout;
 
 		dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
-		verticalLayoutData.addComponent(dpuSettingsLayout); 
-
+		verticalLayoutData.addComponent(dpuSettingsLayout);
 
 		return verticalLayoutData;
 	}
-	
+
 	private HorizontalLayout buildDPUButtonBur() {
-		
+
 		buttonDpuBar = new HorizontalLayout();
 		buttonDpuBar.setWidth(600, Unit.PIXELS);
 		buttonDpuBar.setHeight("100%");
@@ -455,7 +468,8 @@ return dpuDetailLayout;
 				});
 		buttonDpuBar.addComponent(buttonCopyDPU);
 		buttonDpuBar.setExpandRatio(buttonCopyDPU, 0.85f);
-		buttonDpuBar.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
+		buttonDpuBar
+				.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
 
 		Button buttonDeleteDPU = new Button();
 		buttonDeleteDPU.setCaption("Delete DPU");
@@ -466,67 +480,79 @@ return dpuDetailLayout;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-						
-						List<DPUInstance> instances = App.getDPUs().getAllDPUInstances();
-						List<Pipeline>  pipelines = App.getApp().getPipelines().getAllPipelines();
-						 
-		
 
-						int fl=0, i=0; int j = 0;
+						List<DPUInstance> instances = App.getDPUs()
+								.getAllDPUInstances();
+						List<Pipeline> pipelines = App.getApp().getPipelines()
+								.getAllPipelines();
+
+						int fl = 0, i = 0;
+						int j = 0;
 						String[] pipeName = new String[100];
-						for (DPUInstance item : instances){
-							
-							if (item.getDpu().getId() == selectedDpu.getId()){
-								fl=1;
-							
-								for (Pipeline pitem : pipelines){
-									
-									List<Node> nodes = pitem.getGraph().getNodes();
-										
-									for (Node nitem : nodes){
-										
-										if(nitem.getDpuInstance().getDpu().getId()==item.getDpu().getId()){
-											pipeName[j]=pitem.getName().toString();
+						for (DPUInstance item : instances) {
+
+							if (item.getDpu().getId() == selectedDpu.getId()) {
+								fl = 1;
+
+								for (Pipeline pitem : pipelines) {
+
+									List<Node> nodes = pitem.getGraph()
+											.getNodes();
+
+									for (Node nitem : nodes) {
+
+										if (nitem.getDpuInstance().getDpu()
+												.getId() == item.getDpu()
+												.getId()) {
+											pipeName[j] = pitem.getName()
+													.toString();
 											j++;
 										}
 									}
-								
+
 								}
 								break;
 							}
 
 						}
-						if(fl==0){
-							
+						if (fl == 0) {
+
 							App.getApp().getDPUs().delete(selectedDpu);
 							dpuTree.removeAllItems();
 							fillTree(dpuTree);
 							dpuDetailLayout.removeAllComponents();
-							Notification.show("DPU was removed", Notification.Type.HUMANIZED_MESSAGE);
-						}
-						else{ 
-							String names="";
-							
-							for(i=0; i<j; i++){
-								if(i!=j-1)
-									names =names + " " + pipeName[i]+ ",";
-								else 
-									names =names + " " + pipeName[i]+ ".";
-								
+							Notification.show("DPU was removed",
+									Notification.Type.HUMANIZED_MESSAGE);
+						} else {
+							String names = "";
+
+							for (i = 0; i < j; i++) {
+								if (i != j - 1)
+									names = names + " " + pipeName[i] + ",";
+								else
+									names = names + " " + pipeName[i] + ".";
+
 							}
-							
-							if(j>1)
-								Notification.show("DPU can not be removed because it has been used in Pipelines: ", names, Notification.Type.WARNING_MESSAGE);
+
+							if (j > 1)
+								Notification
+										.show("DPU can not be removed because it has been used in Pipelines: ",
+												names,
+												Notification.Type.WARNING_MESSAGE);
 							else
-								Notification.show("DPU can not be removed because it has been used in Pipeline: ", names, Notification.Type.WARNING_MESSAGE);
-							
-						}				
-															
+								Notification
+										.show("DPU can not be removed because it has been used in Pipeline: ",
+												names,
+												Notification.Type.WARNING_MESSAGE);
+
+						}
+
 					}
 				});
 		buttonDpuBar.addComponent(buttonDeleteDPU);
 		buttonDpuBar.setExpandRatio(buttonDeleteDPU, 0.85f);
-		buttonDpuBar.setComponentAlignment(buttonDeleteDPU,		Alignment.BOTTOM_LEFT);
+		buttonDpuBar.setComponentAlignment(buttonDeleteDPU,
+				Alignment.BOTTOM_LEFT);
 
 		Button buttonExportDPU = new Button();
 		buttonExportDPU.setCaption("Export DPU");
@@ -542,7 +568,8 @@ return dpuDetailLayout;
 				});
 		buttonDpuBar.addComponent(buttonExportDPU);
 		buttonDpuBar.setExpandRatio(buttonExportDPU, 2.55f);
-		buttonDpuBar.setComponentAlignment(buttonExportDPU,		Alignment.BOTTOM_LEFT);
+		buttonDpuBar.setComponentAlignment(buttonExportDPU,
+				Alignment.BOTTOM_LEFT);
 
 		Button buttonSaveDPU = new Button();
 		buttonSaveDPU.setCaption("Save");
@@ -553,18 +580,20 @@ return dpuDetailLayout;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-						if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
+						if ((selectedDpu != null)
+								&& (selectedDpu.getId() != null)) {
 							selectedDpu.setName(dpuName.getValue());
 							selectedDpu.setDescription(dpuDescription
 									.getValue());
-							selectedDpu.setVisibility((VisibilityType)groupVisibility
-									.getValue());
-							
+							selectedDpu
+									.setVisibility((VisibilityType) groupVisibility
+											.getValue());
+
 							dpuExec.saveConfiguration(conf);
-														
+
 							// store into DB
 							App.getDPUs().save(selectedDpu);
-							
+
 							fillTree(dpuTree);
 
 						}
@@ -576,7 +605,6 @@ return dpuDetailLayout;
 				Alignment.BOTTOM_RIGHT);
 		dpuDetailLayout.addComponent(buttonDpuBar);
 
-		
 		return buttonDpuBar;
 	}
 
@@ -613,7 +641,6 @@ return dpuDetailLayout;
 		}
 
 	}
-
 
 	@Override
 	public void enter(ViewChangeEvent event) {
