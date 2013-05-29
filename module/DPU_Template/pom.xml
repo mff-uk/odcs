@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cz.cuni.xrg.intlib</groupId>
+        <artifactId>module_master</artifactId>
+        <version>0.0.1</version>
+    </parent>    
+    <!-- TODO 1: fill the DPU name, without special characters, use '_' instead of whitespaces -->
+    <artifactId>DPU_Name</artifactId>
+    <packaging>bundle</packaging>
+    <!-- TODO 2: fill module name -->
+    <name>DPU_Name</name>
+    
+    <properties>       
+    	<!-- TODO 3: specify module version, can be left unchanged -->
+        <module.version>0.0.1</module.version>
+        <!-- TODO 4: fill module description, the description will be visible to the user -->
+        <module.description>My first DPU implementation.</module.description>
+    </properties>
+ 	
+</project>

@@ -31,6 +31,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
 
 	/**
 	 * Class for handling communication with single client.
+	 * 
 	 * @author Petyr
 	 *
 	 */

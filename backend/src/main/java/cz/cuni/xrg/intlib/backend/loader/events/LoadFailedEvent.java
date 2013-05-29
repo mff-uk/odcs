@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
  * Published when a {@link Load} could not complete because an error occurred.
  *
  * @author Petyr
- * @author Alex Kreiser (akreiser@gmail.com)
+ * 
  */
 public class LoadFailedEvent extends LoadEvent {
 

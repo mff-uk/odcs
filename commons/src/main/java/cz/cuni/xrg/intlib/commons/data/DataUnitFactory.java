@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.data;
 
 /**
- * Interface for DataUnit factory.
+ * Interface for {@link DataUnit} factory.
  * 
  * @author Petyr
  *

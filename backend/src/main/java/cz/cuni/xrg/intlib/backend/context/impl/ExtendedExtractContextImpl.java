@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationEventPublisher;
 /**
  *
  * @author Petyr
+ * 
  */
 public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 

@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineEvent;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
 /**

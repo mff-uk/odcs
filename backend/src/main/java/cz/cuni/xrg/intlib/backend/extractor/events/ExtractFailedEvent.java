@@ -10,7 +10,6 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
  * Event is published when an {@link Extract} could not complete because an error occurred.
  *
  * @author Petyr
- * @author Alex Kreiser (akreiser@gmail.com)
  * 
  */
 public class ExtractFailedEvent extends ExtractEvent {

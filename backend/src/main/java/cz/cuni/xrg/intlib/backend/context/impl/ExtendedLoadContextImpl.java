@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationEventPublisher;
 /**
  *
  * @author Petyr
+ * 
  */
 public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 

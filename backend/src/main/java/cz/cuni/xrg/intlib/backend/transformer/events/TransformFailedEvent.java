@@ -9,7 +9,6 @@ import cz.cuni.xrg.intlib.commons.transformer.Transform;
  * Published when a {@link Transform} throws an exception during transformation.
  *
  * @author Petyr
- * @author Alex Kreiser (akreiser@gmail.com)
  * 
  */
 public class TransformFailedEvent extends TransformEvent {

@@ -88,7 +88,7 @@ public class AppEntry {
 		try {
 			server.init();
 		} catch (CommunicationException e1) {
-			logger.info("Fatal error: Can't start server");
+			logger.error("Fatal error: Can't start server");
 			context.close();
 			return;
 		}

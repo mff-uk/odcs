@@ -64,6 +64,7 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 			case RDF:	// as default RDF use local repository
 			case RDF_Local:
 			{
+				// TODO: Jirka: update/check the initialisation of LocalRdf here
 				LocalRDF repository = new LocalRDF();
 				// get directory
 				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Local, mergePrepare, counter);

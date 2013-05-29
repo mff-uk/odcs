@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineContextErrorEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineFailedEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineModuleErrorEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.events.PipelineStructureError;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineContextErrorEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
@@ -38,14 +38,17 @@ import cz.cuni.xrg.intlib.backend.context.impl.ExtendedLoadContextImpl;
 import cz.cuni.xrg.intlib.backend.context.impl.ExtendedTransformContextImpl;
 import cz.cuni.xrg.intlib.backend.context.impl.PrimitiveDataUniteMerger;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
+import cz.cuni.xrg.intlib.backend.extractor.events.ExtractStartEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractFailedEvent;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadCompletedEvent;
+import cz.cuni.xrg.intlib.backend.loader.events.LoadStartEvent;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.backend.loader.events.LoadFailedEvent;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
+import cz.cuni.xrg.intlib.backend.transformer.events.TransformStartEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
 
@@ -59,6 +62,7 @@ import org.springframework.context.ApplicationEventPublisher;
  * Worker responsible for running single PipelineExecution.
  *
  * @author Petyr
+ * 
  */
 class PipelineWorker implements Runnable {
 	// TODO Petyr: release save context before then on the end of the execution
@@ -212,6 +216,7 @@ class PipelineWorker implements Runnable {
 	@Override
 	public void run() {		
 		final String pipielineExecutionId = Integer.toString( execution.getId() );
+		final String MDCDpuInstanceKey = "dpuInstance";
 
 		// add marker to logs from this thread -> both must be specified !!
 		MDC.put("execution", pipielineExecutionId );
@@ -223,8 +228,7 @@ class PipelineWorker implements Runnable {
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-		
-		
+				
 		// save contextWriter before first DPU
 		try {
 			contextWriter.save();
@@ -238,6 +242,9 @@ class PipelineWorker implements Runnable {
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
 			boolean result;
+			
+			// put dpuInstance id to MDC
+			MDC.put(MDCDpuInstanceKey, Long.toString(node.getDpuInstance().getId()) );
 			try {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
@@ -256,7 +263,8 @@ class PipelineWorker implements Runnable {
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
 				executionFailed = true;
 				break;
-			}					
+			}
+			MDC.remove(MDCDpuInstanceKey);
 						
 			if (result) {
 				// DPU executed successfully
@@ -277,7 +285,7 @@ class PipelineWorker implements Runnable {
 		// ending ..
 		
 		logger.debug("Finished");
-		// clear threads markers		
+		// clear all threads markers		
 		MDC.clear();
 	
 		if (execution.isDebugging()) {
@@ -445,6 +453,8 @@ class PipelineWorker implements Runnable {
 	 */
 	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx) {
 
+		eventPublisher.publishEvent(new ExtractStartEvent(extractor, ctx, this));
+		
 		try {
 			extractor.extract(ctx);
 			eventPublisher.publishEvent(new ExtractCompletedEvent(extractor,
@@ -466,6 +476,8 @@ class PipelineWorker implements Runnable {
 	 */
 	private boolean runTransformer(Transform transformer, ExtendedTransformContext ctx) {
 
+		eventPublisher.publishEvent(new TransformStartEvent(transformer, ctx, this));
+		
 		try {
 			transformer.transform(ctx);
 			eventPublisher.publishEvent(new TransformCompletedEvent(
@@ -487,6 +499,8 @@ class PipelineWorker implements Runnable {
 	 */
 	private boolean runLoader(Load loader, ExtendedLoadContext ctx) {
 
+		eventPublisher.publishEvent(new LoadStartEvent(loader, ctx, this));
+		
 		try {
 			loader.load(ctx);
 			eventPublisher.publishEvent(new LoadCompletedEvent(loader, ctx,

@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.transformer.Transform;
  * Base class for {@link Transform} events
  *
  * @see Transform
- * @author Alex Kreiser (akreiser@gmail.com)
+ * 
  */
 public abstract class TransformEvent extends DPUEvent {
 

@@ -6,19 +6,18 @@ import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 
 /**
- * Event is published when an {@link Extract} completed successfully.
+ * Event is published when an {@link Extract} execution starts.
  *
  * @author Petyr
- * 
  */
-public class ExtractCompletedEvent extends ExtractEvent {
+public class ExtractStartEvent extends ExtractEvent {
 
-    public ExtractCompletedEvent(Extract extractor, ExtendedExtractContext context, Object source) {
+    public ExtractStartEvent(Extract extractor, ExtendedExtractContext context, Object source) {
         super(extractor, context, source);
     }
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Extract completed.", "");
+		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Extractor started.", "");
 	}
 }

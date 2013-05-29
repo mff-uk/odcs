@@ -9,7 +9,6 @@ import cz.cuni.xrg.intlib.commons.transformer.Transform;
  * Event is published when a {@link Transform} completed successfully.
  *
  * @author Petyr
- * @author Alex Kreiser (akreiser@gmail.com)
  * 
  */
 public class TransformCompletedEvent extends TransformEvent {
