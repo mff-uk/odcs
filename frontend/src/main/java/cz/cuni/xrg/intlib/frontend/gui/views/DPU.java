@@ -223,7 +223,7 @@ class DPU extends ViewComponent {
 		infoLabel.setImmediate(false);
 		infoLabel.setWidth("-1px");
 		infoLabel.setHeight("-1px");
-		infoLabel.setValue("<br><br><br><h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select DPU from DPU tree for displaying it's details</h>");
+		infoLabel.setValue("<br><br><br><h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select DPU from the DPU tree for displaying it's details.</h>");
 		infoLabel.setContentMode(ContentMode.HTML);
 		layoutInfo.addComponent(infoLabel);
 		
