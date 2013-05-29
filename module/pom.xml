@@ -22,7 +22,6 @@
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>
 		<module>SPARQL_transformer</module>
-		<module>DPU_Template</module>
 	</modules>
 
     <repositories>
