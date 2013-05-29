@@ -256,7 +256,7 @@ class DPU extends ViewComponent {
 					dpuDescription.setValue(selecteDpuDescription);
 					groupVisibility.setValue(selecteDpuVisibility);
 					groupVisibility.setEnabled(true);
-/*					if (selecteDpuVisibility == VisibilityType.PRIVATE){
+					if (selecteDpuVisibility == VisibilityType.PUBLIC){
 						groupVisibility.setValue(selecteDpuVisibility);
 						groupVisibility.setEnabled(false);
 					}
@@ -264,7 +264,7 @@ class DPU extends ViewComponent {
 						groupVisibility.setValue(selecteDpuVisibility);
 						groupVisibility.setEnabled(true);
 					}
-*/
+
 				}
 
 				else {
