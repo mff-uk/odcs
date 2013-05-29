@@ -4,6 +4,7 @@ import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
 
+import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  * @author Petyr
  */
-public class File_extractor implements GraphicalExtractor {
+public class File_extractor implements GraphicalExtractor, DPUExecutive {
 
     /**
      * Configuration component.

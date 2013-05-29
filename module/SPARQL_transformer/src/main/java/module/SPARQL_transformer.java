@@ -4,6 +4,7 @@ import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
 
+import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
@@ -20,7 +21,7 @@ import java.util.List;
  * @author Jiri Tomes
  * @author Petyr
  */
-public class SPARQL_transformer implements GraphicalTransformer {
+public class SPARQL_transformer implements GraphicalTransformer, DPUExecutive {
 
     /**
      * Configuration component.
