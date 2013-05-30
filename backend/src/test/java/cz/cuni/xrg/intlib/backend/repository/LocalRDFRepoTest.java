@@ -4,6 +4,9 @@ import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -50,7 +53,7 @@ public class LocalRDFRepoTest {
             throw new RuntimeException(e.getMessage());
         }
 
-       rdfRepo = LocalRDF.createLocalRepo(pathRepo.toString(),"localRepo");
+        rdfRepo = LocalRDF.createLocalRepo(pathRepo.toString(), "localRepo");
 
     }
 
@@ -103,9 +106,10 @@ public class LocalRDFRepoTest {
             rdfRepo.loadRDFfromRepositoryToXMLFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
+        } catch (CannotOverwriteFileException | LoadException ex) {
             fail(ex.getMessage());
         }
+
     }
 
     @Test
@@ -120,7 +124,7 @@ public class LocalRDFRepoTest {
             rdfRepo.loadRDFfromRepositoryToXMLFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
+        } catch (CannotOverwriteFileException | LoadException ex) {
             fail(ex.getMessage());
         }
     }
@@ -137,7 +141,7 @@ public class LocalRDFRepoTest {
             rdfRepo.loadRDFfromRepositoryToXMLFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
+        } catch (CannotOverwriteFileException | LoadException ex) {
             fail(ex.getMessage());
         }
     }
@@ -154,7 +158,7 @@ public class LocalRDFRepoTest {
             rdfRepo.loadRDFfromRepositoryToXMLFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
+        } catch (CannotOverwriteFileException | LoadException ex) {
             fail(ex.getMessage());
         }
     }
@@ -172,6 +176,8 @@ public class LocalRDFRepoTest {
 
         } catch (CannotOverwriteFileException ex) {
             // test passed
+        } catch (LoadException e) {
+            fail();
         }
     }
 
@@ -184,8 +190,12 @@ public class LocalRDFRepoTest {
 
         long size = rdfRepo.getTripleCountInRepository();
 
-        rdfRepo.extractRDFfromXMLFileToRepository(
-                testFileDir, suffix, baseURI, useSuffix);
+        try {
+            rdfRepo.extractRDFfromXMLFileToRepository(
+                    testFileDir, suffix, baseURI, useSuffix);
+        } catch (ExtractException e) {
+            fail(e.getMessage());
+        }
 
         long newSize = rdfRepo.getTripleCountInRepository();
 
@@ -201,8 +211,13 @@ public class LocalRDFRepoTest {
 
         long size = rdfRepo.getTripleCountInRepository();
 
-        rdfRepo.extractRDFfromXMLFileToRepository(
-                testFileDir, suffix, baseURI, useSuffix);
+        try {
+            rdfRepo.extractRDFfromXMLFileToRepository(
+                    testFileDir, suffix, baseURI, useSuffix);
+        } catch (ExtractException e) {
+            fail(e.getMessage());
+
+        }
 
         long newSize = rdfRepo.getTripleCountInRepository();
 
@@ -221,7 +236,7 @@ public class LocalRDFRepoTest {
             rdfRepo.loadRDFfromRepositoryToXMLFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
+        } catch (CannotOverwriteFileException | LoadException ex) {
             fail(ex.getMessage());
         }
     }
@@ -239,7 +254,13 @@ public class LocalRDFRepoTest {
             String query = "select * where {?s ?o ?p} LIMIT 50";
 
             long sizeBefore = rdfRepo.getTripleCountInRepository();
-            rdfRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
+
+            try {
+                rdfRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
+            } catch (ExtractException e) {
+                fail(e.getMessage());
+            }
+
             long sizeAfter = rdfRepo.getTripleCountInRepository();
 
             assertTrue(sizeBefore < sizeAfter);
@@ -265,8 +286,14 @@ public class LocalRDFRepoTest {
             RDFFormat format = RDFFormat.N3;
 
             long sizeBefore = rdfRepo.getTripleCountInRepository();
-            rdfRepo.extractfromSPARQLEndpoint(
-                    endpointURL, defaultGraphUri, query, name, password, format);
+
+            try {
+                rdfRepo.extractfromSPARQLEndpoint(
+                        endpointURL, defaultGraphUri, query, name, password, format);
+            } catch (ExtractException e) {
+                fail(e.getMessage());
+            }
+
             long sizeAfter = rdfRepo.getTripleCountInRepository();
 
             assertTrue(sizeBefore < sizeAfter);
@@ -287,9 +314,13 @@ public class LocalRDFRepoTest {
             String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
             String name = "SPARQL";
             String password = "nejlepsipaper";
-            WriteGraphType graphType= WriteGraphType.MERGE;
+            WriteGraphType graphType = WriteGraphType.MERGE;
 
-            rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name, password,graphType);
+            try {
+                rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name, password, graphType);
+            } catch (LoadException e) {
+                fail(e.getMessage());
+            }
 
 
         } catch (MalformedURLException ex) {
@@ -317,7 +348,11 @@ public class LocalRDFRepoTest {
                 namespace, subjectName, predicateName, objectName);
         assertTrue(beforeUpdate);
 
-        rdfRepo.transformUsingSPARQL(updateQuery);
+        try {
+            rdfRepo.transformUsingSPARQL(updateQuery);
+        } catch (TransformException e) {
+            fail(e.getMessage());
+        }
 
         boolean afterUpdate = rdfRepo.isTripleInRepository(
                 namespace, subjectName, predicateName, objectName);
@@ -332,8 +367,12 @@ public class LocalRDFRepoTest {
 
         long size = rdfRepo.getTripleCountInRepository();
 
-        rdfRepo.extractRDFfromXMLFileToRepository(
-                testFileDir, suffix, baseURI, useSuffix);
+        try {
+            rdfRepo.extractRDFfromXMLFileToRepository(
+                    testFileDir, suffix, baseURI, useSuffix);
+        } catch (ExtractException e) {
+            fail(e.getMessage());
+        }
 
         long newSize = rdfRepo.getTripleCountInRepository();
 
@@ -348,8 +387,12 @@ public class LocalRDFRepoTest {
 
         long size = rdfRepo.getTripleCountInRepository();
 
-        rdfRepo.extractRDFfromXMLFileToRepository(
-                testFileDir, suffix, baseURI, useSuffix);
+        try {
+            rdfRepo.extractRDFfromXMLFileToRepository(
+                    testFileDir, suffix, baseURI, useSuffix);
+        } catch (ExtractException e) {
+            fail(e.getMessage());
+        }
 
         long newSize = rdfRepo.getTripleCountInRepository();
 
@@ -366,7 +409,11 @@ public class LocalRDFRepoTest {
                 + "<http://example/book1> dc:title \"A new book\" ."
                 + "}";
 
-        rdfRepo.transformUsingSPARQL(updateQuery);
+        try {
+            rdfRepo.transformUsingSPARQL(updateQuery);
+        } catch (TransformException e) {
+            //VIRTUOSO TODO !!! fail(e.getMessage());
+        }
 
     }
 
@@ -381,7 +428,7 @@ public class LocalRDFRepoTest {
             rdfRepo.loadRDFfromRepositoryToXMLFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
+        } catch (CannotOverwriteFileException | LoadException ex) {
             fail(ex.getMessage());
         }
     }
@@ -408,7 +455,11 @@ public class LocalRDFRepoTest {
                 + "{SELECT ?s ?o ?x"
                 + "WHERE {{?s s:streetAddress ?o}}} FILTER (BOUND(?x))}";
 
-        rdfRepo.transformUsingSPARQL(updateQuery);
+        try {
+            rdfRepo.transformUsingSPARQL(updateQuery);
+        } catch (TransformException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -470,8 +521,12 @@ public class LocalRDFRepoTest {
 
         long size = rdfRepo.getTripleCountInRepository();
 
-        rdfRepo.extractRDFfromXMLFileToRepository(
-                testFileDir, suffix, baseURI, useSuffix);
+        try {
+            rdfRepo.extractRDFfromXMLFileToRepository(
+                    testFileDir, suffix, baseURI, useSuffix);
+        } catch (ExtractException e) {
+            fail(e.getMessage());
+        }
 
         long newSize = rdfRepo.getTripleCountInRepository();
 
@@ -498,7 +553,12 @@ public class LocalRDFRepoTest {
                 + "  ?s1 owl:sameAs ?s2 . "
                 + "  ?s ?p ?s1 . }";
 
-        rdfRepo.transformUsingSPARQL(updateQuery);
+        try {
+            rdfRepo.transformUsingSPARQL(updateQuery);
+        } catch (TransformException e) {
+            fail(e.getMessage());
+        }
+
         logger.debug("Transform Query 1 - OK");
     }
 
@@ -520,7 +580,12 @@ public class LocalRDFRepoTest {
                 + "  ?s1 owl:sameAs ?s2 . "
                 + "  ?s ?p ?o . }";
 
-        rdfRepo.transformUsingSPARQL(updateQuery);
+        try {
+            rdfRepo.transformUsingSPARQL(updateQuery);
+        } catch (TransformException e) {
+            fail(e.getMessage());
+        }
+
         logger.debug("Transform Query 2 - OK");
     }
 
@@ -540,7 +605,12 @@ public class LocalRDFRepoTest {
                 + "  ?s1 owl:sameAs ?s2 . }";
 
 
-        rdfRepo.transformUsingSPARQL(updateQuery);
+        try {
+            rdfRepo.transformUsingSPARQL(updateQuery);
+        } catch (TransformException e) {
+            fail(e.getMessage());
+        }
+
         logger.debug("Transform Query 3 - OK");
     }
 
@@ -555,7 +625,7 @@ public class LocalRDFRepoTest {
             rdfRepo.loadRDFfromRepositoryToXMLFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
-        } catch (CannotOverwriteFileException ex) {
+        } catch (CannotOverwriteFileException | LoadException ex) {
             fail(ex.getMessage());
         }
 
