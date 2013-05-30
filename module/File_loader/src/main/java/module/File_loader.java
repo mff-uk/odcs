@@ -1,7 +1,6 @@
 package module;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 import gui.ConfigDialog;
 
@@ -25,22 +24,20 @@ import org.slf4j.LoggerFactory;
  * @author Petyr
  */
 public class File_loader implements GraphicalLoader, DPUExecutive {
-    
+
     /**
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
-    
     /**
      * DPU configuration.
      */
     private Configuration config = null;
-
     /**
      * Logger class.
      */
     private Logger logger = LoggerFactory.getLogger(File_loader.class);
-    
+
     public File_loader() {
     }
 
@@ -49,7 +46,7 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
         configuration.setValue(Config.FileName.name(), "");
         configuration.setValue(Config.DirectoryPath.name(), "");
         configuration.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);
-        configuration.setValue(Config.DiffName.name(), (Boolean)false);
+        configuration.setValue(Config.DiffName.name(), (Boolean) false);
     }
 
     @Override
@@ -73,7 +70,7 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
     public void loadConfiguration(Configuration configuration)
             throws ConfigurationException {
         // 
-    	logger.debug("Loading configuration..");
+        logger.debug("Loading configuration..");
         if (this.configDialog == null) {
         } else {
             // get configuration from dialog
@@ -94,12 +91,11 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
     /**
      * Implementation of module functionality here.
      *
-     */    
-    
+     */
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
         logger.debug("format: " + enumFormatType.toString());
-        
+
         switch (enumFormatType) {
             case AUTO: {
                 String fileName = getFileName();
@@ -143,43 +139,47 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
     }
 
     private boolean hasUniqueName() {
-    	if ( config.getValue(Config.DiffName.name()) == null) {
-    		logger.error("DiffName: unset" );
-    		return false;
-    	} else  {    	
-	    	Boolean isNameUnique = (Boolean) config.getValue(Config.DiffName.name());
-	    	logger.debug("DiffName: " + isNameUnique);
-	        return isNameUnique;
-    	}
+        if (config.getValue(Config.DiffName.name()) == null) {
+            logger.error("DiffName: unset");
+            return false;
+
+        } else {
+            Boolean isNameUnique = (Boolean) config.getValue(Config.DiffName.name());
+            logger.debug("DiffName: " + isNameUnique);
+            return isNameUnique;
+        }
     }
 
     @Override
     public void load(LoadContext context) throws LoadException {
-    	RDFDataRepository repository = null;
-    	// get repository
-    	if (context.getInputs().isEmpty()) {
-    		throw new LoadException("Missing inputs!");
-    	}    	
-    	DataUnit dataUnit = context.getInputs().get(0);
-    	if (dataUnit instanceof RDFDataRepository ) {
-    		repository = (RDFDataRepository) dataUnit;
-    	} else {
-    		// wrong input ..
-    		throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
-    	}
-    	
+
+        //input
+        if (context.getInputs().isEmpty()) {
+            throw new LoadException("Missing inputs!");
+        }
+
+        DataUnit dataUnit = context.getInputs().get(0);
+
+        RDFDataRepository repository = null;
+        
+        if (dataUnit instanceof RDFDataRepository) {
+            repository = (RDFDataRepository) dataUnit;
+        } else {
+            // wrong input
+            throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
+        }
+
+        String directoryPath = getDirectoryPath();
+        String fileName = getFileName();
+        RDFFormat format = getRDFFormat();
+        boolean isNameUnique = hasUniqueName();
+        boolean canFileOverwritte = true;
+
         try {
-            String directoryPath = getDirectoryPath();
-            String fileName = getFileName();
-            RDFFormat format = getRDFFormat();
-            boolean isNameUnique = hasUniqueName();
-            boolean canFileOverwritte = true;
-            
             repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte, isNameUnique);
 
-        } catch (CannotOverwriteFileException | NotSupporteRDFFormatException ex) {
-        	throw new LoadException(ex);
+        } catch (CannotOverwriteFileException ex) {
+            throw new LoadException(ex);
         }
     }
-
 }
