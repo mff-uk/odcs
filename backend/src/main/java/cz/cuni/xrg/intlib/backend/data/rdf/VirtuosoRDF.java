@@ -7,6 +7,8 @@ import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -227,21 +229,21 @@ public class VirtuosoRDF implements RDFDataRepository {
     @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath,
             String fileName, RDFFormat format)
-            throws CannotOverwriteFileException {
+            throws CannotOverwriteFileException, LoadException {
 
         impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format);
     }
 
     @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-            WriteGraphType graphType) {
+            WriteGraphType graphType) throws LoadException {
 
         impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, graphType);
     }
 
     @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-            String name, String password, WriteGraphType graphType) {
+            String name, String password, WriteGraphType graphType) throws LoadException {
 
         impl.loadtoSPARQLEndpoint(endpointURL, defaultGraphURI, name, password, graphType);
     }
@@ -262,7 +264,7 @@ public class VirtuosoRDF implements RDFDataRepository {
     }
 
     @Override
-    public void transformUsingSPARQL(String updateQuery) {
+    public void transformUsingSPARQL(String updateQuery) throws TransformException {
         impl.transformUsingSPARQL(updateQuery);
     }
 
