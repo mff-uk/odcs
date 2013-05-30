@@ -2,18 +2,13 @@ package module;
 
 import gui.ConfigDialog;
 
-import com.vaadin.ui.CustomComponent;
-
-import cz.cuni.xrg.intlib.commons.DPUExecutive;
-import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.message.MessageType;
-import cz.cuni.xrg.intlib.commons.web.*;
+import cz.cuni.xrg.intlib.commons.module.dpu.AbstractExtractor;
+import cz.cuni.xrg.intlib.commons.module.gui.AbstractConfigDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,17 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  * @author Petyr
  */
-public class File_extractor implements GraphicalExtractor, DPUExecutive {
-
-    /**
-     * Configuration component.
-     */
-    private gui.ConfigDialog configDialog = null;
-    
-    /**
-     * DPU configuration.
-     */
-    private Configuration config = null;
+public class File_extractor extends AbstractExtractor {
 
     /**
      * Logger class.
@@ -50,43 +35,10 @@ public class File_extractor implements GraphicalExtractor, DPUExecutive {
     	configuration.setValue(Config.OnlyThisSuffix.name(), false);    	
     }    
     
-    @Override
-    public DpuType getType() {
-        return DpuType.EXTRACTOR;
-    }
-
-    @Override
-    public CustomComponent getConfigurationComponent(Configuration configuration) {
-        // does dialog exist?
-        if (this.configDialog == null) {
-            // create it
-            this.configDialog = new ConfigDialog();
-            this.configDialog.setConfiguration(configuration);
-        }
-        return this.configDialog;
-    }
-
 	@Override
-	public void loadConfiguration(Configuration configuration)
-			throws ConfigurationException {
-		// 
-		logger.debug("Loading configuration..");
-        if (this.configDialog == null) {
-        } else {
-            // get configuration from dialog
-            this.configDialog.setConfiguration(configuration);
-        }        
+	public AbstractConfigDialog createConfigurationDialog() {
+		return new ConfigDialog();
 	}    
-    
-    @Override
-    public void saveConfiguration(Configuration configuration) {
-        this.config = configuration;
-        if (this.configDialog == null) {
-        } else {
-            // also set configuration for dialog
-            this.configDialog.getConfiguration(this.config);
-        }
-    }
 
     /**
      * Implementation of module functionality here.

@@ -5,6 +5,7 @@ import module.Config;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
+import cz.cuni.xrg.intlib.commons.module.gui.AbstractConfigDialog;
 
 /**
  * Configuration dialog.
@@ -12,10 +13,9 @@ import cz.cuni.xrg.intlib.commons.configuration.*;
  * @author Maria
  *
  */
-public class ConfigDialog extends CustomComponent {
+public class ConfigDialog extends AbstractConfigDialog {
 
     private static final long serialVersionUID = 1L;
-
 
     private GridLayout mainLayout;
     private ComboBox comboBoxFormat; //RDFFormat
@@ -42,12 +42,7 @@ public class ConfigDialog extends CustomComponent {
         comboBoxFormat.setValue("TTL");
     }
 
-    /**
-     * Return current configuration from dialog. Can return null, if current
-     * configuration is invalid.
-     *
-     * @return current configuration or null
-     */
+    @Override
     public void getConfiguration(Configuration config) {
     	config.setValue(Config.OnlyThisText.name(), textFieldOnly.getValue());
         config.setValue(Config.Path.name(), textFieldPath.getValue());
@@ -56,12 +51,7 @@ public class ConfigDialog extends CustomComponent {
         config.setValue(Config.OnlyThisSuffix.name(), false);
     }
 
-    /**
-     * Load values from configuration into dialog.
-     *
-     * @throws ConfigurationException
-     * @param conf
-     */
+    @Override
     public void setConfiguration(Configuration conf) {
 
         try {
