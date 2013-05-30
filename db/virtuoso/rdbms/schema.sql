@@ -61,8 +61,8 @@ CREATE TABLE "DB"."INTLIB"."PPL_EXECUTION"
   "status" INTEGER,
   "pipeline_id" INTEGER,
   "debug_mode" SMALLINT,
-  "t_start" TIMESTAMP,
-  "t_end" TIMESTAMP,
+  "t_start" DATETIME,
+  "t_end" DATETIME,
   "execution_directory" VARCHAR(255),
   PRIMARY KEY ("id")
 );
@@ -70,7 +70,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_EXECUTION"
 CREATE TABLE "DB"."INTLIB"."DPU_RECORD"
 (
   "id" INTEGER IDENTITY,
-  "r_time" TIMESTAMP,
+  "r_time" DATETIME,
   "r_type" SMALLINT,
   "dpu_id" INTEGER,
   "execution_id" INTEGER,

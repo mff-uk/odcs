@@ -42,6 +42,8 @@ public class DebuggingView extends CustomComponent {
 	private Tab infoTab;
 	private TabSheet tabs;
 	private TextArea logTextArea;
+	private QueryView queryView;
+	private Button refreshButton;
 
 	public DebuggingView(PipelineExecution pipelineExec, DPUInstance debugDpu, boolean debug) {
 		//setCaption("Debug window");
@@ -58,7 +60,7 @@ public class DebuggingView extends CustomComponent {
 
 		executionRecordsTable = new RecordsTable();
 		executionRecordsTable.setWidth("100%");
-		executionRecordsTable.setHeight("100px");
+		executionRecordsTable.setHeight("160px");
 
 		mainLayout.addComponent(executionRecordsTable);
 
@@ -88,11 +90,24 @@ public class DebuggingView extends CustomComponent {
 		browseTab = tabs.addTab(new Label("Browser"), "Browse");
 
 		logTextArea = new TextArea("Log from log4j", "Log file content");
-		logTextArea.setRows(20);
+		VerticalLayout logLayout = new VerticalLayout(logTextArea);
+		refreshButton = new Button("Refresh", new Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					refreshContent();
+				}
+			});
+		logLayout.addComponent(refreshButton);
+		refreshButton.setVisible(false);
+		logLayout.setSizeFull();
+		logTextArea.setRows(30);
 		logTextArea.setSizeFull();
-		logTab = tabs.addTab(logTextArea, "Log");
+		logTab = tabs.addTab(logLayout, "Log");
 
-		QueryView queryView = new QueryView(this);
+		queryView = new QueryView(this);
+		if(debugDpu != null) {
+			queryView.setGraphs(debugDpu.getDpu().getType());
+		}
 		queryTab = tabs.addTab(queryView, "Query");
 
 		mainLayout.setSizeFull();
@@ -129,7 +144,7 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Content of text log file
-		if (loadSuccessful && isRunFinished) {
+		if (loadSuccessful) {
 			File logFile = ctxReader.getLogFile();
 			String logText = "Log file is empty!";
 			if (logFile.exists()) {
@@ -148,7 +163,7 @@ public class DebuggingView extends CustomComponent {
 			logTextArea.setValue(logText);
 			logTab.setEnabled(true);
 		} else {
-			logTab.setEnabled(false);
+			//logTab.setEnabled(false);
 		}
 
 		//Query View
@@ -161,30 +176,36 @@ public class DebuggingView extends CustomComponent {
 		//Create tab with information about running pipeline and refresh button
 		if(infoTab != null) {
 			tabs.removeTab(infoTab);
+
 		}
+		refreshButton.setVisible(false);
 		if (!loadSuccessful && isInDebugMode || !isRunFinished) {
-			VerticalLayout infoLayout = new VerticalLayout();
-			Label infoLabel = new Label(isRunFinished ? "Pipeline context failed to load!" : "Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
-			infoLayout.addComponent(infoLabel);
-			if (!isRunFinished) {
-				Label infoLabelWaiting = new Label("Saving debug information and data takes time in this version. Please wait...(approximately 30s)");
-				infoLayout.addComponent(infoLabelWaiting);
-			}
-			Button refreshButton = new Button("Refresh", new Button.ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					refreshContent();
-				}
-			});
-			infoLayout.addComponent(refreshButton);
-			infoTab = tabs.addTab(infoLayout, "Info");
-			tabs.setSelectedTab(infoTab);
+			refreshButton.setVisible(true);
+			//VerticalLayout infoLayout = new VerticalLayout();
+			//Label infoLabel = new Label(isRunFinished ? "Pipeline context failed to load!" : "Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
+			//infoLayout.addComponent(infoLabel);
+			//if (!isRunFinished) {
+			//	Label infoLabelWaiting = new Label("Saving debug information and data takes time in this version. Please wait...(approximately 30s)");
+			//	infoLayout.addComponent(infoLabelWaiting);
+			//}
+//			refreshButton = new Button("Refresh", new Button.ClickListener() {
+//				@Override
+//				public void buttonClick(ClickEvent event) {
+//					refreshContent();
+//				}
+//			});
+//			infoLayout.addComponent(refreshButton);
+//			infoTab = tabs.addTab(infoLayout, "Info");
+//			tabs.setSelectedTab(infoTab);
 		}
 	}
 
 	private void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		fillContent();
+		if(debugDpu != null) {
+			queryView.setGraphs(debugDpu.getDpu().getType());
+		}
 		setCompositionRoot(mainLayout);
 	}
 

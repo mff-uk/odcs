@@ -4,7 +4,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -18,10 +18,12 @@ import java.util.List;
  */
 public class RecordsTable extends CustomComponent {
 
-	private Table messageTable;
+	private VerticalLayout mainLayout;
+	private IntlibPagedTable messageTable;
 
 	public RecordsTable() {
-		messageTable = new Table();
+		mainLayout = new VerticalLayout();
+		messageTable = new IntlibPagedTable();
 		messageTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
@@ -34,7 +36,10 @@ public class RecordsTable extends CustomComponent {
 			}
 		});
 		messageTable.setSizeFull();
-		setCompositionRoot(messageTable);
+		mainLayout.addComponent(messageTable);
+		mainLayout.addComponent(messageTable.createControls());
+		messageTable.setPageLength(5);
+		setCompositionRoot(mainLayout);
 	}
 
 	public void setDataSource(List<Record> data) {
