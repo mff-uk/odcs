@@ -11,7 +11,6 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
@@ -94,33 +93,37 @@ public class SPARQL_transformer implements GraphicalTransformer, DPUExecutive {
         if (context != null) {
 
             List<DataUnit> inputs = context.getInputs();
-            // get intput repository
+
             if (inputs.isEmpty()) {
                 throw new TransformException("Missing inputs!");
             }
+
             DataUnit dataUnit = inputs.get(0);
 
             RDFDataRepository intputRepository = null;
+
             if (dataUnit instanceof RDFDataRepository) {
-            	intputRepository = (RDFDataRepository) dataUnit;
+                intputRepository = (RDFDataRepository) dataUnit;
             } else {
-            	throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " expected RDF.");
+                throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " expected RDF.");
             }
 
             // create output repository
             RDFDataRepository outputRepository = (RDFDataRepository) context.getDataUnitFactory().create(DataUnitType.RDF);
+
             if (outputRepository == null) {
-            	throw new TransformException("DataUnitFactory returned null.");
+                throw new TransformException("DataUnitFactory returned null.");
             }
-            
+
             final String updateQuery = getUpdateQuery();
-  
-            // intputRepository != null because otherwise in wont pas the instanceof test
+
             intputRepository.copyAllDataToTargetRepository(outputRepository);
             outputRepository.transformUsingSPARQL(updateQuery);
-            
+
             context.addOutputDataUnit(outputRepository);
-      
+
+        } else {
+            throw new TransformException("Transform context " + context + " is null");
         }
     }
 }
