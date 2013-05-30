@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.rdf;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,8 +12,10 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -237,7 +240,22 @@ public class LocalRDFRepo {
      * @param baseURI
      * @param useSuffix
      */
-    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
+    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) throws ExtractException {
+
+        if (path == null) {
+            final String message = "Mandatory target path in extractor is null.";
+
+            logger.debug(message);
+            throw new ExtractException(message);
+
+        } else if (path.isEmpty()) {
+
+            final String message = "Mandatory target path in extractor have to be not empty.";
+
+            logger.debug(message);
+            throw new ExtractException(message);
+
+        }
 
         final String aceptedSuffix = suffix.toUpperCase();
 
@@ -271,6 +289,7 @@ public class LocalRDFRepo {
 
             } catch (IOException | RepositoryException | RDFParseException ex) {
                 logger.debug(ex.getMessage());
+
             }
 
         }
@@ -629,7 +648,7 @@ public class LocalRDFRepo {
      * @param defaultGraphUri
      * @param query
      */
-    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) throws ExtractException {
         List<String> endpointGraphsURI = new ArrayList<>();
         endpointGraphsURI.add(defaultGraphUri);
 
@@ -647,7 +666,7 @@ public class LocalRDFRepo {
      * @param password
      * @param format
      */
-    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) throws ExtractException {
         List<String> endpointGraphsURI = new ArrayList<>();
         endpointGraphsURI.add(defaultGraphUri);
 
@@ -665,24 +684,47 @@ public class LocalRDFRepo {
      * @param password
      * @param format
      */
-    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) throws ExtractException {
+
+
+        final RDFFormat format = RDFFormat.N3;
+        final int graphSize = endpointGraphsURI.size();
+        final String myquery = query.replace(" ", "+");
+        String encoder = null;
         try {
+            encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
+        } catch (UnsupportedEncodingException e) {
+            String message = "Encode " + encode + " is not support";
+            logger.debug(message);
+            throw new ExtractException(message);
 
-            final RDFFormat format = RDFFormat.N3;
-            final int graphSize = endpointGraphsURI.size();
-            final String myquery = query.replace(" ", "+");
-            final String encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
+        }
 
+
+        try {
             RepositoryConnection connection = repository.getConnection();
+
 
             for (int i = 0; i < graphSize; i++) {
 
                 final String endpointGraph = endpointGraphsURI.get(i).replace(" ", "+");
 
-                URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
+                URL call = null;
+                try {
+                    call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
+                } catch (MalformedURLException e) {
+                    logger.debug("Malfolmed URL exception by construct extract URL");
+                    throw new ExtractException(e.getMessage());
+                }
 
-                HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
-                httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
+                HttpURLConnection httpConnection = null;
+                try {
+                    httpConnection = (HttpURLConnection) call.openConnection();
+                    httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
+                } catch (IOException e) {
+                    logger.debug("Endpoint URL stream can not open");
+                    throw new ExtractException(e.getMessage());
+                }
 
                 boolean usePassword = (!hostName.isEmpty() | !password.isEmpty());
 
@@ -705,18 +747,34 @@ public class LocalRDFRepo {
                 try (InputStreamReader inputStreamReader = new InputStreamReader(httpConnection.getInputStream(), encode)) {
                     connection.add(inputStreamReader, endpointGraph, format);
 
+                } catch (IOException e) {
+                    final String message = "Http connection can can not open stream";
+
+                    logger.debug(message);
+                    throw new ExtractException(message);
+                } catch (RDFParseException e) {
+                    logger.debug(e.getMessage());
+                    throw new ExtractException(e.getMessage());
+                } catch (RepositoryException e) {
                 }
             }
 
             connection.close();
 
-
-        } catch (IOException ex) {
-            logger.debug("Can not open http connection stream");
-            logger.debug(ex.getMessage());
-        } catch (Exception ex) {
-            logger.debug(ex.getMessage());
+        } catch (RepositoryException e) {
+            final String message = "Repository connection failt.";
+            logger.debug(message);
+            throw new ExtractException(message);
         }
+
+
+        /*catch (IOException ex) {
+         logger.debug("Can not open http connection stream");
+         logger.debug(ex.getMessage());
+         } catch (Exception ex) {
+         logger.debug(ex.getMessage());
+         }*/
+
     }
 
     /**
@@ -935,7 +993,7 @@ public class LocalRDFRepo {
      *
      * @param file
      */
-    public void load(File file) {
+    public void load(File file) throws Exception {
         extractRDFfromXMLFileToRepository(file.getAbsolutePath(), "", "", false);
     }
 
