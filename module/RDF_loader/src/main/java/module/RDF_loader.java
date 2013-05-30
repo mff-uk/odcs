@@ -10,7 +10,6 @@ import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
@@ -120,25 +119,33 @@ public class RDF_loader implements GraphicalLoader, DPUExecutive {
         if (context.getInputs().isEmpty()) {
             throw new LoadException("Missing inputs!");
         }
+
         DataUnit dataUnit = context.getInputs().get(0);
+
         if (dataUnit instanceof RDFDataRepository) {
             repository = (RDFDataRepository) dataUnit;
         } else {
-            // wrong input ..
+            
             throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
         }
 
         final String endpoint = getSPARQLEndpointURLAsString();
-        try {
-            final URL endpointURL = new URL(endpoint);
-            final List<String> defaultGraphsURI = getGraphsURI();
-            final String hostName = getHostName();
-            final String password = getPassword();
-            final WriteGraphType graphType = getWriteGraphType();
 
-            repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password, graphType);
+        URL endpointURL = null;
+
+        try {
+            endpointURL = new URL(endpoint);
         } catch (MalformedURLException ex) {
-        	throw new LoadException(ex);
+            
+            throw new LoadException(ex);
         }
+
+        final List<String> defaultGraphsURI = getGraphsURI();
+        final String hostName = getHostName();
+        final String password = getPassword();
+        final WriteGraphType graphType = getWriteGraphType();
+
+        repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI, hostName, password, graphType);
+
     }
 }
