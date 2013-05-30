@@ -33,28 +33,22 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
      * Configuration component.
      */
     private gui.ConfigDialog configDialog = null;
-
     /**
      * DPU configuration.
      */
     private Configuration config = null;
-
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(RDF_extractor.class);    
-    
-    public RDF_extractor() {
-
-    }
+    private Logger logger = LoggerFactory.getLogger(RDF_extractor.class);
 
     @Override
     public void saveConfigurationDefault(Configuration configuration) {
-    	configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
-    	configuration.setValue(Config.Host_name.name(), "");
-    	configuration.setValue(Config.Password.name(), "");
-    	configuration.setValue(Config.GraphsUri.name(), new LinkedList<String>());
-    	configuration.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
+        configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
+        configuration.setValue(Config.Host_name.name(), "");
+        configuration.setValue(Config.Password.name(), "");
+        configuration.setValue(Config.GraphsUri.name(), new LinkedList<String>());
+        configuration.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
     @Override
@@ -74,22 +68,21 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
     }
 
     @Override
-	public void loadConfiguration(Configuration configuration)
-			throws ConfigurationException {
-		//
+    public void loadConfiguration(Configuration configuration)
+            throws ConfigurationException {
+
         if (this.configDialog == null) {
         } else {
-            // get configuration from dialog
             this.configDialog.setConfiguration(configuration);
         }
-	}
+    }
 
     @Override
     public void saveConfiguration(Configuration configuration) {
+
         this.config = configuration;
         if (this.configDialog == null) {
         } else {
-            // also set configuration for dialog
             this.configDialog.getConfiguration(this.config);
         }
     }
@@ -98,7 +91,6 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
      * Implementation of module functionality here.
      *
      */
-
     private String getSPARQLEndpoinURLAsString() {
         String endpoint = (String) config.getValue(Config.SPARQL_endpoint.name());
         return endpoint;
@@ -126,15 +118,15 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
 
     @Override
     public void extract(ExtractContext context) throws ExtractException {
-    	RDFDataRepository repository;
-    	// create repository
-    	repository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
-    	
+        RDFDataRepository repository;
+        // create repository
+        repository = (RDFDataRepository) context.getDataUnitFactory().create(DataUnitType.RDF);
+
         if (repository == null) {
-    		throw new ExtractException("DataUnitFactory returned null.");
-    	}
-    	
-    	context.addOutputDataUnit(repository);
+            throw new ExtractException("DataUnitFactory returned null.");
+        }
+
+        context.addOutputDataUnit(repository);
 
         final String endpoint = getSPARQLEndpoinURLAsString();
         try {
@@ -147,12 +139,12 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
             logger.debug("configuration:");
             logger.debug("endpointURL: " + endpointURL.toString());
             logger.debug("hostName: " + hostName);
-            
+
             repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri, query, hostName, password);
 
         } catch (MalformedURLException ex) {
-        	context.sendMessage(MessageType.ERROR, "MalformedURLException: " + ex.getMessage());
-        	throw new ExtractException(ex);
+            context.sendMessage(MessageType.ERROR, "MalformedURLException: " + ex.getMessage());
+            throw new ExtractException(ex);
         }
     }
 }
