@@ -46,7 +46,7 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	public ExtendedExtractContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
-		this.outputs = new LinkedList<DataUnit>();
+		this.outputs = new LinkedList<>();
 		this.eventPublisher = eventPublisher;
 		this.logger = Logger.getLogger(ExtendedExtractContextImpl.class);
 	}
