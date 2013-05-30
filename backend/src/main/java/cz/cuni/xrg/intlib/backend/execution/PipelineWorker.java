@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
+import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
@@ -421,22 +422,21 @@ class PipelineWorker implements Runnable {
 		DpuType dpuType = dpu.getType();
 		String dpuJarPath = dpu.getJarPath();
 		Configuration configuration = dpuInstance.getInstanceConfig();
+		// set configuration
+		DPUExecutive dpuExecutive = moduleFacade.getInstance(dpuJarPath);
+		dpuExecutive.saveConfiguration(configuration);
 		// now based on DPU type ..
 		switch (dpuType) {
 			case EXTRACTOR: {
-				Extract extractor = moduleFacade.getInstanceExtract(dpuJarPath);
-				extractor.saveConfiguration(configuration);
+				Extract extractor = (Extract)dpuExecutive;				
 				return runExtractor(extractor, getContextForNodeExtractor(node, ancestors) );
 			}
 			case TRANSFORMER: {
-				Transform transformer = moduleFacade
-						.getInstanceTransform(dpuJarPath);
-				transformer.saveConfiguration(configuration);
+				Transform transformer = (Transform)dpuExecutive;
 				return runTransformer(transformer, getContextForNodeTransform(node, ancestors) );
 			}
 			case LOADER: {
-				Load loader = moduleFacade.getInstanceLoader(dpuJarPath);
-				loader.saveConfiguration(configuration);
+				Load loader = (Load)dpuExecutive;
 				return runLoader(loader, getContextForNodeLoader(node, ancestors) );
 			}
 			default:
