@@ -4,6 +4,8 @@ import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -342,7 +344,7 @@ public class LocalRDFRepo {
      * @throws CannotOverwriteFileException
      */
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName,
-            org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException {
+            org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException, LoadException {
 
         loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false, false);
     }
@@ -357,44 +359,69 @@ public class LocalRDFRepo {
      * @throws CannotOverwriteFileException
      */
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
-            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException {
+            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException {
+
+        if (directoryPath == null || fileName == null) {
+            final String message;
+
+            if (directoryPath == null) {
+                message = "Mandatory directory path in File_loader is null.";
+            } else {
+                message = "Mandatory file name in File_loader is null.";
+            }
+
+            logger.debug(message);
+            throw new LoadException(message);
+
+
+        } else if (directoryPath.isEmpty() || fileName.isEmpty()) {
+            final String message;
+            
+            if (directoryPath.isEmpty()) {
+                message = "Mandatory directory path in File_loader is empty.";
+            } else {
+                message = "Mandatory file name in File_loader is empty.";
+            }
+
+            logger.debug(message);
+            throw new LoadException(message);
+        }
 
         final String slash = File.separator;
 
-        try {
-            if (!directoryPath.endsWith(slash)) {
-                directoryPath += slash;
-            }
+        if (!directoryPath.endsWith(slash)) {
+            directoryPath += slash;
+        }
 
-            File directory = new File(directoryPath);
+        File directory = new File(directoryPath);
 
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
 
-            File dataFile = new File(directoryPath + fileName);
+        File dataFile = new File(directoryPath + fileName);
 
-            if (!dataFile.exists()) {
+        if (!dataFile.exists()) {
+            createNewFile(dataFile);
+
+        } else {
+            if (isNameUnique) {
+
+                String uniqueFileName = UniqueNameGenerator.getNextName(fileName);
+
+                dataFile = new File(directoryPath + uniqueFileName);
                 createNewFile(dataFile);
 
+            } else if (canFileOverWrite) {
+                createNewFile(dataFile);
             } else {
-                if (isNameUnique) {
-
-                    String uniqueFileName = UniqueNameGenerator.getNextName(fileName);
-
-                    dataFile = new File(directoryPath + uniqueFileName);
-                    createNewFile(dataFile);
-
-                } else if (canFileOverWrite) {
-                    createNewFile(dataFile);
-                } else {
-                    logger.debug("File existed and cannot be overwritten");
-                    throw new CannotOverwriteFileException();
-                }
-
+                logger.debug("File existed and cannot be overwritten");
+                throw new CannotOverwriteFileException();
             }
 
+        }
 
+        try {
             OutputStreamWriter os;
             try {
                 os = new OutputStreamWriter(new FileOutputStream(dataFile.getAbsoluteFile()), encode);
@@ -409,14 +436,19 @@ public class LocalRDFRepo {
                 connection.close();
                 os.close();
 
-            } catch (FileNotFoundException ex) {
+            } catch (FileNotFoundException | RDFHandlerException ex) {
                 logger.debug(ex.getMessage());
+                throw new LoadException(ex.getMessage());
+
             } catch (IOException ex) {
                 logger.debug(ex.getMessage());
+                throw new LoadException("File stream failt: " + ex.getMessage());
             }
 
-        } catch (RDFHandlerException | RepositoryException ex) {
+        } catch (RepositoryException ex) {
             logger.debug(ex.getMessage());
+            throw new LoadException("Repository connection failt: " + ex.getMessage());
+
         }
     }
 
@@ -427,7 +459,7 @@ public class LocalRDFRepo {
      * @param endpointURL
      * @param defaultGraphURI
      */
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, WriteGraphType graphType) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, WriteGraphType graphType) throws LoadException {
         List<String> endpointGraphsURI = new ArrayList<>();
         endpointGraphsURI.add(defaultGraphURI);
 
@@ -443,7 +475,7 @@ public class LocalRDFRepo {
      * @param name
      * @param password
      */
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password, WriteGraphType graphType) {
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name, String password, WriteGraphType graphType) throws LoadException {
         List<String> endpointGraphsURI = new ArrayList<>();
         endpointGraphsURI.add(defaultGraphURI);
 
@@ -460,7 +492,7 @@ public class LocalRDFRepo {
      * @param password
      */
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
-            String password, WriteGraphType graphType) {
+            String password, WriteGraphType graphType) throws LoadException {
         try {
 
             final int graphSize = endpointGraphsURI.size();
@@ -491,7 +523,7 @@ public class LocalRDFRepo {
             try {
                 endpointRepo.initialize();
             } catch (RepositoryException e) {
-                logger.debug("Endpoint reposiotory is failed");
+                logger.debug("Endpoint repository is failed");
                 logger.debug(e.getMessage());
             }
 
@@ -521,14 +553,15 @@ public class LocalRDFRepo {
                                 throw new GraphNotEmptyException("Graph " + goalGraph.toString() + "is not empty");
                             }
 
-
                         }
                         break;
 
                     }
-                } catch (GraphNotEmptyException | RepositoryException ex) {
+                } catch (GraphNotEmptyException ex) {
                     logger.debug(ex.getMessage());
                     isOK = false;
+
+                    throw new LoadException(ex.getMessage());
                 }
 
                 if (isOK == false) {
@@ -539,12 +572,37 @@ public class LocalRDFRepo {
 
                     final String endpointGraph = endpointGraphsURI.get(i).replace(" ", "+");
                     final String query = dataParts.get(j);
-                    final String myquery = URLEncoder.encode(query, encode);
 
-                    URL call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery);
+                    String myquery = null;
 
-                    HttpURLConnection httpConnection = (HttpURLConnection) call.openConnection();
-                    httpConnection.setRequestProperty("Content-type", "text/xml");
+                    try {
+                        myquery = URLEncoder.encode(query, encode);
+                    } catch (UnsupportedEncodingException ex) {
+                        String message = "Encode " + encode + " is not support";
+                        logger.debug(message);
+                        throw new LoadException(message);
+                    }
+
+                    URL call = null;
+
+                    try {
+                        call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery);
+                    } catch (MalformedURLException e) {
+                        logger.debug("Malfolmed URL exception by construct load from URL");
+                        throw new LoadException(e.getMessage());
+                    }
+
+                    HttpURLConnection httpConnection = null;
+
+                    try {
+
+                        httpConnection = (HttpURLConnection) call.openConnection();
+                        httpConnection.setRequestProperty("Content-type", "text/xml");
+
+                    } catch (IOException e) {
+                        logger.debug("Endpoint URL stream can not open");
+                        throw new LoadException(e.getMessage());
+                    }
 
                     try {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
@@ -554,11 +612,15 @@ public class LocalRDFRepo {
 
                         logger.debug("Data " + processing + " part loaded successful");
                     } catch (IOException ex) {
-                        logger.debug(
-                                "Cannot open http connection stream at '"
+                        final String message = "Cannot open http connection stream at '"
                                 + call.toString()
-                                + "' - data not loaded");
+                                + "' - data not loaded";
+
+                        logger.debug(message);
                         logger.debug(ex.getMessage());
+
+                        throw new LoadException(message);
+
                     } finally {
                         httpConnection.disconnect();
                     }
@@ -568,8 +630,11 @@ public class LocalRDFRepo {
 
             connection.close();
 
-        } catch (RepositoryException | IOException ex) {
+        } catch (RepositoryException ex) {
+            logger.debug("Repository connection failt.");
             logger.debug(ex.getMessage());
+
+            throw new LoadException(ex.getMessage());
         }
     }
 
@@ -686,20 +751,51 @@ public class LocalRDFRepo {
      */
     public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) throws ExtractException {
 
+        if (endpointURL == null) {
+            final String message = "Mandatory URL path in extractor from SPARQL is null.";
 
-        final RDFFormat format = RDFFormat.N3;
-        final int graphSize = endpointGraphsURI.size();
-        final String myquery = query.replace(" ", "+");
-        String encoder = null;
-        try {
-            encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
-        } catch (UnsupportedEncodingException e) {
-            String message = "Encode " + encode + " is not support";
+            logger.debug(message);
+            throw new ExtractException(message);
+
+        } else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
+
+            final String message = "Mandatory URL path in extractor from SPARQL "
+                    + "have to started with http.";
+
             logger.debug(message);
             throw new ExtractException(message);
 
         }
 
+        if (endpointGraphsURI == null) {
+            final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
+
+            logger.debug(message);
+            throw new ExtractException(message);
+
+        } else if (endpointGraphsURI.isEmpty()) {
+            final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
+
+            logger.debug(message);
+            throw new ExtractException(message);
+        }
+
+        final RDFFormat format = RDFFormat.N3;
+        final int graphSize = endpointGraphsURI.size();
+        final String myquery = query.replace(" ", "+");
+
+        String encoder = null;
+
+        try {
+            encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
+        } catch (UnsupportedEncodingException e) {
+
+            String message = "Encode " + encode + " is not support";
+            logger.debug(message);
+
+            throw new ExtractException(message);
+
+        }
 
         try {
             RepositoryConnection connection = repository.getConnection();
@@ -752,10 +848,16 @@ public class LocalRDFRepo {
 
                     logger.debug(message);
                     throw new ExtractException(message);
+
                 } catch (RDFParseException e) {
                     logger.debug(e.getMessage());
+
                     throw new ExtractException(e.getMessage());
+
                 } catch (RepositoryException e) {
+                    logger.debug("Repository connection faild: " + e.getMessage());
+
+                    throw new ExtractException(e.getMessage());
                 }
             }
 
@@ -782,25 +884,47 @@ public class LocalRDFRepo {
      *
      * @param updateQuery
      */
-    public void transformUsingSPARQL(String updateQuery) {
+    public void transformUsingSPARQL(String updateQuery) throws TransformException {
 
         try {
             RepositoryConnection connection = repository.getConnection();
 
-            Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
-            logger.debug("This SPARQL query for transform is valid and prepared for execution:");
-            logger.debug(updateQuery);
+            try {
+                Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
 
-            myupdate.execute();
 
+                logger.debug("This SPARQL query for transform is valid and prepared for execution:");
+                logger.debug(updateQuery);
+
+                myupdate.execute();
+
+                logger.debug("SPARQL query for transform was executed succesfully");
+
+            } catch (MalformedQueryException e) {
+
+                logger.debug(e.getMessage());
+                throw new TransformException(e.getMessage());
+
+            } catch (UpdateExecutionException ex) {
+
+                final String message = "SPARQL query was not executed !!!";
+                logger.debug(message);
+                logger.debug(ex.getMessage());
+
+                throw new TransformException(message);
+            }
             connection.commit();
             connection.close();
 
-            logger.debug("SPARQL query for transform was executed succesfully");
 
-        } catch (RepositoryException | MalformedQueryException | UpdateExecutionException ex) {
-            logger.debug("SPARQL query was not executed !!!");
+        } catch (RepositoryException ex) {
+            final String message = "Connection to repository is not available.";
+
+            logger.debug(message);
             logger.debug(ex.getMessage());
+
+            throw new TransformException(message);
+
         }
 
     }
@@ -972,7 +1096,7 @@ public class LocalRDFRepo {
      * @param file
      * @throws CannotOverwriteFileException
      */
-    public void save(File file) throws CannotOverwriteFileException {
+    public void save(File file) throws CannotOverwriteFileException, LoadException {
 
         RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
 
