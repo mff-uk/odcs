@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.commons.data.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.loader.LoadException;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -25,18 +27,18 @@ public interface RDFDataRepository extends DataUnit {
             boolean useSuffix) throws ExtractException;
 
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName,
-            org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException;
+            org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException, LoadException;
 
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
-            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException;
+            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException,LoadException;
 
-    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, WriteGraphType graphType);
+    public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, WriteGraphType graphType) throws LoadException;
 
     public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI, String name,
-            String password, WriteGraphType graphType);
+            String password, WriteGraphType graphType) throws LoadException;
 
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
-            String password, WriteGraphType graphType);
+            String password, WriteGraphType graphType) throws LoadException;
 
     public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) throws ExtractException;
 
@@ -46,7 +48,7 @@ public interface RDFDataRepository extends DataUnit {
     public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI,
             String query, String hostName, String password) throws ExtractException;
 
-    public void transformUsingSPARQL(String updateQuery);
+    public void transformUsingSPARQL(String updateQuery) throws TransformException;
 
     public long getTripleCountInRepository();
 
