@@ -85,6 +85,7 @@ public class ConfigDialog extends AbstractConfigDialog {
 
         // textFieldPath
         textFieldPath = new TextField();
+        textFieldPath.setNullRepresentation("");
         textFieldPath.setCaption("HTTP URL/Path to file or directory on the server:");
         textFieldPath.setImmediate(false);
         textFieldPath.setWidth("100%");
@@ -123,6 +124,7 @@ public class ConfigDialog extends AbstractConfigDialog {
 
         // textFieldOnly
         textFieldOnly = new TextField();
+        textFieldOnly.setNullRepresentation("");
         textFieldOnly.setImmediate(false);
         textFieldOnly.setWidth("50px");
         textFieldOnly.setHeight("-1px");

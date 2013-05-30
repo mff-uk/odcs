@@ -137,6 +137,7 @@ public class ConfigDialog extends CustomComponent {
 
         // textFieldDir
         textFieldDir = new TextField();
+        textFieldDir.setNullRepresentation("");
         textFieldDir.setCaption("Directory:");
         textFieldDir.setImmediate(false);
         textFieldDir.setWidth("100%");
@@ -146,6 +147,7 @@ public class ConfigDialog extends CustomComponent {
 
         // textFieldFileName
         textFieldFileName = new TextField();
+        textFieldFileName.setNullRepresentation("");
         textFieldFileName.setCaption("File name:");
         textFieldFileName.setImmediate(false);
         textFieldFileName.setWidth("100%");
@@ -188,6 +190,7 @@ public class ConfigDialog extends CustomComponent {
 
         // comboBoxFormat
         comboBoxFormat = new ComboBox();
+        comboBoxFormat.setNullRepresentation(RDFFormatType.AUTO);
         comboBoxFormat.setImmediate(false);
         comboBoxFormat.setWidth("30%");
         comboBoxFormat.setHeight("-1px");

@@ -255,6 +255,7 @@ public class ConfigDialog extends CustomComponent {
 
         // textFieldNameAdm
         textFieldNameAdm = new TextField();
+        textFieldNameAdm.setNullRepresentation("");
         textFieldNameAdm.setImmediate(false);
         textFieldNameAdm.setWidth("100%");
         textFieldNameAdm.setHeight("-1px");
@@ -271,6 +272,7 @@ public class ConfigDialog extends CustomComponent {
 
         // passwordFieldPass
         passwordFieldPass = new PasswordField();
+        passwordFieldPass.setNullRepresentation("");
         passwordFieldPass.setImmediate(false);
         passwordFieldPass.setWidth("100%");
         passwordFieldPass.setHeight("-1px");
@@ -447,6 +449,7 @@ public class ConfigDialog extends CustomComponent {
 
         // textAreaConstr
         textAreaConstr = new TextArea();
+        textAreaConstr.setNullRepresentation("");
         textAreaConstr.setImmediate(false);
         textAreaConstr.setWidth("100%");
         textAreaConstr.setHeight("190px");
