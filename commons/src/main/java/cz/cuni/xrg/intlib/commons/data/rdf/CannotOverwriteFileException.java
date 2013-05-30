@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public class CannotOverwriteFileException extends IOException {
 
-    private final String message = "File cannot be overwritten";
+    private final String message = "This file cannot be overwritten";
 
     public CannotOverwriteFileException() {
     }
