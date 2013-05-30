@@ -6,6 +6,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -215,12 +216,12 @@ public class VirtuosoRDF implements RDFDataRepository {
 
     @Override
     public void save() throws Exception {
-        // TODO Petyr: save restore data into workingDirectory (passed in createNew)
+        
     }
 
     @Override
     public void load(File directory) throws FileNotFoundException, Exception {
-        // TODO Petyr: load data rom given directory 		
+        		
     }
 
     @Override
@@ -247,7 +248,7 @@ public class VirtuosoRDF implements RDFDataRepository {
 
     @Override
     public void extractfromSPARQLEndpoint(URL endpointURL,
-            String defaultGraphUri, String query) {
+            String defaultGraphUri, String query) throws ExtractException {
 
         impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
     }
@@ -255,7 +256,7 @@ public class VirtuosoRDF implements RDFDataRepository {
     @Override
     public void extractfromSPARQLEndpoint(URL endpointURL,
             String defaultGraphUri, String query, String hostName,
-            String password, RDFFormat format) {
+            String password, RDFFormat format) throws ExtractException {
 
         impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, hostName, password, format);
     }

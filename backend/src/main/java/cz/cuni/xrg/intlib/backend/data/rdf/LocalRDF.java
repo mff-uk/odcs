@@ -6,6 +6,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -81,7 +82,7 @@ public class LocalRDF implements RDFDataRepository {
      * @param useSuffix
      */
     @Override
-    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
+    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) throws ExtractException {
         impl.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
     }
 
@@ -169,7 +170,7 @@ public class LocalRDF implements RDFDataRepository {
      * @param query
      */
     @Override
-    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query) throws ExtractException {
         impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query);
     }
 
@@ -185,7 +186,7 @@ public class LocalRDF implements RDFDataRepository {
      * @param format
      */
     @Override
-    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, String defaultGraphUri, String query, String hostName, String password, RDFFormat format) throws ExtractException {
         impl.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri, query, hostName, password, format);
     }
 
@@ -201,7 +202,7 @@ public class LocalRDF implements RDFDataRepository {
      * @param format
      */
     @Override
-    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) throws ExtractException {
         impl.extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, hostName, password);
     }
 
