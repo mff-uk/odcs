@@ -48,6 +48,7 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
 
     }
 
+    @Override
     public void saveConfigurationDefault(Configuration configuration) {
     	configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
     	configuration.setValue(Config.Host_name.name(), "");
@@ -56,10 +57,12 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
     	configuration.setValue(Config.SPARQL_query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
+    @Override
     public DpuType getType() {
         return DpuType.EXTRACTOR;
     }
 
+    @Override
     public CustomComponent getConfigurationComponent(Configuration configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
@@ -70,6 +73,7 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
         return this.configDialog;
     }
 
+    @Override
 	public void loadConfiguration(Configuration configuration)
 			throws ConfigurationException {
 		//
@@ -80,6 +84,7 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
         }
 	}
 
+    @Override
     public void saveConfiguration(Configuration configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
@@ -119,11 +124,13 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
         return query;
     }
 
+    @Override
     public void extract(ExtractContext context) throws ExtractException {
-    	RDFDataRepository repository = null;
+    	RDFDataRepository repository;
     	// create repository
     	repository = (RDFDataRepository)context.getDataUnitFactory().create(DataUnitType.RDF);
-    	if (repository == null) {
+    	
+        if (repository == null) {
     		throw new ExtractException("DataUnitFactory returned null.");
     	}
     	
