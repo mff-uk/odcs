@@ -156,7 +156,7 @@ public class ConfigDialog extends AbstractConfigDialog {
 
         // comboBoxFormat
         comboBoxFormat = new ComboBox();
-        comboBoxFormat.setNullSelectionItemId("TTL");
+//        comboBoxFormat.setNullSelectionItemId("TTL");
         comboBoxFormat.setImmediate(true);
         comboBoxFormat.setWidth("-1px");
         comboBoxFormat.setHeight("-1px");
