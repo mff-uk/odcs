@@ -94,16 +94,26 @@ public class RDF_loader implements GraphicalLoader, DPUExecutive {
 
     private String getHostName() {
         String hostName = (String) config.getValue(Config.Host_name.name());
+        if (hostName == null) {
+            hostName = "";
+        }
         return hostName;
     }
 
     private String getPassword() {
         String password = (String) config.getValue(Config.Password.name());
+        if (password == null) {
+            password = "";
+        }
         return password;
     }
 
     private List<String> getGraphsURI() {
         List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
+        if (graphs==null)
+        {
+            graphs=new LinkedList<>();
+        }
         return graphs;
     }
 
@@ -125,7 +135,7 @@ public class RDF_loader implements GraphicalLoader, DPUExecutive {
         if (dataUnit instanceof RDFDataRepository) {
             repository = (RDFDataRepository) dataUnit;
         } else {
-            
+
             throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
         }
 
@@ -136,7 +146,7 @@ public class RDF_loader implements GraphicalLoader, DPUExecutive {
         try {
             endpointURL = new URL(endpoint);
         } catch (MalformedURLException ex) {
-            
+
             throw new LoadException(ex);
         }
 
