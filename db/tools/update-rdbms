@@ -12,5 +12,5 @@ dbport="1111"
 
 # recreate schema and import data
 cat "${dumpdir}/schema.sql" "${dumpdir}/data.sql" | \
-	isql-vt "${dbhost}:${dbport}" "$dbuser" "$dbpass"
+	isql-v "${dbhost}:${dbport}" "$dbuser" "$dbpass"
 
