@@ -124,15 +124,16 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 		filter = new String();
 
-		HorizontalLayout filtersLayout = new HorizontalLayout();
+		GridLayout filtersLayout = new GridLayout(6,1);
 		filtersLayout.setWidth("100%");
 		filtersLayout.setSpacing(true);
+
 
 		dateFilter = new DateField();
 		dateFilter.setDateFormat("dd-MM-yyyy");
 		dateFilter.setImmediate(true);
 		dateFilter.setCaption("Date:");
-		dateFilter.setWidth("90%");
+		dateFilter.setWidth("110px");
 		dateFilter.addListener(new ValueChangeListener() {
 			
 			@Override
@@ -160,8 +161,9 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		
 		
 		
-		filtersLayout.addComponent(dateFilter);
-		filtersLayout.setComponentAlignment(dateFilter,Alignment.BOTTOM_CENTER);
+		filtersLayout.addComponent(dateFilter,0,0);
+		filtersLayout.setColumnExpandRatio(0, 0.08f);
+		filtersLayout.setComponentAlignment(dateFilter,Alignment.BOTTOM_LEFT);
 
 		if (tableDataFilter == null) {
 			tableDataFilter = new MonitorTableFilter();
@@ -170,7 +172,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		nameFilter.setImmediate(true);
 		nameFilter.setCaption("Pipeline:");
 		nameFilter.setInputPrompt("name of pipeline");
-		nameFilter.setWidth("90%");
+		nameFilter.setWidth("110px");
 		nameFilter.setTextChangeEventMode(TextChangeEventMode.LAZY);
 		nameFilter.addTextChangeListener(new TextChangeListener() {
 
@@ -187,13 +189,14 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			}
 		});
 
-		filtersLayout.addComponent(nameFilter);
-		filtersLayout.setComponentAlignment(nameFilter,Alignment.BOTTOM_CENTER);
+		filtersLayout.addComponent(nameFilter,1,0);
+		filtersLayout.setColumnExpandRatio(1, 0.08f);
+		filtersLayout.setComponentAlignment(nameFilter,Alignment.BOTTOM_LEFT);
 
 		userFilter = new TextField();
 		userFilter.setCaption("User:");
 		userFilter.setInputPrompt("user name");
-		userFilter.setWidth("90%");
+		userFilter.setWidth("110px");
 		userFilter.addTextChangeListener(new TextChangeListener() {
 
 			@Override
@@ -210,15 +213,16 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			}
 		});
 
-		filtersLayout.addComponent(userFilter);
-		filtersLayout.setComponentAlignment(userFilter,Alignment.BOTTOM_CENTER);
+		filtersLayout.addComponent(userFilter,2,0);
+		filtersLayout.setColumnExpandRatio(2, 0.08f);
+		filtersLayout.setComponentAlignment(userFilter,Alignment.BOTTOM_LEFT);
 
 		statusFilter = new ComboBox();
 		//statusFilter.setNullSelectionAllowed(false);
 		statusFilter.setImmediate(true);
 		statusFilter.setCaption("Status:");
 		statusFilter.setInputPrompt("execution status");
-		statusFilter.setWidth("90%");
+		statusFilter.setWidth("110px");
 
 		statusFilter.addItem("CANCELLED");
 		statusFilter.addItem("FAILED");
@@ -247,15 +251,16 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				}
 			}
 		});
-		filtersLayout.addComponent(statusFilter);
-		filtersLayout.setComponentAlignment(statusFilter,Alignment.BOTTOM_CENTER);
+		filtersLayout.addComponent(statusFilter,3,0);
+		filtersLayout.setColumnExpandRatio(3, 0.08f);
+		filtersLayout.setComponentAlignment(statusFilter,Alignment.BOTTOM_LEFT);
 
 		debugFilter = new ComboBox();
 		//debugFilter.setNullSelectionAllowed(false);
 		debugFilter.setImmediate(true);
 		debugFilter.setCaption("Debug:");
 		debugFilter.setInputPrompt("true/false");
-		debugFilter.setWidth("90%");
+		debugFilter.setWidth("110px");
 		debugFilter.addItem("true");
 		debugFilter.addItem("false");
 		debugFilter.addValueChangeListener(new ValueChangeListener() {
@@ -278,13 +283,14 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				}
 			}
 		});
-		filtersLayout.addComponent(debugFilter);
-		filtersLayout.setComponentAlignment(debugFilter,Alignment.BOTTOM_CENTER);
+		filtersLayout.addComponent(debugFilter,4,0);
+		filtersLayout.setColumnExpandRatio(4, 0.08f);
+		filtersLayout.setComponentAlignment(debugFilter,Alignment.BOTTOM_LEFT);
 
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
-		buttonDeleteFilters.setWidth("100%");
+		buttonDeleteFilters.setWidth("110px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -308,7 +314,8 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 					}
 				});
-		filtersLayout.addComponent(buttonDeleteFilters);
+		filtersLayout.addComponent(buttonDeleteFilters,5,0);
+		filtersLayout.setColumnExpandRatio(5, 0.7f);
 		filtersLayout.setComponentAlignment(buttonDeleteFilters,Alignment.BOTTOM_RIGHT);
 		monitorTableLayout.addComponent(filtersLayout);
 
