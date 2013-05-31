@@ -98,16 +98,28 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
 
     private String getHostName() {
         String hostName = (String) config.getValue(Config.Host_name.name());
+
+        if (hostName == null) {
+            hostName = "";
+        }
         return hostName;
     }
 
     private String getPassword() {
         String password = (String) config.getValue(Config.Password.name());
+
+        if (password == null) {
+            password = "";
+        }
         return password;
     }
 
     private List<String> getGraphsURI() {
         List<String> graphs = (List<String>) config.getValue(Config.GraphsUri.name());
+
+        if (graphs == null) {
+            graphs = new LinkedList<>();
+        }
         return graphs;
     }
 
