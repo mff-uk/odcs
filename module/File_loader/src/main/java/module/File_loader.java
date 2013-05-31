@@ -38,9 +38,6 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
      */
     private Logger logger = LoggerFactory.getLogger(File_loader.class);
 
-    public File_loader() {
-    }
-
     @Override
     public void saveConfigurationDefault(Configuration configuration) {
         configuration.setValue(Config.FileName.name(), "");

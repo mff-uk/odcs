@@ -268,18 +268,7 @@ public class LocalRDFRepo {
 
         }
 
-        final String aceptedSuffix = suffix.toUpperCase();
 
-        FilenameFilter acceptedFileFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                if (name.toUpperCase().endsWith(aceptedSuffix)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        };
 
         File dirFile = new File(path);
 
@@ -307,8 +296,23 @@ public class LocalRDFRepo {
 
         if (dirFile.isDirectory()) {
             File[] files;
+
             if (useSuffix) {
+                final String aceptedSuffix = suffix.toUpperCase();
+
+                FilenameFilter acceptedFileFilter = new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        if (name.toUpperCase().endsWith(aceptedSuffix)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                };
+
                 files = dirFile.listFiles(acceptedFileFilter);
+
             } else {
                 files = dirFile.listFiles();
             }
@@ -340,22 +344,22 @@ public class LocalRDFRepo {
 
             connection.begin();
 
-           try {
+            try {
 
                 InputStream is = new FileInputStream(dataFile);
-                
+
                 connection.add(is, baseURI, fileFormat);
                 connection.commit();
 
-            } catch ( IOException | RDFParseException ex) {
+            } catch (IOException | RDFParseException ex) {
                 logger.debug(ex.getMessage());
             }
 
-             
+
 
         } catch (RepositoryException ex) {
             logger.debug("Error by adding file to repository");
-            
+
 
             throw new ExtractException(ex);
         } finally {
@@ -808,6 +812,14 @@ public class LocalRDFRepo {
 
         } else if (endpointGraphsURI.isEmpty()) {
             final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
+
+            logger.debug(message);
+            throw new ExtractException(message);
+        }
+        
+        if (query==null)
+        {
+            final String message = "Mandatory construct query in extractor from SPARQL is null.";
 
             logger.debug(message);
             throw new ExtractException(message);
