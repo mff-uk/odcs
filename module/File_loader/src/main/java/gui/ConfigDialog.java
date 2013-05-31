@@ -37,14 +37,13 @@ public class ConfigDialog extends CustomComponent {
 
     private void mapData() {
 
-
         comboBoxFormat.addItem(RDFFormatType.AUTO);
         comboBoxFormat.addItem(RDFFormatType.TTL);
         comboBoxFormat.addItem(RDFFormatType.RDFXML);
         comboBoxFormat.addItem(RDFFormatType.N3);
-        comboBoxFormat.addItem(RDFFormatType.TTL);
+        comboBoxFormat.addItem(RDFFormatType.TRIG);
 
-        comboBoxFormat.setValue(RDFFormatType.TTL);
+        comboBoxFormat.setValue(RDFFormatType.AUTO);
 
 
     }

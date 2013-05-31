@@ -91,6 +91,11 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
      */
     private RDFFormat getRDFFormat() throws NotSupporteRDFFormatException {
         RDFFormatType enumFormatType = (RDFFormatType) config.getValue(Config.RDFFileFormat.name());
+
+        if (enumFormatType == null) {
+            enumFormatType = RDFFormatType.AUTO;
+        }
+
         logger.debug("format: " + enumFormatType.toString());
 
         switch (enumFormatType) {
@@ -158,7 +163,7 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
         DataUnit dataUnit = context.getInputs().get(0);
 
         RDFDataRepository repository = null;
-        
+
         if (dataUnit instanceof RDFDataRepository) {
             repository = (RDFDataRepository) dataUnit;
         } else {
