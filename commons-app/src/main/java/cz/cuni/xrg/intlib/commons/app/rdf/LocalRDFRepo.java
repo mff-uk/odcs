@@ -8,10 +8,12 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -28,6 +30,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -87,6 +91,10 @@ public class LocalRDFRepo {
      * If the repository is used only for reading data or not.
      */
     protected boolean isReadOnly;
+    /**
+     * Graph resource for saving RDF triples.
+     */
+    protected Resource graph;
 
     /**
      * Create local repository in default path.
@@ -159,6 +167,7 @@ public class LocalRDFRepo {
         memStore.setSyncDelay(timeToStart);
 
         repository = new SailRepository(memStore);
+        graph = createNewGraph("http://default");
 
         try {
             repository.initialize();
@@ -171,8 +180,8 @@ public class LocalRDFRepo {
     }
 
     protected Resource createNewGraph(String graphURI) {
-        Resource graph = new URIImpl(graphURI);
-        return graph;
+        Resource newGraph = new URIImpl(graphURI);
+        return newGraph;
     }
 
     protected void createNewFile(File file) {
@@ -320,18 +329,42 @@ public class LocalRDFRepo {
 
     }
 
-    private void addFileToRepository(File dataFile, String baseURI) {
+    private void addFileToRepository(File dataFile, String baseURI) throws ExtractException {
+
+        RDFFormat fileFormat = RDFFormat.forFileName(dataFile.getAbsolutePath(), RDFFormat.RDFXML);
+
+        RepositoryConnection connection = null;
+
         try {
-            RDFFormat fileFormat = RDFFormat.forFileName(dataFile.getAbsolutePath(), RDFFormat.RDFXML);
-            RepositoryConnection connection = repository.getConnection();
+            connection = repository.getConnection();
 
-            connection.add(dataFile, baseURI, fileFormat);
+            connection.begin();
 
-            connection.commit();
-            connection.close();
+           try {
 
-        } catch (RepositoryException | IOException | RDFParseException ex) {
+                InputStream is = new FileInputStream(dataFile);
+                
+                connection.add(is, baseURI, fileFormat);
+                connection.commit();
+
+            } catch ( IOException | RDFParseException ex) {
+                logger.debug(ex.getMessage());
+            }
+
+             
+
+        } catch (RepositoryException ex) {
             logger.debug("Error by adding file to repository");
+            
+
+            throw new ExtractException(ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                }
+            }
         }
     }
 
@@ -376,7 +409,7 @@ public class LocalRDFRepo {
 
         } else if (directoryPath.isEmpty() || fileName.isEmpty()) {
             final String message;
-            
+
             if (directoryPath.isEmpty()) {
                 message = "Mandatory directory path in File_loader is empty.";
             } else {
@@ -879,6 +912,37 @@ public class LocalRDFRepo {
 
     }
 
+    private String AddGraphToUpdateQuery(String updateQuery) {
+
+        if (repository instanceof SailRepository) {
+            return updateQuery;
+        }
+
+        String regex = "(insert|delete)\\s\\{";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(updateQuery.toLowerCase());
+
+        boolean hasResult = matcher.find();
+
+        if (hasResult) {
+
+            int index = matcher.start();
+
+            String first = updateQuery.substring(0, index);
+            String second = updateQuery.substring(index, updateQuery.length());
+
+            String graphName = " WITH <" + graph.stringValue() + "> ";
+
+            String newQuery = first + graphName + second;
+            return newQuery;
+
+
+        }
+        return updateQuery;
+
+
+    }
+
     /**
      * Transform RDF in repository by SPARQL updateQuery.
      *
@@ -890,11 +954,13 @@ public class LocalRDFRepo {
             RepositoryConnection connection = repository.getConnection();
 
             try {
-                Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery);
+
+                String newUpdateQuery = AddGraphToUpdateQuery(updateQuery);
+                Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL, newUpdateQuery);
 
 
                 logger.debug("This SPARQL query for transform is valid and prepared for execution:");
-                logger.debug(updateQuery);
+                logger.debug(newUpdateQuery);
 
                 myupdate.execute();
 
@@ -1194,3 +1260,62 @@ public class LocalRDFRepo {
         return map;
     }
 }
+
+/*
+class ChunkCommitter implements RDFHandler {
+
+    private RDFInserter inserter;
+    private RepositoryConnection connection;
+    private long count = 0L;
+    
+    private long chunksize = 500000L;
+
+    public ChunkCommitter(RepositoryConnection connection) {
+        inserter = new RDFInserter(connection);
+        this.connection = connection;
+    }
+
+    @Override
+    public void startRDF() throws RDFHandlerException {
+        inserter.startRDF();
+
+    }
+
+    @Override
+    public void endRDF() throws RDFHandlerException {
+        inserter.endRDF();
+
+    }
+
+    @Override
+    public void handleNamespace(String prefix, String uri)
+            throws RDFHandlerException {
+
+        inserter.handleNamespace(prefix, uri);
+
+    }
+
+    @Override
+    public void handleStatement(Statement st) throws RDFHandlerException {
+        inserter.handleStatement(st);
+        count++;
+        // do an intermittent commit whenever the number of triples
+        // has reached a multiple of the chunk size
+        if (count % chunksize == 0) {
+            try {
+                connection.commit();
+            } catch (RepositoryException e) {
+                throw new RDFHandlerException(e);
+
+            }
+
+        }
+
+    }
+
+    @Override
+    public void handleComment(String comment) throws RDFHandlerException {
+        inserter.handleComment(comment);
+
+    }
+*/

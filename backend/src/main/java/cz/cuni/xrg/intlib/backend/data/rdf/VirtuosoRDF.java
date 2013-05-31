@@ -212,8 +212,7 @@ public class VirtuosoRDF implements RDFDataRepository {
 
     @Override
     public void release() {
-        cleanAllRepositoryData();
-        impl.shutDown();
+       impl.shutDown();
     }
 
     @Override
