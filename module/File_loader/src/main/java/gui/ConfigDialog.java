@@ -190,7 +190,7 @@ public class ConfigDialog extends CustomComponent {
 
         // comboBoxFormat
         comboBoxFormat = new ComboBox();
-        comboBoxFormat.setNullSelectionItemId(RDFFormatType.AUTO);
+//        comboBoxFormat.setNullSelectionItemId(RDFFormatType.AUTO);
         comboBoxFormat.setImmediate(true);
         comboBoxFormat.setWidth("-1px");
         comboBoxFormat.setHeight("-1px");

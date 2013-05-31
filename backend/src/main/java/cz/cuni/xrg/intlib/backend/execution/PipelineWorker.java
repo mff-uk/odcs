@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.execution;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -150,6 +151,7 @@ class PipelineWorker implements Runnable {
 	 * Called in case that the execution failed.
 	 */
 	private void executionFailed() {
+		execution.setEnd(new Date());
 		// set new state
 		execution.setExecutionStatus(ExecutionStatus.FAILED);
 		// save	into database
@@ -162,6 +164,7 @@ class PipelineWorker implements Runnable {
 	 * Called in case of successful execution.
 	 */
 	private void executionSuccessful() {
+		execution.setEnd(new Date());
 		// update state
 		execution.setExecutionStatus(ExecutionStatus.FINISHED_SUCCESS);
 		// save into database

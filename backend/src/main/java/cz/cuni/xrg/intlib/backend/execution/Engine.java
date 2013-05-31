@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -87,6 +88,7 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
     	File directory = new File(workingDirectory, "execution-" + pipelineExecution.getId() );    	
     	// store workingDirectory
     	pipelineExecution.setWorkingDirectory(directory.getAbsolutePath());
+    	pipelineExecution.setStart(new Date());
     	
     	// update record in DB
     	database.getPipeline().save(pipelineExecution);
