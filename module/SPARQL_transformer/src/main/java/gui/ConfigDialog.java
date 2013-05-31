@@ -72,6 +72,7 @@ public class ConfigDialog extends CustomComponent {
 
         // textAreaUpQuer
         txtQuery = new TextArea();
+        txtQuery.setNullRepresentation("");
         txtQuery.setImmediate(false);
         txtQuery.setWidth("100%");
         txtQuery.setHeight("211px");
