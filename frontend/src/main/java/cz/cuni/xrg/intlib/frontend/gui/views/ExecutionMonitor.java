@@ -140,7 +140,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				// TODO Auto-generated method stub
 										
 				if(event.getProperty().getValue()!=null){
-					Format formatter = new SimpleDateFormat("dd-MM-yyyy");
+					Format formatter = new SimpleDateFormat("dd/MM/yyyy");
 					String s = formatter.format(event.getProperty().getValue());
 					
 					tableDataFilter.setDateFilter(s);
@@ -504,15 +504,19 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 
 		for (PipelineExecution item : data)
-		{//	Format formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-//		    String s = formatter.format(item.getStart());
+		{	
 
 			Object num = result.addItem();
 			if (item.getStart()==null)
 				result.getContainerProperty(num, "date").setValue("");
 			
-			else
-			result.getContainerProperty(num, "date").setValue(item.getStart().toString());
+			else{
+				
+				Format formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+			    String s = formatter.format(item.getStart());
+				result.getContainerProperty(num, "date").setValue(s);
+			}
+			
 			
 			result.getContainerProperty(num, "exeid").setValue(item.getId());
 			result.getContainerProperty(num, "user").setValue(" ");
