@@ -26,7 +26,8 @@ CREATE TABLE "DB"."INTLIB"."PPL_GRAPH"
 (
   "id" INTEGER IDENTITY,
   "pipeline_id" INTEGER,
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  UNIQUE (pipeline_id)
 );
 
 CREATE TABLE "DB"."INTLIB"."PPL_NODE"
@@ -92,14 +93,16 @@ CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE_CONFIG"
 (
   "id" INTEGER IDENTITY,
   "instance_id" INTEGER,
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  UNIQUE (instance_id)
 );
 
 CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE_CONFIG"
 (
   "id" INTEGER IDENTITY,
   "dpu_id" INTEGER,
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  UNIQUE (dpu_id)
 );
 
 CREATE TABLE "DB"."INTLIB"."DPU_ICONFIG_PAIRS"
