@@ -42,7 +42,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
     private String user;
     private String password;
     private String defaultGraph;
-    private Resource graph;
+    
 
     static {
 
