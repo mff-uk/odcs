@@ -13,11 +13,13 @@ import org.slf4j.LoggerFactory;
  */
 public class VirtuosoTest extends LocalRDFRepoTest {
 
-    public static final String HOSTNAME = "localhost";
-    public static final String PORT = "1111";
-    public static final String USERNAME = "dba";
-    public static final String PASSWORD = "dba";
-    public static final String DEFAUTLGRAPH = "http://default";
+    private static final String HOSTNAME = "localhost"; /* "asgard.vojt.net";*/
+
+    private static final String PORT = "1111"; /* "1155";*/
+
+    private static final String USERNAME = "dba";
+    private static final String PASSWORD = "dba";
+    private static final String DEFAUTLGRAPH = "http://default";
 
     @BeforeClass
     public static void setUpLogger() {
@@ -31,16 +33,10 @@ public class VirtuosoTest extends LocalRDFRepoTest {
         try {
             outDir = Files.createTempDirectory("intlib-out");
             testFileDir = VirtuosoTest.class.getResource("/repository").getPath();
-
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
+
         }
-    }
-
-    @AfterClass
-    public static void cleaning() {
-        rdfRepo.cleanAllRepositoryData();
-
     }
 
     @Override
@@ -48,11 +44,14 @@ public class VirtuosoTest extends LocalRDFRepoTest {
         deleteDirectory(new File(outDir.toString()));
     }
 
-    //@Test
+    @AfterClass
+    public static void cleaning() {
+        rdfRepo.release();
+    }
+
+    @Test
     @Override
     public void BIGDataTest() {
         super.BIGDataTest();
     }
-
-
 }

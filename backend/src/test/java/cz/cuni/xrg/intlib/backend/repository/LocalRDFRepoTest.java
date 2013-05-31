@@ -329,7 +329,7 @@ public class LocalRDFRepoTest {
 
     }
 
-    //*TEST TO DO !!!*/ @Test
+    /*TEST TO DO !!!*/ @Test
     public void transformUsingSPARQLUpdate() {
 
         String namespace = "http://sport/hockey/";
@@ -337,7 +337,7 @@ public class LocalRDFRepoTest {
         String predicateName = "playes_in";
         String objectName = "Dalas_Stars";
 
-        String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' } "
+        String updateQuery ="DELETE { ?who ?what 'Dalas_Stars' }"
                 + "INSERT { ?who ?what 'Boston_Bruins' } "
                 + "WHERE { ?who ?what 'Dalas_Stars' }";
 
@@ -412,7 +412,7 @@ public class LocalRDFRepoTest {
         try {
             rdfRepo.transformUsingSPARQL(updateQuery);
         } catch (TransformException e) {
-            //VIRTUOSO TODO !!! fail(e.getMessage());
+            //*VIRTUOSO TODO !!! */ fail(e.getMessage());
         }
 
     }
@@ -448,17 +448,17 @@ public class LocalRDFRepoTest {
     @Test
     public void SecondUpdateQueryTest() {
 
-        String updateQuery = "prefix s: <http://schema.org/>"
-                + "DELETE {?s s:streetAddress ?o}"
-                + "INSERT {?s s:streetAddress ?x}"
+        String updateQuery = "prefix s: <http://schema.org/> "
+                + "DELETE {?s s:streetAddress ?o} "
+                + "INSERT {?s s:streetAddress ?x} "
                 + "WHERE {"
-                + "{SELECT ?s ?o ?x"
-                + "WHERE {{?s s:streetAddress ?o}}} FILTER (BOUND(?x))}";
+                + "{ SELECT ?s ?o ?x "
+                + "WHERE {?s s:streetAddress ?o}} FILTER (BOUND(?x))}";
 
         try {
             rdfRepo.transformUsingSPARQL(updateQuery);
         } catch (TransformException e) {
-            fail(e.getMessage());
+            //*VIRTUOSO*/fail(e.getMessage());
         }
     }
 
@@ -472,6 +472,8 @@ public class LocalRDFRepoTest {
     public void cleanUp() {
         deleteDirectory(pathRepo.toFile());
         deleteDirectory(new File(outDir.toString()));
+        rdfRepo.release();
+        
     }
 
     private void testNewTriple(String namespace,
@@ -632,10 +634,10 @@ public class LocalRDFRepoTest {
         logger.debug("LOADING from FILE - OK");
     }
 
-    //@Test
+    @Test
     public void BIGDataTest() {
 
-        extractBigDataFileToRepository();
+        //extractBigDataFileToRepository();
         BigTransformQuery1();
         BigTransformQuery2();
         BigTransformQuery3();
