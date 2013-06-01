@@ -41,11 +41,11 @@ INSERT INTO DB.INTLIB.DPU_INSTANCE_CONFIG(id,instance_id) VALUES(1,1);
 INSERT INTO DB.INTLIB.DPU_INSTANCE_CONFIG(id,instance_id) VALUES(2,2);
 -- Table DB.INTLIB.DPU_INSTANCE_CONFIG 2 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_MODEL
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(1,'RDF Extractor','Extracts RDF data.',0,1,'RDF_extractor-0.0.1.jar');
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(2,'File Extractor','Extracts RDF data from file.',0,1,'File_extractor-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,1,'RDF_extractor-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(2,'RDF File Extractor','Extracts RDF data from a file.',0,1,'File_extractor-0.0.1.jar');
 INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(3,'SPARQL Transformer','SPARQL Transformer.',1,1,'SPARQL_transformer-0.0.1.jar');
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(4,'RDF Loader','Loads RDF data.',2,1,'RDF_loader-0.0.1.jar');
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(5,'File Loader','Loads RDF data into file.',2,1,'File_loader-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(4,'SPARQL Loader','Loads RDF data.',2,1,'RDF_loader-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(5,'RDF File Loader','Loads RDF data into file.',2,1,'File_loader-0.0.1.jar');
 -- Table DB.INTLIB.DPU_MODEL 5 rows output.
 -- Table DB.INTLIB.DPU_RECORD has more than one blob column.
 -- The column full_message of type LONG VARCHAR might not get properly inserted.
