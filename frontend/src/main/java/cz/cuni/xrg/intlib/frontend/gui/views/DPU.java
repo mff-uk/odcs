@@ -313,7 +313,7 @@ class DPU extends ViewComponent {
 		tabSheet.setSelectedTab(dataTab);
 
 		tabSheet.setWidth(600, Unit.PIXELS);
-		tabSheet.setHeight(400, Unit.PIXELS);
+		tabSheet.setHeight("100.0%");
 
 		dpuDetailLayout.addComponent(tabSheet);
 
@@ -451,8 +451,8 @@ class DPU extends ViewComponent {
 	private HorizontalLayout buildDPUButtonBur() {
 
 		buttonDpuBar = new HorizontalLayout();
-		buttonDpuBar.setWidth(600, Unit.PIXELS);
-		buttonDpuBar.setHeight("100%");
+		buttonDpuBar.setWidth("100%");
+		buttonDpuBar.setHeight(30, Unit.PIXELS);
 		buttonDpuBar.setSpacing(false);
 
 		Button buttonCopyDPU = new Button();
