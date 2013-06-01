@@ -59,10 +59,11 @@
 font-size: 15px;
 }
 
+/*
 .gwt-MenuItem {
 background : grey;
 color : black;
-}
+}*/
 .gwt-MenuItem-selected {
 background : blue;
 color : white;
