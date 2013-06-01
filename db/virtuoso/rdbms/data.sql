@@ -33,19 +33,19 @@ ACED00057E720031637A2E63756E692E7872672E696E746C69622E636F6D6D6F
 END
 -- Table DB.INTLIB.DPU_ICONFIG_PAIRS 6 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_INSTANCE
-INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(1,'RDF Extractor','Extracts RDF data.',1);
-INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(2,'File Loader','Loads RDF data into file.',5);
+INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(1,'RDF File Extractor','Extracts RDF data.',1);
+INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(2,'RDF File Loader','Loads RDF data into a file.',5);
 -- Table DB.INTLIB.DPU_INSTANCE 2 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_INSTANCE_CONFIG
 INSERT INTO DB.INTLIB.DPU_INSTANCE_CONFIG(id,instance_id) VALUES(1,1);
 INSERT INTO DB.INTLIB.DPU_INSTANCE_CONFIG(id,instance_id) VALUES(2,2);
 -- Table DB.INTLIB.DPU_INSTANCE_CONFIG 2 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_MODEL
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(1,'RDF Extractor','Extracts RDF data.',0,1,'RDF_extractor-0.0.1.jar');
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(2,'File Extractor','Extracts RDF data from file.',0,1,'File_extractor-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,1,'RDF_extractor-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(2,'RDF File Extractor','Extracts RDF data from a file.',0,1,'File_extractor-0.0.1.jar');
 INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(3,'SPARQL Transformer','SPARQL Transformer.',1,1,'SPARQL_transformer-0.0.1.jar');
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(4,'RDF Loader','Loads RDF data.',2,1,'RDF_loader-0.0.1.jar');
-INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(5,'File Loader','Loads RDF data into file.',2,1,'File_loader-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(4,'SPARQL Loader','Loads RDF data.',2,1,'RDF_loader-0.0.1.jar');
+INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VALUES(5,'RDF File Loader','Loads RDF data into file.',2,1,'File_loader-0.0.1.jar');
 -- Table DB.INTLIB.DPU_MODEL 5 rows output.
 -- Table DB.INTLIB.DPU_RECORD has more than one blob column.
 -- The column full_message of type LONG VARCHAR might not get properly inserted.
@@ -54,7 +54,19 @@ INSERT INTO DB.INTLIB.DPU_MODEL(id,name,description,type,visibility,jar_path) VA
 -- The column full_message of type LONG VARCHAR might not get properly inserted.
 -- Table DB.INTLIB.DPU_RECORD 0 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_TCONFIG_PAIRS
--- Table DB.INTLIB.DPU_TCONFIG_PAIRS 0 rows output.
+FOREACH HEXADECIMAL BLOB INSERT INTO DB.INTLIB.DPU_TCONFIG_PAIRS(conf_id,c_property,c_value) VALUES(5,'DirectoryPath',?);
+ACED000574000B2F746D702F696E746C6962
+END
+FOREACH HEXADECIMAL BLOB INSERT INTO DB.INTLIB.DPU_TCONFIG_PAIRS(conf_id,c_property,c_value) VALUES(5,'FileName',?);
+ACED000574000B646270656469612E726466
+END
+FOREACH HEXADECIMAL BLOB INSERT INTO DB.INTLIB.DPU_TCONFIG_PAIRS(conf_id,c_property,c_value) VALUES(5,'RDFFileFormat',?);
+ACED00057E720031637A2E63756E692E7872672E696E746C69622E636F6D6D6F
+6E732E646174612E7264662E524446466F726D61745479706500000000000000
+001200007872000E6A6176612E6C616E672E456E756D00000000000000001200
+0078707400044155544F
+END
+-- Table DB.INTLIB.DPU_TCONFIG_PAIRS 3 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_TEMPLATE_CONFIG
 INSERT INTO DB.INTLIB.DPU_TEMPLATE_CONFIG(id,dpu_id) VALUES(1,1);
 INSERT INTO DB.INTLIB.DPU_TEMPLATE_CONFIG(id,dpu_id) VALUES(2,2);

@@ -453,7 +453,7 @@ public class ConfigDialog extends CustomComponent {
         textAreaConstr.setImmediate(false);
         textAreaConstr.setWidth("100%");
         textAreaConstr.setHeight("190px");
-        textAreaConstr.setInputPrompt("SPARQL CONSTRUCT { ... }");
+        textAreaConstr.setInputPrompt("CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
         gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
 
         return gridLayoutConstr;

@@ -41,10 +41,11 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 			{
 				Button stopButton = new Button("Stop");
 				stopButton.setData(new ActionButtonData("stop",itemId));
-				stopButton.setWidth("120px");
+				stopButton.setWidth("90px");
 				box.addComponent(stopButton);
 				if(this.clickListener!=null)
 					stopButton.addListener(this.clickListener);
+				
 				
 				
 			}
@@ -53,12 +54,13 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog",itemId));
 				
-				logButton.setWidth("120px");
+				logButton.setWidth("90px");
 				if(this.clickListener!=null)
 					logButton.addListener(this.clickListener);
 				
 				
 				box.addComponent(logButton);
+				
 				
 			}
 
@@ -67,10 +69,10 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				Button debugButton = new Button("Debug data");
 				
 				debugButton.setData(new ActionButtonData("debug",itemId));
-				debugButton.setWidth("120px");
+				debugButton.setWidth("90px");
 				if(this.clickListener!=null)
 					debugButton.addListener(this.clickListener);
-				
+								
 				
 				box.addComponent(debugButton);
 				

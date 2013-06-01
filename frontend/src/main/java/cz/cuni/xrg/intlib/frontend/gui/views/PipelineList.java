@@ -29,8 +29,6 @@ class PipelineList extends ViewComponent {
 
 	private VerticalLayout mainLayout;
 
-	private Label label;
-
 	private IntlibPagedTable tablePipelines;
 
 	private Button btnCreatePipeline;
@@ -149,20 +147,12 @@ class PipelineList extends ViewComponent {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
+		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
 
 		// top-level component properties
 		setWidth("100%");
 		setHeight("100%");
-
-		// label
-		label = new Label();
-		label.setImmediate(false);
-		label.setWidth("-1px");
-		label.setHeight("-1px");
-		label.setValue("<h1>Pipelines</h>");
-		label.setContentMode(ContentMode.HTML);
-		mainLayout.addComponent(label);
 
 		tablePipelines = new IntlibPagedTable();
 		tablePipelines.setWidth("99%");
