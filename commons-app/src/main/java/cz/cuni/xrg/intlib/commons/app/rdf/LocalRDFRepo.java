@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -120,7 +121,7 @@ public class LocalRDFRepo {
         try {
             repoPath = Files.createTempDirectory(dirName);
         } catch (IOException e) {
-			// TODO why not throw IOException?
+            // TODO why not throw IOException?
             throw new RuntimeException(e);
         }
 
@@ -788,12 +789,11 @@ public class LocalRDFRepo {
      * @param format
      */
     public void extractfromSPARQLEndpoint(
-		URL endpointURL,
-		List<String> endpointGraphsURI,
-		String query,
-		String hostName,
-		String password
-			) throws ExtractException {
+            URL endpointURL,
+            List<String> endpointGraphsURI,
+            String query,
+            String hostName,
+            String password) throws ExtractException {
 
         if (endpointURL == null) {
             final String message = "Mandatory URL path in extractor from SPARQL is null.";
@@ -823,8 +823,8 @@ public class LocalRDFRepo {
             logger.debug(message);
             throw new ExtractException(message);
         }
-        
-        if (query==null) {
+
+        if (query == null) {
             final String message = "Mandatory construct query in extractor from SPARQL is null.";
             logger.debug(message);
             throw new ExtractException(message);
@@ -1223,7 +1223,7 @@ public class LocalRDFRepo {
      * return empty Map.
      *
      */
-    public Map<String, List<String>> makeQueryOverRepository(String query) {
+    public Map<String, List<String>> makeQueryOverRepository(String query) throws NotValidQueryException {
 
         Map<String, List<String>> map = new HashMap<>();
 
@@ -1267,6 +1267,7 @@ public class LocalRDFRepo {
         } catch (MalformedQueryException | RepositoryException | QueryEvaluationException ex) {
             logger.debug("This query is probably not valid");
             logger.debug(ex.getMessage());
+            throw new NotValidQueryException("Query: " + query + "is not valid");
         }
 
         return map;

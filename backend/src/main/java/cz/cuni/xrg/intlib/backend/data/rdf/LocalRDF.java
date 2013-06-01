@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -257,7 +258,7 @@ public class LocalRDF implements RDFDataRepository {
     }
     
     @Override
-    public Map<String,List<String>> makeQueryOverRepository(String query)
+    public Map<String,List<String>> makeQueryOverRepository(String query) throws NotValidQueryException
     {
         return impl.makeQueryOverRepository(query);
     }
