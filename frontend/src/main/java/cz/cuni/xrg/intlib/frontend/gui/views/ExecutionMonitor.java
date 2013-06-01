@@ -130,7 +130,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 
 		dateFilter = new DateField();
-		dateFilter.setDateFormat("yyyy-MM-dd");
+		dateFilter.setDateFormat("dd.MM.yyyy");
 		dateFilter.setImmediate(true);
 		dateFilter.setCaption("Date:");
 		dateFilter.setWidth("110px");
@@ -141,7 +141,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				// TODO Auto-generated method stub
 										
 				if(event.getProperty().getValue()!=null){
-					Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+					Format formatter = new SimpleDateFormat("dd.MM.yyyy");
 					String s = formatter.format(event.getProperty().getValue());
 					
 					tableDataFilter.setDateFilter(s);
@@ -519,7 +519,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			
 			else{
 				
-				Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Format formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 			    String s = formatter.format(item.getStart());
 				result.getContainerProperty(num, "date").setValue(s);
 			}
