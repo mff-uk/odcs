@@ -33,8 +33,8 @@ ACED00057E720031637A2E63756E692E7872672E696E746C69622E636F6D6D6F
 END
 -- Table DB.INTLIB.DPU_ICONFIG_PAIRS 6 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_INSTANCE
-INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(1,'RDF Extractor','Extracts RDF data.',1);
-INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(2,'File Loader','Loads RDF data into file.',5);
+INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(1,'RDF File Extractor','Extracts RDF data.',1);
+INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,dpu_id) VALUES(2,'RDF File Loader','Loads RDF data into a file.',5);
 -- Table DB.INTLIB.DPU_INSTANCE 2 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_INSTANCE_CONFIG
 INSERT INTO DB.INTLIB.DPU_INSTANCE_CONFIG(id,instance_id) VALUES(1,1);
