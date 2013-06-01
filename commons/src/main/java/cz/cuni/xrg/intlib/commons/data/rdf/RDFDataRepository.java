@@ -65,6 +65,6 @@ public interface RDFDataRepository extends DataUnit {
 
     public List<Statement> getRepositoryStatements();
     
-    public Map<String, List<String>> makeQueryOverRepository(String query); 
+    public Map<String, List<String>> makeQueryOverRepository(String query) throws NotValidQueryException; 
 
 }
