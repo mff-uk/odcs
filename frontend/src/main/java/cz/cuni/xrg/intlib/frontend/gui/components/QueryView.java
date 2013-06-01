@@ -5,6 +5,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
+import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +42,18 @@ public class QueryView extends CustomComponent {
         queryButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                Map<String, List<String>> data = query();
-                IndexedContainer container = buildDataSource(data);
-                resultTable.setContainerDataSource(container);
+                try {
+                    Map<String, List<String>> data = query();
+
+                    IndexedContainer container = buildDataSource(data);
+                    resultTable.setContainerDataSource(container);
+
+                } catch (NotValidQueryException e) {
+                    Notification.show("Query Validator",
+                            "Query is not valid: "
+                            + e.getCause().getMessage(),
+                            Notification.Type.ERROR_MESSAGE);
+                }
             }
         });
         topLine.addComponent(queryButton);
@@ -68,7 +78,7 @@ public class QueryView extends CustomComponent {
         setCompositionRoot(mainLayout);
     }
 
-    private Map<String, List<String>> query() {
+    private Map<String, List<String>> query() throws NotValidQueryException {
         boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
         String query = queryText.getValue();
         String repoPath = parent.getRepositoryPath(onInputGraph);
@@ -92,7 +102,7 @@ public class QueryView extends CustomComponent {
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
-        
+
         Map<String, List<String>> data = repository.makeQueryOverRepository(query);
         repository.shutDown();
         return data;
