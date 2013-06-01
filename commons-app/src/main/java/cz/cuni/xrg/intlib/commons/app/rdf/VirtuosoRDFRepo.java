@@ -17,6 +17,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -31,6 +33,8 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
+
+import static cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo.logger;
 
 /**
  *
@@ -474,13 +478,12 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
     @Override
     public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) {
         try {
+            RepositoryConnection connection = repository.getConnection();
 
             final RDFFormat format = RDFFormat.N3;
             final int graphSize = endpointGraphsURI.size();
             final String myquery = query.replace(" ", "+");
             final String encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
-
-            RepositoryConnection connection = repository.getConnection();
 
             for (int i = 0; i < graphSize; i++) {
 
@@ -515,18 +518,19 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                     } else {
                         connection.add(inputStreamReader, endpointGraph, format);
                     }
-                }
+                } catch (RDFParseException ex) {
+					logger.debug(ex.getMessage());
+				}
             }
 
             connection.close();
 
-
         } catch (IOException ex) {
             logger.debug("Can not open http connection stream");
             logger.debug(ex.getMessage());
-        } catch (Exception ex) {
+        } catch (RepositoryException ex) {
             logger.debug(ex.getMessage());
-        }
+		}
     }
 
     @Override

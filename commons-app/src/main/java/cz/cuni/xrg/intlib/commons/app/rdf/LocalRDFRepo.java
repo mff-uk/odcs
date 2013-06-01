@@ -120,7 +120,8 @@ public class LocalRDFRepo {
         try {
             repoPath = Files.createTempDirectory(dirName);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+			// TODO why not throw IOException?
+            throw new RuntimeException(e);
         }
 
         return LocalRDFRepo.createLocalRepo(repoPath.toString(), fileName);
@@ -475,16 +476,16 @@ public class LocalRDFRepo {
 
             } catch (FileNotFoundException | RDFHandlerException ex) {
                 logger.debug(ex.getMessage());
-                throw new LoadException(ex.getMessage());
+                throw new LoadException(ex);
 
             } catch (IOException ex) {
                 logger.debug(ex.getMessage());
-                throw new LoadException("File stream failt: " + ex.getMessage());
+                throw new LoadException(ex);
             }
 
         } catch (RepositoryException ex) {
             logger.debug(ex.getMessage());
-            throw new LoadException("Repository connection failt: " + ex.getMessage());
+            throw new LoadException("Repository connection failed: " + ex.getMessage(), ex);
 
         }
     }
@@ -598,7 +599,7 @@ public class LocalRDFRepo {
                     logger.debug(ex.getMessage());
                     isOK = false;
 
-                    throw new LoadException(ex.getMessage());
+                    throw new LoadException(ex);
                 }
 
                 if (isOK == false) {
@@ -615,9 +616,9 @@ public class LocalRDFRepo {
                     try {
                         myquery = URLEncoder.encode(query, encode);
                     } catch (UnsupportedEncodingException ex) {
-                        String message = "Encode " + encode + " is not support";
+                        String message = "Encoding " + encode + " is not supported.";
                         logger.debug(message);
-                        throw new LoadException(message);
+                        throw new LoadException(ex);
                     }
 
                     URL call = null;
@@ -626,7 +627,7 @@ public class LocalRDFRepo {
                         call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery);
                     } catch (MalformedURLException e) {
                         logger.debug("Malfolmed URL exception by construct load from URL");
-                        throw new LoadException(e.getMessage());
+                        throw new LoadException(e);
                     }
 
                     HttpURLConnection httpConnection = null;
@@ -638,7 +639,7 @@ public class LocalRDFRepo {
 
                     } catch (IOException e) {
                         logger.debug("Endpoint URL stream can not open");
-                        throw new LoadException(e.getMessage());
+                        throw new LoadException(e);
                     }
 
                     try {
@@ -656,7 +657,7 @@ public class LocalRDFRepo {
                         logger.debug(message);
                         logger.debug(ex.getMessage());
 
-                        throw new LoadException(message);
+                        throw new LoadException(ex);
 
                     } finally {
                         httpConnection.disconnect();
@@ -668,10 +669,10 @@ public class LocalRDFRepo {
             connection.close();
 
         } catch (RepositoryException ex) {
-            logger.debug("Repository connection failt.");
+            logger.debug("Repository connection failed.");
             logger.debug(ex.getMessage());
 
-            throw new LoadException(ex.getMessage());
+            throw new LoadException(ex);
         }
     }
 
@@ -786,7 +787,13 @@ public class LocalRDFRepo {
      * @param password
      * @param format
      */
-    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) throws ExtractException {
+    public void extractfromSPARQLEndpoint(
+		URL endpointURL,
+		List<String> endpointGraphsURI,
+		String query,
+		String hostName,
+		String password
+			) throws ExtractException {
 
         if (endpointURL == null) {
             final String message = "Mandatory URL path in extractor from SPARQL is null.";
@@ -817,10 +824,8 @@ public class LocalRDFRepo {
             throw new ExtractException(message);
         }
         
-        if (query==null)
-        {
+        if (query==null) {
             final String message = "Mandatory construct query in extractor from SPARQL is null.";
-
             logger.debug(message);
             throw new ExtractException(message);
         }
@@ -834,17 +839,13 @@ public class LocalRDFRepo {
         try {
             encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
         } catch (UnsupportedEncodingException e) {
-
             String message = "Encode " + encode + " is not support";
             logger.debug(message);
-
-            throw new ExtractException(message);
-
+            throw new ExtractException(message, e);
         }
 
         try {
             RepositoryConnection connection = repository.getConnection();
-
 
             for (int i = 0; i < graphSize; i++) {
 
@@ -855,7 +856,7 @@ public class LocalRDFRepo {
                     call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
                 } catch (MalformedURLException e) {
                     logger.debug("Malfolmed URL exception by construct extract URL");
-                    throw new ExtractException(e.getMessage());
+                    throw new ExtractException(e);
                 }
 
                 HttpURLConnection httpConnection = null;
@@ -864,10 +865,10 @@ public class LocalRDFRepo {
                     httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
                 } catch (IOException e) {
                     logger.debug("Endpoint URL stream can not open");
-                    throw new ExtractException(e.getMessage());
+                    throw new ExtractException(e);
                 }
 
-                boolean usePassword = (!hostName.isEmpty() | !password.isEmpty());
+                boolean usePassword = !(hostName.isEmpty() && password.isEmpty());
 
                 if (usePassword) {
 
@@ -890,19 +891,18 @@ public class LocalRDFRepo {
 
                 } catch (IOException e) {
                     final String message = "Http connection can can not open stream";
-
                     logger.debug(message);
-                    throw new ExtractException(message);
+                    throw new ExtractException(message, e);
 
                 } catch (RDFParseException e) {
                     logger.debug(e.getMessage());
 
-                    throw new ExtractException(e.getMessage());
+                    throw new ExtractException(e);
 
                 } catch (RepositoryException e) {
-                    logger.debug("Repository connection faild: " + e.getMessage());
+                    logger.debug("Repository connection failed: " + e.getMessage());
 
-                    throw new ExtractException(e.getMessage());
+                    throw new ExtractException(e);
                 }
             }
 
@@ -911,7 +911,7 @@ public class LocalRDFRepo {
         } catch (RepositoryException e) {
             final String message = "Repository connection failt.";
             logger.debug(message);
-            throw new ExtractException(message);
+            throw new ExtractException(e);
         }
 
 
@@ -981,7 +981,7 @@ public class LocalRDFRepo {
             } catch (MalformedQueryException e) {
 
                 logger.debug(e.getMessage());
-                throw new TransformException(e.getMessage());
+                throw new TransformException(e);
 
             } catch (UpdateExecutionException ex) {
 
@@ -989,7 +989,7 @@ public class LocalRDFRepo {
                 logger.debug(message);
                 logger.debug(ex.getMessage());
 
-                throw new TransformException(message);
+                throw new TransformException(message, ex);
             }
             connection.commit();
             connection.close();
@@ -1001,7 +1001,7 @@ public class LocalRDFRepo {
             logger.debug(message);
             logger.debug(ex.getMessage());
 
-            throw new TransformException(message);
+            throw new TransformException(message, ex);
 
         }
 
