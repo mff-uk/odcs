@@ -266,7 +266,7 @@ public class ConfigDialog extends CustomComponent {
         comboBoxSparql.setTextInputAllowed(true);
         comboBoxSparql.setItemCaptionPropertyId("endpoint");
         comboBoxSparql.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        comboBoxSparql.setInputPrompt("KNOWLEDGE BASE");
+        comboBoxSparql.setInputPrompt("http://example:8894/sparql");
 
         comboBoxSparql.setFilteringMode(FilteringMode.CONTAINS);
         comboBoxSparql.setImmediate(true);

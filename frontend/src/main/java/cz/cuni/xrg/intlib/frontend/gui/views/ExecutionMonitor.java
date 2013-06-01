@@ -519,7 +519,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			
 			else{
 				
-				Format formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+				Format formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			    String s = formatter.format(item.getStart());
 				result.getContainerProperty(num, "date").setValue(s);
 			}
