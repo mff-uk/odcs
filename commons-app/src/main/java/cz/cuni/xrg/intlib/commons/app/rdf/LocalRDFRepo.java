@@ -166,9 +166,11 @@ public class LocalRDFRepo {
         long timeToStart = 1000L;
         File dataFile = new File(repoPath, fileName);
         MemoryStore memStore = new MemoryStore(dataFile);
+        memStore.setPersist(true);
         memStore.setSyncDelay(timeToStart);
 
         repository = new SailRepository(memStore);
+
         graph = createNewGraph("http://default");
 
         try {
@@ -193,8 +195,8 @@ public class LocalRDFRepo {
         }
         try {
             file.createNewFile();
-        } catch (IOException ex) {
-            logger.debug(ex.getMessage());
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
         }
 
     }
@@ -228,19 +230,25 @@ public class LocalRDFRepo {
 
     private void addStatement(Statement statement) {
 
+        RepositoryConnection conection = null;
+
         try {
 
-            RepositoryConnection conection = repository.getConnection();
-
+            conection = repository.getConnection();
             conection.add(statement);
-
             conection.commit();
-            conection.close();
 
-        } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage());
+        } catch (RepositoryException e) {
+            logger.debug(e.getMessage());
 
 
+        } finally {
+            if (conection != null) {
+                try {
+                    conection.close();
+                } catch (RepositoryException ex) {
+                }
+            }
         }
 
     }
@@ -270,13 +278,11 @@ public class LocalRDFRepo {
 
         }
 
-
-
         File dirFile = new File(path);
 
         if (path.toLowerCase().startsWith("http")) {
 
-            InputStreamReader inputStream;
+            InputStreamReader inputStream = null;
             try {
 
                 URL urlPath = new URL(path);
@@ -287,11 +293,17 @@ public class LocalRDFRepo {
                 RepositoryConnection connection = repository.getConnection();
                 connection.add(inputStream, baseURI, format);
 
-                inputStream.close();
 
             } catch (IOException | RepositoryException | RDFParseException ex) {
                 logger.debug(ex.getMessage());
 
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException ex) {
+                    }
+                }
             }
 
         }
@@ -344,26 +356,31 @@ public class LocalRDFRepo {
         try {
             connection = repository.getConnection();
 
-            connection.begin();
-
+            InputStream is = null;
             try {
 
-                InputStream is = new FileInputStream(dataFile);
+                is = new FileInputStream(dataFile);
 
                 connection.add(is, baseURI, fileFormat);
                 connection.commit();
 
             } catch (IOException | RDFParseException ex) {
                 logger.debug(ex.getMessage());
+
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException ex) {
+                    }
+                }
             }
-
-
 
         } catch (RepositoryException ex) {
             logger.debug("Error by adding file to repository");
 
-
             throw new ExtractException(ex);
+
         } finally {
             if (connection != null) {
                 try {
@@ -401,6 +418,7 @@ public class LocalRDFRepo {
             boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException {
 
         if (directoryPath == null || fileName == null) {
+
             final String message;
 
             if (directoryPath == null) {
@@ -414,6 +432,7 @@ public class LocalRDFRepo {
 
 
         } else if (directoryPath.isEmpty() || fileName.isEmpty()) {
+
             final String message;
 
             if (directoryPath.isEmpty()) {
@@ -460,20 +479,22 @@ public class LocalRDFRepo {
 
         }
 
+        RepositoryConnection connection = null;
+
         try {
-            OutputStreamWriter os;
+            connection = repository.getConnection();
+
+            OutputStreamWriter os = null;
+
             try {
                 os = new OutputStreamWriter(new FileOutputStream(dataFile.getAbsoluteFile()), encode);
 
                 RDFWriter writer = Rio.createWriter(format, os);
 
-                RepositoryConnection connection = repository.getConnection();
-
                 connection.export(writer);
 
                 connection.commit();
                 connection.close();
-                os.close();
 
             } catch (FileNotFoundException | RDFHandlerException ex) {
                 logger.debug(ex.getMessage());
@@ -482,13 +503,30 @@ public class LocalRDFRepo {
             } catch (IOException ex) {
                 logger.debug(ex.getMessage());
                 throw new LoadException(ex);
+
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException ex) {
+                    }
+                }
+
             }
 
         } catch (RepositoryException ex) {
             logger.debug(ex.getMessage());
             throw new LoadException("Repository connection failed: " + ex.getMessage(), ex);
 
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                }
+            }
         }
+
     }
 
     /**
@@ -532,45 +570,80 @@ public class LocalRDFRepo {
      */
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
             String password, WriteGraphType graphType) throws LoadException {
+
+        if (endpointURL == null) {
+            final String message = "Mandatory URL path in extractor from SPARQL is null.";
+
+            logger.debug(message);
+            throw new LoadException(message);
+
+        } else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
+
+            final String message = "Mandatory URL path in extractor from SPARQL "
+                    + "have to started with http.";
+
+            logger.debug(message);
+            throw new LoadException(message);
+
+        }
+
+        if (endpointGraphsURI == null) {
+            final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
+
+            logger.debug(message);
+            throw new LoadException(message);
+
+        } else if (endpointGraphsURI.isEmpty()) {
+            final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
+
+            logger.debug(message);
+            throw new LoadException(message);
+        }
+
+        final int graphSize = endpointGraphsURI.size();
+        List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT, this);
+        final int partsCount = dataParts.size();
+
+        HTTPRepository endpointRepo = new HTTPRepository(endpointURL.toString(), "");
+
+        boolean usePassword = (!userName.isEmpty() | !password.isEmpty());
+
+        if (usePassword) {
+
+            final String myName = userName;
+            final String myPassword = password;
+
+            Authenticator autentisator = new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(myName, myPassword.toCharArray());
+                }
+            };
+
+            Authenticator.setDefault(autentisator);
+            endpointRepo.setUsernameAndPassword(userName, password);
+
+        }
+
+        try {
+            endpointRepo.initialize();
+        } catch (RepositoryException e) {
+            logger.debug("Endpoint repository is failed");
+            logger.debug(e.getMessage());
+
+            throw new LoadException(e);
+        }
+
+        RepositoryConnection connection = null;
+
         try {
 
-            final int graphSize = endpointGraphsURI.size();
-            List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT, this);
-            final int partsCount = dataParts.size();
-
-            HTTPRepository endpointRepo = new HTTPRepository(endpointURL.toString(), "");
-
-            boolean usePassword = (!userName.isEmpty() | !password.isEmpty());
-
-            if (usePassword) {
-
-                final String myName = userName;
-                final String myPassword = password;
-
-                Authenticator autentisator = new Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(myName, myPassword.toCharArray());
-                    }
-                };
-
-                Authenticator.setDefault(autentisator);
-                endpointRepo.setUsernameAndPassword(userName, password);
-
-            }
-
-            try {
-                endpointRepo.initialize();
-            } catch (RepositoryException e) {
-                logger.debug("Endpoint repository is failed");
-                logger.debug(e.getMessage());
-            }
-
-            RepositoryConnection connection = repository.getConnection();
+            connection = repository.getConnection();
 
             for (int i = 0; i < graphSize; i++) {
 
                 boolean isOK = true;
+
                 try {
                     switch (graphType) {
                         case MERGE:
@@ -600,7 +673,7 @@ public class LocalRDFRepo {
                     logger.debug(ex.getMessage());
                     isOK = false;
 
-                    throw new LoadException(ex);
+                    //throw new LoadException(ex);
                 }
 
                 if (isOK == false) {
@@ -640,6 +713,9 @@ public class LocalRDFRepo {
 
                     } catch (IOException e) {
                         logger.debug("Endpoint URL stream can not open");
+                        if (httpConnection != null) {
+                            httpConnection.disconnect();
+                        }
                         throw new LoadException(e);
                     }
 
@@ -667,13 +743,19 @@ public class LocalRDFRepo {
                 }
             }
 
-            connection.close();
-
         } catch (RepositoryException ex) {
             logger.debug("Repository connection failed.");
             logger.debug(ex.getMessage());
 
             throw new LoadException(ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                }
+            }
+
         }
     }
 
@@ -844,8 +926,9 @@ public class LocalRDFRepo {
             throw new ExtractException(message, e);
         }
 
+        RepositoryConnection connection = null;
         try {
-            RepositoryConnection connection = repository.getConnection();
+            connection = repository.getConnection();
 
             for (int i = 0; i < graphSize; i++) {
 
@@ -863,8 +946,12 @@ public class LocalRDFRepo {
                 try {
                     httpConnection = (HttpURLConnection) call.openConnection();
                     httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
+
                 } catch (IOException e) {
                     logger.debug("Endpoint URL stream can not open");
+                    if (httpConnection != null) {
+                        httpConnection.disconnect();
+                    }
                     throw new ExtractException(e);
                 }
 
@@ -890,8 +977,10 @@ public class LocalRDFRepo {
                     connection.add(inputStreamReader, endpointGraph, format);
 
                 } catch (IOException e) {
+
                     final String message = "Http connection can can not open stream";
                     logger.debug(message);
+
                     throw new ExtractException(message, e);
 
                 } catch (RDFParseException e) {
@@ -899,28 +988,26 @@ public class LocalRDFRepo {
 
                     throw new ExtractException(e);
 
-                } catch (RepositoryException e) {
-                    logger.debug("Repository connection failed: " + e.getMessage());
-
-                    throw new ExtractException(e);
                 }
             }
 
-            connection.close();
 
         } catch (RepositoryException e) {
-            final String message = "Repository connection failt.";
+
+            final String message = "Repository connection failt: " + e.getMessage();
+
             logger.debug(message);
+
             throw new ExtractException(e);
+
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                }
+            }
         }
-
-
-        /*catch (IOException ex) {
-         logger.debug("Can not open http connection stream");
-         logger.debug(ex.getMessage());
-         } catch (Exception ex) {
-         logger.debug(ex.getMessage());
-         }*/
 
     }
 
@@ -1205,13 +1292,27 @@ public class LocalRDFRepo {
      * create new instance.
      */
     public void shutDown() {
-        try {
-            repository.shutDown();
-            logger.debug("Repository destroyed SUCCESSFULL");
-        } catch (RepositoryException ex) {
-            logger.debug("Repository was not destroyed - potencial problems with locks ");
-            logger.debug(ex.getMessage());
-        }
+
+       Thread destroyThread=new Thread(new Runnable() {
+
+           @Override
+           public void run() {
+                try {
+                    repository.shutDown();
+                    logger.debug("Repository destroyed SUCCESSFULL");
+                } catch (RepositoryException ex) {
+                    logger.debug("Repository was not destroyed - potencial problems with locks ");
+                    logger.debug(ex.getMessage());
+                }
+            }
+       });
+       
+       destroyThread.setDaemon(true);
+       destroyThread.start();
+       
+
+       
+
     }
 
     /**
@@ -1267,7 +1368,7 @@ public class LocalRDFRepo {
         } catch (MalformedQueryException | RepositoryException | QueryEvaluationException ex) {
             logger.debug("This query is probably not valid");
             logger.debug(ex.getMessage());
-            throw new NotValidQueryException("Query: " + query + "is not valid");
+            throw new NotValidQueryException(ex);
         }
 
         return map;
