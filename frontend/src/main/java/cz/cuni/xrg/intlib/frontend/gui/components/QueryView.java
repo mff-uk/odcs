@@ -103,9 +103,15 @@ public class QueryView extends CustomComponent {
             logger.error(e.getMessage());
         }
 
-        Map<String, List<String>> data = repository.makeQueryOverRepository(query);
-        repository.shutDown();
-        return data;
+        try {
+            Map<String, List<String>> data = repository.makeQueryOverRepository(query);
+            return data;
+
+        } catch (NotValidQueryException e) {
+            throw e;
+        } finally {
+            repository.shutDown();
+        }
     }
 
     private IndexedContainer buildDataSource(Map<String, List<String>> data) {
