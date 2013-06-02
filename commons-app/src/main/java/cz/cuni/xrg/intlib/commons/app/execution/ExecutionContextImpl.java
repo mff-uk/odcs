@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -106,7 +104,11 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 		JAXBContext jc = JAXBContext.newInstance(ExecutionContextImpl.class, DPUContextInfo.class);
 		Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(this, new FileOutputStream(outputFile) );
+            
+        try (FileOutputStream os = new FileOutputStream(outputFile)) {
+                marshaller.marshal(this, os );
+                os.close();
+            }
 	}
 
 	@Override
