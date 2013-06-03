@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
  * @author Petyr
  *
  */
-public abstract class AbstractConfigurationDialog <C extends Configuration> extends CustomComponent {
+public abstract class AbstractConfigDialog <C extends Configuration> extends CustomComponent {
 
 	/**
 	 * Set dialog interface according to passed configuration. If

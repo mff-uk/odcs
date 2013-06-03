@@ -7,12 +7,12 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
  * @author Petyr
  *
  */
-public interface DialogProvider <C extends Configuration> {
+public interface ConfigDialogProvider <C extends Configuration> {
 
 	/**
 	 * Return configuration dialog.
 	 * @return
 	 */
-	public AbstractConfigurationDialog<C> getConfigurationDialog();
+	public AbstractConfigDialog<C> getConfigurationDialog();
 
 }
