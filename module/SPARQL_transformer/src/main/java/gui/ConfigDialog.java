@@ -1,5 +1,6 @@
 package gui;
 
+import com.vaadin.data.Property;
 import module.Config;
 
 import com.vaadin.ui.*;
@@ -18,7 +19,7 @@ public class ConfigDialog extends CustomComponent {
     private GridLayout mainLayout;
     private TextArea txtQuery;
     private Label labelUpQuer;
-
+   
     public ConfigDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
@@ -72,6 +73,17 @@ public class ConfigDialog extends CustomComponent {
 
         // textAreaUpQuer
         txtQuery = new TextArea();
+        
+        txtQuery.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                final String query=txtQuery.getValue();
+                
+                
+            }
+        });
+        
         txtQuery.setNullRepresentation("");
         txtQuery.setImmediate(false);
         txtQuery.setWidth("100%");
