@@ -6,7 +6,7 @@ import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.module.gui.AbstractConfigDialog;
-import cz.cuni.xrg.intlib.commons.web.Graphical;
+import cz.cuni.xrg.intlib.commons.web.DialogProvider;
 
 /**
  * Abstract base implementation for DPUs.
@@ -14,7 +14,7 @@ import cz.cuni.xrg.intlib.commons.web.Graphical;
  * @author Petyr
  *
  */
-public abstract class AbstractDPU implements DPUExecutive, Graphical {
+public abstract class AbstractDPU implements DPUExecutive, DialogProvider {
 
 	/**
 	 * Configuration dialog for DPU.

@@ -3,6 +3,8 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 import java.util.Objects;
 import javax.persistence.*;
 
+import org.hibernate.engine.loading.internal.LoadingCollectionEntry;
+
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
@@ -151,6 +153,10 @@ public class DPURecord {
 		this.templateConfiguration = templateConfiguration;
 	}
 
+    /**
+     * Get stored instance. To load instance use {@link #loadInstance}.
+     * @return Stored instance.
+     */
     public Configurable<Configuration> getInstance() {
     	return instance;
     }
