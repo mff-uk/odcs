@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationListener;
 public class Engine implements ApplicationListener<EngineEvent>, ApplicationEventPublisherAware  {
 	
     /**
-     * Provide access to DPU implementation.
+     * Provide access to DPURecord implementation.
      */	
 	protected ModuleFacade moduleFacade;
 	

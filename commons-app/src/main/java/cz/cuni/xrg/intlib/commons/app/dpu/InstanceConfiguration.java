@@ -7,11 +7,12 @@ import java.util.Map;
 import javax.persistence.*;
 
 /**
- * Configuration setting for DPU component on the canvas.
+ * Configuration setting for DPURecord component on the canvas.
  *
  * @author Jiri Tomes
  * @author Jan Vojt
  */
+@Deprecated
 @Entity
 @Table(name = "dpu_instance_config")
 public class InstanceConfiguration implements Configuration {

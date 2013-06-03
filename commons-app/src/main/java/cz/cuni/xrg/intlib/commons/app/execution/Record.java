@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import javax.persistence.*;
 
 /**
- * Represent a single message created during DPU execution. 
+ * Represent a single message created during DPURecord execution. 
  * 
  * @author Petyr
  * @author Bogo
@@ -40,7 +40,7 @@ public class Record {
 	private RecordType type;
 	
 	/**
-	 * DPU which emmitted the message.
+	 * DPURecord which emmitted the message.
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "dpu_id", nullable = false)

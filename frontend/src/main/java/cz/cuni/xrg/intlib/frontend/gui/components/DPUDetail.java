@@ -12,7 +12,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
@@ -153,7 +153,7 @@ public class DPUDetail extends Window {
 		});
 		buttonBar.addComponent(cancelButton);
 
-		Button saveAsNewButton = new Button("Save to DPU tree", new Button.ClickListener() {
+		Button saveAsNewButton = new Button("Save to DPURecord tree", new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -171,7 +171,7 @@ public class DPUDetail extends Window {
 	}
 
 	/**
-	 * Saves configuration of DPU Instance which was set in detail dialog.
+	 * Saves configuration of DPURecord Instance which was set in detail dialog.
 	 * @return
 	 */
 	protected boolean saveDPUInstance() {
@@ -192,7 +192,7 @@ public class DPUDetail extends Window {
 
 	protected boolean saveDpuAsNew() {
 		if(saveDPUInstance()) {
-			DPU newDPU = App.getDPUs().createDpuFromInstance(dpu);
+			DPURecord newDPU = App.getDPUs().createDpuFromInstance(dpu);
 			dpu.setDpu(newDPU);
 			App.getDPUs().save(newDPU);
 			return true;

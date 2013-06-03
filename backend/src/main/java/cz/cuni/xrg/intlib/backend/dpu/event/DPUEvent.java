@@ -9,7 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
- * Base abstract class for the DPU event. 
+ * Base abstract class for the DPURecord event. 
  *
  * @author Petyr
  * @author Jiri Tomes 

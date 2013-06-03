@@ -29,7 +29,7 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	private ExecutionContextWriter contextWriter;
 	
 	/**
-	 * Instance of DPU for which is this DataUnitFactory.
+	 * Instance of DPURecord for which is this DataUnitFactory.
 	 */
 	private DPUInstance dpuInstance;	
 	

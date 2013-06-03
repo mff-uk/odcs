@@ -34,7 +34,7 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
     private List<DataUnit> outputs;
     	
 	/**
-	 * Application event publisher used to publish messages from DPU.
+	 * Application event publisher used to publish messages from DPURecord.
 	 */
 	private ApplicationEventPublisher eventPublisher;
 	

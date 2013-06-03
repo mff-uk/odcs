@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Graph of DPU dependencies.
+ * Graph of DPURecord dependencies.
  *
  * @author Jan Vojt
  *
@@ -16,7 +16,7 @@ import java.util.Set;
 public class DependencyGraph implements Iterable<Node> {
 
     /**
-     * DPU Graph
+     * DPURecord Graph
      */
     private PipelineGraph graph;
     /**

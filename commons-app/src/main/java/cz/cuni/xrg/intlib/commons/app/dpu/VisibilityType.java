@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 /**
- * Types of DPU Visibility.
+ * Types of DPURecord Visibility.
  * 
  * @author Maria Kukhar
  *

@@ -21,7 +21,7 @@ public abstract class PipelineEvent extends ApplicationEvent {
 	protected Date time;
 	
 	/**
-	 * The most related DPU to the event. 
+	 * The most related DPURecord to the event. 
 	 */
 	protected DPUInstance dpuInstance;
 	

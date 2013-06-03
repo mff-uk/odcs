@@ -6,13 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import javax.persistence.*;
 
 /**
- * Oriented acyclic graph representation of pipeline. Each Node represents a DPU
+ * Oriented acyclic graph representation of pipeline. Each Node represents a DPURecord
  * instance, and each edge represents data flow.
  *
  * @author Jiri Tomes
@@ -90,13 +90,13 @@ public class PipelineGraph {
     }
 
     /**
-     * Adds new DPU to graph.
+     * Adds new DPURecord to graph.
      *
      * @param dpu
      * @return
      */
 	@Deprecated
-    public int addDpu(DPU dpu) {
+    public int addDpu(DPURecord dpu) {
         DPUInstance dpuInstance = new DPUInstance(dpu);
         Node node = new Node(dpuInstance);
         addNode(node);
@@ -116,7 +116,7 @@ public class PipelineGraph {
 	} 
 
     /**
-     * Removes DPU from graph.
+     * Removes DPURecord from graph.
      *
      * @param dpuId
      * @return
@@ -132,8 +132,8 @@ public class PipelineGraph {
     /**
      * Adds a single edge into pipeline graph, unless it exists already.
      *
-     * @param from source DPU
-     * @param to target DPU
+     * @param from source DPURecord
+     * @param to target DPURecord
      * @return newly created edge or null TODO find and return edge even if it
      * was present before
      */

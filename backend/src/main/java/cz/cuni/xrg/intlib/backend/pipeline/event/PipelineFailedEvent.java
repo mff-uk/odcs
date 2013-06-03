@@ -9,7 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
- * Event is published if the pipeline is terminated due the error in DPU.
+ * Event is published if the pipeline is terminated due the error in DPURecord.
  * 
  * @author Petyr
  *

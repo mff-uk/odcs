@@ -23,7 +23,7 @@ public interface ExecutionContextReader {
 	public boolean containsData(DPUInstance dpuInstance);
 	
 	/**
-	 * Return list of DataUnit indexes for DPU that can be used in {@link #getTypeForDataUnit} 
+	 * Return list of DataUnit indexes for DPURecord that can be used in {@link #getTypeForDataUnit} 
 	 * and {@link #getDirectoryForDataUnit}
 	 * @param dpuInstance
 	 * @return Set of indexes or null if there is no data for given dpuInstance.
@@ -40,7 +40,7 @@ public interface ExecutionContextReader {
 	public DataUnitInfo getDataUnitInfo(DPUInstance dpuInstance, int index);
 		
 	/**
-	 * Return directory where the result from given DPU are be stored.
+	 * Return directory where the result from given DPURecord are be stored.
 	 * @param dpuInstance The author of results.
 	 * @return Null in case of bad dpuInstance.
 	 */

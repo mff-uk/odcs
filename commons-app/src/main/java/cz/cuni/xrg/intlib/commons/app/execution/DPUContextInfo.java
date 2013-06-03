@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
- * Store information about context of single DPU. 
+ * Store information about context of single DPURecord. 
  * Is used as a data container in class {@link cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextImpl}
  * 
  * @author Petyr
@@ -38,7 +38,7 @@ class DPUContextInfo {
 	private File resultDirectory = null;
 	
 	/**
-	 * DPU's root working directory.
+	 * DPURecord's root working directory.
 	 */
 	@XmlElement
 	private File rootDirectory = null;
@@ -52,7 +52,7 @@ class DPUContextInfo {
 	
 	/**
 	 * 
-	 * @param rootDirectory DPU's root directory doesn't have to exit.
+	 * @param rootDirectory DPURecord's root directory doesn't have to exit.
 	 */
 	public DPUContextInfo(File rootDirectory) {
 		this.rootDirectory = rootDirectory;
@@ -98,7 +98,7 @@ class DPUContextInfo {
 	}
 	
 	/**
-	 * Return the storage directory or this associated DPU.
+	 * Return the storage directory or this associated DPURecord.
 	 * @return The path to the directory, is not guaranteed that the directory exist.
 	 */
 	public File getDirForDPUStorage() {
@@ -109,7 +109,7 @@ class DPUContextInfo {
 	}
 	
 	/**
-	 * Return the result directory or this associated DPU.
+	 * Return the result directory or this associated DPURecord.
 	 * @return The path to the directory, is not guaranteed that the directory exist.
 	 */
 	public File getDirForDPUResult(boolean add) {

@@ -63,7 +63,7 @@ class DPU extends ViewComponent {
 	private TextField dpuName;
 	private TextArea dpuDescription;
 	private TabSheet tabSheet;
-	private cz.cuni.xrg.intlib.commons.app.dpu.DPU selectedDpu;
+	private cz.cuni.xrg.intlib.commons.app.dpu.DPURecord selectedDpu;
 	private OptionGroup groupVisibility;
 	private DPUExecutive dpuExec;
 	String jarPath;
@@ -101,12 +101,12 @@ class DPU extends ViewComponent {
 		setWidth("100%");
 		setHeight("100%");
 
-		// Buttons on the top: "Create DPU", "Import DPU", "Export All"
+		// Buttons on the top: "Create DPURecord", "Import DPURecord", "Export All"
 		HorizontalLayout buttonBar = new HorizontalLayout();
 	//	buttonBar.setWidth("100%");
 
 		Button buttonCreateDPU = new Button();
-		buttonCreateDPU.setCaption("Create DPU");
+		buttonCreateDPU.setCaption("Create DPURecord");
 		buttonCreateDPU.setHeight("25px");
 		buttonCreateDPU.setWidth("100px");
 		buttonCreateDPU
@@ -119,7 +119,7 @@ class DPU extends ViewComponent {
 		buttonBar.addComponent(buttonCreateDPU);
 
 		Button buttonImportDPU = new Button();
-		buttonImportDPU.setCaption("Import DPU");
+		buttonImportDPU.setCaption("Import DPURecord");
 		buttonImportDPU.setHeight("25px");
 		buttonImportDPU.setWidth("100px");
 		buttonImportDPU
@@ -155,7 +155,7 @@ class DPU extends ViewComponent {
 	}
 
 	/**
-	 * Building layout contains DPU tree and DPU details.
+	 * Building layout contains DPURecord tree and DPURecord details.
 	 */
 	@SuppressWarnings({ "serial", "deprecation" })
 	private GridLayout buildDpuLayout() {
@@ -176,12 +176,12 @@ class DPU extends ViewComponent {
 		layoutTree.setStyleName("dpuTreeLayout");
 		
 		
-		// DPU tree filters
+		// DPURecord tree filters
 		HorizontalLayout filterBar = new HorizontalLayout();
 		filterBar.setSpacing(true);
 
 		CheckBox onlyMyDPU = new CheckBox();
-		onlyMyDPU.setCaption("Only My DPU");
+		onlyMyDPU.setCaption("Only My DPURecord");
 		filterBar.addComponent(onlyMyDPU);
 
 		Label labelFilter = new Label();
@@ -223,13 +223,13 @@ class DPU extends ViewComponent {
 		infoLabel.setImmediate(false);
 		infoLabel.setWidth("-1px");
 		infoLabel.setHeight("-1px");
-		infoLabel.setValue("<br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select DPU from the DPU tree for displaying it's details.");
+		infoLabel.setValue("<br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select DPURecord from the DPURecord tree for displaying it's details.");
 		infoLabel.setContentMode(ContentMode.HTML);
 		layoutInfo.addComponent(infoLabel);
 		
 		
 
-		// DPU tree 
+		// DPURecord tree 
 		dpuTree = new Tree("DPUs");
 		dpuTree.setImmediate(true);
 		dpuTree.setHeight("100%");
@@ -243,7 +243,7 @@ class DPU extends ViewComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				// TODO Auto-generated method stub
-				selectedDpu = (cz.cuni.xrg.intlib.commons.app.dpu.DPU) event
+				selectedDpu = (cz.cuni.xrg.intlib.commons.app.dpu.DPURecord) event
 						.getItemId();
 				jarPath = selectedDpu.getJarPath();
 
@@ -355,7 +355,7 @@ class DPU extends ViewComponent {
 			}
 		}
 
-		// DPU details: Info Tab
+		// DPURecord details: Info Tab
 		verticalLayoutInfo = new VerticalLayout();
 		verticalLayoutInfo.setImmediate(false);
 		verticalLayoutInfo.setWidth("100.0%");
@@ -456,7 +456,7 @@ class DPU extends ViewComponent {
 		buttonDpuBar.setSpacing(false);
 
 		Button buttonCopyDPU = new Button();
-		buttonCopyDPU.setCaption("Copy DPU");
+		buttonCopyDPU.setCaption("Copy DPURecord");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
 		buttonCopyDPU
@@ -472,7 +472,7 @@ class DPU extends ViewComponent {
 				.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
 
 		Button buttonDeleteDPU = new Button();
-		buttonDeleteDPU.setCaption("Delete DPU");
+		buttonDeleteDPU.setCaption("Delete DPURecord");
 		buttonDeleteDPU.setHeight("25px");
 		buttonDeleteDPU.setWidth("100px");
 		buttonDeleteDPU
@@ -521,7 +521,7 @@ class DPU extends ViewComponent {
 							dpuTree.removeAllItems();
 							fillTree(dpuTree);
 							dpuDetailLayout.removeAllComponents();
-							Notification.show("DPU was removed",
+							Notification.show("DPURecord was removed",
 									Notification.Type.HUMANIZED_MESSAGE);
 						} else {
 							String names = "";
@@ -536,12 +536,12 @@ class DPU extends ViewComponent {
 
 							if (j > 1)
 								Notification
-										.show("DPU can not be removed because it has been used in Pipelines: ",
+										.show("DPURecord can not be removed because it has been used in Pipelines: ",
 												names,
 												Notification.Type.WARNING_MESSAGE);
 							else
 								Notification
-										.show("DPU can not be removed because it has been used in Pipeline: ",
+										.show("DPURecord can not be removed because it has been used in Pipeline: ",
 												names,
 												Notification.Type.WARNING_MESSAGE);
 
@@ -555,7 +555,7 @@ class DPU extends ViewComponent {
 				Alignment.BOTTOM_LEFT);
 
 		Button buttonExportDPU = new Button();
-		buttonExportDPU.setCaption("Export DPU");
+		buttonExportDPU.setCaption("Export DPURecord");
 		buttonExportDPU.setHeight("25px");
 		buttonExportDPU.setWidth("100px");
 		buttonExportDPU
@@ -610,19 +610,19 @@ class DPU extends ViewComponent {
 
 	private void fillTree(Tree tree) {
 
-		cz.cuni.xrg.intlib.commons.app.dpu.DPU rootExtractor = new cz.cuni.xrg.intlib.commons.app.dpu.DPU(
+		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootExtractor = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
 				"Extractors", null);
 		tree.addItem(rootExtractor);
-		cz.cuni.xrg.intlib.commons.app.dpu.DPU rootTransformer = new cz.cuni.xrg.intlib.commons.app.dpu.DPU(
+		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootTransformer = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
 				"Transformers", null);
 		tree.addItem(rootTransformer);
-		cz.cuni.xrg.intlib.commons.app.dpu.DPU rootLoader = new cz.cuni.xrg.intlib.commons.app.dpu.DPU(
+		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootLoader = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
 				"Loaders", null);
 		tree.addItem(rootLoader);
 
-		List<cz.cuni.xrg.intlib.commons.app.dpu.DPU> dpus = App.getApp()
+		List<cz.cuni.xrg.intlib.commons.app.dpu.DPURecord> dpus = App.getApp()
 				.getDPUs().getAllDpus();
-		for (cz.cuni.xrg.intlib.commons.app.dpu.DPU dpu : dpus) {
+		for (cz.cuni.xrg.intlib.commons.app.dpu.DPURecord dpu : dpus) {
 			tree.addItem(dpu);
 
 			switch (dpu.getType()) {

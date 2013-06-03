@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Petyr
  */
 public interface Configuration extends Serializable {
-		
+	
 	/**
 	 * Return value for given id.
 	 * 

@@ -9,7 +9,7 @@ import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.app.module.osgi.*;
 
 /**
- * Facade providing actions with DPU module implementations.
+ * Facade providing actions with DPURecord module implementations.
  * 
  * @author Petyr
  *

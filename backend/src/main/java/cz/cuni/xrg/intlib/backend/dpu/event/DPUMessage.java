@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 /**
- * Class for representing DPU messages send by ProcessingContext sendMessage.
+ * Class for representing DPURecord messages send by ProcessingContext sendMessage.
  * 
  * @author Petyr
  *

@@ -4,7 +4,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import javax.persistence.*;
 
 /**
- * Node represents DPU on the pipeline and holds information about its position
+ * Node represents DPURecord on the pipeline and holds information about its position
  * on the Pipeline canvas.
  *
  * @author Jiri Tomes

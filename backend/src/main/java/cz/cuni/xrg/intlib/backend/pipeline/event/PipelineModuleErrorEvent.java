@@ -18,7 +18,7 @@ public class PipelineModuleErrorEvent extends PipelineEvent {
 	@Override
 	public Record getRecord() {
 		return new Record(time, RecordType.PIPELINEERROR, dpuInstance, execution, 
-				"Failed to load DPU implementation.", "Loading of DPU implementation thrown fallowing exception: " + exception.getMessage());
+				"Failed to load DPURecord implementation.", "Loading of DPURecord implementation thrown fallowing exception: " + exception.getMessage());
 	}
 	
 }

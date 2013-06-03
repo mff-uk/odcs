@@ -26,7 +26,7 @@ public interface ExecutionContextWriter {
 	public File createDirForDataUnit(DPUInstance dpuInstance, DataUnitType type, boolean isInput, int index);
 
 	/**
-	 * Create directory where DPU {@link cz.cuni.xrg.intlib.commons.ProcessingContext} 
+	 * Create directory where DPURecord {@link cz.cuni.xrg.intlib.commons.ProcessingContext} 
 	 * can store it's content ie. function  {@link cz.cuni.xrg.intlib.commons.ProcessingContext#storeData} and 
 	 * {@link cz.cuni.xrg.intlib.commons.ProcessingContext#loadData}. 
 	 * @param dpuInstance The {@link DPUInstance} which will work with the DataUnit.
@@ -35,7 +35,7 @@ public interface ExecutionContextWriter {
 	public File getDirForDPUStorage(DPUInstance dpuInstance);
 	
 	/**
-	 * Create directory where DPU could store data that should be accessible to the 
+	 * Create directory where DPURecord could store data that should be accessible to the 
 	 * user after the pipeline run. Do not use this to store debug data.
 	 * @param dpuInstance dpuInstance The {@link DPUInstance} for which crate the directory.
 	 * @return The path to the directory, is not guaranteed that the directory exist.

@@ -5,7 +5,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  * Contains support for:
- * 	identifying pipeline and DPU related to the context 
+ * 	identifying pipeline and DPURecord related to the context 
  * 
  * @author Petyr
  *

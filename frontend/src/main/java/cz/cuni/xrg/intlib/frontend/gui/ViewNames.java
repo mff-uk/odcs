@@ -11,7 +11,7 @@ public enum ViewNames {
 	Initial(""),
 	Administrator("Administrator"),
 	DataBrowser("DataBrowser"),
-	DPU("DPU"),
+	DPU("DPURecord"),
 	ExecutionMonitor("ExecutionMonitor"),
 	PipelineList("PipelineList"),
 	PipelineEdit("PipelineEdit"),

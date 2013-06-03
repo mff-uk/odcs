@@ -4,7 +4,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import javax.persistence.*;
 
 /**
- * For representing concrete DPU component in the pipeline.
+ * For representing concrete DPURecord component in the pipeline.
  *
  * @author Jiri Tomes
  */
@@ -24,7 +24,7 @@ public class DPUInstance {
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "dpu_id", nullable = false)
-	private DPU dpu;
+	private DPURecord dpu;
 	
 	/**
 	 * Configuration setting for this component.
@@ -42,7 +42,7 @@ public class DPUInstance {
 	public DPUInstance() {
 	}
 
-	public DPUInstance(DPU dpu) {
+	public DPUInstance(DPURecord dpu) {
 		this.dpu = dpu;
 		this.name = dpu.getName();
 		this.description = dpu.getDescription();
@@ -58,14 +58,14 @@ public class DPUInstance {
 	/**
 	 * @return the dpu
 	 */
-	public DPU getDpu() {
+	public DPURecord getDpu() {
 		return dpu;
 	}
 
 	/**
 	 * @param dpu the dpu to set
 	 */
-	public void setDpu(DPU dpu) {
+	public void setDpu(DPURecord dpu) {
 		this.dpu = dpu;
 	}
 	

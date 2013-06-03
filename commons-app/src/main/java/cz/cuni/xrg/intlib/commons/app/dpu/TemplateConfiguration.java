@@ -8,11 +8,12 @@ import java.util.Objects;
 import javax.persistence.*;
 
 /**
- * Base configuration setting for concrete DPU type.
+ * Base configuration setting for concrete DPURecord type.
  *
  * @author Jiri Tomes
  * @author Petyr
  */
+@Deprecated
 @Entity
 @Table(name = "dpu_template_config")
 public class TemplateConfiguration implements Configuration {
@@ -29,7 +30,7 @@ public class TemplateConfiguration implements Configuration {
 	
 	@OneToOne(optional = false)
 	@JoinColumn(name = "dpu_id", unique = true)
-	private DPU dpu;
+	private DPURecord dpu;
 
 	/**
 	 * Return value for given id.
@@ -54,11 +55,11 @@ public class TemplateConfiguration implements Configuration {
 		this.config.put(parameter, value);
 	}
 
-	public DPU getDpu() {
+	public DPURecord getDpu() {
 		return dpu;
 	}
 
-	public void setDpu(DPU dpu) {
+	public void setDpu(DPURecord dpu) {
 		this.dpu = dpu;
 	}
 

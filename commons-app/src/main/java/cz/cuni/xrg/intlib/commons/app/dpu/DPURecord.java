@@ -1,12 +1,15 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import cz.cuni.xrg.intlib.commons.DpuType;
 import java.util.Objects;
 import javax.persistence.*;
 
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.configuration.Configurable;
+import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+
 
 /**
- * Represent imported DPUExecution in database.
+ * Represent imported DPU in database.
  *
  * @author Petyr
  * @author Bogo
@@ -15,7 +18,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="dpu_model")
-public class DPU {
+public class DPURecord {
 
     /**
      * Primary key of graph stored in db
@@ -25,26 +28,27 @@ public class DPU {
     private Long id;
     
     /**
-     * DPU name, provided by user.
+     * DPURecord name, provided by user.
      */
 	@Column(name="name")
     private String name;
     
     /**
-     * DPU description, provided by user.
+     * DPURecord description, provided by user.
      */
 	@Column(name="description")
     private String description;
     
     /**
-     * DPU type, determined by associated jar file.
+     * DPURecord type, determined by associated jar file.
      */
 	@Enumerated(EnumType.ORDINAL)
-    private DpuType type;
+    private DPUType type;
     
     /**
      * VIsibility.
      */
+	@Deprecated
 	@Enumerated(EnumType.ORDINAL)
     private VisibilityType visibility;
     
@@ -57,35 +61,43 @@ public class DPU {
     private String jarPath;
 	
 	/**
-	 * Default configuration for this DPU.
+	 * Default configuration for this DPURecord.
 	 * When {@link DPUInstance} is created, its {@link InstanceConfiguration} is
 	 * automatically created as an exact copy of {@link TemplateConfiguration}.
 	 */
 	@OneToOne(mappedBy = "dpu", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private TemplateConfiguration templateConfiguration;
 
+	/**
+	 * Instance of DPU.
+	 */
+	@Transient
+	private Configurable<Configuration> instance;
+	
     /**
      * Allow empty constructor for JPA.
      */
-    public DPU() {}
+    public DPURecord() {}
 
     /**
-     * Constructor with name and type of DPU.
+     * Constructor with name and type of DPURecord.
      *
      * @param name
      * @param type
      */
-    public DPU(String name, DpuType type) {
-        //this.id = id;
+    public DPURecord(String name, DPUType type) {
         this.name = name;
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return name;
+    /**
+     * Load instance from associated jar file.
+     * @throws ModuleException
+     */
+    public void loadInstance() throws ModuleException {
+    	
     }
-
+    
     public String getName() {
         return name;
     }
@@ -102,10 +114,12 @@ public class DPU {
         this.description = description;
     }
 
+    @Deprecated
     public VisibilityType getVisibility() {
         return visibility;
     }
 
+    @Deprecated
     public void setVisibility(VisibilityType visibility) {
         this.visibility = visibility;
     }
@@ -114,12 +128,7 @@ public class DPU {
         return id;
     }
 
-    /**
-     * Gets DPU type.
-     *
-     * @return DPU type
-     */
-    public DpuType getType() {
+    public DPUType getType() {
         return type;
     }
 
@@ -131,15 +140,21 @@ public class DPU {
         return jarPath;
     }
 
+    @Deprecated
 	public TemplateConfiguration getTemplateConfiguration() {
 		return templateConfiguration;
 	}
 
+    @Deprecated
 	public void setTemplateConfiguration(TemplateConfiguration templateConfiguration) {
 		templateConfiguration.setDpu(this);
 		this.templateConfiguration = templateConfiguration;
 	}
 
+    public Configurable<Configuration> getInstance() {
+    	return instance;
+    }
+    
 	/**
 	 * Generates hash code from primary key if it is available, otherwise
 	 * from the rest of the attributes.
@@ -163,7 +178,7 @@ public class DPU {
 	}
 	
 	/**
-	 * Compares DPU to other object. Two DPU instances are equal if they have
+	 * Compares DPURecord to other object. Two DPURecord instances are equal if they have
 	 * the same non-null primary key, or if both their primary keys are
 	 * <code>null</code> and their attributes are equal. Note that
 	 * {@link TemplateConfiguration} is also a part ofDPUs identity, because we
@@ -181,7 +196,7 @@ public class DPU {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final DPU other = (DPU) obj;
+		final DPURecord other = (DPURecord) obj;
 		
 		// try primary key comparison
 		if (this.id != null && other.id != null) {
@@ -216,4 +231,8 @@ public class DPU {
 		return true;
 	}
 	
+    @Override
+    public String toString() {
+        return name;
+    }
 }

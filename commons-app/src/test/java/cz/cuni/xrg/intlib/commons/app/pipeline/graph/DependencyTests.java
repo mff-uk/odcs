@@ -41,7 +41,7 @@ public class DependencyTests {
 	}
 	
 	/**
-	 * Test dependency resolution for serialized DPU setup.
+	 * Test dependency resolution for serialized DPURecord setup.
 	 * Scenario: E -> T -> T -> T -> L
 	 */
 	@Test

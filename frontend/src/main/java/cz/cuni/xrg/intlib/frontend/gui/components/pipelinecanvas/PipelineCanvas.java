@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -119,13 +119,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Adds new DPU to graph canvas.
+	 * Adds new DPURecord to graph canvas.
 	 *
 	 * @param dpu
 	 * @param x
 	 * @param y
 	 */
-	public void addDpu(DPU dpu, int x, int y) {
+	public void addDpu(DPURecord dpu, int x, int y) {
 		DPUInstance dpuInstance = App.getDPUs().createDPUInstance(dpu);
 		Node node = graph.addDpuInstance(dpuInstance);
 		getRpcProxy(PipelineCanvasClientRpc.class)

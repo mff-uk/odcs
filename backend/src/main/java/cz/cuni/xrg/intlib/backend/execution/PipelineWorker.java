@@ -16,7 +16,7 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
@@ -80,7 +80,7 @@ class PipelineWorker implements Runnable {
 	private ApplicationEventPublisher eventPublisher;
 
 	/**
-	 * Provide access to DPU implementation.
+	 * Provide access to DPURecord implementation.
 	 */
 	private ModuleFacade moduleFacade;
 	
@@ -144,7 +144,7 @@ class PipelineWorker implements Runnable {
 			// exception -> use new one .. 
 			this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
 		}
-		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPU (also save .. DataUnits .. )
+		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
 	}
 
 	/**
@@ -181,7 +181,7 @@ class PipelineWorker implements Runnable {
 		// save context if in debug mode
 		if (execution.isDebugging()) {
 			logger.debug("Saving pipeline execution context");
-			// save DPU's contexts
+			// save DPURecord's contexts
 			for (ProcessingContext item : contexts.values()) {
 				if (item instanceof ExtendedContext) {
 					ExtendedContext exCtx = (ExtendedContext)item;
@@ -233,7 +233,7 @@ class PipelineWorker implements Runnable {
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
 				
-		// save contextWriter before first DPU
+		// save contextWriter before first DPURecord
 		try {
 			contextWriter.save();
 		} catch (Exception e) {
@@ -271,15 +271,15 @@ class PipelineWorker implements Runnable {
 			MDC.remove(MDCDpuInstanceKey);
 						
 			if (result) {
-				// DPU executed successfully
+				// DPURecord executed successfully
 			} else {
 				// error -> end pipeline
 				executionFailed = true;
-				eventPublisher.publishEvent(new PipelineFailedEvent("Error in DPU.", node.getDpuInstance(), execution, this));
+				eventPublisher.publishEvent(new PipelineFailedEvent("Error in DPURecord.", node.getDpuInstance(), execution, this));
 				break;
 			}
 			
-			// save contextWriter after every DPU to enable recovery
+			// save contextWriter after every DPURecord to enable recovery
 			try {
 				contextWriter.save();
 			} catch (Exception e) {
@@ -317,9 +317,9 @@ class PipelineWorker implements Runnable {
 	 * Return context that should be used when executing given Extractor.
 	 * The context is also stored in {@link #contexts }
 	 * 
-	 * @param node Node for which DPU the context is.
+	 * @param node Node for which DPURecord the context is.
 	 * @param ancestors Ancestors of the given node.
-	 * @return Context for the DPU execution.
+	 * @return Context for the DPURecord execution.
 	 * @throws ContextException 
 	 * @throws StructureException 
 	 */		
@@ -341,9 +341,9 @@ class PipelineWorker implements Runnable {
 	 * Return context that should be used when executing given Transform.
 	 * The context is also stored in {@link #contexts }
 	 * 
-	 * @param node Node for which DPU the context is.
+	 * @param node Node for which DPURecord the context is.
 	 * @param ancestors Ancestors of the given node.
-	 * @return Context for the DPU execution.
+	 * @return Context for the DPURecord execution.
 	 * @throws ContextException 
 	 * @throws StructureException 
 	 */		
@@ -377,9 +377,9 @@ class PipelineWorker implements Runnable {
 	 * Return context that should be used when executing given Loader.
 	 * The context is also stored in {@link #contexts }
 	 * 
-	 * @param node Node for which DPU the context is.
+	 * @param node Node for which DPURecord the context is.
 	 * @param ancestors Ancestors of the given node.
-	 * @return Context for the DPU execution.
+	 * @return Context for the DPURecord execution.
 	 * @throws ContextException 
 	 * @throws StructureException 
 	 */	
@@ -410,7 +410,7 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
-	 * Executes a single DPU associated with given Node.
+	 * Executes a single DPURecord associated with given Node.
 	 * 
 	 * @param node
 	 * @param ancestors Ancestors of the given node.
@@ -421,14 +421,14 @@ class PipelineWorker implements Runnable {
 	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException {
 		// prepare what we need to start the execution
 		DPUInstance dpuInstance = node.getDpuInstance();
-		DPU dpu = dpuInstance.getDpu();
+		DPURecord dpu = dpuInstance.getDpu();
 		DpuType dpuType = dpu.getType();
 		String dpuJarPath = dpu.getJarPath();
 		Configuration configuration = dpuInstance.getInstanceConfig();
 		// set configuration
 		DPUExecutive dpuExecutive = moduleFacade.getInstance(dpuJarPath);
 		dpuExecutive.saveConfiguration(configuration);
-		// now based on DPU type ..
+		// now based on DPURecord type ..
 		switch (dpuType) {
 			case EXTRACTOR: {
 				Extract extractor = (Extract)dpuExecutive;				
@@ -443,12 +443,12 @@ class PipelineWorker implements Runnable {
 				return runLoader(loader, getContextForNodeLoader(node, ancestors) );
 			}
 			default:
-				throw new RuntimeException("Unknown DPU type.");
+				throw new RuntimeException("Unknown DPURecord type.");
 		}
 	}
 
 	/**
-	 * Runs a single extractor DPU module.
+	 * Runs a single extractor DPURecord module.
 	 * 
 	 * @param extractor
 	 * @param ctx
@@ -471,7 +471,7 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
-	 * Runs a single Transformer DPU module.
+	 * Runs a single Transformer DPURecord module.
 	 * 
 	 * @param transformer
 	 * @param ctx
@@ -494,7 +494,7 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
-	 * Runs a single Loader DPU module.
+	 * Runs a single Loader DPURecord module.
 	 * 
 	 * @param loader
 	 * @param ctx

@@ -48,7 +48,7 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 	public void onLogMessage(String message);
 
 	/**
-	 * Occurs when debug up to given DPU is requested.
+	 * Occurs when debug up to given DPURecord is requested.
 	 * @param dpuId
 	 */
 	public void onDebugRequested(int dpuId);

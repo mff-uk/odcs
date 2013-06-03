@@ -43,7 +43,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
     private List<DataUnit> outputs = new LinkedList<DataUnit>();
      
 	/**
-	 * Application event publisher used to publish messages from DPU.
+	 * Application event publisher used to publish messages from DPURecord.
 	 */
 	private ApplicationEventPublisher eventPublisher;	
 

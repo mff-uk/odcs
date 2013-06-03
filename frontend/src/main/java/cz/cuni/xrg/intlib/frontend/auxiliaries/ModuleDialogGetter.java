@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.web.GraphicalTransformer;
 
 /**
  * Provide function that enable obtain Configuration dialog 
- * from module (DPU) in easy way.
+ * from module (DPURecord) in easy way.
  * 
  * @author Petyr
  *
@@ -25,14 +25,14 @@ public class ModuleDialogGetter {
 	}
 	
 	/**
-	 * Return configuration dialog for given DPU. 
+	 * Return configuration dialog for given DPURecord. 
 	 * @param dpuExewcutive
 	 * @param configuration 
 	 * @return configuration dialog or null
 	 */
 	public static CustomComponent getDialog(DPUExecutive dpuExewcutive, Configuration config) {
 		CustomComponent confComponent;
-		// get DPU type, recast, get configuration component and return it
+		// get DPURecord type, recast, get configuration component and return it
 		switch(dpuExewcutive.getType()) {
 		case EXTRACTOR:
 			GraphicalExtractor graphExtract = (GraphicalExtractor)dpuExewcutive;

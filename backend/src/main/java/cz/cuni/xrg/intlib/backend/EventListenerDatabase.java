@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineEvent;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
 /**
- * Store all DPU and Pipeline related events into database.
+ * Store all DPURecord and Pipeline related events into database.
  * 
  * @author Petyr
  *

@@ -18,7 +18,7 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 
 	/**
 	 * Store context information for DPUs under
-	 * DPU's id.
+	 * DPURecord's id.
 	 */
 	@XmlElement
 	private HashMap<Long, DPUContextInfo> contexts = new HashMap<>();
@@ -85,7 +85,7 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
 		if (contexts.containsKey(dpuInstance.getId())) {
 			return contexts.get(dpuInstance.getId()).getDirForDPUResult(false);
 		} else {
-			// DPU's context does'n exist
+			// DPURecord's context does'n exist
 			return null;
 		}
 	}

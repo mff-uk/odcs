@@ -38,18 +38,18 @@ class ExtendedCommonImpl {
     private Map<String, Object> customData;
 
     /**
-     * True id the related DPU should be run in debug mode.
+     * True id the related DPURecord should be run in debug mode.
      */
     private boolean isDebugging;
 	
     /**
      * PipelineExecution. The one who caused
-     * run of this DPU.
+     * run of this DPURecord.
      */
 	private PipelineExecution execution;
 
 	/**
-	 * Instance of DPU for which is this context.
+	 * Instance of DPURecord for which is this context.
 	 */
 	private DPUInstance dpuInstance;
     	

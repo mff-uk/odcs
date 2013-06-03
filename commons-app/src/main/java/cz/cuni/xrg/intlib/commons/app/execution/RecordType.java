@@ -10,23 +10,23 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
  */
 public enum RecordType {
 	/**
-	 * Debug information from DPU.
+	 * Debug information from DPURecord.
 	 */
 	 DPUDEBUG
 	/**
-	 * Log information from DPU.
+	 * Log information from DPURecord.
 	 */
 	,DPULOG
 	/**
-	 * Closer unspecified information from DPU.
+	 * Closer unspecified information from DPURecord.
 	 */
 	,DPUINFO
 	/**
-	 * Warning from DPU.
+	 * Warning from DPURecord.
 	 */
 	,DPUWARNING
 	/**
-	 * Error from DPU.
+	 * Error from DPURecord.
 	 */
 	,DPUERROR
 	/**

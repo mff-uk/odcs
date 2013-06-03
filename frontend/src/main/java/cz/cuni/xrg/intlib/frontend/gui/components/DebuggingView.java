@@ -64,7 +64,7 @@ public class DebuggingView extends CustomComponent {
 
 		mainLayout.addComponent(executionRecordsTable);
 
-		ComboBox dpuSelector = new ComboBox("Select DPU:");
+		ComboBox dpuSelector = new ComboBox("Select DPURecord:");
 		dpuSelector.setImmediate(true);
 		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
 			dpuSelector.addItem(node.getDpuInstance());

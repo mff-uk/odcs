@@ -93,7 +93,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 		// TODO: set module relative path .. ?
 //		this.modules.installDirectory(App.getWebAppDirectory() + "/OSGI/libs/");
-//		cz.cuni.xrg.intlib.commons.app.dpu.DPU.HACK_basePath = App.getWebAppDirectory() + "/OSGI";
+//		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord.HACK_basePath = App.getWebAppDirectory() + "/OSGI";
 
 		this.addDetachListener(new DetachListener() {
 			@Override

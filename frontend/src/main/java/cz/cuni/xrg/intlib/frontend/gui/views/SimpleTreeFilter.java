@@ -4,7 +4,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 
 /**
- * String filter for the DPU Tree. Matching tree items that start with or contain a
+ * String filter for the DPURecord Tree. Matching tree items that start with or contain a
  * specified string.
  * 
  * @author Maria Kukhar 

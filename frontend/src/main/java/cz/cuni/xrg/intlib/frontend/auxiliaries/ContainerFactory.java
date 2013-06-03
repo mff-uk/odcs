@@ -5,7 +5,7 @@ import java.util.List;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
@@ -45,12 +45,12 @@ public class ContainerFactory {
 	 * @param data data for container
 	 * @return
 	 */
-	public static Container CreateDPUs(List<DPU> data) {
-		BeanContainer<Long, DPU> container = new BeanContainer<>( DPU.class );
+	public static Container CreateDPUs(List<DPURecord> data) {
+		BeanContainer<Long, DPURecord> container = new BeanContainer<>( DPURecord.class );
 		// set container id
 		container.setBeanIdProperty("id");
 
-		for (DPU item : data) {
+		for (DPURecord item : data) {
 			container.addBean(item);
 		}
 		return container;

@@ -16,7 +16,7 @@ import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -147,12 +147,12 @@ class PipelineEdit extends ViewComponent {
 
 				Object obj = t.getData("itemId");
 
-				if (obj.getClass() == DPU.class) {
-					DPU dpu = (DPU) obj;
+				if (obj.getClass() == DPURecord.class) {
+					DPURecord dpu = (DPURecord) obj;
 					if (App.getApp().getDPUs().getAllDpus().contains(dpu)) {
 						pc.addDpu(dpu, mouse.getClientX() - 261, mouse.getClientY() - 256);
 					} else {
-						// TODO log unknown DPU
+						// TODO log unknown DPURecord
 					}
 				}
 
@@ -367,15 +367,15 @@ class PipelineEdit extends ViewComponent {
 
 		tree.removeAllItems();
 
-		DPU rootExtractor = new DPU("Extractors", null);
+		DPURecord rootExtractor = new DPURecord("Extractors", null);
 		tree.addItem(rootExtractor);
-		DPU rootTransformer = new DPU("Transformers", null);
+		DPURecord rootTransformer = new DPURecord("Transformers", null);
 		tree.addItem(rootTransformer);
-		DPU rootLoader = new DPU("Loaders", null);
+		DPURecord rootLoader = new DPURecord("Loaders", null);
 		tree.addItem(rootLoader);
 
-		List<DPU> dpus = App.getApp().getDPUs().getAllDpus();
-		for (DPU dpu : dpus) {
+		List<DPURecord> dpus = App.getApp().getDPUs().getAllDpus();
+		for (DPURecord dpu : dpus) {
 			tree.addItem(dpu);
 
 			switch (dpu.getType()) {

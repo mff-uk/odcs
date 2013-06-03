@@ -103,7 +103,7 @@ public class AppEntry {
 		logger.info("Heartbeat is running ... ");
 		
 		// print some information ..
-		logger.info("DPU directory:" + appConfig.getString(ConfProperty.MODULE_PATH));
+		logger.info("DPURecord directory:" + appConfig.getString(ConfProperty.MODULE_PATH));
 		logger.info("Listening on port:" + appConfig.getInteger(ConfProperty.BACKEND_PORT));
 		logger.info("Running ...");
 		
