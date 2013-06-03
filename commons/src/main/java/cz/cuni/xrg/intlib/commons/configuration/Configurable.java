@@ -7,15 +7,15 @@ package cz.cuni.xrg.intlib.commons.configuration;
  * @author Petyr
  *
  */
-public interface Configurable <C extends Configuration> {
+public interface Configurable <C extends Config> {
 
 	/**
 	 * Configure object based on passed object. If the object does not
-	 * contains valid configuration ConfigurationException should be thrown.
+	 * contains valid configuration ConfigException should be thrown.
 	 * @param c Object with configuration.
-	 * @throws ConfigurationException
+	 * @throws ConfigException
 	 */
-	void configure(C c) throws ConfigurationException;
+	void configure(C c) throws ConfigException;
 
 	/**
 	 * Return object configuration. 

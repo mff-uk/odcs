@@ -2,8 +2,8 @@ package cz.cuni.xrg.intlib.commons.extractor;
 
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-
-import java.util.List;
+import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
  * Context used by {@link Extract}s for the extraction process.
@@ -14,14 +14,17 @@ import java.util.List;
 public interface ExtractContext extends ProcessingContext {
 
 	/**
-	 * Return list of output data units.
-	 * @return
+	 * Request creating a new output DataUnit of given type.
+	 * @param type Type of DataUnit.
+	 * @return Created DataUnit.
 	 */
-	public List<DataUnit> getOutputs();
+	public DataUnit addOutputDataUnit(DataUnitType type) throws DataUnitCreateException;
 	
 	/**
-	 * Add data unit to output data list.
-	 * @param dataUnit
+	 * Request creating a new output DataUnit of given type.
+	 * @param type Type of DataUnit.
+	 * @param configu DataUnit initial configuration object.
+	 * @return Created DataUnit.
 	 */
-	public void addOutputDataUnit(DataUnit dataUnit);
+	public DataUnit addOutputDataUnit(DataUnitType type, Object configu) throws DataUnitCreateException;
 }

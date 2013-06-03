@@ -31,7 +31,8 @@ public interface ProcessingContext {
     public Object loadData(String id);
 
     /**
-     * Send message about execution.
+     * Send message about execution. If the message type is DEBUG and the pipeline
+     * is not running in debug mode the message is ignored.
      * 
      * @param type Type of message.
      * @param shortMessage Short message, should not be more than 50 chars.
@@ -39,7 +40,8 @@ public interface ProcessingContext {
     public void sendMessage(MessageType type, String shortMessage);
     
     /**
-     * Send message about execution.
+     * Send message about execution.If the message type is DEBUG and the pipeline
+     * is not running in debug mode the message is ignored.
      * 
      * @param type Type of message.
      * @param shortMessage Short message, should not be more than 50 chars.
@@ -70,11 +72,5 @@ public interface ProcessingContext {
      * @return
      */
     public Map<String, Object> getCustomData();    
-    
-    /**
-     * Return DataUnitFactory, that can be used to create new DataUnits.
-     * @return
-     */
-    public DataUnitFactory getDataUnitFactory();
-    
+        
 }

@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.commons.transformer;
 
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 import java.util.List;
 
@@ -18,16 +20,19 @@ public interface TransformContext extends ProcessingContext {
 	 * @return
 	 */
 	public List<DataUnit> getInputs();	
+
+	/**
+	 * Request creating a new output DataUnit of given type.
+	 * @param type Type of DataUnit.
+	 * @return Created DataUnit.
+	 */
+	public DataUnit addOutputDataUnit(DataUnitType type) throws DataUnitCreateException;
 	
 	/**
-	 * Return list of output data units.
-	 * @return
+	 * Request creating a new output DataUnit of given type.
+	 * @param type Type of DataUnit.
+	 * @param configu DataUnit initial configuration object.
+	 * @return Created DataUnit.
 	 */
-	public List<DataUnit> getOutputs();
-	
-	/**
-	 * Add data unit to output data list.
-	 * @param dataUnit
-	 */
-	public void addOutputDataUnit(DataUnit dataUnit);
+	public DataUnit addOutputDataUnit(DataUnitType type, Object configu) throws DataUnitCreateException;	
 }
