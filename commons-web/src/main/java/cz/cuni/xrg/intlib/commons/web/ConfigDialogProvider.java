@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 
 /**
  * Interface with graphical configuration dialog.
+ * 
  * @author Petyr
  *
  */
