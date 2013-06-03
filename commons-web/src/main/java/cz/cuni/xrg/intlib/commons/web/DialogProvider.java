@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.web;
 
-import com.vaadin.ui.CustomComponent;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 
 /**
@@ -15,15 +14,5 @@ public interface DialogProvider <C extends Configuration> {
 	 * @return
 	 */
 	public AbstractConfigurationDialog<C> getConfigurationDialog();
-	
-	/**
-	 * Return configuration component for class. The configuration
-	 * component must not contains close button. The component will be closed
-	 * by the application. 
-	 * @param configuration Default configuration shown in dialog. 
-	 * @return configuration component.
-	 */
-	@Deprecated
-	public CustomComponent getConfigurationComponent(Configuration configuration);
 
 }
