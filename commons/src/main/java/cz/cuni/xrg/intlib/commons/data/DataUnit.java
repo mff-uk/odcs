@@ -21,6 +21,7 @@ public interface DataUnit {
      * @param workingDirectory Path to the directory where DataUnit can store files.
      * @param mergePrepare If true the merge method will be called immediately after this method.
      */
+	@Deprecated
     public void createNew(String id, File workingDirectory, boolean mergePrepare);
     
     /**
@@ -51,7 +52,7 @@ public interface DataUnit {
     /**
      * Return true if DataUnit is in read only state.
      * @see {@link #madeReadOnly}
-     * @return
+     * @return True if data in DataUnit are read only.
      */
     public boolean isReadOnly();
     
@@ -63,12 +64,12 @@ public interface DataUnit {
     public void release();    
     
     /**
-     * Save DataUnit context into workingDirectory. In case
-     * of any problem throws exception.
+     * Save DataUnit context into given directory. In case
+     * of any problem throws exception. The directory doesn't have to exist.
      * @see #createNew
      * @throws Exception
      */
-    public void save() throws Exception;
+    public void save(File directory) throws Exception;
     
     /**
      * Load data unit context from directory. Throw {@link FileNotFoundException}

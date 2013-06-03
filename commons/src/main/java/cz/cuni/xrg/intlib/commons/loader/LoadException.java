@@ -1,15 +1,13 @@
 package cz.cuni.xrg.intlib.commons.loader;
 
-import cz.cuni.xrg.intlib.commons.DPUException;
-
 /**
  * Exception thrown by a loader if something goes wrong throughout the
  * loading process.
  *
  * @see Load
- * @author Alex Kreiser (akreiser@gmail.com)
+ * @author Petyr
  */
-public class LoadException extends DPUException {
+public class LoadException extends Exception {
 
     public LoadException(Throwable cause) {
         super(cause);

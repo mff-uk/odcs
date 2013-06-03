@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Interface for dpu's configuration.
+ * Base interface for dpu's configuration.
  * 
  * @author Petyr
  */
-public interface Configuration {
+public interface Configuration extends Serializable {
 		
 	/**
 	 * Return value for given id.
@@ -16,6 +16,7 @@ public interface Configuration {
 	 * @param parameter id
 	 * @return null if there is not object stored under given id
 	 */
+	@Deprecated
 	public Serializable getValue(String parameter);
 	
 	/**
@@ -25,6 +26,7 @@ public interface Configuration {
 	 * @param parameter object id
 	 * @param value object to store
 	 */
+	@Deprecated
 	public void setValue(String parameter, Serializable value);
 	
 	/**
@@ -32,6 +34,7 @@ public interface Configuration {
 	 * 
 	 * @return configuration values
 	 */
+	@Deprecated
 	public Map<String, Serializable> getValues();
 	
 	/**
@@ -39,5 +42,6 @@ public interface Configuration {
 	 * 
 	 * @param values 
 	 */
+	@Deprecated
 	public void setValues(Map<String, Serializable> values);
 }

@@ -6,6 +6,7 @@ package cz.cuni.xrg.intlib.commons;
  * @author Jiri Tomes
  * @author Jan Vojt
  */
+@Deprecated
 public enum DpuType {
 	
     EXTRACTOR("extractor"),

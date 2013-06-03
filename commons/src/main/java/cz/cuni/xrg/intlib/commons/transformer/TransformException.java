@@ -1,15 +1,13 @@
 package cz.cuni.xrg.intlib.commons.transformer;
 
-import cz.cuni.xrg.intlib.commons.DPUException;
-
 /**
  * Exception thrown by a transformer if something goes wrong throughout the
  * transformation process.
  *
  * @see Transform
- * @author Alex Kreiser (akreiser@gmail.com)
+ * @author Petyr
  */
-public class TransformException extends DPUException {
+public class TransformException extends Exception {
 
     public TransformException(Throwable cause) {
         super(cause);

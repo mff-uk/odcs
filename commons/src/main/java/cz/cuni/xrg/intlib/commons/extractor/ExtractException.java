@@ -1,15 +1,13 @@
 package cz.cuni.xrg.intlib.commons.extractor;
 
-import cz.cuni.xrg.intlib.commons.DPUException;
-
 /**
  * Exception thrown by an extractor if something goes wrong throughout the
  * extraction process.
  *
  * @see Extract
- * @author Alex Kreiser (akreiser@gmail.com)
+ * @author Petyr
  */
-public class ExtractException extends DPUException {
+public class ExtractException extends Exception {
 
     public ExtractException(Throwable cause) {
         super(cause);

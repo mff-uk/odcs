@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.commons.configuration.*;
  * @author Jiri Tomes
  * @author Petyr
  */
+@Deprecated
 public interface DPUExecutive {
 
     /**

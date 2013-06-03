@@ -5,6 +5,7 @@ package cz.cuni.xrg.intlib.commons;
  * 
  * @author Petyr
  */
+@Deprecated
 public class DPUException extends Exception {
 
     public DPUException(Throwable cause) {
