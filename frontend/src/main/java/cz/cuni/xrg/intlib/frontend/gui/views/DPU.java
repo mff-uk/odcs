@@ -5,13 +5,11 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
@@ -26,18 +24,13 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
 
-import cz.cuni.xrg.intlib.commons.DPUExecutive;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.dpu.TemplateConfiguration;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.ModuleDialogGetter;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 
 import java.util.List;
@@ -63,13 +56,12 @@ class DPU extends ViewComponent {
 	private TextField dpuName;
 	private TextArea dpuDescription;
 	private TabSheet tabSheet;
-	private cz.cuni.xrg.intlib.commons.app.dpu.DPURecord selectedDpu;
+	private DPUTemplateRecord selectedDpu;
 	private OptionGroup groupVisibility;
-	private DPUExecutive dpuExec;
 	String jarPath;
 	private GridLayout dpuLayout;
 	private HorizontalLayout buttonDpuBar;
-	private Configuration conf;
+	private Config conf;
 	private HorizontalLayout layoutInfo;
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
@@ -243,8 +235,7 @@ class DPU extends ViewComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				// TODO Auto-generated method stub
-				selectedDpu = (cz.cuni.xrg.intlib.commons.app.dpu.DPURecord) event
-						.getItemId();
+				selectedDpu = (DPUTemplateRecord) event.getItemId();
 				jarPath = selectedDpu.getJarPath();
 
 				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
@@ -318,6 +309,8 @@ class DPU extends ViewComponent {
 		dpuDetailLayout.addComponent(tabSheet);
 
 		if (jarPath != null) {
+// TODO !!			
+			/*
 			try {
 				dpuExec = App.getApp().getModules().getInstance(jarPath);
 
@@ -346,13 +339,14 @@ class DPU extends ViewComponent {
 				Notification.show(
 						"ModuleException:Failed to load configuration dialog.",
 						me.getTraceMessage(), Type.ERROR_MESSAGE);
-			} catch (ConfigurationException ce) {
+			} catch (ConfigException ce) {
 				// TODO: Show info about invalid saved config(should not happen
 				// -> validity check on save)
 				Notification
-						.show("ConfigurationException: Failed to set configuration for dialog.",
+						.show("ConfigException: Failed to set configuration for dialog.",
 								ce.getMessage(), Type.ERROR_MESSAGE);
 			}
+			*/
 		}
 
 		// DPURecord details: Info Tab
@@ -481,7 +475,7 @@ class DPU extends ViewComponent {
 					@Override
 					public void buttonClick(ClickEvent event) {
 
-						List<DPUInstance> instances = App.getDPUs()
+						List<DPUInstanceRecord> instances = App.getDPUs()
 								.getAllDPUInstances();
 						List<Pipeline> pipelines = App.getApp().getPipelines()
 								.getAllPipelines();
@@ -489,9 +483,9 @@ class DPU extends ViewComponent {
 						int fl = 0, i = 0;
 						int j = 0;
 						String[] pipeName = new String[100];
-						for (DPUInstance item : instances) {
+						for (DPUInstanceRecord item : instances) {
 
-							if (item.getDpu().getId() == selectedDpu.getId()) {
+							if (item.getTemplate().getId() == selectedDpu.getId()) {
 								fl = 1;
 
 								for (Pipeline pitem : pipelines) {
@@ -501,9 +495,7 @@ class DPU extends ViewComponent {
 
 									for (Node nitem : nodes) {
 
-										if (nitem.getDpuInstance().getDpu()
-												.getId() == item.getDpu()
-												.getId()) {
+										if (nitem.getDpuInstance().getId() == item.getId()) {
 											pipeName[j] = pitem.getName()
 													.toString();
 											j++;
@@ -588,8 +580,8 @@ class DPU extends ViewComponent {
 							selectedDpu
 									.setVisibility((VisibilityType) groupVisibility
 											.getValue());
-
-							dpuExec.saveConfiguration(conf);
+// TODO !!
+//							dpuExec.saveConfiguration(conf);
 
 							// store into DB
 							App.getDPUs().save(selectedDpu);
@@ -609,7 +601,9 @@ class DPU extends ViewComponent {
 	}
 
 	private void fillTree(Tree tree) {
-
+// TODO !!!
+		
+/*
 		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootExtractor = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
 				"Extractors", null);
 		tree.addItem(rootExtractor);
@@ -620,26 +614,25 @@ class DPU extends ViewComponent {
 				"Loaders", null);
 		tree.addItem(rootLoader);
 
-		List<cz.cuni.xrg.intlib.commons.app.dpu.DPURecord> dpus = App.getApp()
-				.getDPUs().getAllDpus();
-		for (cz.cuni.xrg.intlib.commons.app.dpu.DPURecord dpu : dpus) {
+		List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
+		for (DPUTemplateRecord dpu : dpus) {
 			tree.addItem(dpu);
 
 			switch (dpu.getType()) {
-			case EXTRACTOR:
+			case Extractor:
 				tree.setParent(dpu, rootExtractor);
 				break;
-			case TRANSFORMER:
+			case Transformer:
 				tree.setParent(dpu, rootTransformer);
 				break;
-			case LOADER:
+			case Loader:
 				tree.setParent(dpu, rootLoader);
 				break;
 			default:
 				throw new IllegalArgumentException();
 			}
 		}
-
+*/
 	}
 
 	@Override

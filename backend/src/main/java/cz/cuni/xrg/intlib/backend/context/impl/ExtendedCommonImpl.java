@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 /**
@@ -61,7 +61,7 @@ class ExtendedCommonImpl {
 	/**
 	 * Manage mapping context into execution's directory. 
 	 */
-	private ExecutionContextWriter contextWriter;
+	private ExecutionContext contextWriter;
 	
 	/**
 	 * Counter used to generate unique id for data.
@@ -74,7 +74,7 @@ class ExtendedCommonImpl {
 	private Logger logger;
 	
 	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
-			ExecutionContextWriter contextWriter) {
+			ExecutionContext contextWriter) {
 		this.id = id;
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();

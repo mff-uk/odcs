@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 
 /**
- * Configuration dialog.
+ * Config dialog.
  *
  * @author Maria
  *
@@ -54,7 +54,7 @@ public class ConfigDialog extends CustomComponent {
      *
      * @return current configuration or null
      */
-    public void getConfiguration(Configuration config) {
+    public void getConfiguration(Config config) {
         config.setValue(Config.DiffName.name(), checkBoxDiffName.getValue());
         config.setValue(Config.DirectoryPath.name(), textFieldDir.getValue());
         config.setValue(Config.FileName.name(), textFieldFileName.getValue());
@@ -64,10 +64,10 @@ public class ConfigDialog extends CustomComponent {
     /**
      * Load values from configuration into dialog.
      *
-     * @throws ConfigurationException
+     * @throws ConfigException
      * @param conf
      */
-    public void setConfiguration(Configuration conf) {
+    public void setConfiguration(Config conf) {
         try {
             checkBoxDiffName.setValue((Boolean) conf.getValue(Config.DiffName.name()));
             textFieldDir.setValue((String) conf.getValue(Config.DirectoryPath.name()));
@@ -76,7 +76,7 @@ public class ConfigDialog extends CustomComponent {
 
         } catch (Property.ReadOnlyException | Converter.ConversionException ex) {
             // throw setting exception
-            throw new ConfigurationException();
+            throw new ConfigException();
         }
     }
 

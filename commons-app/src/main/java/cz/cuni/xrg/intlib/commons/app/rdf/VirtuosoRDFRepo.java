@@ -52,7 +52,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
     }
 
     public static VirtuosoRDFRepo createVirtuosoRDFRepo() {
-        // TODO: Load from AppConfiguration ... 
+        // TODO: Load from AppConfig ... 
         final String hostName = "localhost";
         final String port = "1111";
         final String user = "dba";

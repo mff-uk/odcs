@@ -1,9 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
 import cz.cuni.xrg.intlib.commons.app.Application;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
-import java.util.Properties;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 
 /**
  * Contains settings for ModuleFacade;
@@ -14,7 +13,8 @@ import java.util.Properties;
 public class ModuleFacadeConfiguration {
 
 	/**
-	 * Folder with dpu to load during execution.
+	 * Folder with dpu to load during execution. 
+	 * Without file:/// prefix.
 	 */
 	private String dpuFolder;
 
@@ -25,19 +25,20 @@ public class ModuleFacadeConfiguration {
 	
 	/**
 	 * Folder with dpu libraries.
+	 * Without file:/// prefix.
 	 */
 	private String dpuLibsFolder = "";
 
 	/**
-	 * Module configuration is constructed directly from {@link AppConfiguration}.
+	 * Module configuration is constructed directly from {@link AppConfig}.
 	 *
 	 * @param conf
 	 */
-	public ModuleFacadeConfiguration(AppConfiguration conf, Application app) {
-		dpuFolder = conf.getString(ConfProperty.MODULE_PATH);
-		dpuLibsFolder = conf.getString(ConfProperty.MODULE_LIBS);
+	public ModuleFacadeConfiguration(AppConfig conf, Application app) {
+		dpuFolder = conf.getString(ConfigProperty.MODULE_PATH);
+		dpuLibsFolder = conf.getString(ConfigProperty.MODULE_LIBS);
 		packagesToExpose = conf.getString(Application.FRONTEND.equals(app)
-			? ConfProperty.MODULE_FRONT_EXPOSE : ConfProperty.MODULE_BACK_EXPOSE);
+			? ConfigProperty.MODULE_FRONT_EXPOSE : ConfigProperty.MODULE_BACK_EXPOSE);
 	}
 
 	public String getDpuFolder() {

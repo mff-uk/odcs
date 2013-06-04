@@ -1,7 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
 /**
- * Module exception.
+ * Base module exception.
+ * 
  * @author Petyr
  *
  */
@@ -17,22 +18,5 @@ public class ModuleException extends RuntimeException {
 
     public ModuleException(String message) {
         super(message);
-    }
-	
-	/**
-	 * Return original exception.
-	 * @return original exception
-	 */
-	public Exception getOriginal() {
-		return null;
-	}
-	
-	/**
-	 * Return exception message extended by original exception message.
-	 * @return
-	 */
-	public String getTraceMessage() {
-		return getMessage();
-	}
-	
+    }	
 }

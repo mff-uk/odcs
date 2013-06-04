@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+
 /**
  * Facade providing actions with pipelines.
  *

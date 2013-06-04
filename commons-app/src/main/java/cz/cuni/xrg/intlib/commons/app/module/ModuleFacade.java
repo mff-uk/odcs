@@ -1,12 +1,10 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
-import cz.cuni.xrg.intlib.commons.DPUExecutive;
-import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.commons.app.module.osgi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Facade providing actions with DPURecord module implementations.
@@ -19,12 +17,17 @@ public class ModuleFacade {
 	/**
 	 * Used framework.
 	 */
-	private Framework framework;
+	private OSGIFramework framework;
 	
 	/**
-	 * Configuration.
+	 * Facade configuration.
 	 */
 	private ModuleFacadeConfiguration configuration;
+	
+	/**
+	 * Logger instance.
+	 */
+	private Logger logger = LoggerFactory.getLogger(ModuleFacade.class);
 	
 	/**
 	 * Base ctor. The configuration is not used until some other 
@@ -33,18 +36,26 @@ public class ModuleFacade {
 	 * @param configuration
 	 */
 	public ModuleFacade(ModuleFacadeConfiguration configuration) {
-		this.framework = new Framework();
+		this.framework = new OSGIFramework();
 		this.configuration = configuration;
 	}	
 	
 	/**
 	 * Start framework. Must be called as a first method after ctor.
+	 * @throws FrameworkStartFailedException
+	 * @throws LibsLoadFailedException
 	 */
-	public void start() throws ModuleException {
+	public void start() throws FrameworkStartFailedException, LibsLoadFailedException {
+		logger.info("Starting module facade");
 		// start
-		this.framework.start(configuration.getPackagesToExpose());
+		framework.start(configuration.getPackagesToExpose());
 		// load libs
-		installDirectory(configuration.getDpuLibsFolder());
+		try {
+			installDirectory(configuration.getDpuLibsFolder());
+		} catch (Exception e) {
+			logger.error("installDirectory failed", e);
+			throw new LibsLoadFailedException(e);
+		}
 	}
 	
 	/**
@@ -52,81 +63,52 @@ public class ModuleFacade {
 	 * releasing all used instances from ModuleFacade.
 	 */
 	public void stop() {
-// TODO: ...		
-//		this.framework.uninstallBundles();
-		this.framework.stop();		
+		framework.stop();
 	}
 	
 	/**
-	 * Try to load DPUExecutive from given path.
-	 * @param path path to bundle (jar file) relative to dpu's directory
-	 * @return loaded module
-	 * @throws ModuleException
+	 * Load main class from bundle and return it as object.
+	 * @param relativePath Relative path in DPU's directory.
+	 * @return Loaded class.
+	 * @throws FileNotFoundException 
+	 * @throws ClassLoadFailedException 
+	 * @throws BundleInstallFailedException 
 	 */
-	public DPUExecutive getInstance(String path) throws ModuleException {
-		return this.framework.loadDPU(configuration.getDpuFolder() + path);
-	}
-	
-	/**
-	 * Try to load DPUExecutive from given uri.
-	 * @param uri uri to module file
-	 * @return loaded loader
-	 * @throws ModuleException
-	 */
-	public Load getInstanceLoader(String uri) throws ModuleException {
-		return (Load) getInstance(uri);
-	}
-	
-	/**
-	 * Try to load DPUExecutive from given uri.
-	 * @param uri uri to module file
-	 * @return loaded extractor
-	 * @throws ModuleException
-	 */
-	public Extract getInstanceExtract(String uri) throws ModuleException {
-		return (Extract) getInstance(uri);
-	}
-	
-	/**
-	 * Try to load DPUExecutive from given uri.
-	 * @param uri uri to module file
-	 * @return loaded transformer
-	 * @throws ModuleException
-	 */
-	public Transform getInstanceTransform(String uri) throws ModuleException {
-		return (Transform) getInstance(uri);
-	}
+	public Object getObject(String relativePath) 
+			throws BundleInstallFailedException, ClassLoadFailedException, FileNotFoundException {
+		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
+		return framework.loadClass(uri);
+	}	
 	
 	/**
 	 * List files in single directory (non-recursive). If the
 	 * file is *.jar then load id as a bundle.
-	 * @param directoryPath system path to directory. Not url.
+	 * @param directoryPath system path to directory. Not prefixed by file:///
+	 * @throws LibsLoadFailedException
 	 */
-	private void installDirectory(String directoryPath) {
-		String message = "";
-// TODO: Propagate exceptions to application .. in some way ?		
+	private void installDirectory(String directoryPath) throws LibsLoadFailedException {
+		logger.info("Loading libs from {}", directoryPath);
+		
 		File directory = new File( directoryPath );
 		File[] fList = directory.listFiles();
 		if (fList == null ){
 			// invalid directory
-			// TODO: send message?
-			return;
+			throw new LibsLoadFailedException("Invalid libs path.");
 		}
-		
+		// load bundles .. 
 		for (File file : fList){
 			if (file.isFile()){
 				if (file.getName().contains("jar")) {
-					// load as bundle
-					// install bundle
-					String path = "file:///" + file.getAbsolutePath().replace('\\', '/');
-					message += "loading: " + path + "\n";
+					logger.info("Loading lib '{}'", file.getAbsolutePath());
+					// load and install as bundle
+					String path = "file:///" + file.getAbsolutePath().replace('\\', '/');				
 					try {
 						framework.installBundle( path );
-					} catch (OSGiException e) {
-						message = e.getMessage() + " > " + e.getOriginal().getMessage() + "\n";
-					} catch(Exception e) {
-						message = "Exception: " + e.getMessage() + "\n";
-					}							
+					} catch (BundleInstallFailedException
+							| FileNotFoundException e) {
+						logger.error("Failed to load bundle from {}", path, e);
+						throw new LibsLoadFailedException("Failed to load bundle " + path, e);
+					}
 				}
 				
 			}

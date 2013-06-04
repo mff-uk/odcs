@@ -2,6 +2,11 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.io.File;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -15,49 +20,47 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  * @author Petyr
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD) 
+@Entity
+@Table(name = "dataUnit_info")
 public class DataUnitInfo {
 	
 	/**
-	 * Associated directory.
+	 * Associated working directory. Absolute path.
 	 */
-	@XmlValue
+	@Column(name="directory")
 	private File directory;
-	
-	/**
-	 * True if the data unit is created as a input.
-	 */
-	@XmlAttribute
-	private boolean isInput;
-	
+		
 	/**
 	 * DataUnit type. 
 	 */
-	@XmlAttribute
+	@Enumerated(EnumType.ORDINAL)
 	private DataUnitType type;
 	
 	/**
-	 * Empty ctor because of JAXB.
-	 */	
-	public DataUnitInfo() {
-		
-	}
+	 * True if use as input.
+	 */
+	private boolean isInput;
 	
-	public DataUnitInfo(File directory, boolean isInput, DataUnitType type) {
+	/**
+	 * Empty ctor because of JAP.
+	 */	
+	public DataUnitInfo() { }
+	
+	public DataUnitInfo(File directory, DataUnitType type, boolean isInput) {
 		this.directory = directory;
-		this.isInput = isInput;
 		this.type = type;
+		this.isInput = isInput;
 	}
 
 	public File getDirectory() {
 		return directory;
 	}
 
-	public boolean isInput() {
-		return isInput;
-	}
-
 	public DataUnitType getType() {
 		return type;
+	}
+
+	public boolean isInput() {
+		return isInput;
 	}
 }

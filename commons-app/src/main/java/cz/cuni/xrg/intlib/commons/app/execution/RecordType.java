@@ -12,27 +12,27 @@ public enum RecordType {
 	/**
 	 * Debug information from DPURecord.
 	 */
-	 DPUDEBUG
+	 DPU_DEBUG
 	/**
 	 * Log information from DPURecord.
 	 */
-	,DPULOG
+	,DPU_LOG
 	/**
 	 * Closer unspecified information from DPURecord.
 	 */
-	,DPUINFO
+	,DPU_INFO
 	/**
 	 * Warning from DPURecord.
 	 */
-	,DPUWARNING
+	,DPU_WARNING
 	/**
 	 * Error from DPURecord.
 	 */
-	,DPUERROR
+	,DPU_ERROR
 	/**
 	 * Represent error message from pipeline.
 	 */
-	,PIPELINEERROR;
+	,PIPELINE_ERROR;
 		
 	/**
 	 * Convert message.Type to RecordType.
@@ -40,15 +40,15 @@ public enum RecordType {
 	public static RecordType fromMessageType(MessageType type) {
 		switch(type) {
 		case DEBUG:
-			return RecordType.DPUDEBUG;
+			return RecordType.DPU_DEBUG;
 		case INFO:
-			return RecordType.DPUINFO;
+			return RecordType.DPU_INFO;
 		case WARNING:
-			return RecordType.DPUWARNING;
+			return RecordType.DPU_WARNING;
 		case ERROR:
-			return RecordType.DPUERROR;
+			return RecordType.DPU_ERROR;
 		default:
-			return RecordType.DPUINFO;
+			return RecordType.DPU_INFO;
 		}		
 	}
 }

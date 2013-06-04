@@ -5,7 +5,7 @@ import java.io.File;
 import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF;
 import cz.cuni.xrg.intlib.backend.data.rdf.VirtuosoRDF;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -26,7 +26,7 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	/**
 	 * Manage mapping context into execution's directory. 
 	 */
-	private ExecutionContextWriter contextWriter;
+	private ExecutionContext contextWriter;
 	
 	/**
 	 * Instance of DPURecord for which is this DataUnitFactory.
@@ -43,7 +43,7 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 	 * @param id Unique id (Context id.)
 	 * @param storageDirectory The folder does not have to exist.
 	 */
-	public DataUnitFactoryImpl(String id, ExecutionContextWriter contextWriter, DPUInstance dpuInstance) {
+	public DataUnitFactoryImpl(String id, ExecutionContext contextWriter, DPUInstance dpuInstance) {
 		this.id = id;
 		this.contextWriter = contextWriter;
 		this.dpuInstance = dpuInstance;

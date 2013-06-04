@@ -5,7 +5,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Panel;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -141,8 +141,8 @@ public class AppEntry extends com.vaadin.ui.UI {
      * Return application configuration class.
      * @return
      */
-    public AppConfiguration getAppConfiguration() {
-		return (AppConfiguration) context.getBean("configuration");
+    public AppConfig getAppConfiguration() {
+		return (AppConfig) context.getBean("configuration");
     }
 
 	/**

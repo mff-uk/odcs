@@ -3,22 +3,20 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
@@ -36,16 +34,14 @@ class PipelineList extends ViewComponent {
 	public void runPipeline(Pipeline pipeline, boolean inDebugMode) {
 		PipelineExecution pipelineExec =  new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
-		// TODO Petyr: leave null value?
-		pipelineExec.setWorkingDirectory("");
 		// do some settings here
 
 		// store into DB
 		App.getPipelines().save(pipelineExec);
-		AppConfiguration config = App.getApp().getAppConfiguration();
+		AppConfig config = App.getApp().getAppConfiguration();
 		Client client = new Client(
-			config.getString(ConfProperty.BACKEND_HOST),
-			config.getInteger(ConfProperty.BACKEND_PORT)
+			config.getString(ConfigProperty.BACKEND_HOST),
+			config.getInteger(ConfigProperty.BACKEND_PORT)
 		);
 
 		// send message to backend

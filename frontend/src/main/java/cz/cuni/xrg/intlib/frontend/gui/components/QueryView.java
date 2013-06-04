@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import cz.cuni.xrg.intlib.commons.DpuType;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
 import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
 import java.io.File;
@@ -143,12 +143,12 @@ public class QueryView extends CustomComponent {
         return result;
     }
 
-    public void setGraphs(DpuType type) {
+    public void setGraphs(DPUType type) {
         graphSelect.removeAllItems();
-        if (type != DpuType.EXTRACTOR) {
+        if (type != DPUType.Extractor) {
             graphSelect.addItem("Input Graph");
         }
-        if (type != DpuType.LOADER) {
+        if (type != DPUType.Loader) {
             graphSelect.addItem("Output Graph");
         }
     }

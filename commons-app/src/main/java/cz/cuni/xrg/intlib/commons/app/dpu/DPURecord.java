@@ -7,7 +7,7 @@ import org.hibernate.engine.loading.internal.LoadingCollectionEntry;
 
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
 
 
 /**
@@ -19,7 +19,6 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
  *
  */
 @Entity
-@Table(name="dpu_model")
 public class DPURecord {
 
     /**
@@ -46,35 +45,20 @@ public class DPURecord {
      */
 	@Enumerated(EnumType.ORDINAL)
     private DPUType type;
-    
-    /**
-     * VIsibility.
-     */
-	@Deprecated
-	@Enumerated(EnumType.ORDINAL)
-    private VisibilityType visibility;
-    
+        
     /**
      * Path to the jar file. The path is relative to the 
-     * AppConfiguration.dpuDirectory.
-     * @see AppConfiguration
+     * AppConfig.dpuDirectory.
+     * @see AppConfig
      */
 	@Column(name="jar_path")
     private String jarPath;
 	
 	/**
-	 * Default configuration for this DPURecord.
-	 * When {@link DPUInstance} is created, its {@link InstanceConfiguration} is
-	 * automatically created as an exact copy of {@link TemplateConfiguration}.
-	 */
-	@OneToOne(mappedBy = "dpu", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private TemplateConfiguration templateConfiguration;
-
-	/**
 	 * Instance of DPU.
 	 */
 	@Transient
-	private Configurable<Configuration> instance;
+	private Configurable<Config> instance;
 	
     /**
      * Allow empty constructor for JPA.
@@ -97,7 +81,7 @@ public class DPURecord {
      * @throws ModuleException
      */
     public void loadInstance() throws ModuleException {
-    	
+    	// TODO Petyr, load DPUInstance using OSGi here .. 
     }
     
     public String getName() {
@@ -116,16 +100,6 @@ public class DPURecord {
         this.description = description;
     }
 
-    @Deprecated
-    public VisibilityType getVisibility() {
-        return visibility;
-    }
-
-    @Deprecated
-    public void setVisibility(VisibilityType visibility) {
-        this.visibility = visibility;
-    }
-
     public Long getId() {
         return id;
     }
@@ -142,31 +116,21 @@ public class DPURecord {
         return jarPath;
     }
 
-    @Deprecated
-	public TemplateConfiguration getTemplateConfiguration() {
-		return templateConfiguration;
-	}
-
-    @Deprecated
-	public void setTemplateConfiguration(TemplateConfiguration templateConfiguration) {
-		templateConfiguration.setDpu(this);
-		this.templateConfiguration = templateConfiguration;
-	}
-
     /**
-     * Get stored instance. To load instance use {@link #loadInstance}.
+     * Get stored instance if loaded. To load instance use {@link #loadInstance}.
      * @return Stored instance.
      */
-    public Configurable<Configuration> getInstance() {
+    public Object getInstance() {
     	return instance;
     }
-    
+        
 	/**
 	 * Generates hash code from primary key if it is available, otherwise
 	 * from the rest of the attributes.
 	 * 
 	 * @return 
 	 */
+    @Deprecated
 	@Override
 	public int hashCode() {
 		int hash = 7;
@@ -174,9 +138,7 @@ public class DPURecord {
 			hash = 83 * hash + Objects.hashCode(this.name);
 			hash = 83 * hash + Objects.hashCode(this.description);
 			hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
-			hash = 83 * hash + (this.visibility != null ? this.visibility.hashCode() : 0);
 			hash = 83 * hash + Objects.hashCode(this.jarPath);
-			hash = 83 * hash + Objects.hashCode(this.templateConfiguration);
 		} else {
 			hash = 83 * hash + Objects.hashCode(this.id);
 		}
@@ -194,6 +156,7 @@ public class DPURecord {
 	 * @param obj
 	 * @return
 	 */
+    @Deprecated
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -224,14 +187,7 @@ public class DPURecord {
 		if (this.type != other.type) {
 			return false;
 		}
-		if (this.visibility != other.visibility) {
-			return false;
-		}
 		if (!Objects.equals(this.jarPath, other.jarPath)) {
-			return false;
-		}
-		if (!Objects.equals(this.templateConfiguration,
-				other.templateConfiguration)) {
 			return false;
 		}
 		return true;

@@ -18,7 +18,7 @@ import java.util.List;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 
 /**
- * Configuration dialog.
+ * Config dialog.
  *
  * @author Maria
  *
@@ -102,7 +102,7 @@ public class ConfigDialog extends CustomComponent {
      * Return current configuration from dialog. Can return null, if current
      * configuration is invalid.
      */
-    public void getConfiguration(Configuration config) {
+    public void getConfiguration(Config config) {
         mapData();
         saveEditedTexts();
 
@@ -121,10 +121,10 @@ public class ConfigDialog extends CustomComponent {
     /**
      * Load values from configuration into dialog.
      *
-     * @throws ConfigurationException
+     * @throws ConfigException
      * @param conf
      */
-    public void setConfiguration(Configuration conf) {
+    public void setConfiguration(Config conf) {
         try {
             String endp = (String) conf.getValue(Config.SPARQL_endpoint.name());
 
@@ -153,7 +153,7 @@ public class ConfigDialog extends CustomComponent {
 
         } catch (UnsupportedOperationException | Property.ReadOnlyException ex) {
             // throw setting exception
-            throw new ConfigurationException();
+            throw new ConfigException();
         }
     }
 

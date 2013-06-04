@@ -2,8 +2,8 @@ package cz.cuni.xrg.intlib.commons.web;
 
 import com.vaadin.ui.CustomComponent;
 
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 
 /**
  * Base abstract class for configuration dialog.
@@ -11,21 +11,21 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
  * @author Petyr
  *
  */
-public abstract class AbstractConfigDialog <C extends Configuration> extends CustomComponent {
+public abstract class AbstractConfigDialog <C extends Config> extends CustomComponent {
 
 	/**
 	 * Set dialog interface according to passed configuration. If
-	 * the passed configuration is invalid ConfigurationException can be thrown.
-	 * @param conf Configuration object.
-	 * @throws ConfigurationException
+	 * the passed configuration is invalid ConfigException can be thrown.
+	 * @param conf Config object.
+	 * @throws ConfigException
 	 */
-	public abstract void setConfiguration(C conf) throws ConfigurationException;
+	public abstract void setConfiguration(C conf) throws ConfigException;
 	
 	/**
 	 * Get configuration from dialog. In case of presence invalid configuration in 
-	 * dialog throw ConfigurationException.
-	 * @return Configuration object.
+	 * dialog throw ConfigException.
+	 * @return Config object.
 	 */
-	public abstract C getConfiguration() throws ConfigurationException;
+	public abstract C getConfiguration() throws ConfigException;
 	
 }

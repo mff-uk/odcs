@@ -2,17 +2,17 @@ package module;
 
 import gui.ConfigDialog;
 
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.module.dpu.AbstractTransformer;
 import cz.cuni.xrg.intlib.commons.module.gui.AbstractConfigDialog;
 
 public class DPU_Template extends AbstractTransformer { // TODO 1: Select Abstract class to Exnted
 
 	@Override
-	public void saveConfigurationDefault(Configuration configuration) {
+	public void saveConfigurationDefault(Config configuration) {
 		// TODO 2: Store default configuration into configuration	
 		configuration.setValue("myNumer", 3);
-		configuration.setValue("myString", "Configuration ...");
+		configuration.setValue("myString", "Config ...");
 	}
 
 	@Override

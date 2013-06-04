@@ -1,13 +1,12 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
-import cz.cuni.xrg.intlib.commons.DpuType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import javax.persistence.*;
 
@@ -88,20 +87,6 @@ public class PipelineGraph {
 			edge.setGraph(this);
 		}
     }
-
-    /**
-     * Adds new DPURecord to graph.
-     *
-     * @param dpu
-     * @return
-     */
-	@Deprecated
-    public int addDpu(DPURecord dpu) {
-        DPUInstance dpuInstance = new DPUInstance(dpu);
-        Node node = new Node(dpuInstance);
-        addNode(node);
-        return node.hashCode();
-    }
 	
 	/**
 	 * Adds a new node created from given DPUInstance.
@@ -109,7 +94,7 @@ public class PipelineGraph {
 	 * @param dpuInstance
 	 * @return node instance
 	 */
-	public Node addDpuInstance(DPUInstance dpuInstance) {
+	public Node addDpuInstance(DPUInstanceRecord dpuInstance) {
         Node node = new Node(dpuInstance);
 		addNode(node);
 		return node;
@@ -253,11 +238,11 @@ public class PipelineGraph {
 		Node from = getNodeById(fromId);
         Node to = getNodeById(toId);
 
-		//Rules validation with corresponding error messages.
-		if(to.getDpuInstance().getDpu().getType() == DpuType.EXTRACTOR) {
+		// Rules validation with corresponding error messages.
+		if(to.getDpuInstance().getType() == DPUType.Extractor) {
 			return "Extractor cannot have an input edge!";
 		}
-		if(from.getDpuInstance().getDpu().getType() == DpuType.LOADER) {
+		if(from.getDpuInstance().getType() == DPUType.Loader) {
 			return "Loader cannot have an output edge!";
 		}
 		if(from.equals(to)) {

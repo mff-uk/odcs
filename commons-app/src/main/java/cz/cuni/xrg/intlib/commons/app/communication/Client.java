@@ -63,11 +63,11 @@ public class Client {
 			
 		// communication
 		try {
-                    try (DataOutputStream stream = new DataOutputStream (socket.getOutputStream())) {
-                        stream.writeInt(Messages.CheckDatabase.getMessage());
-                        // flush and close .. 
-                        stream.flush();
-                    }
+            try (DataOutputStream stream = new DataOutputStream (socket.getOutputStream())) {
+                stream.writeInt(Messages.CheckDatabase.getMessage());
+                // flush and close .. 
+                stream.flush();
+            }
 			socket.close();
 		} catch (IOException e) {			
 			throw new CommunicationException("Error in communication with backend.", e);

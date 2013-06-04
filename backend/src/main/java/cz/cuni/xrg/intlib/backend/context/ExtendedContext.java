@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.backend.context;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 
 /**
  * Contains support for:

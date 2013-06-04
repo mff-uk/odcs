@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
@@ -15,51 +13,45 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  * @author Petyr
  *
  */
-class DPUContextInfo {
+class ProcessingContextInfo {
 	
 	/**
 	 * Storage for dataUnits descriptors.
 	 */
-	@XmlElement
 	private HashMap<Integer, DataUnitInfo> dataUnits = new HashMap<>();
 	
 	/**
 	 * Path to the storage directory or null if the directory
 	 * has't been used yet.
 	 */
-	@XmlElement
 	private File storageDirectory = null;
 	
 	/**
 	 * Path to the result storage directory or null if the directory
 	 * has't been used yet.
 	 */		
-	@XmlElement
 	private File resultDirectory = null;
 	
 	/**
 	 * DPURecord's root working directory.
 	 */
-	@XmlElement
 	private File rootDirectory = null;
 	
 	/**
 	 * Empty ctor because of JAXB.
 	 */
-	public DPUContextInfo() {
-		
-	}
+	public ProcessingContextInfo() { }
 	
 	/**
 	 * 
 	 * @param rootDirectory DPURecord's root directory doesn't have to exit.
 	 */
-	public DPUContextInfo(File rootDirectory) {
+	public ProcessingContextInfo(File rootDirectory) {
 		this.rootDirectory = rootDirectory;
 	}
-	
+		
 	/**
-	 * Return set of indexes for stored DataUnits.
+	 * Return set of indexes for DataUnits.
 	 * @return
 	 */
 	public Set<Integer> getIndexForDataUnits() {
@@ -67,7 +59,7 @@ class DPUContextInfo {
 	}	
 	
 	/**
-	 * Return {@link DataUnitInfo} for given {@link DataUnit}. 
+	 * Return {@link DataUnitInfo} for {@link DataUnit}. 
 	 * @param index Index of {@link DataUnit}.
 	 * @return {@link DataUnitType} or null in case of invalid id.
 	 */
@@ -78,24 +70,40 @@ class DPUContextInfo {
 			return null;
 		}
 	}
-		
+	
 	/**
-	 * Return path to the directory associated with given. If the path 
-	 * doesn't exist then it's created.
+	 * Return path to the directory for given input DataUnit. Is not
+	 * secured that the returned directory exist.
 	 * @param type DataUnit type.
-	 * @param isInput True it the DataUnit is created as a input.
-	 * @param index Index of DataUnit.
+	 * @param index Index of input DataUnit.
 	 * @return The directory or null.
 	 */
-	public File createDirForDataUnit(DataUnitType type, boolean isInput, int index) {
+	public File createInputDir(DataUnitType type, int index) {
 		if (dataUnits.containsKey(index)) {
 			return dataUnits.get(index).getDirectory();
 		} else {
 			File path = new File(rootDirectory, Integer.toString(index) );
-			dataUnits.put(index, new DataUnitInfo(path, isInput, type));
+			dataUnits.put(index, new DataUnitInfo(path, type, true));
 			return path;
 		}
 	}
+	
+	/**
+	 * Return path to the directory for given output DataUnit. Is not
+	 * secured that the returned directory exist.
+	 * @param type DataUnit type.
+	 * @param index Index of output DataUnit.
+	 * @return The directory or null.
+	 */	
+	public File createOutputDir(DataUnitType type, int index) {
+		if (dataUnits.containsKey(index)) {
+			return dataUnits.get(index).getDirectory();
+		} else {
+			File path = new File(rootDirectory, Integer.toString(index) );
+			dataUnits.put(index, new DataUnitInfo(path, type, false));
+			return path;
+		}
+	}	
 	
 	/**
 	 * Return the storage directory or this associated DPURecord.

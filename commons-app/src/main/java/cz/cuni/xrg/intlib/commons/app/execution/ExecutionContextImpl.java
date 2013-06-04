@@ -1,150 +1,91 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
-@XmlRootElement
-class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWriter {
+class ExecutionContextImpl implements ExecutionContext {
 
 	/**
-	 * Store context information for DPUs under
-	 * DPURecord's id.
+	 * Contexts for DPU's. Indexed by id's of DPUINstanceRecord
 	 */
-	@XmlElement
-	private HashMap<Long, DPUContextInfo> contexts = new HashMap<>();
-
+	private Map<Long, ProcessingContextInfo> contexts;
+	
 	/**
 	 * Working directory for execution.
 	 */
-	private File workingDirectory = null;
-
+	private File directory;
+	
 	/**
-	 * Empty ctor because of JAXB.
+	 * Empty ctor for JPA. Do not use.
 	 */
-	public ExecutionContextImpl() {
-
+	public ExecutionContextImpl() { }
+	
+	public ExecutionContextImpl(File directory) {
+		this.contexts = new HashMap<>();
+		this.directory = directory;		
 	}
-
+	
 	/**
-	 *
-	 * @param workingDirectory Execution working directory doesn't have to exit.
+	 * Return context for given DPUInstanceRecord. Create new context if need.
+	 * @param id DPUInstanceRecord's id.
+	 * @return ProcessingContextInfo
 	 */
-	public ExecutionContextImpl(File workingDirectory) {
-		this.workingDirectory = workingDirectory;
+	private ProcessingContextInfo getContext(DPUInstanceRecord dpuInstance) {
+		// check existence
+		Long id = dpuInstance.getId();
+		if (!contexts.containsKey(id)) {
+			// add new 
+			File root = new File(directory, Long.toString(id));
+			contexts.put(id, new ProcessingContextInfo(root));
+		}
+		// return data
+		return contexts.get(id);
 	}
-
+	
 	@Override
-	public DataUnitInfo getDataUnitInfo(DPUInstance dpuInstance, int id) {
-		return getContext(dpuInstance).getDataUnitInfo(id);
-	}
-
-	@Override
-	public File createDirForDataUnit(DPUInstance dpuInstance,
-			DataUnitType type, boolean isInput, int index) {
-		return getContext(dpuInstance).createDirForDataUnit(type, isInput, index);
-	}
-
-	@Override
-	public File getDirForDPUStorage(DPUInstance dpuInstance) {
-		return getContext(dpuInstance).getDirForDPUStorage();
-	}
-
-	@Override
-	public File getDirForDPUResult(DPUInstance dpuInstance) {
-		return getContext(dpuInstance).getDirForDPUResult(true);
-	}
-
-	@Override
-	public boolean containsData(DPUInstance dpuInstance) {
+	public boolean containsData(DPUInstanceRecord dpuInstance) {
 		return contexts.containsKey(dpuInstance.getId());
 	}
 
 	@Override
-	public Set<Integer> getIndexesForDataUnits(DPUInstance dpuInstance) {		
-		if (contexts.containsKey(dpuInstance.getId())) {
-			Long id = dpuInstance.getId();
-			DPUContextInfo dpuContextInfo = contexts.get(id);
-			return dpuContextInfo.getIndexForDataUnits();
-		} else {
-			return null;
-		}
+	public Set<Integer> getIndexesForDataUnits(DPUInstanceRecord dpuInstance) {
+		return getContext(dpuInstance).getIndexForDataUnits();
 	}
 
 	@Override
-	public File getDirectoryForResult(DPUInstance dpuInstance) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			return contexts.get(dpuInstance.getId()).getDirForDPUResult(false);
-		} else {
-			// DPURecord's context does'n exist
-			return null;
-		}
+	public DataUnitInfo getDataUnitInfo(DPUInstanceRecord dpuInstance, int index) {
+		return getContext(dpuInstance).getDataUnitInfo(index);
 	}
 
 	@Override
-	public void save() throws Exception {
-		// make sure that the folder exist
-		workingDirectory.mkdirs();
-		// get output file
-		File outputFile = getloadFilePath();
-		// delete file if existing ..
-		if (outputFile.exists()) {
-			outputFile.delete();
-		}
-		// now create a new file and write output ..
-		JAXBContext jc = JAXBContext.newInstance(ExecutionContextImpl.class, DPUContextInfo.class);
-		Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            
-        try (FileOutputStream os = new FileOutputStream(outputFile)) {
-                marshaller.marshal(this, os );
-                os.close();
-            }
+	public File getDirectoryForResult(DPUInstanceRecord dpuInstance) {
+		return getContext(dpuInstance).getDirForDPUResult(false);
 	}
 
 	@Override
-	public File getloadFilePath() {
-		return new File(workingDirectory, "context.xml");
+	public File createDirForInput(DPUInstanceRecord dpuInstance,
+			DataUnitType type, int index) {
+		return getContext(dpuInstance).createInputDir(type, index);
 	}
 
 	@Override
-	public File getLogFile() {
-		return new File(workingDirectory, "log.txt");
+	public File createDirForOutput(DPUInstanceRecord dpuInstance,
+			DataUnitType type, int index) {
+		return getContext(dpuInstance).createOutputDir(type, index);
 	}
 
-	/**
-	 * Return {@link DPUContextInfo} for given {@link DPUInstance}
-	 * @param dpuInstance
-	 * @return
-	 */
-	private DPUContextInfo getContext(DPUInstance dpuInstance) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			// context exist
-			return contexts.get(dpuInstance.getId());
-		} else {
-			// prepare directory
-			File dpuContextDir = new File(workingDirectory, dpuInstance.getId().toString() );
-			// create context
-			DPUContextInfo newContext = new DPUContextInfo(dpuContextDir);
-			contexts.put(dpuInstance.getId(), newContext);
-			return newContext;
-		}
+	@Override
+	public File createDirForDPUStorage(DPUInstanceRecord dpuInstance) {
+		return getContext(dpuInstance).getDirForDPUStorage();
 	}
 
-	public File getWorkingDirectory() {
-		return workingDirectory;
-	}
-
-	public void setWorkingDirectory(File workingDirectory) {
-		this.workingDirectory = workingDirectory;
+	@Override
+	public File createDirForDPUResult(DPUInstanceRecord dpuInstance) {
+		return getContext(dpuInstance).getDirForDPUResult(true);
 	}
 }

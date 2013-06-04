@@ -1,6 +1,6 @@
 package module;
 
-import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 
 /**
  * This exception is thrown, when selected data format is not supported by basic
@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
  *
  * @author Jiri Tomes
  */
-public class NotSupporteRDFFormatException extends ConfigurationException {
+public class NotSupporteRDFFormatException extends ConfigException {
 
     private final String message = "This RDF format is not supported.";
 

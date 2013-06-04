@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.web;
 
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
 
 /**
  * Interface with graphical configuration dialog.
@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
  * @author Petyr
  *
  */
-public interface ConfigDialogProvider <C extends Configuration> {
+public interface ConfigDialogProvider <C extends Config> {
 
 	/**
 	 * Return configuration dialog.

@@ -2,8 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.util.Date;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 
 import javax.persistence.*;
 
@@ -40,11 +39,11 @@ public class Record {
 	private RecordType type;
 	
 	/**
-	 * DPURecord which emmitted the message.
+	 * DPURecord which emitted the message.
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "dpu_id", nullable = false)
-	private DPUInstance dpuInstance;
+	private DPUInstanceRecord dpuInstance;
 	
 	/**
 	 * Pipeline execution during which message was emitted.
@@ -81,7 +80,7 @@ public class Record {
 	 */
 	public Record(Date time,
 					RecordType type,
-					DPUInstance dpuInstance,
+					DPUInstanceRecord dpuInstance,
 					PipelineExecution execution,
 					String shortMessage,
 					String fullMessage ) {
@@ -105,7 +104,7 @@ public class Record {
 		return type;
 	}
 
-	public DPUInstance getDpuInstance() {
+	public DPUInstanceRecord getDpuInstance() {
 		return dpuInstance;
 	}
 

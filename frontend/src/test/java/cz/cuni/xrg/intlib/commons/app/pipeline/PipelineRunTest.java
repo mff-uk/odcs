@@ -7,7 +7,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
 import java.io.Serializable;
 
 import java.util.LinkedList;
@@ -33,7 +33,7 @@ public class PipelineRunTest {
      */
    // @Test
     public void testTrivialRun() {
-  /*      moduleFacade = new ModuleFacade(new AppConfiguration());
+  /*      moduleFacade = new ModuleFacade(new AppConfig());
 
         moduleFacade.start(
 				",com.vaadin.ui" +

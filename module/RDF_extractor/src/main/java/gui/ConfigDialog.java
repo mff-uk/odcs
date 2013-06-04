@@ -18,7 +18,7 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 import java.io.Serializable;
 
 /**
- * Configuration dialog.
+ * Config dialog.
  *
  * @author Maria
  *
@@ -59,7 +59,7 @@ public class ConfigDialog extends CustomComponent {
      * configuration is invalid.
      *
      */
-    public void getConfiguration(Configuration config) {
+    public void getConfiguration(Config config) {
         saveEditedTexts();
         config.setValue(Config.SPARQL_endpoint.name(), (String) comboBoxSparql.getValue());
         config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
@@ -72,10 +72,10 @@ public class ConfigDialog extends CustomComponent {
     /**
      * Load values from configuration into dialog.
      *
-     * @throws ConfigurationException
+     * @throws ConfigException
      * @param conf
      */
-    public void setConfiguration(Configuration conf) {
+    public void setConfiguration(Config conf) {
         try {
             String endp = (String) conf.getValue(Config.SPARQL_endpoint.name());
 
@@ -105,7 +105,7 @@ public class ConfigDialog extends CustomComponent {
             refreshNamedGraphData();
         } catch (UnsupportedOperationException | Property.ReadOnlyException | Converter.ConversionException ex) {
             // throw setting exception
-            throw new ConfigurationException();
+            throw new ConfigException();
         }
     }
 

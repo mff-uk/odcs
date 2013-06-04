@@ -18,16 +18,16 @@ import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFacade;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
@@ -112,7 +112,7 @@ class PipelineWorker implements Runnable {
 	/**
 	 * Manage mapping execution context into {@link #workDirectory}. 
 	 */
-	private ExecutionContextWriter contextWriter;	
+	private ExecutionContext contextWriter;	
 	
 	/**
 	 * @param execution The pipeline execution record to run.
@@ -133,16 +133,16 @@ class PipelineWorker implements Runnable {
 		this.database = database;
 		// try to load the context ..
 		try {
-			this.contextWriter = ExecutionContextFactory.restoreAsWrite(workDirectory);
+			this.contextWriter = ExecutionContextFacade.restoreAsWrite(workDirectory);
 			if (this.contextWriter == null) {
 				// can't load use empty
-				this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
+				this.contextWriter = ExecutionContextFacade.createNew(workDirectory);
 			} else {
 				// used restored
 			}
 		} catch (FileNotFoundException e) {
 			// exception -> use new one .. 
-			this.contextWriter = ExecutionContextFactory.createNew(workDirectory);
+			this.contextWriter = ExecutionContextFacade.createNew(workDirectory);
 		}
 		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
 	}
@@ -424,7 +424,7 @@ class PipelineWorker implements Runnable {
 		DPURecord dpu = dpuInstance.getDpu();
 		DpuType dpuType = dpu.getType();
 		String dpuJarPath = dpu.getJarPath();
-		Configuration configuration = dpuInstance.getInstanceConfig();
+		Config configuration = dpuInstance.getInstanceConfig();
 		// set configuration
 		DPUExecutive dpuExecutive = moduleFacade.getInstance(dpuJarPath);
 		dpuExecutive.saveConfiguration(configuration);

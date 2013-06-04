@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+
 import javax.persistence.*;
 
 /**
@@ -25,7 +26,7 @@ public class Node {
 
 	@OneToOne(optional=false, cascade=CascadeType.ALL)
 	@JoinColumn(name="instance_id", unique=true, nullable=false)
-    private DPUInstance dpuInstance;
+    private DPUInstanceRecord dpuInstance;
 
 	@OneToOne(optional=false, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="position_id", unique=true)
@@ -41,19 +42,18 @@ public class Node {
     /**
      * Empty constructor for JPA.
      */
-    public Node() {
-    }
+    public Node() { }
 
     /**
      * Constructor with corresponding DPUInstance
      *
      * @param dpuInstance
      */
-    public Node(DPUInstance dpuInstance) {
+    public Node(DPUInstanceRecord dpuInstance) {
         this.dpuInstance = dpuInstance;
     }
 
-    public DPUInstance getDpuInstance() {
+    public DPUInstanceRecord getDpuInstance() {
         return dpuInstance;
     }
 
@@ -61,7 +61,7 @@ public class Node {
         return position;
     }
 
-    public void setDpuInstance(DPUInstance dpuInstance) {
+    public void setDpuInstance(DPUInstanceRecord dpuInstance) {
         this.dpuInstance = dpuInstance;
     }
 
@@ -77,16 +77,4 @@ public class Node {
 		this.graph = graph;
 	}
 	
-//    public int getId() {
-//        return id;
-//    }
-
-    /**
-     * Temporary solution of id generation.
-     *
-     * @param GetUniqueDpuInstanceId
-     */
-//    void setId(int getUniqueDpuInstanceId) {
-//        id = getUniqueDpuInstanceId;
-//    }
 }

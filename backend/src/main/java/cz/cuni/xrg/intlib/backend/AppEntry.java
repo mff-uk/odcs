@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,7 +20,7 @@ import cz.cuni.xrg.intlib.backend.execution.Engine;
 import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
 /**
@@ -61,7 +61,7 @@ public class AppEntry {
 		
 		// override default config path if it has been provided
 		if (configFileLocation != null) {
-			AppConfiguration.confPath = configFileLocation;
+			AppConfig.confPath = configFileLocation;
 		}
 		
 		// load spring
@@ -69,7 +69,7 @@ public class AppEntry {
 		context.registerShutdownHook();
 		
 		// load configuration
-		AppConfiguration appConfig = (AppConfiguration)context.getBean("configuration");
+		AppConfig appConfig = (AppConfig)context.getBean("configuration");
 
 		// set engine
 		logger.info("Configuring engine ...");
@@ -103,8 +103,8 @@ public class AppEntry {
 		logger.info("Heartbeat is running ... ");
 		
 		// print some information ..
-		logger.info("DPURecord directory:" + appConfig.getString(ConfProperty.MODULE_PATH));
-		logger.info("Listening on port:" + appConfig.getInteger(ConfProperty.BACKEND_PORT));
+		logger.info("DPURecord directory:" + appConfig.getString(ConfigProperty.MODULE_PATH));
+		logger.info("Listening on port:" + appConfig.getInteger(ConfigProperty.BACKEND_PORT));
 		logger.info("Running ...");
 		
 		// check for any pending jobs published before engine startup

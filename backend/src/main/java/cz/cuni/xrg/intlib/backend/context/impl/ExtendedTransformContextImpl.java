@@ -7,8 +7,8 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
@@ -53,7 +53,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	private Logger logger;	
 	
 	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
+			ApplicationEventPublisher eventPublisher, ExecutionContext contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.intputs = new LinkedList<DataUnit>();
 		this.outputs = new LinkedList<DataUnit>();

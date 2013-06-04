@@ -6,8 +6,8 @@ import com.vaadin.ui.CustomComponent;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
@@ -30,20 +30,20 @@ import org.slf4j.LoggerFactory;
 public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
 
     /**
-     * Configuration component.
+     * Config component.
      */
     private gui.ConfigDialog configDialog = null;
     /**
      * DPU configuration.
      */
-    private Configuration config = null;
+    private Config config = null;
     /**
      * Logger class.
      */
     private Logger logger = LoggerFactory.getLogger(RDF_extractor.class);
 
     @Override
-    public void saveConfigurationDefault(Configuration configuration) {
+    public void saveConfigurationDefault(Config configuration) {
         configuration.setValue(Config.SPARQL_endpoint.name(), "http://");
         configuration.setValue(Config.Host_name.name(), "");
         configuration.setValue(Config.Password.name(), "");
@@ -57,7 +57,7 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
     }
 
     @Override
-    public CustomComponent getConfigurationComponent(Configuration configuration) {
+    public CustomComponent getConfigurationComponent(Config configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
@@ -68,8 +68,8 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
     }
 
     @Override
-    public void loadConfiguration(Configuration configuration)
-            throws ConfigurationException {
+    public void loadConfiguration(Config configuration)
+            throws ConfigException {
 
         if (this.configDialog == null) {
         } else {
@@ -78,7 +78,7 @@ public class RDF_extractor implements GraphicalExtractor, DPUExecutive {
     }
 
     @Override
-    public void saveConfiguration(Configuration configuration) {
+    public void saveConfiguration(Config configuration) {
 
         this.config = configuration;
         if (this.configDialog == null) {

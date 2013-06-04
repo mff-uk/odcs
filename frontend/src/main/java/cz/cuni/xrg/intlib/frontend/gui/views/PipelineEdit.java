@@ -16,9 +16,10 @@ import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -101,7 +102,7 @@ class PipelineEdit extends ViewComponent {
 		});
 		pc.addListener(new ShowDebugListener() {
 			@Override
-			public void showDebug(PipelineExecution execution, DPUInstance instance) {
+			public void showDebug(PipelineExecution execution, DPUInstanceRecord instance) {
 				DebuggingView dv = new DebuggingView(execution, instance, true);
 				openDebug(dv);
 			}
@@ -147,9 +148,9 @@ class PipelineEdit extends ViewComponent {
 
 				Object obj = t.getData("itemId");
 
-				if (obj.getClass() == DPURecord.class) {
-					DPURecord dpu = (DPURecord) obj;
-					if (App.getApp().getDPUs().getAllDpus().contains(dpu)) {
+				if (obj.getClass() == DPUTemplateRecord.class) {
+					DPUTemplateRecord dpu = (DPUTemplateRecord) obj;
+					if (App.getApp().getDPUs().getAllTemplates().contains(dpu)) {
 						pc.addDpu(dpu, mouse.getClientX() - 261, mouse.getClientY() - 256);
 					} else {
 						// TODO log unknown DPURecord
@@ -374,18 +375,18 @@ class PipelineEdit extends ViewComponent {
 		DPURecord rootLoader = new DPURecord("Loaders", null);
 		tree.addItem(rootLoader);
 
-		List<DPURecord> dpus = App.getApp().getDPUs().getAllDpus();
-		for (DPURecord dpu : dpus) {
+		List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
+		for (DPUTemplateRecord dpu : dpus) {
 			tree.addItem(dpu);
 
 			switch (dpu.getType()) {
-				case EXTRACTOR:
+				case Extractor:
 					tree.setParent(dpu, rootExtractor);
 					break;
-				case TRANSFORMER:
+				case Transformer:
 					tree.setParent(dpu, rootTransformer);
 					break;
-				case LOADER:
+				case Loader:
 					tree.setParent(dpu, rootLoader);
 					break;
 				default:

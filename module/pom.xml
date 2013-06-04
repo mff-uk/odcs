@@ -18,10 +18,12 @@
 
 	<modules>
 		<module>File_extractor</module>
+		<!-- 
 		<module>File_loader</module>
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>
 		<module>SPARQL_transformer</module>
+		 -->
 	</modules>
 
     <repositories>

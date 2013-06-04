@@ -3,8 +3,10 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
 
 /**
  * 
@@ -12,12 +14,15 @@ import cz.cuni.xrg.intlib.commons.configuration.Configuration;
  * @author Petyr
  * 
  */
+@MappedSuperclass
+@Table(name = "dpu_template")
 public class DPUTemplateRecord extends DPURecord {
 
 	/**
 	 * Visibility in DPUTree.
 	 */
 	@Enumerated(EnumType.ORDINAL)
+	@Column(name="visibility")
 	private VisibilityType visibility;
 	
 	/**
@@ -30,7 +35,7 @@ public class DPUTemplateRecord extends DPURecord {
 	 * DPU's configuration.
 	 */
 	@Column(name="config")
-	private Configuration conf;
+	private Config conf;
 
 	public VisibilityType getVisibility() {
 		return visibility;
@@ -48,11 +53,11 @@ public class DPUTemplateRecord extends DPURecord {
 		this.jarDescription = jarDescription;
 	}
 
-	public Configuration getConf() {
+	public Config getConf() {
 		return conf;
 	}
 
-	public void setConf(Configuration conf) {
+	public void setConf(Config conf) {
 		this.conf = conf;
 	}
 	

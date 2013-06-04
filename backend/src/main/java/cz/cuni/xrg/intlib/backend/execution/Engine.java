@@ -1,11 +1,11 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 import java.io.File;
 import java.util.Date;
@@ -66,8 +66,8 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 	 * Setup engine from given configuration.
 	 * @param config
 	 */
-	public void setup(AppConfiguration config) {
-		workingDirectory = new File( config.getString(ConfProperty.GENERAL_WORKINGDIR) );
+	public void setup(AppConfig config) {
+		workingDirectory = new File( config.getString(ConfigProperty.GENERAL_WORKINGDIR) );
 		// make sure that our working directory exist
 		if (workingDirectory.isDirectory()) {
 			workingDirectory.mkdirs();

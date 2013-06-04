@@ -1,7 +1,10 @@
-package cz.cuni.xrg.intlib.commons.app.pipeline;
+package cz.cuni.xrg.intlib.commons.app.execution;
 
+import java.io.File;
 import java.util.Date;
 import javax.persistence.*;
+
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
 /**
  * Information about executed pipeline and its states.
@@ -54,12 +57,13 @@ public class PipelineExecution  {
 	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
 	@Column(name = "t_end")
 	private Date end;
-
+	
 	/**
-	 * Path to the pipeline execution working directory.
+	 * Execution context, can be null.
 	 */
-	@Column(name = "execution_directory")
-	private String workingDirectory;
+	@OneToOne
+	@JoinColumn(name="context_id", nullable = true)	
+	private ExecutionContextImpl context;
 	
 	/** No-arg constructor for JPA */
 	public PipelineExecution() {}
@@ -76,6 +80,18 @@ public class PipelineExecution  {
         this.isDebugging = false;
     }
 
+    /**
+     * Create execution context or this execution in given directory.
+     * If context already exist return the existing one.
+     * @return
+     */
+    public ExecutionContext createExecutionContext(File directory) {
+    	if (context == null) {
+    		context = new ExecutionContextImpl(directory);
+    	}
+    	return context;
+    }
+    
     public int getId() {
     	return id;
     }
@@ -91,10 +107,6 @@ public class PipelineExecution  {
     public Pipeline getPipeline() {
         return pipeline;
     }
-
-    public String getWorkingDirectory() {
-        return workingDirectory;
-    }    
     
     public void setPipeline(Pipeline pipeline) {
         this.pipeline = pipeline;
@@ -123,8 +135,12 @@ public class PipelineExecution  {
 	public void setEnd(Date end) {
 		this.end = end;
 	}
-	
-    public void setWorkingDirectory(String workingDirectory) {
-        this.workingDirectory = workingDirectory;
-    } 	
+	        
+    /**
+     * Use to gain read only access to the context.
+     * @return Context or null.
+     */    
+    public ExecutionContext getContextReadOnly() {
+    	return context;
+    }    
 }

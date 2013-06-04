@@ -5,13 +5,14 @@ import java.util.List;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
 
 /**
  * Class support creating vaadin container from List<?>.
+ * 
  * @author Petyr
  *
  */
@@ -41,16 +42,16 @@ public class ContainerFactory {
 	}
 
 	/**
-	 * Create container for DPUs and fill it with given data.
+	 * Create container for DPUTemplateRecord and fill it with given data.
 	 * @param data data for container
 	 * @return
 	 */
-	public static Container CreateDPUs(List<DPURecord> data) {
-		BeanContainer<Long, DPURecord> container = new BeanContainer<>( DPURecord.class );
+	public static Container CreateDPUTemplates(List<DPUTemplateRecord> data) {
+		BeanContainer<Long, DPUTemplateRecord> container = new BeanContainer<>( DPUTemplateRecord.class );
 		// set container id
 		container.setBeanIdProperty("id");
 
-		for (DPURecord item : data) {
+		for (DPUTemplateRecord item : data) {
 			container.addBean(item);
 		}
 		return container;
@@ -71,7 +72,5 @@ public class ContainerFactory {
 
 		return container;
 	}
-
-
 
 }

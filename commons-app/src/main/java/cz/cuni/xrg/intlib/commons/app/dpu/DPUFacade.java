@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -25,18 +25,7 @@ public class DPUFacade {
 	@PersistenceContext
 	private EntityManager em;
 
-	/* ******************* Methods for DPURecord management *********************** */
-
-	/**
-	 * Creates DPURecord and its {@link TemplateConfiguration} without persisting it.
-	 *
-	 * @return
-	 */
-	public DPURecord createDpu() {
-		DPURecord dpu = new DPURecord();
-		dpu.setTemplateConfiguration(new TemplateConfiguration());
-		return dpu;
-	}
+	/* ******************* Methods for DPUTemplateRecord management *********************** */
 
 	/**
 	 * Creates a new DPURecord with the same properties and configuration as in given
@@ -47,54 +36,55 @@ public class DPUFacade {
 	 * @param instance
 	 * @return new DPURecord
 	 */
-	public DPURecord createDpuFromInstance(DPUInstance instance) {
-
-		DPURecord oDpu = instance.getDpu();
-		DPURecord nDpu = new DPURecord(instance.getName(), oDpu.getType());
+	public DPUTemplateRecord creatTemplateFromInstance(DPUInstanceRecord instance) {
+// TODO !! createInstanceFromTemplate
+//		DPURecord oDpu = instance.getDpu();
+//		DPURecord nDpu = new DPURecord(instance.getName(), oDpu.getType());
 
 		// copy properties
-		nDpu.setDescription(instance.getDescription());
-		nDpu.setJarPath(oDpu.getJarPath());
-		nDpu.setVisibility(VisibilityType.PRIVATE);
+//		nDpu.setDescription(instance.getDescription());
+//		nDpu.setJarPath(oDpu.getJarPath());
+//		nDpu.setVisibility(VisibilityType.PRIVATE);
 
 		// copy configuration
-		TemplateConfiguration conf = new TemplateConfiguration();
-		conf.setValues(instance.getInstanceConfig().getValues());
-		nDpu.setTemplateConfiguration(conf);
+//		TemplateConfiguration conf = new TemplateConfiguration();
+//		conf.setValues(instance.getInstanceConfig().getValues());
+//		nDpu.setTemplateConfiguration(conf);
 
-		return nDpu;
+//		return nDpu;
+		return null;
 	}
 
 	/**
-	 * Returns list of all DPUs currently persisted in database.
+	 * Returns list of all DPUTemplateRecords currently persisted in database.
 	 * @return DPURecord list
 	 */
-	public List<DPURecord> getAllDpus() {
+	public List<DPUTemplateRecord> getAllTemplates() {
 
 		@SuppressWarnings("unchecked")
-		List<DPURecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPURecord e").getResultList(),
-				DPURecord.class
+		List<DPUTemplateRecord> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM DPUTemplateRecord e").getResultList(),
+				DPUTemplateRecord.class
 		);
 
 		return resultList;
 	}
 
 	/**
-	 * Find DPURecord in database by ID and return it.
+	 * Find DPUTemplateRecord in database by ID and return it.
 	 * @param id
 	 * @return
 	 */
-	public DPURecord getDpu(long id) {
-		return em.find(DPURecord.class, id);
+	public DPUTemplateRecord getTemplate(long id) {
+		return em.find(DPUTemplateRecord.class, id);
 	}
 
 	/**
-	 * Saves any modifications made to the DPURecord into the database.
+	 * Saves any modifications made to the DPUTemplateRecord into the database.
 	 * @param dpu
 	 */
 	@Transactional
-	public void save(DPURecord dpu) {
+	public void save(DPUTemplateRecord dpu) {
 		if (dpu.getId() == null) {
 			em.persist(dpu);
 		} else {
@@ -103,16 +93,15 @@ public class DPUFacade {
 	}
 
 	/**
-	 * Deletes DPURecord from the database.
+	 * Deletes DPUTemplateRecord from the database.
 	 * @param dpu
 	 */
 	@Transactional
-	public void delete(DPURecord dpu) {
+	public void delete(DPUTemplateRecord dpu) {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
 		// TODO this is just a workaround -> resolve in future release!
-		DPURecord d = dpu.getId() == null
-				? dpu : getDpu(dpu.getId());
+		DPUTemplateRecord d = dpu.getId() == null ? dpu : getTemplate(dpu.getId());
 		if (d != null) {
 			em.remove(d);
 		} else {
@@ -120,57 +109,57 @@ public class DPUFacade {
 		}
 	}
 
-	/* **************** Methods for DPURecord Instance management ***************** */
+	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
 
 	/**
-	 * Creates DPUInstance with configuration copied from template without
+	 * Creates DPUInstanceRecord with configuration copied from template without
 	 * persisting it.
 	 *
 	 * @return
 	 */
-	public DPUInstance createDPUInstance(DPURecord dpu) {
-		DPUInstance dpuInstance = new DPUInstance(dpu);
-
+	public DPUInstanceRecord createInstanceFromTemplate(DPUTemplateRecord dpu) {
+		DPUInstanceRecord dpuInstance = new DPUInstanceRecord();
+// TODO !! createInstanceFromTemplate
 		// convert template configuration to instance configuration
-		InstanceConfiguration conf = new InstanceConfiguration();
-		conf.setValues(dpu.getTemplateConfiguration().getValues());
-		dpuInstance.setInstanceConfig(conf);
+//		InstanceConfiguration conf = new InstanceConfiguration();
+//		conf.setValues(dpu.getTemplateConfiguration().getValues());
+//		dpuInstance.setInstanceConfig(conf);
 
 		return dpuInstance;
 	}
 
 	/**
-	 * Returns list of all DPUInstances currently persisted in database.
+	 * Returns list of all DPUInstanceRecord currently persisted in database.
 	 *
 	 * @return DPUInstance list
 	 */
-	public List<DPUInstance> getAllDPUInstances() {
+	public List<DPUInstanceRecord> getAllDPUInstances() {
 
 		@SuppressWarnings("unchecked")
-		List<DPUInstance> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUInstance e").getResultList(),
-				DPUInstance.class
+		List<DPUInstanceRecord> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM DPUInstanceRecord e").getResultList(),
+				DPUInstanceRecord.class
 		);
 
 		return resultList;
 	}
 
 	/**
-	 * Find DPUInstance in database by ID and return it.
+	 * Find DPUInstanceRecord in database by ID and return it.
 	 *
 	 * @param id
 	 * @return
 	 */
-	public DPUInstance getDPUInstance(long id) {
-		return em.find(DPUInstance.class, id);
+	public DPUInstanceRecord getDPUInstance(long id) {
+		return em.find(DPUInstanceRecord.class, id);
 	}
 
 	/**
-	 * Saves any modifications made to the DPUInstance into the database.
+	 * Saves any modifications made to the DPUInstanceRecord into the database.
 	 * @param dpu
 	 */
 	@Transactional
-	public void save(DPUInstance dpu) {
+	public void save(DPUInstanceRecord dpu) {
 		if (dpu.getId() == null) {
 			em.persist(dpu);
 		} else {
@@ -183,11 +172,11 @@ public class DPUFacade {
 	 * @param dpu
 	 */
 	@Transactional
-	public void delete(DPUInstance dpu) {
+	public void delete(DPUInstanceRecord dpu) {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
 		// TODO this is just a workaround -> resolve in future release!
-		DPUInstance d = dpu.getId() == null
+		DPUInstanceRecord d = dpu.getId() == null
 				? dpu : getDPUInstance(dpu.getId());
 		if (d != null) {
 			em.remove(d);
@@ -196,10 +185,10 @@ public class DPUFacade {
 		}
 	}
 
-	/* **************** Methods for DPURecord Record management ***************** */
+	/* **************** Methods for Record (messages) management ***************** */
 
 	/**
-	 * Returns list of all DPURecords currently persisted in database.
+	 * Returns list of all Records currently persisted in database.
 	 *
 	 * @return Record list
 	 */
@@ -220,7 +209,7 @@ public class DPUFacade {
 	 * @param dpuInstance
 	 * @return
 	 */
-	public List<Record> getAllDPURecords(DPUInstance dpuInstance) {
+	public List<Record> getAllDPURecords(DPUInstanceRecord dpuInstance) {
 
 		@SuppressWarnings("unchecked")
 		List<Record> resultList = Collections.checkedList(
@@ -285,4 +274,5 @@ public class DPUFacade {
 	public void delete(Record record) {
 		em.remove(record);
 	}
+
 }

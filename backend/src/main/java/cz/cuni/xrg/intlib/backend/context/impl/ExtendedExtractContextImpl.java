@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.backend.context.impl;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
@@ -44,7 +44,7 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	private Logger logger;
 	
 	public ExtendedExtractContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextWriter contextWriter) {
+			ApplicationEventPublisher eventPublisher, ExecutionContext contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.outputs = new LinkedList<>();
 		this.eventPublisher = eventPublisher;

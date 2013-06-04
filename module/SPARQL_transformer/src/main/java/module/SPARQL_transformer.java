@@ -6,8 +6,8 @@ import com.vaadin.ui.CustomComponent;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
@@ -23,19 +23,19 @@ import java.util.List;
 public class SPARQL_transformer implements GraphicalTransformer, DPUExecutive {
 
     /**
-     * Configuration component.
+     * Config component.
      */
     private gui.ConfigDialog configDialog = null;
     /**
      * DPU configuration.
      */
-    private Configuration config = null;
+    private Config config = null;
 
     public SPARQL_transformer() {
     }
 
     @Override
-    public void saveConfigurationDefault(Configuration configuration) {
+    public void saveConfigurationDefault(Config configuration) {
         configuration.setValue(Config.SPARQL_Update_Query.name(), "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}");
     }
 
@@ -46,7 +46,7 @@ public class SPARQL_transformer implements GraphicalTransformer, DPUExecutive {
     }
 
     @Override
-    public CustomComponent getConfigurationComponent(Configuration configuration) {
+    public CustomComponent getConfigurationComponent(Config configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
@@ -57,8 +57,8 @@ public class SPARQL_transformer implements GraphicalTransformer, DPUExecutive {
     }
 
     @Override
-    public void loadConfiguration(Configuration configuration)
-            throws ConfigurationException {
+    public void loadConfiguration(Config configuration)
+            throws ConfigException {
         // 
         if (this.configDialog == null) {
         } else {
@@ -68,7 +68,7 @@ public class SPARQL_transformer implements GraphicalTransformer, DPUExecutive {
     }
 
     @Override
-    public void saveConfiguration(Configuration configuration) {
+    public void saveConfiguration(Config configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
         } else {

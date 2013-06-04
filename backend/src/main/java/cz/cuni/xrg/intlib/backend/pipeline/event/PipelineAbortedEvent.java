@@ -1,9 +1,9 @@
 package cz.cuni.xrg.intlib.backend.pipeline.event;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  * Event published during the pipeline execution termination

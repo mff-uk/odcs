@@ -7,7 +7,7 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 
 /**
- * Configuration dialog.
+ * Config dialog.
  *
  * @author Maria
  *
@@ -29,23 +29,23 @@ public class ConfigDialog extends CustomComponent {
      * configuration is invalid.
      *
      */
-    public void getConfiguration(Configuration config) {
+    public void getConfiguration(Config config) {
         config.setValue(Config.SPARQL_Update_Query.name(), txtQuery.getValue());
     }
 
     /**
      * Load values from configuration into dialog.
      *
-     * @throws ConfigurationException
+     * @throws ConfigException
      * @param conf
      */
-    public void setConfiguration(Configuration conf) {
+    public void setConfiguration(Config conf) {
         try {
             txtQuery.setValue((String) conf.getValue(Config.SPARQL_Update_Query.name()));
 
         } catch (Exception ex) {
             // throw setting exception
-            throw new ConfigurationException();
+            throw new ConfigException();
         }
     }
 

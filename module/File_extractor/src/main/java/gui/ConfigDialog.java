@@ -1,28 +1,25 @@
 package gui;
 
-import module.Config;
+import module.FileExtractorConfig;
 
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.module.gui.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
 /**
- * Configuration dialog.
+ * FileExtractorConfig dialog.
  *
  * @author Maria
  *
  */
-public class ConfigDialog extends AbstractConfigDialog {
-
-    private static final long serialVersionUID = 1L;
+public class ConfigDialog extends AbstractConfigDialog<FileExtractorConfig> {
 
     private GridLayout mainLayout;
     private ComboBox comboBoxFormat; //RDFFormat
     private Label labelFormat;
     private TextField textFieldOnly;
     private Label labelOnly;
- //   private CheckBox checkBoxWhole;
     private TextField textFieldPath; //Path
     private HorizontalLayout horizontalLayoutOnly;
     private HorizontalLayout horizontalLayoutFormat;
@@ -42,33 +39,30 @@ public class ConfigDialog extends AbstractConfigDialog {
         comboBoxFormat.setValue("TTL");
     }
 
+	@Override
+	public FileExtractorConfig getConfiguration() throws ConfigException {
+		FileExtractorConfig conf = new FileExtractorConfig();
+		conf.Path = textFieldPath.getValue();
+		conf.FileSuffix = (String)comboBoxFormat.getValue();
+		conf.OnlyThisText= textFieldOnly.getValue();
+		// TODO Maria: read from dialog
+		conf.OnlyThisSuffix = false;
+		return conf;
+	}    
+    
     @Override
-    public void getConfiguration(Configuration config) {
-    	config.setValue(Config.OnlyThisText.name(), textFieldOnly.getValue());
-        config.setValue(Config.Path.name(), textFieldPath.getValue());
-        config.setValue(Config.FileSuffix.name(), (String)comboBoxFormat.getValue());
-// TODO: read from dialog
-        config.setValue(Config.OnlyThisSuffix.name(), false);
-    }
-
-    @Override
-    public void setConfiguration(Configuration conf) {
-
-        try {
-        	
-            textFieldPath.setValue((String) conf.getValue(Config.Path.name()));
-            comboBoxFormat.setValue((String) conf.getValue(Config.FileSuffix.name()));
-            textFieldOnly.setValue((String) conf.getValue(Config.OnlyThisText.name()));
-
-
+    public void setConfiguration(FileExtractorConfig conf) {
+        try {        	
+            textFieldPath.setValue(conf.Path);
+            comboBoxFormat.setValue(conf.FileSuffix);
+            textFieldOnly.setValue(conf.OnlyThisText);
         } catch (Exception ex) {
             // throw setting exception
-            throw new ConfigurationException();
+            throw new ConfigException();
         }
     }
 
     private GridLayout buildMainLayout() {
-
 
         // common part: create layout
         mainLayout = new GridLayout(1, 3);
@@ -82,7 +76,6 @@ public class ConfigDialog extends AbstractConfigDialog {
         setWidth("100%");
         setHeight("100%");
 
-
         // textFieldPath
         textFieldPath = new TextField();
         textFieldPath.setNullRepresentation("");
@@ -92,7 +85,6 @@ public class ConfigDialog extends AbstractConfigDialog {
         textFieldPath.setHeight("-1px");
         textFieldPath.setInputPrompt("http://example.org/test.ttl");
         mainLayout.addComponent(textFieldPath, 0, 0);
-
 
         // layoutOnly
         horizontalLayoutOnly = buildHorizontalLayoutOnly();
@@ -130,8 +122,7 @@ public class ConfigDialog extends AbstractConfigDialog {
         textFieldOnly.setHeight("-1px");
         textFieldOnly.setInputPrompt("*.ttl");
         horizontalLayoutOnly.addComponent(textFieldOnly);
-        horizontalLayoutOnly.setComponentAlignment(textFieldOnly,Alignment.TOP_RIGHT);
-        
+        horizontalLayoutOnly.setComponentAlignment(textFieldOnly,Alignment.TOP_RIGHT);        
 
         return horizontalLayoutOnly;
     }
@@ -143,8 +134,7 @@ public class ConfigDialog extends AbstractConfigDialog {
         horizontalLayoutFormat.setWidth("-1px");
         horizontalLayoutFormat.setHeight("-1px");
         horizontalLayoutFormat.setMargin(false);
-        horizontalLayoutFormat.setSpacing(true);
-        
+        horizontalLayoutFormat.setSpacing(true);        
 
         // labelFormat
         labelFormat = new Label();
@@ -163,9 +153,10 @@ public class ConfigDialog extends AbstractConfigDialog {
         comboBoxFormat.setNewItemsAllowed(false);
 		comboBoxFormat.setNullSelectionAllowed(false);
         horizontalLayoutFormat.addComponent(comboBoxFormat);
-   //     horizontalLayoutFormat.setComponentAlignment(comboBoxFormat,Alignment.TOP_RIGHT);
-        
+   //     horizontalLayoutFormat.setComponentAlignment(comboBoxFormat,Alignment.TOP_RIGHT);        
 
         return horizontalLayoutFormat;
     }
+    
+
 }

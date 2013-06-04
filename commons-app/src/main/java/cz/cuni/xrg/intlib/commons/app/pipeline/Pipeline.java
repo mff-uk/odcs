@@ -1,13 +1,9 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import javax.persistence.*;
+
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.transformer.Transform;
-
-
 
 /**
  * Represents a fixed workflow composed of one or several {@link Extract}s,
@@ -38,7 +34,6 @@ import cz.cuni.xrg.intlib.commons.transformer.Transform;
  * @see Extract
  * @see Transform
  * @see Load
- * @author Alex Kreiser (akreiser@gmail.com)
  * @author Jiri Tomes
  * @author Jan Vojt <jan@vojt.net>
  * @author Bogo

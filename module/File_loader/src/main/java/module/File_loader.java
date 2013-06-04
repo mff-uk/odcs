@@ -8,8 +8,8 @@ import com.vaadin.ui.CustomComponent;
 
 import cz.cuni.xrg.intlib.commons.DPUExecutive;
 import cz.cuni.xrg.intlib.commons.DpuType;
-import cz.cuni.xrg.intlib.commons.configuration.Configuration;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
+import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
@@ -26,20 +26,20 @@ import org.slf4j.LoggerFactory;
 public class File_loader implements GraphicalLoader, DPUExecutive {
 
     /**
-     * Configuration component.
+     * Config component.
      */
     private gui.ConfigDialog configDialog = null;
     /**
      * DPU configuration.
      */
-    private Configuration config = null;
+    private Config config = null;
     /**
      * Logger class.
      */
     private Logger logger = LoggerFactory.getLogger(File_loader.class);
 
     @Override
-    public void saveConfigurationDefault(Configuration configuration) {
+    public void saveConfigurationDefault(Config configuration) {
         configuration.setValue(Config.FileName.name(), "");
         configuration.setValue(Config.DirectoryPath.name(), "");
         configuration.setValue(Config.RDFFileFormat.name(), RDFFormatType.AUTO);
@@ -53,7 +53,7 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
     }
 
     @Override
-    public CustomComponent getConfigurationComponent(Configuration configuration) {
+    public CustomComponent getConfigurationComponent(Config configuration) {
         // does dialog exist?
         if (this.configDialog == null) {
             // create it
@@ -64,8 +64,8 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
     }
 
     @Override
-    public void loadConfiguration(Configuration configuration)
-            throws ConfigurationException {
+    public void loadConfiguration(Config configuration)
+            throws ConfigException {
         // 
         logger.debug("Loading configuration..");
         if (this.configDialog == null) {
@@ -76,7 +76,7 @@ public class File_loader implements GraphicalLoader, DPUExecutive {
     }
 
     @Override
-    public void saveConfiguration(Configuration configuration) {
+    public void saveConfiguration(Config configuration) {
         this.config = configuration;
         if (this.configDialog == null) {
         } else {

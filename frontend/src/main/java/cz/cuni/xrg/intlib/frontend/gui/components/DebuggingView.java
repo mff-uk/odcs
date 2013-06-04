@@ -5,13 +5,12 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TabSheet.Tab;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFactory;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.pipeline.ExecutionStatus;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
@@ -19,7 +18,6 @@ import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +31,7 @@ public class DebuggingView extends CustomComponent {
 	private VerticalLayout mainLayout;
 	private PipelineExecution pipelineExec;
 	private ExecutionContextReader ctxReader;
-	private DPUInstance debugDpu;
+	private DPUInstanceRecord debugDpu;
 	private boolean isInDebugMode;
 	private RecordsTable executionRecordsTable;
 	private Tab browseTab;
@@ -45,7 +43,7 @@ public class DebuggingView extends CustomComponent {
 	private QueryView queryView;
 	private Button refreshButton;
 
-	public DebuggingView(PipelineExecution pipelineExec, DPUInstance debugDpu, boolean debug) {
+	public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug) {
 		//setCaption("Debug window");
 		this.pipelineExec = pipelineExec;
 		this.debugDpu = debugDpu;
@@ -76,8 +74,8 @@ public class DebuggingView extends CustomComponent {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				Object value = event.getProperty().getValue();
-				if (value != null && value.getClass() == DPUInstance.class) {
-					debugDpu = (DPUInstance) value;
+				if (value != null && value.getClass() == DPUInstanceRecord.class) {
+					debugDpu = (DPUInstanceRecord) value;
 					refreshContent();
 				}
 			}
@@ -106,7 +104,7 @@ public class DebuggingView extends CustomComponent {
 
 		queryView = new QueryView(this);
 		if(debugDpu != null) {
-			queryView.setGraphs(debugDpu.getDpu().getType());
+			queryView.setGraphs(debugDpu.getType());
 		}
 		queryTab = tabs.addTab(queryView, "Query");
 
@@ -145,6 +143,8 @@ public class DebuggingView extends CustomComponent {
 
 		//Content of text log file
 		if (loadSuccessful) {
+// TODO !! List log			
+			/*
 			File logFile = ctxReader.getLogFile();
 			String logText = "Log file is empty!";
 			if (logFile.exists()) {
@@ -162,6 +162,7 @@ public class DebuggingView extends CustomComponent {
 			}
 			logTextArea.setValue(logText);
 			logTab.setEnabled(true);
+			*/
 		} else {
 			//logTab.setEnabled(false);
 		}
@@ -204,7 +205,7 @@ public class DebuggingView extends CustomComponent {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		fillContent();
 		if(debugDpu != null) {
-			queryView.setGraphs(debugDpu.getDpu().getType());
+			queryView.setGraphs(debugDpu.getType());
 		}
 		setCompositionRoot(mainLayout);
 	}
@@ -233,15 +234,18 @@ public class DebuggingView extends CustomComponent {
 //		return fullList;
 //	}
 	private boolean loadExecutionContextReader() {
+// TODO !!		
+		/*
 		String workingDirPath = pipelineExec.getWorkingDirectory();
 		File workingDir = new File(workingDirPath);
 		try {
-			ctxReader = ExecutionContextFactory.restoreAsRead(workingDir);
+			ctxReader = ExecutionContextFacade.restoreAsRead(workingDir);
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 			return false;
 		}
-		return true;
+		return true; */
+		return false;
 	}
 
 	private DataUnitBrowser loadBrowser(boolean showInput) {
@@ -249,6 +253,7 @@ public class DebuggingView extends CustomComponent {
 			return null;
 		}
 		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+		
 		if (indexes == null) {
 			return null;
 		}
@@ -256,12 +261,15 @@ public class DebuggingView extends CustomComponent {
 		Iterator<Integer> iter = indexes.iterator();
 		while (iter.hasNext()) {
 			Integer index = iter.next();
-			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
-			if (indexes.size() == 1 || duInfo.isInput() == showInput) {
+			DataUnitInfo duInfo = null;
+			duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
+			
+			if (indexes.size() == 1 || showInput) {
 				DataUnitBrowser duBrowser;
 				try {
 					String dumpDirName = "ex" + pipelineExec.getId() + "_dpu-" + index;
-					duBrowser = DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, index, dumpDirName);
+					duBrowser = 
+							DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, showInput, index, dumpDirName);
 				} catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
@@ -297,6 +305,7 @@ public class DebuggingView extends CustomComponent {
 			return null;
 		}
 		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+				
 		if (indexes == null) {
 			return null;
 		}
@@ -316,8 +325,10 @@ public class DebuggingView extends CustomComponent {
 		if (debugDpu == null) {
 			return null;
 		}
+		
 		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
-		if (indexes == null) {
+		
+		if (indexes.isEmpty()) {
 			return null;
 		}
 

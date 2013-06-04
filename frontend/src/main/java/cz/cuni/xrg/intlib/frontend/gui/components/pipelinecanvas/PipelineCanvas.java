@@ -8,13 +8,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
@@ -103,7 +104,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			return;
 		}
 
-		DPUInstance debugDpu = graph.getNodeById(dpuId).getDpuInstance();
+		DPUInstanceRecord debugDpu = graph.getNodeById(dpuId).getDpuInstance();
 		fireShowDebug(pExec, debugDpu);
 	}
 
@@ -125,8 +126,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param x
 	 * @param y
 	 */
-	public void addDpu(DPURecord dpu, int x, int y) {
-		DPUInstance dpuInstance = App.getDPUs().createDPUInstance(dpu);
+	public void addDpu(DPUTemplateRecord dpu, int x, int y) {
+		DPUInstanceRecord dpuInstance = App.getDPUs().createInstanceFromTemplate(dpu);
 		Node node = graph.addDpuInstance(dpuInstance);
 		getRpcProxy(PipelineCanvasClientRpc.class)
 				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), x, y);
@@ -193,7 +194,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param dpu
 	 */
 	public void showDPUDetail(final Node node) {
-		final DPUInstance dpu = node.getDpuInstance();
+		final DPUInstanceRecord dpu = node.getDpuInstance();
 		DPUDetail detailDialog = new DPUDetail(dpu);
 		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
@@ -209,16 +210,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
 		PipelineExecution pipelineExec = new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
-		// TODO Petyr: leave null value?
-		pipelineExec.setWorkingDirectory("");
 		// do some settings here
 
 		// store into DB
 		App.getPipelines().save(pipelineExec);
-		AppConfiguration config = App.getApp().getAppConfiguration();
+		AppConfig config = App.getApp().getAppConfiguration();
 		Client client = new Client(
-				config.getString(ConfProperty.BACKEND_HOST),
-				config.getInteger(ConfProperty.BACKEND_PORT));
+				config.getString(ConfigProperty.BACKEND_HOST),
+				config.getInteger(ConfigProperty.BACKEND_PORT));
 
 		// send message to backend
 		try {
@@ -248,7 +247,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 	}
 
-	protected void fireShowDebug(PipelineExecution execution, DPUInstance instance) {
+	protected void fireShowDebug(PipelineExecution execution, DPUInstanceRecord instance) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
 		for (Listener l : ls) {
 			try {
