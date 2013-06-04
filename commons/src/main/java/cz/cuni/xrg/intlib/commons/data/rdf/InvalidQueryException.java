@@ -4,23 +4,23 @@ package cz.cuni.xrg.intlib.commons.data.rdf;
  *
  * @author Jiri Tomes
  */
-public class NotValidQueryException extends Exception {
+public class InvalidQueryException extends Exception {
 
     private final String message = "This SPARQL query is not valid !!!";
 
-    public NotValidQueryException() {
+    public InvalidQueryException() {
     }
 
     
-    public NotValidQueryException(String message) {
+    public InvalidQueryException(String message) {
         super(message);
     }
 
-    public NotValidQueryException(Throwable cause) {
+    public InvalidQueryException(Throwable cause) {
         super(cause);
     }
 
-    public NotValidQueryException(String message, Throwable cause) {
+    public InvalidQueryException(String message, Throwable cause) {
         super(message, cause);
     }
 
