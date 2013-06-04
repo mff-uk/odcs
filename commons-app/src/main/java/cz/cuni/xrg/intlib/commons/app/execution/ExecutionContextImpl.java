@@ -106,9 +106,8 @@ class ExecutionContextImpl implements ExecutionContextReader, ExecutionContextWr
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             
         try (FileOutputStream os = new FileOutputStream(outputFile)) {
-                marshaller.marshal(this, os );
-                os.close();
-            }
+			marshaller.marshal(this, os );
+		}
 	}
 
 	@Override

@@ -6,7 +6,9 @@ import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
 import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,25 +95,20 @@ public class QueryView extends CustomComponent {
         // FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
         logger.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
 
-        LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath);
-        File dumpFile = new File(repoDir, "dump_dat.ttl");
+        try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath)) {
+			File dumpFile = new File(repoDir, "dump_dat.ttl");
 
-        try {
-            repository.load(dumpFile);
+			try {
+				repository.load(dumpFile);
+			} catch (ExtractException e) {
+				logger.error(e.getMessage(), e);
+			}
 
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-
-        try {
-            Map<String, List<String>> data = repository.makeQueryOverRepository(query);
-            return data;
-
-        } catch (NotValidQueryException e) {
-            throw e;
-        } finally {
-            repository.shutDown();
-        }
+			Map<String, List<String>> data = repository.makeQueryOverRepository(query);
+			return data;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
     }
 
     private IndexedContainer buildDataSource(Map<String, List<String>> data) {
