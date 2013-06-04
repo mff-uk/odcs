@@ -5,7 +5,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
-import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
+import cz.cuni.xrg.intlib.commons.data.rdf.InvalidQueryException;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class QueryView extends CustomComponent {
                     IndexedContainer container = buildDataSource(data);
                     resultTable.setContainerDataSource(container);
 
-                } catch (NotValidQueryException e) {
+                } catch (InvalidQueryException e) {
                     Notification.show("Query Validator",
                             "Query is not valid: "
                             + e.getCause().getMessage(),
@@ -80,7 +80,7 @@ public class QueryView extends CustomComponent {
         setCompositionRoot(mainLayout);
     }
 
-    private Map<String, List<String>> query() throws NotValidQueryException {
+    private Map<String, List<String>> query() throws InvalidQueryException {
         boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
         String query = queryText.getValue();
         String repoPath = parent.getRepositoryPath(onInputGraph);

@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
-import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
+import cz.cuni.xrg.intlib.commons.data.rdf.InvalidQueryException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -1292,7 +1292,7 @@ public class LocalRDFRepo implements Closeable {
 	 * values in this column. When query is invalid, return
 	 * empty <code>Map</code>.
      */
-    public Map<String, List<String>> makeQueryOverRepository(String query) throws NotValidQueryException {
+    public Map<String, List<String>> makeQueryOverRepository(String query) throws InvalidQueryException {
 
         Map<String, List<String>> map = new HashMap<>();
 		RepositoryConnection connection = null;
@@ -1315,7 +1315,7 @@ public class LocalRDFRepo implements Closeable {
 
 				listBindings = result.asList();
 			} catch (QueryEvaluationException ex) {
-				throw new NotValidQueryException("This query is probably not valid", ex);
+				throw new InvalidQueryException("This query is probably not valid", ex);
 			} finally {
 				if (result != null) {
 					try {
@@ -1340,7 +1340,7 @@ public class LocalRDFRepo implements Closeable {
             }
 
         } catch (MalformedQueryException ex) {
-            throw new NotValidQueryException("This query is probably not valid", ex);
+            throw new InvalidQueryException("This query is probably not valid", ex);
         } catch (RepositoryException ex) {
 			logger.error("Connection to RDF repository failed.", ex);
 		} finally {

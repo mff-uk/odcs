@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.rdf;
 
-import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
+import cz.cuni.xrg.intlib.commons.data.rdf.InvalidQueryException;
 import cz.cuni.xrg.intlib.commons.data.rdf.Validator;
 
 /**
@@ -31,7 +31,7 @@ public class SPARQLValidator implements Validator {
         LocalRDFRepo emptyRepo= LocalRDFRepo.createLocalRepo();
         try {
             emptyRepo.makeQueryOverRepository(query);
-        } catch (NotValidQueryException e) {
+        } catch (InvalidQueryException e) {
             message = e.getCause().getMessage();
             isValid = false;
         }
