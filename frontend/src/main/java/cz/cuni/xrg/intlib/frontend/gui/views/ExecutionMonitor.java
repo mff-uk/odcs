@@ -65,6 +65,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 	static String filter;
 	private Integer exeId ;
 	private String pipeName;
+	int style = DateFormat.MEDIUM;
 
 	static String[] visibleCols = new String[] { "date", "name", "user",
 			"status", "debug", "obsolete", "actions", "report" };
@@ -129,10 +130,12 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		GridLayout filtersLayout = new GridLayout(6,1);
 		filtersLayout.setWidth("100%");
 		filtersLayout.setSpacing(true);
-
-
+		
+//		DateFormat dfField;
+//		dfField = DateFormat.getDateInstance(style, getLocale());
+//		dfField.format(dateFilter);
 		dateFilter = new DateField();
-		dateFilter.setDateFormat("dd.MM.yyyy");
+//		dateFilter.setDateFormat();
 		dateFilter.setImmediate(true);
 		dateFilter.setCaption("Date:");
 		dateFilter.setWidth("110px");
@@ -143,7 +146,6 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				// TODO Auto-generated method stub
 										
 				if(event.getProperty().getValue()!=null){
-					int style = DateFormat.MEDIUM;
 					DateFormat df;
 					df = DateFormat.getDateInstance(style, getLocale());
 					String s = df.format(event.getProperty().getValue());
