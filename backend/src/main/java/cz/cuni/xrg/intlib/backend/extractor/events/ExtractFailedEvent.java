@@ -23,7 +23,7 @@ public class ExtractFailedEvent extends ExtractEvent {
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Extract failed.", "Exception: " + exception.getMessage());
+		return new Record(time, RecordType.DPU_ERROR, dpuInstance, execution, "Extract failed.", "Exception: " + exception.getMessage());
 	}
 	
 }

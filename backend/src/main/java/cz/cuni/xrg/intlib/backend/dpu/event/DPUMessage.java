@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.backend.dpu.event;
 import java.util.Date;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
@@ -70,7 +70,7 @@ public class DPUMessage extends DPUEvent {
 		return execution;
 	}
 
-	public DPUInstance getDpuInstance() {
+	public DPUInstanceRecord getDpuInstance() {
 		return dpuInstance;
 	}
 

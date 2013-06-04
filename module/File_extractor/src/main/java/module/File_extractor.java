@@ -2,7 +2,6 @@ package module;
 
 import gui.ConfigDialog;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;

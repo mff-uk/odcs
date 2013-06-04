@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.backend.pipeline.event;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
@@ -18,12 +18,12 @@ public class PipelineFailedEvent extends PipelineEvent {
 
 	private String longMessage;
 	
-    public PipelineFailedEvent(String message, DPUInstance dpuInstance, PipelineExecution pipelineExec, Object source) {
+    public PipelineFailedEvent(String message, DPUInstanceRecord dpuInstance, PipelineExecution pipelineExec, Object source) {
         super(dpuInstance, pipelineExec, source);
         this.longMessage = message;
     }
 
-    public PipelineFailedEvent(Exception exception, DPUInstance dpuInstance, PipelineExecution pipelineExec, Object source) {
+    public PipelineFailedEvent(Exception exception, DPUInstanceRecord dpuInstance, PipelineExecution pipelineExec, Object source) {
         super(dpuInstance, pipelineExec, source);
         // get trace message
         StringWriter sw = new StringWriter();
@@ -35,7 +35,7 @@ public class PipelineFailedEvent extends PipelineEvent {
     
     @Override
 	public Record getRecord() {
-    	return new Record(time, RecordType.PIPELINEERROR, dpuInstance, execution, 
+    	return new Record(time, RecordType.PIPELINE_ERROR, dpuInstance, execution, 
     			"Pipeline execution failed.", "Pipeline execution terminated because of: " + longMessage);
 	}
 	

@@ -23,7 +23,7 @@ public class LoadFailedEvent extends LoadEvent {
     
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Loader failed.", "Exception: " + exception.getMessage());
+		return new Record(time, RecordType.DPU_ERROR, dpuInstance, execution, "Loader failed.", "Exception: " + exception.getMessage());
 	}    
     
 }

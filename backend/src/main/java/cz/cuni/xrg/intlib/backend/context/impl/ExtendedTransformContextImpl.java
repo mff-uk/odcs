@@ -6,11 +6,12 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	/**
 	 * Context input data units.
 	 */
-    private List<DataUnit> intputs = new LinkedList<DataUnit>();
+    private List<DataUnit> inputs = new LinkedList<DataUnit>();
     
     /**
      * Context output data units.
@@ -52,10 +53,10 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	 */
 	private Logger logger;	
 	
-	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
+	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContext contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
-		this.intputs = new LinkedList<DataUnit>();
+		this.inputs = new LinkedList<DataUnit>();
 		this.outputs = new LinkedList<DataUnit>();
 		this.eventPublisher = eventPublisher;
 		this.logger = Logger.getLogger(ExtendedTransformContextImpl.class);
@@ -63,17 +64,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 
 	@Override
 	public List<DataUnit> getInputs() {
-		return intputs;
-	}
-
-	@Override
-	public List<DataUnit> getOutputs() {
-		return outputs;
-	}
-
-	@Override
-	public void addOutputDataUnit(DataUnit dataUnit) {
-		outputs.add(dataUnit);
+		return inputs;
 	}
 
 	@Override
@@ -111,10 +102,6 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 		return extendedImp.getCustomData();
 	}
 
-	@Override
-	public DataUnitFactory getDataUnitFactory() {
-		return extendedImp.getDataUnitFactory();
-	}	
 	
 	@Override
 	public PipelineExecution getPipelineExecution() {		
@@ -122,13 +109,13 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	}
 
 	@Override
-	public DPUInstance getDPUInstance() {
+	public DPUInstanceRecord getDPUInstance() {
 		return extendedImp.getDPUInstance();
 	}
 
 	@Override
 	public void release() {
-		for (DataUnit item : intputs) {
+		for (DataUnit item : inputs) {
 			item.release();
 		}
 		for (DataUnit item : outputs) {
@@ -139,11 +126,11 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	@Override
 	public void save() {
 		logger.debug("saving DataUnits");
-		for (DataUnit item : intputs) {		
+		for (DataUnit item : inputs) {		
 			try {
 				item.save();
 			} catch (Exception e) {
-				logger.error("Can't save DataUnit", e);
+				logger.error("Can't save input DataUnit", e);
 			}
 		}
 		
@@ -151,14 +138,14 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 			try {
 				item.save();
 			} catch (Exception e) {
-				logger.error("Can't save DataUnit", e);
+				logger.error("Can't save output DataUnit", e);
 			}
 		}
 	}	
 	
 	@Override
 	public void sealInputs() {
-		for (DataUnit inputDataUnit : intputs) {
+		for (DataUnit inputDataUnit : inputs) {
 			inputDataUnit.madeReadOnly();
 		}
 	}
@@ -175,14 +162,31 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 		if (context instanceof ExtendedExtractContext) {
 			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, extractContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, extractContext.getOutputs(), extendedImp.getDataUnitFactory());
 		} else if (context instanceof ExtendedTransformContext) {
 			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
 			// primitive merge .. 
-			merger.merger(intputs, transformContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, transformContext.getOutputs(), extendedImp.getDataUnitFactory());
 		} else {
 			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
 		}
+	}
+
+	@Override
+	public DataUnit addOutputDataUnit(DataUnitType type)
+			throws DataUnitCreateException {
+		return extendedImp.getDataUnitFactory().createOutput(type);
+	}
+
+	@Override
+	public DataUnit addOutputDataUnit(DataUnitType type, Object config)
+			throws DataUnitCreateException {
+		return extendedImp.getDataUnitFactory().createOutput(type, config);
+	}
+
+	@Override
+	public List<DataUnit> getOutputs() {
+		return outputs;
 	}
       
 }

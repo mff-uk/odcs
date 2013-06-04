@@ -34,5 +34,5 @@ public interface TransformContext extends ProcessingContext {
 	 * @param configu DataUnit initial configuration object.
 	 * @return Created DataUnit.
 	 */
-	public DataUnit addOutputDataUnit(DataUnitType type, Object configu) throws DataUnitCreateException;	
+	public DataUnit addOutputDataUnit(DataUnitType type, Object config) throws DataUnitCreateException;	
 }

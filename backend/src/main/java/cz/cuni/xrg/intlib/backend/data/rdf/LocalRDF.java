@@ -305,7 +305,6 @@ public class LocalRDF implements RDFDataRepository {
         impl.setReadOnly(isReadOnly);
     }
 
-    @Override
     public void createNew(String id, File workingDirectory, boolean mergePrepare) {
         if (!workingDirectory.exists()) {
             workingDirectory.mkdirs();
@@ -339,4 +338,10 @@ public class LocalRDF implements RDFDataRepository {
         File file = new File(workingDirectory, dumpName);
         impl.load(file);
     }
+
+	@Override
+	public void save(File directory) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

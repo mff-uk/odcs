@@ -2,8 +2,8 @@ package cz.cuni.xrg.intlib.backend.context;
 
 import java.util.List;
 
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 /**
  * Basic interface for data merger.

@@ -18,6 +18,6 @@ public class ExtractStartEvent extends ExtractEvent {
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Extractor started.", "");
+		return new Record(time, RecordType.DPU_INFO, dpuInstance, execution, "Extractor started.", "");
 	}
 }

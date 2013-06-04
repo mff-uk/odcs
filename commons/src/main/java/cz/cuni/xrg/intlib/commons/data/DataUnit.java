@@ -52,9 +52,16 @@ public interface DataUnit {
     public void release();    
     
     /**
+     * Save DataUnit context into DataUnit working directory.
+     * In case of any problem throws exception.
+     * @throws Exception
+     */
+    public void save() throws Exception;    
+    
+    /**
      * Save DataUnit context into given directory. In case
      * of any problem throws exception. The directory doesn't have to exist.
-     * @see #createNew
+     * The directory can be the same as the DataUnit working directory!
      * @throws Exception
      */
     public void save(File directory) throws Exception;

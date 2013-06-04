@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,12 +12,8 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
-import cz.cuni.xrg.intlib.commons.DPUExecutive;
-import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextFacade;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
@@ -28,6 +23,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
+import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
@@ -88,12 +85,7 @@ class PipelineWorker implements Runnable {
 	 * Store context related to Nodes (DPUs).
 	 */
 	private Map<Node, ProcessingContext> contexts;
-	
-	/**
-	 * Working directory for this execution.
-	 */
-	private File workDirectory;
-	
+		
 	/**
 	 * Logger class.
 	 */
@@ -121,29 +113,18 @@ class PipelineWorker implements Runnable {
 	 * @param database Access to database.
 	 */
 	public PipelineWorker(PipelineExecution execution, ModuleFacade moduleFacade, 
-			ApplicationEventPublisher eventPublisher, DatabaseAccess database) {
+			ApplicationEventPublisher eventPublisher, DatabaseAccess database,
+			File workingDirectory) {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
 		this.contexts = new HashMap<>();
 		// get working directory from pipelineExecution
-		this.workDirectory = new File( execution.getWorkingDirectory() );
 		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
-		// try to load the context ..
-		try {
-			this.contextWriter = ExecutionContextFacade.restoreAsWrite(workDirectory);
-			if (this.contextWriter == null) {
-				// can't load use empty
-				this.contextWriter = ExecutionContextFacade.createNew(workDirectory);
-			} else {
-				// used restored
-			}
-		} catch (FileNotFoundException e) {
-			// exception -> use new one .. 
-			this.contextWriter = ExecutionContextFacade.createNew(workDirectory);
-		}
+		// create or get existing .. 
+		this.contextWriter = execution.createExecutionContext(workingDirectory);
 		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
 	}
 
@@ -206,7 +187,7 @@ class PipelineWorker implements Runnable {
 		} else {
 			// try to delete the working directory
 			try {
-				FileUtils.deleteDirectory(workDirectory);
+				FileUtils.deleteDirectory( contextWriter.getWorkingDirectory() );
 			} catch (IOException e) {
 				logger.error("Can't delete directory after execution: " + execution.getId(), e);
 			}
@@ -219,13 +200,11 @@ class PipelineWorker implements Runnable {
 	 */
 	@Override
 	public void run() {		
-		final String pipielineExecutionId = Integer.toString( execution.getId() );
+		final String pipielineExecutionId = Long.toString( execution.getId() );
 		final String MDCDpuInstanceKey = "dpuInstance";
 
 		// add marker to logs from this thread -> both must be specified !!
 		MDC.put("execution", pipielineExecutionId );
-		// set "file" to full path to the log file
-		MDC.put("file", contextWriter.getLogFile().toString() );
 		
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
@@ -233,13 +212,7 @@ class PipelineWorker implements Runnable {
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
 				
-		// save contextWriter before first DPURecord
-		try {
-			contextWriter.save();
-		} catch (Exception e) {
-			logger.error("Can't save context: " + execution.getId(), e);
-		}	
-		
+		// TODO: Petyr, persist context into DO		
 		logger.debug("Started");
 		
 		boolean executionFailed = false;
@@ -279,12 +252,8 @@ class PipelineWorker implements Runnable {
 				break;
 			}
 			
-			// save contextWriter after every DPURecord to enable recovery
-			try {
-				contextWriter.save();
-			} catch (Exception e) {
-				logger.error("Can't save context: " + execution.getId(), e);
-			}				
+			// TODO Petyr:save contextWriter after every DPURecord to enable recovery
+			//		also save the new DataUnits .. 
 		}
 		// ending ..
 		
@@ -293,12 +262,7 @@ class PipelineWorker implements Runnable {
 		MDC.clear();
 	
 		if (execution.isDebugging()) {
-			// save contextWriter for the last time ..
-			try {
-				contextWriter.save();
-			} catch (Exception e) {
-				logger.error("Can't save context: " + execution.getId(), e);
-			}	
+			// TODO Petyr: save contextWriter for the last time ..
 		}
 		
 		// and do clean up
@@ -309,8 +273,6 @@ class PipelineWorker implements Runnable {
 		} else {
 			executionSuccessful();
 		}
-		
-		
 	}
 
 	/**
@@ -325,7 +287,7 @@ class PipelineWorker implements Runnable {
 	 */		
 	private ExtendedExtractContext getContextForNodeExtractor(Node node, 
 			Set<Node> ancestors) throws ContextException, StructureException {
-		DPUInstance dpuInstance = node.getDpuInstance();
+		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedExtractContext extractContext;
@@ -349,7 +311,7 @@ class PipelineWorker implements Runnable {
 	 */		
 	private ExtendedTransformContext getContextForNodeTransform(Node node,
 			Set<Node> ancestors) throws ContextException, StructureException {
-		DPUInstance dpuInstance = node.getDpuInstance();
+		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedTransformContext transformContext;
@@ -385,7 +347,7 @@ class PipelineWorker implements Runnable {
 	 */	
 	private ExtendedLoadContext getContextForNodeLoader(Node node, 
 			Set<Node> ancestors) throws ContextException, StructureException {
-		DPUInstance dpuInstance = node.getDpuInstance();
+		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedLoadContext loadContext;
@@ -420,30 +382,40 @@ class PipelineWorker implements Runnable {
 	 */
 	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException {
 		// prepare what we need to start the execution
-		DPUInstance dpuInstance = node.getDpuInstance();
-		DPURecord dpu = dpuInstance.getDpu();
-		DpuType dpuType = dpu.getType();
-		String dpuJarPath = dpu.getJarPath();
-		Config configuration = dpuInstance.getInstanceConfig();
+		DPUInstanceRecord dpuInstanceRecord = node.getDpuInstance();
+		
+		// load instance
+		try {
+			dpuInstanceRecord.loadInstance();
+		} catch(ModuleException e) {
+			throw new StructureException("Failed to create instance of DPU.", e);
+		}
+		
+		// get instance
+		Object dpuInstance = dpuInstanceRecord.getInstance();		
+		Config configuration = dpuInstanceRecord.getConf();
 		// set configuration
-		DPUExecutive dpuExecutive = moduleFacade.getInstance(dpuJarPath);
-		dpuExecutive.saveConfiguration(configuration);
-		// now based on DPURecord type ..
-		switch (dpuType) {
-			case EXTRACTOR: {
-				Extract extractor = (Extract)dpuExecutive;				
-				return runExtractor(extractor, getContextForNodeExtractor(node, ancestors) );
+		if (dpuInstance instanceof Configurable<?>) {
+			Configurable<Config> configurable = 
+					(Configurable<Config>)dpuInstance;			
+			try {
+				configurable.configure(configuration);
+			} catch (ConfigException e) {
+				throw new StructureException("Failed to configure DPU.", e);
 			}
-			case TRANSFORMER: {
-				Transform transformer = (Transform)dpuExecutive;
-				return runTransformer(transformer, getContextForNodeTransform(node, ancestors) );
-			}
-			case LOADER: {
-				Load loader = (Load)dpuExecutive;
-				return runLoader(loader, getContextForNodeLoader(node, ancestors) );
-			}
-			default:
-				throw new RuntimeException("Unknown DPURecord type.");
+		}
+
+		if (dpuInstance instanceof Extract) {
+			Extract extractor = (Extract)dpuInstance;
+			return runExtractor(extractor, getContextForNodeExtractor(node, ancestors) );
+		} else if (dpuInstance instanceof Transform) {
+			Transform transformer = (Transform)dpuInstance;
+			return runTransformer(transformer, getContextForNodeTransform(node, ancestors) );
+		} else if (dpuInstance instanceof Load) {
+			Load loader = (Load)dpuInstance;
+			return runLoader(loader, getContextForNodeLoader(node, ancestors) );
+		} else {
+			throw new RuntimeException("Unknown DPURecord type.");
 		}
 	}
 

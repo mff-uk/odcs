@@ -19,6 +19,6 @@ public class LoadStartEvent extends LoadEvent {
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Loader started.", "");
+		return new Record(time, RecordType.DPU_INFO, dpuInstance, execution, "Loader started.", "");
 	}
 }

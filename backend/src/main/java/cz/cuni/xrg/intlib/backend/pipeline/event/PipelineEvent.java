@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.springframework.context.ApplicationEvent;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
@@ -23,14 +23,14 @@ public abstract class PipelineEvent extends ApplicationEvent {
 	/**
 	 * The most related DPURecord to the event. 
 	 */
-	protected DPUInstance dpuInstance;
+	protected DPUInstanceRecord dpuInstance;
 	
 	/**
 	 * Associated pipeline execution.
 	 */
     protected PipelineExecution execution;
 
-    public PipelineEvent(DPUInstance dpuInstance, PipelineExecution execution, Object source) {
+    public PipelineEvent(DPUInstanceRecord dpuInstance, PipelineExecution execution, Object source) {
         super(source);
         time = new Date();
         this.dpuInstance = dpuInstance;

@@ -185,10 +185,6 @@ public class VirtuosoRDF implements RDFDataRepository {
     }
 
     @Override
-    public void createNew(String id, File workingDirectory, boolean mergePrepare) {
-    }
-
-    @Override
     public void merge(DataUnit unit) throws IllegalArgumentException {
         if (unit != null) {
             if (unit instanceof RDFDataRepository) {
@@ -287,4 +283,10 @@ public class VirtuosoRDF implements RDFDataRepository {
     public Map<String, List<String>> makeQueryOverRepository(String query) throws NotValidQueryException{
         return impl.makeQueryOverRepository(query);
     }
+
+	@Override
+	public void save(File directory) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

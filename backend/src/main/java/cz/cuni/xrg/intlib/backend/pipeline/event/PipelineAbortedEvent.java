@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend.pipeline.event;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
@@ -19,14 +19,14 @@ public class PipelineAbortedEvent extends PipelineEvent {
 	 */
     private final String message;
 
-    public PipelineAbortedEvent(String message, DPUInstance dpuInstance, PipelineExecution pipelineExec, Object source) {
+    public PipelineAbortedEvent(String message, DPUInstanceRecord dpuInstance, PipelineExecution pipelineExec, Object source) {
         super(dpuInstance, pipelineExec, source);
         this.message = message;
     }
 
 	@Override
 	public Record getRecord() {
-		return new Record(time, RecordType.PIPELINEERROR, dpuInstance, execution, 
+		return new Record(time, RecordType.PIPELINE_ERROR, dpuInstance, execution, 
 				"Pipeline execution aborted.", "Pipeline execution aborted on user request with message: " + message);
 	}
 }

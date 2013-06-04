@@ -19,11 +19,10 @@ public class PipelineExecution  {
 
 	/**
 	 * Unique id of pipeline execution.
-	 * TODO change to Long
 	 */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private long id;
 	
     /**
      * Actual status for executed pipeline.
@@ -89,10 +88,11 @@ public class PipelineExecution  {
     	if (context == null) {
     		context = new ExecutionContextImpl(directory);
     	}
+    	// TODO Petyr, Honza: Persist to DB
     	return context;
     }
     
-    public int getId() {
+    public long getId() {
     	return id;
     }
     

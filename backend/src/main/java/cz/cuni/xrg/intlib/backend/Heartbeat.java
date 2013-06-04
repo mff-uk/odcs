@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.backend;
 
-import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 

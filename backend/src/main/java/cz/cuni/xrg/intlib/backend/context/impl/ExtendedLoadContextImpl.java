@@ -7,11 +7,10 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.util.LinkedList;
@@ -48,7 +47,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	 */
 	private Logger logger;	
 	
-	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
+	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContext contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.inputs = new LinkedList<DataUnit>();
@@ -94,11 +93,6 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	public Map<String, Object> getCustomData() {
 		return extendedImp.getCustomData();
 	}
-
-	@Override
-	public DataUnitFactory getDataUnitFactory() {
-		return extendedImp.getDataUnitFactory();
-	}	
 	
 	@Override
 	public PipelineExecution getPipelineExecution() {		
@@ -106,7 +100,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	}
 
 	@Override
-	public DPUInstance getDPUInstance() {
+	public DPUInstanceRecord getDPUInstance() {
 		return extendedImp.getDPUInstance();
 	}
 	

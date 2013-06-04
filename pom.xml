@@ -27,7 +27,7 @@
 		<module>commons-web</module>
 		<!-- frontend is the last build -->
 		<module>frontend</module>
-		<!-- <module>backend</module>  -->
+		<module>backend</module>
 		<module>libs</module>
 		<!-- build modules -->
 		<module>module</module>

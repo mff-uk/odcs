@@ -5,8 +5,9 @@ import java.util.List;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 
 /**
  * Very primitive DataUnits merger.
@@ -44,8 +45,13 @@ public class PrimitiveDataUniteMerger implements DataUnitMerger {
 			// add the rest from right			
 			while (iterRight.hasNext()) {
 				DataUnit rightDataUnit = iterRight.next();
-				// create new data unit (in context into which we merge)
-				DataUnit newDataUnit = factory.create(rightDataUnit.getType(), true);
+				// create new data unit (in context into which we merge)				
+				DataUnit newDataUnit;
+				try {
+					newDataUnit = factory.createInput(rightDataUnit.getType());
+				} catch (DataUnitCreateException e) {
+					throw new ContextException("Failed to create input object.", e);
+				}
 				// and copy the data
 				newDataUnit.merge(rightDataUnit);
 				left.add(newDataUnit);

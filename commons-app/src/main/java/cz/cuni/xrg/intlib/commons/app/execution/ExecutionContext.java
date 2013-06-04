@@ -7,7 +7,8 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
  * Complete read write interface for execution context. Enable writing
- * data into context and asking for directories.
+ * data into context and asking for directories. Provide methods
+ * for creating file names for DataUnits.
  * 
  * @author Petyr
  *
@@ -50,4 +51,10 @@ public interface ExecutionContext extends ExecutionContextReader {
 	 * @return The path to the directory, is not guaranteed that the directory exist.
 	 */
 	public File createDirForDPUResult(DPUInstanceRecord dpuInstance);
+	
+	/**
+	 * Return root workingDirectory.
+	 * @return workingDirecotry.
+	 */
+	public File getWorkingDirectory();
 }

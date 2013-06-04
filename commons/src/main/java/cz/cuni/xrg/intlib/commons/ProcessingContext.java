@@ -2,11 +2,12 @@ package cz.cuni.xrg.intlib.commons;
 
 import java.util.Map;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 /**
- * Base context class.
+ * Base context class. The context provide functions that enable DPU
+ * communicate with outside world and cooperate with other DPUs
+ * in scope of pipeline execution.
  *
  * @author Petyr
  */

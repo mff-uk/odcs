@@ -11,16 +11,18 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import cz.cuni.xrg.intlib.backend.data.DataUnitFactoryImpl;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
-import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 
 /**
  * Provide implementation of commons methods for 
  * {@link ExtendedExtractContextImpl}, {@link ExtendedLoadContextImpl} 
  * and {@link ExtendedTransformContextImpl}
+ * 
+ * For details about methods see {@link cz.cuni.xrg.intlib.commons.ProcessingContext} 
  * 
  * @author Petyr
  *
@@ -49,19 +51,19 @@ class ExtendedCommonImpl {
 	private PipelineExecution execution;
 
 	/**
-	 * Instance of DPURecord for which is this context.
+	 * DPUInstanceRecord as owner of this context.
 	 */
-	private DPUInstance dpuInstance;
+	private DPUInstanceRecord dpuInstance;
     	
 	/**
 	 * Used factory.
 	 */
-	private DataUnitFactoryImpl dataUnitFactory;
+	private DataUnitFactory dataUnitFactory;
 	
 	/**
 	 * Manage mapping context into execution's directory. 
 	 */
-	private ExecutionContext contextWriter;
+	private ExecutionContext context;
 	
 	/**
 	 * Counter used to generate unique id for data.
@@ -73,15 +75,22 @@ class ExtendedCommonImpl {
 	 */
 	private Logger logger;
 	
-	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstance dpuInstance, 
+	/**
+	 * 
+	 * @param id Context'id.
+	 * @param execution Associated pipelineExecution.
+	 * @param dpuInstance Associated dpuInstanceRecord ~ owner.
+	 * @param context Access to context 'manager'.
+	 */
+	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ExecutionContext contextWriter) {
 		this.id = id;
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
-		this.dataUnitFactory = new DataUnitFactoryImpl(this.id, contextWriter, dpuInstance);
-		this.contextWriter = contextWriter;
+		this.dataUnitFactory = new DataUnitFactory(this.id, contextWriter, dpuInstance);
+		this.context = contextWriter;
 		this.storeCounter = 0;
 		this.logger = Logger.getLogger(ExtendedCommonImpl.class); 
 	}	
@@ -93,7 +102,7 @@ class ExtendedCommonImpl {
 		try
 		{
 			FileOutputStream fileOut =
-				new FileOutputStream( new File(contextWriter.getDirForDPUStorage(dpuInstance), id) );
+				new FileOutputStream( new File(context.createDirForDPUStorage(dpuInstance), id) );
 			ObjectOutputStream outStream =
 				new ObjectOutputStream(fileOut);
 			outStream.writeObject(object);
@@ -109,7 +118,7 @@ class ExtendedCommonImpl {
 		Object result = null;
 		try {
 			FileInputStream fileIn = 
-					new FileInputStream( new File(contextWriter.getDirForDPUStorage(dpuInstance), id));
+					new FileInputStream( new File(context.createDirForDPUStorage(dpuInstance), id));
 			ObjectInputStream inStream = new ObjectInputStream(fileIn);
 			result = inStream.readObject();
 			inStream.close();
@@ -123,7 +132,7 @@ class ExtendedCommonImpl {
 	}
 
 	public void storeDataForResult(String id, Object object) {
-		// TODO Petyr: storeDataForResult	
+		// TODO Petyr: storeDataForResult
 	}
 
 	public boolean isDebugging() {
@@ -142,7 +151,11 @@ class ExtendedCommonImpl {
 		return execution;
 	}
 
-	public DPUInstance getDPUInstance() {
+	public DPUInstanceRecord getDPUInstance() {
 		return dpuInstance;
 	}	
+	
+	public ExecutionContextReader getContext() {
+		return context;
+	}
 }

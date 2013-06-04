@@ -1,5 +1,9 @@
 package cz.cuni.xrg.intlib.backend.context;
 
+import java.util.List;
+
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
+
 /**
  * Extended transform context.
  * 
@@ -13,4 +17,9 @@ public interface ExtendedTransformContext extends cz.cuni.xrg.intlib.commons.tra
 	 */
 	public void sealInputs();	
 		
+	/**
+	 * Return access to list of all output DataUnits.
+	 * @return
+	 */
+	public List<DataUnit> getOutputs();	
 }

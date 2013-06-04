@@ -5,11 +5,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 class ExecutionContextImpl implements ExecutionContext {
 
+	/**
+	 * Unique id of pipeline execution.
+	 */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;	
+	
 	/**
 	 * Contexts for DPU's. Indexed by id's of DPUINstanceRecord
 	 */
@@ -87,5 +98,9 @@ class ExecutionContextImpl implements ExecutionContext {
 	@Override
 	public File createDirForDPUResult(DPUInstanceRecord dpuInstance) {
 		return getContext(dpuInstance).getDirForDPUResult(true);
+	}
+	
+	public File getWorkingDirectory() {
+		return directory;
 	}
 }

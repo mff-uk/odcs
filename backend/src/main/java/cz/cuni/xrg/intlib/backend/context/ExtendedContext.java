@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend.context;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 
 /**
@@ -23,7 +23,7 @@ public interface ExtendedContext {
 	 * (The one who work with it.) 
 	 * @return
 	 */
-	public DPUInstance getDPUInstance();
+	public DPUInstanceRecord getDPUInstance();
 	
     /**
      * Release all locks from context and DataUnits. 

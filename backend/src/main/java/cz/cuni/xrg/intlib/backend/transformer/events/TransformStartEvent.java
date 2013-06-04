@@ -18,6 +18,6 @@ public class TransformStartEvent extends TransformEvent {
 
 	@Override
 	public Record getRecord() {		
-		return new Record(time, RecordType.DPUINFO, dpuInstance, execution, "Transformer started.", "");
+		return new Record(time, RecordType.DPU_INFO, dpuInstance, execution, "Transformer started.", "");
 	}
 }

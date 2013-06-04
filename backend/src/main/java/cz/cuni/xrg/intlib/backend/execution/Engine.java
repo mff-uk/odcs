@@ -86,15 +86,14 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
     	
     	// prepare working directory for execution
     	File directory = new File(workingDirectory, "execution-" + pipelineExecution.getId() );    	
-    	// store workingDirectory
-    	pipelineExecution.setWorkingDirectory(directory.getAbsolutePath());
+    	// store workingDirectory    	
     	pipelineExecution.setStart(new Date());
     	
     	// update record in DB
     	database.getPipeline().save(pipelineExecution);
    	
     	this.executorService.execute(
-    			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, database));
+    			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, database, directory));
     }
     
     /**
