@@ -8,6 +8,8 @@ import javax.persistence.Table;
 
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 
+//TODO Honza: Add to database
+
 /**
  * 
  * 

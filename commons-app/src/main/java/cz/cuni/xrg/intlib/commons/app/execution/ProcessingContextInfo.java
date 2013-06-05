@@ -6,6 +6,8 @@ import java.util.Set;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
+// TODO Honza: Add to database, this class is used in ExecutionContextImpl
+
 /**
  * Store information about context of single DPURecord. 
  * Is used as a data container in class {@link cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextImpl}

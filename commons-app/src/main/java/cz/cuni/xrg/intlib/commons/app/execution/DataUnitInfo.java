@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
+//TODO Honza: Add to database
+
 /**
  * Holds information about single DataUnit' context.
  * 
@@ -34,11 +36,13 @@ public class DataUnitInfo {
 	 * DataUnit type. 
 	 */
 	@Enumerated(EnumType.ORDINAL)
+	@Column(name="type")
 	private DataUnitType type;
 	
 	/**
 	 * True if use as input.
 	 */
+	@Column(name="isInput")
 	private boolean isInput;
 	
 	/**

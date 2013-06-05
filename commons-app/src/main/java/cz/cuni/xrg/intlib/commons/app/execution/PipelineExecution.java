@@ -6,6 +6,8 @@ import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
+//TODO Honza: Update
+
 /**
  * Information about executed pipeline and its states.
  *
@@ -61,7 +63,8 @@ public class PipelineExecution  {
 	 * Execution context, can be null.
 	 */
 	@OneToOne
-	@JoinColumn(name="context_id", nullable = true)	
+	@JoinColumn(name="context_id", nullable = true)
+	// TODO Honza: can be null, also there should be possibility to delete this context and preserve pipelineExecution
 	private ExecutionContextImpl context;
 	
 	/** No-arg constructor for JPA */

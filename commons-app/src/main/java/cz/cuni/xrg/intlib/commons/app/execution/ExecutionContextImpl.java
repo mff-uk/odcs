@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+
+//TODO Honza: Add to database, see PipelineExecution
 
 class ExecutionContextImpl implements ExecutionContext {
 
@@ -24,11 +27,13 @@ class ExecutionContextImpl implements ExecutionContext {
 	/**
 	 * Contexts for DPU's. Indexed by id's of DPUINstanceRecord
 	 */
+    @Column(name="")
 	private Map<Long, ProcessingContextInfo> contexts;
 	
 	/**
 	 * Working directory for execution.
 	 */
+    @Column(name="directory")
 	private File directory;
 	
 	/**

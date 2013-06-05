@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 
+// TODO Honza: DPURecord is base class for DPUInstaceRecord and DPUTemplateRecord
 
 /**
  * Represent imported DPU in database.
