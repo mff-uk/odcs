@@ -21,7 +21,8 @@ public interface DataUnit {
      * @param workingDirectory Path to the directory where DataUnit can store files.
      * @param mergePrepare If true the merge method will be called immediately after this method.
      */
-    public void createNew(String id, File workingDirectory, boolean mergePrepare);
+	@Deprecated
+    public DataUnit createNew(String id, File workingDirectory, boolean mergePrepare);
     
     /**
      * Made this DataUnit read only. This copy will be used as a input for
@@ -78,5 +79,5 @@ public interface DataUnit {
      * @throws FileNotFoundException
      * @throws Exception
      */
-    public void load(File directory) throws FileNotFoundException, Exception;
+    public void load() throws FileNotFoundException, Exception;
 }
