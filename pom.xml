@@ -23,6 +23,7 @@
 	<modules>
 		<module>commons</module>
 		<module>commons-app</module>
+		<module>RDF</module>
 		<module>commons-module</module>
 		<module>commons-web</module>
 		<!-- frontend is the last build -->
