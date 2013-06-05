@@ -1,6 +1,5 @@
 package module;
 
-import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import gui.ConfigDialog;
 
 import com.vaadin.ui.CustomComponent;
@@ -10,10 +9,11 @@ import cz.cuni.xrg.intlib.commons.DpuType;
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigurationException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;

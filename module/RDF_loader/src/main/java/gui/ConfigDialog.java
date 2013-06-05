@@ -10,12 +10,12 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 
 /**
  * Configuration dialog.
@@ -428,7 +428,7 @@ public class ConfigDialog extends CustomComponent {
         buttonGraphAdd.setImmediate(true);
         buttonGraphAdd.setWidth("55px");
         buttonGraphAdd.setHeight("-1px");
-        buttonGraphAdd.addListener(new Button.ClickListener() {
+        buttonGraphAdd.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 saveEditedTexts();
