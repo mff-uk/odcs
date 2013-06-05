@@ -76,15 +76,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 
     /** Pipeline states
-	 * 	NormalMode - standard mode, DPUs can be dragged
-	 *  NewConnectionMode - new connection is being created, line follows mouse
+	 * 	NORMAL_MODE - standard mode, DPUs can be dragged
+	 *  NEW_CONNECTION_MODE - new connection is being created, line follows mouse
 	 *  ...
 	 * **/
-    //Stage state
-    const NewConnectionMode = "new_connection_mode";
-    const NormalMode = "normal_mode";
+    // Stage state constants
+    var NEW_CONNECTION_MODE = "new_connection_mode";
+    var NORMAL_MODE = "normal_mode";
 
-    var stageMode = NormalMode;
+    var stageMode = NORMAL_MODE;
 
     /** New connection related variables **/
     //Adding new connection
@@ -160,7 +160,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 var y = mousePos.y;
                 writeMessage(messageLayer, 'x: ' + x + ', y: ' + y);
                 moveLine(dragId, x, y);
-            } else if(stageMode == NewConnectionMode) {
+            } else if(stageMode == NEW_CONNECTION_MODE) {
                 // Repositioning new connection line
                 var mousePosition = stage.getMousePosition();
                 newConnLine.setPoints(computeConnectionPoints3(newConnStart.group, mousePosition.x, mousePosition.y));
@@ -184,12 +184,12 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         stage.on('click', function() {
-            if(stageMode == NewConnectionMode) {
-                // Cancels NewConnectionMode
+            if(stageMode == NEW_CONNECTION_MODE) {
+                // Cancels NEW_CONNECTION_MODE
                 newConnLine.destroy();
                 newConnLine = null;
                 newConnStart = null;
-                stageMode = NormalMode;
+                stageMode = NORMAL_MODE;
                 lineLayer.draw();
             }
         });
@@ -317,7 +317,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
         cmdConnection.on('click', function(evt) {
-            if(stageMode == NormalMode) {
+            if(stageMode == NORMAL_MODE) {
                 writeMessage(messageLayer, 'action bar clicked');
                 var mousePosition = stage.getMousePosition();
                 newConnLine = new Kinetic.Line({
@@ -325,7 +325,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     stroke: '#555',
                     strokeWidth: 3
                 });
-                stageMode = NewConnectionMode;
+                stageMode = NEW_CONNECTION_MODE;
                 newConnStart = dpu;
                 writeMessage(messageLayer, 'Clicking on:'+ dpu.name);
                 lineLayer.add(newConnLine);
@@ -380,7 +380,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // Handling the visibility of actionBar
         group.on('mouseenter', function() {
-            if(stageMode == NormalMode) {
+            if(stageMode == NORMAL_MODE) {
                 actionBar.setVisible(true);
                 actionBar.moveToTop();
                 writeMessage(messageLayer, 'mouseentered');
@@ -431,17 +431,17 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         group.on('click', function(evt) {
             writeMessage(messageLayer, 'Clicked on Extractor');
 
-            if(stageMode == NewConnectionMode) {
+            if(stageMode == NEW_CONNECTION_MODE) {
                 newConnLine.destroy();
                 newConnLine = null;
-                stageMode = NormalMode;
+                stageMode = NORMAL_MODE;
                 idFrom = newConnStart.id;
                 idTo = dpu.id; //getDpuByPosition(stage.getMousePosition());
                 if(idTo != 0) {
                     rpcProxy.onConnectionAdded(idFrom, parseInt(idTo));
                 }
                 newConnStart = null;
-            } else if(stageMode == NormalMode) {
+            } else if(stageMode == NORMAL_MODE) {
                 if(evt.ctrlKey) {
                     writeMessage(messageLayer, 'DPU removed - CTRL');
                     removeDpu(dpu);
@@ -455,7 +455,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                         stroke: '#555',
                         strokeWidth: 3
                     });
-                    stageMode = NewConnectionMode;
+                    stageMode = NEW_CONNECTION_MODE;
                     newConnStart = dpu;
                     writeMessage(messageLayer, 'Clicking on:'+ dpu.name);
                     lineLayer.add(newConnLine);
@@ -466,7 +466,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         group.on('dblclick', function(evt) {
-            if(stageMode == NormalMode) {
+            if(stageMode == NORMAL_MODE) {
                 writeMessage(messageLayer, 'Detail requested');
                 rpcProxy.onDetailRequested(dpu.id);
                 evt.cancelBubble = true;
