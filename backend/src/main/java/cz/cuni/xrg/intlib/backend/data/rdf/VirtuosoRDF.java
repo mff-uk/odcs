@@ -274,7 +274,7 @@ public class VirtuosoRDF implements RDFDataRepository {
     }
 
     @Override
-    public void mergeRepositoryData(RDFDataRepository second) {
+    public void mergeRepositoryData(RDFDataRepository second) throws IllegalArgumentException {
         impl.mergeRepositoryData(second);
     }
 
