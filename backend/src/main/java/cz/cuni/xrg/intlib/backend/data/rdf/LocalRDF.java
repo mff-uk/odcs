@@ -19,6 +19,8 @@ import java.util.Map;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -322,8 +324,11 @@ public class LocalRDF implements RDFDataRepository {
 
     @Override
     public void release() {
+    	Logger logger = LoggerFactory.getLogger(LocalRDF.class);
+    	logger.info("Releasing DPU LocalRdf: {}", workingDirectory.toString());
         cleanAllRepositoryData();
         impl.shutDown();
+        logger.info("Relelased LocalRdf: {}", workingDirectory.toString());
     }
 
     @Override

@@ -200,17 +200,6 @@ class PipelineWorker implements Runnable {
 				logger.error("Unexpected ProcessingContext instance. Can't call release().");
 			}	
 		}
-		// delete working folder
-		if (execution.isDebugging()) {
-			// do not delete anything
-		} else {
-			// try to delete the working directory
-			try {
-				FileUtils.deleteDirectory(workDirectory);
-			} catch (IOException e) {
-				logger.error("Can't delete directory after execution: " + execution.getId(), e);
-			}
-		}
 	}
 	
 	/**
@@ -289,8 +278,6 @@ class PipelineWorker implements Runnable {
 		// ending ..
 		
 		logger.debug("Finished");
-		// clear all threads markers		
-		MDC.clear();
 	
 		if (execution.isDebugging()) {
 			// save contextWriter for the last time ..
@@ -303,7 +290,22 @@ class PipelineWorker implements Runnable {
 		
 		// and do clean up
 		cleanUp();
-                
+        
+		// clear all threads markers		
+		MDC.clear();		
+		
+		// delete working folder
+		if (execution.isDebugging()) {
+			// do not delete anything
+		} else {
+			// try to delete the working directory
+			try {
+				FileUtils.deleteDirectory(workDirectory);
+			} catch (IOException e) {
+				logger.error("Can't delete directory after execution: " + execution.getId(), e);
+			}
+		}		
+		
         if (executionFailed) {
 			executionFailed();
 		} else {
