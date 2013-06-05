@@ -17,9 +17,9 @@
 
 	<dependencies>
 	
-		<dependency> <!-- commons project -->
+		<dependency> <!-- RDF project -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>commons</artifactId>
+			<artifactId>RDF</artifactId>
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
