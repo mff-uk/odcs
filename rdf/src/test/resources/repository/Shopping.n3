@@ -1,0 +1,50 @@
+# Saved by TopBraid on Fri Nov 21 23:52:06 PST 2008
+# baseURI: http://www.workingontologist.org/Examples/Chapter5/Shopping.owl
+
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix shop:    <http://www.workingontologist.org/Examples/Chapter5/Shopping.owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix daml:    <http://www.daml.org/2001/03/daml+oil#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+
+<http://www.workingontologist.org/Examples/Chapter5/Shopping.owl>
+      a       owl:Ontology ;
+      owl:versionInfo "Created with TopBraid Composer"^^xsd:string .
+
+shop:BikerT
+      a       shop:MensWear , shop:Tshirts .
+
+shop:Blouses
+      a       owl:Class ;
+      rdfs:subClassOf shop:WomensWear .
+
+shop:ChamoisHenley
+      a       shop:Henleys .
+
+shop:ClassicOxford
+      a       shop:Shirts , shop:Oxfords .
+
+shop:Henleys
+      a       owl:Class ;
+      rdfs:subClassOf shop:Shirts .
+
+shop:MensWear
+      a       owl:Class ;
+      rdfs:subClassOf owl:Thing .
+
+shop:Oxfords
+      a       owl:Class ;
+      rdfs:subClassOf shop:Shirts .
+
+shop:Shirts
+      a       owl:Class ;
+      rdfs:subClassOf shop:MensWear .
+
+shop:Tshirts
+      a       owl:Class ;
+      rdfs:subClassOf shop:Shirts .
+
+shop:WomensWear
+      a       owl:Class ;
+      rdfs:subClassOf owl:Thing .
