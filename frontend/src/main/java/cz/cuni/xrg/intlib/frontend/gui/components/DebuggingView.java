@@ -63,26 +63,11 @@ public class DebuggingView extends CustomComponent {
 		executionRecordsTable.setHeight("160px");
 
 		mainLayout.addComponent(executionRecordsTable);
-
-		ComboBox dpuSelector = new ComboBox("Select DPU:");
-		dpuSelector.setImmediate(true);
-		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
-			dpuSelector.addItem(node.getDpuInstance());
+		
+		// DPU selector is shown in debug mode only
+		if (isInDebugMode) {
+			buildDpuSelector();
 		}
-		if(debugDpu != null) {
-			dpuSelector.select(debugDpu);
-		}
-		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				Object value = event.getProperty().getValue();
-				if (value != null && value.getClass() == DPUInstance.class) {
-					debugDpu = (DPUInstance) value;
-					refreshContent();
-				}
-			}
-		});
-		mainLayout.addComponent(dpuSelector);
 
 		tabs = new TabSheet();
 		tabs.setSizeFull();
@@ -311,5 +296,30 @@ public class DebuggingView extends CustomComponent {
 		refreshLayout.setVisible(false);
 		
 		return refreshLayout;
+	}
+
+	/**
+	 * DPU select box factory.
+	 */
+	private void buildDpuSelector() {
+		ComboBox dpuSelector = new ComboBox("Select DPU:");
+		dpuSelector.setImmediate(true);
+		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
+			dpuSelector.addItem(node.getDpuInstance());
+		}
+		if(debugDpu != null) {
+			dpuSelector.select(debugDpu);
+		}
+		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				Object value = event.getProperty().getValue();
+				if (value != null && value.getClass() == DPUInstance.class) {
+					debugDpu = (DPUInstance) value;
+					refreshContent();
+				}
+			}
+		});
+		mainLayout.addComponent(dpuSelector);
 	}
 }
