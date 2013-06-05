@@ -4,11 +4,11 @@ import gui.ConfigDialog;
 
 import cz.cuni.xrg.intlib.commons.configuration.Configuration;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.dpu.AbstractExtractor;
 import cz.cuni.xrg.intlib.commons.module.gui.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
