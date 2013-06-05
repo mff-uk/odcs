@@ -27,6 +27,9 @@ public class QueryView extends CustomComponent {
     private TextArea queryText;
     private IntlibPagedTable resultTable;
     private NativeSelect graphSelect;
+	
+	private final static String IN_GRAPH = "Input Graph";
+	private final static String OUT_GRAPH = "Output Graph";
 
     public QueryView(DebuggingView parent) {
         this.parent = parent;
@@ -36,8 +39,7 @@ public class QueryView extends CustomComponent {
 
         graphSelect = new NativeSelect("Graph:");
         graphSelect.setImmediate(true);
-//		graphSelect.addItem("Input Graph");
-//		graphSelect.addItem("Output Graph");
+		graphSelect.setNullSelectionAllowed(false);
         topLine.addComponent(graphSelect);
 
         Button queryButton = new Button("Query");
@@ -140,13 +142,23 @@ public class QueryView extends CustomComponent {
         return result;
     }
 
+	/**
+	 * Populates select box for RDF graph to query.
+	 * 
+	 * @param type DPU type to query
+	 */
     public void setGraphs(DpuType type) {
         graphSelect.removeAllItems();
-        if (type != DpuType.EXTRACTOR) {
-            graphSelect.addItem("Input Graph");
-        }
-        if (type != DpuType.LOADER) {
-            graphSelect.addItem("Output Graph");
-        }
-    }
+        if (DpuType.EXTRACTOR.equals(type)) {
+			graphSelect.addItem(IN_GRAPH);
+			graphSelect.select(IN_GRAPH);
+		} else if (DpuType.TRANSFORMER.equals(type)) {
+			graphSelect.addItem(IN_GRAPH);
+            graphSelect.addItem(OUT_GRAPH);
+			graphSelect.select(OUT_GRAPH);
+		} else if (DpuType.LOADER.equals(type)) {
+            graphSelect.addItem(OUT_GRAPH);
+			graphSelect.select(OUT_GRAPH);
+		}
+	}
 }
