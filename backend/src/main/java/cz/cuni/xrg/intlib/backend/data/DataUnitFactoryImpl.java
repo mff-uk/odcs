@@ -2,13 +2,14 @@ package cz.cuni.xrg.intlib.backend.data;
 
 import java.io.File;
 
-import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF;
-import cz.cuni.xrg.intlib.backend.data.rdf.VirtuosoRDF;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextWriter;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 /**
  * Implementation of DataUnitFactory.
@@ -64,21 +65,19 @@ public class DataUnitFactoryImpl implements DataUnitFactory {
 			case RDF:	// as default RDF use local repository
 			case RDF_Local:
 			{
-				// TODO: Jirka: update/check the initialisation of LocalRdf here
-				LocalRDF repository = new LocalRDF();
 				// get directory
 				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Local, mergePrepare, counter);
-				repository.createNew(id, workingDirectory, mergePrepare);			
-				return repository;
+				
+				RDFDataRepository localRepository=LocalRDFRepo.createLocalRepo(workingDirectory.getAbsolutePath(),id);
+				
+				return localRepository;
 			}
 			case RDF_Virtuoso:
 			{
 				// TODO: Petyr, Jirka : enable connection outside ctor, add empty ctor for factory
-				VirtuosoRDF repository = VirtuosoRDF.createVirtuosoRDFRepo();
-				// get directory
-				File workingDirectory = contextWriter.createDirForDataUnit(dpuInstance, DataUnitType.RDF_Virtuoso, mergePrepare, counter);
-				repository.createNew(id, workingDirectory, mergePrepare);			
-				return repository;
+				RDFDataRepository virtuosoRepository = VirtuosoRDFRepo.createVirtuosoRDFRepo();
+							
+				return virtuosoRepository;
 			}				
 		}
 		return null;
