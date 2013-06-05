@@ -41,7 +41,7 @@ public class DebuggingView extends CustomComponent {
 	private TabSheet tabs;
 	private TextArea logTextArea;
 	private QueryView queryView;
-	private Button refreshButton;
+	private HorizontalLayout refreshComponent;
 
 	public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug) {
 		//setCaption("Debug window");
@@ -61,42 +61,23 @@ public class DebuggingView extends CustomComponent {
 		executionRecordsTable.setHeight("160px");
 
 		mainLayout.addComponent(executionRecordsTable);
-
-		ComboBox dpuSelector = new ComboBox("Select DPURecord:");
-		dpuSelector.setImmediate(true);
-		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
-			dpuSelector.addItem(node.getDpuInstance());
+		
+		// DPU selector is shown in debug mode only
+		if (isInDebugMode) {
+			buildDpuSelector();
 		}
-		if(debugDpu != null) {
-			dpuSelector.select(debugDpu);
-		}
-		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				Object value = event.getProperty().getValue();
-				if (value != null && value.getClass() == DPUInstanceRecord.class) {
-					debugDpu = (DPUInstanceRecord) value;
-					refreshContent();
-				}
-			}
-		});
-		mainLayout.addComponent(dpuSelector);
 
 		tabs = new TabSheet();
 		tabs.setSizeFull();
 
 		browseTab = tabs.addTab(new Label("Browser"), "Browse");
+		
+		refreshComponent = buildRefreshComponent();
 
 		logTextArea = new TextArea("Log from log4j", "Log file content");
-		VerticalLayout logLayout = new VerticalLayout(logTextArea);
-		refreshButton = new Button("Refresh", new Button.ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					refreshContent();
-				}
-			});
-		logLayout.addComponent(refreshButton);
-		refreshButton.setVisible(false);
+		VerticalLayout logLayout = new VerticalLayout();
+		logLayout.addComponent(refreshComponent);
+		logLayout.addComponent(logTextArea);
 		logLayout.setSizeFull();
 		logTextArea.setRows(30);
 		logTextArea.setSizeFull();
@@ -111,8 +92,7 @@ public class DebuggingView extends CustomComponent {
 		mainLayout.setSizeFull();
 		mainLayout.addComponent(tabs);
 
-		fillContent();
-
+		fillContent();		
 	}
 
 	public void fillContent() {
@@ -179,26 +159,9 @@ public class DebuggingView extends CustomComponent {
 			tabs.removeTab(infoTab);
 
 		}
-		refreshButton.setVisible(false);
-		if (!loadSuccessful && isInDebugMode || !isRunFinished) {
-			refreshButton.setVisible(true);
-			//VerticalLayout infoLayout = new VerticalLayout();
-			//Label infoLabel = new Label(isRunFinished ? "Pipeline context failed to load!" : "Pipeline context failed to load, pipeline is still running, please click \"Refresh\" button after while.");
-			//infoLayout.addComponent(infoLabel);
-			//if (!isRunFinished) {
-			//	Label infoLabelWaiting = new Label("Saving debug information and data takes time in this version. Please wait...(approximately 30s)");
-			//	infoLayout.addComponent(infoLabelWaiting);
-			//}
-//			refreshButton = new Button("Refresh", new Button.ClickListener() {
-//				@Override
-//				public void buttonClick(ClickEvent event) {
-//					refreshContent();
-//				}
-//			});
-//			infoLayout.addComponent(refreshButton);
-//			infoTab = tabs.addTab(infoLayout, "Info");
-//			tabs.setSelectedTab(infoTab);
-		}
+		
+		boolean showRefresh = !loadSuccessful && isInDebugMode || !isRunFinished;
+		refreshComponent.setVisible(showRefresh);
 	}
 
 	private void refreshContent() {
@@ -210,29 +173,6 @@ public class DebuggingView extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
-//	private List<Record> buildStubMessageData() {
-//		List<Record> stubList = new ArrayList<>();
-///*		Record m = new Record(new Date(), RecordType.DPUINFO, null, "Test message", "Long test message");
-//		m.setId(1);
-//		stubList.add(m);
-//		Record m2 = new Record(new Date(), RecordType.DPUWARNING, null, "Test warning", "Long test warning message");
-//		m2.setId(2);
-//		stubList.add(m2);*/
-//
-//		return stubList;
-//	}
-//	private List<Record> buildStubFullData() {
-//		List<Record> fullList = buildStubMessageData();
-//
-///*		Record m = new Record(new Date(), RecordType.DPULOG, null, "Test log message", "Long test log message");
-//		m.setId(3);
-//		fullList.add(1, m);
-//		Record m2 = new Record(new Date(), RecordType.DPULOG, null, "Another test log message", "Bla bla Long test warning message");
-//		m2.setId(4);
-//		fullList.add(m2);*/
-//
-//		return fullList;
-//	}
 	private boolean loadExecutionContextReader() {
 // TODO !!		
 		/*
@@ -274,14 +214,7 @@ public class DebuggingView extends CustomComponent {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
-				/*
-				 try {
-				 duBrowser.loadDataUnit(duInfo.getDirectory());
-				 } catch (Exception ex) {
-				 Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
-				 return null;
-				 }
-				 */
+				
 				duBrowser.enter();
 				return duBrowser;
 			}
@@ -341,5 +274,62 @@ public class DebuggingView extends CustomComponent {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Refresh component factory. Is to be displayed while pipeline is still
+	 * running. Contains refresh button, which updates the content of
+	 * debugging view and shows the most current data of given pipeline run.
+	 * 
+	 * @return layout with label and refresh button
+	 */
+	private HorizontalLayout buildRefreshComponent() {
+		
+		Button refreshButton = new Button("Refresh",
+				new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				refreshContent();
+			}
+		});
+		
+		Label label = new Label("Pipeline is still running. Please click refresh to update status.");
+		label.setStyleName("warning");
+		label.setWidth(450, Unit.PIXELS);
+		
+		HorizontalLayout refreshLayout = new HorizontalLayout();
+		refreshLayout.setWidth(100, Unit.PERCENTAGE);
+		refreshLayout.addComponent(label);
+		refreshLayout.addComponent(refreshButton);
+		refreshLayout.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
+		
+		refreshLayout.setVisible(false);
+		
+		return refreshLayout;
+	}
+
+	/**
+	 * DPU select box factory.
+	 */
+	private void buildDpuSelector() {
+		ComboBox dpuSelector = new ComboBox("Select DPU:");
+		dpuSelector.setImmediate(true);
+		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
+			dpuSelector.addItem(node.getDpuInstance());
+		}
+		if(debugDpu != null) {
+			dpuSelector.select(debugDpu);
+		}
+		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				Object value = event.getProperty().getValue();
+				if (value != null && value.getClass() == DPUInstanceRecord.class) {
+					debugDpu = (DPUInstanceRecord) value;
+					refreshContent();
+				}
+			}
+		});
+		mainLayout.addComponent(dpuSelector);
 	}
 }

@@ -5,8 +5,10 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
-import cz.cuni.xrg.intlib.commons.data.rdf.NotValidQueryException;
+import cz.cuni.xrg.intlib.commons.data.rdf.InvalidQueryException;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,9 @@ public class QueryView extends CustomComponent {
     private TextArea queryText;
     private IntlibPagedTable resultTable;
     private NativeSelect graphSelect;
+	
+	private final static String IN_GRAPH = "Input Graph";
+	private final static String OUT_GRAPH = "Output Graph";
 
     public QueryView(DebuggingView parent) {
         this.parent = parent;
@@ -34,8 +39,7 @@ public class QueryView extends CustomComponent {
 
         graphSelect = new NativeSelect("Graph:");
         graphSelect.setImmediate(true);
-//		graphSelect.addItem("Input Graph");
-//		graphSelect.addItem("Output Graph");
+		graphSelect.setNullSelectionAllowed(false);
         topLine.addComponent(graphSelect);
 
         Button queryButton = new Button("Query");
@@ -48,7 +52,7 @@ public class QueryView extends CustomComponent {
                     IndexedContainer container = buildDataSource(data);
                     resultTable.setContainerDataSource(container);
 
-                } catch (NotValidQueryException e) {
+                } catch (InvalidQueryException e) {
                     Notification.show("Query Validator",
                             "Query is not valid: "
                             + e.getCause().getMessage(),
@@ -78,7 +82,7 @@ public class QueryView extends CustomComponent {
         setCompositionRoot(mainLayout);
     }
 
-    private Map<String, List<String>> query() throws NotValidQueryException {
+    private Map<String, List<String>> query() throws InvalidQueryException {
         boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
         String query = queryText.getValue();
         String repoPath = parent.getRepositoryPath(onInputGraph);
@@ -93,25 +97,20 @@ public class QueryView extends CustomComponent {
         // FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
         logger.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
 
-        LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath);
-        File dumpFile = new File(repoDir, "dump_dat.ttl");
+        try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath)) {
+			File dumpFile = new File(repoDir, "dump_dat.ttl");
 
-        try {
-            repository.load(dumpFile);
+			try {
+				repository.load(dumpFile);
+			} catch (ExtractException e) {
+				logger.error(e.getMessage(), e);
+			}
 
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-
-        try {
-            Map<String, List<String>> data = repository.makeQueryOverRepository(query);
-            return data;
-
-        } catch (NotValidQueryException e) {
-            throw e;
-        } finally {
-            repository.shutDown();
-        }
+			Map<String, List<String>> data = repository.makeQueryOverRepository(query);
+			return data;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
     }
 
     private IndexedContainer buildDataSource(Map<String, List<String>> data) {
@@ -143,13 +142,24 @@ public class QueryView extends CustomComponent {
         return result;
     }
 
+	/**
+	 * Populates select box for RDF graph to query.
+	 * 
+	 * @param type DPU type to query
+	 */
     public void setGraphs(DPUType type) {
         graphSelect.removeAllItems();
-        if (type != DPUType.Extractor) {
-            graphSelect.addItem("Input Graph");
-        }
-        if (type != DPUType.Loader) {
-            graphSelect.addItem("Output Graph");
-        }
-    }
+        if (DPUType.Extractor.equals(type)) {
+			graphSelect.addItem(IN_GRAPH);
+			graphSelect.select(IN_GRAPH);
+		} else if (DPUType.Transformer.equals(type)) {
+			graphSelect.addItem(IN_GRAPH);
+            graphSelect.addItem(OUT_GRAPH);
+			graphSelect.select(OUT_GRAPH);
+		} else if (DPUType.Loader.equals(type)) {
+            graphSelect.addItem(OUT_GRAPH);
+			graphSelect.select(OUT_GRAPH);
+		}
+	}
+
 }

@@ -29,8 +29,10 @@ public class PrimitiveDataUniteMerger implements DataUnitMerger {
 				try {
 					iterLeft.next().merge( iterRight.next() );
 				} catch(IllegalArgumentException  e) {
+					throw new ContextException("Can't merge data units, type miss match.", e);
+				} catch (Exception e) {
 					throw new ContextException("Can't merge data units.", e);
-				}				
+				}
 			}
 		} else {
 			// the right is larger ..
@@ -39,8 +41,10 @@ public class PrimitiveDataUniteMerger implements DataUnitMerger {
 				try {
 					iterLeft.next().merge( iterRight.next() );
 				} catch(IllegalArgumentException  e) {
+					throw new ContextException("Can't merge data units, type miss match.", e);
+				} catch (Exception e) {
 					throw new ContextException("Can't merge data units.", e);
-				}				
+				}			
 			}
 			// add the rest from right			
 			while (iterRight.hasNext()) {
@@ -53,7 +57,13 @@ public class PrimitiveDataUniteMerger implements DataUnitMerger {
 					throw new ContextException("Failed to create input object.", e);
 				}
 				// and copy the data
-				newDataUnit.merge(rightDataUnit);
+				try {
+					newDataUnit.merge(rightDataUnit);
+				} catch(IllegalArgumentException  e) {
+					throw new ContextException("Can't merge data units, type miss match.", e);
+				} catch (Exception e) {
+					throw new ContextException("Can't merge data units.", e);
+				}
 				left.add(newDataUnit);
 			}
 		}

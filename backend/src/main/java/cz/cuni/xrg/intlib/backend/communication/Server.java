@@ -59,16 +59,20 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
         public void run() {
             // read message
             Messages msg = Messages.Uknown;
-            try {
-                try (DataInputStream stream = new DataInputStream(socket.getInputStream())) {
+            try (DataInputStream stream = new DataInputStream(socket.getInputStream())) {
                     int messageId = stream.readInt();
                     // translate id to Message enum value
                     msg = Messages.getEnum(messageId);
-                    stream.close();
-                }
-                socket.close();
             } catch (IOException e) {
-            }
+				throw new RuntimeException(e);
+            } finally {
+				try {
+					socket.close();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
             // decide what to do next based on message
             switch (msg) {
                 case Uknown:

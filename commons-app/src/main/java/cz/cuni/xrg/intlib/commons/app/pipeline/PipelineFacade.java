@@ -135,7 +135,7 @@ public class PipelineFacade {
 	 * @param id of PipelineExecution
 	 * @return PipelineExecution
 	 */
-	public PipelineExecution getExecution(int id) {
+	public PipelineExecution getExecution(long id) {
 		return em.find(PipelineExecution.class, id);
 	}
 
