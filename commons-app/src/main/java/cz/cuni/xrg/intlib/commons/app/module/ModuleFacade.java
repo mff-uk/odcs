@@ -2,6 +2,13 @@ package cz.cuni.xrg.intlib.commons.app.module;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +87,30 @@ public class ModuleFacade {
 		return framework.loadClass(uri);
 	}	
 	
+    /**
+     * Return content of manifest for given bundle.
+     * @param uri Path to the bundle.
+     * @return Description stored in manifest file or null in case of error.
+     * @throws MalformedURLException 
+     */
+    public String getJarDescription(String uri) throws MalformedURLException {
+    	// can throw
+        URL url = new URL(uri);
+    	
+        try ( InputStream is = url.openStream()) {        	        	
+        	Manifest manifest = new Manifest(is);
+        	Attributes mainAttribs = manifest.getMainAttributes();
+        	String description = (String)mainAttribs.get("Description");
+        	
+        	is.close();
+        	return description;
+        } catch (IOException ex) {
+        	logger.error("Failed to read description from {}", uri, ex);
+        	// in case of exception return null
+        	return null;
+        }
+    }	
+	
 	/**
 	 * List files in single directory (non-recursive). If the
 	 * file is *.jar then load id as a bundle.
@@ -114,5 +145,5 @@ public class ModuleFacade {
 			}
 		}
 	}
-		
+	
 }
