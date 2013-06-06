@@ -3,13 +3,9 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 import java.util.Objects;
 import javax.persistence.*;
 
-import org.hibernate.engine.loading.internal.LoadingCollectionEntry;
-
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
-
-// TODO Honza: DPURecord is base class for DPUInstaceRecord and DPUTemplateRecord
 
 /**
  * Represent imported DPU in database.
@@ -19,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Config;
  * @author Maria Kukhar
  *
  */
-@Entity
+@MappedSuperclass
 public class DPURecord {
 
     /**
@@ -43,6 +39,7 @@ public class DPURecord {
     
     /**
      * DPURecord type, determined by associated jar file.
+	 * TODO move to {@link DPUTemplateRecord}?
      */
 	@Enumerated(EnumType.ORDINAL)
     private DPUType type;
@@ -50,6 +47,8 @@ public class DPURecord {
     /**
      * Path to the jar file. The path is relative to the 
      * AppConfig.dpuDirectory.
+	 * TODO move to {@link DPUTemplateRecord}?
+	 * 
      * @see AppConfig
      */
 	@Column(name="jar_path")

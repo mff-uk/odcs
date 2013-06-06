@@ -85,6 +85,8 @@ CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
   "id" INTEGER IDENTITY,
   "name" VARCHAR(45),
   "description" VARCHAR(255),
+  "type" SMALLINT, -- TODO redundant, can be obtained through dpu_id -> remove?
+  "jar_path" VARCHAR(255), -- TODO redundant, can be obtained through dpu_id -> remove?
   "dpu_id" INTEGER,
   PRIMARY KEY ("id")
 );
@@ -129,6 +131,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_MODEL"
   "type" SMALLINT,
   "visibility" SMALLINT,
   "jar_path" VARCHAR(255),
+  "jar_description" VARCHAR(512),
   PRIMARY KEY ("id")
 );
 

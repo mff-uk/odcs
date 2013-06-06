@@ -1,14 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 
 import cz.cuni.xrg.intlib.commons.configuration.Config;
-
-// TODO Honza: Add to database
+import javax.persistence.Transient;
 
 /**
  * Represent the DPU instance pipeline placement in DB.
@@ -16,21 +13,21 @@ import cz.cuni.xrg.intlib.commons.configuration.Config;
  * @author Petyr
  *
  */
-@MappedSuperclass
 @Table(name = "dpu_instance")
 public class DPUInstanceRecord extends DPURecord {
 	
 	/**
 	 * DPU's configuration.
+	 * TODO serializing whole configuration into DB is a very bad idea...
 	 */
-	@Column(name="config")
+	@Transient
 	private Config conf;
 	
 	/**
 	 * Template used for creating this instance. 
 	 */
 	@ManyToOne
-	@JoinColumn(name="")
+	@JoinColumn(name="dpu_id")
 	private DPUTemplateRecord template;
 
 	public Config getConf() {
