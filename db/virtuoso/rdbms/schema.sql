@@ -135,6 +135,15 @@ CREATE TABLE "DB"."INTLIB"."DPU_MODEL"
   PRIMARY KEY ("id")
 );
 
+CREATE TABLE "DB"."INTLIB"."DATAUNIT_INFO"
+(
+  "id" INTEGER IDENTITY,
+  "directory" VARCHAR(255),
+  "type" SMALLINT,
+  "is_input" SMALLINT,
+  PRIMARY KEY ("id")
+);
+
 -- CONSTRAINTS
 
 ALTER TABLE "DB"."intlib"."PPL_GRAPH"

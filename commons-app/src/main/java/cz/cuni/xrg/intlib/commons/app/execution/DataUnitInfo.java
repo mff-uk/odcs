@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import javax.persistence.*;
 
 //TODO Honza: Add to database
 
@@ -23,8 +24,14 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  *
  */
 @Entity
-@Table(name = "dataUnit_info")
+@Table(name = "dataunit_info")
 public class DataUnitInfo {
+
+	/**
+	 * Primary key.
+	 */
+	@Id
+	private Long id;
 	
 	/**
 	 * Associated working directory. Absolute path.
@@ -42,7 +49,7 @@ public class DataUnitInfo {
 	/**
 	 * True if use as input.
 	 */
-	@Column(name="isInput")
+	@Column(name="is_input")
 	private boolean isInput;
 	
 	/**
