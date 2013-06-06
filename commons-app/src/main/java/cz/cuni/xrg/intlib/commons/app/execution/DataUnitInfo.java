@@ -7,15 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import javax.persistence.*;
-
-//TODO Honza: Add to database
 
 /**
  * Holds information about single DataUnit' context.
