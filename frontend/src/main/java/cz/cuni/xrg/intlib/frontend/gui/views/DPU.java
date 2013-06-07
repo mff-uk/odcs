@@ -93,7 +93,7 @@ class DPU extends ViewComponent {
 		setWidth("100%");
 		setHeight("100%");
 
-		// Buttons on the top: "Create DPURecord", "Import DPURecord", "Export All"
+		// Buttons on the top: "Create DPU", "Import DPU", "Export All"
 		HorizontalLayout buttonBar = new HorizontalLayout();
 	//	buttonBar.setWidth("100%");
 
@@ -450,7 +450,7 @@ class DPU extends ViewComponent {
 		buttonDpuBar.setSpacing(false);
 
 		Button buttonCopyDPU = new Button();
-		buttonCopyDPU.setCaption("Copy DPURecord");
+		buttonCopyDPU.setCaption("Copy DPU");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
 		buttonCopyDPU
@@ -466,7 +466,7 @@ class DPU extends ViewComponent {
 				.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
 
 		Button buttonDeleteDPU = new Button();
-		buttonDeleteDPU.setCaption("Delete DPURecord");
+		buttonDeleteDPU.setCaption("Delete DPU");
 		buttonDeleteDPU.setHeight("25px");
 		buttonDeleteDPU.setWidth("100px");
 		buttonDeleteDPU
@@ -547,7 +547,7 @@ class DPU extends ViewComponent {
 				Alignment.BOTTOM_LEFT);
 
 		Button buttonExportDPU = new Button();
-		buttonExportDPU.setCaption("Export DPURecord");
+		buttonExportDPU.setCaption("Export DPU");
 		buttonExportDPU.setHeight("25px");
 		buttonExportDPU.setWidth("100px");
 		buttonExportDPU
@@ -601,9 +601,6 @@ class DPU extends ViewComponent {
 	}
 
 	private void fillTree(Tree tree) {
-// TODO !!!
-		
-/*
 		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootExtractor = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
 				"Extractors", null);
 		tree.addItem(rootExtractor);
@@ -632,7 +629,6 @@ class DPU extends ViewComponent {
 				throw new IllegalArgumentException();
 			}
 		}
-*/
 	}
 
 	@Override
