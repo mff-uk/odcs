@@ -10,6 +10,7 @@ import java.util.Set;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
@@ -275,6 +276,9 @@ class PipelineWorker implements Runnable {
 		} else {
 			executionSuccessful();
 		}
+        
+        // publish information for the rest of the application
+        eventPublisher.publishEvent(new PipelineFinished(execution, this));
 	}
 
 	/**
