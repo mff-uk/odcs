@@ -9,7 +9,7 @@
 
 	<!-- Module configuration needs to be defined here,
 		 because it differs from frontend -->
-	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfiguration">
+	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
 		<constructor-arg value="BACKEND" />
 	</bean>
 
@@ -34,5 +34,5 @@
 	
 	<!-- periodically send message to event to check DB for new tasks -->
 	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" />
-	
+		
 </beans>

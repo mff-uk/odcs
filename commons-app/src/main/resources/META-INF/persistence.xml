@@ -6,11 +6,13 @@
 
 	<persistence-unit name="intlib">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPU</class>
-		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUInstance</class>
-		<class>cz.cuni.xrg.intlib.commons.app.dpu.InstanceConfiguration</class>
-		<class>cz.cuni.xrg.intlib.commons.app.dpu.TemplateConfiguration</class>
+		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord</class>
+		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextImpl</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.ProcessingContextInfo</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.Record</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node</class>

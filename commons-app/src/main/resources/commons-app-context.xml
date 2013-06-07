@@ -11,7 +11,7 @@
 						http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 	
 	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfiguration" />
+	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig" />
 	
 	<!-- EntityManager factory -->
 	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -35,7 +35,7 @@
 	<bean id="dpuFacade" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade" />
 
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
-	<bean id="abstractModuleFacadeConfiguration" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfiguration">
+	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig">
 		<constructor-arg ref="configuration" />
 	</bean>
 

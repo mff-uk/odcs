@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
  * @author Petyr
  *
  */
-public class ModuleFacadeConfiguration {
+public class ModuleFacadeConfig {
 
 	/**
 	 * Folder with dpu to load during execution. 
@@ -34,7 +34,7 @@ public class ModuleFacadeConfiguration {
 	 *
 	 * @param conf
 	 */
-	public ModuleFacadeConfiguration(AppConfig conf, Application app) {
+	public ModuleFacadeConfig(AppConfig conf, Application app) {
 		dpuFolder = conf.getString(ConfigProperty.MODULE_PATH);
 		dpuLibsFolder = conf.getString(ConfigProperty.MODULE_LIBS);
 		packagesToExpose = conf.getString(Application.FRONTEND.equals(app)

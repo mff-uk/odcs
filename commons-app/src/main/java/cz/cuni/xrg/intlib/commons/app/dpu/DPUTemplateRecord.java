@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
@@ -14,6 +15,7 @@ import javax.persistence.Transient;
  * @author Petyr
  * 
  */
+@Entity
 @Table(name = "dpu_template")
 public class DPUTemplateRecord extends DPURecord {
 

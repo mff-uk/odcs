@@ -62,7 +62,7 @@ public class PipelineExecution  {
 	/**
 	 * Execution context, can be null.
 	 */
-	@OneToOne
+	@OneToOne(optional = true)
 	@JoinColumn(name="context_id", nullable = true)
 	// TODO Honza: can be null, also there should be possibility to delete this context and preserve pipelineExecution
 	private ExecutionContextImpl context;

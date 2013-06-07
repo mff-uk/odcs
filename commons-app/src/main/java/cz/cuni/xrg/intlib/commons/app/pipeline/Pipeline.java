@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Plan;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
 
 /**
@@ -64,6 +65,9 @@ public class Pipeline implements Resource {
     @OneToOne(cascade=CascadeType.ALL, mappedBy="pipeline", fetch= FetchType.EAGER)
     private PipelineGraph graph;
 
+    //@ManyToOne(cascade=CascadeType.ALL, mappedBy="pipeline", fetch= FetchType.EAGER)
+    //private Plan plan;
+    
     /**
      * Default constructor for JPA
      */

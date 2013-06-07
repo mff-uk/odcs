@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Table;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -20,12 +22,20 @@ import javax.persistence.*;
 @Entity
 @Table(name = "dataunit_info")
 public class DataUnitInfo {
-
+	
 	/**
 	 * Primary key.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
+	/**
+	 * DataUnit index, used to identify DataUnit in application.
+	 */
+	// TODO Petyr: use String name instead of Integer index
+	@Column(name="index")
+	private Integer index;
 	
 	/**
 	 * Associated working directory. Absolute path.
@@ -51,10 +61,11 @@ public class DataUnitInfo {
 	 */	
 	public DataUnitInfo() { }
 	
-	public DataUnitInfo(File directory, DataUnitType type, boolean isInput) {
+	public DataUnitInfo(File directory, DataUnitType type, boolean isInput, Integer index) {
 		this.directory = directory;
 		this.type = type;
 		this.isInput = isInput;
+		this.index = index;
 	}
 
 	public File getDirectory() {
@@ -67,5 +78,9 @@ public class DataUnitInfo {
 
 	public boolean isInput() {
 		return isInput;
+	}
+	
+	public Integer getIndex() {
+		return index;
 	}
 }

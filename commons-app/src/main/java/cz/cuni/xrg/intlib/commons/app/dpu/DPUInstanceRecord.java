@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -13,6 +14,7 @@ import javax.persistence.Transient;
  * @author Petyr
  *
  */
+@Entity
 @Table(name = "dpu_instance")
 public class DPUInstanceRecord extends DPURecord {
 	
@@ -26,7 +28,7 @@ public class DPUInstanceRecord extends DPURecord {
 	/**
 	 * Template used for creating this instance. 
 	 */
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name="dpu_id")
 	private DPUTemplateRecord template;
 

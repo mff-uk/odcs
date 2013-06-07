@@ -6,15 +6,30 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
-//TODO Honza: Add to database, see PipelineExecution
+// TODO Honza: Add to database, see PipelineExecution
 
+/**
+ * Implementation of {@link ExecutionContext}. Manage resources during 
+ * pipeline execution.
+ * 
+ * @author Petyr
+ *
+ */
+@Entity
+@Table(name = "executionContext")
 class ExecutionContextImpl implements ExecutionContext {
 
 	/**
@@ -27,8 +42,10 @@ class ExecutionContextImpl implements ExecutionContext {
 	/**
 	 * Contexts for DPU's. Indexed by id's of DPUINstanceRecord
 	 */
-    @Column(name="")
-	private Map<Long, ProcessingContextInfo> contexts;
+    @OneToMany()
+    @JoinTable(name="exContextImpl_procContextInfo")
+    @MapKeyColumn(name="dpu")
+	private Map<Long, ProcessingContextInfo> contexts = new HashMap<>();
 	
 	/**
 	 * Working directory for execution.
