@@ -98,7 +98,7 @@ class DPU extends ViewComponent {
 	//	buttonBar.setWidth("100%");
 
 		Button buttonCreateDPU = new Button();
-		buttonCreateDPU.setCaption("Create DPURecord");
+		buttonCreateDPU.setCaption("Create DPU");
 		buttonCreateDPU.setHeight("25px");
 		buttonCreateDPU.setWidth("100px");
 		buttonCreateDPU
@@ -111,7 +111,7 @@ class DPU extends ViewComponent {
 		buttonBar.addComponent(buttonCreateDPU);
 
 		Button buttonImportDPU = new Button();
-		buttonImportDPU.setCaption("Import DPURecord");
+		buttonImportDPU.setCaption("Import DPU");
 		buttonImportDPU.setHeight("25px");
 		buttonImportDPU.setWidth("100px");
 		buttonImportDPU
