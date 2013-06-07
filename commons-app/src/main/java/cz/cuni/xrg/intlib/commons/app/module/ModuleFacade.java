@@ -29,7 +29,7 @@ public class ModuleFacade {
 	/**
 	 * Facade configuration.
 	 */
-	private ModuleFacadeConfiguration configuration;
+	private ModuleFacadeConfig configuration;
 	
 	/**
 	 * Logger instance.
@@ -42,7 +42,7 @@ public class ModuleFacade {
 	 * fully set when passing to the ctor.
 	 * @param configuration
 	 */
-	public ModuleFacade(ModuleFacadeConfiguration configuration) {
+	public ModuleFacade(ModuleFacadeConfig configuration) {
 		this.framework = new OSGIFramework();
 		this.configuration = configuration;
 	}	
@@ -83,6 +83,14 @@ public class ModuleFacade {
 	 */
 	public Object getObject(String relativePath) 
 			throws BundleInstallFailedException, ClassLoadFailedException, FileNotFoundException {
+		// check existance
+		File file = new File(configuration.getDpuFolder() + relativePath);
+		if (file.exists()) {
+			// ok, file exist ..
+		} else {
+			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
+		}
+		
 		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
 		return framework.loadClass(uri);
 	}	
@@ -124,7 +132,7 @@ public class ModuleFacade {
 		File[] fList = directory.listFiles();
 		if (fList == null ){
 			// invalid directory
-			throw new LibsLoadFailedException("Invalid libs path.");
+			throw new LibsLoadFailedException("Invalid libs path: " + directoryPath);
 		}
 		// load bundles .. 
 		for (File file : fList){
@@ -135,8 +143,7 @@ public class ModuleFacade {
 					String path = "file:///" + file.getAbsolutePath().replace('\\', '/');				
 					try {
 						framework.installBundle( path );
-					} catch (BundleInstallFailedException
-							| FileNotFoundException e) {
+					} catch (BundleInstallFailedException e) {
 						logger.error("Failed to load bundle from {}", path, e);
 						throw new LibsLoadFailedException("Failed to load bundle " + path, e);
 					}

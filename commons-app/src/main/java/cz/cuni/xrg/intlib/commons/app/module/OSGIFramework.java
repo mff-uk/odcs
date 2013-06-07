@@ -120,21 +120,14 @@ class OSGIFramework {
      *
      * @param uri Uri to install bundle from.
      * @return BundleContainer or null.
-     * @throws FileNotFoundException
      * @throws BundleInstallFailedException
      */
-    public BundleContainer installBundle(String uri) throws FileNotFoundException, BundleInstallFailedException {
+    public BundleContainer installBundle(String uri) throws  BundleInstallFailedException {
         // has bundle been already loaded?
         if (loadedBundles.containsKey(uri)) {
             return loadedBundles.get(uri);
         }
-        File file = new File(uri);
-        if (!file.exists()) {
-        	logger.error("Bundle '{}' doesn't exist.", uri);
-        	// file does not exist
-        	throw new FileNotFoundException();
-        }
-        
+
         // load bundle
         BundleContainer bundleContainer = null;
         try {
