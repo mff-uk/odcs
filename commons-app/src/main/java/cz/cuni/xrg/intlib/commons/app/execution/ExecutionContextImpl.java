@@ -29,7 +29,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  *
  */
 @Entity
-@Table(name = "executionContext")
+@Table(name = "exec_context_pipeline")
 class ExecutionContextImpl implements ExecutionContext {
 
 	/**
@@ -38,14 +38,14 @@ class ExecutionContextImpl implements ExecutionContext {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;	
-	
+
 	/**
 	 * Contexts for DPU's. Indexed by id's of DPUINstanceRecord
 	 */
     @OneToMany()
-    @JoinTable(name="exContextImpl_procContextInfo")
-    @MapKeyColumn(name="dpu")
-	private Map<Long, ProcessingContextInfo> contexts = new HashMap<>();
+    @JoinTable(name="exec_context_proccontext")
+    @MapKeyColumn(name="dpu_execution")
+    private Map<Long, ProcessingContextInfo> contexts = new HashMap<>();
 	
 	/**
 	 * Working directory for execution.

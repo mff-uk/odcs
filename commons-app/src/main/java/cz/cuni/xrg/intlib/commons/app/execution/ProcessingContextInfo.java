@@ -27,7 +27,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  *
  */
 @Entity
-@Table(name = "processingContextInfo")
+@Table(name = "exec_context_dpu")
 class ProcessingContextInfo {
 	
 	/**
@@ -48,7 +48,7 @@ class ProcessingContextInfo {
 	 * Path to the storage directory or null if the directory
 	 * has't been used yet.
 	 */
-	@Column
+	@Column(name = "directory")
 	private File storageDirectory = null;
 	
 	/**

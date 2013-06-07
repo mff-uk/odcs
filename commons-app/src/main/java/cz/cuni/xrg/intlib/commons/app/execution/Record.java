@@ -14,7 +14,7 @@ import javax.persistence.*;
  *
  */
 @Entity
-@Table(name = "dpu_record")
+@Table(name = "exec_record")
 public class Record {
 
 	/**

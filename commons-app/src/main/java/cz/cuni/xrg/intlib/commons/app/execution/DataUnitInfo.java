@@ -20,7 +20,7 @@ import javax.persistence.*;
  *
  */
 @Entity
-@Table(name = "dataunit_info")
+@Table(name = "exec_dataunit_info")
 public class DataUnitInfo {
 	
 	/**

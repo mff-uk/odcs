@@ -16,7 +16,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
  * @author Petyr
  */
 @Entity
-@Table(name = "ppl_execution")
+@Table(name = "exec_pipeline")
 public class PipelineExecution  {
 
 	/**
