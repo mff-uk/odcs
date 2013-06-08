@@ -17,7 +17,7 @@
 	</properties>
 
 	<modules>
-		<module>File_extractor</module>
+		<module>File_extractor</module>		
 		<!-- 
 		<module>File_loader</module>
 		<module>RDF_extractor</module>
@@ -86,7 +86,7 @@
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-Description>${module.description}</Bundle-Description>
-						<Export-Package>module;version="${module.version}",gui;version="${module.version}"</Export-Package>						
+						<Export-Package>module;version="${module.version}"</Export-Package>
 						<!-- TODO: update version ! -->
 						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}", *</Import-Package>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>

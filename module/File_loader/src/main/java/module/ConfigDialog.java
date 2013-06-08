@@ -1,21 +1,21 @@
-package gui;
+package module;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
-import module.Config;
 
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
+import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
 /**
- * Config dialog.
+ * FileLoaderConfig dialog.
  *
  * @author Maria
  *
  */
-public class ConfigDialog extends CustomComponent {
+public class ConfigDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
     private static final long serialVersionUID = 1L;
     private GridLayout mainLayout;
@@ -46,38 +46,6 @@ public class ConfigDialog extends CustomComponent {
         comboBoxFormat.setValue(RDFFormatType.AUTO);
 
 
-    }
-
-    /**
-     * Return current configuration from dialog. Can return null, if current
-     * configuration is invalid.
-     *
-     * @return current configuration or null
-     */
-    public void getConfiguration(Config config) {
-        config.setValue(Config.DiffName.name(), checkBoxDiffName.getValue());
-        config.setValue(Config.DirectoryPath.name(), textFieldDir.getValue());
-        config.setValue(Config.FileName.name(), textFieldFileName.getValue());
-        config.setValue(Config.RDFFileFormat.name(), (RDFFormatType) comboBoxFormat.getValue());
-    }
-
-    /**
-     * Load values from configuration into dialog.
-     *
-     * @throws ConfigException
-     * @param conf
-     */
-    public void setConfiguration(Config conf) {
-        try {
-            checkBoxDiffName.setValue((Boolean) conf.getValue(Config.DiffName.name()));
-            textFieldDir.setValue((String) conf.getValue(Config.DirectoryPath.name()));
-            textFieldFileName.setValue((String) conf.getValue(Config.FileName.name()));
-            comboBoxFormat.setValue((RDFFormatType) conf.getValue(Config.RDFFileFormat.name()));
-
-        } catch (Property.ReadOnlyException | Converter.ConversionException ex) {
-            // throw setting exception
-            throw new ConfigException();
-        }
     }
 
     private GridLayout buildMainLayout() {
@@ -199,4 +167,33 @@ public class ConfigDialog extends CustomComponent {
 
         return horizontalLayoutFormat;
     }
+
+	@Override
+	public FileLoaderConfig getConfiguration() throws ConfigException {
+		FileLoaderConfig config = new FileLoaderConfig();
+		config.DiffName = checkBoxDiffName.getValue();
+		config.DirectoryPath = textFieldDir.getValue();
+		config.FileName = textFieldFileName.getValue();
+		config.RDFFileFormat = (RDFFormatType) comboBoxFormat.getValue();
+		return null;
+	}
+	
+    /**
+     * Load values from configuration into dialog.
+     *
+     * @throws ConfigException
+     * @param conf
+     */
+	@Override
+    public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
+        try {
+            checkBoxDiffName.setValue(conf.DiffName);
+            textFieldDir.setValue(conf.DirectoryPath);
+            textFieldFileName.setValue(conf.FileName);
+            comboBoxFormat.setValue(conf.RDFFileFormat);
+        } catch (Property.ReadOnlyException | Converter.ConversionException ex) {
+            // throw setting exception
+            throw new ConfigException();
+        }
+    }	
 }
