@@ -54,7 +54,7 @@ public class FileExtractor implements Extract,
 
 	@Override
 	public AbstractConfigDialog<FileExtractorConfig> getConfigurationDialog() {
-		return new ConfigDialog();
+		return new FileExtractorDialog();
 	}
 
 	@Override

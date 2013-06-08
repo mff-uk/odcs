@@ -18,7 +18,7 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
  * @author Maria
  *
  */
-public class ConfigDialog extends AbstractConfigDialog<FileExtractorConfig> {
+public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfig> {
 
     private GridLayout mainLayout;
     private ComboBox comboBoxFormat; //RDFFormat
@@ -29,7 +29,7 @@ public class ConfigDialog extends AbstractConfigDialog<FileExtractorConfig> {
     private HorizontalLayout horizontalLayoutOnly;
     private HorizontalLayout horizontalLayoutFormat;
 
-    public ConfigDialog() {
+    public FileExtractorDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
         mapData();
