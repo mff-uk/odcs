@@ -1,4 +1,4 @@
-package module;
+package cz.cuni.mff.xrg.intlib.loader.file;
 
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;

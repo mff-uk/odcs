@@ -9,11 +9,12 @@
     </parent>
     <artifactId>File_loader</artifactId>
     <packaging>bundle</packaging>
-    <name>File_loader</name>
     
     <properties>       
     	<!-- specify module version -->
         <module.version>0.0.1</module.version>
+        <dpu.package>cz.cuni.mff.xrg.intlib.loader.file</dpu.package>
+        <dpu.mainClass>FileLoader</dpu.mainClass>
     </properties>
  	
 </project>

@@ -1,4 +1,4 @@
-package module;
+package cz.cuni.mff.xrg.intlib.loader.file;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  * @author Petyr
  */
-public class File_loader implements  Load, 
+public class FileLoader implements  Load, 
 	Configurable<FileLoaderConfig>, ConfigDialogProvider<FileLoaderConfig> {
     
     /**
@@ -29,7 +29,7 @@ public class File_loader implements  Load,
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(File_loader.class);
+    private Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
     @Override
     public void load(LoadContext context) throws LoadException {
@@ -83,7 +83,7 @@ public class File_loader implements  Load,
 	
     @Override
 	public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
-		return new ConfigDialog();
+		return new FileLoaderDialog();
 	}
 
 	

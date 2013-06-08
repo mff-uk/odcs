@@ -1,4 +1,4 @@
-package module;
+package cz.cuni.mff.xrg.intlib.loader.file;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
@@ -15,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
  * @author Maria
  *
  */
-public class ConfigDialog extends AbstractConfigDialog<FileLoaderConfig> {
+public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
     private static final long serialVersionUID = 1L;
     private GridLayout mainLayout;
@@ -29,7 +29,7 @@ public class ConfigDialog extends AbstractConfigDialog<FileLoaderConfig> {
     private TextField textFieldFileName; // FileName
     private TextField textFieldDir;	//Directory
 
-    public ConfigDialog() {
+    public FileLoaderDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
         mapData();
