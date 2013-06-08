@@ -83,18 +83,41 @@ public class ModuleFacade {
 	 */
 	public Object getObject(String relativePath) 
 			throws BundleInstallFailedException, ClassLoadFailedException, FileNotFoundException {
-		// check existance
+		// check existence
 		File file = new File(configuration.getDpuFolder() + relativePath);
 		if (file.exists()) {
 			// ok, file exist ..
 		} else {
 			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
-		}
-		
+		}		
 		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
 		return framework.loadClass(uri);
-	}	
+	}
 	
+	/**
+	 * Create {@link BundleObjectInputStream} for given bundle. This stream can be used to deserialize classes 
+	 * from given bundle.
+	 * @param stream
+	 * @param relativePath relativePath Relative path in DPU's directory.
+	 * @return
+	 * @throws BundleInstallFailedException
+	 * @throws IOException
+	 */
+	public BundleObjectInputStream getObjectStream(InputStream stream, String relativePath) 
+			throws BundleInstallFailedException, IOException {
+		// check existence
+		File file = new File(configuration.getDpuFolder() + relativePath);
+		if (file.exists()) {
+			// ok, file exist ..
+		} else {
+			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
+		}		
+		String uri = "file:///" + configuration.getDpuFolder() + relativePath;		
+		BundleContainer container = framework.installBundle(uri);
+		// create InputStream .. 
+		return new BundleObjectInputStream(stream, container.getBundle());
+	}
+		
     /**
      * Return content of manifest for given bundle.
      * @param uri Path to the bundle.

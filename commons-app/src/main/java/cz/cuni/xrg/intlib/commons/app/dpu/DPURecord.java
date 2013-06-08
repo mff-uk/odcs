@@ -1,9 +1,19 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Objects;
 import javax.persistence.*;
 
+import org.hibernate.internal.util.SerializationHelper;
+
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 
@@ -55,10 +65,23 @@ public class DPURecord {
     private String jarPath;
 	
 	/**
+	 * DPU's configuration in serialized version.
+	 */
+	@Column(name="configuration", nullable = true)
+	private byte[] configuration;	
+	// TODO Honza: serializing whole configuration into DB is a very bad idea...
+	
+	/**
 	 * Instance of DPU.
 	 */
 	@Transient
-	private Configurable<Config> instance;
+	private ModuleFacade moduleFacade;
+	
+	/**
+	 * DPU instance.
+	 */
+	@Transient
+	private Object instance;
 	
     /**
      * Allow empty constructor for JPA.
@@ -78,10 +101,15 @@ public class DPURecord {
 
     /**
      * Load instance from associated jar file.
+     * @param moduleFacade ModuleFacade used to load DPU.
      * @throws ModuleException
+     * @throws FileNotFoundException 
      */
-    public void loadInstance() throws ModuleException {
+    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException, FileNotFoundException {
+    	// store module facade, can be useful
+    	this.moduleFacade = moduleFacade;
     	// TODO Petyr, load DPUInstance using OSGi here .. 
+    	instance = moduleFacade.getObject(jarPath);
     }
     
     public String getName() {
@@ -123,7 +151,38 @@ public class DPURecord {
     public Object getInstance() {
     	return instance;
     }
-        
+    
+	public Config getConf() throws ConfigException {
+		if (configuration == null) {
+			return null;
+		}		
+		Config config  = null;
+		// reconstruct object form byte[]
+		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(configuration)) {			
+			ObjectInputStream in = moduleFacade.getObjectStream(byteIn, jarPath);			
+			Object obj = in.readObject();
+			config = (Config)obj;
+			in.close();
+		} catch (IOException e) {
+			throw new ConfigException("Can't deserialize configuration.", e);
+		} catch (ClassNotFoundException e) {
+			throw new ConfigException("Can't re-cast configuration object.", e);
+		}
+		return config;
+	}
+
+	public void setConf(Config config) throws ConfigException {		
+		// serialize object into byte[]
+		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {			
+			ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
+			objOut.writeObject(config);
+			objOut.close();
+			configuration = byteOut.toByteArray();
+		} catch (IOException e) {
+			throw new ConfigException("Can't serialize configuration.", e);
+		}		
+	}    
+    
 	/**
 	 * Generates hash code from primary key if it is available, otherwise
 	 * from the rest of the attributes.

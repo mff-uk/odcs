@@ -24,7 +24,7 @@ class BundleContainer {
 	 * the bundle has been loaded.
 	 */
 	private String uri;
-	
+		
 	/**
 	 * List of loaded class<?> from this bundle.
 	 */
@@ -34,7 +34,6 @@ class BundleContainer {
 		this.bundle = bundle;
 		this.uri = uri;
 		this.loadedClassCtors = new HashMap<>();
-		
 	}
 	
 	/**
@@ -57,6 +56,7 @@ class BundleContainer {
             // store loaded class
             this.loadedClassCtors.put(className, loaderClass);
 		}
+		
 		// we have loader, create instance ..
 		return loaderClass.newInstance(); // InstantiationException, IllegalAccessException
 	}
@@ -80,4 +80,5 @@ class BundleContainer {
 	public String getUri() {
 		return uri;
 	}
+	
 }

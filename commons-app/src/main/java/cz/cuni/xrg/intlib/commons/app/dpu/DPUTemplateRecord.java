@@ -32,13 +32,6 @@ public class DPUTemplateRecord extends DPURecord {
 	@Column(name="jar_description")
 	private String jarDescription;
 	
-	/**
-	 * DPU's configuration.
-	 * TODO serializing whole configuration into DB is a very bad idea...
-	 */
-	@Transient
-	private Config conf;
-
 	public VisibilityType getVisibility() {
 		return visibility;
 	}
@@ -54,13 +47,4 @@ public class DPUTemplateRecord extends DPURecord {
 	public void setJarDescription(String jarDescription) {
 		this.jarDescription = jarDescription;
 	}
-
-	public Config getConf() {
-		return conf;
-	}
-
-	public void setConf(Config conf) {
-		this.conf = conf;
-	}
-	
 }

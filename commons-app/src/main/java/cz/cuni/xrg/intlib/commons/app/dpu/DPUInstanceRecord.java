@@ -17,28 +17,13 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "dpu_instance")
 public class DPUInstanceRecord extends DPURecord {
-	
-	/**
-	 * DPU's configuration.
-	 * TODO serializing whole configuration into DB is a very bad idea...
-	 */
-	@Transient
-	private Config conf;
-	
+		
 	/**
 	 * Template used for creating this instance. 
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name="dpu_id")
 	private DPUTemplateRecord template;
-
-	public Config getConf() {
-		return conf;
-	}
-
-	public void setConf(Config conf) {
-		this.conf = conf;
-	}
 
 	public DPUTemplateRecord getTemplate() {
 		return template;
