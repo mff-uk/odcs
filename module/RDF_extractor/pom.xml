@@ -12,8 +12,9 @@
     <name>RDF_extractor</name>
     
     <properties>       
-    	<!-- specify module version -->
         <module.version>0.0.1</module.version>
+        <dpu.package>cz.cuni.mff.xrg.intlib.extractor.rdf</dpu.package>
+        <dpu.mainClass>RDFExtractor</dpu.mainClass>
     </properties>
  	
 </project>

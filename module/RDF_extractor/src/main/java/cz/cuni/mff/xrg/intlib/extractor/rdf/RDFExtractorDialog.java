@@ -1,10 +1,10 @@
-package gui;
+package cz.cuni.mff.xrg.intlib.extractor.rdf;
 
-import module.Config;
 
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
+import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,9 +13,7 @@ import java.util.List;
 import com.vaadin.data.*;
 import com.vaadin.data.util.*;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.event.FieldEvents.*;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import java.io.Serializable;
 
 /**
  * Config dialog.
@@ -23,7 +21,7 @@ import java.io.Serializable;
  * @author Maria
  *
  */
-public class ConfigDialog extends CustomComponent {
+public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig> {
 
     private static final long serialVersionUID = 1L;
     private GridLayout mainLayout;
@@ -49,66 +47,11 @@ public class ConfigDialog extends CustomComponent {
     private Button buttonGraphAdd;
     int n = 1;
 
-    public ConfigDialog() {
+    public RDFExtractorDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
     }
-
-    /**
-     * Return current configuration from dialog. Can return null, if current
-     * configuration is invalid.
-     *
-     */
-    public void getConfiguration(Config config) {
-        saveEditedTexts();
-        config.setValue(Config.SPARQL_endpoint.name(), (String) comboBoxSparql.getValue());
-        config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
-        config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-        config.setValue(Config.SPARQL_query.name(), textAreaConstr.getValue());
-        config.setValue(Config.GraphsUri.name(), (Serializable) griddata);
-        config.setValue(Config.ExtractFail.name(), checkBoxFail.getValue());
-    }
-
-    /**
-     * Load values from configuration into dialog.
-     *
-     * @throws ConfigException
-     * @param conf
-     */
-    public void setConfiguration(Config conf) {
-        try {
-            String endp = (String) conf.getValue(Config.SPARQL_endpoint.name());
-
-            if ((endp!=null)&& (comboBoxSparql.addItem(endp) != null)) {
-                final Item item = comboBoxSparql.getItem(endp);
-                item.getItemProperty("endpoint").setValue(endp);
-                comboBoxSparql.setValue(endp);
-            }
-            textFieldNameAdm.setValue((String) conf.getValue(Config.Host_name
-                    .name()));
-            passwordFieldPass.setValue((String) conf.getValue(Config.Password
-                    .name()));
-
-            textAreaConstr.setValue((String) conf.getValue(Config.SPARQL_query
-                    .name()));
-            checkBoxFail.setValue((Boolean) conf.getValue(Config.ExtractFail
-                    .name()));
-
-            try {
-                griddata = (List<String>) conf.getValue(Config.GraphsUri.name());
-                if (griddata == null) {
-                    griddata = new LinkedList<>();
-                }
-            } catch (Exception e) {
-                griddata = new LinkedList<>();
-            }
-            refreshNamedGraphData();
-        } catch (UnsupportedOperationException | Property.ReadOnlyException | Converter.ConversionException ex) {
-            // throw setting exception
-            throw new ConfigException();
-        }
-    }
-
+    
     public static IndexedContainer getFridContainer() {
 
         String[] visibleCols = new String[]{"endpoint"};
@@ -458,4 +401,45 @@ public class ConfigDialog extends CustomComponent {
 
         return gridLayoutConstr;
     }
+
+	@Override
+	public RDFExtractorConfig getConfiguration() throws ConfigException {
+		saveEditedTexts();
+		
+		RDFExtractorConfig config = new RDFExtractorConfig();		
+		config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
+		config.Host_name = textFieldNameAdm.getValue();
+		config.Password = passwordFieldPass.getValue();
+		config.SPARQL_query = textAreaConstr.getValue();
+		config.GraphsUri = griddata;
+		config.ExtractFail = checkBoxFail.getValue();
+				
+		return config;
+	}
+	
+	@Override
+    public void setConfiguration(RDFExtractorConfig conf) {
+        try {
+            String endp = conf.SPARQL_endpoint;
+
+            if ((endp!=null)&& (comboBoxSparql.addItem(endp) != null)) {
+                final Item item = comboBoxSparql.getItem(endp);
+                item.getItemProperty("endpoint").setValue(endp);
+                comboBoxSparql.setValue(endp);
+            }
+            textFieldNameAdm.setValue(conf.Host_name);
+            passwordFieldPass.setValue(conf.Password);
+            textAreaConstr.setValue(conf.SPARQL_query);
+            checkBoxFail.setValue(conf.ExtractFail);
+
+            griddata = conf.GraphsUri;
+            if (griddata == null) {
+                griddata = new LinkedList<>();
+            }
+            refreshNamedGraphData();
+        } catch (UnsupportedOperationException | Property.ReadOnlyException | Converter.ConversionException ex) {
+            // throw setting exception
+            throw new ConfigException();
+        }
+    }	
 }
