@@ -226,5 +226,12 @@ ALTER TABLE "DB"."intlib"."DPU_TCONFIG_PAIRS"
     REFERENCES "DB"."intlib"."DPU_TEMPLATE_CONFIG" ("id")
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
-
+-- workaround for bug in virtuoso's implementation of cascades on delete
+-- see https://github.com/openlink/virtuoso-opensource/issues/56
+CREATE TRIGGER delete_node_fix BEFORE DELETE ON ppl_node REFERENCING old AS n
+{
+	DELETE FROM ppl_edge
+	 WHERE node_from_id = n.id
+	  OR node_to_id = n.id;
+};
 
