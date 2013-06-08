@@ -19,9 +19,9 @@
 		<h2>Types of DPUs</h2>
         <div>The application distinguished three types of DPUs: 
         <ul>
-            <li>Extractor (DpuType.EXTRACTOR) - DPU which extract data from some source. This DPU type has only outputs.</li>
-            <li>Transformer (DpuType.TRANSFORMER) - DPU which transform input data into output data. This DPU has inputs as well as outputs.</li>
-            <li>Loader (DpuType.LOADER) - DPU which save into DB/File/etc.. This DPU has only inputs. </li>
+            <li>Extractor - DPU which extract data from some source. This DPU type has only outputs.</li>
+            <li>Transformer - DPU which transform input data into output data. This DPU has inputs as well as outputs.</li>
+            <li>Loader - DPU which save into DB/File/etc.. This DPU has only inputs. </li>
          </ul>   
         </div>
 	
@@ -33,18 +33,29 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DPU_Template implements GraphicalExtractor {
-	private Logger = LoggerFactory.getLogger(DPU_Template.class);
+public class DPUTemplate  {
+	private Logger = LoggerFactory.getLogger(DPUTemplate.class);
 ...
 			</code> </pre> </div>
-			Just remember to replace DPU_Template with your class's name. Then when you want to log something just call:<br/>
-			<div class="code"><pre><code>logger.debug("Some message .. ");</code></pre></div>
+			Just remember to replace DPUTemplate with your class's name. Then when you want to log something just call:<br/>
+			<div class="code"> <pre> <code>logger.debug("Some message .. ");</code> </pre> </div>
 		</div>
 	
 		<h2 id="secConfigurationConcept">Configuration concept</h2>
 		<div>Each DPU has possibility to store configuration that can configure DPU execution. User can edit the configuration
-			through the configuration dialog which is also provided by DPU implementation. You can store any serializable object into
-			configuration.</div>
+			through the configuration dialog which is also provided by DPU implementation. The configuration can be set/get for DPU's as well 
+			as for configuration dialog. </br> DPU's methods for working with configuration are:
+			<div class="code"> <pre> <code>
+public void configure(Config c) throws ConfigException 
+public Config getConfiguration() </code> </pre></div>
+			and for DPU's configuration dialog:
+			<div class="code"> <pre> <code>
+public void setConfiguration(Config conf) throws ConfigException 
+public Config getConfiguration() throws ConfigException </code> </pre> </div>
+			Where <b>Config</b> is replaced by your configuration class. The configuration class must implements interface
+			<div class="code"> <pre> <code>
+interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> </div> which is located in commons.
+			</div>
 	
 		<h2>DataUnit containers</h2>
 		<div>Data between DPUs are passed in containers that are called DataUnit. The DataUnit from the programmer's point of view is an interface
@@ -57,7 +68,7 @@ public class DPU_Template implements GraphicalExtractor {
 			uses more special type of Context ie. ExtractContext, TransformContext or LoadContext. 
 			The context provide ability to send messages that are stored and accessible to the user. <br/>
 			Context also manages access to the input/output DataUnits. The following example demonstrate this functionality for transformer: <br/>
-			<div class="code"><pre><code>
+			<div class="code"> <pre> <code>
 <span class="comment">// get input DataUnits</span>
 List&lt;DataUnit&gt;inputs = context.getInputs();
 <span class="comment">// check if we have some inputs</span>
@@ -75,12 +86,16 @@ if (dataUnit instanceof RDFDataRepository) {
 }
 <span class="comment">// now, create output repository
 // we have to specify type, in this case DataUnitType.RDF</span>
-RDFDataRepository outputRepository = (RDFDataRepository) context.getDataUnitFactory().create(DataUnitType.RDF);
+try {
+	repository = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+} catch (DataUnitCreateException e) {
+	throw new ExtractException("Can't create DataUnit", e);
+}
 <span class="comment">// now we just check that we the object has been successfully created</span>
 if (outputRepository == null) {
 	throw new TransformException("DataUnitFactory returned null.");
 }
-			</code></pre></div>
+			</code> </pre> </div>
 		</div>
 	
 		<h2>DPU implementation</h2>
@@ -89,7 +104,8 @@ if (outputRepository == null) {
         <div>For each DPU, you have to:
         <ul>
         	<li>adjust pom.xml containing basic metadata about the DPU</li>
-        	<li>define the configuration dialog, which may be used by users of your DPU to set up the parameters of your DPU</li>
+        	<li>define configuration class which implements Config interface</li>
+        	<li>define the configuration dialog, which may be used by users of your DPU to set up the parameters of your DPU and extends AbstractConfigDialog&lt;Config&gt; </li>
         	<li>implement the functionality of the DPU</li>
         </ul> </div>
 
@@ -97,55 +113,57 @@ if (outputRepository == null) {
 		<div>The pom.xml file contains Maven configuration. If you are not familiar with Maven then just ignore everything except of several lines containing "TODO". 
 			TODOs have assigned number to make it easy to refer to them. In next few lines we go through all of them and give brief comment to each of them.
 			<ul>
-				<li><b>TODO 1. <span class="module_name">module_name</span>: </b>The Maven's artifact should be provided here. 
+				<li><b>TODO 1. module_name: </b>The Maven's artifact should be provided here. 
 					Maven uses this name to identify the output jar file. For common usage you can just use name of your DPU. 
 					This value should contains only a-z, A-Z, 0-9 and _ as whitespace. 
 					This value also determines the name of the module's main class. </li>				
-				<li><b>TODO 2. DPU name:</b> This value will be stored in manifest.mf file. 
-					This name is presented to the user when your DPU is imported into the application.</li>
-				<li><b>TODO 3. DPU version: </b> In most common scenarios you can leave the default value here. This value is stored in manifest.mf file as "version of DPU". 
+				<li><b>TODO 2. DPU version: </b> In most common scenarios you can leave the default value here. This value is stored in manifest.mf file as "version of DPU". 
 					It correspond with Bundle-Version in manifest.mf. </li>
-				<li><b>TODO 4. DPU description: </b> DPU's description is visible to the users. Provide all necessary information about your intended DPU usage here. 
+				<li><b>TODO 3. DPU description: </b> DPU's description is visible to the users. Provide all necessary information about your intended DPU usage here. 
 					Provide contact details on the author of the DPU.</li>
+				<li><b>TODO 4. DPU package: </b> Specify the root (longest common) package. If you use just one package, use it's name.</li>
+				<li><b>TODO 5. DPU's <span class="module_name">main_class_name</span>: </b> Fill the DPU main class name. 
+					The main class must be placed in package specified in <b>TODO 4. DPU package: </b> </li>
 			</ul>
 		</div>
 
-		<h3>DPU_Template.java</h3>
-		<div>The DPU's main class. The name of the class and file must be the same as <span class="module_name">module_name</span>. 
-			Thus, rename the file and class in it according to <span class="module_name">module_name</span>. One important thing is that the package for this class
-			must be <b>module</b>. As in pom.xml the template file contains "TODOs", places which requires your attention:
+		<h3>DPUTemplate.java</h3>
+		<div>The DPU's main class. The name of the class and file must be the same as <span class="module_name">main_class_name</span>. 
+			Thus, rename the file and class in it according to <span class="module_name">main_class_name</span>.
+			As in pom.xml the template file contains "TODOs", places which requires your attention:
 			<ul>
 				<li><b>TODO 1.</b> First of all we need to change the extended base class of the DPU. 
 					The following super classes are available: 
 					<ul>
-						<li><b>AbstractExtractor</b> - Use if you implement new Extractor</li>
-						<li><b>AbstractTransformer</b> - Use if you implement new Transformer </li>
-						<li><b>AbstractLoader</b> - Use if you implement new Loader</li>
+						<li><b>Extract</b> - Use if you implement new Extractor</li>
+						<li><b>Transform</b> - Use if you implement new Transformer </li>
+						<li><b>Load</b> - Use if you implement new Loader</li>
 					</ul> 
 					Each of these interfaces contains unique method that has to be implemented. We return to this later.</li>
-				<li><b>TODO 2.</b> Here you should store default configuration of your DPU into configuration (the function parameter). 
-				  	For more information about configuration please refer to <a href="#secConfigurationConcept">Configuration concept</a> section. <br/>
-				  	The examples how to store integer and string to database are presented in the function. </li>
-				<li><b>TODO 3.</b> Every DPU can have configuration dialog, that enable user to configure the DPU. In this method the DPU
-				  	should create and return instance of this configuration dialog. <b>If you use gui.ConfigDialog class for your configuration
-				  	dialog, you do not need to change default implementation here. </b></li>
-				<li><b>TODO 4.</b> Based on implemented interface (selected in TODO 1.) you have to provide implementation
+				<li><b>TODO 2.</b> Based on implemented interface (selected in TODO 1.) you have to provide implementation
 				  	of one corresponding method required by that interface:
 				  	<ul>
-				  		<li><b>public extract(ExtractContext context) throws ExtractException</b> for <b>GraphicalExtractor</b></li>				  			
-				  		<li><b>public void transform(TransformContext context) throws TransformException</b> for <b>GraphicalTransformer</b></li>
-				  		<li><b>public void load(LoadContext context) throws LoadException</b> for <b>GraphicalLoader</b></li>
+				  		<li><b>public extract(ExtractContext context) throws ExtractException</b> for <b>Extrac</b></li>				  			
+				  		<li><b>public void transform(TransformContext context) throws TransformException</b> for <b>Transfor</b></li>
+				  		<li><b>public void load(LoadContext context) throws LoadException</b> for <b>Load</b></li>
 				  	</ul> 
 				  	In this method the functionality of the DPU should be implemented. All important data needed is passed to the method as Contex. 
 				To get more information to the Context please refer to the Context section above.</li>
 			</ul>
 		</div>
 		
-		<h3>ConfigDialog.java</h3>
+		<h3>DPUTemplateDialog.java</h3>
 		<div>This file contains implementation of DPU's configuration dialog. 
-			The DPU's configuration dialog is implemented as a <a href="www.vaadin.com">Vaadin</a> component. To preserve compatibility with 
-			DPU_Template.java default's implementation super class must not be changed.
+			The DPU's configuration dialog is implemented as a <a href="www.vaadin.com">Vaadin</a> component. The dialog
+			class must extends abstract class
+			<div class="code"> <pre> <code> AbstractConfigDialog&lt;Config&gt; </code> </pre> </div>
 			</div>
+			
+		<h3>DPUTemplateConfig.java</h3>
+		<div>This file contains template for DPU's configuration the class must implement interface
+			<div class="code"> <pre> <code> cz.cuni.xrg.intlib.commons.configuration.Config </code> </pre> Put your configuration 
+			variables inside this class. You can then access it from DPUTemplate class through the member variable config. Assume you haven't removed 
+			this variable. </div>
 		
 	</body>
 </html>
