@@ -7,13 +7,16 @@
         <artifactId>module_master</artifactId>
         <version>0.0.1</version>
     </parent>
-    <artifactId>File_extractor</artifactId>
+    <artifactId>FileExtractor</artifactId>
     <packaging>bundle</packaging>
-    <name>File_extractor</name>
+    <name>FileExtractor</name>
     
     <properties>       
     	<!-- specify module version -->
-        <module.version>0.0.1</module.version>
+        <dpu.version>0.0.1</dpu.version>
+        <dpu.description>Manifest description. File extractor.</dpu.description>
+        <dpu.package>cz.cuni.mff.xrg.intlib.extractor.file</dpu.package>
+        <dpu.mainClass>FileExtractor</dpu.mainClass>
     </properties>
  	
 </project>

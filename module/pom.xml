@@ -12,12 +12,16 @@
 	<description>Maven parent project for modules-DPU implementations.</description>
 
 	<properties>
-		<module.version>0.0.0</module.version>
-		<module.description>No description is available for this module.</module.description>
+		<dpu.version>0.0.0</dpu.version>
+		<dpu.description>No description is available for this module.</dpu.description>
+		<!-- contains full name of the DPU main class -->
+		<dpu.mainClass></dpu.mainClass>
+		<!-- contains full name of package where the bundle.mainclass is located -->
+		<dpu.package></dpu.package>
 	</properties>
 
 	<modules>
-		<module>File_extractor</module>		
+		<module>File_extractor</module>
 		<!-- 
 		<module>File_loader</module>
 		<module>RDF_extractor</module>
@@ -85,8 +89,8 @@
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Bundle-Description>${module.description}</Bundle-Description>
-						<Export-Package>module;version="${module.version}"</Export-Package>
+						<Bundle-Description>${dpu.description}</Bundle-Description>
+						<Export-Package>${dpu.package};version="${dpu.version}"</Export-Package>
 						<!-- TODO: update version ! -->
 						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}", *</Import-Package>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
@@ -97,6 +101,9 @@
 						<!-- dependencies location in output file -->
 						<Embed-Directory>dependency</Embed-Directory>
 						<Embed-StripGroup>false</Embed-StripGroup>
+						<!-- information for intlib -->						
+						<DPU-Package>${dpu.package}</DPU-Package>
+						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
 					</instructions>					
 				</configuration>
 			</plugin>

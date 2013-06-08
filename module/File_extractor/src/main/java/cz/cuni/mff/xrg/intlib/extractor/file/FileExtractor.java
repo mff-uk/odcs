@@ -1,4 +1,4 @@
-package module;
+package cz.cuni.mff.xrg.intlib.extractor.file;
 
 
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
@@ -20,17 +20,17 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  * @author Petyr
  */
-public class File_extractor implements Extract, 
+public class FileExtractor implements Extract, 
 	Configurable<FileExtractorConfig>, ConfigDialogProvider<FileExtractorConfig> {
 
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(File_extractor.class);
+    private Logger logger = LoggerFactory.getLogger(FileExtractor.class);
 
     private FileExtractorConfig config = new FileExtractorConfig();
     
-    public File_extractor() { }
+    public FileExtractor() { }
 
     @Override
     public void extract(ExtractContext context) throws ExtractException {

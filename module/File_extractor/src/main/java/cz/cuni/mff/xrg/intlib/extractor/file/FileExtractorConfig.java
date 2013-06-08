@@ -1,4 +1,4 @@
-package module;
+package cz.cuni.mff.xrg.intlib.extractor.file;
 
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 
