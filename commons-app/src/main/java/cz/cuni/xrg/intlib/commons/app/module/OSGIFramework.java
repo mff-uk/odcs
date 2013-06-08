@@ -17,11 +17,6 @@ import org.slf4j.LoggerFactory;
 class OSGIFramework {
 
     /**
-     * Package and class, that will be loaded from bundle into application.
-     */
-    private final String baseDpuClassName = "module.";
-    
-    /**
      * OSGi framework class.
      */
     private org.osgi.framework.launch.Framework framework = null;
@@ -181,20 +176,24 @@ class OSGIFramework {
     		throws BundleInstallFailedException, FileNotFoundException, ClassLoadFailedException {
         // load bundle
         BundleContainer bundleContainer = installBundle(uri);
-        // get bundle name
-        String className = (String)
-        		bundleContainer.getBundle().getHeaders().get("Bundle-Name");
-        
-        if (className == null) {
-        	logger.error("'Bundle-Name' undefined for '{}'", uri);
+        // get location of bundle main class
+        String packageName = (String)
+        		bundleContainer.getBundle().getHeaders().get("DPU-Package");        
+        if (packageName == null) {
+        	logger.error("'DPU-Package' undefined for '{}'", uri);
         	throw new ClassLoadFailedException("Can't find class name.");
         }
-        // prefix with package
-        className = baseDpuClassName + className;
+        String className = (String)
+        		bundleContainer.getBundle().getHeaders().get("DPU-MainClass");        
+        if (className == null) {
+        	logger.error("'DPU-MainClass' undefined for '{}'", uri);
+        	throw new ClassLoadFailedException("Can't find class name.");
+        }        
+        String fullMainClassName = packageName + "." + className;
         // load object
         Object loadedObject;
 		try {
-			loadedObject = bundleContainer.loadClass(className);
+			loadedObject = bundleContainer.loadClass(fullMainClassName);
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
 			logger.error("Failed to load class for '{}'", uri, e);
