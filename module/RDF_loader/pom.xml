@@ -9,11 +9,11 @@
     </parent>
     <artifactId>RDF_loader</artifactId>
     <packaging>bundle</packaging>
-    <name>RDF_loader</name>
     
     <properties>       
-    	<!-- specify module version -->
         <module.version>0.0.1</module.version>
+        <dpu.package>cz.cuni.mff.xrg.intlib.loader.rdf</dpu.package>
+        <dpu.mainClass>RDFLoader</dpu.mainClass>
     </properties>
  	
 </project>

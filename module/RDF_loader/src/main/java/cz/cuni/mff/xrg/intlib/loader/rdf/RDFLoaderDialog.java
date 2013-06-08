@@ -1,21 +1,21 @@
-package gui;
+package cz.cuni.mff.xrg.intlib.loader.rdf;
 
-import module.Config;
 
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
+import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
 /**
  * Config dialog.
@@ -23,7 +23,7 @@ import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
  * @author Maria
  *
  */
-public class ConfigDialog extends CustomComponent {
+public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 
     private static final long serialVersionUID = 1L;
     private GridLayout mainLayout;
@@ -46,7 +46,7 @@ public class ConfigDialog extends CustomComponent {
     int n = 1;
     private List<GraphItem> graphItems = new ArrayList<>();
 
-    public ConfigDialog() {
+    public RDFLoaderDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
         mapData();
@@ -95,65 +95,6 @@ public class ConfigDialog extends CustomComponent {
             optionGroupDetail.addItem(fail.getDescription());
             optionGroupDetail.setValue(override.getDescription());
 
-        }
-    }
-
-    /**
-     * Return current configuration from dialog. Can return null, if current
-     * configuration is invalid.
-     */
-    public void getConfiguration(Config config) {
-        mapData();
-        saveEditedTexts();
-
-        String graphDescription = (String) optionGroupDetail.getValue();
-        WriteGraphType graphType = getGraphType(graphDescription);
-
-        config.setValue(Config.Options.name(), graphType);
-        config.setValue(Config.SPARQL_endpoint.name(), (String) comboBoxSparql.getValue());
-        config.setValue(Config.Host_name.name(), textFieldNameAdm.getValue());
-        config.setValue(Config.Password.name(), passwordFieldPass.getValue());
-        config.setValue(Config.GraphsUri.name(), (Serializable) griddata);
-
-
-    }
-
-    /**
-     * Load values from configuration into dialog.
-     *
-     * @throws ConfigException
-     * @param conf
-     */
-    public void setConfiguration(Config conf) {
-        try {
-            String endp = (String) conf.getValue(Config.SPARQL_endpoint.name());
-
-            if ((endp!=null)&& (comboBoxSparql.addItem(endp) != null)) {
-                final Item item = comboBoxSparql.getItem(endp);
-                item.getItemProperty("endpoint").setValue(endp);
-                comboBoxSparql.setValue(endp);
-            }
-            textFieldNameAdm.setValue((String) conf.getValue(Config.Host_name.name()));
-            passwordFieldPass.setValue((String) conf.getValue(Config.Password.name()));
-
-            WriteGraphType graphType = (WriteGraphType) conf.getValue(Config.Options.name());
-            String description = getGraphDescription(graphType);
-
-            optionGroupDetail.setValue(description);
-
-            try {
-                griddata = (List<String>) conf.getValue(Config.GraphsUri.name());
-                if (griddata == null) {
-                    griddata = new LinkedList<>();
-                }
-            } catch (Exception e) {
-                griddata = new LinkedList<>();
-            }
-            refreshNamedGraphData();
-
-        } catch (UnsupportedOperationException | Property.ReadOnlyException ex) {
-            // throw setting exception
-            throw new ConfigException();
         }
     }
 
@@ -470,6 +411,60 @@ public class ConfigDialog extends CustomComponent {
         verticalLayoutDetails.addComponent(optionGroupDetail);
 
         return verticalLayoutDetails;
+    }
+
+	@Override
+	public RDFLoaderConfig getConfiguration() throws ConfigException {
+		RDFLoaderConfig config = new RDFLoaderConfig();
+		
+        String graphDescription = (String) optionGroupDetail.getValue();
+        WriteGraphType graphType = getGraphType(graphDescription);		
+		config.Options = graphType;
+		config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
+		config.Host_name = textFieldNameAdm.getValue();
+		config.Password = passwordFieldPass.getValue();
+		config.GraphsUri = griddata;
+		
+		return config;
+	}
+    
+    /**
+     * Load values from configuration into dialog.
+     *
+     * @throws ConfigException
+     * @param conf
+     */
+    public void setConfiguration(RDFLoaderConfig conf) {
+        try {
+            String endp = conf.SPARQL_endpoint;
+
+            if ((endp!=null)&& (comboBoxSparql.addItem(endp) != null)) {
+                final Item item = comboBoxSparql.getItem(endp);
+                item.getItemProperty("endpoint").setValue(endp);
+                comboBoxSparql.setValue(endp);
+            }
+            textFieldNameAdm.setValue(conf.Host_name);
+            passwordFieldPass.setValue(conf.Password);
+
+            WriteGraphType graphType = conf.Options;
+            String description = getGraphDescription(graphType);
+
+            optionGroupDetail.setValue(description);
+
+            try {
+                griddata = conf.GraphsUri;
+                if (griddata == null) {
+                    griddata = new LinkedList<>();
+                }
+            } catch (Exception e) {
+                griddata = new LinkedList<>();
+            }
+            refreshNamedGraphData();
+
+        } catch (UnsupportedOperationException | Property.ReadOnlyException ex) {
+            // throw setting exception
+            throw new ConfigException();
+        }
     }
 }
 
