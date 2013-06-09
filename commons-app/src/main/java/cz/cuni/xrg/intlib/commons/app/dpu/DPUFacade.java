@@ -37,22 +37,8 @@ public class DPUFacade {
 	 * @return new DPURecord
 	 */
 	public DPUTemplateRecord creatTemplateFromInstance(DPUInstanceRecord instance) {
-// TODO Honza: createInstanceFromTemplate
-//		DPURecord oDpu = instance.get();
-//		DPURecord nDpu = new DPURecord(instance.getName(), oDpu.getType());
-
-		// copy properties
-//		nDpu.setDescription(instance.getDescription());
-//		nDpu.setJarPath(oDpu.getJarPath());
-//		nDpu.setVisibility(VisibilityType.PRIVATE);
-
-		// copy configuration
-//		TemplateConfiguration conf = new TemplateConfiguration();
-//		conf.setValues(instance.getInstanceConfig().getValues());
-//		nDpu.setTemplateConfiguration(conf);
-
-//		return nDpu;
-		return null;
+		DPUTemplateRecord template = new DPUTemplateRecord(instance);
+		return template;
 	}
 
 	/**
