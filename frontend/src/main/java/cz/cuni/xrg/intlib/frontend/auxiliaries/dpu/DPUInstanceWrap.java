@@ -34,7 +34,7 @@ public class DPUInstanceWrap extends DPURecordWrap{
 		App.getDPUs().save(dpuInstance);
 	}
 	
-	public DPUInstanceRecord getDPUTemplateRecord() {
+	public DPUInstanceRecord getDPUInstanceRecord() {
 		return dpuInstance;
 	}	
 	
