@@ -32,6 +32,28 @@ public class DPUTemplateRecord extends DPURecord {
 	@Column(name="jar_description")
 	private String jarDescription;
 	
+	/**
+	 * Empty ctor for JPA.
+	 */
+	public DPUTemplateRecord() { }
+	
+	/**
+	 * Create template from given instance.
+	 * @param dpuInstance
+	 */
+	public DPUTemplateRecord(DPUInstanceRecord dpuInstance) {
+		super(dpuInstance);
+		this.visibility = VisibilityType.PRIVATE;
+		// copy jarDescription from template of previous one ..
+		DPUTemplateRecord dpuInstanceTemplate =
+				dpuInstance.getTemplate();
+		if (dpuInstanceTemplate == null) {
+			// TODO Petyr, Honza: This should not happen .. use some default jarDescription 
+		} else {
+			this.jarDescription = dpuInstanceTemplate.getJarDescription();
+		}		 
+	}
+	
 	public VisibilityType getVisibility() {
 		return visibility;
 	}

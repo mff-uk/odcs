@@ -98,6 +98,18 @@ public class DPURecord {
     }
 
     /**
+     * Create new DPURecord by copying the values from existing DPURecord.
+     * @param dpuRecord
+     */
+    public DPURecord(DPURecord dpuRecord) {
+    	this.name = dpuRecord.name;
+    	this.description = dpuRecord.description;
+    	this.type = dpuRecord.type;
+    	this.jarPath = dpuRecord.jarPath;
+    	this.configuration = dpuRecord.configuration;
+    }
+    
+    /**
      * Load instance from associated jar file.
      * @param moduleFacade ModuleFacade used to load DPU.
      * @throws ModuleException
@@ -106,7 +118,6 @@ public class DPURecord {
     public void loadInstance(ModuleFacade moduleFacade) throws ModuleException, FileNotFoundException {
     	// store module facade, can be useful
     	this.moduleFacade = moduleFacade;
-    	// TODO Petyr, load DPUInstance using OSGi here .. 
     	instance = moduleFacade.getObject(jarPath);
     }
     
