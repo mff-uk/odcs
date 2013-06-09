@@ -15,19 +15,19 @@ public interface ProcessingContext {
 
     /**
      * Store given data object. The object is accessible. to the end of DPU run
-     * under id. If object can't be stored throw {@link Exception}.
+     * under id. If object can't be stored throw {@link RuntimeException}.
      *
      * @param object Object to store.
      * @return object id
-     * throws Exception
+     * throws RuntimeException
      */
-    public String storeData(Object object) throws Exception;
+    public String storeData(Object object) throws RuntimeException;
 
     /**
      * Load object from repository.
      *
      * @param id Object's id.
-     * @return null if there is no object under given id.
+     * @return Loaded object or null in case of problems.
      */
     public Object loadData(String id);
 
@@ -56,8 +56,9 @@ public interface ProcessingContext {
      *
      * @param id Object id.
      * @param object Object data.
+     * @throws RuntimeException
      */
-    public void storeDataForResult(String id, Object object);
+    public void storeDataForResult(String id, Object object) throws RuntimeException;
 
     /**
      * Return true if the DPU is running in debugging mode.

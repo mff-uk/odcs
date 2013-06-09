@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.backend.context.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -95,44 +96,46 @@ class ExtendedCommonImpl {
 		this.logger = Logger.getLogger(ExtendedCommonImpl.class); 
 	}	
 	
-	public String storeData(Object object) throws Exception {
+	public String storeData(Object object) throws RuntimeException {
 		String id = Integer.toString(this.storeCounter) + ".ser";
 		++this.storeCounter;
 		// ...
-		try
-		{
-			FileOutputStream fileOut =
-				new FileOutputStream( new File(context.createDirForDPUStorage(dpuInstance), id) );
-			ObjectOutputStream outStream =
-				new ObjectOutputStream(fileOut);
+		// determine file
+		File file = new File(context.createDirForDPUStorage(dpuInstance), id);
+		// save data into file
+		try (FileOutputStream fileOutStream = new FileOutputStream(file) ) {
+			ObjectOutputStream outStream = new ObjectOutputStream(fileOutStream);
 			outStream.writeObject(object);
 			outStream.close();
-			fileOut.close();
-		} catch(IOException e) {
-			logger.error("storeData", e);
-		}				
-		return null;
+		} catch (IOException e) {
+			logger.error("loadData", e);
+			throw new RuntimeException("Can't save object.", e);
+		}
+		return id;
 	}
 
 	public Object loadData(String id) {
 		Object result = null;
-		try {
-			FileInputStream fileIn = 
-					new FileInputStream( new File(context.createDirForDPUStorage(dpuInstance), id));
-			ObjectInputStream inStream = new ObjectInputStream(fileIn);
+		// determine file
+		File file = new File(context.createDirForDPUStorage(dpuInstance), id);
+		// try to load data from file
+		try (FileInputStream fileInStream = new FileInputStream(file)) {
+			ObjectInputStream inStream = new ObjectInputStream(fileInStream);
 			result = inStream.readObject();
 			inStream.close();
-			fileIn.close();
+		}  catch (FileNotFoundException e) {
+			logger.error("loadData: FileNotFoundException", e);
 		} catch (IOException e) {
-			logger.error("loadData", e);
+			logger.error("loadData: IOException", e);
 		} catch (ClassNotFoundException e) {
-			logger.error("loadData", e);
+			logger.error("loadData: ClassNotFoundException", e);
 		}
+
 		return result;
 	}
 
 	public void storeDataForResult(String id, Object object) {
-		// TODO Petyr: storeDataForResult
+		// TODO Petyr: store data for result
 	}
 
 	public boolean isDebugging() {
