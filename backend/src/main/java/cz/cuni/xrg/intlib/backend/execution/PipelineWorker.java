@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,8 +66,7 @@ import org.springframework.context.ApplicationEventPublisher;
  * 
  */
 class PipelineWorker implements Runnable {
-	// TODO Petyr: release save context before then on the end of the execution
-	
+		
 	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
@@ -126,7 +126,8 @@ class PipelineWorker implements Runnable {
 		this.database = database;
 		// create or get existing .. 
 		this.contextWriter = execution.createExecutionContext(workingDirectory);
-		// TODO Petyr: persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
+		// TODO Petyr: Persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
+		// TODO Petyr: Release context sooner then on the end of the execution
 	}
 
 	/**
@@ -392,8 +393,8 @@ class PipelineWorker implements Runnable {
 		
 		// load instance
 		try {
-			dpuInstanceRecord.loadInstance();
-		} catch(ModuleException e) {
+			dpuInstanceRecord.loadInstance(moduleFacade);
+		} catch(ModuleException | FileNotFoundException e) {
 			throw new StructureException("Failed to create instance of DPU.", e);
 		}
 		
@@ -402,15 +403,14 @@ class PipelineWorker implements Runnable {
 		Config configuration = dpuInstanceRecord.getConf();
 		// set configuration
 		if (dpuInstance instanceof Configurable<?>) {
-			Configurable<Config> configurable = 
-					(Configurable<Config>)dpuInstance;			
+			Configurable<Config> configurable = (Configurable<Config>)dpuInstance;			
 			try {
 				configurable.configure(configuration);
 			} catch (ConfigException e) {
 				throw new StructureException("Failed to configure DPU.", e);
 			}
 		}
-
+		// run dpu instance
 		if (dpuInstance instanceof Extract) {
 			Extract extractor = (Extract)dpuInstance;
 			return runExtractor(extractor, getContextForNodeExtractor(node, ancestors) );
@@ -438,11 +438,9 @@ class PipelineWorker implements Runnable {
 		
 		try {
 			extractor.extract(ctx);
-			eventPublisher.publishEvent(new ExtractCompletedEvent(extractor,
-					ctx, this));
+			eventPublisher.publishEvent(new ExtractCompletedEvent(extractor, ctx, this));
 		} catch (ExtractException ex) {
-			eventPublisher.publishEvent(new ExtractFailedEvent(ex, extractor,
-					ctx, this));
+			eventPublisher.publishEvent(new ExtractFailedEvent(ex, extractor, ctx, this));
 			return false;
 		}
 		return true;
@@ -461,11 +459,9 @@ class PipelineWorker implements Runnable {
 		
 		try {
 			transformer.transform(ctx);
-			eventPublisher.publishEvent(new TransformCompletedEvent(
-					transformer, ctx, this));
+			eventPublisher.publishEvent(new TransformCompletedEvent(transformer, ctx, this));
 		} catch (TransformException ex) {
-			eventPublisher.publishEvent(new TransformFailedEvent(ex,
-					transformer, ctx, this));
+			eventPublisher.publishEvent(new TransformFailedEvent(ex, transformer, ctx, this));
 			return false;
 		}
 		return true;
@@ -479,16 +475,14 @@ class PipelineWorker implements Runnable {
 	 * @return false if execution failed
 	 */
 	private boolean runLoader(Load loader, ExtendedLoadContext ctx) {
-
+		
 		eventPublisher.publishEvent(new LoadStartEvent(loader, ctx, this));
 		
 		try {
 			loader.load(ctx);
-			eventPublisher.publishEvent(new LoadCompletedEvent(loader, ctx,
-					this));
+			eventPublisher.publishEvent(new LoadCompletedEvent(loader, ctx, this));
 		} catch (LoadException ex) {
-			eventPublisher.publishEvent(new LoadFailedEvent(ex, loader, ctx,
-					this));
+			eventPublisher.publishEvent(new LoadFailedEvent(ex, loader, ctx, this));
 			return false;
 		}
 		return true;

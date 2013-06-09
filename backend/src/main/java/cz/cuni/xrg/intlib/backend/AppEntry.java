@@ -122,7 +122,7 @@ public class AppEntry {
 				continue;
 			}			
 			// ...
-		// TODO Petyr: interact with user
+		// TODO Petyr: Interact with user
 		}
 		
 	}

@@ -166,7 +166,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
                     executorService.execute(communicator);
                 }
             } catch (IOException e) {
-                // TODO Petyr: How to react on server IOException, not it's ignored
+                // TODO Petyr: How to react on server IOException, now it's ignored
                 e.printStackTrace();
             }
         }
