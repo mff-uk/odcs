@@ -4,6 +4,11 @@
  */
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import java.io.FileNotFoundException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
@@ -12,14 +17,13 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
-import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 
 /**
  *
@@ -27,7 +31,9 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
  */
 public class DPUDetail extends Window {
 
-	private DPUInstanceRecord dpu;
+	private Logger logger = LoggerFactory.getLogger(DPUDetail.class);
+	
+	private DPUInstanceWrap dpuInstance;	
 	
 	private TextField dpuName;
 	
@@ -46,7 +52,7 @@ public class DPUDetail extends Window {
 
 		this.setResizable(false);
 		this.setModal(true);
-		this.dpu = dpu;
+		this.dpuInstance = new DPUInstanceWrap(dpu);		
 		this.setCaption(String.format("%s detail", dpu.getName()));
 
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -93,54 +99,27 @@ public class DPUDetail extends Window {
 		mainLayout.addComponent(dpuGeneralSettingsLayout);
 
 		// load instance
-		dpu.loadInstance();
+		confDialog = null;
+		try {
+			confDialog = dpuInstance.getDialog();
+		} catch (ModuleException e) {
+			Notification.show("Failed to load configuration dialog.", e.getMessage(), Type.ERROR_MESSAGE);
+			logger.error("Failed to load dialog for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
+		} catch(FileNotFoundException e) {
+			Notification.show("Failed to load DPU.", e.getMessage(), Type.ERROR_MESSAGE);
+		} catch(ConfigException e) {
+			Notification.show("Failed to load configuration. The dialog defaul configuration is used.",	e.getMessage(), Type.WARNING_MESSAGE);
+			logger.error("Failed to load configuration for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
+		}
 		
-		Object dpuInstance = dpu.getInstance();
-		// try to re-cast to dialog provider
-		if (dpuInstance instanceof ConfigDialogProvider<?>){
-			ConfigDialogProvider<?> dialogProvider = (ConfigDialogProvider<?>)dpuInstance;
-			// get configuration dialog
-			confDialog = 
-					(AbstractConfigDialog<Config>)dialogProvider.getConfigurationDialog();
-			// 
-			confDialog.setConfiguration(dpu.getConf());
+		if (confDialog == null) {
+		
+		} else {
 			// add to layout
 			confDialog.setWidth("100%");
 			mainLayout.addComponent(confDialog);
-		} else {
-			// does not contain dialog provider .. 
 		}
 		
-/* Petyr 4.6.2013
- 		String jarPath = dpu.getDpu().getJarPath();
-		try {
-			dpuExec = App.getApp().getModules().getInstance(jarPath);
-
-			// get configuration from dpu
-			Config conf = dpu.getInstanceConfig();
-
-			if (dpuExec != null) {
-
-				if (conf == null) {
-					// create new default configuration
-					conf = new InstanceConfiguration();
-					dpuExec.saveConfigurationDefault(conf);
-				}
-
-				CustomComponent dpuConfigurationDialog = ModuleDialogGetter.getDialog(dpuExec, conf);
-				dpuConfigurationDialog.setWidth("100%");
-				mainLayout.addComponent(dpuConfigurationDialog);
-			}
-
-		} catch (ModuleException me) {
-			//TODO: Show info about failed load of custom part of dialog
-			Notification.show("ModuleException:Failed to load configuration dialog.", me.getTraceMessage(), Type.ERROR_MESSAGE);
-		} catch (ConfigException ce) {
-			//TODO: Show info about invalid saved config(should not happen -> validity check on save)
-			Notification.show("ConfigException: Failed to set configuration for dialog.",
-					ce.getMessage(), Type.ERROR_MESSAGE);
-		}
-*/
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setStyleName("dpuDetailButtonBar");
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
@@ -198,17 +177,13 @@ public class DPUDetail extends Window {
 	 * @return
 	 */
 	protected boolean saveDPUInstance() {
-
+		dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue());
+		dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription.getValue());
 		try {
-			if(confDialog != null) {
-				dpu.setConf( confDialog.getConfiguration() );
-				//dpuExec.saveConfiguration(dpu.getInstanceConfig());
-			}
-			dpu.setName(dpuName.getValue());
-			dpu.setDescription(dpuDescription.getValue());
+			dpuInstance.saveConfig();
 		} catch (ConfigException ce) {
 			Notification.show("ConfigException:", ce.getMessage(), Type.ERROR_MESSAGE);
-			//TODO: Inform about invalid settings and do not close detail dialog
+			// TODO Bohuslav: Inform about invalid settings and do not close detail dialog
 			return false;
 		}
 		return true;
@@ -216,7 +191,7 @@ public class DPUDetail extends Window {
 
 	protected boolean saveDpuAsNew() {
 		if(saveDPUInstance()) {
-			DPUTemplateRecord newDPU = App.getDPUs().creatTemplateFromInstance(dpu);
+			DPUTemplateRecord newDPU = App.getDPUs().creatTemplateFromInstance(dpuInstance.getDPUInstanceRecord());
 			App.getDPUs().save(newDPU);
 			return true;
 		}
