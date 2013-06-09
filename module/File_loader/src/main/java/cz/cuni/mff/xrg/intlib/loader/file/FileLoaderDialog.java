@@ -175,7 +175,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		config.DirectoryPath = textFieldDir.getValue();
 		config.FileName = textFieldFileName.getValue();
 		config.RDFFileFormat = (RDFFormatType) comboBoxFormat.getValue();
-		return null;
+		return config;
 	}
 	
     /**
