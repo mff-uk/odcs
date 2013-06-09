@@ -71,16 +71,15 @@ public class DPURecord {
 	 */
 	@Column(name="configuration", nullable = true)
 	private byte[] configuration;	
-	// TODO Honza: serializing whole configuration into DB is a very bad idea...
 	
 	/**
-	 * Instance of DPU.
+	 * ModuleFacade. Set in {{@link #loadInstance(ModuleFacade)}.
 	 */
 	@Transient
 	private ModuleFacade moduleFacade;
 	
 	/**
-	 * DPU instance.
+	 * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
 	 */
 	@Transient
 	private Object instance;
@@ -198,7 +197,6 @@ public class DPURecord {
 	 * 
 	 * @return 
 	 */
-    @Deprecated
 	@Override
 	public int hashCode() {
 		int hash = 7;
@@ -207,6 +205,7 @@ public class DPURecord {
 			hash = 83 * hash + Objects.hashCode(this.description);
 			hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
 			hash = 83 * hash + Objects.hashCode(this.jarPath);
+			hash = 83 * hash + Objects.hashCode(this.configuration);
 		} else {
 			hash = 83 * hash + Objects.hashCode(this.id);
 		}
@@ -224,7 +223,6 @@ public class DPURecord {
 	 * @param obj
 	 * @return
 	 */
-    @Deprecated
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -256,6 +254,9 @@ public class DPURecord {
 			return false;
 		}
 		if (!Objects.equals(this.jarPath, other.jarPath)) {
+			return false;
+		}
+		if (!Objects.equals(this.configuration, other.configuration)) {
 			return false;
 		}
 		return true;
