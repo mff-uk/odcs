@@ -9,14 +9,11 @@ import java.io.ObjectOutputStream;
 import java.util.Objects;
 import javax.persistence.*;
 
-import org.hibernate.internal.util.SerializationHelper;
-
 import com.thoughtworks.xstream.XStream;
 
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
-import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 
 /**
