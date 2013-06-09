@@ -32,9 +32,11 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 
 import java.io.FileNotFoundException;
@@ -70,11 +72,10 @@ class DPU extends ViewComponent {
 	private Config conf;
 	private HorizontalLayout layoutInfo;
 
-	private DPUTemplateRecord selectedDpu;
 	/**
-	 * DPU's configuration dialog.
+	 * Wrap for selected DPUTemplateRecord.
 	 */
-	private AbstractConfigDialog<Config> configDialog = null;
+	private DPUTemplateWrap selectedDpuWrap = null;
 	
 	private static Logger logger = LoggerFactory.getLogger(ViewComponent.class);
 	
@@ -247,19 +248,23 @@ class DPU extends ViewComponent {
 
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				selectedDpu = (DPUTemplateRecord) event.getItemId();
+				DPUTemplateRecord selectedDpu = (DPUTemplateRecord) event.getItemId();
 
 				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
-
+					// crate new wrap
+					selectedDpuWrap = new DPUTemplateWrap(selectedDpu);
+					
 					dpuLayout.removeComponent(dpuDetailLayout);
 					dpuLayout.removeComponent(layoutInfo);
 					dpuDetailLayout = buildDPUDetailLayout();
 					dpuLayout.addComponent(dpuDetailLayout, 1, 0);
 
-					String selectedDpuName = selectedDpu.getName();
-					String selecteDpuDescription = selectedDpu.getDescription();
-					VisibilityType selecteDpuVisibility = selectedDpu
-							.getVisibility();
+					String selectedDpuName = 
+							selectedDpuWrap.getDPUTemplateRecord().getName();
+					String selecteDpuDescription = 
+							selectedDpuWrap.getDPUTemplateRecord().getDescription();
+					VisibilityType selecteDpuVisibility = 
+							selectedDpuWrap.getDPUTemplateRecord().getVisibility();
 					dpuName.setValue(selectedDpuName);
 					dpuDescription.setValue(selecteDpuDescription);
 										
@@ -324,53 +329,34 @@ class DPU extends ViewComponent {
 
 		dpuDetailLayout.addComponent(tabSheet);
 
-		if (selectedDpu != null) {
-			// TODO Petyr: Move this code to separate class, use to access ConfigDialog
-			Object instance = null;
+		if (selectedDpuWrap != null) {
+			AbstractConfigDialog<Config> configDialog = null;
+			
 			try {
-				selectedDpu.loadInstance( App.getApp().getModules() );
-				instance = selectedDpu.getInstance();
+				configDialog = selectedDpuWrap.getDialog();
 			} catch (ModuleException ex) {
 				Notification.show(
 						"Failed to load configuration dialog",
 						ex.getMessage(), Type.ERROR_MESSAGE);
-				logger.error("Can't load DPU '{}'", selectedDpu.getId(), ex);
+				logger.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
 			} catch (FileNotFoundException ex) {
 				Notification.show(
 						"File not found",
 						ex.getMessage(), Type.ERROR_MESSAGE);
-				logger.error("Can't load DPU '{}'", selectedDpu.getId(), ex);
+				logger.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+			} catch (ConfigException ex) {
+				Notification.show(
+						"Failed to load configuration. Dialog default configuration is used.",
+						ex.getMessage(), Type.WARNING_MESSAGE);
+				logger.error("Can't load configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
 			}
 			
-			if (instance != null) {
-				configDialog = null;
-				
-				// continue ..
-				if (instance instanceof ConfigDialogProvider<?>) {
-					ConfigDialogProvider<Config> dialogProvider;
-					// TODO Petyr: use try block
-					dialogProvider = (ConfigDialogProvider<Config>)instance;
-					// get configuration dialog
-					configDialog = dialogProvider.getConfigurationDialog();					
-				}
-
-				if (configDialog == null) {
-					// no dialog
-					Notification.show("DPU does not provide ConfigurationDialog", Type.WARNING_MESSAGE);
-				} else {
-					// set configuration 
-					// TODO Petyr: set configuration, add try catch ?
-					Config conf = selectedDpu.getConf();
-					if (conf == null) {
-						// use default configuration
-					} else {
-						// try to use configuration from database
-						configDialog.setConfiguration( conf );
-					}
-					// add layout
-					verticalLayoutConfigure.removeAllComponents();
-					verticalLayoutConfigure.addComponent(configDialog);
-				}				
+			verticalLayoutConfigure.removeAllComponents();
+			if (configDialog == null) {
+				// use some .. dummy component
+			}  else {
+				// add dialog
+				verticalLayoutConfigure.addComponent(configDialog);
 			}
 		}
 
@@ -389,13 +375,13 @@ class DPU extends ViewComponent {
 		jarPathLayout.setHeight("100%");
 
 		jarPathLayout.addComponent(new Label("JAR path:"));
-		Label jPath = new Label( selectedDpu.getJarPath() );
+		Label jPath = new Label( selectedDpuWrap.getDPUTemplateRecord().getJarPath() );
 		jarPathLayout.addComponent(jPath);
 		
 		// created in "buildDPUDetailLayout"
 		verticalLayoutInfo.addComponent(jarPathLayout);
 		verticalLayoutInfo.addComponent(new Label("Description of JAR:"));
-		TextArea jDescription = new TextArea(selectedDpu.getJarDescription());
+		TextArea jDescription = new TextArea(selectedDpuWrap.getDPUTemplateRecord().getJarDescription());
 		jDescription.setReadOnly(true);
 		jDescription.setWidth("100%");
 		jDescription.setHeight("100%");		
@@ -514,7 +500,7 @@ class DPU extends ViewComponent {
 						String[] pipeName = new String[100];
 						for (DPUInstanceRecord item : instances) {
 
-							if (item.getTemplate().getId() == selectedDpu.getId()) {
+							if (item.getTemplate().getId() == selectedDpuWrap.getDPUTemplateRecord().getId()) {
 								fl = 1;
 
 								for (Pipeline pitem : pipelines) {
@@ -538,7 +524,7 @@ class DPU extends ViewComponent {
 						}
 						if (fl == 0) {
 
-							App.getApp().getDPUs().delete(selectedDpu);
+							App.getApp().getDPUs().delete(selectedDpuWrap.getDPUTemplateRecord());
 							dpuTree.removeAllItems();
 							fillTree(dpuTree);
 							dpuDetailLayout.removeAllComponents();
@@ -601,20 +587,27 @@ class DPU extends ViewComponent {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-						if ((selectedDpu != null)
-								&& (selectedDpu.getId() != null)) {
-							selectedDpu.setName(dpuName.getValue());
-							selectedDpu.setDescription(dpuDescription
+						if ((selectedDpuWrap != null)
+								&& (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
+							selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue());
+							selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
 									.getValue());
-							selectedDpu
+							selectedDpuWrap.getDPUTemplateRecord()
 									.setVisibility((VisibilityType) groupVisibility
 											.getValue());
+							
 							// save configuration
-							selectedDpu.setConf(
-									configDialog.getConfiguration() );
+							try {
+								selectedDpuWrap.saveConfig();
+							} catch(ConfigException e) {
+								Notification.show(
+										"Failed to save configuration from dialog.",
+										e.getMessage(), Type.ERROR_MESSAGE);
+								logger.error("Can't save configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+							}
 
 							// store into DB
-							App.getDPUs().save(selectedDpu);
+							selectedDpuWrap.save();
 							
 							fillTree(dpuTree);
 
