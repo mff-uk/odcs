@@ -11,6 +11,8 @@ import javax.persistence.*;
 
 import org.hibernate.internal.util.SerializationHelper;
 
+import com.thoughtworks.xstream.XStream;
+
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
@@ -158,11 +160,15 @@ public class DPURecord {
 		}		
 		Config config  = null;
 		// reconstruct object form byte[]
-		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(configuration)) {			
-			ObjectInputStream in = moduleFacade.getObjectStream(byteIn, jarPath);			
-			Object obj = in.readObject();
+		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(configuration)) {
+			// use XStream for serialisation
+			XStream xstream = new XStream();
+			// add class loader for bundle
+			xstream.setClassLoader(moduleFacade.getClassLoader(jarPath));
+			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);						
+			Object obj = objIn.readObject();
 			config = (Config)obj;
-			in.close();
+			objIn.close();
 		} catch (IOException e) {
 			throw new ConfigException("Can't deserialize configuration.", e);
 		} catch (ClassNotFoundException e) {
@@ -173,8 +179,11 @@ public class DPURecord {
 
 	public void setConf(Config config) throws ConfigException {		
 		// serialize object into byte[]
-		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {			
-			ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
+		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {	
+			// use XStream for serialisation
+// TODO Petyr: use do not create XStream instance every time .. 			
+			XStream xstream = new XStream();
+			ObjectOutputStream objOut = xstream.createObjectOutputStream(byteOut);
 			objOut.writeObject(config);
 			objOut.close();
 			configuration = byteOut.toByteArray();

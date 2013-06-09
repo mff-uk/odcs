@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -93,31 +92,30 @@ public class ModuleFacade {
 		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
 		return framework.loadClass(uri);
 	}
-	
+		
 	/**
-	 * Create {@link BundleObjectInputStream} for given bundle. This stream can be used to deserialize classes 
-	 * from given bundle.
-	 * @param stream
-	 * @param relativePath relativePath Relative path in DPU's directory.
-	 * @return
-	 * @throws BundleInstallFailedException
-	 * @throws IOException
+	 * Return class loader for bundle.
+	 * @param relativePath RelativePath Relative path in DPU's directory.
+	 * @return Bundle's ClassLoader
+	 * @throws FileNotFoundException
 	 */
-	public BundleObjectInputStream getObjectStream(InputStream stream, String relativePath) 
-			throws BundleInstallFailedException, IOException {
+	public ClassLoader getClassLoader(String relativePath) throws FileNotFoundException {
+		// TODO Petyr: try, catch .. move check code to common method
+		
 		// check existence
 		File file = new File(configuration.getDpuFolder() + relativePath);
 		if (file.exists()) {
 			// ok, file exist ..
 		} else {
 			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
-		}		
-		String uri = "file:///" + configuration.getDpuFolder() + relativePath;		
-		BundleContainer container = framework.installBundle(uri);
-		// create InputStream .. 
-		return new BundleObjectInputStream(stream, container.getBundle());
-	}
+		}			
 		
+		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
+		BundleContainer container = framework.installBundle(uri);
+		// get class loader
+		return container.getClassLoader();
+	}
+	
     /**
      * Return content of manifest for given bundle.
      * @param uri Path to the bundle.

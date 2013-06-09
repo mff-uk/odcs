@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-
+import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * Represent a single bundle with some additional information.
@@ -29,11 +29,17 @@ class BundleContainer {
 	 * List of loaded class<?> from this bundle.
 	 */
 	private java.util.Map<String, Class<?>> loadedClassCtors;
-		
+	
+	/**
+	 * Bundle class loader. The variable is load on request in {@link #getClassLoader()}
+	 */
+	private ClassLoader classLoader;
+	
 	public BundleContainer(Bundle bundle, String uri) {
 		this.bundle = bundle;
 		this.uri = uri;
 		this.loadedClassCtors = new HashMap<>();
+		this.classLoader = null;
 	}
 	
 	/**
@@ -51,14 +57,14 @@ class BundleContainer {
 			// class already been loaded 
 			loaderClass = this.loadedClassCtors.get(className);
 		} else {
-			// try to load class -> throw ClassNotFoundException
+			// try to load class -> throw: ClassNotFoundException
             loaderClass = bundle.loadClass(className);
             // store loaded class
             this.loadedClassCtors.put(className, loaderClass);
 		}
 		
 		// we have loader, create instance ..
-		return loaderClass.newInstance(); // InstantiationException, IllegalAccessException
+		return loaderClass.newInstance(); // throw: InstantiationException, IllegalAccessException
 	}
 
 	/**
@@ -68,6 +74,7 @@ class BundleContainer {
 	public void uninstall() throws BundleException {
 		// clear list
 		loadedClassCtors.clear();
+		classLoader = null;
 		// 
 		bundle.uninstall();
 		bundle = null;
@@ -81,4 +88,10 @@ class BundleContainer {
 		return uri;
 	}
 	
+	public ClassLoader getClassLoader() {
+		if (classLoader == null && bundle != null) {
+			classLoader = bundle.adapt(BundleWiring.class).getClassLoader();
+		}
+		return classLoader;
+	}
 }
