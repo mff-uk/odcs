@@ -82,14 +82,9 @@ public class ModuleFacade {
 	 */
 	public Object getObject(String relativePath) 
 			throws BundleInstallFailedException, ClassLoadFailedException, FileNotFoundException {
-		// check existence
-		File file = new File(configuration.getDpuFolder() + relativePath);
-		if (file.exists()) {
-			// ok, file exist ..
-		} else {
-			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
-		}		
+		checkExistance(relativePath); // throw FileNotFoundException	
 		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
+		// throw BundleInstallFailedException
 		return framework.loadClass(uri);
 	}
 		
@@ -98,22 +93,30 @@ public class ModuleFacade {
 	 * @param relativePath RelativePath Relative path in DPU's directory.
 	 * @return Bundle's ClassLoader
 	 * @throws FileNotFoundException
+	 * @throws BundleInstallFailedException 
 	 */
-	public ClassLoader getClassLoader(String relativePath) throws FileNotFoundException {
-		// TODO Petyr: try, catch .. move check code to common method
-		
-		// check existence
-		File file = new File(configuration.getDpuFolder() + relativePath);
-		if (file.exists()) {
-			// ok, file exist ..
-		} else {
-			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
-		}			
-		
+	public ClassLoader getClassLoader(String relativePath) 
+			throws BundleInstallFailedException, FileNotFoundException {
+		checkExistance(relativePath); // throw FileNotFoundException
 		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
+		// throw BundleInstallFailedException
 		BundleContainer container = framework.installBundle(uri);
 		// get class loader
 		return container.getClassLoader();
+	}
+	
+	/**
+	 * Check if the bundle exist.
+	 * @param relativePath RelativePath Relative path in DPU's directory.
+	 * @throws FileNotFoundException
+	 */
+	private void checkExistance(String relativePath) throws FileNotFoundException {
+		File file = new File(configuration.getDpuFolder() + relativePath);
+		if (file.exists()) {
+			// file exist .. 
+		} else {
+			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
+		}	
 	}
 	
     /**
@@ -155,7 +158,7 @@ public class ModuleFacade {
 			// invalid directory
 			throw new LibsLoadFailedException("Invalid libs path: " + directoryPath);
 		}
-		// load bundles .. 
+		// load bundles ..
 		for (File file : fList){
 			if (file.isFile()){
 				if (file.getName().contains("jar")) {
