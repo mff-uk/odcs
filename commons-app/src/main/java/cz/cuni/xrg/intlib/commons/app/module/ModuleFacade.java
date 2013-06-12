@@ -33,7 +33,7 @@ public class ModuleFacade {
 	/**
 	 * Logger instance.
 	 */
-	private Logger logger = LoggerFactory.getLogger(ModuleFacade.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleFacade.class);
 	
 	/**
 	 * Base ctor. The configuration is not used until some other 
@@ -52,14 +52,14 @@ public class ModuleFacade {
 	 * @throws LibsLoadFailedException
 	 */
 	public void start() throws FrameworkStartFailedException, LibsLoadFailedException {
-		logger.info("Starting module facade");
+		LOG.info("Starting module facade");
 		// start
 		framework.start(configuration.getPackagesToExpose());
 		// load libs
 		try {
 			installDirectory(configuration.getDpuLibsFolder());
 		} catch (Exception e) {
-			logger.error("installDirectory failed", e);
+			LOG.error("installDirectory failed", e);
 			throw new LibsLoadFailedException(e);
 		}
 	}
@@ -137,7 +137,7 @@ public class ModuleFacade {
         	is.close();
         	return description;
         } catch (IOException ex) {
-        	logger.error("Failed to read description from {}", uri, ex);
+        	LOG.error("Failed to read description from {}", uri, ex);
         	// in case of exception return null
         	return null;
         }
@@ -150,7 +150,7 @@ public class ModuleFacade {
 	 * @throws LibsLoadFailedException
 	 */
 	private void installDirectory(String directoryPath) throws LibsLoadFailedException {
-		logger.info("Loading libs from {}", directoryPath);
+		LOG.info("Loading libs from {}", directoryPath);
 		
 		File directory = new File( directoryPath );
 		File[] fList = directory.listFiles();
@@ -162,13 +162,13 @@ public class ModuleFacade {
 		for (File file : fList){
 			if (file.isFile()){
 				if (file.getName().contains("jar")) {
-					logger.info("Loading lib '{}'", file.getAbsolutePath());
+					LOG.info("Loading lib '{}'", file.getAbsolutePath());
 					// load and install as bundle
 					String path = "file:///" + file.getAbsolutePath().replace('\\', '/');				
 					try {
 						framework.installBundle( path );
 					} catch (BundleInstallFailedException e) {
-						logger.error("Failed to load bundle from {}", path, e);
+						LOG.error("Failed to load bundle from {}", path, e);
 						throw new LibsLoadFailedException("Failed to load bundle " + path, e);
 					}
 				}

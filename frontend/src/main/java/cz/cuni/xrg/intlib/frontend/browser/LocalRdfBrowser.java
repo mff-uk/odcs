@@ -26,13 +26,14 @@ class LocalRdfBrowser extends DataUnitBrowser {
 
     private List<RDFTriple> data = null;
     private IntlibPagedTable dataTable;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(LocalRdfBrowser.class);
 
     @Override
     public void loadDataUnit(File directory, String dumpDirName) {
-        Logger logger = LoggerFactory.getLogger(LocalRdfBrowser.class);
 
         // FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-        logger.debug("Create LocalRDFRepo in directory={} dumpDirname={}", directory.toString(), dumpDirName);
+        LOG.debug("Create LocalRDFRepo in directory={} dumpDirname={}", directory.toString(), dumpDirName);
 
         LocalRDFRepo repository = new LocalRDFRepo(directory.getAbsolutePath(), dumpDirName);
         File dumpFile = new File(directory, "dump_dat.ttl");
@@ -43,7 +44,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
         }
         data = repository.getRDFTriplesInRepository();
 
-        logger.debug("Number of triples: {}", data.size());
+        LOG.debug("Number of triples: {}", data.size());
 
         repository.shutDown();
 

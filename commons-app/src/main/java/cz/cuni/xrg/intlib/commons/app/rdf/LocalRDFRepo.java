@@ -73,29 +73,37 @@ public class LocalRDFRepo implements Closeable {
 	/**
 	 * Logging information about execution of method using openRDF.
 	 */
-	protected static Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
+	protected final Logger LOG = LoggerFactory.getLogger(getClass());
+
 	/**
 	 * How many triples is possible to add to SPARQL endpoind at once.
 	 */
 	protected static final int STATEMENTS_COUNT = 10;
+
 	/**
 	 * Default name for temp directory, where this repository is placed.
 	 */
 	private final static String repoDirName = "intlib-repo";
+
 	private final static String repoFileName = "localRepository";
+
 	/**
 	 * Directory root, where is repository stored.
 	 */
 	private File WorkingRepoDirectory;
+
 	protected final String encode = "UTF-8";
+
 	/**
 	 * RDF data storage component.
 	 */
 	protected Repository repository = null;
+
 	/**
 	 * If the repository is used only for reading data or not.
 	 */
 	protected boolean isReadOnly;
+
 	/**
 	 * Graph resource for saving RDF triples.
 	 */
@@ -180,10 +188,10 @@ public class LocalRDFRepo implements Closeable {
 
 		try {
 			repository.initialize();
-			logger.info("New repository incicialized");
+			LOG.info("New repository incicialized");
 
 		} catch (RepositoryException ex) {
-			logger.debug(ex.getMessage());
+			LOG.debug(ex.getMessage());
 
 		}
 	}
@@ -201,7 +209,7 @@ public class LocalRDFRepo implements Closeable {
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
-			logger.debug(e.getMessage());
+			LOG.debug(e.getMessage());
 		}
 
 	}
@@ -244,7 +252,7 @@ public class LocalRDFRepo implements Closeable {
 			conection.commit();
 
 		} catch (RepositoryException e) {
-			logger.debug(e.getMessage());
+			LOG.debug(e.getMessage());
 
 
 		} finally {
@@ -272,14 +280,14 @@ public class LocalRDFRepo implements Closeable {
 		if (path == null) {
 			final String message = "Mandatory target path in extractor is null.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message);
 
 		} else if (path.isEmpty()) {
 
 			final String message = "Mandatory target path in extractor have to be not empty.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message);
 
 		}
@@ -359,7 +367,7 @@ public class LocalRDFRepo implements Closeable {
 			connection.commit();
 
 		} catch (IOException | RDFParseException ex) {
-			logger.debug(ex.getMessage(), ex);
+			LOG.debug(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			throw new ExtractException("Error by adding file to repository", ex);
 		} finally {
@@ -367,7 +375,7 @@ public class LocalRDFRepo implements Closeable {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository.", ex);
+					LOG.warn("Failed to close connection to RDF repository.", ex);
 				}
 			}
 		}
@@ -409,7 +417,7 @@ public class LocalRDFRepo implements Closeable {
 				message = "Mandatory file name in File_loader is null.";
 			}
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new LoadException(message);
 
 
@@ -423,7 +431,7 @@ public class LocalRDFRepo implements Closeable {
 				message = "Mandatory file name in File_loader is empty.";
 			}
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new LoadException(message);
 		}
 
@@ -455,7 +463,7 @@ public class LocalRDFRepo implements Closeable {
 			} else if (canFileOverWrite) {
 				createNewFile(dataFile);
 			} else {
-				logger.debug("File existed and cannot be overwritten");
+				LOG.debug("File existed and cannot be overwritten");
 				throw new CannotOverwriteFileException();
 			}
 
@@ -480,7 +488,7 @@ public class LocalRDFRepo implements Closeable {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository while trying to load into XML file.", ex);
+					LOG.warn("Failed to close connection to RDF repository while trying to load into XML file.", ex);
 				}
 			}
 		}
@@ -532,7 +540,7 @@ public class LocalRDFRepo implements Closeable {
 		if (endpointURL == null) {
 			final String message = "Mandatory URL path in extractor from SPARQL is null.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new LoadException(message);
 
 		} else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
@@ -540,7 +548,7 @@ public class LocalRDFRepo implements Closeable {
 			final String message = "Mandatory URL path in extractor from SPARQL "
 					+ "have to started with http.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new LoadException(message);
 
 		}
@@ -548,13 +556,13 @@ public class LocalRDFRepo implements Closeable {
 		if (endpointGraphsURI == null) {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new LoadException(message);
 
 		} else if (endpointGraphsURI.isEmpty()) {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new LoadException(message);
 		}
 
@@ -586,8 +594,8 @@ public class LocalRDFRepo implements Closeable {
 		try {
 			endpointRepo.initialize();
 		} catch (RepositoryException e) {
-			logger.debug("Endpoint repository is failed");
-			logger.debug(e.getMessage());
+			LOG.debug("Endpoint repository is failed");
+			LOG.debug(e.getMessage());
 
 			throw new LoadException(e);
 		}
@@ -628,7 +636,7 @@ public class LocalRDFRepo implements Closeable {
 
 					}
 				} catch (GraphNotEmptyException ex) {
-					logger.debug(ex.getMessage());
+					LOG.debug(ex.getMessage());
 					isOK = false;
 
 					//throw new LoadException(ex);
@@ -681,7 +689,7 @@ public class LocalRDFRepo implements Closeable {
 
 						final String processing = String.valueOf(j + 1) + "/" + String.valueOf(partsCount);
 
-						logger.debug("Data " + processing + " part loaded successful");
+						LOG.debug("Data " + processing + " part loaded successful");
 					} catch (IOException ex) {
 						final String message = "Cannot open http connection stream at '"
 								+ call.toString()
@@ -702,7 +710,7 @@ public class LocalRDFRepo implements Closeable {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository.", ex);
+					LOG.warn("Failed to close connection to RDF repository.", ex);
 				}
 			}
 
@@ -721,7 +729,7 @@ public class LocalRDFRepo implements Closeable {
 				statemens = connection.getStatements(null, null, null, true).asList();
 
 			} catch (RepositoryException ex) {
-				logger.debug(ex.getMessage());
+				LOG.debug(ex.getMessage());
 			} finally {
 				if (connection != null) {
 					try {
@@ -840,7 +848,7 @@ public class LocalRDFRepo implements Closeable {
 		if (endpointURL == null) {
 			final String message = "Mandatory URL path in extractor from SPARQL is null.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message);
 
 		} else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
@@ -848,7 +856,7 @@ public class LocalRDFRepo implements Closeable {
 			final String message = "Mandatory URL path in extractor from SPARQL "
 					+ "have to started with http.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message);
 
 		}
@@ -856,19 +864,19 @@ public class LocalRDFRepo implements Closeable {
 		if (endpointGraphsURI == null) {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message);
 
 		} else if (endpointGraphsURI.isEmpty()) {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
 
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message);
 		}
 
 		if (query == null) {
 			final String message = "Mandatory construct query in extractor from SPARQL is null.";
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message);
 		}
 
@@ -882,7 +890,7 @@ public class LocalRDFRepo implements Closeable {
 			encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
 		} catch (UnsupportedEncodingException e) {
 			String message = "Encode " + encode + " is not support";
-			logger.debug(message);
+			LOG.debug(message);
 			throw new ExtractException(message, e);
 		}
 
@@ -898,7 +906,7 @@ public class LocalRDFRepo implements Closeable {
 				try {
 					call = new URL(endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
 				} catch (MalformedURLException e) {
-					logger.debug("Malfolmed URL exception by construct extract URL");
+					LOG.debug("Malfolmed URL exception by construct extract URL");
 					throw new ExtractException(e);
 				}
 
@@ -908,7 +916,7 @@ public class LocalRDFRepo implements Closeable {
 					httpConnection.addRequestProperty("Accept", format.getDefaultMIMEType());
 
 				} catch (IOException e) {
-					logger.debug("Endpoint URL stream can not open");
+					LOG.debug("Endpoint URL stream can not open");
 					if (httpConnection != null) {
 						httpConnection.disconnect();
 					}
@@ -939,12 +947,12 @@ public class LocalRDFRepo implements Closeable {
 				} catch (IOException e) {
 
 					final String message = "Http connection can can not open stream";
-					logger.debug(message);
+					LOG.debug(message);
 
 					throw new ExtractException(message, e);
 
 				} catch (RDFParseException e) {
-					logger.debug(e.getMessage());
+					LOG.debug(e.getMessage());
 
 					throw new ExtractException(e);
 
@@ -956,7 +964,7 @@ public class LocalRDFRepo implements Closeable {
 
 			final String message = "Repository connection failt: " + e.getMessage();
 
-			logger.debug(message);
+			LOG.debug(message);
 
 			throw new ExtractException(e);
 
@@ -965,7 +973,7 @@ public class LocalRDFRepo implements Closeable {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository while extracting from SPQRQL endpoint.", ex);
+					LOG.warn("Failed to close connection to RDF repository while extracting from SPQRQL endpoint.", ex);
 				}
 			}
 		}
@@ -1020,24 +1028,24 @@ public class LocalRDFRepo implements Closeable {
 					newUpdateQuery);
 
 
-			logger.debug("This SPARQL query for transform is valid and prepared for execution:");
-			logger.debug(newUpdateQuery);
+			LOG.debug("This SPARQL query for transform is valid and prepared for execution:");
+			LOG.debug(newUpdateQuery);
 
 			myupdate.execute();
 			connection.commit();
 
-			logger.debug("SPARQL query for transform was executed succesfully");
+			LOG.debug("SPARQL query for transform was executed succesfully");
 
 		} catch (MalformedQueryException e) {
 
-			logger.debug(e.getMessage());
+			LOG.debug(e.getMessage());
 			throw new TransformException(e);
 
 		} catch (UpdateExecutionException ex) {
 
 			final String message = "SPARQL query was not executed !!!";
-			logger.debug(message);
-			logger.debug(ex.getMessage());
+			LOG.debug(message);
+			LOG.debug(ex.getMessage());
 
 			throw new TransformException(message, ex);
 
@@ -1049,7 +1057,7 @@ public class LocalRDFRepo implements Closeable {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository while executing SPARQL transform.", ex);
+					LOG.warn("Failed to close connection to RDF repository while executing SPARQL transform.", ex);
 				}
 			}
 		}
@@ -1071,13 +1079,13 @@ public class LocalRDFRepo implements Closeable {
 				connection = repository.getConnection();
 				size = connection.size();
 			} catch (RepositoryException ex) {
-				logger.debug(ex.getMessage());
+				LOG.debug(ex.getMessage());
 			} finally {
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (RepositoryException ex) {
-						logger.warn("Failed to close connection to RDF repository while counting triples.", ex);
+						LOG.warn("Failed to close connection to RDF repository while counting triples.", ex);
 					}
 				}
 			}
@@ -1108,13 +1116,13 @@ public class LocalRDFRepo implements Closeable {
 				connection = repository.getConnection();
 				hasTriple = connection.hasStatement(statement, true);
 			} catch (RepositoryException ex) {
-				logger.debug(ex.getMessage());
+				LOG.debug(ex.getMessage());
 			} finally {
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (RepositoryException ex) {
-						logger.warn("Failed to close connection to RDF repository while looking for triple.", ex);
+						LOG.warn("Failed to close connection to RDF repository while looking for triple.", ex);
 					}
 				}
 			}
@@ -1134,13 +1142,13 @@ public class LocalRDFRepo implements Closeable {
 
 			connection.commit();
 		} catch (RepositoryException ex) {
-			logger.debug(ex.getMessage());
+			LOG.debug(ex.getMessage());
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository while cleaning up.", ex);
+					LOG.warn("Failed to close connection to RDF repository while cleaning up.", ex);
 				}
 			}
 		}
@@ -1174,7 +1182,7 @@ public class LocalRDFRepo implements Closeable {
 				}
 			}
 		} catch (RepositoryException ex) {
-			logger.error(ex.getMessage());
+			LOG.error(ex.getMessage());
 
 		} finally {
 			if (sourceConnection != null) {
@@ -1222,7 +1230,7 @@ public class LocalRDFRepo implements Closeable {
 			}
 		} catch (RepositoryException ex) {
 
-			logger.debug(ex.getMessage());
+			LOG.debug(ex.getMessage());
 
 		} finally {
 			if (sourceConnection != null) {
@@ -1290,8 +1298,8 @@ public class LocalRDFRepo implements Closeable {
 			directory.mkdirs();
 		}
 
-		logger.debug("saving directory:" + directory.toString());
-		logger.debug("saving fileName:" + file.getName());
+		LOG.debug("saving directory:" + directory.toString());
+		LOG.debug("saving fileName:" + file.getName());
 
 		loadRDFfromRepositoryToXMLFile(directory.toString(), file.getName(), format, true, false);
 	}
@@ -1321,10 +1329,10 @@ public class LocalRDFRepo implements Closeable {
 			public void run() {
 				try {
 					repository.shutDown();
-					logger.debug("Repository destroyed SUCCESSFULL");
+					LOG.debug("Repository destroyed SUCCESSFULL");
 				} catch (RepositoryException ex) {
-					logger.debug("Repository was not destroyed - potencial problems with locks ");
-					logger.debug(ex.getMessage());
+					LOG.debug("Repository was not destroyed - potencial problems with locks ");
+					LOG.debug(ex.getMessage());
 				}
 			}
 		});
@@ -1349,13 +1357,13 @@ public class LocalRDFRepo implements Closeable {
 			connection = repository.getConnection();
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
 
-			logger.debug("Query " + query + " is valid.");
+			LOG.debug("Query " + query + " is valid.");
 
 			TupleQueryResult result = null;
 			List<BindingSet> listBindings = new ArrayList<>();
 			try {
 				result = tupleQuery.evaluate();
-				logger.debug("Query " + query + " has not null result.");
+				LOG.debug("Query " + query + " has not null result.");
 				List<String> names = result.getBindingNames();
 
 				for (String name : names) {
@@ -1370,7 +1378,7 @@ public class LocalRDFRepo implements Closeable {
 					try {
 						result.close();
 					} catch (QueryEvaluationException ex) {
-						logger.warn("Failed to close RDF tuple result.", ex);
+						LOG.warn("Failed to close RDF tuple result.", ex);
 					}
 				}
 			}
@@ -1391,13 +1399,13 @@ public class LocalRDFRepo implements Closeable {
 		} catch (MalformedQueryException ex) {
 			throw new InvalidQueryException("This query is probably not valid", ex);
 		} catch (RepositoryException ex) {
-			logger.error("Connection to RDF repository failed.", ex);
+			LOG.error("Connection to RDF repository failed.", ex);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository while querying.", ex);
+					LOG.warn("Failed to close connection to RDF repository while querying.", ex);
 				}
 			}
 		}

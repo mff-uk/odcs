@@ -51,7 +51,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	/**
 	 * Logger class.
 	 */
-	private Logger logger;	
+	private final static Logger LOG = Logger.getLogger(ExtendedTransformContextImpl.class);	
 	
 	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContext contextWriter) {
@@ -59,7 +59,6 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 		this.inputs = new LinkedList<DataUnit>();
 		this.outputs = new LinkedList<DataUnit>();
 		this.eventPublisher = eventPublisher;
-		this.logger = Logger.getLogger(ExtendedTransformContextImpl.class);
 	}
 
 	@Override
@@ -125,12 +124,12 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	
 	@Override
 	public void save() {
-		logger.debug("saving DataUnits");
+		LOG.debug("saving DataUnits");
 		for (DataUnit item : inputs) {		
 			try {
 				item.save();
 			} catch (Exception e) {
-				logger.error("Can't save input DataUnit", e);
+				LOG.error("Can't save input DataUnit", e);
 			}
 		}
 		
@@ -138,7 +137,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 			try {
 				item.save();
 			} catch (Exception e) {
-				logger.error("Can't save output DataUnit", e);
+				LOG.error("Can't save output DataUnit", e);
 			}
 		}
 	}	

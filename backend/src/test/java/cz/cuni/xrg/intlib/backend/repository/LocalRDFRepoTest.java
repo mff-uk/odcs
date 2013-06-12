@@ -25,23 +25,27 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalRDFRepoTest {
 
-    /**
-     * Path to test repository
-     */
-    private Path pathRepo;
-    /**
-     * Path to directory with produced data
-     */
-    protected Path outDir;
-    /**
-     * Path to directory with test input data
-     */
-    protected String testFileDir;
-    /**
-     * Local repository
-     */
-    protected static RDFDataRepository rdfRepo;
-    protected static Logger logger = LoggerFactory.getLogger(LocalRDFRepoTest.class);
+	/**
+	 * Path to test repository
+	 */
+	private Path pathRepo;
+
+	/**
+	 * Path to directory with produced data
+	 */
+	protected Path outDir;
+
+	/**
+	 * Path to directory with test input data
+	 */
+	protected String testFileDir;
+
+	/**
+	 * Local repository
+	 */
+	protected static RDFDataRepository rdfRepo;
+	
+    protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
     @Before
     public void setUp() {
@@ -54,7 +58,6 @@ public class LocalRDFRepoTest {
         }
 
         rdfRepo = LocalRDF.createLocalRepo(pathRepo.toString(), "localRepo");
-
     }
 
     @Test
@@ -266,7 +269,7 @@ public class LocalRDFRepoTest {
             assertTrue(sizeBefore < sizeAfter);
 
         } catch (MalformedURLException ex) {
-            logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+            LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
     }
 
@@ -299,7 +302,7 @@ public class LocalRDFRepoTest {
             assertTrue(sizeBefore < sizeAfter);
 
         } catch (MalformedURLException ex) {
-            logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+            LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
     }
 
@@ -324,7 +327,7 @@ public class LocalRDFRepoTest {
 
 
         } catch (MalformedURLException ex) {
-            logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+            LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
 
     }
@@ -532,8 +535,8 @@ public class LocalRDFRepoTest {
 
         long newSize = rdfRepo.getTripleCountInRepository();
 
-        logger.debug("EXTRACTING from FILE - OK");
-        logger.debug("EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
+        LOG.debug("EXTRACTING from FILE - OK");
+        LOG.debug("EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
 
     }
 
@@ -561,7 +564,7 @@ public class LocalRDFRepoTest {
             fail(e.getMessage());
         }
 
-        logger.debug("Transform Query 1 - OK");
+        LOG.debug("Transform Query 1 - OK");
     }
 
     private void BigTransformQuery2() {
@@ -588,7 +591,7 @@ public class LocalRDFRepoTest {
             fail(e.getMessage());
         }
 
-        logger.debug("Transform Query 2 - OK");
+        LOG.debug("Transform Query 2 - OK");
     }
 
     private void BigTransformQuery3() {
@@ -613,7 +616,7 @@ public class LocalRDFRepoTest {
             fail(e.getMessage());
         }
 
-        logger.debug("Transform Query 3 - OK");
+        LOG.debug("Transform Query 3 - OK");
     }
 
     private void loadBigDataToN3File() {
@@ -631,7 +634,7 @@ public class LocalRDFRepoTest {
             fail(ex.getMessage());
         }
 
-        logger.debug("LOADING from FILE - OK");
+        LOG.debug("LOADING from FILE - OK");
     }
 
     @Test

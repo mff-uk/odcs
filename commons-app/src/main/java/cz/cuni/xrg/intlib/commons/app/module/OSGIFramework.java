@@ -34,7 +34,7 @@ class OSGIFramework {
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(OSGIFramework.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OSGIFramework.class);
     
     /**
      * Return configuration used to start up OSGi implementation.
@@ -67,7 +67,7 @@ class OSGIFramework {
         try {
             frameworkFactory = java.util.ServiceLoader.load(FrameworkFactory.class).iterator().next();
         } catch (Exception ex) {
-        	logger.error("Failed to load osgi framework class.", ex);
+        	LOG.error("Failed to load osgi framework class.", ex);
             // failed to load FrameworkFactory class
             throw new FrameworkStartFailedException("Can't load class FrameworkFactory.", ex);            
         }
@@ -78,7 +78,7 @@ class OSGIFramework {
             // start OSGi container ..
             framework.start();
         } catch (org.osgi.framework.BundleException ex) {
-        	logger.error("Failed to lstart framework.", ex);
+        	LOG.error("Failed to lstart framework.", ex);
             // failed to start/initiate framework
             throw new FrameworkStartFailedException("Failed to start OSGi framework.", ex);
         }
@@ -86,7 +86,7 @@ class OSGIFramework {
         try {
             context = framework.getBundleContext();
         } catch (SecurityException ex) {
-        	logger.error("Failed to get osgi context.", ex);
+        	LOG.error("Failed to get osgi context.", ex);
             // we have to stop framework ..
             stop();
             throw new FrameworkStartFailedException("Failed to get OSGi context.", ex);
@@ -180,13 +180,13 @@ class OSGIFramework {
         String packageName = (String)
         		bundleContainer.getBundle().getHeaders().get("DPU-Package");        
         if (packageName == null) {
-        	logger.error("'DPU-Package' undefined for '{}'", uri);
+        	LOG.error("'DPU-Package' undefined for '{}'", uri);
         	throw new ClassLoadFailedException("Can't find class name.");
         }
         String className = (String)
         		bundleContainer.getBundle().getHeaders().get("DPU-MainClass");        
         if (className == null) {
-        	logger.error("'DPU-MainClass' undefined for '{}'", uri);
+        	LOG.error("'DPU-MainClass' undefined for '{}'", uri);
         	throw new ClassLoadFailedException("Can't find class name.");
         }        
         String fullMainClassName = packageName + "." + className;
@@ -196,7 +196,7 @@ class OSGIFramework {
 			loadedObject = bundleContainer.loadClass(fullMainClassName);
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
-			logger.error("Failed to load class for '{}'", uri, e);
+			LOG.error("Failed to load class for '{}'", uri, e);
 			throw new ClassLoadFailedException(e);
 		}
         

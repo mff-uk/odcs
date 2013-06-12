@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import org.junit.*;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -20,10 +21,9 @@ public class VirtuosoTest extends LocalRDFRepoTest {
     private static final String USERNAME = "dba";
     private static final String PASSWORD = "dba";
     private static final String DEFAUTLGRAPH = "http://default";
-
+	
     @BeforeClass
     public static void setUpLogger() {
-        logger = LoggerFactory.getLogger(VirtuosoTest.class);
         rdfRepo = VirtuosoRDF.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD, DEFAUTLGRAPH);
         rdfRepo.cleanAllRepositoryData();
     }

@@ -26,7 +26,7 @@ public class FileExtractor implements Extract,
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(FileExtractor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileExtractor.class);
 
     private FileExtractorConfig config = new FileExtractorConfig();
     

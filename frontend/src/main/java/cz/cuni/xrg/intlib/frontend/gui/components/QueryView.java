@@ -30,6 +30,8 @@ public class QueryView extends CustomComponent {
 	
 	private final static String IN_GRAPH = "Input Graph";
 	private final static String OUT_GRAPH = "Output Graph";
+	
+	private final static Logger LOG = LoggerFactory.getLogger(QueryView.class);
 
     public QueryView(DebuggingView parent) {
         this.parent = parent;
@@ -92,10 +94,8 @@ public class QueryView extends CustomComponent {
             return new HashMap<>();
         }
 
-        Logger logger = LoggerFactory.getLogger(QueryView.class);
-
         // FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-        logger.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
+        LOG.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
 
         try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath)) {
 			File dumpFile = new File(repoDir, "dump_dat.ttl");
@@ -103,7 +103,7 @@ public class QueryView extends CustomComponent {
 			try {
 				repository.load(dumpFile);
 			} catch (ExtractException e) {
-				logger.error(e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			}
 
 			Map<String, List<String>> data = repository.makeQueryOverRepository(query);

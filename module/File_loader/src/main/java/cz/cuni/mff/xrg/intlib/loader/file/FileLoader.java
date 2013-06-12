@@ -29,7 +29,7 @@ public class FileLoader implements  Load,
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(FileLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileLoader.class);
 
     @Override
     public void load(LoadContext context) throws LoadException {

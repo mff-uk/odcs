@@ -31,7 +31,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
  */
 public class DPUDetail extends Window {
 
-	private Logger logger = LoggerFactory.getLogger(DPUDetail.class);
+	private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
 	
 	private DPUInstanceWrap dpuInstance;	
 	
@@ -104,12 +104,12 @@ public class DPUDetail extends Window {
 			confDialog = dpuInstance.getDialog();
 		} catch (ModuleException e) {
 			Notification.show("Failed to load configuration dialog.", e.getMessage(), Type.ERROR_MESSAGE);
-			logger.error("Failed to load dialog for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
+			LOG.error("Failed to load dialog for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
 		} catch(FileNotFoundException e) {
 			Notification.show("Failed to load DPU.", e.getMessage(), Type.ERROR_MESSAGE);
 		} catch(ConfigException e) {
 			Notification.show("Failed to load configuration. The dialog defaul configuration is used.",	e.getMessage(), Type.WARNING_MESSAGE);
-			logger.error("Failed to load configuration for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
+			LOG.error("Failed to load configuration for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
 		}
 		
 		if (confDialog == null) {

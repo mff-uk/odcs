@@ -33,6 +33,8 @@ public class LocalRDF implements RDFDataRepository {
 	private static File workingDirectory;
 
 	private static String dumpName = "dump_dat.ttl";
+	
+	private static final Logger LOG = LoggerFactory.getLogger(LocalRDF.class);
 
 	public static LocalRDF createLocalRepoInDirectory(String dirName,
 			String fileName) {
@@ -349,10 +351,9 @@ public class LocalRDF implements RDFDataRepository {
 
 	@Override
 	public void release() {
-		Logger logger = LoggerFactory.getLogger(LocalRDF.class);
-		logger.info("Releasing DPU LocalRdf: {}", workingDirectory.toString());
+		LOG.info("Releasing DPU LocalRdf: {}", workingDirectory.toString());
 		impl.shutDown();
-		logger.info("Relelased LocalRdf: {}", workingDirectory.toString());
+		LOG.info("Relelased LocalRdf: {}", workingDirectory.toString());
 	}
 
 	@Override

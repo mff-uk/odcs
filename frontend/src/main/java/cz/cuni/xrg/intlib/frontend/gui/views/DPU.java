@@ -77,7 +77,7 @@ class DPU extends ViewComponent {
 	 */
 	private DPUTemplateWrap selectedDpuWrap = null;
 	
-	private static Logger logger = LoggerFactory.getLogger(ViewComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ViewComponent.class);
 	
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -338,17 +338,17 @@ class DPU extends ViewComponent {
 				Notification.show(
 						"Failed to load configuration dialog",
 						ex.getMessage(), Type.ERROR_MESSAGE);
-				logger.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+				LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
 			} catch (FileNotFoundException ex) {
 				Notification.show(
 						"File not found",
 						ex.getMessage(), Type.ERROR_MESSAGE);
-				logger.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+				LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
 			} catch (ConfigException ex) {
 				Notification.show(
 						"Failed to load configuration. Dialog default configuration is used.",
 						ex.getMessage(), Type.WARNING_MESSAGE);
-				logger.error("Can't load configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+				LOG.error("Can't load configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
 			}
 			
 			verticalLayoutConfigure.removeAllComponents();
@@ -603,7 +603,7 @@ class DPU extends ViewComponent {
 								Notification.show(
 										"Failed to save configuration from dialog.",
 										e.getMessage(), Type.ERROR_MESSAGE);
-								logger.error("Can't save configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+								LOG.error("Can't save configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 							}
 
 							// store into DB

@@ -90,7 +90,7 @@ class PipelineWorker implements Runnable {
 	/**
 	 * Logger class.
 	 */
-	private Logger logger;
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineWorker.class);
 	
 	/**
 	 * Used data unit merger.
@@ -121,7 +121,6 @@ class PipelineWorker implements Runnable {
 		this.eventPublisher = eventPublisher;
 		this.contexts = new HashMap<>();
 		// get working directory from pipelineExecution
-		this.logger = LoggerFactory.getLogger(PipelineWorker.class);
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
 		// create or get existing .. 
@@ -140,7 +139,7 @@ class PipelineWorker implements Runnable {
 		// save	into database
 		database.getPipeline().save(execution);
 		// 
-		logger.error("execution failed");
+		LOG.error("execution failed");
 	}
 	
 	/**
@@ -160,17 +159,17 @@ class PipelineWorker implements Runnable {
 	 * is not in debugMode.
 	 */
 	private void cleanUp() {
-		logger.debug("Clean up");
+		LOG.debug("Clean up");
 		// save context if in debug mode
 		if (execution.isDebugging()) {
-			logger.debug("Saving pipeline execution context");
+			LOG.debug("Saving pipeline execution context");
 			// save DPURecord's contexts
 			for (ProcessingContext item : contexts.values()) {
 				if (item instanceof ExtendedContext) {
 					ExtendedContext exCtx = (ExtendedContext)item;
 					exCtx.save();
 				} else {
-					logger.error("Unexpected ProcessingContext instance. Can't call release().");
+					LOG.error("Unexpected ProcessingContext instance. Can't call release().");
 				}	
 			}
 		}
@@ -180,7 +179,7 @@ class PipelineWorker implements Runnable {
 				ExtendedContext exCtx = (ExtendedContext)item;
 				exCtx.release();
 			} else {
-				logger.error("Unexpected ProcessingContext instance. Can't call release().");
+				LOG.error("Unexpected ProcessingContext instance. Can't call release().");
 			}	
 		}
 	}
@@ -204,7 +203,7 @@ class PipelineWorker implements Runnable {
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
 				
 		// TODO: Petyr, persist context into DO		
-		logger.debug("Started");
+		LOG.debug("Started");
 		
 		boolean executionFailed = false;
 		// run DPUs ...
@@ -248,7 +247,7 @@ class PipelineWorker implements Runnable {
 		}
 		// ending ..
 		
-		logger.debug("Finished");
+		LOG.debug("Finished");
 	
 		if (execution.isDebugging()) {
 			// TODO Petyr: save contextWriter for the last time ..
@@ -268,7 +267,7 @@ class PipelineWorker implements Runnable {
 			try {
 				FileUtils.deleteDirectory( contextWriter.getWorkingDirectory() );
 			} catch (IOException e) {
-				logger.error("Can't delete directory after execution: " + execution.getId(), e);
+				LOG.error("Can't delete directory after execution: " + execution.getId(), e);
 			}
 		}		
 		

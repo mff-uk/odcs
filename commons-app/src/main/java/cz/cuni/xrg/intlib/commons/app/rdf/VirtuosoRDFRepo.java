@@ -29,10 +29,7 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
-import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
-
-import static cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo.logger;
 
 /**
  *
@@ -45,12 +42,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
     private String password;
     private String defaultGraph;
     
-
-    static {
-
-        logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-    }
-
     public static VirtuosoRDFRepo createVirtuosoRDFRepo() {
         // TODO: Load from AppConfig ... 
         final String hostName = "localhost";
@@ -97,11 +88,11 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
 
         try {
             repository.initialize();
-            logger.info("Virtuoso repository successfully incicialized");
+            LOG.info("Virtuoso repository successfully incicialized");
 
         } catch (RepositoryException ex) {
-            logger.warn("Your Virtuoso is maybe turn off.");
-            logger.debug(ex.getMessage());
+            LOG.warn("Your Virtuoso is maybe turn off.");
+            LOG.debug(ex.getMessage());
 
         }
     }
@@ -177,7 +168,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
             conection.close();
 
         } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage());
+            LOG.debug(ex.getMessage());
 
 
         }
@@ -223,7 +214,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                 inputStream.close();
 
             } catch (IOException | RepositoryException | RDFParseException ex) {
-                logger.debug(ex.getMessage());
+                LOG.debug(ex.getMessage());
             }
 
         }
@@ -267,7 +258,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
             connection.close();
 
         } catch (RepositoryException | IOException | RDFParseException ex) {
-            logger.debug("Error by adding file to repository");
+            LOG.debug("Error by adding file to repository");
         }
     }
 
@@ -313,7 +304,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                 } else if (canFileOverWrite) {
                     createNewFile(dataFile);
                 } else {
-                    logger.debug("File existed and cannot be overwritten");
+                    LOG.debug("File existed and cannot be overwritten");
                     throw new CannotOverwriteFileException();
                 }
 
@@ -339,13 +330,13 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                 os.close();
 
             } catch (FileNotFoundException ex) {
-                logger.debug(ex.getMessage());
+                LOG.debug(ex.getMessage());
             } catch (IOException ex) {
-                logger.debug(ex.getMessage());
+                LOG.debug(ex.getMessage());
             }
 
         } catch (RDFHandlerException | RepositoryException ex) {
-            logger.debug(ex.getMessage());
+            LOG.debug(ex.getMessage());
         }
     }
 
@@ -391,8 +382,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
             try {
                 endpointRepo.initialize();
             } catch (RepositoryException e) {
-                logger.debug("Endpoint reposiotory is failed");
-                logger.debug(e.getMessage());
+                LOG.debug("Endpoint reposiotory is failed");
+                LOG.debug(e.getMessage());
             }
 
             RepositoryConnection connection = repository.getConnection();
@@ -427,7 +418,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
 
                     }
                 } catch (GraphNotEmptyException | RepositoryException ex) {
-                    logger.debug(ex.getMessage());
+                    LOG.debug(ex.getMessage());
                     isOK = false;
                 }
 
@@ -452,13 +443,13 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
 
                         final String processing = String.valueOf(j + 1) + "/" + String.valueOf(partsCount);
 
-                        logger.debug("Data " + processing + " part loaded successful");
+                        LOG.debug("Data " + processing + " part loaded successful");
                     } catch (IOException ex) {
-                        logger.debug(
+                        LOG.debug(
                                 "Cannot open http connection stream at '"
                                 + call.toString()
                                 + "' - data not loaded");
-                        logger.debug(ex.getMessage());
+                        LOG.debug(ex.getMessage());
                     } finally {
                         httpConnection.disconnect();
                     }
@@ -469,7 +460,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
             connection.close();
 
         } catch (RepositoryException | IOException ex) {
-            logger.debug(ex.getMessage());
+            LOG.debug(ex.getMessage());
         }
     }
 
@@ -517,17 +508,17 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                         connection.add(inputStreamReader, endpointGraph, format);
                     }
                 } catch (RDFParseException ex) {
-					logger.debug(ex.getMessage());
+					LOG.debug(ex.getMessage());
 				}
             }
 
             connection.close();
 
         } catch (IOException ex) {
-            logger.debug("Can not open http connection stream");
-            logger.debug(ex.getMessage());
+            LOG.debug("Can not open http connection stream");
+            LOG.debug(ex.getMessage());
         } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage());
+            LOG.debug(ex.getMessage());
 		}
     }
 
@@ -546,7 +537,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                 connection.close();
 
             } catch (RepositoryException ex) {
-                logger.debug(ex.getMessage());
+                LOG.debug(ex.getMessage());
             }
 
         }
@@ -567,7 +558,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
             connection.close();
 
         } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage());
+            LOG.debug(ex.getMessage());
         }
     }
 
@@ -589,7 +580,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                 connection.close();
 
             } catch (RepositoryException ex) {
-                logger.debug(ex.getMessage());
+                LOG.debug(ex.getMessage());
             }
         }
         return hasTriple;
@@ -609,7 +600,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo {
                 }
 
             } catch (RepositoryException ex) {
-                logger.debug(ex.getMessage());
+                LOG.debug(ex.getMessage());
             }
         }
 

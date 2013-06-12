@@ -34,7 +34,7 @@ public class RDFExtractor implements Extract,
     /**
      * Logger class.
      */
-    private Logger logger = LoggerFactory.getLogger(RDFExtractor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RDFExtractor.class);
 
     @Override
     public void extract(ExtractContext context) throws ExtractException {
