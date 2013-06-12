@@ -74,11 +74,11 @@ class ExtendedCommonImpl {
 	/**
 	 * Log facade.
 	 */
-	private Logger logger;
+	private static final Logger LOG = Logger.getLogger(ExtendedCommonImpl.class);
 	
 	/**
 	 * 
-	 * @param id Context'id.
+	 * @param id Context id.
 	 * @param execution Associated pipelineExecution.
 	 * @param dpuInstance Associated dpuInstanceRecord ~ owner.
 	 * @param context Access to context 'manager'.
@@ -93,10 +93,9 @@ class ExtendedCommonImpl {
 		this.dataUnitFactory = new DataUnitFactory(this.id, contextWriter, dpuInstance);
 		this.context = contextWriter;
 		this.storeCounter = 0;
-		this.logger = Logger.getLogger(ExtendedCommonImpl.class); 
 	}	
 	
-	public String storeData(Object object) throws RuntimeException {
+	public String storeData(Object object) {
 		String id = Integer.toString(this.storeCounter) + ".ser";
 		++this.storeCounter;
 		// ...
@@ -108,7 +107,7 @@ class ExtendedCommonImpl {
 			outStream.writeObject(object);
 			outStream.close();
 		} catch (IOException e) {
-			logger.error("loadData", e);
+			LOG.error("loadData", e);
 			throw new RuntimeException("Can't save object.", e);
 		}
 		return id;
@@ -124,11 +123,11 @@ class ExtendedCommonImpl {
 			result = inStream.readObject();
 			inStream.close();
 		}  catch (FileNotFoundException e) {
-			logger.error("loadData: FileNotFoundException", e);
+			LOG.error("loadData: FileNotFoundException", e);
 		} catch (IOException e) {
-			logger.error("loadData: IOException", e);
+			LOG.error("loadData: IOException", e);
 		} catch (ClassNotFoundException e) {
-			logger.error("loadData: ClassNotFoundException", e);
+			LOG.error("loadData: ClassNotFoundException", e);
 		}
 
 		return result;

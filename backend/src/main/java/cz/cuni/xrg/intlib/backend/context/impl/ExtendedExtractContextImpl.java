@@ -42,18 +42,17 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 	/**
 	 * Logger class.
 	 */
-	private Logger logger;
+	private static final Logger LOG = Logger.getLogger(ExtendedExtractContextImpl.class);
 	
 	public ExtendedExtractContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContext contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
 		this.outputs = new LinkedList<>();
 		this.eventPublisher = eventPublisher;
-		this.logger = Logger.getLogger(ExtendedExtractContextImpl.class);
 	}
 	
 	@Override
-	public String storeData(Object object) throws Exception {
+	public String storeData(Object object) {
 		return extendedImp.storeData(object);
 	}
 
@@ -110,7 +109,7 @@ public class ExtendedExtractContextImpl implements ExtendedExtractContext {
 			try {
 				item.save();
 			} catch (Exception e) {
-				logger.error("Can't save DataUnit", e);
+				LOG.error("Can't save DataUnit", e);
 			}
 		}
 	}

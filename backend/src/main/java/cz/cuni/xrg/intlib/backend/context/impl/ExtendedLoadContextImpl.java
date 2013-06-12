@@ -35,7 +35,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	/**
 	 * Context input data units.
 	 */
-    private List<DataUnit> inputs = new LinkedList<DataUnit>();
+    private List<DataUnit> inputs = new LinkedList<>();
         
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
@@ -45,14 +45,12 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	/**
 	 * Logger class.
 	 */
-	private Logger logger;	
+	private static final Logger LOG = Logger.getLogger(ExtendedLoadContextImpl.class);	
 	
 	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContext contextWriter) {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
-		this.inputs = new LinkedList<DataUnit>();
 		this.eventPublisher = eventPublisher;
-		this.logger = Logger.getLogger(ExtendedLoadContextImpl.class);
 	}
 
 	@Override
@@ -61,7 +59,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	}
 
 	@Override
-	public String storeData(Object object) throws Exception {
+	public String storeData(Object object) {
 		return extendedImp.storeData(object);
 	}
 
@@ -80,6 +78,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
 	}
 
+	@Override
 	public void storeDataForResult(String id, Object object) {
 		// TODO Petyr: storeDataForResult		
 	}
@@ -113,12 +112,12 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	
 	@Override
 	public void save() {
-		logger.debug("saving DataUnits");
+		LOG.debug("saving DataUnits");
 		for (DataUnit item : inputs) {		
 			try {
 				item.save();
 			} catch (Exception e) {
-				logger.error("Can't save DataUnit", e);
+				LOG.error("Can't save DataUnit", e);
 			}
 		}
 	}	

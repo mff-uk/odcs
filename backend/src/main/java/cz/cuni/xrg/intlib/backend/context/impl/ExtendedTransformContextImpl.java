@@ -68,7 +68,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	}
 
 	@Override
-	public String storeData(Object object) throws Exception {
+	public String storeData(Object object) {
 		return extendedImp.storeData(object);
 	}
 
