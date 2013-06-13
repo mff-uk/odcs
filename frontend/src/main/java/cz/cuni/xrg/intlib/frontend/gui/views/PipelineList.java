@@ -92,7 +92,7 @@ class PipelineList extends ViewComponent {
 			// get item
 			final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
 
-			
+
 			// TODO Petyr, Maria, Bohuslav, Honza: Pipeline delete
 /*			Button deleteButton = new Button();
 			deleteButton.setCaption("delete");

@@ -68,6 +68,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		}
     });
 
+	//DoubleClick hack
+	var lastClickedDpu = null;
+	var lastClickedTime = null;
+
 
     //dragVariables
     var isDragging = false;
@@ -183,7 +187,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             height: 800
         });
 
-        stage.on('click', function() {
+        stage.on('click', function(evt) {
             if(stageMode == NEW_CONNECTION_MODE) {
                 // Cancels NEW_CONNECTION_MODE
                 newConnLine.destroy();
@@ -461,17 +465,30 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     lineLayer.add(newConnLine);
                     lineLayer.draw();
                     evt.cancelBubble = true;
-                }
+                } else {
+					var now = Date.now();
+					if(lastClickedDpu != null && lastClickedTime != null) {
+						if(lastClickedDpu == group && now - lastClickedTime < 500) {
+							lastClickedTime = null;
+							writeMessage(messageLayer, 'Detail requested');
+							rpcProxy.onDetailRequested(dpu.id);
+							evt.cancelBubble = true;
+							return;
+						}
+					}
+					lastClickedDpu = group;
+					lastClickedTime = now;
+				}
             }
         });
 
-        group.on('dblclick', function(evt) {
-            if(stageMode == NORMAL_MODE) {
-                writeMessage(messageLayer, 'Detail requested');
-                rpcProxy.onDetailRequested(dpu.id);
-                evt.cancelBubble = true;
-            }
-        });
+//        group.on('dblclick', function(evt) {
+//            if(stageMode == NORMAL_MODE) {
+//                writeMessage(messageLayer, 'Detail requested');
+//                rpcProxy.onDetailRequested(dpu.id);
+//                evt.cancelBubble = true;
+//            }
+//        });
 
 		dpu.rect = rect;
 		dpu.text = complexText;
