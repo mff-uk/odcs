@@ -27,10 +27,10 @@ public class QueryView extends CustomComponent {
     private TextArea queryText;
     private IntlibPagedTable resultTable;
     private NativeSelect graphSelect;
-	
+
 	private final static String IN_GRAPH = "Input Graph";
 	private final static String OUT_GRAPH = "Output Graph";
-	
+
 	private final static Logger LOG = LoggerFactory.getLogger(QueryView.class);
 
     public QueryView(DebuggingView parent) {
@@ -72,7 +72,6 @@ public class QueryView extends CustomComponent {
         queryText.setHeight("30%");
         mainLayout.addComponent(queryText);
 
-        //TODO: Change to table - resolve container issue
         resultTable = new IntlibPagedTable();
         resultTable.setWidth("100%");
         resultTable.setHeight("60%");
@@ -144,7 +143,7 @@ public class QueryView extends CustomComponent {
 
 	/**
 	 * Populates select box for RDF graph to query.
-	 * 
+	 *
 	 * @param type DPU type to query
 	 */
     public void setGraphs(DPUType type) {

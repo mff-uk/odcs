@@ -32,11 +32,11 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 public class DPUDetail extends Window {
 
 	private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
-	
-	private DPUInstanceWrap dpuInstance;	
-	
+
+	private DPUInstanceWrap dpuInstance;
+
 	private TextField dpuName;
-	
+
 	private TextArea dpuDescription;
 
 	/**
@@ -52,7 +52,7 @@ public class DPUDetail extends Window {
 
 		this.setResizable(false);
 		this.setModal(true);
-		this.dpuInstance = new DPUInstanceWrap(dpu);		
+		this.dpuInstance = new DPUInstanceWrap(dpu);
 		this.setCaption(String.format("%s detail", dpu.getName()));
 
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -111,15 +111,15 @@ public class DPUDetail extends Window {
 			Notification.show("Failed to load configuration. The dialog defaul configuration is used.",	e.getMessage(), Type.WARNING_MESSAGE);
 			LOG.error("Failed to load configuration for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
 		}
-		
+
 		if (confDialog == null) {
-		
+
 		} else {
 			// add to layout
 			confDialog.setWidth("100%");
 			mainLayout.addComponent(confDialog);
 		}
-		
+
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setStyleName("dpuDetailButtonBar");
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
@@ -183,7 +183,6 @@ public class DPUDetail extends Window {
 			dpuInstance.saveConfig();
 		} catch (ConfigException ce) {
 			Notification.show("ConfigException:", ce.getMessage(), Type.ERROR_MESSAGE);
-			// TODO Bohuslav: Inform about invalid settings and do not close detail dialog
 			return false;
 		}
 		return true;
