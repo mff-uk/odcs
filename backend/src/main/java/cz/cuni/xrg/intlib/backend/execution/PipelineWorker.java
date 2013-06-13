@@ -202,7 +202,7 @@ class PipelineWorker implements Runnable {
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
 				
-		// TODO: Petyr, persist context into DO		
+		// TODO: Petyr, persist context into DO
 		LOG.debug("Started");
 		
 		boolean executionFailed = false;
@@ -326,10 +326,10 @@ class PipelineWorker implements Runnable {
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
-		}					
+		}
 		for (Node item : ancestors) {
 			if (contexts.containsKey(item)) {
-				transformContext.addSource(contexts.get(item), dataUnitMerger); 
+				transformContext.addSource(contexts.get(item), dataUnitMerger);
 			} else {
 				// can't find context ..
 				throw new StructureException("Can't find context.");

@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 
 //TODO Honza: Update
 
@@ -66,6 +67,25 @@ public class PipelineExecution  {
 	@JoinColumn(name="context_id", nullable = true)
 	// TODO Honza: can be null, also there should be possibility to delete this context and preserve pipelineExecution
 	private ExecutionContextImpl context;
+	
+	/**
+	 * Schedule that crate this execution. Null for  
+	 * execution created by user.
+	 */
+	@Transient
+	//@ManyToOne(optional = true)
+	//@JoinColumn(name="chedule_id", nullable = true)
+	// TODO Petyr: Scheduling support
+	private Schedule schedule;
+	
+	/**
+	 * It true pipeline run in silent mode and the end 
+	 * of the execution can't be used to fire schedule.
+	 */
+	@Transient
+	//@Column(name = "silnetMode")
+	// TODO Petyr: Scheduling support
+	private Boolean silentMode; 
 	
 	/** No-arg constructor for JPA */
 	public PipelineExecution() {}
@@ -145,5 +165,21 @@ public class PipelineExecution  {
      */    
     public ExecutionContext getContextReadOnly() {
     	return context;
-    }    
+    }
+
+	public Schedule getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
+
+	public Boolean getSilentMode() {
+		return silentMode;
+	}
+
+	public void setSilentMode(Boolean silentMode) {
+		this.silentMode = silentMode;
+	}    
 }
