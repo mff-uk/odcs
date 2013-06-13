@@ -34,6 +34,9 @@
 	<!-- Facade for managing DPUs -->
 	<bean id="dpuFacade" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade" />
 
+	<!-- Facade for managing plans -->
+	<!-- <bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" /> -->	
+	
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
 	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig">
 		<constructor-arg ref="configuration" />

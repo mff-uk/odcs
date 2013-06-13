@@ -172,7 +172,7 @@ public class DPURecord {
 			XStream xstream = new XStream();
 			// add class loader for bundle
 			xstream.setClassLoader(moduleFacade.getClassLoader(jarPath));
-			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);						
+			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);
 			Object obj = objIn.readObject();
 			config = (Config)obj;
 			objIn.close();
