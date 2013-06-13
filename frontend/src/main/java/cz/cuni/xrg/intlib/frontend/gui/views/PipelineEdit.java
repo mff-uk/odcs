@@ -42,7 +42,7 @@ class PipelineEdit extends ViewComponent {
 	private TextField pipelineName;
 	private TextArea pipelineDescription;
 	private Pipeline pipeline = null;
-	private VerticalSplitPanel verticalSplit;
+	//private VerticalSplitPanel verticalSplit;
 	PipelineCanvas pc;
 	Tree dpuTree;
 
@@ -58,9 +58,10 @@ class PipelineEdit extends ViewComponent {
 	 *
 	 * @return
 	 */
-	private VerticalSplitPanel buildMainLayout() {
+	private VerticalLayout buildMainLayout() {
 
-		verticalSplit = new VerticalSplitPanel();
+		//verticalSplit = new VerticalSplitPanel();
+		//verticalSplit.setSizeFull();
 
 		// common part: create layout
 		mainLayout = new VerticalLayout();
@@ -234,18 +235,18 @@ class PipelineEdit extends ViewComponent {
 //			}
 //		});
 //		layout.addComponent(button);
-		verticalSplit.setFirstComponent(mainLayout);
-		verticalSplit.setSecondComponent(null);
-		verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
-		verticalSplit.setLocked(true);
+//		verticalSplit.setFirstComponent(mainLayout);
+//		verticalSplit.setSecondComponent(null);
+//		verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
+//		verticalSplit.setLocked(true);
 
-		return verticalSplit;
+		return mainLayout;
 	}
 
 	private void closeDebug() {
-		verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
-		verticalSplit.setSecondComponent(null);
-		verticalSplit.setLocked(true);
+		//verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
+		//verticalSplit.setSecondComponent(null);
+		//verticalSplit.setLocked(true);
 	}
 
 	private void openDebug(DebuggingView debug) {
@@ -487,7 +488,7 @@ class PipelineEdit extends ViewComponent {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
-		setCompositionRoot(verticalSplit);
+		setCompositionRoot(mainLayout);
 		// ..
 		this.loadPipeline(event);
 		// or use this.entity.getEntity();
