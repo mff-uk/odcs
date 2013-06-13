@@ -15,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
  * Test suite for testing pipeline graph dependency resolving algorithms.
  * @author Jan Vojt
  */
-public class DependencyTests {
+public class DependencyTest {
 	
 	private Pipeline pipe;
 	

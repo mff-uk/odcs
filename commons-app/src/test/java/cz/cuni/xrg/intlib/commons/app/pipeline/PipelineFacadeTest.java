@@ -24,7 +24,7 @@ import static org.junit.Assert.assertArrayEquals;
 @ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback=true)
-public class PipelineFacadeTests {
+public class PipelineFacadeTest {
 	
 	@Autowired
 	private PipelineFacade facade;
