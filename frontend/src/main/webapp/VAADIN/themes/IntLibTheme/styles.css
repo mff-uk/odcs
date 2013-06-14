@@ -57,13 +57,13 @@
 /* Menubar */
 .v-menubar {
 font-size: 15px;
+/*color: red;*/
 }
 
-/*
 .gwt-MenuItem {
 background : grey;
 color : black;
-}*/
+}
 .gwt-MenuItem-selected {
 background : blue;
 color : white;

@@ -23,6 +23,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
+import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.DetailClosedListener;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.ShowDebugListener;
@@ -44,7 +45,7 @@ class PipelineEdit extends ViewComponent {
 	private Pipeline pipeline = null;
 	//private VerticalSplitPanel verticalSplit;
 	PipelineCanvas pc;
-	Tree dpuTree;
+	DPUTree dpuTree;
 
 	/**
 	 * Empty constructor.
@@ -92,7 +93,7 @@ class PipelineEdit extends ViewComponent {
 		pc.addListener(new DetailClosedListener() {
 			@Override
 			public void detailClosed(EventObject e) {
-				fillTree(dpuTree);
+				dpuTree.refresh();
 				dpuTree.markAsDirty();
 				App.getApp().push();
 			}
@@ -112,24 +113,6 @@ class PipelineEdit extends ViewComponent {
 			public void componentEvent(Event event) {
 			}
 		});
-
-//        try {
-//            pc.addListener(ActionEvent.class, this, PipelineEdit.class.getMethod("showDPUDetail", new Class[]{DPUInstance.class}));
-//    //        pc.addListener(new ActionListener() {
-//    //
-//    //            @Override
-//    //            public void actionPerformed(ActionEvent ae) {
-//    //                if(ae.getActionCommand().equals("detail")) {
-//    //                    DPUInstance dpu = (DPUInstance) ae.getSource();
-//    //                }
-//    //            }
-//    //
-//    //        });
-//        } catch (NoSuchMethodException ex) {
-//            Logger.getLogger(PipelineEdit.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (SecurityException ex) {
-//            Logger.getLogger(PipelineEdit.class.getName()).log(Level.SEVERE, null, ex);
-//        }
 
 		DragAndDropWrapper dadWrapper = new DragAndDropWrapper(pc);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
@@ -174,11 +157,10 @@ class PipelineEdit extends ViewComponent {
 
 		layout.addComponent(tabSheet);
 
-		dpuTree = new Tree("DPUs");
+		dpuTree = new DPUTree();
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setWidth(220, Unit.PIXELS);
-		dpuTree.setDragMode(Tree.TreeDragMode.NODE);
-		fillTree(dpuTree);
+		dpuTree.setDraggable(true);
 		layout.addComponentAsFirst(dpuTree);
 
 		mainLayout.addComponent(layout);
@@ -358,46 +340,6 @@ class PipelineEdit extends ViewComponent {
 		pipelineSettingsLayout.setSpacing(true);
 		pipelineSettingsLayout.setWidth("100%");
 		return pipelineSettingsLayout;
-	}
-
-	/**
-	 * Fills tree with available DPUs.
-	 *
-	 * @param tree
-	 */
-	private void fillTree(Tree tree) {
-
-		tree.removeAllItems();
-
-		DPURecord rootExtractor = new DPURecord("Extractors", null);
-		tree.addItem(rootExtractor);
-		DPURecord rootTransformer = new DPURecord("Transformers", null);
-		tree.addItem(rootTransformer);
-		DPURecord rootLoader = new DPURecord("Loaders", null);
-		tree.addItem(rootLoader);
-
-		List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
-		for (DPUTemplateRecord dpu : dpus) {
-			tree.addItem(dpu);
-
-			switch (dpu.getType()) {
-				case Extractor:
-					tree.setParent(dpu, rootExtractor);
-					break;
-				case Transformer:
-					tree.setParent(dpu, rootTransformer);
-					break;
-				case Loader:
-					tree.setParent(dpu, rootLoader);
-					break;
-				default:
-					throw new IllegalArgumentException();
-			}
-		}
-
-		tree.expandItem(rootExtractor);
-		tree.expandItem(rootTransformer);
-		tree.expandItem(rootLoader);
 	}
 
 	/**

@@ -38,6 +38,7 @@ import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
+import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -62,7 +63,7 @@ class DPU extends ViewComponent {
 	private VerticalLayout verticalLayoutConfigure;
 	private VerticalLayout verticalLayoutInfo;
 	private VerticalLayout dpuDetailLayout;
-	private Tree dpuTree;
+	private DPUTree dpuTree;
 	private TextField dpuName;
 	private TextArea dpuDescription;
 	private TabSheet tabSheet;	
@@ -174,54 +175,7 @@ class DPU extends ViewComponent {
 		dpuLayout.setHeight(630, Unit.PIXELS);
 		dpuLayout.setRowExpandRatio(0, 0.01f);
 		dpuLayout.setRowExpandRatio(1, 0.99f);
-		
-		VerticalLayout layoutTree = new VerticalLayout();
-		layoutTree.setSpacing(true);
-		layoutTree.setImmediate(true);
-		layoutTree.setHeight("100%");
-		layoutTree.setMargin(true);
-		layoutTree.setStyleName("dpuTreeLayout");
-		
-		
-		// DPURecord tree filters
-		HorizontalLayout filterBar = new HorizontalLayout();
-		filterBar.setSpacing(true);
-
-		CheckBox onlyMyDPU = new CheckBox();
-		onlyMyDPU.setCaption("Only My DPURecord");
-		filterBar.addComponent(onlyMyDPU);
-
-		Label labelFilter = new Label();
-		labelFilter.setContentMode(ContentMode.HTML);
-		labelFilter.setValue("<span style=padding-left:5px>Filter:</span>");
-		filterBar.addComponent(labelFilter);
-
-		TextField treeFilter = new TextField();
-		treeFilter.setImmediate(false);
-		treeFilter.setInputPrompt("Type to filter tree");
-		treeFilter.addListener(new FieldEvents.TextChangeListener() {
-
-			SimpleTreeFilter filter = null;
-
-			@Override
-			public void textChange(TextChangeEvent event) {
-				Filterable f = (Filterable) dpuTree.getContainerDataSource();
-
-				// Remove old filter
-				if (filter != null)
-					f.removeContainerFilter(filter);
-
-				// Set new filter
-				filter = new SimpleTreeFilter(event.getText(), true, false);
-				f.addContainerFilter(filter);
-
-			}
-		});
-
-		filterBar.addComponent(treeFilter);
-		layoutTree.addComponent(filterBar);
-		layoutTree.setExpandRatio(filterBar, 0.05f);
-		
+				
 		layoutInfo = new HorizontalLayout();
 		layoutInfo.setHeight("100%");
 		layoutInfo.setWidth("100%");
@@ -235,19 +189,14 @@ class DPU extends ViewComponent {
 		
 		
 
-		// DPURecord tree 
-		dpuTree = new Tree("DPUs");
-		dpuTree.setImmediate(true);
-		dpuTree.setHeight("100%");
-	//	dpuTree.setHeight(600, Unit.PIXELS);
-		dpuTree.setStyleName("dpuTree");
-		fillTree(dpuTree);
-		for (Object itemId : dpuTree.rootItemIds())
-			dpuTree.expandItemsRecursively(itemId);
+		dpuTree = new DPUTree();
 		dpuTree.addItemClickListener(new ItemClickListener() {
 
 			@Override
 			public void itemClick(ItemClickEvent event) {
+				if(event.getItemId().getClass() != DPUTemplateRecord.class) {
+					return;
+				}
 				DPUTemplateRecord selectedDpu = (DPUTemplateRecord) event.getItemId();
 
 				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
@@ -289,10 +238,8 @@ class DPU extends ViewComponent {
 			}
 		});
 
-		layoutTree.addComponent(dpuTree);
-		layoutTree.setComponentAlignment(dpuTree, Alignment.TOP_LEFT);
-		layoutTree.setExpandRatio(dpuTree, 0.95f);
-		dpuLayout.addComponent(layoutTree,0,0);
+		
+		dpuLayout.addComponent(dpuTree,0,0);
 		dpuLayout.addComponent(layoutInfo, 2, 0);
 
 		return dpuLayout;
@@ -525,8 +472,7 @@ class DPU extends ViewComponent {
 						if (fl == 0) {
 
 							App.getApp().getDPUs().delete(selectedDpuWrap.getDPUTemplateRecord());
-							dpuTree.removeAllItems();
-							fillTree(dpuTree);
+							dpuTree.refresh();
 							dpuDetailLayout.removeAllComponents();
 							Notification.show("DPURecord was removed",
 									Notification.Type.HUMANIZED_MESSAGE);
@@ -609,7 +555,7 @@ class DPU extends ViewComponent {
 							// store into DB
 							selectedDpuWrap.save();
 							
-							fillTree(dpuTree);
+							dpuTree.refresh();
 
 						}
 
@@ -621,37 +567,6 @@ class DPU extends ViewComponent {
 		dpuDetailLayout.addComponent(buttonDpuBar);
 
 		return buttonDpuBar;
-	}
-
-	private void fillTree(Tree tree) {
-		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootExtractor = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
-				"Extractors", null);
-		tree.addItem(rootExtractor);
-		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootTransformer = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
-				"Transformers", null);
-		tree.addItem(rootTransformer);
-		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord rootLoader = new cz.cuni.xrg.intlib.commons.app.dpu.DPURecord(
-				"Loaders", null);
-		tree.addItem(rootLoader);
-
-		List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
-		for (DPUTemplateRecord dpu : dpus) {
-			tree.addItem(dpu);
-
-			switch (dpu.getType()) {
-			case Extractor:
-				tree.setParent(dpu, rootExtractor);
-				break;
-			case Transformer:
-				tree.setParent(dpu, rootTransformer);
-				break;
-			case Loader:
-				tree.setParent(dpu, rootLoader);
-				break;
-			default:
-				throw new IllegalArgumentException();
-			}
-		}
 	}
 
 	@Override
