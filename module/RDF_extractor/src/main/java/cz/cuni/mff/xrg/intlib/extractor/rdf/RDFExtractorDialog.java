@@ -334,6 +334,8 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         gridLayoutGraph.setColumns(2);
         gridLayoutGraph.setColumnExpandRatio(0, 0.95f);
         gridLayoutGraph.setColumnExpandRatio(1, 0.05f);
+        
+        refreshNamedGraphData();
 
     }
 
