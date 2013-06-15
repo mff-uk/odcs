@@ -417,6 +417,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 
 	@Override
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
+		saveEditedTexts();
 		RDFLoaderConfig config = new RDFLoaderConfig();
 		
         String graphDescription = (String) optionGroupDetail.getValue();
