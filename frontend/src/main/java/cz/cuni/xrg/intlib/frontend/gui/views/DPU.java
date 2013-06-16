@@ -195,9 +195,9 @@ class DPU extends ViewComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if(event.getItemId().getClass() != DPUTemplateRecord.class) {
-//					dpuLayout.removeComponent(dpuDetailLayout);
-//					dpuLayout.removeComponent(layoutInfo);
-//					dpuLayout.addComponent(layoutInfo, 2, 0);
+					dpuLayout.removeComponent(dpuDetailLayout);
+					dpuLayout.removeComponent(layoutInfo);
+					dpuLayout.addComponent(layoutInfo, 2, 0);
 					return;
 				}
 
