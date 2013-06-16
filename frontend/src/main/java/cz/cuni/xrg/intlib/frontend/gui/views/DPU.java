@@ -248,39 +248,40 @@ class DPU extends ViewComponent {
 
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				DPUTemplateRecord selectedDpu = (DPUTemplateRecord) event.getItemId();
+				Object item = event.getItemId().toString();
+				if ((item != "Extractors") && (item != "Transformers") && (item != "Loaders")) {
+					DPUTemplateRecord selectedDpu = (DPUTemplateRecord) event.getItemId();
 
-				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
-					// crate new wrap
-					selectedDpuWrap = new DPUTemplateWrap(selectedDpu);
-					
-					dpuLayout.removeComponent(dpuDetailLayout);
-					dpuLayout.removeComponent(layoutInfo);
-					dpuDetailLayout = buildDPUDetailLayout();
-					dpuLayout.addComponent(dpuDetailLayout, 1, 0);
+					if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
+						// crate new wrap
+						selectedDpuWrap = new DPUTemplateWrap(selectedDpu);
 
-					String selectedDpuName = 
-							selectedDpuWrap.getDPUTemplateRecord().getName();
-					String selecteDpuDescription = 
-							selectedDpuWrap.getDPUTemplateRecord().getDescription();
-					VisibilityType selecteDpuVisibility = 
-							selectedDpuWrap.getDPUTemplateRecord().getVisibility();
-					dpuName.setValue(selectedDpuName);
-					dpuDescription.setValue(selecteDpuDescription);
-										
-					groupVisibility.setValue(selecteDpuVisibility);
-					groupVisibility.setEnabled(true);
-					if (selecteDpuVisibility == VisibilityType.PUBLIC) {
-						groupVisibility.setValue(selecteDpuVisibility);
-						groupVisibility.setEnabled(false);
-					} else {
+						dpuLayout.removeComponent(dpuDetailLayout);
+						dpuLayout.removeComponent(layoutInfo);
+						dpuDetailLayout = buildDPUDetailLayout();
+						dpuLayout.addComponent(dpuDetailLayout, 1, 0);
+
+						String selectedDpuName = selectedDpuWrap
+								.getDPUTemplateRecord().getName();
+						String selecteDpuDescription = selectedDpuWrap
+								.getDPUTemplateRecord().getDescription();
+						VisibilityType selecteDpuVisibility = selectedDpuWrap
+								.getDPUTemplateRecord().getVisibility();
+						dpuName.setValue(selectedDpuName);
+						dpuDescription.setValue(selecteDpuDescription);
+
 						groupVisibility.setValue(selecteDpuVisibility);
 						groupVisibility.setEnabled(true);
+						if (selecteDpuVisibility == VisibilityType.PUBLIC) {
+							groupVisibility.setValue(selecteDpuVisibility);
+							groupVisibility.setEnabled(false);
+						} else {
+							groupVisibility.setValue(selecteDpuVisibility);
+							groupVisibility.setEnabled(true);
+						}
+
 					}
-
-				}
-
-				else {
+				} else {
 					dpuLayout.removeComponent(dpuDetailLayout);
 					dpuLayout.removeComponent(layoutInfo);
 					dpuLayout.addComponent(layoutInfo, 2, 0);
@@ -587,7 +588,8 @@ class DPU extends ViewComponent {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-						if ((selectedDpuWrap != null)
+					
+						if ((selectedDpuWrap != null )
 								&& (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
 							selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue());
 							selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
