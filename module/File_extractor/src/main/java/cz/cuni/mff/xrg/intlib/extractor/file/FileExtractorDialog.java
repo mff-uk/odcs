@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
@@ -89,6 +91,15 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
         textFieldPath.setWidth("100%");
         textFieldPath.setHeight("-1px");
         textFieldPath.setInputPrompt("http://example.org/test.ttl");
+        textFieldPath.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value.getClass() == String.class && !((String) value).isEmpty()) {
+					return;
+				}
+				throw new InvalidValueException("HTTP URL/Path must be filled!");
+			}
+		});
         mainLayout.addComponent(textFieldPath, 0, 0);
 
         // layoutOnly

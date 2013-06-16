@@ -8,6 +8,8 @@ import cz.cuni.xrg.intlib.commons.configuration.*;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 
@@ -241,6 +243,15 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
                 }
             }
         });
+        comboBoxSparql.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value!=null) {
+					return;
+				}
+				throw new InvalidValueException("SPARQL endpoint must be filled!");
+			}
+		});
 
         gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
 

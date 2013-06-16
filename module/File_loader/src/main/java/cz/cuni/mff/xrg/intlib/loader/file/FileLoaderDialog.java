@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.intlib.loader.file;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.converter.Converter;
 
 import com.vaadin.ui.*;
@@ -110,6 +112,15 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
         textFieldDir.setWidth("100%");
         textFieldDir.setHeight("-1px");
         textFieldDir.setInputPrompt("C:\\ted\\");
+        textFieldDir.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value.getClass() == String.class && !((String) value).isEmpty()) {
+					return;
+				}
+				throw new InvalidValueException("Directory must be filled!");
+			}
+		});
         verticalLayoutCore.addComponent(textFieldDir);
 
         // textFieldFileName
@@ -120,6 +131,15 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
         textFieldFileName.setWidth("100%");
         textFieldFileName.setHeight("-1px");
         textFieldFileName.setInputPrompt("test-ted.ttl");
+        textFieldFileName.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value.getClass() == String.class && !((String) value).isEmpty()) {
+					return;
+				}
+				throw new InvalidValueException("File name must be filled!");
+			}
+		});
         verticalLayoutCore.addComponent(textFieldFileName);
 
         // checkBoxDiffName
