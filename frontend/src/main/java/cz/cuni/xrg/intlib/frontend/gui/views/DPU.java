@@ -195,41 +195,45 @@ class DPU extends ViewComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if(event.getItemId().getClass() != DPUTemplateRecord.class) {
+//					dpuLayout.removeComponent(dpuDetailLayout);
+//					dpuLayout.removeComponent(layoutInfo);
+//					dpuLayout.addComponent(layoutInfo, 2, 0);
 					return;
 				}
-				DPUTemplateRecord selectedDpu = (DPUTemplateRecord) event.getItemId();
 
-				if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
-					// crate new wrap
-					selectedDpuWrap = new DPUTemplateWrap(selectedDpu);
-					
-					dpuLayout.removeComponent(dpuDetailLayout);
-					dpuLayout.removeComponent(layoutInfo);
-					dpuDetailLayout = buildDPUDetailLayout();
-					dpuLayout.addComponent(dpuDetailLayout, 1, 0);
+					DPUTemplateRecord selectedDpu = (DPUTemplateRecord) event
+							.getItemId();
 
-					String selectedDpuName = 
-							selectedDpuWrap.getDPUTemplateRecord().getName();
-					String selecteDpuDescription = 
-							selectedDpuWrap.getDPUTemplateRecord().getDescription();
-					VisibilityType selecteDpuVisibility = 
-							selectedDpuWrap.getDPUTemplateRecord().getVisibility();
-					dpuName.setValue(selectedDpuName);
-					dpuDescription.setValue(selecteDpuDescription);
-										
-					groupVisibility.setValue(selecteDpuVisibility);
-					groupVisibility.setEnabled(true);
-					if (selecteDpuVisibility == VisibilityType.PUBLIC) {
-						groupVisibility.setValue(selecteDpuVisibility);
-						groupVisibility.setEnabled(false);
-					} else {
+					if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
+						// crate new wrap
+						selectedDpuWrap = new DPUTemplateWrap(selectedDpu);
+
+						dpuLayout.removeComponent(dpuDetailLayout);
+						dpuLayout.removeComponent(layoutInfo);
+						dpuDetailLayout = buildDPUDetailLayout();
+						dpuLayout.addComponent(dpuDetailLayout, 1, 0);
+
+						String selectedDpuName = selectedDpuWrap
+								.getDPUTemplateRecord().getName();
+						String selecteDpuDescription = selectedDpuWrap
+								.getDPUTemplateRecord().getDescription();
+						VisibilityType selecteDpuVisibility = selectedDpuWrap
+								.getDPUTemplateRecord().getVisibility();
+						dpuName.setValue(selectedDpuName);
+						dpuDescription.setValue(selecteDpuDescription);
+
 						groupVisibility.setValue(selecteDpuVisibility);
 						groupVisibility.setEnabled(true);
-					}
+						if (selecteDpuVisibility == VisibilityType.PUBLIC) {
+							groupVisibility.setValue(selecteDpuVisibility);
+							groupVisibility.setEnabled(false);
+						} else {
+							groupVisibility.setValue(selecteDpuVisibility);
+							groupVisibility.setEnabled(true);
+						}
 
-				}
-
-				else {
+					
+				} else {
 					dpuLayout.removeComponent(dpuDetailLayout);
 					dpuLayout.removeComponent(layoutInfo);
 					dpuLayout.addComponent(layoutInfo, 2, 0);
