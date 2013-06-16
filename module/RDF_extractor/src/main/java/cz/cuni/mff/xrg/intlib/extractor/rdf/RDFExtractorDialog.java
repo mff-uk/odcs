@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.vaadin.data.*;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.*;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -185,7 +186,15 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
             }
         });
 
-
+        comboBoxSparql.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value!=null) {
+					return;
+				}
+				throw new InvalidValueException("SPARQL endpoint must be filled!");
+			}
+		});
         gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
 
         // labelNameAdm
@@ -334,6 +343,8 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         gridLayoutGraph.setColumns(2);
         gridLayoutGraph.setColumnExpandRatio(0, 0.95f);
         gridLayoutGraph.setColumnExpandRatio(1, 0.05f);
+        
+        refreshNamedGraphData();
 
     }
 
@@ -395,7 +406,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         textAreaConstr.setNullRepresentation("");
         textAreaConstr.setImmediate(false);
         textAreaConstr.setWidth("100%");
-        textAreaConstr.setHeight("190px");
+        textAreaConstr.setHeight("100px");
         textAreaConstr.setInputPrompt("CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
         gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
 
