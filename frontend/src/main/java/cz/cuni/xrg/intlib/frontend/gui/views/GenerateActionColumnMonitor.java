@@ -8,6 +8,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 
 public class GenerateActionColumnMonitor implements ColumnGenerator {
 
@@ -22,9 +23,9 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
-		Property prop1 = source.getItem(itemId).getItemProperty("status");
+		Property propStatus = source.getItem(itemId).getItemProperty("status");
 		Property prop2 = source.getItem(itemId).getItemProperty("debug");
-		String testStatus = "---";
+		ExecutionStatus testStatus = null;
 		String testDebug = "---";
 		// execID=itemId;
 		execID = itemId;
@@ -32,29 +33,28 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 		HorizontalLayout box = new HorizontalLayout();
 		box.setSpacing(true);
 
-		if ((prop1.getType().equals(String.class))
+		if ((propStatus.getType().equals(ExecutionStatus.class))
 				|| (prop2.getType().equals(String.class))) {
-			testStatus = (String) prop1.getValue();
+			testStatus = (ExecutionStatus) propStatus.getValue();
 			testDebug = (String) prop2.getValue();
-			if ((testStatus.contains("SCHEDULED"))
+			if ((testStatus== ExecutionStatus.SCHEDULED)
 					&& (testDebug.contains("false"))) {
 				Button stopButton = new Button("Stop");
 				stopButton.setData(new ActionButtonData("stop", itemId));
 				stopButton.setWidth("90px");
 				box.addComponent(stopButton);
 				if (this.clickListener != null)
-					stopButton.addListener(this.clickListener);
+					stopButton.addClickListener(this.clickListener);
 
 			}
-			if (((testStatus.contains("FAILED")) || (testStatus
-					.contains("FINISHED_SUCCESS")))
+			if ((testStatus == ExecutionStatus.FAILED) || (testStatus == ExecutionStatus.FINISHED_SUCCESS)
 					&& (testDebug.contains("false"))) {
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog", itemId));
 
 				logButton.setWidth("90px");
 				if (this.clickListener != null)
-					logButton.addListener(this.clickListener);
+					logButton.addClickListener(this.clickListener);
 
 				box.addComponent(logButton);
 
@@ -66,7 +66,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 				debugButton.setData(new ActionButtonData("debug", itemId));
 				debugButton.setWidth("90px");
 				if (this.clickListener != null)
-					debugButton.addListener(this.clickListener);
+					debugButton.addClickListener(this.clickListener);
 
 				box.addComponent(debugButton);
 
