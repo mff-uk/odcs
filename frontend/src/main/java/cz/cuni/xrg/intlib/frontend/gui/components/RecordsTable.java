@@ -1,12 +1,20 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+
+import static cz.cuni.xrg.intlib.commons.app.execution.RecordType.*;
+import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
@@ -19,17 +27,20 @@ import java.util.List;
 public class RecordsTable extends CustomComponent {
 
 	private VerticalLayout mainLayout;
+
 	private IntlibPagedTable messageTable;
 
 	public RecordsTable() {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
-		messageTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+		messageTable.addItemClickListener(
+				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (event.isDoubleClick()) {
 					BeanItem beanItem = (BeanItem) event.getItem();
-					long recordId = (long)beanItem.getItemProperty("id").getValue();
+					long recordId = (long) beanItem.getItemProperty("id")
+							.getValue();
 					Record record = App.getDPUs().getDPURecord(recordId);
 					showRecordDetail(record);
 				}
@@ -50,10 +61,42 @@ public class RecordsTable extends CustomComponent {
 
 		Container container = ContainerFactory.CreateExecutionMessages(data);
 		messageTable.setContainerDataSource(container);
-
+		messageTable.addGeneratedColumn("type", new Table.ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId,
+					Object columnId) {
+				
+				RecordType type = (RecordType) source.getItem(itemId).getItemProperty(columnId).getValue();
+				ThemeResource img = null;
+				switch (type) {
+					case DPU_INFO:
+						img = new ThemeResource("icons/ok.png");
+						break;
+					case DPU_LOG:
+						img = new ThemeResource("icons/log.png");
+						break;
+					case DPU_DEBUG:
+						img = new ThemeResource("icons/debug.png");
+						break;
+					case DPU_WARNING:
+						img = new ThemeResource("icons/warning.png");
+						break;
+					case DPU_ERROR:
+					case PIPELINE_ERROR:
+						img = new ThemeResource("icons/error.png");
+						break;
+					default:
+						//no img
+						break;
+				}
+				Embedded emb = new Embedded(type.name(), img);
+				return emb;
+			}
+		});
 		// set columns
-		messageTable.setVisibleColumns(new String[]{"time", "type", "dpuInstance",
-			"shortMessage"});
+		messageTable.setVisibleColumns(
+					new String[]{"time", "type", "dpuInstance",
+				"shortMessage"});
 	}
 
 	private void showRecordDetail(Record record) {

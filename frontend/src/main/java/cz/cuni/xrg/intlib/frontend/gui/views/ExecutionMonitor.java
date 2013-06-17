@@ -63,7 +63,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private ComboBox debugFilter;
 	private IndexedContainer tableData;
 	static String filter;
-	private Integer exeId ;
+	private Long exeId ;
 	private String pipeName;
 	int style = DateFormat.MEDIUM;
 
@@ -139,7 +139,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		dateFilter.setImmediate(true);
 		dateFilter.setCaption("Date:");
 		dateFilter.setWidth("110px");
-		dateFilter.addListener(new ValueChangeListener() {
+		dateFilter.addValueChangeListener(new ValueChangeListener() {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -516,7 +516,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 	//		if (p.equals("exeid")==false)
 				result.addContainerProperty(p, String.class, "");
 		}
-		result.addContainerProperty("exeid", Integer.class, "");
+		result.addContainerProperty("exeid", Long.class, "");
 
 
 		for (PipelineExecution item : data)
@@ -589,7 +589,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			String caption = senderData.action;
 			Object itemId = senderData.data;
 
-			exeId = (Integer) tableData.getContainerProperty(itemId,"exeid").getValue();
+			exeId = (Long) tableData.getContainerProperty(itemId,"exeid").getValue();
 			pipeName = (String) tableData.getContainerProperty(itemId, "name").getValue();
 			switch (caption) {
 				case "stop":
