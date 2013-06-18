@@ -415,8 +415,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
+		if (!comboBoxSparql.isValid()) {
+			throw new ConfigException();
+		} else {
 		saveEditedTexts();
-		
 		RDFExtractorConfig config = new RDFExtractorConfig();		
 		config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
 		config.Host_name = textFieldNameAdm.getValue();
@@ -424,8 +426,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 		config.SPARQL_query = textAreaConstr.getValue();
 		config.GraphsUri = griddata;
 		config.ExtractFail = checkBoxFail.getValue();
-				
+		
 		return config;
+		}
 	}
 	
 	@Override

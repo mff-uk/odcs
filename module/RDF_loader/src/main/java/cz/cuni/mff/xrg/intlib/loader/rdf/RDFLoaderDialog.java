@@ -428,9 +428,11 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 
 	@Override
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
+		if (!comboBoxSparql.isValid()) {
+			throw new ConfigException();
+		} else {
 		saveEditedTexts();
 		RDFLoaderConfig config = new RDFLoaderConfig();
-		
         String graphDescription = (String) optionGroupDetail.getValue();
         WriteGraphType graphType = getGraphType(graphDescription);		
 		config.Options = graphType;
@@ -440,6 +442,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 		config.GraphsUri = griddata;
 		
 		return config;
+		}
 	}
     
     /**

@@ -549,15 +549,23 @@ class DPU extends ViewComponent {
 							// save configuration
 							try {
 								selectedDpuWrap.saveConfig();
-							} catch(ConfigException e) {
+								Notification.show("DPURecord was saved",
+										Notification.Type.HUMANIZED_MESSAGE);
+							} catch (ConfigException e) {
+
 								Notification.show(
+										"Failed to save DPURecord.", "Mandatory fields should be filled", Type.ERROR_MESSAGE);
+
+								/*Notification.show(
 										"Failed to save configuration from dialog.",
-										e.getMessage(), Type.ERROR_MESSAGE);
+										e.getMessage(), Type.ERROR_MESSAGE);*/
+									
 								LOG.error("Can't save configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-							}
+							}	
 
 							// store into DB
 							selectedDpuWrap.save();
+
 							
 							dpuTree.refresh();
 
