@@ -114,21 +114,6 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		setWidth("100%");
 		setHeight("100%");
 
-		// label
-
-		/*		label = new Label();
-		 label.setImmediate(false);
-		 label.setWidth("-1px");
-		 label.setHeight("-1px");
-		 label.setValue("<h1>ExecutionMonitor</h>");
-		 label.setContentMode(ContentMode.HTML);
-		 monitorTableLayout.addComponent(label);
-
-		 Label filtersLabel = new Label();
-		 filtersLabel.setCaption("Filters:");
-		 filtersLabel.setWidth("100px");
-		 monitorTableLayout.addComponent(filtersLabel);*/
-
 		filter = new String();
 
 		GridLayout filtersLayout = new GridLayout(6, 1);
@@ -189,12 +174,10 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			@Override
 			public void textChange(TextChangeEvent event) {
 
-
 				tableDataFilter.setNameFilter(event.getText());
 				tableData.removeAllContainerFilters();
 				tableData.addContainerFilter(tableDataFilter);
 				monitorTable.refreshRowCache();
-
 
 			}
 		});
@@ -211,13 +194,10 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			@Override
 			public void textChange(TextChangeEvent event) {
 
-
 				tableDataFilter.setUserFilter(event.getText());
 				tableData.removeAllContainerFilters();
 				tableData.addContainerFilter(tableDataFilter);
 				monitorTable.refreshRowCache();
-
-
 
 			}
 		});
@@ -337,6 +317,16 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setImmediate(true);
 		monitorTable.setVisibleColumns(visibleCols); // Set visible columns
 		monitorTable.setColumnHeaders(headers);
+		//"date", "name", "user",
+		//"status", "debug", "obsolete", "actions", "report"
+//		monitorTable.setColumnExpandRatio("date", 2);
+//		monitorTable.setColumnExpandRatio("name", 4);
+//		monitorTable.setColumnExpandRatio("user", 2);
+//		monitorTable.setColumnExpandRatio("status", 1);
+//		monitorTable.setColumnExpandRatio("debug", 1);
+//		monitorTable.setColumnExpandRatio("obsolete", 1);
+//		monitorTable.setColumnExpandRatio("actions", 2);
+//		monitorTable.setColumnExpandRatio("report", 2);
 
 		monitorTable.addGeneratedColumn("status", new Table.ColumnGenerator() {
 			@Override
@@ -369,6 +359,23 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 						break;
 				}
 				Embedded emb = new Embedded(type.name(), img);
+				emb.setDescription(type.name());
+				return emb;
+			}
+		});
+		
+		monitorTable.addGeneratedColumn("debug", new Table.ColumnGenerator() {
+
+			@Override
+			public Object generateCell(Table source, Object itemId,
+					Object columnId) {
+				String debugValue = (String) source.getItem(itemId).getItemProperty(columnId).getValue();
+				boolean inDebug = debugValue.equals("true");
+				Embedded emb = null;
+				if(inDebug) {
+					emb = new Embedded("True", new ThemeResource("icons/debug.png"));
+					emb.setDescription("TRUE");
+				}
 				return emb;
 			}
 		});
@@ -418,85 +425,11 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		logLayout.setWidth("100%");
 		logLayout.setHeight("100%");
 
-		GridLayout infoBar = new GridLayout();
-		infoBar.setWidth("100%");
-		infoBar.setSpacing(true);
-		infoBar.setRows(2);
-		infoBar.setColumns(5);
-
-		infoBar.addComponent(new Label("Messages overview for: "), 0, 0);
-		infoBar.addComponent(new Label("Pipeline: "), 1, 0);
-		infoBar.addComponent(new Label("User: "), 1, 1);
-		infoBar.addComponent(new Label("Start: "), 3, 0);
-		infoBar.addComponent(new Label("End: "), 3, 1);
-
-
-
-		Label pipeline = new Label();
-		pipeline.setCaption(pipeName);
-		infoBar.addComponent(pipeline, 2, 0);
-
-		Label user = new Label();
-		user.setCaption("");
-		infoBar.addComponent(user, 2, 1);
-
-		Label start = new Label();
-		start.setCaption("");
-		infoBar.addComponent(start, 4, 0);
-
-		Label end = new Label();
-		end.setCaption("");
-		infoBar.addComponent(end, 4, 1);
-
-		//TODO: Possibly remove infoBar completely
-		//logLayout.addComponent(infoBar);
-
 		PipelineExecution pipelineExec = App.getApp().getPipelines()
 				.getExecution(exeId);
 		DebuggingView debugView = new DebuggingView(pipelineExec, null,
 				pipelineExec.isDebugging());
 		logLayout.addComponent(debugView);
-
-//		List<Record> records = App.getDPUs().getAllDPURecords();
-//
-//		List<Record> filteredRecords = new ArrayList<Record>();
-//		for (Record item : records){
-//			if (item.getExecution().getId() == exeId)
-//				filteredRecords.add(item);
-//		}
-//
-//		RecordsTable executionRecordsTable = new RecordsTable(filteredRecords);
-//		executionRecordsTable.setWidth("100%");
-//		executionRecordsTable.setHeight("100px");
-//
-//
-//		logLayout.addComponent(executionRecordsTable);
-//
-//		TabSheet tabs = new TabSheet();
-//	//	tabs.setHeight("500px");
-//
-//		//Table with data
-//
-//		BrowserTable browserTable = new BrowserTable(buildStubRDFData());
-//		tabs.addTab(browserTable, "Browse");
-//
-//
-//		//RecordsTable with different data source
-//		List<Record> fullRecords = App.getDPUs().getAllDPURecords();
-//		RecordsTable fullRecordsTable = new RecordsTable(fullRecords);
-//		fullRecordsTable.setWidth("100%");
-//		fullRecordsTable.setHeight("100%");
-//		Tab logTab = tabs.addTab(fullRecordsTable, "Log");
-//
-//		//Query View
-//		QueryView queryView = new QueryView();
-//		tabs.addTab(queryView, "Query");
-//		tabs.setSelectedTab(logTab);
-//
-//
-//		logLayout.addComponent(tabs);
-
-
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidth("100%");
@@ -728,8 +661,8 @@ class MonitorTableFilter implements Filter {
 		}
 
 		if (stringIsSet(this.statusFilter)) {
-			String objectUser = ((String) item.getItemProperty("status")
-					.getValue()).toLowerCase();
+			String objectUser = ((ExecutionStatus) item.getItemProperty("status")
+					.getValue()).name().toLowerCase();
 			if (objectUser.contains(this.statusFilter) == false) {
 				return false;
 			}

@@ -90,6 +90,7 @@ public class RecordsTable extends CustomComponent {
 						break;
 				}
 				Embedded emb = new Embedded(type.name(), img);
+				emb.setDescription(type.name());
 				return emb;
 			}
 		});
