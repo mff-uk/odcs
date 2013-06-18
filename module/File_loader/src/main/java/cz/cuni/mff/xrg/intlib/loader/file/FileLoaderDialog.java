@@ -190,7 +190,6 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	@Override
 	public FileLoaderConfig getConfiguration() throws ConfigException {
-
 		if ((!textFieldDir.isValid()) || (!textFieldFileName.isValid())) {
 			throw new ConfigException();
 		} else {
@@ -203,7 +202,6 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		}
 
 	}
-	
 	
     /**
      * Load values from configuration into dialog.

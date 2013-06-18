@@ -431,17 +431,17 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 		if (!comboBoxSparql.isValid()) {
 			throw new ConfigException();
 		} else {
-		saveEditedTexts();
-		RDFLoaderConfig config = new RDFLoaderConfig();
-        String graphDescription = (String) optionGroupDetail.getValue();
-        WriteGraphType graphType = getGraphType(graphDescription);		
-		config.Options = graphType;
-		config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
-		config.Host_name = textFieldNameAdm.getValue();
-		config.Password = passwordFieldPass.getValue();
-		config.GraphsUri = griddata;
-		
-		return config;
+			saveEditedTexts();
+			RDFLoaderConfig config = new RDFLoaderConfig();
+	        String graphDescription = (String) optionGroupDetail.getValue();
+	        WriteGraphType graphType = getGraphType(graphDescription);		
+			config.Options = graphType;
+			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
+			config.Host_name = textFieldNameAdm.getValue();
+			config.Password = passwordFieldPass.getValue();
+			config.GraphsUri = griddata;
+			
+			return config;
 		}
 	}
     
