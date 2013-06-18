@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.repository;
 
 import cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF;
+import cz.cuni.xrg.intlib.commons.IntegrationTest;
 import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
@@ -14,6 +15,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
@@ -248,7 +250,8 @@ public class LocalRDFRepoTest {
      * This is not unit test, as it depends on remote server -> commented out
      * for build, use only when debugging
      */
-//    @Test
+    @Test
+	@Category(IntegrationTest.class)
     public void extractDataFromSPARQLEndpointTest() {
 
         try {
@@ -278,6 +281,7 @@ public class LocalRDFRepoTest {
      * for build, use only when debugging
      */
 //    @Test
+	@Category(IntegrationTest.class)
     public void extractDataFromSPARQLEndpointNamePasswordTest() {
         try {
             URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
@@ -311,6 +315,7 @@ public class LocalRDFRepoTest {
      * for build, use only when debugging
      */
 //    @Test
+	@Category(IntegrationTest.class)
     public void loadDataToSPARQLEndpointTest() {
         try {
             URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
@@ -638,6 +643,7 @@ public class LocalRDFRepoTest {
     }
 
     @Test
+	@Category(IntegrationTest.class)
     public void BIGDataTest() {
 
         //extractBigDataFileToRepository();

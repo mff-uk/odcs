@@ -1,17 +1,18 @@
 package cz.cuni.xrg.intlib.backend.repository;
 
+import cz.cuni.xrg.intlib.commons.IntegrationTest;
 import cz.cuni.xrg.intlib.backend.data.rdf.VirtuosoRDF;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.experimental.categories.Category;
 
 /**
  *
  * @author Jiri Tomes
  */
+@Category(IntegrationTest.class)
 public class VirtuosoTest extends LocalRDFRepoTest {
 
     private static final String HOSTNAME = "localhost"; /* "asgard.vojt.net";*/
