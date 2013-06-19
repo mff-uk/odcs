@@ -54,7 +54,7 @@ public class RecordsTable extends CustomComponent {
 	}
 
 	public void setDataSource(List<Record> data) {
-		loadMessageTable(data);
+		loadMessageTable(data); 
 	}
 
 	private void loadMessageTable(List<Record> data) {

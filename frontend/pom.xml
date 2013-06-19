@@ -93,12 +93,12 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml
-					which will be ignored -->
+				which will be ignored -->
 				<version>2.3</version>
 			</plugin>
 
 			<!-- deploy to Apache tomcat see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html
-				http://localhost:8080/docs/manager-howto.html use maven cmd: mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy -->
+			http://localhost:8080/docs/manager-howto.html use maven cmd: mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>

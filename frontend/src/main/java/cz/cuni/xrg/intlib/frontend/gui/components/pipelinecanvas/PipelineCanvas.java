@@ -1,10 +1,8 @@
 package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
-import com.vaadin.ui.AbstractJavaScriptComponent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Window;
+import com.vaadin.server.Page;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
@@ -12,7 +10,6 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
@@ -21,9 +18,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
-import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 import java.util.Collection;
-import java.util.EventObject;
 
 /**
  * Component for visualization of the pipeline.
@@ -93,6 +88,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				showDebugWindow(dpuId);
 			}
 		});
+		
 	}
 
 	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
@@ -257,5 +253,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				//TODO: Solve better!
 			}
 		}
+	}
+	
+	public void resizeCanvas(int height, int width) {
+		getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(height, width);
 	}
 }

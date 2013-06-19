@@ -50,23 +50,23 @@
 
 
 .v-select-optiongroup-horizontalgroup
-  .v-select-option.v-radiobutton {
+.v-select-option.v-radiobutton {
     padding-right: 10px;
 }
 
 /* Menubar */
 .v-menubar {
-font-size: 15px;
-/*color: red;*/
+	font-size: 15px;
+	/*color: red;*/
 }
 
 .gwt-MenuItem {
-background : grey;
-color : black;
+	background : grey;
+	color : black;
 }
 .gwt-MenuItem-selected {
-background : blue;
-color : white;
+	background : blue;
+	color : white;
 }
 
 .v-label-warning {

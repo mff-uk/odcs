@@ -65,6 +65,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         },
 		updateNode: function(id, name, description) {
 			updateDpu(id, name, description);
+		},
+		resizeStage: function(height, width) {
+			resizeStage(height, width);
 		}
     });
 
@@ -654,8 +657,19 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         var leftY = points[3] - dist * y + dist * x;
         return [leftX, leftY, points[2], points[3]];
      }
+	 
+	 function resizeStage(height, width) {
+		 stage.height = height;
+		 stage.width = width;
+		 stage.draw();
+	 }
 
-    /** Computes connection points for uniform visual for 2 DPU **/
+    /** 
+	 * Computes connection points for uniform visual for 2 DPU 
+	 * 
+	 * @param start start point
+	 * @param end end point
+	 **/
     function computeConnectionPoints2(start, end) {
 
         var EminX = end.getPosition().x;

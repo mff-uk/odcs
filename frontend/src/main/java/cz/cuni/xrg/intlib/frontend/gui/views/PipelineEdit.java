@@ -7,6 +7,7 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -17,7 +18,6 @@ import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -29,7 +29,6 @@ import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.DetailClosedLis
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.ShowDebugListener;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import java.util.EventObject;
-import java.util.List;
 
 /**
  * Page for creating new pipeline or editing existing pipeline.
@@ -39,13 +38,21 @@ import java.util.List;
 class PipelineEdit extends ViewComponent {
 
 	private VerticalLayout mainLayout;
+
 	private Label label;
+
 	private TextField pipelineName;
+
 	private TextArea pipelineDescription;
+
 	private Pipeline pipeline = null;
 	//private VerticalSplitPanel verticalSplit;
+
 	PipelineCanvas pc;
+
 	DPUTree dpuTree;
+
+	TabSheet tabSheet;
 
 	/**
 	 * Empty constructor.
@@ -135,7 +142,7 @@ class PipelineEdit extends ViewComponent {
 				if (obj.getClass() == DPUTemplateRecord.class) {
 					DPUTemplateRecord dpu = (DPUTemplateRecord) obj;
 					if (App.getApp().getDPUs().getAllTemplates().contains(dpu)) {
-						pc.addDpu(dpu, mouse.getClientX() - 261, mouse.getClientY() - 256);
+						pc.addDpu(dpu, mouse.getClientX() - 261 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 256 + UI.getCurrent().getScrollTop());
 					} else {
 						// TODO log unknown DPURecord
 					}
@@ -144,7 +151,7 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 
-		TabSheet tabSheet = new TabSheet();
+		tabSheet = new TabSheet();
 
 		Tab standardTab = tabSheet.addTab(new Label("Under construction"), "Standard");
 		standardTab.setEnabled(false);
@@ -176,7 +183,7 @@ class PipelineEdit extends ViewComponent {
 		buttonRevert.setCaption("Revert to last commit");
 		buttonRevert.setHeight("25px");
 		buttonRevert.setWidth("150px");
-		buttonRevert.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+		buttonRevert.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 			}
@@ -187,7 +194,7 @@ class PipelineEdit extends ViewComponent {
 		buttonCommit.setCaption("Save & Commit");
 		buttonCommit.setHeight("25px");
 		buttonCommit.setWidth("150px");
-		buttonCommit.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+		buttonCommit.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
@@ -210,17 +217,6 @@ class PipelineEdit extends ViewComponent {
 		buttonBar.addComponent(button);
 		buttonBar.setExpandRatio(labelFiller, 1.0f);
 		mainLayout.addComponent(buttonBar);
-//		Button button = new Button("Click Me");
-//		button.addClickListener(new Button.ClickListener() {
-//			public void buttonClick(ClickEvent event) {
-//				pc.getPipeline();
-//			}
-//		});
-//		layout.addComponent(button);
-//		verticalSplit.setFirstComponent(mainLayout);
-//		verticalSplit.setSecondComponent(null);
-//		verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
-//		verticalSplit.setLocked(true);
 
 		return mainLayout;
 	}
@@ -232,21 +228,16 @@ class PipelineEdit extends ViewComponent {
 	}
 
 	private void openDebug(DebuggingView debug) {
-		//verticalSplit.setSplitPosition(50, Unit.PERCENTAGE);
-
 		Window debugWindow = new Window("Debug window", debug);
-				debugWindow.setWidth("600px");
-				debugWindow.setHeight("620px");
-				debugWindow.addCloseListener(new Window.CloseListener() {
-					@Override
-					public void windowClose(Window.CloseEvent e) {
-						//closeDebug();
-					}
-				});
-				App.getApp().addWindow(debugWindow);
-
-		//verticalSplit.setSecondComponent(debug);
-		//verticalSplit.setLocked(false);
+		debugWindow.setWidth("600px");
+		debugWindow.setHeight("620px");
+		debugWindow.addCloseListener(new Window.CloseListener() {
+			@Override
+			public void windowClose(Window.CloseEvent e) {
+				//closeDebug();
+			}
+		});
+		App.getApp().addWindow(debugWindow);
 	}
 
 	/**
@@ -380,8 +371,7 @@ class PipelineEdit extends ViewComponent {
 	}
 
 	/**
-	 * Loads pipeline to edit or create. Pipeline entity is loaded into
-	 * this.entity. If /New parameter is passed in url, create just
+	 * Loads pipeline to edit or create. Pipeline entity is loaded into this.entity. If /New parameter is passed in url, create just
 	 * representation for pipeline.
 	 *
 	 * @param event
@@ -441,7 +431,29 @@ class PipelineEdit extends ViewComponent {
 			label.setValue("<h3>Editing pipeline<h3>");// + this.pipeline.getName() + "</h3>");
 		}
 
+		//Resizing canvas
+		UI.getCurrent().setImmediate(true);
+		resizeCanvas(UI.getCurrent().getPage().getBrowserWindowWidth());
+		UI.getCurrent().getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
+			@Override
+			public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
+				int width = event.getWidth();
+				resizeCanvas(width);
+			}
+		});
+
+
+
 		// work with pipeline here ...
 
+	}
+
+	private void resizeCanvas(int width) {
+		if (width > 1350) {
+			int newWidth = 1050 + (width - 1350);
+			pc.setWidth(newWidth, Unit.PIXELS);
+			pc.resizeCanvas(630, newWidth);
+			tabSheet.setWidth(1070 + (width - 1350), Unit.PIXELS);
+		}
 	}
 }

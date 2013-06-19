@@ -40,5 +40,12 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * @param description
 	 */
 	public void updateNode(int id, String name, String description);
+	
+	/**
+	 * Resizes stage.
+	 * @param height new height
+	 * @param width new width
+	 */
+	public void resizeStage(int height, int width);
 
 }
