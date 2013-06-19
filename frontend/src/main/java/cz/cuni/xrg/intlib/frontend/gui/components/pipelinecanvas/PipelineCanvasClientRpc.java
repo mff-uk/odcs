@@ -47,5 +47,11 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * @param width new width
 	 */
 	public void resizeStage(int height, int width);
+	
+	/**
+	 * Zooms the stage to given ratio.
+	 * @param zoom 
+	 */
+	public void zoomStage(double zoom);
 
 }

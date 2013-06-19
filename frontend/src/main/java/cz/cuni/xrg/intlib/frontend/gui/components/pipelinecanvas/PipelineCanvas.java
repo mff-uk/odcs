@@ -31,6 +31,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	int dpuCount = 0;
 	int connCount = 0;
+	float currentZoom = 1.0f;
 	private PipelineGraph graph;
 	//TEMPORARY
 	private Pipeline pip;
@@ -257,5 +258,23 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	
 	public void resizeCanvas(int height, int width) {
 		getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(height, width);
+	}
+
+	public void zoom(boolean isZoomIn) {
+		if(isZoomIn && currentZoom < 2) {
+			if(currentZoom < 1.5) {
+				currentZoom = 1.5f;
+			} else {
+				currentZoom = 2.0f;
+			}
+		} else if (!isZoomIn && currentZoom > 1.0f) {
+			if(currentZoom > 1.5f) {
+				currentZoom = 1.5f;
+			} else {
+				currentZoom = 1.0f;
+			}
+		}
+		
+		getRpcProxy(PipelineCanvasClientRpc.class).zoomStage(currentZoom);
 	}
 }

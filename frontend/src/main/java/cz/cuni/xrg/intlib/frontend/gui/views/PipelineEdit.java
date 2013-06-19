@@ -38,20 +38,12 @@ import java.util.EventObject;
 class PipelineEdit extends ViewComponent {
 
 	private VerticalLayout mainLayout;
-
 	private Label label;
-
 	private TextField pipelineName;
-
 	private TextArea pipelineDescription;
-
 	private Pipeline pipeline = null;
-	//private VerticalSplitPanel verticalSplit;
-
 	PipelineCanvas pc;
-
 	DPUTree dpuTree;
-
 	TabSheet tabSheet;
 
 	/**
@@ -120,6 +112,8 @@ class PipelineEdit extends ViewComponent {
 			public void componentEvent(Event event) {
 			}
 		});
+		
+		pc.zoom(true);
 
 		DragAndDropWrapper dadWrapper = new DragAndDropWrapper(pc);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
@@ -142,7 +136,8 @@ class PipelineEdit extends ViewComponent {
 				if (obj.getClass() == DPUTemplateRecord.class) {
 					DPUTemplateRecord dpu = (DPUTemplateRecord) obj;
 					if (App.getApp().getDPUs().getAllTemplates().contains(dpu)) {
-						pc.addDpu(dpu, mouse.getClientX() - 261 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 256 + UI.getCurrent().getScrollTop());
+						pc.addDpu(dpu, mouse.getClientX() - 261 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 256 + UI
+								.getCurrent().getScrollTop());
 					} else {
 						// TODO log unknown DPURecord
 					}
@@ -371,7 +366,8 @@ class PipelineEdit extends ViewComponent {
 	}
 
 	/**
-	 * Loads pipeline to edit or create. Pipeline entity is loaded into this.entity. If /New parameter is passed in url, create just
+	 * Loads pipeline to edit or create. Pipeline entity is loaded into
+	 * this.entity. If /New parameter is passed in url, create just
 	 * representation for pipeline.
 	 *
 	 * @param event
@@ -430,6 +426,21 @@ class PipelineEdit extends ViewComponent {
 		} else {
 			label.setValue("<h3>Editing pipeline<h3>");// + this.pipeline.getName() + "</h3>");
 		}
+
+		Button zoomIn = new Button("Zoom In", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				pc.zoom(true);
+			}
+		});
+		Button zoomOut = new Button("Zoom Out", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				pc.zoom(false);
+			}
+		});
+		mainLayout.addComponent(zoomIn);
+		mainLayout.addComponent(zoomOut);
 
 		//Resizing canvas
 		UI.getCurrent().setImmediate(true);
