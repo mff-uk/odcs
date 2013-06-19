@@ -190,12 +190,17 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	@Override
 	public FileLoaderConfig getConfiguration() throws ConfigException {
-		FileLoaderConfig config = new FileLoaderConfig();
-		config.DiffName = checkBoxDiffName.getValue();
-		config.DirectoryPath = textFieldDir.getValue();
-		config.FileName = textFieldFileName.getValue();
-		config.RDFFileFormat = (RDFFormatType) comboBoxFormat.getValue();
-		return config;
+		if ((!textFieldDir.isValid()) || (!textFieldFileName.isValid())) {
+			throw new ConfigException();
+		} else {
+			FileLoaderConfig config = new FileLoaderConfig();
+			config.DiffName = checkBoxDiffName.getValue();
+			config.DirectoryPath = textFieldDir.getValue();
+			config.FileName = textFieldFileName.getValue();
+			config.RDFFileFormat = (RDFFormatType) comboBoxFormat.getValue();
+			return config;
+		}
+
 	}
 	
     /**

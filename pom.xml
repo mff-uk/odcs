@@ -18,6 +18,7 @@
 		<!-- define output dirs -->
 		<project.output.lib>target\lib\</project.output.lib>
 		<project.output.dpu>target\dpu\</project.output.dpu>
+		<skipTests>false</skipTests>
 	</properties>
 
 	<modules>
@@ -84,17 +85,73 @@
 
 	<build>
         <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
+					<configuration>
                         <source>${project.java.version}</source>
                         <target>${project.java.version}</target>
-                    </configuration>
-                </plugin>
-            </plugins>
+					</configuration>
+				</plugin>
+				
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.14.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>2.14.1</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<includes>
+							<include>**/*.java</include>
+						</includes>
+						<excludedGroups>cz.cuni.xrg.intlib.commons.IntegrationTest</excludedGroups>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.14.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>2.14.1</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<groups>cz.cuni.xrg.intlib.commons.IntegrationTest</groups>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+							<configuration>
+								<includes>
+									<include>**/*.java</include>
+								</includes>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
         </pluginManagement>
     </build>
-
+	
+	<profiles>
+		<profile>
+			<id>skipTests</id>
+			<properties>
+				<skipTests>true</skipTests>
+			</properties>
+		</profile>
+	</profiles>
+	
 </project>

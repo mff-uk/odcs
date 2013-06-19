@@ -48,13 +48,18 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
     
 	@Override
 	public FileExtractorConfig getConfiguration() throws ConfigException {
-		FileExtractorConfig conf = new FileExtractorConfig();
-		conf.Path = textFieldPath.getValue();
-		conf.FileSuffix = (String)comboBoxFormat.getValue();
-		conf.OnlyThisText= textFieldOnly.getValue();
-		// TODO Maria: read from dialog
-		conf.OnlyThisSuffix = false;
-		return conf;
+		
+		if (!textFieldPath.isValid()) {
+			throw new ConfigException();
+		} else {
+			FileExtractorConfig conf = new FileExtractorConfig();
+			conf.Path = textFieldPath.getValue();
+			conf.FileSuffix = (String) comboBoxFormat.getValue();
+			conf.OnlyThisText = textFieldOnly.getValue();
+			// TODO Maria: read from dialog
+			conf.OnlyThisSuffix = false;
+			return conf;
+		}
 	}    
     
     @Override

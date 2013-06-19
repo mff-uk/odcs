@@ -194,6 +194,7 @@ class DPU extends ViewComponent {
 
 			@Override
 			public void itemClick(ItemClickEvent event) {
+
 				if(event.getItemId().getClass() != DPUTemplateRecord.class) {
 					dpuLayout.removeComponent(dpuDetailLayout);
 					dpuLayout.removeComponent(layoutInfo);
@@ -231,8 +232,6 @@ class DPU extends ViewComponent {
 							groupVisibility.setValue(selecteDpuVisibility);
 							groupVisibility.setEnabled(true);
 						}
-
-					
 				} else {
 					dpuLayout.removeComponent(dpuDetailLayout);
 					dpuLayout.removeComponent(layoutInfo);
@@ -537,7 +536,8 @@ class DPU extends ViewComponent {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-						if ((selectedDpuWrap != null)
+					
+						if ((selectedDpuWrap != null )
 								&& (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
 							selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue());
 							selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
@@ -549,15 +549,23 @@ class DPU extends ViewComponent {
 							// save configuration
 							try {
 								selectedDpuWrap.saveConfig();
-							} catch(ConfigException e) {
+								Notification.show("DPURecord was saved",
+										Notification.Type.HUMANIZED_MESSAGE);
+							} catch (ConfigException e) {
+
 								Notification.show(
+										"Failed to save DPURecord.", "Mandatory fields should be filled", Type.ERROR_MESSAGE);
+
+								/*Notification.show(
 										"Failed to save configuration from dialog.",
-										e.getMessage(), Type.ERROR_MESSAGE);
+										e.getMessage(), Type.ERROR_MESSAGE);*/
+									
 								LOG.error("Can't save configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-							}
+							}	
 
 							// store into DB
 							selectedDpuWrap.save();
+
 							
 							dpuTree.refresh();
 
