@@ -20,6 +20,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -45,6 +46,7 @@ class PipelineEdit extends ViewComponent {
 	PipelineCanvas pc;
 	DPUTree dpuTree;
 	TabSheet tabSheet;
+	DragAndDropWrapper dadWrapper;
 
 	/**
 	 * Empty constructor.
@@ -86,6 +88,7 @@ class PipelineEdit extends ViewComponent {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setMargin(true);
 		pc = new PipelineCanvas();
+		pc.setImmediate(true);
 		pc.setWidth(1060, Unit.PIXELS);
 		pc.setHeight(630, Unit.PIXELS);
 		pc.init();
@@ -115,7 +118,7 @@ class PipelineEdit extends ViewComponent {
 		
 		pc.zoom(true);
 
-		DragAndDropWrapper dadWrapper = new DragAndDropWrapper(pc);
+		dadWrapper = new DragAndDropWrapper(pc);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
 		dadWrapper.setWidth(1060, Unit.PIXELS);
 		dadWrapper.setHeight(630, Unit.PIXELS);
@@ -156,15 +159,35 @@ class PipelineEdit extends ViewComponent {
 
 		tabSheet.setWidth(1080, Unit.PIXELS);
 		tabSheet.setHeight(670, Unit.PIXELS);
+		tabSheet.setImmediate(true);
 
 		layout.addComponent(tabSheet);
 
+		VerticalLayout left = new VerticalLayout();
 		dpuTree = new DPUTree();
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setWidth(220, Unit.PIXELS);
 		dpuTree.setDraggable(true);
-		layout.addComponentAsFirst(dpuTree);
+		left.addComponentAsFirst(dpuTree);
 
+		Button zoomIn = new Button("Zoom In", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Position bounds = pc.zoom(true);
+				calculateCanvasDimensions(bounds);
+			}
+		});
+		Button zoomOut = new Button("Zoom Out", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Position bounds = pc.zoom(false);
+				calculateCanvasDimensions(bounds);
+			}
+		});
+		left.addComponent(zoomIn);
+		left.addComponent(zoomOut);
+
+		layout.addComponentAsFirst(left);
 		mainLayout.addComponent(layout);
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
@@ -427,21 +450,6 @@ class PipelineEdit extends ViewComponent {
 			label.setValue("<h3>Editing pipeline<h3>");// + this.pipeline.getName() + "</h3>");
 		}
 
-		Button zoomIn = new Button("Zoom In", new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				pc.zoom(true);
-			}
-		});
-		Button zoomOut = new Button("Zoom Out", new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				pc.zoom(false);
-			}
-		});
-		mainLayout.addComponent(zoomIn);
-		mainLayout.addComponent(zoomOut);
-
 		//Resizing canvas
 		UI.getCurrent().setImmediate(true);
 		resizeCanvas(UI.getCurrent().getPage().getBrowserWindowWidth());
@@ -457,6 +465,27 @@ class PipelineEdit extends ViewComponent {
 
 		// work with pipeline here ...
 
+	}
+	
+	private void calculateCanvasDimensions(Position zoomBounds) {
+		int browserWidth = 1050 + (UI.getCurrent().getPage().getBrowserWindowWidth() - 1350);
+		int browserHeight = 630;
+		if(zoomBounds.getX() > browserWidth) {
+			browserWidth = zoomBounds.getX();
+			//enable horizontal scrollbar
+		}
+		if(zoomBounds.getY() > browserHeight) {
+			browserHeight = zoomBounds.getY();
+			//enable vertical scrollbar
+		}
+		pc.setWidth(browserWidth, Unit.PIXELS);
+		pc.setHeight(browserHeight, Unit.PIXELS);
+		dadWrapper.setSizeUndefined();
+		tabSheet.markAsDirty();
+		
+		//pc.resizeCanvas(browserHeight, browserWidth);
+		//tabSheet.setWidth(browserWidth + 20, Unit.PIXELS);
+		//tabSheet.setHeight(browserHeight + 40, Unit.PIXELS);
 	}
 
 	private void resizeCanvas(int width) {

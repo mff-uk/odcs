@@ -8,6 +8,7 @@ import java.util.Set;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import java.awt.Point;
 import javax.persistence.*;
 
 /**
@@ -304,6 +305,20 @@ public class PipelineGraph {
 			}
 		}
 		return false;
+	}
+	
+	public Position getBounds() {
+		Position bounds = new Position(0, 0);
+		for(Node node : nodes) {
+			Position nodePosition = node.getPosition();
+			if(nodePosition.getX() > bounds.getX()) {
+				bounds.setX(nodePosition.getX());
+			}
+			if(nodePosition.getY() > bounds.getY()) {
+				bounds.setY(nodePosition.getY());
+			}
+		}
+		return bounds;
 	}
 
 }

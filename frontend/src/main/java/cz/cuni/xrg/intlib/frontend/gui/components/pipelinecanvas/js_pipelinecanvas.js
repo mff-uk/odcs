@@ -149,14 +149,16 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	var addConnectionIcon = null;
 	var removeConnectionIcon = null;
 	var debugIcon = null;
+	
+	var backgroundRect = null;
 
     /** Init function which builds entire stage for pipeline */
     function init() {
 
         stage = new Kinetic.Stage({
             container: 'container',
-            width: e.clientWidth,
-            height: e.clientHeight
+            width: 1600,
+            height: 630
         });
 
         dpuLayer = new Kinetic.Layer();
@@ -187,12 +189,12 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         //background layer for detection of mouse move on whole stage
         var backgroundLayer = new Kinetic.Layer();
-        var backgroundRect = new Kinetic.Rect({
+        backgroundRect = new Kinetic.Rect({
             x: 0,
             y: 0,
             fill: '#fff',
-            width: 1500,
-            height: 800
+            width: 1600,
+            height: 630
         });
 
         stage.on('click', function(evt) {
@@ -664,14 +666,18 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
      }
 	 
 	 function resizeStage(height, width) {
-		 stage.height = height;
-		 stage.width = width;
-		 stage.draw();
+		 //stage.height = height;
+		 //stage.width = width;
+		 //backgroundRect.height = height;
+		 //backgroundRect.width = width;
+		 //stage.draw();
 	 }
 	 
 	 function zoomStage(zoom) {
 		 scale = zoom;
 		 stage.setScale(zoom);
+		 stage.setWidth(1600 * zoom);
+		 stage.setHeight(630 * zoom);
 		 stage.draw();
 	 }
 

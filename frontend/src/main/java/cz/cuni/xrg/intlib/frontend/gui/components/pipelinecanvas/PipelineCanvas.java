@@ -16,6 +16,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
 import java.util.Collection;
@@ -28,6 +29,9 @@ import java.util.Collection;
 @SuppressWarnings("serial")
 @JavaScript({"js_pipelinecanvas.js", "kinetic-v4.4.3.min.js", "jquery-2.0.0.min.js"})
 public class PipelineCanvas extends AbstractJavaScriptComponent {
+	
+	final int DPU_WIDTH = 120;
+	final int DPU_HEIGHT = 100;
 
 	int dpuCount = 0;
 	int connCount = 0;
@@ -260,7 +264,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(height, width);
 	}
 
-	public void zoom(boolean isZoomIn) {
+	public Position zoom(boolean isZoomIn) {
+		Position bounds = new Position(0, 0);
+		if(graph != null) {
+			bounds = graph.getBounds();
+		}
+		bounds.setX(bounds.getX() + DPU_WIDTH);
+		bounds.setY(bounds.getY() + DPU_HEIGHT);
 		if(isZoomIn && currentZoom < 2) {
 			if(currentZoom < 1.5) {
 				currentZoom = 1.5f;
@@ -274,7 +284,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				currentZoom = 1.0f;
 			}
 		}
-		
 		getRpcProxy(PipelineCanvasClientRpc.class).zoomStage(currentZoom);
+		bounds.setX((int) (bounds.getX() * currentZoom));
+		bounds.setY((int) (bounds.getY() * currentZoom));
+		//return bounds;
+		return new Position((int)(1600 * currentZoom), (int)(630 * currentZoom));
 	}
 }
