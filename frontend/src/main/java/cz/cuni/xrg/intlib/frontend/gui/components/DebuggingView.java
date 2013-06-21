@@ -58,7 +58,7 @@ public class DebuggingView extends CustomComponent {
 
 		executionRecordsTable = new RecordsTable();
 		executionRecordsTable.setWidth("100%");
-		executionRecordsTable.setHeight("160px");
+		//executionRecordsTable.setHeight("160px");
 
 		mainLayout.addComponent(executionRecordsTable);
 		
@@ -79,8 +79,9 @@ public class DebuggingView extends CustomComponent {
 		logLayout.addComponent(refreshComponent);
 		logLayout.addComponent(logTextArea);
 		logLayout.setSizeFull();
-		logTextArea.setRows(30);
+		//logTextArea.setRows(30);
 		logTextArea.setSizeFull();
+		logTextArea.setHeight(460, Unit.PIXELS);
 		logTab = tabs.addTab(logLayout, "Log");
 
 		queryView = new QueryView(this);
@@ -331,5 +332,13 @@ public class DebuggingView extends CustomComponent {
 			}
 		});
 		mainLayout.addComponent(dpuSelector);
+	}
+
+	public void resize(float height) {
+		float newLogHeight = height - 325;
+		if(newLogHeight < 400) {
+			newLogHeight = 400;
+		}
+		logTextArea.setHeight(newLogHeight, Unit.PIXELS);
 	}
 }

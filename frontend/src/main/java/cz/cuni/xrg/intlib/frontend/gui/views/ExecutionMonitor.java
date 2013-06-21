@@ -430,6 +430,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		DebuggingView debugView = new DebuggingView(pipelineExec, null,
 				pipelineExec.isDebugging());
 		logLayout.addComponent(debugView);
+		logLayout.setExpandRatio(debugView, 1.0f);
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidth("100%");
@@ -464,6 +465,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		buttonBar.setComponentAlignment(buttonExport, Alignment.BOTTOM_RIGHT);
 
 		logLayout.addComponent(buttonBar);
+		logLayout.setExpandRatio(buttonBar, 0);
 
 		return logLayout;
 

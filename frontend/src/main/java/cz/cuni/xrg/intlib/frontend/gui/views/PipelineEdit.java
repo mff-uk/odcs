@@ -245,14 +245,22 @@ class PipelineEdit extends ViewComponent {
 		//verticalSplit.setLocked(true);
 	}
 
-	private void openDebug(DebuggingView debug) {
+	private void openDebug(final DebuggingView debug) {
 		Window debugWindow = new Window("Debug window", debug);
+		debugWindow.setImmediate(true);
 		debugWindow.setWidth("600px");
-		debugWindow.setHeight("620px");
+		debugWindow.setHeight("785px");
 		debugWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {
 				//closeDebug();
+			}
+		});
+		debugWindow.addResizeListener(new Window.ResizeListener() {
+
+			@Override
+			public void windowResized(Window.ResizeEvent e) {
+				debug.resize(e.getWindow().getHeight());
 			}
 		});
 		App.getApp().addWindow(debugWindow);
