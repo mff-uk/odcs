@@ -8,7 +8,7 @@ import com.vaadin.data.util.BeanContainer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 
 /**
  * Class support creating vaadin container from List<?>.

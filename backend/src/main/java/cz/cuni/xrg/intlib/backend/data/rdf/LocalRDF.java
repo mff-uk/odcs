@@ -1,15 +1,16 @@
 package cz.cuni.xrg.intlib.backend.data.rdf;
 
-import cz.cuni.xrg.intlib.commons.app.rdf.LocalRDFRepo;
-import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.commons.data.rdf.InvalidQueryException;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
-import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
+import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -300,7 +301,8 @@ public class LocalRDF implements RDFDataRepository {
 	 */
 	@Override
 	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
-		impl.copyAllDataToTargetRepository(targetRepo.getDataRepository());
+		// TODO Jirka: Check re-cast, why need RDFDataRepository and not Repository ?
+		impl.copyAllDataToTargetRepository( (RDFDataRepository)targetRepo.getDataRepository());
 	}
 
 	@Override
@@ -364,14 +366,14 @@ public class LocalRDF implements RDFDataRepository {
 	}
 
 	@Override
-	public void load(File directory) throws FileNotFoundException, Exception {
+	public void load(File directory) {
 
 		File file = new File(workingDirectory, dumpName);
 		impl.load(file);
 	}
 
 	@Override
-	public void save(File directory) throws Exception {
-		// TODO Auto-generated method stub
+	public void save(File directory) {
+		// TODO Jirka: pleas provide impl.
 	}
 }

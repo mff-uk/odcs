@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.intlib.loader.file;
 
 import cz.cuni.xrg.intlib.commons.configuration.Config;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 /**
  * Enum for naming setting values.

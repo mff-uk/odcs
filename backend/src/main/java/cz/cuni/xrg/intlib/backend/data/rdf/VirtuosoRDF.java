@@ -1,15 +1,16 @@
 package cz.cuni.xrg.intlib.backend.data.rdf;
 
-import cz.cuni.xrg.intlib.commons.app.rdf.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
-import cz.cuni.xrg.intlib.commons.data.rdf.InvalidQueryException;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
-import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
+import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -116,7 +117,7 @@ public class VirtuosoRDF implements RDFDataRepository {
     }
 
     @Override
-    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) {
+    public void extractRDFfromXMLFileToRepository(String path, String suffix, String baseURI, boolean useSuffix) throws ExtractException {
         impl.extractRDFfromXMLFileToRepository(path, suffix, baseURI, useSuffix);
     }
 
@@ -128,10 +129,11 @@ public class VirtuosoRDF implements RDFDataRepository {
      * @param format
      * @param canFileOverWrite
      * @throws CannotOverwriteFileException
+     * @throws LoadException 
      */
     @Override
     public void loadRDFfromRepositoryToXMLFile(String directoryPath, String fileName, org.openrdf.rio.RDFFormat format,
-            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException {
+            boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException {
         impl.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverWrite, isNameUnique);
     }
 
@@ -143,15 +145,16 @@ public class VirtuosoRDF implements RDFDataRepository {
      * @param defaultGraphURI
      * @param userName
      * @param password
+     * @throws LoadException 
      */
     @Override
     public void loadtoSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String userName,
-            String password, WriteGraphType graphType) {
+            String password, WriteGraphType graphType) throws LoadException {
         impl.loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, userName, password, graphType);
     }
 
     @Override
-    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) {
+    public void extractfromSPARQLEndpoint(URL endpointURL, List<String> endpointGraphsURI, String query, String hostName, String password) throws ExtractException {
         impl.extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, hostName, password);
     }
 
@@ -218,7 +221,7 @@ public class VirtuosoRDF implements RDFDataRepository {
     }
 
     @Override
-    public void load(File directory) throws FileNotFoundException, Exception {
+    public void load(File directory) {
         		
     }
 
@@ -266,7 +269,8 @@ public class VirtuosoRDF implements RDFDataRepository {
 
     @Override
     public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
-        impl.copyAllDataToTargetRepository(targetRepo.getDataRepository());
+    	// TODO Jirka: is usage of (RDFDataRepository) all right?
+        impl.copyAllDataToTargetRepository( (RDFDataRepository) targetRepo.getDataRepository());
     }
 
     @Override
@@ -280,12 +284,12 @@ public class VirtuosoRDF implements RDFDataRepository {
     }
 
     @Override
-    public Map<String, List<String>> makeQueryOverRepository(String query) throws InvalidQueryException{
+    public Map<String, List<String>> makeQueryOverRepository(String query) throws InvalidQueryException {
         return impl.makeQueryOverRepository(query);
     }
 
 	@Override
-	public void save(File directory) throws Exception {
+	public void save(File directory) {
 		// TODO Auto-generated method stub
 		
 	}

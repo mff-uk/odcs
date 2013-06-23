@@ -62,17 +62,18 @@ public interface DataUnit {
      * Save DataUnit context into given directory. In case
      * of any problem throws exception. The directory doesn't have to exist.
      * The directory can be the same as the DataUnit working directory!
-     * @throws Exception
+     * @throws RuntimeException
      */
-    public void save(File directory) throws Exception;
+    public void save(File directory) throws RuntimeException;
     
     /**
      * Load data unit context from directory. Throw {@link FileNotFoundException}
-     * if some of required file can't be found. And {@link Exception}
+     * if some of required file can't be found. And {@link RuntimeException}
      * in case of any other error.
      * @param directory
      * @throws FileNotFoundException
-     * @throws Exception
+     * @throws RuntimeException
      */
-    public void load(File directory) throws FileNotFoundException, Exception;
+    public void load(File directory) throws FileNotFoundException, RuntimeException;
 }
+

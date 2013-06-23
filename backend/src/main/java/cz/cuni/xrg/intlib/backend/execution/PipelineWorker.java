@@ -238,7 +238,7 @@ class PipelineWorker implements Runnable {
 			} else {
 				// error -> end pipeline
 				executionFailed = true;
-				eventPublisher.publishEvent(new PipelineFailedEvent("Error in DPURecord.", node.getDpuInstance(), execution, this));
+				eventPublisher.publishEvent(new PipelineFailedEvent("DPU execution failed.", node.getDpuInstance(), execution, this));
 				break;
 			}
 			
@@ -393,7 +393,9 @@ class PipelineWorker implements Runnable {
 		// load instance
 		try {
 			dpuInstanceRecord.loadInstance(moduleFacade);
-		} catch(ModuleException | FileNotFoundException e) {
+		} catch(FileNotFoundException e) {
+			throw new StructureException("Failed to load instance of DPU from file.", e);
+		} catch(ModuleException e) {
 			throw new StructureException("Failed to create instance of DPU.", e);
 		}
 		

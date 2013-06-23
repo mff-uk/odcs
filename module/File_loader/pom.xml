@@ -15,5 +15,5 @@
         <dpu.package>cz.cuni.mff.xrg.intlib.loader.file</dpu.package>
         <dpu.mainClass>FileLoader</dpu.mainClass>
     </properties>
- 	
+  	
 </project>

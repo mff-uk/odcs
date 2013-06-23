@@ -4,7 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cz.cuni.xrg.intlib.commons.configuration.Config;
-import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
+
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 
 /**
  *

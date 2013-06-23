@@ -70,6 +70,13 @@
 			<type>jar</type>
 		</dependency>
 
+		<dependency> <!-- RDF data unit -->
+			<groupId>cz.cuni.xrg.intlib</groupId>
+			<artifactId>RDF</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>pagedtable</artifactId>

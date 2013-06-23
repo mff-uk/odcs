@@ -8,8 +8,8 @@ import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 /**
  * FileLoaderConfig dialog.

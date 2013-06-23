@@ -7,8 +7,8 @@ import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.commons.data.rdf.CannotOverwriteFileException;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;

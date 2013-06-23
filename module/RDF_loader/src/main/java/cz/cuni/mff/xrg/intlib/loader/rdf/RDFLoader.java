@@ -1,15 +1,14 @@
 package cz.cuni.mff.xrg.intlib.loader.rdf;
 
-import cz.cuni.xrg.intlib.commons.data.rdf.WriteGraphType;
-
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.rdf.RDFDataRepository;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 import java.net.MalformedURLException;
 import java.net.URL;

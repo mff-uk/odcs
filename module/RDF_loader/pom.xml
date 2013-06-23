@@ -15,5 +15,5 @@
         <dpu.package>cz.cuni.mff.xrg.intlib.loader.rdf</dpu.package>
         <dpu.mainClass>RDFLoader</dpu.mainClass>
     </properties>
- 	
+ 	 	
 </project>

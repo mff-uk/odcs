@@ -108,11 +108,17 @@ public class PipelineExecution  {
      * @return
      */
     public ExecutionContext createExecutionContext(File directory) {
+    	
+    	// TODO Petyr, Honza: Persist to DB
+    	
+    	/*
     	if (context == null) {
     		context = new ExecutionContextImpl(directory);
-    	}
-    	// TODO Petyr, Honza: Persist to DB
+    	}    	
     	return context;
+    	*/
+    	
+    	return new ExecutionContextImpl(directory);
     }
     
     public long getId() {

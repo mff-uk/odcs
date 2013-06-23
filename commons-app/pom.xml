@@ -171,18 +171,7 @@
 
 		<!-- END OF SPRING DEPENDENCIES -->
 	    
-        <dependency> <!-- Virtuoso dependency -->
-            <groupId>com.openlinksw</groupId>
-            <artifactId>virt_sesame2</artifactId>
-            <version>2.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.openlinksw</groupId>
-            <artifactId>virtjdbc</artifactId>
-            <version>3</version>
-        </dependency>
-
-		<!-- Embedded database used for testing -->
+        <!-- Embedded database used for testing -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

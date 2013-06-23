@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.Container;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
-import cz.cuni.xrg.intlib.commons.app.rdf.RDFTriple;
+import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
 import java.util.List;

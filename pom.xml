@@ -22,7 +22,11 @@
 	</properties>
 
 	<modules>
+		<!-- commons -->
 		<module>commons</module>
+		<!-- libs -->
+		<module>rdf</module>
+		<!-- application -->
 		<module>commons-app</module>
 		<module>commons-module</module>
 		<module>commons-web</module>
@@ -155,3 +159,4 @@
 	</profiles>
 	
 </project>
+

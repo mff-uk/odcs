@@ -108,7 +108,7 @@ public class DataUnitFactory  {
 			LocalRDF repository = new LocalRDF();
 			File workingDirectory = contextWriter.createDirForInput(dpuInstance, DataUnitType.RDF_Local, counter);
 			repository.createNew(id, workingDirectory, input);	
-			break;
+			return repository;
 		case RDF_Virtuoso:
 			break;
 		}
