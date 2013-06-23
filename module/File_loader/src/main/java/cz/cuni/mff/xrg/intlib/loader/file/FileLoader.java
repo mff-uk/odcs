@@ -18,82 +18,83 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  * @author Petyr
  */
-public class FileLoader implements  Load, 
-	Configurable<FileLoaderConfig>, ConfigDialogProvider<FileLoaderConfig> {
-    
-    /**
-     * DPU configuration.
-     */
-    private FileLoaderConfig config = new FileLoaderConfig();
-    
-    /**
-     * Logger class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(FileLoader.class);
+public class FileLoader implements Load,
+		Configurable<FileLoaderConfig>, ConfigDialogProvider<FileLoaderConfig> {
 
-    @Override
-    public void load(LoadContext context) throws LoadException {
+	/**
+	 * DPU configuration.
+	 */
+	private FileLoaderConfig config = new FileLoaderConfig();
 
-        //input
-        if (context.getInputs().isEmpty()) {
-            throw new LoadException("Missing inputs!");
-        }
+	/**
+	 * Logger class.
+	 */
+	private static final Logger LOG = LoggerFactory.getLogger(FileLoader.class);
 
-        DataUnit dataUnit = context.getInputs().get(0);
+	@Override
+	public void load(LoadContext context) throws LoadException {
 
-        RDFDataRepository repository = null;
+		//input
+		if (context.getInputs().isEmpty()) {
+			throw new LoadException("Missing inputs!");
+		}
 
-        if (dataUnit instanceof RDFDataRepository) {
-            repository = (RDFDataRepository) dataUnit;
-        } else {
-            // wrong input
-            throw new LoadException("Wrong input type " + dataUnit.getType().toString() + " instead of RDF.");
-        }
+		DataUnit dataUnit = context.getInputs().get(0);
 
-        String directoryPath = config.DirectoryPath;
-        String fileName = config.FileName;
-        RDFFormat format = null;
-        switch(config.RDFFileFormat)
-        {
-        default:
-        case AUTO:
-        case RDFXML:
-        	format = RDFFormat.RDFXML;
-        	break;
-        case N3:
-        	format = RDFFormat.N3;
-        	break;
-        case TRIG:
-        	format = RDFFormat.TRIG;
-        	break;
-        case TTL:
-        	format = RDFFormat.TURTLE;
-        	break;
-        }
-        boolean isNameUnique = config.DiffName;
-        boolean canFileOverwritte = true;
+		RDFDataRepository repository = null;
 
-        try {
-            repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, canFileOverwritte, isNameUnique);
-        } catch (CannotOverwriteFileException ex) {
-            throw new LoadException(ex);
-        }
-    }
+		if (dataUnit instanceof RDFDataRepository) {
+			repository = (RDFDataRepository) dataUnit;
+		} else {
+			// wrong input
+			throw new LoadException("Wrong input type " + dataUnit.getType()
+					.toString() + " instead of RDF.");
+		}
 
-	
-    @Override
+		String directoryPath = config.DirectoryPath;
+		String fileName = config.FileName;
+
+		RDFFormat format;
+
+		switch (config.RDFFileFormat) {
+			default:
+			case AUTO:
+			case RDFXML:
+				format = RDFFormat.RDFXML;
+				break;
+			case N3:
+				format = RDFFormat.N3;
+				break;
+			case TRIG:
+				format = RDFFormat.TRIG;
+				break;
+			case TTL:
+				format = RDFFormat.TURTLE;
+				break;
+		}
+
+		boolean isNameUnique = config.DiffName;
+		boolean canFileOverwritte = true;
+
+		try {
+			repository.loadRDFfromRepositoryToXMLFile(directoryPath, fileName,
+					format, canFileOverwritte, isNameUnique);
+		} catch (CannotOverwriteFileException ex) {
+			throw new LoadException(ex);
+		}
+	}
+
+	@Override
 	public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
 		return new FileLoaderDialog();
 	}
 
-	
-    @Override
+	@Override
 	public void configure(FileLoaderConfig c) throws ConfigException {
-		this.config = c;		
+		config = c;
 	}
 
-	
-    @Override
+	@Override
 	public FileLoaderConfig getConfiguration() {
 		return config;
 	}

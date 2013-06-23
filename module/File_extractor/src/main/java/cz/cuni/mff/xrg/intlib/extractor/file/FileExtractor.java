@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.intlib.extractor.file;
 
-
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
@@ -20,37 +19,38 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  * @author Petyr
  */
-public class FileExtractor implements Extract, 
-	Configurable<FileExtractorConfig>, ConfigDialogProvider<FileExtractorConfig> {
+public class FileExtractor implements Extract,
+		Configurable<FileExtractorConfig>, ConfigDialogProvider<FileExtractorConfig> {
 
-    /**
-     * Logger class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(FileExtractor.class);
+	/**
+	 * Logger class.
+	 */
+	private static final Logger LOG = LoggerFactory.getLogger(
+			FileExtractor.class);
 
-    private FileExtractorConfig config = new FileExtractorConfig();
-    
-    public FileExtractor() { }
+	private FileExtractorConfig config = new FileExtractorConfig();
 
-    @Override
-    public void extract(ExtractContext context) throws ExtractException {
+	@Override
+	public void extract(ExtractContext context) throws ExtractException {
 
-    	RDFDataRepository repository;
+		RDFDataRepository repository = null;
+		
 		try {
-			repository = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+			repository = (RDFDataRepository) context.addOutputDataUnit(
+					DataUnitType.RDF);
 		} catch (DataUnitCreateException e) {
 			throw new ExtractException("Can't create DataUnit", e);
 		}
-		
-        if (repository == null) {
-            throw new ExtractException("DataUnitFactory returned null.");
-        }
 
-        final String baseURI = "";
+		if (repository == null) {
+			throw new ExtractException("DataUnitFactory returned null.");
+		}
 
-        repository.extractRDFfromXMLFileToRepository(
-        		config.Path, config.FileSuffix, baseURI, config.OnlyThisSuffix);
-    }
+		final String baseURI = "";
+
+		repository.extractRDFfromXMLFileToRepository(
+				config.Path, config.FileSuffix, baseURI, config.OnlyThisSuffix);
+	}
 
 	@Override
 	public AbstractConfigDialog<FileExtractorConfig> getConfigurationDialog() {
@@ -59,7 +59,7 @@ public class FileExtractor implements Extract,
 
 	@Override
 	public void configure(FileExtractorConfig c) throws ConfigException {
-		config = c;		
+		config = c;
 	}
 
 	@Override

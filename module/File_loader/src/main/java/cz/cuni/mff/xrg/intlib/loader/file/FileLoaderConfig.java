@@ -11,13 +11,12 @@ import cz.cuni.xrg.intlib.commons.data.rdf.RDFFormatType;
  *
  */
 public class FileLoaderConfig implements Config {
-	
-    public String DirectoryPath;
-    
-    public String FileName;
-    
-    public RDFFormatType RDFFileFormat;
-    
-    public Boolean DiffName;
-    
+
+	public String DirectoryPath;
+
+	public String FileName;
+
+	public RDFFormatType RDFFileFormat;
+
+	public Boolean DiffName;
 }

@@ -12,10 +12,16 @@ import cz.cuni.xrg.intlib.commons.configuration.Config;
  *
  */
 public class RDFExtractorConfig implements Config {
-    public String SPARQL_endpoint;
-    public String Host_name;  
-    public String Password;
-    public List<String> GraphsUri = new LinkedList<>();
-    public String SPARQL_query;
-    public Boolean ExtractFail;
+
+	public String SPARQL_endpoint;
+
+	public String Host_name;
+
+	public String Password;
+
+	public List<String> GraphsUri = new LinkedList<>();
+
+	public String SPARQL_query;
+
+	public Boolean ExtractFail;
 }
