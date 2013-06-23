@@ -71,7 +71,10 @@ public class TemplateConfiguration implements Configuration {
 	 */
 	@Override
 	public Map<String, Serializable> getValues() {
-		return config;
+		// make defensive copy
+		HashMap<String, Serializable> newConfig = new HashMap<>();
+		newConfig.putAll(this.config);
+		return newConfig;
 	}
 
 	/**
