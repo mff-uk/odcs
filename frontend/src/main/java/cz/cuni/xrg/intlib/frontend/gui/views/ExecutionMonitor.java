@@ -212,6 +212,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		statusFilter.setCaption("Status:");
 		statusFilter.setInputPrompt("execution status");
 		statusFilter.setWidth("110px");
+		statusFilter.setTextInputAllowed(false);
 
 		statusFilter.addItem("CANCELLED");
 		statusFilter.addItem("FAILED");
@@ -249,6 +250,8 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		debugFilter.setCaption("Debug:");
 		debugFilter.setInputPrompt("true/false");
 		debugFilter.setWidth("110px");
+		debugFilter.setTextInputAllowed(false);
+		
 		debugFilter.addItem("true");
 		debugFilter.addItem("false");
 		debugFilter.addValueChangeListener(new ValueChangeListener() {
