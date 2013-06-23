@@ -17,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -1361,6 +1360,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 * @param file
 	 */
+	@Override
 	public void save(File file) {
 
 		RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
@@ -1430,7 +1430,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param query String representation of query
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
 	 * map key is column name and <code>List&lt;String&gt;</code> are string
-	 * values in this column. When query is invalid, return * * * * * * * *
+	 * values in this column. When query is invalid, return
 	 * empty <code>Map</code>.
 	 */
 	@Override
