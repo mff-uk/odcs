@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import java.util.List;
 
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
@@ -35,11 +36,14 @@ public class FileLoader implements Load,
 	public void load(LoadContext context) throws LoadException {
 
 		//input
-		if (context.getInputs().isEmpty()) {
+		List<DataUnit> inputs = context.getInputs();
+
+
+		if (inputs.isEmpty()) {
 			throw new LoadException("Missing inputs!");
 		}
 
-		DataUnit dataUnit = context.getInputs().get(0);
+		DataUnit dataUnit = inputs.get(0);
 
 		RDFDataRepository repository = null;
 
