@@ -81,6 +81,7 @@ public class DebuggingView extends CustomComponent {
 		logLayout.setSizeFull();
 		//logTextArea.setRows(30);
 		logTextArea.setSizeFull();
+		logTextArea.setReadOnly(true);
 		logTextArea.setHeight(460, Unit.PIXELS);
 		logTab = tabs.addTab(logLayout, "Log");
 
