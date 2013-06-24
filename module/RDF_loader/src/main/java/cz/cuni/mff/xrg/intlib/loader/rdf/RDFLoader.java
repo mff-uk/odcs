@@ -32,11 +32,13 @@ public class RDFLoader implements Load,
     public void load(LoadContext context) throws LoadException {
         RDFDataRepository repository = null;
         // get repository
-        if (context.getInputs().isEmpty()) {
+		List<DataUnit> inputs=context.getInputs();
+		
+        if (inputs.isEmpty()) {
             throw new LoadException("Missing inputs!");
         }
 
-        DataUnit dataUnit = context.getInputs().get(0);
+        DataUnit dataUnit = inputs.get(0);
 
         if (dataUnit instanceof RDFDataRepository) {
             repository = (RDFDataRepository) dataUnit;

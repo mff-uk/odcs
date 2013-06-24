@@ -47,9 +47,12 @@ public class FileExtractor implements Extract,
 		}
 
 		final String baseURI = "";
+		final String path=config.Path;
+		final String fileSuffix=config.FileSuffix;
+		final boolean onlyThisSuffix=config.OnlyThisSuffix;
 
 		repository.extractRDFfromXMLFileToRepository(
-				config.Path, config.FileSuffix, baseURI, config.OnlyThisSuffix);
+				path, fileSuffix, baseURI, onlyThisSuffix);
 	}
 
 	@Override
