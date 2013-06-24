@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.scheduling;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 
@@ -25,8 +23,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
  * @author Petyr
  *
  */
-//@Entity
-//@Table(name = "schedule")
+@Entity
+@Table(name = "schedule")
 public class Schedule {
 
     /**
@@ -65,8 +63,8 @@ public class Schedule {
 	 * True if the schedule is enabled. Disabled
 	 * (not enabled) schedules are ignored.
 	 */
-	@Column(name = "enable")
-	private boolean enable;
+	@Column(name = "enabled")
+	private boolean enabled;
 	
 	/**
 	 * Schedule rule type.
@@ -109,7 +107,7 @@ public class Schedule {
 	 * Used only if {@link #type} = RunAfterPipeline.
      */
 	@ManyToOne
-	@JoinColumn(name = "pred", nullable = true)	
+	@JoinColumn(name = "predPipeline", nullable = true)	
     private Pipeline predPipeline;	
 	
 	/**
@@ -117,10 +115,22 @@ public class Schedule {
 	 */
 	public Schedule() { }
 
-	public Long getId() {
-		return id;
-	}	
-	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public Pipeline getPipeline() {
 		return pipeline;
 	}
@@ -137,12 +147,64 @@ public class Schedule {
 		this.justOnce = justOnce;
 	}
 
-	public boolean isEnable() {
-		return enable;
+	public boolean isEnabled() {
+		return enabled;
 	}
 
-	public void setEnable(boolean enable) {
-		this.enable = enable;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
+	public ScheduleType getType() {
+		return type;
+	}
+
+	public void setType(ScheduleType type) {
+		this.type = type;
+	}
+
+	public Date getFirstExecution() {
+		return firstExecution;
+	}
+
+	public void setFirstExecution(Date firstExecution) {
+		this.firstExecution = firstExecution;
+	}
+
+	public Date getLastExecution() {
+		return lastExecution;
+	}
+
+	public void setLastExecution(Date lastExecution) {
+		this.lastExecution = lastExecution;
+	}
+
+	public Long getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(Long period) {
+		this.period = period;
+	}
+
+	public PeriodeUnit getPeriodUnit() {
+		return periodUnit;
+	}
+
+	public void setPeriodUnit(PeriodeUnit periodUnit) {
+		this.periodUnit = periodUnit;
+	}
+
+	public Pipeline getPredPipeline() {
+		return predPipeline;
+	}
+
+	public void setPredPipeline(Pipeline predPipeline) {
+		this.predPipeline = predPipeline;
+	}
+
+	public Long getId() {
+		return id;
+	}
+	
 }
