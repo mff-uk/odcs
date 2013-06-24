@@ -6,7 +6,6 @@ package cz.cuni.xrg.intlib.commons.app.execution;
  * @author Jiri Tomes
  */
 public enum ExecutionStatus {
-
     CANCELLED,
     FAILED,
     FINISHED_SUCCESS,

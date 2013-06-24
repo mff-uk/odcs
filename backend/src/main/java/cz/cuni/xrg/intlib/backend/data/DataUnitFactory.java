@@ -2,8 +2,6 @@ package cz.cuni.xrg.intlib.backend.data;
 
 import java.io.File;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -11,7 +9,7 @@ import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 /**
- * Implementation of DataUnitFactory.
+ * Create new DataUnits.
  *
  * @author Petyr
  *
@@ -24,33 +22,27 @@ public class DataUnitFactory {
 	private String id;
 
 	/**
-	 * Manage mapping context into execution's directory.
+	 * Counter for creating a working directories.
 	 */
-	private ExecutionContext contextWriter;
-
+	private Integer counter;
+	
 	/**
-	 * Instance of DPURecord for which is this DataUnitFactory.
+	 * Root for working directories.
 	 */
-	private DPUInstanceRecord dpuInstance;
-
-	/**
-	 * Counter, can be use when generating sub folder names for new DataUnits.
-	 */
-	private int counter;
-
+	private File rootWorkingDirectory;
+	
 	/**
 	 * Base constructor..
 	 *
-	 * @param id               Unique id (Context id.)
+	 * @param id Unique id (Context id.)
 	 * @param storageDirectory The folder does not have to exist.
 	 * @param dpuInstance
+	 * @param rootWorkingDirectory Directory where DataUnits working directory can be created.
 	 */
-	public DataUnitFactory(String id, ExecutionContext contextWriter,
-			DPUInstanceRecord dpuInstance) {
+	public DataUnitFactory(String id, File rootWorkingDirectory) {
 		this.id = id;
-		this.contextWriter = contextWriter;
-		this.dpuInstance = dpuInstance;
 		this.counter = 0;
+		this.rootWorkingDirectory = rootWorkingDirectory; 
 	}
 
 	/**
@@ -112,15 +104,12 @@ public class DataUnitFactory {
 		switch (type) {
 			case RDF:
 			case RDF_Local:
-
-				File workingDirectory = contextWriter.createDirForInput(
-						dpuInstance, DataUnitType.RDF_Local, counter);
-
+				// create new working directory
+				File workingDirectory = new File(rootWorkingDirectory, counter.toString());
+				// create DataUnit
 				RDFDataRepository localRepository = LocalRDFRepo
 						.createLocalRepo(workingDirectory.getAbsolutePath(), id);
-
 				return localRepository;
-
 			case RDF_Virtuoso:
 				break;
 		}
@@ -140,7 +129,7 @@ public class DataUnitFactory {
 		++counter;
 		switch (type) {
 			case RDF:
-			case RDF_Local: // RDF_Local does't support default configuration
+			case RDF_Local: // RDF_Local does't support non-default configuration
 				return null;
 			case RDF_Virtuoso:
 				break;

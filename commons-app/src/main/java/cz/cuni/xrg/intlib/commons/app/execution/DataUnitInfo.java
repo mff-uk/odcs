@@ -31,18 +31,17 @@ public class DataUnitInfo {
 	private Long id;
 	
 	/**
-	 * DataUnit index, used to identify DataUnit in application.
+	 * Index of DataUnit. Used to determine folder.
 	 */
-	// TODO Petyr: use String name instead of Integer index
 	@Column(name="index")
 	private Integer index;
 	
 	/**
-	 * Associated working directory. Absolute path.
+	 * Name of DataUnit.
 	 */
-	@Column(name="directory")
-	private File directory;
-		
+	@Column(name="name")
+	private String name;
+			
 	/**
 	 * DataUnit type. 
 	 */
@@ -57,30 +56,55 @@ public class DataUnitInfo {
 	private boolean isInput;
 	
 	/**
-	 * Empty ctor because of JAP.
+	 * Empty constructor because of JAP.
 	 */	
 	public DataUnitInfo() { }
 	
-	public DataUnitInfo(File directory, DataUnitType type, boolean isInput, Integer index) {
-		this.directory = directory;
+	/**
+	 * 
+	 * @param name Name of DataUnit.
+	 * @param index Index of data unit.
+	 * @param type Type of DataUnit.
+	 * @param isInput Is used as input?
+	 */
+	public DataUnitInfo(Integer index, String name, DataUnitType type, boolean isInput) {
+		this.index = index;
+		this.name = name;
 		this.type = type;
 		this.isInput = isInput;
-		this.index = index;
 	}
 
+	
+	/**
+	 * Return relative path to the DataUnit info directory.
+	 * @return
+	 */
 	public File getDirectory() {
-		return directory;
+		return new File(index.toString());
+	}
+	
+	public Long getId() {
+		return id;
 	}
 
-	public DataUnitType getType() {
-		return type;
-	}
-
-	public boolean isInput() {
-		return isInput;
-	}
 	
 	public Integer getIndex() {
 		return index;
 	}
+
+	
+	public String getName() {
+		return name;
+	}
+
+	
+	public DataUnitType getType() {
+		return type;
+	}
+
+	
+	public boolean isInput() {
+		return isInput;
+	}
+	
 }

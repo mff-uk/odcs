@@ -10,12 +10,12 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 
 /**
@@ -64,7 +64,7 @@ class ExtendedCommonImpl {
 	/**
 	 * Manage mapping context into execution's directory. 
 	 */
-	private ExecutionContext context;
+	private ExecutionContextInfo context;
 	
 	/**
 	 * Counter used to generate unique id for data.
@@ -77,26 +77,36 @@ class ExtendedCommonImpl {
 	private static final Logger LOG = Logger.getLogger(ExtendedCommonImpl.class);
 	
 	/**
-	 * 
+	 * If the working directory for Context already exist then the ctor try to delete it.
 	 * @param id Context id.
 	 * @param execution Associated pipelineExecution.
 	 * @param dpuInstance Associated dpuInstanceRecord ~ owner.
 	 * @param context Access to context 'manager'.
+	 * @throws IOException 
 	 */
 	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ExecutionContext contextWriter) {
+			ExecutionContextInfo context) throws IOException {
 		this.id = id;
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
-		this.dataUnitFactory = new DataUnitFactory(this.id, contextWriter, dpuInstance);
-		this.context = contextWriter;
+		File workingDir = new File(context.getWorkingDirectory(), id);
+		// if working directory exist, try to delete it 
+		if (workingDir.exists()) {
+			if (workingDir.isDirectory()) {
+				FileUtils.deleteDirectory(workingDir);
+			} else {
+				FileUtils.forceDelete(workingDir);
+			}
+		}
+		this.dataUnitFactory = new DataUnitFactory(this.id, workingDir);
+		this.context = context;
 		this.storeCounter = 0;
 	}	
 	
 	public String storeData(Object object) {
-		String id = Integer.toString(this.storeCounter) + ".ser";
+		String id = Integer.toString(this.storeCounter) + ".tmp";
 		++this.storeCounter;
 		// ...
 		// determine file
@@ -134,7 +144,18 @@ class ExtendedCommonImpl {
 	}
 
 	public void storeDataForResult(String id, Object object) {
-		// TODO Petyr: store data for result
+		File resultDir = context.createDirForDPUResult(dpuInstance);
+		File file = new File(resultDir, id);
+		// save data into file
+		try (FileOutputStream fileOutStream = new FileOutputStream(file) ) {
+			ObjectOutputStream outStream = new ObjectOutputStream(fileOutStream);
+			outStream.writeObject(object);
+			outStream.close();
+		} catch (IOException e) {
+			LOG.error("loadData", e);
+			throw new RuntimeException("Can't save object.", e);
+		}		
+		
 	}
 
 	public boolean isDebugging() {
@@ -157,7 +178,7 @@ class ExtendedCommonImpl {
 		return dpuInstance;
 	}	
 	
-	public ExecutionContextReader getContext() {
+	public ExecutionContextInfo getContext() {
 		return context;
 	}
 }

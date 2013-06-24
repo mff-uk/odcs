@@ -65,17 +65,15 @@ public class PipelineExecution  {
 	 */
 	@OneToOne(optional = true)
 	@JoinColumn(name="context_id", nullable = true)
-	// TODO Honza: can be null, also there should be possibility to delete this context and preserve pipelineExecution
-	private ExecutionContextImpl context;
+	private ExecutionContextInfo context;
 	
 	/**
 	 * Schedule that crate this execution. Null for  
 	 * execution created by user.
 	 */
 	@Transient
-	//@ManyToOne(optional = true)
-	//@JoinColumn(name="chedule_id", nullable = true)
-	// TODO Petyr: Scheduling support
+	@ManyToOne(optional = true)
+	@JoinColumn(name="schedule_id", nullable = true)
 	private Schedule schedule;
 	
 	/**
@@ -83,8 +81,7 @@ public class PipelineExecution  {
 	 * of the execution can't be used to fire schedule.
 	 */
 	@Transient
-	//@Column(name = "silnetMode")
-	// TODO Petyr: Scheduling support
+	@Column(name = "silnetMode")
 	private Boolean silentMode; 
 	
 	/** No-arg constructor for JPA */
@@ -92,7 +89,8 @@ public class PipelineExecution  {
     
     /**
      * Constructor. Create pipeline which will be run 
-     * as soon as possible in non-debug mode.
+     * as soon as possible in non-debug mode. The pipeline execution
+     * will not run other pipelines based on scheduling rules.
      *
      * @param pipeline
      */
@@ -100,6 +98,8 @@ public class PipelineExecution  {
         this.status = ExecutionStatus.SCHEDULED;
         this.pipeline = pipeline;
         this.isDebugging = false;
+        this.schedule = null;
+        this.silentMode = true;
     }
 
     /**
@@ -107,7 +107,7 @@ public class PipelineExecution  {
      * If context already exist return the existing one.
      * @return
      */
-    public ExecutionContext createExecutionContext(File directory) {
+    public ExecutionContextInfo createExecutionContext(File directory) {
     	
     	// TODO Petyr, Honza: Persist to DB
     	
@@ -118,7 +118,7 @@ public class PipelineExecution  {
     	return context;
     	*/
     	
-    	return new ExecutionContextImpl(directory);
+    	return new ExecutionContextInfo(directory);
     }
     
     public long getId() {
@@ -169,7 +169,7 @@ public class PipelineExecution  {
      * Use to gain read only access to the context.
      * @return Context or null.
      */    
-    public ExecutionContext getContextReadOnly() {
+    public ExecutionContextInfo getContextReadOnly() {
     	return context;
     }
 

@@ -16,7 +16,7 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContext;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
@@ -105,7 +105,7 @@ class PipelineWorker implements Runnable {
 	/**
 	 * Manage mapping execution context into {@link #workDirectory}. 
 	 */
-	private ExecutionContext contextWriter;	
+	private ExecutionContextInfo contextWriter;	
 		
 	/**
 	 * @param execution The pipeline execution record to run.
@@ -290,9 +290,10 @@ class PipelineWorker implements Runnable {
 	 * @return Context for the DPURecord execution.
 	 * @throws ContextException 
 	 * @throws StructureException 
+	 * @throws IOException 
 	 */		
 	private ExtendedExtractContext getContextForNodeExtractor(Node node, 
-			Set<Node> ancestors) throws ContextException, StructureException {
+			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
@@ -314,9 +315,10 @@ class PipelineWorker implements Runnable {
 	 * @return Context for the DPURecord execution.
 	 * @throws ContextException 
 	 * @throws StructureException 
+	 * @throws IOException 
 	 */		
 	private ExtendedTransformContext getContextForNodeTransform(Node node,
-			Set<Node> ancestors) throws ContextException, StructureException {
+			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
@@ -350,9 +352,10 @@ class PipelineWorker implements Runnable {
 	 * @return Context for the DPURecord execution.
 	 * @throws ContextException 
 	 * @throws StructureException 
+	 * @throws IOException 
 	 */	
 	private ExtendedLoadContext getContextForNodeLoader(Node node, 
-			Set<Node> ancestors) throws ContextException, StructureException {
+			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
@@ -414,13 +417,37 @@ class PipelineWorker implements Runnable {
 		// run dpu instance
 		if (dpuInstance instanceof Extract) {
 			Extract extractor = (Extract)dpuInstance;
-			return runExtractor(extractor, getContextForNodeExtractor(node, ancestors) );
+			
+			ExtendedExtractContext context;
+			try {
+				context = getContextForNodeExtractor(node, ancestors);
+			} catch (IOException e) {
+				throw new StructureException("Failed to create context.", e);
+			}
+			
+			return runExtractor(extractor, context );
 		} else if (dpuInstance instanceof Transform) {
 			Transform transformer = (Transform)dpuInstance;
-			return runTransformer(transformer, getContextForNodeTransform(node, ancestors) );
+			
+			ExtendedTransformContext context;
+			try {
+				context = getContextForNodeTransform(node, ancestors);
+			} catch (IOException e) {
+				throw new StructureException("Failed to create context.", e);
+			}
+			
+			return runTransformer(transformer, context);
 		} else if (dpuInstance instanceof Load) {
 			Load loader = (Load)dpuInstance;
-			return runLoader(loader, getContextForNodeLoader(node, ancestors) );
+			
+			ExtendedLoadContext context;
+			try {
+				context = getContextForNodeLoader(node, ancestors);
+			} catch (IOException e) {
+				throw new StructureException("Failed to create context.", e);
+			}
+			
+			return runLoader(loader, context);
 		} else {
 			throw new RuntimeException("Unknown DPURecord type.");
 		}
