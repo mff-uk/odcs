@@ -16,17 +16,19 @@ import cz.cuni.xrg.intlib.commons.app.execution.Record;
  */
 public class RecordDetail extends CustomComponent {
 
-
+	TextArea fullMessageContent;
 
 	public RecordDetail(Record record) {
-		GridLayout mainLayout = new GridLayout(2, 20);
+		GridLayout mainLayout = new GridLayout(2, 5);
+		mainLayout.setImmediate(true);
 		mainLayout.setSpacing(true);
-		mainLayout.setWidth("600px");
-		mainLayout.setHeight("400px");
+		mainLayout.setSizeFull();
 
 		Label pipelineExecutionLabel = new Label("Pipeline execution:");
+		pipelineExecutionLabel.setWidth(120, Unit.PIXELS);
 		mainLayout.addComponent(pipelineExecutionLabel, 0, 0);
 		Label pipelineExecutionContent = new Label(String.format("%d", record.getExecution().getId()));
+		pipelineExecutionContent.setWidth(100, Unit.PIXELS);
 		mainLayout.addComponent(pipelineExecutionContent, 1, 0);
 
 		Label timeLabel = new Label("Time:");
@@ -44,12 +46,19 @@ public class RecordDetail extends CustomComponent {
 		Label shortMessageContent = new Label(record.getShortMessage());
 		mainLayout.addComponent(shortMessageContent, 1, 3);
 
-		TextArea fullMessageContent = new TextArea("Full Message:", record.getFullMessage());
+		fullMessageContent = new TextArea("Full Message:", record.getFullMessage());
 		fullMessageContent.setSizeFull();
-		mainLayout.addComponent(fullMessageContent, 0, 4, 1, 19);
+		mainLayout.addComponent(fullMessageContent, 0, 4, 1, 4);
+		
+		mainLayout.setColumnExpandRatio(1, 1.0f);
+		mainLayout.setRowExpandRatio(4, 1.0f);
 
 		setCompositionRoot(mainLayout);
 
+	}
+
+	void setContentHeight(float height, Unit unit) {
+		fullMessageContent.setHeight(height - 170, unit);
 	}
 
 }
