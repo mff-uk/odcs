@@ -17,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -1361,6 +1360,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 * @param file
 	 */
+	@Override
 	public void save(File file) {
 
 		RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
@@ -1430,7 +1430,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param query String representation of query
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
 	 * map key is column name and <code>List&lt;String&gt;</code> are string
-	 * values in this column. When query is invalid, return * * * * * * * *
+	 * values in this column. When query is invalid, return
 	 * empty <code>Map</code>.
 	 */
 	@Override
@@ -1549,62 +1549,3 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 }
-
-/*
-class ChunkCommitter implements RDFHandler {
-
-    private RDFInserter inserter;
-    private RepositoryConnection connection;
-    private long count = 0L;
-    
-    private long chunksize = 500000L;
-
-    public ChunkCommitter(RepositoryConnection connection) {
-        inserter = new RDFInserter(connection);
-        this.connection = connection;
-    }
-
-    @Override
-    public void startRDF() throws RDFHandlerException {
-        inserter.startRDF();
-
-    }
-
-    @Override
-    public void endRDF() throws RDFHandlerException {
-        inserter.endRDF();
-
-    }
-
-    @Override
-    public void handleNamespace(String prefix, String uri)
-            throws RDFHandlerException {
-
-        inserter.handleNamespace(prefix, uri);
-
-    }
-
-    @Override
-    public void handleStatement(Statement st) throws RDFHandlerException {
-        inserter.handleStatement(st);
-        count++;
-        // do an intermittent commit whenever the number of triples
-        // has reached a multiple of the chunk size
-        if (count % chunksize == 0) {
-            try {
-                connection.commit();
-            } catch (RepositoryException e) {
-                throw new RDFHandlerException(e);
-
-            }
-
-        }
-
-    }
-
-    @Override
-    public void handleComment(String comment) throws RDFHandlerException {
-        inserter.handleComment(comment);
-
-    }
-*/

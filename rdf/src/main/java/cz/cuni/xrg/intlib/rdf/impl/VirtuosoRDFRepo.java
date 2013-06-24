@@ -1,8 +1,6 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import java.io.File;
 import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;

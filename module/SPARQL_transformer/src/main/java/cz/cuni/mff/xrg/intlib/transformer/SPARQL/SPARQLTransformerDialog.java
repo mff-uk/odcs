@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.intlib.transformer.SPARQL;
 
 import com.vaadin.data.Property;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.rdf.impl.SPARQLValidator;
+import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
 
 /**
  *
@@ -20,6 +20,8 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 	private TextArea txtQuery;
 
 	private Label labelUpQuer;
+
+	private boolean isQueryValid = false;
 
 	public SPARQLTransformerDialog() {
 		buildMainLayout();
@@ -55,6 +57,20 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 			public void valueChange(Property.ValueChangeEvent event) {
 				final String query = txtQuery.getValue();
 
+				Validator validator = new SPARQLValidator(query);
+
+				if (!validator.isQueryValid()) {
+
+					isQueryValid = false;
+
+					Notification.show("Query Validator",
+							"Query is not valid: "
+							+ validator.getErrorMessage(),
+							Notification.Type.ERROR_MESSAGE);
+				} else {
+					isQueryValid = true;
+				}
+
 
 			}
 		});
@@ -81,8 +97,8 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 	@Override
 	public SPARQLTransformerConfig getConfiguration() throws ConfigException {
 
-		//TODO Add Right SPARQL VALIDATOR
-		if (!txtQuery.isValid()) {
+		//Right SPARQL VALIDATOR - default false
+		if (!isQueryValid) {
 			throw new ConfigException();
 		} else {
 

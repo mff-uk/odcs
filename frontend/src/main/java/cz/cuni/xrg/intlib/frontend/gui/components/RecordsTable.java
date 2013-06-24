@@ -31,11 +31,13 @@ public class RecordsTable extends CustomComponent {
 	public RecordsTable() {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
+		messageTable.setSelectable(true);
 		messageTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (event.isDoubleClick()) {
+				//if (event.isDoubleClick()) {
+				if(!messageTable.isSelected(event.getItemId())) {
 					BeanItem beanItem = (BeanItem) event.getItem();
 					long recordId = (long) beanItem.getItemProperty("id")
 							.getValue();
@@ -101,8 +103,19 @@ public class RecordsTable extends CustomComponent {
 	}
 
 	private void showRecordDetail(Record record) {
-		RecordDetail detail = new RecordDetail(record);
+		final RecordDetail detail = new RecordDetail(record);
 		Window detailWindow = new Window("Record detail", detail);
+		detailWindow.setHeight(600, Unit.PIXELS);
+		detailWindow.setWidth(400, Unit.PIXELS);
+		detailWindow.setImmediate(true);
+		detail.setContentHeight(600, Unit.PIXELS);
+		detailWindow.addResizeListener(new Window.ResizeListener() {
+
+			@Override
+			public void windowResized(Window.ResizeEvent e) {
+			 	detail.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+			}
+		});
 		App.getApp().addWindow(detailWindow);
 	}
 }
