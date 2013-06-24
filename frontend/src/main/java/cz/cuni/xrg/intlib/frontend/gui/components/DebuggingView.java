@@ -208,7 +208,7 @@ public class DebuggingView extends CustomComponent {
 			if (indexes.size() == 1 || showInput) {
 				DataUnitBrowser duBrowser;
 				try {
-					String dumpDirName = "ex" + pipelineExec.getId() + "_dpu-" + index;
+					String dumpDirName = "ex" + pipelineExec.getId() + "_dpu-" + debugDpu.getId();
 					duBrowser = 
 							DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, showInput, index, dumpDirName);
 				} catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
@@ -249,7 +249,7 @@ public class DebuggingView extends CustomComponent {
 			Integer index = iter.next();
 			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
 			if (indexes.size() == 1 || duInfo.isInput() == onInputGraph) {
-				return "ex" + pipelineExec.getId() + "_dpu-" + index;
+				return "ex" + pipelineExec.getId() + "_dpu-" + debugDpu.getId();
 			}
 		}
 		return null;

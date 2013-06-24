@@ -31,6 +31,9 @@
 		</sift>
 	</appender>
 
+	<logger name="org.hibernate.type" level="ALL" />
+	<logger name="org.hibernate" level="DEBUG" />
+	
 	<root level="debug">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="SIFT" />
