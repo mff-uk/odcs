@@ -27,6 +27,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
+import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
@@ -225,7 +226,12 @@ class PipelineWorker implements Runnable {
 			} catch (StructureException e) {
 				eventPublisher.publishEvent(new PipelineStructureError(e, node.getDpuInstance(), execution, this));
 				executionFailed = true;
-				break;			
+				break;		
+			} catch (DataUnitCreateException e) {
+				// can't create DataUnit 
+				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(), execution, this));
+				executionFailed = true;
+				break;
 			} catch (Exception e) {
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
 				executionFailed = true;
@@ -382,6 +388,7 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
+	 * @throws DataUnitCreateException 
 	 * Executes a single DPURecord associated with given Node.
 	 * 
 	 * @param node
@@ -389,8 +396,9 @@ class PipelineWorker implements Runnable {
 	 * @return false if execution failed
 	 * @throws ContextException 
 	 * @throws StructureException 
+	 * @throws  
 	 */
-	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException {
+	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException, DataUnitCreateException {
 		// prepare what we need to start the execution
 		DPUInstanceRecord dpuInstanceRecord = node.getDpuInstance();
 		
@@ -426,7 +434,7 @@ class PipelineWorker implements Runnable {
 				throw new StructureException("Failed to create context.", e);
 			}
 			
-			return runExtractor(extractor, context );
+			return runExtractor(extractor, context);			
 		} else if (dpuInstance instanceof Transform) {
 			Transform transformer = (Transform)dpuInstance;
 			
@@ -460,8 +468,9 @@ class PipelineWorker implements Runnable {
 	 * @param extractor
 	 * @param ctx
 	 * @return false if execution failed
+	 * @throws DataUnitCreateException 
 	 */
-	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx) {
+	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx) throws DataUnitCreateException {
 
 		eventPublisher.publishEvent(new ExtractStartEvent(extractor, ctx, this));
 		
@@ -481,8 +490,9 @@ class PipelineWorker implements Runnable {
 	 * @param transformer
 	 * @param ctx
 	 * @return false if execution failed
+	 * @throws DataUnitCreateException 
 	 */
-	private boolean runTransformer(Transform transformer, ExtendedTransformContext ctx) {
+	private boolean runTransformer(Transform transformer, ExtendedTransformContext ctx) throws DataUnitCreateException {
 
 		eventPublisher.publishEvent(new TransformStartEvent(transformer, ctx, this));
 		
@@ -502,8 +512,9 @@ class PipelineWorker implements Runnable {
 	 * @param loader
 	 * @param ctx
 	 * @return false if execution failed
+	 * @throws DataUnitCreateException 
 	 */
-	private boolean runLoader(Load loader, ExtendedLoadContext ctx) {
+	private boolean runLoader(Load loader, ExtendedLoadContext ctx) throws DataUnitCreateException {
 		
 		eventPublisher.publishEvent(new LoadStartEvent(loader, ctx, this));
 		

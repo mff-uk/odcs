@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.loader;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+
 /**
  * Is responsible for loading the RDF data.
  * 
@@ -19,6 +21,7 @@ public interface Load {
      * @param context The context containing meta information about this load
      * process
      * @throws LoadException If loading fails, this exception has to be thrown
+     * @throws DataUnitCreateException If failed to create a DataUnit.
      */
-    public void load(LoadContext context) throws LoadException;
+    public void load(LoadContext context) throws LoadException, DataUnitCreateException;
 }
