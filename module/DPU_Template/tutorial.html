@@ -62,7 +62,16 @@ interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> <
 			that in fact does not offer usable any functionality. For practical use more specific interface is provided. Currently only one interface 
 			is available: <i>RDFDataRepository</i>. The DataUnit (ie. RDFDataRepository) can't be created directly. 
 			To create DataUnit use DataUnitFactory, which is accessible via Context.</div>
-		
+			
+		<h3>DataUnit - RDFDataRepository</h3>
+		The RDFDataRepository is RDF focused implementation of DataUnit. Let's name few importat function for work with RDFDataRepository.
+		<ul>
+			<li><b>addOutputDataUnit</b> - Add data from given RDFLocalRepository into current repository.</li>
+			<li><b>transformUsingSPARQL</b> - Transform data in repository using given SPARQL query.</li>
+			<li><b>addTripleToRepository</b> - Add given triple into repository.</li>
+			<li><b>extractRDFfromXMLFileToRepository</b> - Read data from given file and add them to the repository.</li>
+		</ul> For more information about the methods please refer to the RDFDataRepository documentation. 
+				
 		<h2>Context</h2>
 		<div>Each DPU has execution context. It's main interface is ProcessingContext located in commons. The DPU itself (extractor/transformer/loader)
 			uses more special type of Context ie. ExtractContext, TransformContext or LoadContext. 
