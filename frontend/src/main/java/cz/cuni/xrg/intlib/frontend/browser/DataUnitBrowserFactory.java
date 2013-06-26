@@ -4,7 +4,7 @@ import java.io.File;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 
 /**
  * Factory for DataUnitBrowsers.
@@ -25,7 +25,7 @@ public class DataUnitBrowserFactory {
 	 * @throws BrowserInitFailedException
 	 */
 	public static DataUnitBrowser getBrowser(
-			ExecutionContextReader context, DPUInstanceRecord dpuInstance, 
+			ExecutionContextInfo context, DPUInstanceRecord dpuInstance, 
 			boolean isInput, int dataUnitIndex, String dumpDirName)
 		throws DataUnitNotFoundException, BrowserInitFailedException{
 		// get type and directory

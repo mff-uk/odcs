@@ -19,8 +19,8 @@ import javax.persistence.*;
  * @author Petyr
  *
  */
-//@Entity
-//@Table(name = "exec_dataunit_info")
+@Entity
+@Table(name = "exec_dataunit_info")
 public class DataUnitInfo {
 	
 	/**

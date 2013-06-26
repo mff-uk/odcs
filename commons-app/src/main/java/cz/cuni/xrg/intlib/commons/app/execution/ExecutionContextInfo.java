@@ -227,6 +227,20 @@ public class ExecutionContextInfo {
 	}
 	
 	/**
+	 * Return DataUnitInfo for DataUnit with given index.
+	 * @param dpuInstance
+	 * @param index
+	 * @return DataUnitInfo or null of DataUnitInfo can't be found.
+	 */
+	public DataUnitInfo getDataUnitInfo(DPUInstanceRecord dpuInstance, Integer index) {
+		if (contexts.containsKey(dpuInstance.getId())) {
+			return contexts.get(dpuInstance.getId()).getDataUnit(index);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
 	 * Return directory where all DPU's can store their results.
 	 * @return
 	 */
