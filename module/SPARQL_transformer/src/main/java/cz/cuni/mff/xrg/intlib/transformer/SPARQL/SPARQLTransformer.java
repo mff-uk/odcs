@@ -2,9 +2,9 @@ package cz.cuni.mff.xrg.intlib.transformer.SPARQL;
 
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
-import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries.InputHelper;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
@@ -12,7 +12,6 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,22 +35,9 @@ public class SPARQLTransformer implements Transform,
 		
 		if (context != null) {
 
-			List<DataUnit> inputs = context.getInputs();
-
-			if (inputs.isEmpty()) {
-				throw new TransformException("Missing inputs!");
-			}
-
-			DataUnit dataUnit = inputs.get(0);
-
-			RDFDataRepository intputRepository = null;
-
-			if (dataUnit instanceof RDFDataRepository) {
-				intputRepository = (RDFDataRepository) dataUnit;
-			} else {
-				throw new TransformException("Wrong input type " + dataUnit
-						.getType().toString() + " expected RDF.");
-			}
+			// get input repository
+			RDFDataRepository intputRepository = 
+					InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
 
 			// create output repository
 			RDFDataRepository outputRepository = 

@@ -69,32 +69,15 @@ interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> <
 			The context provide ability to send messages that are stored and accessible to the user. <br/>
 			Context also manages access to the input/output DataUnits. The following example demonstrate this functionality for transformer: <br/>
 			<div class="code"> <pre> <code>
-<span class="comment">// get input DataUnits</span>
-List&lt;DataUnit&gt;inputs = context.getInputs();
-<span class="comment">// check if we have some inputs</span>
-if (inputs.isEmpty()) {
-	throw new TransformException("Missing inputs!");
-}
-<span class="comment">// use first input and ignore the rest</span>
-DataUnit dataUnit = inputs.get(0);
-<span class="comment">// cast input dataUnit to inputRepository, to check if we can cast we use 'instanceof'</span>
-RDFDataRepository intputRepository = null;
-if (dataUnit instanceof RDFDataRepository) {
-	intputRepository = (RDFDataRepository) dataUnit;
-} else {
-	throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " expected RDF.");
-}
-<span class="comment">// now, create output repository
-// we have to specify type, in this case DataUnitType.RDF</span>
-try {
-	repository = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
-} catch (DataUnitCreateException e) {
-	throw new ExtractException("Can't create DataUnit", e);
-}
-<span class="comment">// now we just check that we the object has been successfully created</span>
-if (outputRepository == null) {
-	throw new TransformException("DataUnitFactory returned null.");
-}
+			
+<span class="comment">// get first input as RDFDataRepository</span>
+RDFDataRepository intputRepository = 
+		InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
+
+<span class="comment">// create output RDFDataRepository</span>
+RDFDataRepository outputRepository = 
+		(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+		
 			</code> </pre> </div>
 		</div>
 	
