@@ -32,7 +32,7 @@ public class SPARQLTransformer implements Transform,
 	private SPARQLTransformerConfig config = new SPARQLTransformerConfig();
 
 	@Override
-	public void transform(TransformContext context) throws TransformException {
+	public void transform(TransformContext context) throws TransformException, DataUnitCreateException {
 		
 		if (context != null) {
 
@@ -54,19 +54,8 @@ public class SPARQLTransformer implements Transform,
 			}
 
 			// create output repository
-			RDFDataRepository outputRepository = null;
-
-			try {
-				outputRepository = (RDFDataRepository) context
-						.addOutputDataUnit(DataUnitType.RDF);
-			} catch (DataUnitCreateException ex) {
-				throw new TransformException("Can't create DataUnit", ex);
-			}
-
-			if (outputRepository == null) {
-				throw new TransformException(
-						"DataUnitFactory returned null.");
-			}
+			RDFDataRepository outputRepository = 
+					(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
 
 			final String updateQuery = config.SPARQL_Update_Query;
 

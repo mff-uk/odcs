@@ -31,21 +31,11 @@ public class FileExtractor implements Extract,
 	private FileExtractorConfig config = new FileExtractorConfig();
 
 	@Override
-	public void extract(ExtractContext context) throws ExtractException {
+	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
 
-		RDFDataRepository repository = null;
+		RDFDataRepository repository = 
+				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
 		
-		try {
-			repository = (RDFDataRepository) context.addOutputDataUnit(
-					DataUnitType.RDF);
-		} catch (DataUnitCreateException e) {
-			throw new ExtractException("Can't create DataUnit", e);
-		}
-
-		if (repository == null) {
-			throw new ExtractException("DataUnitFactory returned null.");
-		}
-
 		final String baseURI = "";
 		final String path=config.Path;
 		final String fileSuffix=config.FileSuffix;

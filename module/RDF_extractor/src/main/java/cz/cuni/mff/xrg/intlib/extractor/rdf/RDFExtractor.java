@@ -39,19 +39,10 @@ public class RDFExtractor implements Extract,
 			.getLogger(RDFExtractor.class);
 
 	@Override
-	public void extract(ExtractContext context) throws ExtractException {
+	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
 		
-		RDFDataRepository repository = null;
-		// create output repository
-		try {
-			repository = (RDFDataRepository) context.addOutputDataUnit(
-					DataUnitType.RDF);
-		} catch (DataUnitCreateException e) {
-			throw new ExtractException("Failed to create output DataUnit.", e);
-		}
-		if (repository == null) {
-			throw new ExtractException("DataUnitFactory returned null.");
-		}
+		RDFDataRepository repository = 
+				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
 
 		try {
 			final URL endpointURL = new URL(config.SPARQL_endpoint);
