@@ -1,11 +1,8 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,11 +64,6 @@ class ExtendedCommonImpl {
 	private ExecutionContextInfo context;
 	
 	/**
-	 * Counter used to generate unique id for data.
-	 */
-	private int storeCounter;	
-	
-	/**
 	 * Log facade.
 	 */
 	private static final Logger LOG = Logger.getLogger(ExtendedCommonImpl.class);
@@ -100,51 +92,12 @@ class ExtendedCommonImpl {
 				FileUtils.forceDelete(workingDir);
 			}
 		}
-		this.dataUnitFactory = new DataUnitFactory(this.id, workingDir);
+		this.dataUnitFactory = new DataUnitFactory(this.id, dpuInstance, context);
 		this.context = context;
-		this.storeCounter = 0;
 	}	
 	
-	public String storeData(Object object) {
-		String id = Integer.toString(this.storeCounter) + ".tmp";
-		++this.storeCounter;
-		// ...
-		// determine file
-		File file = new File(context.createDirForDPUStorage(dpuInstance), id);
-		// save data into file
-		try (FileOutputStream fileOutStream = new FileOutputStream(file) ) {
-			ObjectOutputStream outStream = new ObjectOutputStream(fileOutStream);
-			outStream.writeObject(object);
-			outStream.close();
-		} catch (IOException e) {
-			LOG.error("loadData", e);
-			throw new RuntimeException("Can't save object.", e);
-		}
-		return id;
-	}
-
-	public Object loadData(String id) {
-		Object result = null;
-		// determine file
-		File file = new File(context.createDirForDPUStorage(dpuInstance), id);
-		// try to load data from file
-		try (FileInputStream fileInStream = new FileInputStream(file)) {
-			ObjectInputStream inStream = new ObjectInputStream(fileInStream);
-			result = inStream.readObject();
-			inStream.close();
-		}  catch (FileNotFoundException e) {
-			LOG.error("loadData: FileNotFoundException", e);
-		} catch (IOException e) {
-			LOG.error("loadData: IOException", e);
-		} catch (ClassNotFoundException e) {
-			LOG.error("loadData: ClassNotFoundException", e);
-		}
-
-		return result;
-	}
-
 	public void storeDataForResult(String id, Object object) {
-		File resultDir = context.createDirForDPUResult(dpuInstance);
+		File resultDir = context.getResult(dpuInstance);
 		File file = new File(resultDir, id);
 		// save data into file
 		try (FileOutputStream fileOutStream = new FileOutputStream(file) ) {

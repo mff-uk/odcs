@@ -28,10 +28,35 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  * @author Petyr
  *
  */
-@Entity
-@Table(name = "exec_context_pipeline")
+//@Entity
+//@Table(name = "exec_context_pipeline")
 public class ExecutionContextInfo {
 
+	/**
+	 * Name of working sub directory.
+	 */
+	private static final String WORKING_DIR = "working";
+	
+	/**
+	 * Name of DPU tmp directory.
+	 */
+	private static final String WORKING_TMP_DIR = "tmp";
+	
+	/**
+	 * Name of storage directory in which the DataUnits are save into.
+	 */
+	private static final String STORAGE_DIR = "storage";
+	
+	/**
+	 * Directory for results.
+	 */
+	private static final String RESULT_DIR = "result";
+	
+	/**
+	 * Prefix for dpu folder.
+	 */
+	private static final String DPU_ID_PREFIX = "dpu_";
+	
 	/**
 	 * Unique id of pipeline execution.
 	 */
@@ -43,7 +68,7 @@ public class ExecutionContextInfo {
 	 * Root directory for execution.
 	 */
     @Column(name="directory")
-	private File rootDirectory;    
+	private File rootDirectory;
     
 	/**
 	 * Contexts for DPU's. Indexed by id's of DPUInstanceRecord.
@@ -75,22 +100,13 @@ public class ExecutionContextInfo {
 		// check existence
 		Long id = dpuInstance.getId();
 		if (!contexts.containsKey(id)) {
-			// add new 
+			// unknown context -> add
 			contexts.put(id, new ProcessingUnitInfo());
 		}
 		// return data
 		return contexts.get(id);
 	}    
     
-	/**
-	 * Return path to the root directory for given dpuInstance.
-	 * @param dpuInstance
-	 * @return
-	 */
-	private File getPathToDpuDirectory(DPUInstanceRecord dpuInstance) {
-		return new File(rootDirectory, dpuInstance.getId().toString() );
-	}
-	
 	/**
 	 * Add info record for new input {@link cz.cuni.xrg.intlib.commons.data.DataUnit}.
 	 * @param dpuInstance The {@link DPUInstanceRecord} which will work with the DataUnit.
@@ -109,69 +125,82 @@ public class ExecutionContextInfo {
 	 * @param type {@link DataUnitType Type} of data unit.
 	 * @return Index of new DataUnitInfo.
 	 */
-	public Integer createOutput(DPUInstanceRecord dpuInstance, String name, DataUnitType type) {
+	public Integer createOutput(DPUInstanceRecord dpuInstance, String name, DataUnitType type)  {
 		return getContext(dpuInstance).addDataUnit(name, type, false);
 	}
 	
 	/**
-	 * Return path to the directory where could {@link cz.cuni.xrg.intlib.commons.data.DataUnit}
-	 * store it's content. It's not working directory.
+	 * Return tmp directory for given DPU instance.
+	 * Does not create the directory!
 	 * @param dpuInstance
-	 * @param index
-	 * @return Null if no context for given dpuInstance exist or if index is invalid.
+	 * @return
+	 * @throws UnknownDPUInstanceException 
+	 */
+	public File getTmp(DPUInstanceRecord dpuInstance) {
+		// secure DPU record existence
+		getContext(dpuInstance);
+		//
+		File tmpDir = new File(rootDirectory, 
+				WORKING_DIR + File.separatorChar + 
+				DPU_ID_PREFIX + dpuInstance.getId().toString() + 
+				File.separatorChar + WORKING_TMP_DIR);
+		return tmpDir;
+	}
+	
+	/**
+	 * Return tmp directory (working) for DataUnit.
+	 * Does not create the directory!
+	 * @param dpuInstance Owner of DataUnit.
+	 * @param index DataUnit index from 
+	 * {@link #createInput(DPUInstanceRecord, String, DataUnitType)} or 
+	 * {@link #createOutput(DPUInstanceRecord, String, DataUnitType)}
+	 * @return
+	 */
+	public File getDataUnitTmp(DPUInstanceRecord dpuInstance, Integer index) {
+		// secure DPU record existence
+		getContext(dpuInstance);
+		//		
+		File tmpDir = new File(rootDirectory, 
+				WORKING_DIR + File.separatorChar + 
+				DPU_ID_PREFIX + dpuInstance.getId().toString() + 
+				File.separatorChar + index.toString());
+		return tmpDir;
+	}
+	
+	/**
+	 * Return storage directory for DataUnit, here should DataUnit store it's results 
+	 * for possible further processing. Does not create the directory!
+	 * @param dpuInstance Owner of DataUnit.
+	 * @param index DataUnit index from 
+	 * {@link #createInput(DPUInstanceRecord, String, DataUnitType)} or 
+	 * {@link #createOutput(DPUInstanceRecord, String, DataUnitType)}
+	 * @return
 	 */
 	public File getDataUnitStorage(DPUInstanceRecord dpuInstance, Integer index) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			ProcessingUnitInfo unitInfo = contexts.get(dpuInstance.getId());
-			if (unitInfo.getDataUnit(index) == null) {
-				// no DataUnit for this index
-				return null;
-			}			
-			// create path
-			File relativeDpu = getPathToDpuDirectory(dpuInstance);			
-			return new File(relativeDpu, index.toString());
-			
-		} else {
-			return null;
-		}
-	}
-	
-	/**
-	 * Create directory where DPU can store it's content 
-	 * ie. function {@link cz.cuni.xrg.intlib.commons.ProcessingContext#storeData} and 
-	 * {@link cz.cuni.xrg.intlib.commons.ProcessingContext#loadData}. 
-	 * @param dpuInstance The {@link DPUInstanceRecord}.
-	 * @return The path to the directory.
-	 */
-	public File createDirForDPUStorage(DPUInstanceRecord dpuInstance) {
-		File result = new File(getPathToDpuDirectory(dpuInstance), "Storage" );
-		result.mkdirs();
-		return result;
-	}
-	
-	/**
-	 * Create directory where DPURecord could store data that should be accessible to the 
-	 * user after the pipeline run. Do not use this to store debug data.
-	 * @param dpuInstance dpuInstance The {@link DPUInstanceRecord} for which crate the directory.
-	 * @return The path to the directory.
-	 */
-	public File createDirForDPUResult(DPUInstanceRecord dpuInstance) {
-		// secure existence of record
+		// secure DPU record existence
 		getContext(dpuInstance);
-		// get root directory
-		File rootResultDir = new File(rootDirectory, "Storage");
-		// get directory for given instance		
-		File result = new File(rootResultDir, dpuInstance.getId().toString());
-		result.mkdirs();
-		return result;
+		//		
+		File storageDir = new File(rootDirectory, 
+				STORAGE_DIR + File.separatorChar + 
+				DPU_ID_PREFIX + dpuInstance.getId().toString() + 
+				File.separatorChar + index.toString());
+		return storageDir;		
 	}
 	
 	/**
-	 * Return root workingDirectory.
-	 * @return workingDirecotry.
+	 * Return directory where should DPUInstance store it's results that will 
+	 * be available to the user. Does not create the directory!
+	 * @param dpuInstance
+	 * @return
 	 */
-	public File getWorkingDirectory() {
-		return rootDirectory;
+	public File getResult(DPUInstanceRecord dpuInstance) {
+		// secure DPU record existence
+		getContext(dpuInstance);
+		//		
+		File storageDir = new File(rootDirectory, 
+				RESULT_DIR + File.separatorChar + 
+				DPU_ID_PREFIX+ dpuInstance.getId().toString() );
+		return storageDir;			
 	}
 	
 	/**
@@ -198,33 +227,20 @@ public class ExecutionContextInfo {
 	}
 	
 	/**
-	 * Return directory where the result from given DPURecord are be stored.
-	 * @param dpuInstance The author of results.
-	 * @return Null in case of bad dpuInstance.
-	 */
-	public File getDirectoryForResult(DPUInstanceRecord dpuInstance) {
-		if (contexts.containsKey(dpuInstance.getId())) {			
-			// already exist won't be created again
-			return createDirForDPUResult(dpuInstance);			
-		} else {
-			return null;
-		}
-	}
-	
-	/**
-	 * Return directory where all DPU's have their results directories.
+	 * Return directory where all DPU's can store their results.
 	 * @return
 	 */
 	public File getDirectoryForResults() {
-		return new File(rootDirectory, "Storage");
+		return new File(rootDirectory, RESULT_DIR);
 	}
 
 	/**
-	 * Return working directory.
+	 * Return path to the working directory.
 	 * @return
 	 */
-	public File getWorkingRootDirectory() {
-		return new File(rootDirectory, "Working");
+	public File getWorkingDirectory() {
+		File workDir = new File(rootDirectory, WORKING_DIR);
+		return workDir;
 	}
-
+	
 }

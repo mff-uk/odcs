@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
+import cz.cuni.xrg.intlib.backend.data.DataUnitContainer;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -14,7 +15,9 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +46,12 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
      * Context output data units.
      */
     private List<DataUnit> outputs = new LinkedList<DataUnit>();
-     
+    
+    /**
+     * Mapping from {@link outputs} to indexes.
+     */
+    private Map<DataUnit, Integer> indexes;    
+    
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
@@ -57,8 +65,9 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextInfo contextWriter) throws IOException {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
-		this.inputs = new LinkedList<DataUnit>();
-		this.outputs = new LinkedList<DataUnit>();
+		this.inputs = new LinkedList<>();
+		this.outputs = new LinkedList<>();
+		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -69,12 +78,12 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 
 	@Override
 	public String storeData(Object object) {
-		return extendedImp.storeData(object);
+		return null;
 	}
 
 	@Override
 	public Object loadData(String id) {
-		return extendedImp.loadData(id);
+		return null;
 	}
 
 	@Override
@@ -125,20 +134,25 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	
 	@Override
 	public void save() {
-		LOG.debug("saving DataUnits");
 		for (DataUnit item : inputs) {		
 			try {
-				item.save();
+				// get directory
+				File directory = extendedImp.getContext().getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				// and save into directory
+				item.save(directory);
 			} catch (Exception e) {
-				LOG.error("Can't save input DataUnit", e);
+				LOG.error("Can't save DataUnit", e);
 			}
 		}
 		
 		for (DataUnit item : outputs) {		
 			try {
-				item.save();
+				// get directory
+				File directory = extendedImp.getContext().getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				// and save into directory
+				item.save(directory);
 			} catch (Exception e) {
-				LOG.error("Can't save output DataUnit", e);
+				LOG.error("Can't save DataUnit", e);
 			}
 		}
 	}	
@@ -175,13 +189,27 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type)
 			throws DataUnitCreateException {
-		return extendedImp.getDataUnitFactory().createOutput(type);
+		// create data unit
+		DataUnitContainer dataUnitContainer = extendedImp.getDataUnitFactory().createOutput(type);
+		// store mapping
+		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
+		// add to outputs
+		outputs.add(dataUnitContainer.getDataUnit());
+		// return new DataUnit
+		return dataUnitContainer.getDataUnit();
 	}
 
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type, Object config)
-			throws DataUnitCreateException {
-		return extendedImp.getDataUnitFactory().createOutput(type, config);
+			throws DataUnitCreateException {		
+		// create data unit
+		DataUnitContainer dataUnitContainer = extendedImp.getDataUnitFactory().createOutput(type, config);
+		// store mapping
+		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
+		// add to outputs
+		outputs.add(dataUnitContainer.getDataUnit());
+		// return new DataUnit
+		return dataUnitContainer.getDataUnit();
 	}
 
 	@Override

@@ -2,9 +2,11 @@ package cz.cuni.xrg.intlib.backend.context.impl;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
+import cz.cuni.xrg.intlib.backend.data.DataUnitContainer;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
@@ -52,10 +54,12 @@ public class PrimitiveDataUniteMerger implements DataUnitMerger {
 				// create new data unit (in context into which we merge)				
 				DataUnit newDataUnit;
 				try {
-					newDataUnit = factory.createInput(rightDataUnit.getType());
+					// we do not store reverse mapping for inputs
+					newDataUnit = factory.createInput(rightDataUnit.getType()).getDataUnit();
 				} catch (DataUnitCreateException e) {
 					throw new ContextException("Failed to create input object.", e);
 				}
+				
 				// and copy the data
 				try {
 					newDataUnit.merge(rightDataUnit);

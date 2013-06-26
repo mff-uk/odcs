@@ -8,9 +8,6 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord</class>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord</class>
-		<class>cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo</class>
-		<class>cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextImpl</class>
-		<class>cz.cuni.xrg.intlib.commons.app.execution.ProcessingContextInfo</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.Record</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline</class>

@@ -269,6 +269,7 @@ class PipelineWorker implements Runnable {
 			} catch (IOException e) {
 				LOG.error("Can't delete directory after execution: " + execution.getId(), e);
 			}
+			// TODO Petyr: delete also directory with stored data units ?
 		}		
 		
         if (executionFailed) {
@@ -339,7 +340,7 @@ class PipelineWorker implements Runnable {
 		}
 		transformContext.sealInputs();
 		// store context
-		contexts.put(node, transformContext);		
+		contexts.put(node, transformContext);
 		return transformContext;		
 	}
 	

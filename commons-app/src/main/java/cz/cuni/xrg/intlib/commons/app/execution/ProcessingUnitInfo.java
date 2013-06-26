@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
-import java.io.File;
 import java.util.LinkedList;
 
 import javax.persistence.Entity;
@@ -19,22 +18,22 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  * @author Petyr
  *
  */
-@Entity
-@Table(name = "exec_context_dpu")
+//@Entity
+//@Table(name = "exec_context_dpu")
 class ProcessingUnitInfo {
 
 	/**
 	 * Unique id of pipeline execution.
 	 */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;	
 	
 	/**
 	 * Storage for dataUnits descriptors.
 	 */
-    @OneToMany()
-    @OrderBy("index")
+    //@OneToMany()
+    //@OrderBy("index")
 	private LinkedList<DataUnitInfo> dataUnits = new LinkedList<>();
 	
 	public ProcessingUnitInfo() { }

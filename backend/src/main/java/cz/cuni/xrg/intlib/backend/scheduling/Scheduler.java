@@ -48,7 +48,7 @@ public class Scheduler implements ApplicationListener {
 				List<Schedule> toRun = database.getPlan().getFollowers(pipelineFinishedEvent.getExecution().getPipeline());
 				// for each .. run 
 				for (Schedule schedule : toRun) {
-					if (schedule.isEnable()) {
+					if (schedule.isEnabled()) {
 						execute(schedule);
 					}
 				}

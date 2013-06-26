@@ -63,8 +63,9 @@ public class PipelineExecution  {
 	/**
 	 * Execution context, can be null.
 	 */
-	@OneToOne(optional = true)
-	@JoinColumn(name="context_id", nullable = true)
+	@Transient
+	//@OneToOne(optional = true)
+	//@JoinColumn(name="context_id", nullable = true)
 	private ExecutionContextInfo context;
 	
 	/**
@@ -72,8 +73,8 @@ public class PipelineExecution  {
 	 * execution created by user.
 	 */
 	@Transient
-	@ManyToOne(optional = true)
-	@JoinColumn(name="schedule_id", nullable = true)
+	//@ManyToOne(optional = true)
+	//@JoinColumn(name="schedule_id", nullable = true)
 	private Schedule schedule;
 	
 	/**
@@ -81,7 +82,7 @@ public class PipelineExecution  {
 	 * of the execution can't be used to fire schedule.
 	 */
 	@Transient
-	@Column(name = "silnetMode")
+	//@Column(name = "silnetMode")
 	private Boolean silentMode; 
 	
 	/** No-arg constructor for JPA */

@@ -13,7 +13,9 @@ import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,12 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	 * Context input data units.
 	 */
     private List<DataUnit> inputs = new LinkedList<>();
-        
+    
+    /**
+     * Mapping from {@link outputs} to indexes.
+     */
+    private Map<DataUnit, Integer> indexes;    
+    
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
@@ -51,6 +58,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextInfo contextWriter) throws IOException {
 		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
+		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -61,12 +69,12 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 
 	@Override
 	public String storeData(Object object) {
-		return extendedImp.storeData(object);
+		return null;
 	}
 
 	@Override
 	public Object loadData(String id) {
-		return extendedImp.loadData(id);
+		return null;
 	}
 
 	@Override
@@ -113,10 +121,12 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	
 	@Override
 	public void save() {
-		LOG.debug("saving DataUnits");
 		for (DataUnit item : inputs) {		
 			try {
-				item.save();
+				// get directory
+				File directory = extendedImp.getContext().getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				// and save into directory
+				item.save(directory);
 			} catch (Exception e) {
 				LOG.error("Can't save DataUnit", e);
 			}

@@ -56,6 +56,7 @@ public interface DataUnit {
      * In case of any problem throws exception.
      * @throws Exception
      */
+    @Deprecated
     public void save() throws Exception;    
     
     /**
