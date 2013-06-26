@@ -12,7 +12,7 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
  * @author Petyr
  */
 public interface ProcessingContext {
-
+	
     /**
      * Store given data object. The object is accessible. to the end of DPU run
      * under id. If object can't be stored throw {@link RuntimeException}.
@@ -21,6 +21,7 @@ public interface ProcessingContext {
      * @return object id
      * throws RuntimeException
      */
+	@Deprecated
     public String storeData(Object object) throws RuntimeException;
 
     /**
@@ -29,6 +30,7 @@ public interface ProcessingContext {
      * @param id Object's id.
      * @return Loaded object or null in case of problems.
      */
+	@Deprecated
     public Object loadData(String id);
 
     /**
@@ -58,6 +60,7 @@ public interface ProcessingContext {
      * @param object Object data.
      * @throws RuntimeException
      */
+    @Deprecated
     public void storeDataForResult(String id, Object object) throws RuntimeException;
 
     /**

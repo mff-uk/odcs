@@ -7,9 +7,9 @@ package cz.cuni.xrg.intlib.commons.configuration;
  *
  */
 public class ConfigException extends RuntimeException {
-private final String message = "Config is wrong set.";
-
+	
     public ConfigException() {
+    	super("Invalid configuration.");
     }
 
     public ConfigException(Throwable cause) {
@@ -22,14 +22,7 @@ private final String message = "Config is wrong set.";
 
     public ConfigException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
-    }
-    
-    
+    }    
 
 
 }
