@@ -7,7 +7,7 @@ import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextReader;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
@@ -30,7 +30,7 @@ public class DebuggingView extends CustomComponent {
 
 	private VerticalLayout mainLayout;
 	private PipelineExecution pipelineExec;
-	private ExecutionContextReader ctxReader;
+	private ExecutionContextInfo ctxReader;
 	private DPUInstanceRecord debugDpu;
 	private boolean isInDebugMode;
 	private RecordsTable executionRecordsTable;
@@ -194,17 +194,18 @@ public class DebuggingView extends CustomComponent {
 		if (debugDpu == null) {
 			return null;
 		}
-		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+		List<DataUnitInfo> indexes = ctxReader.getDataUnitsInfo(debugDpu);
 		
 		if (indexes == null) {
 			return null;
 		}
 
-		Iterator<Integer> iter = indexes.iterator();
+		Iterator<DataUnitInfo> iter = indexes.iterator();
 		while (iter.hasNext()) {
-			Integer index = iter.next();
+			/*
+			DataUnitInfo dataUnitInfo = iter.next();
 			DataUnitInfo duInfo = null;
-			duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
+			duInfo = ctxReader.getDataUnitsInfo(debugDpu, dataUnitInfo.getIndex());
 			
 			if (indexes.size() == 1 || showInput) {
 				DataUnitBrowser duBrowser;
@@ -220,7 +221,7 @@ public class DebuggingView extends CustomComponent {
 				duBrowser.enter();
 				return duBrowser;
 			}
-
+			*/
 		}
 		return null;
 	}
@@ -236,6 +237,7 @@ public class DebuggingView extends CustomComponent {
 	}
 
 	String getRepositoryPath(boolean onInputGraph) {
+		/*
 		if (debugDpu == null) {
 			return null;
 		}
@@ -252,11 +254,12 @@ public class DebuggingView extends CustomComponent {
 			if (indexes.size() == 1 || duInfo.isInput() == onInputGraph) {
 				return "ex" + pipelineExec.getId() + "_dpu-" + debugDpu.getId();
 			}
-		}
+		}*/
 		return null;
 	}
 
 	File getRepositoryDirectory(boolean onInputGraph) {
+		/*
 		if (debugDpu == null) {
 			return null;
 		}
@@ -274,7 +277,7 @@ public class DebuggingView extends CustomComponent {
 			if (indexes.size() == 1 || duInfo.isInput() == onInputGraph) {
 				return duInfo.getDirectory();
 			}
-		}
+		}*/
 		return null;
 	}
 	
