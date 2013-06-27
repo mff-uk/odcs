@@ -4,6 +4,7 @@
 	<head>
 		<style>
 			.code		{background-color: #f6f9f6;}
+                        .inCode		{font-family:"Courier New", Courier, monospace}
 			.comment	{color:green}
 			.module_name{color:blue}
 			h1			{color:darkblue}
@@ -28,7 +29,7 @@
 		<h2>Logging the DPU's activity</h2>
 		<div>Every DPU should log extensively. To log in your DPU, use slf4j. 
 			The log for each DPU is stored and accessible to the user by the graphical user interface of the application. 
-			Using sl4j is simple. If you are not familiar with sl4j	the following example show the basics.<br/>
+			Using sl4j is simple. If you are not familiar with sl4j	the following example shows the basics.<br/>
 			<div class="code"> <pre> <code>
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,21 +53,21 @@ public Config getConfiguration() </code> </pre></div>
 			<div class="code"> <pre> <code>
 public void setConfiguration(Config conf) throws ConfigException 
 public Config getConfiguration() throws ConfigException </code> </pre> </div>
-			Where <b>Config</b> is replaced by your configuration class. The configuration class must implements interface
+			Where <b>Config</b> is replaced by your configuration class. The configuration class must implement interface
 			<div class="code"> <pre> <code>
 interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> </div> which is located in commons.
 			</div>
 	
 		<h2>DataUnit containers</h2>
-		<div>Data between DPUs are passed in containers that are called DataUnit. The DataUnit from the programmer's point of view is an interface
-			that in fact does not offer usable any functionality. For practical use more specific interface is provided. Currently only one interface 
+		<div>Data between DPUs are passed in containers that are called DataUnits. The DataUnit from the programmer's point of view is an interface
+			that does not offer any usable functionality. For practical use, more specific interface is provided. Currently only one interface 
 			is available: <i>RDFDataRepository</i>. The DataUnit (ie. RDFDataRepository) can't be created directly. 
-			To create DataUnit use DataUnitFactory, which is accessible via Context.</div>
+			To create DataUnit use <span class="inCode">DataUnitFactory</span>, which is accessible via <span class="inCode">Context</span>.</div>
 		
-		<h2>Context</h2>
-		<div>Each DPU has execution context. It's main interface is ProcessingContext located in commons. The DPU itself (extractor/transformer/loader)
-			uses more special type of Context ie. ExtractContext, TransformContext or LoadContext. 
-			The context provide ability to send messages that are stored and accessible to the user. <br/>
+		<h2 id="context">Context</h2>
+		<div>Each DPU has execution context. It's main interface is <span class="inCode">ProcessingContext</span> located in commons. The DPU itself (extractor/transformer/loader)
+			uses more special type of <span class="inCode">Context</span> ie. <span class="inCode">ExtractContext</span>, <span class="inCode">TransformContext</span> or <span class="inCode">LoadContext</span>. 
+			The context provide ability to send messages (events) that are stored and accessible to the user. <br/>
 			Context also manages access to the input/output DataUnits. The following example demonstrate this functionality for transformer: <br/>
 			<div class="code"> <pre> <code>
 <span class="comment">// get input DataUnits</span>
@@ -100,12 +101,12 @@ if (outputRepository == null) {
 	
 		<h2>DPU implementation</h2>
 		<div>It the following sections we will go through the files prepared in the DPU template project, from which you may derive your DPU. 
-			For each file we explain its purpose and list the mandatory and optionally changes that need to be done in order to implement DPU.</div>
+			For each file we explain its purpose and list the mandatory and optional changes that need to be done in order to implement DPU.</div>
         <div>For each DPU, you have to:
         <ul>
         	<li>adjust pom.xml containing basic metadata about the DPU</li>
-        	<li>define configuration class which implements Config interface</li>
-        	<li>define the configuration dialog, which may be used by users of your DPU to set up the parameters of your DPU and extends AbstractConfigDialog&lt;Config&gt; </li>
+        	<li>define configuration class which implements <span class="inCode">Config</span> interface</li>
+        	<li>define the configuration dialog, which may be used by users of your DPU to set up the parameters of your DPU and extends <span class="inCode">AbstractConfigDialog&lt;Config&gt;</span> </li>
         	<li>implement the functionality of the DPU</li>
         </ul> </div>
 
@@ -123,7 +124,7 @@ if (outputRepository == null) {
 					Provide contact details on the author of the DPU.</li>
 				<li><b>TODO 4. DPU package: </b> Specify the root (longest common) package. If you use just one package, use it's name.</li>
 				<li><b>TODO 5. DPU's <span class="module_name">main_class_name</span>: </b> Fill the DPU main class name. 
-					The main class must be placed in package specified in <b>TODO 4. DPU package: </b> </li>
+					The main class must be placed in package specified in the previous step.</li>
 			</ul>
 		</div>
 
@@ -147,8 +148,8 @@ if (outputRepository == null) {
 				  		<li><b>public void transform(TransformContext context) throws TransformException</b> for <b>Transfor</b></li>
 				  		<li><b>public void load(LoadContext context) throws LoadException</b> for <b>Load</b></li>
 				  	</ul> 
-				  	In this method the functionality of the DPU should be implemented. All important data needed is passed to the method as Contex. 
-				To get more information to the Context please refer to the Context section above.</li>
+				  	In this method the functionality of the DPU should be implemented. All important data needed is passed to the method as <a href="#context">Contex</a>. 
+				</li>
 			</ul>
 		</div>
 		
@@ -160,10 +161,9 @@ if (outputRepository == null) {
 			</div>
 			
 		<h3>DPUTemplateConfig.java</h3>
-		<div>This file contains template for DPU's configuration the class must implement interface
+		<div>This file contains template for DPU's configuration. It representes an object holding configuration needed by the DPU. The class must implement interface
 			<div class="code"> <pre> <code> cz.cuni.xrg.intlib.commons.configuration.Config </code> </pre> Put your configuration 
-			variables inside this class. You can then access it from DPUTemplate class through the member variable config. Assume you haven't removed 
-			this variable. </div>
+			variables inside this class. You can then access it from DPUTemplate class through the atribut <span class="inCode">config</span>. </div>
 		
 	</body>
 </html>
