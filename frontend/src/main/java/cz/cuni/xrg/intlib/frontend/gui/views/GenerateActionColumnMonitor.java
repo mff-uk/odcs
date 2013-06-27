@@ -47,7 +47,7 @@ public class GenerateActionColumnMonitor implements ColumnGenerator {
 					stopButton.addClickListener(this.clickListener);
 
 			}
-			if ((testStatus == ExecutionStatus.FAILED) || (testStatus == ExecutionStatus.FINISHED_SUCCESS)
+			if (((testStatus == ExecutionStatus.FAILED) || (testStatus == ExecutionStatus.FINISHED_SUCCESS))
 					&& (testDebug.contains("false"))) {
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog", itemId));
