@@ -64,38 +64,34 @@ interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> <
 			is available: <i>RDFDataRepository</i>. The DataUnit (ie. RDFDataRepository) can't be created directly. 
 			To create DataUnit use <span class="inCode">DataUnitFactory</span>, which is accessible via <span class="inCode">Context</span>.</div>
 		
-		<h2 id="context">Context</h2>
+		
+
+			
+		<h3>DataUnit - RDFDataRepository</h3>
+		The RDFDataRepository is RDF focused implementation of DataUnit. Let's name few importat function for work with RDFDataRepository.
+		<ul>
+			<li><b>addOutputDataUnit</b> - Add data from given RDFLocalRepository into current repository.</li>
+			<li><b>transformUsingSPARQL</b> - Transform data in repository using given SPARQL query.</li>
+			<li><b>addTripleToRepository</b> - Add given triple into repository.</li>
+			<li><b>extractRDFfromXMLFileToRepository</b> - Read data from given file and add them to the repository.</li>
+		</ul> For more information about the methods please refer to the RDFDataRepository documentation. 
+				
+                        
+                <h2 id="context">Context</h2>
 		<div>Each DPU has execution context. It's main interface is <span class="inCode">ProcessingContext</span> located in commons. The DPU itself (extractor/transformer/loader)
 			uses more special type of <span class="inCode">Context</span> ie. <span class="inCode">ExtractContext</span>, <span class="inCode">TransformContext</span> or <span class="inCode">LoadContext</span>. 
 			The context provide ability to send messages (events) that are stored and accessible to the user. <br/>
 			Context also manages access to the input/output DataUnits. The following example demonstrate this functionality for transformer: <br/>
 			<div class="code"> <pre> <code>
-<span class="comment">// get input DataUnits</span>
-List&lt;DataUnit&gt;inputs = context.getInputs();
-<span class="comment">// check if we have some inputs</span>
-if (inputs.isEmpty()) {
-	throw new TransformException("Missing inputs!");
-}
-<span class="comment">// use first input and ignore the rest</span>
-DataUnit dataUnit = inputs.get(0);
-<span class="comment">// cast input dataUnit to inputRepository, to check if we can cast we use 'instanceof'</span>
-RDFDataRepository intputRepository = null;
-if (dataUnit instanceof RDFDataRepository) {
-	intputRepository = (RDFDataRepository) dataUnit;
-} else {
-	throw new TransformException("Wrong input type " + dataUnit.getType().toString() + " expected RDF.");
-}
-<span class="comment">// now, create output repository
-// we have to specify type, in this case DataUnitType.RDF</span>
-try {
-	repository = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
-} catch (DataUnitCreateException e) {
-	throw new ExtractException("Can't create DataUnit", e);
-}
-<span class="comment">// now we just check that we the object has been successfully created</span>
-if (outputRepository == null) {
-	throw new TransformException("DataUnitFactory returned null.");
-}
+			
+<span class="comment">// get first input as RDFDataRepository</span>
+RDFDataRepository intputRepository = 
+		InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
+
+<span class="comment">// create output RDFDataRepository</span>
+RDFDataRepository outputRepository = 
+		(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+		
 			</code> </pre> </div>
 		</div>
 	
