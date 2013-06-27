@@ -6,6 +6,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
@@ -58,7 +59,6 @@ public class DebuggingView extends CustomComponent {
 
 		executionRecordsTable = new RecordsTable();
 		executionRecordsTable.setWidth("100%");
-		//executionRecordsTable.setHeight("160px");
 
 		mainLayout.addComponent(executionRecordsTable);
 		
@@ -79,7 +79,6 @@ public class DebuggingView extends CustomComponent {
 		logLayout.addComponent(refreshComponent);
 		logLayout.addComponent(logTextArea);
 		logLayout.setSizeFull();
-		//logTextArea.setRows(30);
 		logTextArea.setSizeFull();
 		logTextArea.setReadOnly(true);
 		logTextArea.setHeight(460, Unit.PIXELS);
@@ -97,12 +96,14 @@ public class DebuggingView extends CustomComponent {
 		fillContent();		
 	}
 
+	/**
+	 * Fills DebuggingView with data.
+	 * 
+	 */
 	public void fillContent() {
 		boolean loadSuccessful = loadExecutionContextReader();
 
-		//List<Record> records = debugDpu == null ? App.getDPUs().getAllDPURecords() : App.getDPUs().getAllDPURecords(debugDpu);
 		List<Record> records = App.getDPUs().getAllDPURecords(pipelineExec);
-		//records = filterRecords(records, pipelineExec);
 		executionRecordsTable.setDataSource(records);
 
 		boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
@@ -175,8 +176,9 @@ public class DebuggingView extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
-	private boolean loadExecutionContextReader() {
-// TODO !!		
+	private boolean loadExecutionContextReader() {	
+		ctxReader = pipelineExec.getContextReadOnly();
+		return ctxReader != null;
 		/*
 		String workingDirPath = pipelineExec.getWorkingDirectory();
 		File workingDir = new File(workingDirPath);
@@ -186,8 +188,9 @@ public class DebuggingView extends CustomComponent {
 			Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 			return false;
 		}
-		return true; */
+		return true; 
 		return false;
+		*/
 	}
 
 	private DataUnitBrowser loadBrowser(boolean showInput) {
@@ -202,17 +205,16 @@ public class DebuggingView extends CustomComponent {
 
 		Iterator<DataUnitInfo> iter = indexes.iterator();
 		while (iter.hasNext()) {
-			/*
+		
 			DataUnitInfo dataUnitInfo = iter.next();
-			DataUnitInfo duInfo = null;
-			duInfo = ctxReader.getDataUnitsInfo(debugDpu, dataUnitInfo.getIndex());
+			
 			
 			if (indexes.size() == 1 || showInput) {
 				DataUnitBrowser duBrowser;
 				try {
-					String dumpDirName = "ex" + pipelineExec.getId() + "_dpu-" + debugDpu.getId();
+					//File dumpDir = ctxReader.getDataUnitStorage(debugDpu, dataUnitInfo.getIndex());
 					duBrowser = 
-							DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, showInput, index, dumpDirName);
+							DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, showInput, dataUnitInfo);
 				} catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
@@ -221,63 +223,51 @@ public class DebuggingView extends CustomComponent {
 				duBrowser.enter();
 				return duBrowser;
 			}
-			*/
 		}
 		return null;
 	}
 
-	private List<Record> filterRecords(List<Record> records, PipelineExecution pipelineExec) {
-		List<Record> filteredRecords = new ArrayList<>();
-		for (Record record : records) {
-			if (record.getExecution().getId() == pipelineExec.getId()) {
-				filteredRecords.add(record);
-			}
-		}
-		return filteredRecords;
-	}
-
 	String getRepositoryPath(boolean onInputGraph) {
-		/*
+		
 		if (debugDpu == null) {
 			return null;
 		}
-		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
+		List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
 				
-		if (indexes == null) {
+		if (infos == null) {
 			return null;
 		}
 
-		Iterator<Integer> iter = indexes.iterator();
+		Iterator<DataUnitInfo> iter = infos.iterator();
 		while (iter.hasNext()) {
-			Integer index = iter.next();
-			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
-			if (indexes.size() == 1 || duInfo.isInput() == onInputGraph) {
-				return "ex" + pipelineExec.getId() + "_dpu-" + debugDpu.getId();
+			DataUnitInfo duInfo = iter.next();
+			
+			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
+				ctxReader.getDataUnitStorage(debugDpu, duInfo.getIndex());
 			}
-		}*/
+		}
 		return null;
 	}
 
 	File getRepositoryDirectory(boolean onInputGraph) {
-		/*
+		
 		if (debugDpu == null) {
 			return null;
 		}
-		
-		Set<Integer> indexes = ctxReader.getIndexesForDataUnits(debugDpu);
-		
-		if (indexes.isEmpty()) {
+		List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
+				
+		if (infos == null) {
 			return null;
 		}
 
-		Iterator<Integer> iter = indexes.iterator();
+		Iterator<DataUnitInfo> iter = infos.iterator();
 		while (iter.hasNext()) {
-			Integer index = iter.next();
-			DataUnitInfo duInfo = ctxReader.getDataUnitInfo(debugDpu, index);
-			if (indexes.size() == 1 || duInfo.isInput() == onInputGraph) {
-				return duInfo.getDirectory();
+			DataUnitInfo duInfo = iter.next();
+			
+			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
+				duInfo.getDirectory();
 			}
-		}*/
+		}
 		return null;
 	}
 	
