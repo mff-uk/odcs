@@ -13,9 +13,8 @@
 	
 	</head>
 	<body>
-		<h1>DPU implementation tutorial</h1>		
-		<div>This tutorial will guide you through the process of the new data processing unit (DPU) creation. But before you start
-			coding there are few thing which deserve your attention.</div>
+		<h1>Data Processing Units (DPUs)</h1>		
+		
 	
 		<h2>Types of DPUs</h2>
         <div>The application distinguished three types of DPUs: 
@@ -68,13 +67,13 @@ interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> <
 
 			
 		<h3>DataUnit - RDFDataRepository</h3>
-		The RDFDataRepository is RDF focused implementation of DataUnit. Let's name few importat function for work with RDFDataRepository.
+		The RDFDataRepository is RDF focused implementation of DataUnit. Let's name few importat function for work with RDFDataRepository (to store RDF data being prepared by the DPU).
 		<ul>
-			<li><b>addOutputDataUnit</b> - Add data from given RDFLocalRepository into current repository.</li>
+			<!--<li><b>addOutputDataUnit</b> - Associate output data unit with the context of the </li>-->
 			<li><b>transformUsingSPARQL</b> - Transform data in repository using given SPARQL query.</li>
 			<li><b>addTripleToRepository</b> - Add given triple into repository.</li>
-			<li><b>extractRDFfromXMLFileToRepository</b> - Read data from given file and add them to the repository.</li>
-		</ul> For more information about the methods please refer to the RDFDataRepository documentation. 
+			<li><b>extractRDFfromXMLFileToRepository</b> - Read data from the given file and add them to the repository.</li>
+		</ul> For more information about the methods please refer to the <span class="inCode">RDFDataRepository</span> documentation. 
 				
                         
                 <h2 id="context">Context</h2>
@@ -91,29 +90,36 @@ RDFDataRepository intputRepository =
 <span class="comment">// create output RDFDataRepository</span>
 RDFDataRepository outputRepository = 
 		(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
-		
+                
 			</code> </pre> </div>
 		</div>
 	
-		<h2>DPU implementation</h2>
-		<div>It the following sections we will go through the files prepared in the DPU template project, from which you may derive your DPU. 
-			For each file we explain its purpose and list the mandatory and optional changes that need to be done in order to implement DPU.</div>
+		<h1>Tutorial - Creation of Custom DPUs</h2>
+		<div>This tutorial will guide you through the process of the new data processing unit (DPU) creation. </div>
+		
+		
+		<div>
+      It the following sections we will go through the files prepared in the DPU template project (which may be obtained from <a href="https://github.com/mff-uk/intlib"> Github project site</a>, master branch, folder "module/DPU_template"), from which you may derive your DPU implementation. You may start by copying the "module/DPU_template" folder and opening it in, e.g., Netbeans. You can also be inspired by the existing DPU implementations in the folder "module".
+      </div>
+      
+      <div>
+      The template DPU contains 4 important files, which are typically needed when new DPU is created. For each file, we explain in the following sections its purpose and list the mandatory and optional changes (called TODOs) that need to be done to implement DPU.</div>
         <div>For each DPU, you have to:
         <ul>
-        	<li>adjust pom.xml containing basic metadata about the DPU</li>
-        	<li>define configuration class which implements <span class="inCode">Config</span> interface</li>
-        	<li>define the configuration dialog, which may be used by users of your DPU to set up the parameters of your DPU and extends <span class="inCode">AbstractConfigDialog&lt;Config&gt;</span> </li>
-        	<li>implement the functionality of the DPU</li>
+        	<li>adjust pom.xml containing basic metadata about the DPU implementation</li>
+        	<li>define configuration class which implements <span class="inCode">Config</span> interface and holds configuration of the DPU</li>
+        	<li>define the configuration dialog, which may be used by users of your DPU to set up the configuration of your DPU and extends <span class="inCode">AbstractConfigDialog&lt;Config&gt;</span>. The configuration obtained from the dialog is stored to the configuration class</li>
+        	<li>implement the class which executes the DPU - it contains the main functionality of the DPU and the functionality may be influenced by the configuration class</li>
         </ul> </div>
 
 		<h3>pom.xml</h3>
-		<div>The pom.xml file contains Maven configuration. If you are not familiar with Maven then just ignore everything except of several lines containing "TODO". 
-			TODOs have assigned number to make it easy to refer to them. In next few lines we go through all of them and give brief comment to each of them.
+		<div>The pom.xml file contains Maven configuration. If you are not familiar with Maven then just ignore everything except of several lines containing "TODOs", which needs your attention. 
+			TODOs have assigned number to make it easy to follow. In next few lines we go through all of them and give brief comment to each of them:
 			<ul>
-				<li><b>TODO 1. module_name: </b>The Maven's artifact should be provided here. 
-					Maven uses this name to identify the output jar file. For common usage you can just use name of your DPU. 
+				<li><b>TODO 1. module_name: </b>The Maven's artifact's ID should be provided here. 
+					Maven uses this name to identify the output module (jar) filename.  
 					This value should contains only a-z, A-Z, 0-9 and _ as whitespace. 
-					This value also determines the name of the module's main class. </li>				
+                                    </li>				
 				<li><b>TODO 2. DPU version: </b> In most common scenarios you can leave the default value here. This value is stored in manifest.mf file as "version of DPU". 
 					It correspond with Bundle-Version in manifest.mf. </li>
 				<li><b>TODO 3. DPU description: </b> DPU's description is visible to the users. Provide all necessary information about your intended DPU usage here. 
@@ -144,7 +150,36 @@ RDFDataRepository outputRepository =
 				  		<li><b>public void transform(TransformContext context) throws TransformException</b> for <b>Transfor</b></li>
 				  		<li><b>public void load(LoadContext context) throws LoadException</b> for <b>Load</b></li>
 				  	</ul> 
-				  	In this method the functionality of the DPU should be implemented. All important data needed is passed to the method as <a href="#context">Contex</a>. 
+				  	In this method the functionality of the DPU should be implemented. All important data needed is passed to the method as <a href="#context">Context</a>. 
+				
+                                    <br/><br/>
+                                      Sample transform() method for simple SPARQL transformer executing the given SPARQL query:
+                               <div class="code"> <pre> <code>
+<span class="comment">// transform method which has to be implemented by DPU - transformer</span>
+public void transform(TransformContext context) throws TransformException, DataUnitCreateException {
+			
+    <span class="comment">// get first input as RDFDataRepository</span>
+    RDFDataRepository intputRepository = 
+                    InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
+
+    <span class="comment">// create output </span>
+    RDFDataRepository outputRepository = 
+                    (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+     
+    <span class="comment">// query to be executed (obtained from the dialog) </span>            
+    String updateQuery = config.getQuery();
+                
+    <span class="comment">// copies all data from input RDFDataRepository to output RDFDataRepository and transforms </span>
+    intputRepository.copyAllDataToTargetRepository(outputRepository);
+    outputRepository.transformUsingSPARQL(updateQuery);
+}
+
+			</code> </pre> </div>
+                               
+                              
+        
+				
+				
 				</li>
 			</ul>
 		</div>
@@ -160,6 +195,9 @@ RDFDataRepository outputRepository =
 		<div>This file contains template for DPU's configuration. It representes an object holding configuration needed by the DPU. The class must implement interface
 			<div class="code"> <pre> <code> cz.cuni.xrg.intlib.commons.configuration.Config </code> </pre> Put your configuration 
 			variables inside this class. You can then access it from DPUTemplate class through the atribut <span class="inCode">config</span>. </div>
+		
+		
+		
 		
 	</body>
 </html>
