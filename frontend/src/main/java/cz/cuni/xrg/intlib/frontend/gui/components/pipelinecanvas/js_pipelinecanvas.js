@@ -67,6 +67,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	var lastPositionX = 0;
 	var	lastPositionY = 0;
 	
+	var selectedDpu = null;
+	
 	var scale = 1.0;
 
     /** Registering RPC for calls from server-side**/
@@ -230,7 +232,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 newConnStart = null;
                 stageMode = NORMAL_MODE;
                 lineLayer.draw();
-            }
+            } else {
+				setSelectedDpu(null);
+			}
         });
 
         /*
@@ -286,11 +290,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	
 	function getDpuColor(type) {
 		if(type === "Extractor") {
-			return '#500';
+			return '#A6F22A';
 		} else if(type === "Transformer") {
-			return '#050';
+			return '#25A8C0';
 		} else {
-			return '#005';
+			return '#FF402D';
 		}
 		
 	}
@@ -509,7 +513,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     writeMessage(messageLayer, 'DPU removed - CTRL');
                     removeDpu(dpu);
                     rpcProxy.onDpuRemoved(dpu.id);
-                    evt.cancelBubble = true;
                 } else if(evt.shiftKey) {
                     writeMessage(messageLayer, 'New Edge - SHIFT');
                     var mousePosition = stage.getMousePosition();
@@ -523,7 +526,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     writeMessage(messageLayer, 'Clicking on:'+ dpu.name);
                     lineLayer.add(newConnLine);
                     lineLayer.draw();
-                    evt.cancelBubble = true;
+                    
                 } else {
 					var now = Date.now();
 					if(lastClickedDpu !== null && lastClickedTime !== null) {
@@ -535,9 +538,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 							return;
 						}
 					}
+					setSelectedDpu(dpu);
 					lastClickedDpu = group;
 					lastClickedTime = now;
 				}
+				evt.cancelBubble = true;
             }
         });
 
@@ -685,6 +690,46 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpus[dpu.id] = null;
         dpuLayer.draw();
     }
+	
+	function setSelectedDpu(dpu) {
+		if(dpu !== selectedDpu) {
+			if(selectedDpu !== null) {
+				highlightDpuLines(selectedDpu, false);
+			}
+			if(dpu !== null) {
+				highlightDpuLines(dpu, true);
+			}
+			selectedDpu = dpu;
+		}
+	}
+	
+	function highlightDpuLines(dpu, highlight) {
+		var stroke = "#555";
+		var strokeWidth = 1.5;
+		if(highlight) {
+			stroke = "#222";
+			strokeWidth = 2.5;
+		}
+		for(lineId in dpu.connectionFrom) {
+            var conn = connections[dpu.connectionFrom[lineId]];
+            conn.line.setStroke(stroke);
+			conn.line.setStrokeWidth(strokeWidth);
+            conn.arrowLeft.setStroke(stroke);
+			conn.arrowLeft.setStrokeWidth(strokeWidth);
+            conn.arrowRight.setStroke(stroke);
+			conn.arrowRight.setStrokeWidth(strokeWidth);
+        }
+        for(lineId in dpu.connectionTo) {
+            conn = connections[dpu.connectionTo[lineId]];
+            conn.line.setStroke(stroke);
+			conn.line.setStrokeWidth(strokeWidth);
+            conn.arrowLeft.setStroke(stroke);
+			conn.arrowLeft.setStrokeWidth(strokeWidth);
+            conn.arrowRight.setStroke(stroke);
+			conn.arrowRight.setStrokeWidth(strokeWidth);
+        }
+		lineLayer.draw();
+	}
 
     function getDpuPosition(id) {
     /*Dpu dpu = dpus[id];

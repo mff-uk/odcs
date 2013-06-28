@@ -18,7 +18,7 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * @param posX
 	 * @param posY
 	 */
-	public void addNode(int dpuId, String name, String description, int posX, int posY);
+	public void addNode(int dpuId, String name, String description, String type, int posX, int posY);
 
 	/**
 	 * Adds new edge on graph canvas.

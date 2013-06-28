@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
-import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
@@ -131,7 +130,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		DPUInstanceRecord dpuInstance = App.getDPUs().createInstanceFromTemplate(dpu);
 		Node node = graph.addDpuInstance(dpuInstance);
 		getRpcProxy(PipelineCanvasClientRpc.class)
-				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), x, y);
+				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), x, y);
 	}
 
 	/**
@@ -160,7 +159,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		this.graph = pipeline.getGraph();
 		this.pip = pipeline;
 		for (Node node : graph.getNodes()) {
-			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), node.getDpuInstance().getName(), node.getDpuInstance().getDescription(), node.getPosition().getX(), node.getPosition().getY());
+			DPUInstanceRecord dpu = node.getDpuInstance();
+			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY());
 		}
 		for (Edge edge : graph.getEdges()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode());
