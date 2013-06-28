@@ -1441,7 +1441,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		try {
 			connection = repository.getConnection();
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
-
 			logger.debug("Query " + query + " is valid.");
 
 			TupleQueryResult result = null;
