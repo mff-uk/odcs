@@ -146,16 +146,8 @@ public class DPUDetail extends Window {
 		});
 		buttonBar.addComponent(saveAndCommitButton);
 
-		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				close();
-			}
-		});
-		buttonBar.addComponent(cancelButton);
-
-		Button saveAsNewButton = new Button("Save to DPURecord tree", new Button.ClickListener() {
+		
+		Button saveAsNewButton = new Button("Save and store to DPU tree", new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -165,6 +157,15 @@ public class DPUDetail extends Window {
 			}
 		});
 		buttonBar.addComponent(saveAsNewButton);
+		
+		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				close();
+			}
+		});
+		buttonBar.addComponent(cancelButton);
 
 		mainLayout.addComponent(buttonBar);
 

@@ -197,10 +197,10 @@ class PipelineEdit extends ViewComponent {
 		buttonBar.addComponent(labelFiller);
 
 
-		Button buttonRevert = new Button();
-		buttonRevert.setCaption("Revert to last commit");
+		Button buttonRevert = new Button("Revert to last commit");
 		buttonRevert.setHeight("25px");
 		buttonRevert.setWidth("150px");
+		buttonRevert.setEnabled(false);
 		buttonRevert.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -208,10 +208,10 @@ class PipelineEdit extends ViewComponent {
 		});
 		buttonBar.addComponent(buttonRevert);
 
-		Button buttonCommit = new Button();
-		buttonCommit.setCaption("Save & Commit");
+		Button buttonCommit = new Button("Save & Commit");
 		buttonCommit.setHeight("25px");
 		buttonCommit.setWidth("150px");
+		buttonCommit.setEnabled(false);
 		buttonCommit.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -221,8 +221,18 @@ class PipelineEdit extends ViewComponent {
 		});
 		buttonBar.addComponent(buttonCommit);
 
-		Button button = new Button();
-		button.setCaption("Save");
+		Button buttonSave = new Button("Save");
+		buttonSave.setHeight("25px");
+		buttonSave.setWidth("150px");
+		buttonSave.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipeline();
+			}
+		});
+		buttonBar.addComponent(buttonSave);
+		Button button = new Button("Save & Close");
 		button.setHeight("25px");
 		button.setWidth("150px");
 		button.addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -230,10 +240,22 @@ class PipelineEdit extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
 				savePipeline();
+				App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
 			}
 		});
 		buttonBar.addComponent(button);
-		buttonBar.setExpandRatio(labelFiller, 1.0f);
+		Button buttonCancel = new Button("Cancel");
+		buttonCancel.setHeight("25px");
+		buttonCancel.setWidth("150px");
+		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
+			}
+		});
+		buttonBar.addComponent(buttonCancel);
+		
+		buttonBar.setSpacing(true);
 		mainLayout.addComponent(buttonBar);
 
 		return mainLayout;
@@ -440,8 +462,6 @@ class PipelineEdit extends ViewComponent {
 		pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
-
-		App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
 	}
 
 	@Override

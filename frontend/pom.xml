@@ -28,6 +28,11 @@
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
+		
+		<repository>
+			<id>qiiip-repo</id>
+			<url>http://qiiip.org/mavenRepo</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -80,8 +85,7 @@
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>pagedtable</artifactId>
-			<version>0.6.5</version>
-			<type>jar</type>
+			<version>0.6.7</version>
 		</dependency>
 
 		<dependency>
