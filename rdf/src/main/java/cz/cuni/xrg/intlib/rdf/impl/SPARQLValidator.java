@@ -31,7 +31,7 @@ public class SPARQLValidator implements Validator {
         boolean isValid = true;
         LocalRDFRepo emptyRepo= LocalRDFRepo.createLocalRepo();
         try {
-            emptyRepo.makeQueryOverRepository(query);
+            emptyRepo.makeSelectQueryOverRepository(query);
         } catch (InvalidQueryException e) {
             message = e.getCause().getMessage();
             isValid = false;

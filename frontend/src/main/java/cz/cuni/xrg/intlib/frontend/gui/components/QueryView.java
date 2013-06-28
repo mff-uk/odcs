@@ -151,7 +151,7 @@ public class QueryView extends CustomComponent {
 
 			repository.load(repoDir);
 
-			Map<String, List<String>> data = repository.makeQueryOverRepository(query);
+			Map<String, List<String>> data = repository.makeSelectQueryOverRepository(query);
 			return data;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
