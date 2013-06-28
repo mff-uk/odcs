@@ -74,7 +74,8 @@ public class DebuggingView extends CustomComponent {
 		
 		refreshComponent = buildRefreshComponent();
 
-		logTextArea = new TextArea("Log from log4j", "Log file content");
+		logTextArea = new TextArea();
+		logTextArea.setValue("Log file content");
 		VerticalLayout logLayout = new VerticalLayout();
 		logLayout.addComponent(refreshComponent);
 		logLayout.addComponent(logTextArea);

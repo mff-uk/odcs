@@ -251,7 +251,7 @@ public class PipelineGraph {
 		}
 		
 		//Same edge check
-		if(sameEdgeExists(fromId, toId)) {
+		if(sameEdgeExists(from, to)) {
 			return "Same edge already exists in graph!";
 		}
 
@@ -326,9 +326,9 @@ public class PipelineGraph {
 		return bounds;
 	}
 
-	private boolean sameEdgeExists(int fromId, int toId) {
+	private boolean sameEdgeExists(Node from, Node to) {
 		for(Edge e : edges) {
-			if(e.getFrom().getDpuInstance().getId() == fromId &&  e.getTo().getDpuInstance().getId() == toId) {
+			if(e.getFrom().equals(from) &&  e.getTo().equals(to)) {
 				return true;
 			}
 		}
