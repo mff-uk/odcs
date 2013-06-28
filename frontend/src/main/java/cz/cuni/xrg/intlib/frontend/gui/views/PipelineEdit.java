@@ -184,8 +184,16 @@ class PipelineEdit extends ViewComponent {
 				calculateCanvasDimensions(bounds);
 			}
 		});
+		Button undo = new Button("Undo", new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				pc.undo();
+			}
+		});
 		left.addComponent(zoomIn);
 		left.addComponent(zoomOut);
+		left.addComponent(undo);
 
 		layout.addComponentAsFirst(left);
 		mainLayout.addComponent(layout);

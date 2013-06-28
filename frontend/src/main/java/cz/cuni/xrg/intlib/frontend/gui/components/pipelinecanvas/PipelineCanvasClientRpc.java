@@ -54,4 +54,9 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 */
 	public void zoomStage(double zoom);
 
+	/**
+	 * Clears stage.
+	 */
+	public void clearStage();
+
 }

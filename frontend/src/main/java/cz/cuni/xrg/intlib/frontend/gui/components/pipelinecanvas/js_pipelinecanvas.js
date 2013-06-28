@@ -90,6 +90,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		},
 		zoomStage: function(zoom) {
 			zoomStage(zoom);
+		},
+		clearStage: function() {
+			clearStage();
 		}
     });
 
@@ -296,7 +299,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		} else {
 			return '#FF402D';
 		}
-		
+	}
+	
+	function clearStage() {
+		dpus.clear();
+		connections.clear();
+		stage.destroy();
+		init();
 	}
 
     /** 
