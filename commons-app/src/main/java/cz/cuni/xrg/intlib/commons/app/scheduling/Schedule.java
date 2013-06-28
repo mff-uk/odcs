@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.scheduling;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -106,9 +107,10 @@ public class Schedule {
      * Pipeline after which activate this plan.
 	 * Used only if {@link #type} = RunAfterPipeline.
      */
-	@ManyToOne
-	@JoinColumn(name = "predPipeline", nullable = true)	
-    private Pipeline predPipeline;	
+// TODO Honza: List of pipelines from Pipelines 	
+//	@ManyToOne
+//	@JoinColumn(name = "predPipeline", nullable = true)	
+    private List<Pipeline> predPipeline;	
 	
 	/**
 	 * Empty ctor. Used by JPA. Do not use otherwise.
@@ -195,12 +197,8 @@ public class Schedule {
 		this.periodUnit = periodUnit;
 	}
 
-	public Pipeline getPredPipeline() {
+	public List<Pipeline> getPredPipeline() {
 		return predPipeline;
-	}
-
-	public void setPredPipeline(Pipeline predPipeline) {
-		this.predPipeline = predPipeline;
 	}
 
 	public Long getId() {
