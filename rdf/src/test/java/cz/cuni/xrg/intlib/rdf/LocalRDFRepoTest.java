@@ -110,7 +110,7 @@ public class LocalRDFRepoTest {
         boolean isNameUnique = false;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(
+            rdfRepo.loadRDFfromRepositoryToFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException | LoadException ex) {
@@ -128,7 +128,7 @@ public class LocalRDFRepoTest {
         boolean isNameUnique = false;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(
+            rdfRepo.loadRDFfromRepositoryToFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException | LoadException ex) {
@@ -145,7 +145,7 @@ public class LocalRDFRepoTest {
         boolean isNameUnique = false;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(
+            rdfRepo.loadRDFfromRepositoryToFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException | LoadException ex) {
@@ -162,7 +162,7 @@ public class LocalRDFRepoTest {
         boolean isNameUnique = false;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(
+            rdfRepo.loadRDFfromRepositoryToFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException | LoadException ex) {
@@ -177,8 +177,8 @@ public class LocalRDFRepoTest {
         RDFFormat format = RDFFormat.RDFXML;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(outDir.toString(), fileName, format);
-            rdfRepo.loadRDFfromRepositoryToXMLFile(outDir.toString(), fileName, format);
+            rdfRepo.loadRDFfromRepositoryToFile(outDir.toString(), fileName, format);
+            rdfRepo.loadRDFfromRepositoryToFile(outDir.toString(), fileName, format);
             fail();
 
         } catch (CannotOverwriteFileException ex) {
@@ -198,7 +198,7 @@ public class LocalRDFRepoTest {
         long size = rdfRepo.getTripleCountInRepository();
 
         try {
-            rdfRepo.extractRDFfromXMLFileToRepository(
+            rdfRepo.extractRDFfromFileToRepository(
                     testFileDir, suffix, baseURI, useSuffix);
         } catch (ExtractException e) {
             fail(e.getMessage());
@@ -219,7 +219,7 @@ public class LocalRDFRepoTest {
         long size = rdfRepo.getTripleCountInRepository();
 
         try {
-            rdfRepo.extractRDFfromXMLFileToRepository(
+            rdfRepo.extractRDFfromFileToRepository(
                     testFileDir, suffix, baseURI, useSuffix);
         } catch (ExtractException e) {
             fail(e.getMessage());
@@ -240,7 +240,7 @@ public class LocalRDFRepoTest {
         boolean isNameUnique = false;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(
+            rdfRepo.loadRDFfromRepositoryToFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException | LoadException ex) {
@@ -378,7 +378,7 @@ public class LocalRDFRepoTest {
         long size = rdfRepo.getTripleCountInRepository();
 
         try {
-            rdfRepo.extractRDFfromXMLFileToRepository(
+            rdfRepo.extractRDFfromFileToRepository(
                     testFileDir, suffix, baseURI, useSuffix);
         } catch (ExtractException e) {
             fail(e.getMessage());
@@ -398,7 +398,7 @@ public class LocalRDFRepoTest {
         long size = rdfRepo.getTripleCountInRepository();
 
         try {
-            rdfRepo.extractRDFfromXMLFileToRepository(
+            rdfRepo.extractRDFfromFileToRepository(
                     testFileDir, suffix, baseURI, useSuffix);
         } catch (ExtractException e) {
             fail(e.getMessage());
@@ -435,7 +435,7 @@ public class LocalRDFRepoTest {
         boolean isNameUnique = false;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(
+            rdfRepo.loadRDFfromRepositoryToFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException | LoadException ex) {
@@ -534,7 +534,7 @@ public class LocalRDFRepoTest {
         long size = rdfRepo.getTripleCountInRepository();
 
         try {
-            rdfRepo.extractRDFfromXMLFileToRepository(
+            rdfRepo.extractRDFfromFileToRepository(
                     testFileDir, suffix, baseURI, useSuffix);
         } catch (ExtractException e) {
             fail(e.getMessage());
@@ -634,7 +634,7 @@ public class LocalRDFRepoTest {
         boolean isNameUnique = false;
 
         try {
-            rdfRepo.loadRDFfromRepositoryToXMLFile(
+            rdfRepo.loadRDFfromRepositoryToFile(
                     outDir.toString(), fileName, format, canBeOverWriten, isNameUnique);
 
         } catch (CannotOverwriteFileException | LoadException ex) {

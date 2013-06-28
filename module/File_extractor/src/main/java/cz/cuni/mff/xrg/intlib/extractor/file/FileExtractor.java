@@ -41,7 +41,7 @@ public class FileExtractor implements Extract,
 		final String fileSuffix=config.FileSuffix;
 		final boolean onlyThisSuffix=config.OnlyThisSuffix;
 
-		repository.extractRDFfromXMLFileToRepository(
+		repository.extractRDFfromFileToRepository(
 				path, fileSuffix, baseURI, onlyThisSuffix);
 	}
 

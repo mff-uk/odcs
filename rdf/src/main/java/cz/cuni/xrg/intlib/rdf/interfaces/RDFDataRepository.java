@@ -47,7 +47,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                  or not.
 	 * @throws ExtractException when extraction fail.
 	 */
-	public void extractRDFfromXMLFileToRepository(String path, String suffix,
+	public void extractRDFfromFileToRepository(String path, String suffix,
 			String baseURI,
 			boolean useSuffix) throws ExtractException;
 
@@ -63,7 +63,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                                      overwritting.
 	 * @throws LoadException                when loading data fault.
 	 */
-	public void loadRDFfromRepositoryToXMLFile(String directoryPath,
+	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName,
 			org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException, LoadException;
 
@@ -83,7 +83,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                                      overwritting.
 	 * @throws LoadException                when loading data fault.
 	 */
-	public void loadRDFfromRepositoryToXMLFile(String directoryPath,
+	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName, org.openrdf.rio.RDFFormat format,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException;
 

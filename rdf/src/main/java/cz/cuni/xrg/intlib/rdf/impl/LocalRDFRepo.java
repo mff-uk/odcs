@@ -299,7 +299,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws ExtractException when extraction fail.
 	 */
 	@Override
-	public void extractRDFfromXMLFileToRepository(String path, String suffix,
+	public void extractRDFfromFileToRepository(String path, String suffix,
 			String baseURI, boolean useSuffix) throws ExtractException {
 
 		if (path == null) {
@@ -436,11 +436,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws LoadException                when loading data fault.
 	 */
 	@Override
-	public void loadRDFfromRepositoryToXMLFile(String directoryPath,
+	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName,
 			org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException, LoadException {
 
-		loadRDFfromRepositoryToXMLFile(directoryPath, fileName, format, false,
+		loadRDFfromRepositoryToFile(directoryPath, fileName, format, false,
 				false);
 	}
 
@@ -461,7 +461,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws LoadException                when loading data fault.
 	 */
 	@Override
-	public void loadRDFfromRepositoryToXMLFile(String directoryPath,
+	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName, org.openrdf.rio.RDFFormat format,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException {
 
@@ -1509,7 +1509,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		logger.debug("saving fileName:" + file.getName());
 
 		try {
-			loadRDFfromRepositoryToXMLFile(directory.toString(), file.getName(),
+			loadRDFfromRepositoryToFile(directory.toString(), file.getName(),
 					format, true, false);
 		} catch (CannotOverwriteFileException | LoadException e) {
 			throw new RuntimeException(e);
@@ -1529,7 +1529,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	public void load(File directory) {
 		File file = new File(directory, dumpName);
 		try {
-			extractRDFfromXMLFileToRepository(file.getAbsolutePath(), "", "",
+			extractRDFfromFileToRepository(file.getAbsolutePath(), "", "",
 					false);
 		} catch (ExtractException e) {
 			throw new RuntimeException(e);
