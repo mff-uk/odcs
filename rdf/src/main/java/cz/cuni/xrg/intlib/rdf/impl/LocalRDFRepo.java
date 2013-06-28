@@ -5,6 +5,9 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
+
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType.*;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
@@ -12,17 +15,7 @@ import cz.cuni.xrg.intlib.rdf.exceptions.GraphNotEmptyException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -46,25 +39,18 @@ import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.Binding;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.http.HTTPRepository;
 import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.RDFWriter;
-import org.openrdf.rio.Rio;
+import org.openrdf.rio.*;
+import org.openrdf.rio.n3.N3Writer;
+import org.openrdf.rio.rdfxml.RDFXMLWriter;
+import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
+import org.openrdf.rio.trig.TriGWriter;
+import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1561,17 +1547,117 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		destroyThread.start();
 	}
 
+	
+	@Override
+	public File makeConstructQueryOverRepository(String constructQuery,
+			RDFFormatType formatType, String fileName) throws InvalidQueryException {
+
+		RepositoryConnection connection = null;
+
+		try {
+			connection = repository.getConnection();
+
+			GraphQuery graphQuery = connection.prepareGraphQuery(
+					QueryLanguage.SPARQL,
+					constructQuery);
+
+
+			logger.debug("Query " + constructQuery + " is valid.");
+
+			GraphQueryResult result = null;
+
+			try {
+				result = graphQuery.evaluate();
+
+				logger.debug(
+						"Query " + constructQuery + " has not null result.");
+
+				List<Statement> statements = result.asList();
+
+				File file = new File(fileName);
+				try (FileOutputStream os = new FileOutputStream(file)) {
+
+					RDFHandler goal = null;
+
+					switch (formatType) {
+						case AUTO:
+							goal = new RDFXMLPrettyWriter(os);
+							break;
+						case N3:
+							goal = new N3Writer(os);
+							break;
+						case RDFXML:
+							goal = new RDFXMLWriter(os);
+							break;
+						case TRIG:
+							goal = new TriGWriter(os);
+							break;
+						case TTL:
+							goal = new TurtleWriter(os);
+							break;
+
+
+					}
+
+					for (Statement next : statements) {
+
+						connection.exportStatements(next.getSubject(), next
+								.getPredicate(), next.getObject(), true, goal);
+					}
+				}
+
+				return file;
+
+			} catch (QueryEvaluationException ex) {
+				throw new InvalidQueryException(
+						"This query is probably not valid", ex);
+			} catch (FileNotFoundException ex) {
+				logger.error("Creating fileStream fault - file not found", ex);
+			} catch (IOException ex) {
+				logger.error("Stream were not closed", ex);
+			} finally {
+				if (result != null) {
+					try {
+						result.close();
+					} catch (QueryEvaluationException ex) {
+						logger.warn("Failed to close RDF tuple result.", ex);
+					}
+				}
+			}
+
+		} catch (MalformedQueryException ex) {
+			throw new InvalidQueryException("This query is probably not valid",
+					ex);
+		} catch (RepositoryException ex) {
+			logger.error("Connection to RDF repository failed.", ex);
+		} catch (RDFHandlerException ex) {
+			logger.error("RDF handler failt", ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn(
+							"Failed to close connection to RDF repository while querying.",
+							ex);
+				}
+			}
+		}
+
+		throw new InvalidQueryException("Creating File with RDF data fault");
+	}
+
 	/**
-	 * Make query over repository data and return tables as result.
+	 * Make select query over repository data and return tables as result.
 	 *
-	 * @param query String representation of SPARQL query.
+	 * @param selectQuery String representation of SPARQL select query.
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
 	 *         map key is column name and <code>List&lt;String&gt;</code> are
 	 *         string values in this column. When query is invalid, return *
 	 *         empty <code>Map</code>.
 	 */
 	@Override
-	public Map<String, List<String>> makeQueryOverRepository(String query)
+	public Map<String, List<String>> makeSelectQueryOverRepository(String selectQuery)
 			throws InvalidQueryException {
 
 		Map<String, List<String>> map = new HashMap<>();
@@ -1580,15 +1666,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			connection = repository.getConnection();
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
-					QueryLanguage.SPARQL, query);
+					QueryLanguage.SPARQL, selectQuery);
 
-			logger.debug("Query " + query + " is valid.");
+			logger.debug("Query " + selectQuery + " is valid.");
 
 			TupleQueryResult result = null;
 			List<BindingSet> listBindings = new ArrayList<>();
 			try {
 				result = tupleQuery.evaluate();
-				logger.debug("Query " + query + " has not null result.");
+				logger.debug("Query " + selectQuery + " has not null result.");
 				List<String> names = result.getBindingNames();
 
 				for (String name : names) {
