@@ -4,10 +4,12 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -249,14 +251,31 @@ public interface RDFDataRepository extends DataUnit {
 	public List<Statement> getRepositoryStatements();
 
 	/**
-	 * Make query over repository data and return tables as result.
+	 * Make select query over repository data and return tables as result.
 	 *
-	 * @param query String representation of SPARQL query.
+	 * @param selectQuery String representation of SPARQL query.
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
 	 *         map key is column name and <code>List&lt;String&gt;</code> are
 	 *         string values in this column. When query is invalid, return *
 	 *         empty <code>Map</code>.
+	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public Map<String, List<String>> makeQueryOverRepository(String query)
+	public Map<String, List<String>> makeSelectQueryOverRepository(
+			String selectQuery)
 			throws InvalidQueryException;
+
+	/**
+	 * Make construct query over repository data and return file where RDF data
+	 * as result are saved.
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @param formatType     Choosed type of format RDF data in result.
+	 * @param fileName       Name of file where result with RDF data is stored.
+	 * @return File with RDF data in defined format as result of construct
+	 *         query.
+	 * @throws InvalidQueryException when query is not valid or creating file
+	 *                               fault.
+	 */
+	public File makeConstructQueryOverRepository(String constructQuery,
+			RDFFormatType formatType, String fileName) throws InvalidQueryException;
 }
