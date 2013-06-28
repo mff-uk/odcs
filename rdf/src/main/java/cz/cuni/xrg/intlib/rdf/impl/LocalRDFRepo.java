@@ -826,7 +826,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	/**
 	 * Return all triples(statements) in reposiotory as list.
 	 *
-	 * @return List<code>&lt;Statement&gt;</code> list of all triples in repository/
+	 * @return List<code>&lt;Statement&gt;</code> list of all triples in
+	 *         repository/
 	 */
 	@Override
 	public List<Statement> getRepositoryStatements() {
@@ -1577,6 +1578,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		RepositoryConnection connection = null;
 		try {
 			connection = repository.getConnection();
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, query);
 

@@ -249,6 +249,11 @@ public class PipelineGraph {
 		if(from.equals(to)) {
 			return "Loops are not allowed!";
 		}
+		
+		//Same edge check
+		if(sameEdgeExists(fromId, toId)) {
+			return "Same edge already exists in graph!";
+		}
 
 		//Same edge, other direction check
 		for(Edge e : edges) {
@@ -319,6 +324,15 @@ public class PipelineGraph {
 			}
 		}
 		return bounds;
+	}
+
+	private boolean sameEdgeExists(int fromId, int toId) {
+		for(Edge e : edges) {
+			if(e.getFrom().getDpuInstance().getId() == fromId &&  e.getTo().getDpuInstance().getId() == toId) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

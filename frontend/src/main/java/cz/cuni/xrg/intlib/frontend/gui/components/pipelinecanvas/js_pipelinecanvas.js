@@ -13,7 +13,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 
     //provisional placement of DPU and connection "classes"
-    /** Class representing DPU for use on Canvas**/
+    /** 
+	 * Class representing DPU for use on Canvas
+	 *  
+	 *  @param id
+	 *  @param name
+	 *  @param description
+	 **/
     function Dpu (id, name, description) {
         this.id = id;
         this.name = name;
@@ -30,7 +36,16 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         };
     }
 
-    /** Class representing Connection between 2 DPUs on Canvas **/
+    /** 
+	 * Class representing Connection between 2 DPUs on Canvas 
+	 * 
+	 *  @param id
+	 *  @param from
+	 *  @param to
+	 *  @param line
+	 *  @param cmdDelete
+	 *  @param hitLine
+	 **/
     function Connection(id, from, to, line, cmdDelete, hitLine) {
         this.id = id;
         this.from = from;
@@ -52,6 +67,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	var lastPositionX = 0;
 	var	lastPositionY = 0;
 	
+	var selectedDpu = null;
+	
 	var scale = 1.0;
 
     /** Registering RPC for calls from server-side**/
@@ -59,8 +76,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         init: function() {
             init();
         },
-        addNode: function(dpuId, name, description, x , y) {
-            addDpu(dpuId, name, description, x , y);
+        addNode: function(dpuId, name, description, type, x , y) {
+            addDpu(dpuId, name, description, type, x , y);
         },
         addEdge: function(id, dpuFrom, dpuTo) {
             addConnection(id, dpuFrom, dpuTo);
@@ -104,7 +121,12 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var newConnStart = null;
 
 
-    /** Function for moving connection lines after DPU is dragged **/
+    /** 
+	 * Function for moving connection lines after DPU is dragged 
+	 * @param dpuId id of dpu which was moved
+	 * @param x x coordinate of new position
+	 * @param y y coordinate of new position
+	 **/
     function moveLine(dpuId, x, y) {
         var dpu = dpus[dpuId];
         var dpuGroup = dpu.group;
@@ -126,7 +148,12 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         }
     }
 
-    /** Writes message on given message layer **/
+    /** 
+	 * Writes message on given message layer 
+	 * 
+	 * @param messageLayer
+	 * @param message
+	 **/
     function writeMessage(messageLayer, message) {
 //        var context = messageLayer.getContext();
 //        messageLayer.clear();
@@ -174,7 +201,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 var y = mousePos.y;
                 writeMessage(messageLayer, 'x: ' + x + ', y: ' + y);
                 moveLine(dragId, x, y);
-            } else if(stageMode == NEW_CONNECTION_MODE) {
+            } else if(stageMode === NEW_CONNECTION_MODE) {
                 // Repositioning new connection line
                 var mousePosition = stage.getMousePosition();
                 newConnLine.setPoints(computeConnectionPoints3(newConnStart.group, mousePosition.x / scale, mousePosition.y / scale));
@@ -198,14 +225,16 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         stage.on('click', function(evt) {
-            if(stageMode == NEW_CONNECTION_MODE) {
+            if(stageMode === NEW_CONNECTION_MODE) {
                 // Cancels NEW_CONNECTION_MODE
                 newConnLine.destroy();
                 newConnLine = null;
                 newConnStart = null;
                 stageMode = NORMAL_MODE;
                 lineLayer.draw();
-            }
+            } else {
+				setSelectedDpu(null);
+			}
         });
 
         /*
@@ -230,7 +259,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 
 		var basePath = "http://" + window.location.host + window.location.pathname;
-		if(basePath.charAt(basePath.length - 1) != '/') {
+		if(basePath.charAt(basePath.length - 1) !== '/') {
 			basePath = basePath + '/';
 		}
 		var imgPath = "VAADIN/themes/IntLibTheme/img/";
@@ -248,6 +277,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 	/** Updates text in DPU visualization
 	 *
+	 * @param id ID of Dpu to update
+	 * @param name new Dpu name
+	 * @param description new Dpu description
 	 */
 	function updateDpu(id, name, description) {
 		var dpu = dpus[id];
@@ -255,9 +287,29 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		dpu.rect.setHeight(dpu.text.getHeight());
 		dpuLayer.draw();
 	}
+	
+	function getDpuColor(type) {
+		if(type === "Extractor") {
+			return '#A6F22A';
+		} else if(type === "Transformer") {
+			return '#25A8C0';
+		} else {
+			return '#FF402D';
+		}
+		
+	}
 
-    /** Builds DPU object and creates its representations on the stage **/
-    function addDpu(id, name, description, posX, posY) {
+    /** 
+	 * Builds DPU object and creates its representations on the stage
+	 * 
+	 *  @param id ID of new Dpu
+	 *  @param name Name of new Dpu
+	 *  @param description
+	 *  @param type
+	 *  @param posX x coordinate of Dpu's position 
+	 *  @param posY y coordinate of Dpu's position
+	 **/
+    function addDpu(id, name, description, type, posX, posY) {
 
         var dpu = new Dpu(id, name, description);
 
@@ -276,12 +328,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         // Graphical representation of DPU
+		var fill = getDpuColor(type);
         var rect = new Kinetic.Rect({
             x: 0,
             y: 0,
             stroke: '#555',
             strokeWidth: 2,
-            fill: '#ddd',
+            fill: fill,
             width: 120,
             height: complexText.getHeight(),
             shadowColor: 'black',
@@ -294,7 +347,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         // Group containing text and rect
         if(posX < 0) {
             var mousePos = null; //stage.getPointerPosition();// stage.getMousePosition();
-			if(mousePos != null) {
+			if(mousePos !== null) {
 				posX = mousePos.x;
 				posY = mousePos.y;
 			} else {
@@ -331,7 +384,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
         cmdConnection.on('click', function(evt) {
-            if(stageMode == NORMAL_MODE) {
+            if(stageMode === NORMAL_MODE) {
                 writeMessage(messageLayer, 'action bar clicked');
                 var mousePosition = stage.getMousePosition();
                 newConnLine = new Kinetic.Line({
@@ -394,7 +447,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // Handling the visibility of actionBar
         group.on('mouseenter', function() {
-            if(stageMode == NORMAL_MODE) {
+            if(stageMode === NORMAL_MODE) {
                 actionBar.setVisible(true);
                 actionBar.moveToTop();
                 writeMessage(messageLayer, 'mouseentered');
@@ -429,7 +482,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             isDragging = false;
             dragId = 0;
             var endPosition = group.getPosition();
-            if(endPosition == null) {
+            if(endPosition === null) {
                 writeMessage(messageLayer, 'DPU removed - Out of Stage');
                 removeDpu(dpu);
                 rpcProxy.onDpuRemoved(dpu.id);
@@ -445,22 +498,21 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         group.on('click', function(evt) {
             writeMessage(messageLayer, 'Clicked on Extractor');
 
-            if(stageMode == NEW_CONNECTION_MODE) {
+            if(stageMode === NEW_CONNECTION_MODE) {
                 newConnLine.destroy();
                 newConnLine = null;
                 stageMode = NORMAL_MODE;
                 idFrom = newConnStart.id;
                 idTo = dpu.id; //getDpuByPosition(stage.getMousePosition());
-                if(idTo != 0) {
+                if(idTo !== 0) {
                     rpcProxy.onConnectionAdded(idFrom, parseInt(idTo));
                 }
                 newConnStart = null;
-            } else if(stageMode == NORMAL_MODE) {
+            } else if(stageMode === NORMAL_MODE) {
                 if(evt.ctrlKey) {
                     writeMessage(messageLayer, 'DPU removed - CTRL');
                     removeDpu(dpu);
                     rpcProxy.onDpuRemoved(dpu.id);
-                    evt.cancelBubble = true;
                 } else if(evt.shiftKey) {
                     writeMessage(messageLayer, 'New Edge - SHIFT');
                     var mousePosition = stage.getMousePosition();
@@ -474,11 +526,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     writeMessage(messageLayer, 'Clicking on:'+ dpu.name);
                     lineLayer.add(newConnLine);
                     lineLayer.draw();
-                    evt.cancelBubble = true;
+                    
                 } else {
 					var now = Date.now();
-					if(lastClickedDpu != null && lastClickedTime != null) {
-						if(lastClickedDpu == group && now - lastClickedTime < 500) {
+					if(lastClickedDpu !== null && lastClickedTime !== null) {
+						if(lastClickedDpu === group && now - lastClickedTime < 500) {
 							lastClickedTime = null;
 							writeMessage(messageLayer, 'Detail requested');
 							rpcProxy.onDetailRequested(dpu.id);
@@ -486,9 +538,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 							return;
 						}
 					}
+					setSelectedDpu(dpu);
 					lastClickedDpu = group;
 					lastClickedTime = now;
 				}
+				evt.cancelBubble = true;
             }
         });
 
@@ -510,7 +564,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		rpcProxy.onDpuMoved(id, parseInt(posX), parseInt(posY));
     }
 
-    /** Adds connection between 2 given DPUs **/
+    /** 
+	 * Adds connection between 2 given DPUs 
+	 *
+	 * @param id ID of new connection
+	 * @param from ID of connection's start Dpu 
+	 * @param to ID of connection's end Dpu
+	 **/
     function addConnection(id, from, to) {
 
         var dpuFrom = dpus[from].group;
@@ -530,7 +590,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			strokeWidth: 15,
 			stroke: '#555',
 			opacity: 0
-		})
+		});
 
         hitLine.on('click', function(evt) {
             var del = connections[id].cmdDelete;
@@ -592,7 +652,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         lineLayer.draw();
     }
 
-    /** Removes given connection **/
+    /** 
+	 * Removes given connection 
+	 * @param id id of connection to remove
+	 **/
     function removeConnection(id) {
         var con = connections[id];
         var idx = dpus[con.from].connectionFrom.indexOf(id);
@@ -609,7 +672,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         lineLayer.draw();
     }
 
-    /** Removes DPU and related connections **/
+    /** 
+	 * Removes DPU and related connections 
+	 * 
+	 * @param dpu dpu to remove
+	 **/
     function removeDpu(dpu) {
         var count = dpu.connectionFrom.length;
         for(var i = 0; i < count; i++) {
@@ -623,6 +690,46 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpus[dpu.id] = null;
         dpuLayer.draw();
     }
+	
+	function setSelectedDpu(dpu) {
+		if(dpu !== selectedDpu) {
+			if(selectedDpu !== null) {
+				highlightDpuLines(selectedDpu, false);
+			}
+			if(dpu !== null) {
+				highlightDpuLines(dpu, true);
+			}
+			selectedDpu = dpu;
+		}
+	}
+	
+	function highlightDpuLines(dpu, highlight) {
+		var stroke = "#555";
+		var strokeWidth = 1.5;
+		if(highlight) {
+			stroke = "#222";
+			strokeWidth = 2.5;
+		}
+		for(lineId in dpu.connectionFrom) {
+            var conn = connections[dpu.connectionFrom[lineId]];
+            conn.line.setStroke(stroke);
+			conn.line.setStrokeWidth(strokeWidth);
+            conn.arrowLeft.setStroke(stroke);
+			conn.arrowLeft.setStrokeWidth(strokeWidth);
+            conn.arrowRight.setStroke(stroke);
+			conn.arrowRight.setStrokeWidth(strokeWidth);
+        }
+        for(lineId in dpu.connectionTo) {
+            conn = connections[dpu.connectionTo[lineId]];
+            conn.line.setStroke(stroke);
+			conn.line.setStrokeWidth(strokeWidth);
+            conn.arrowLeft.setStroke(stroke);
+			conn.arrowLeft.setStrokeWidth(strokeWidth);
+            conn.arrowRight.setStroke(stroke);
+			conn.arrowRight.setStrokeWidth(strokeWidth);
+        }
+		lineLayer.draw();
+	}
 
     function getDpuPosition(id) {
     /*Dpu dpu = dpus[id];
@@ -630,7 +737,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		return [position.x, position.y];*/
     }
 
-    /** Gets DPU on given position, currently not used **/
+    /** 
+	 * Gets DPU on given position, currently not used 
+	 * 
+	 * @param position Position where to look for Dpu
+	 **/
     function getDpuByPosition(position) {
         for(dpuId in dpus) {
             var dpu = dpus[dpuId].group;
@@ -697,12 +808,26 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         return computeConnectionPoints5(start, EminX, EmaxX, EminY, EmaxY);
     }
 
-    /** Computes connection points for uniform visual for DPU and point **/
+    /** 
+	 * Computes connection points for uniform visual for DPU and point 
+	 *
+	 * @param start Start position
+	 * @param endX End position x coordinate 
+	 * @param endY End position y coordinate
+	 **/
     function computeConnectionPoints3(start, endX, endY) {
         return computeConnectionPoints5(start, endX, endX, endY, endY);
     }
 
-    /** Computes connection points for uniform visual - internal **/
+    /** 
+	 * Computes connection points for uniform visual - internal 
+	 
+	 * @param start Start position
+	 * @param EminX End position x min coordinate 
+	 * @param EmaxX End position x max coordinate 
+	 * @param EminY End position y min coordinate 
+	 * @param EmaxY End position y max coordinate 
+	 **/
     function computeConnectionPoints5(start, EminX, EmaxX, EminY, EmaxY) {
         var SminX = start.getPosition().x;
         var SmaxX = SminX + start.children[0].getWidth();
@@ -723,7 +848,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         } else if (SminX > EminX) {
             startX = SminX + ((EmaxX - SminX) / 2);
             endX = startX;
-        } else if (EminX == EmaxX) {
+        } else if (EminX === EmaxX) {
             startX = EminX;
             endX = EminX;
         } else {
@@ -740,7 +865,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         } else if (SminY > EminY) {
             startY = SminY + ((EmaxY - SminY) / 2);
             endY = startY;
-        } else if (EminY == EmaxY) {
+        } else if (EminY === EmaxY) {
             startY = EminY;
             endY = startY;
         } else {
