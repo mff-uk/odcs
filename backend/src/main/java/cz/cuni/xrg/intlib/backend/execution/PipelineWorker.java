@@ -22,6 +22,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
@@ -35,9 +36,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
-import cz.cuni.xrg.intlib.backend.context.impl.ExtendedExtractContextImpl;
-import cz.cuni.xrg.intlib.backend.context.impl.ExtendedLoadContextImpl;
-import cz.cuni.xrg.intlib.backend.context.impl.ExtendedTransformContextImpl;
+import cz.cuni.xrg.intlib.backend.context.impl.ContextFactory;
 import cz.cuni.xrg.intlib.backend.context.impl.PrimitiveDataUniteMerger;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractStartEvent;
@@ -67,7 +66,11 @@ import org.springframework.context.ApplicationEventPublisher;
  * 
  */
 class PipelineWorker implements Runnable {
-		
+	
+	private static final String MDC_DPU_INSTANCE_KEY_NAME = "dpuInstance"; 
+	
+	private static final String MDPU_EXECUTION_KEY_NAME = "execution";
+	
 	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
@@ -106,7 +109,7 @@ class PipelineWorker implements Runnable {
 	/**
 	 * Manage mapping execution context into {@link #workDirectory}. 
 	 */
-	private ExecutionContextInfo contextWriter;	
+	private ExecutionContextInfo contextInfo;	
 		
 	/**
 	 * @param execution The pipeline execution record to run.
@@ -125,7 +128,7 @@ class PipelineWorker implements Runnable {
 		this.dataUnitMerger = new PrimitiveDataUniteMerger();
 		this.database = database;
 		// create or get existing .. 
-		this.contextWriter = execution.createExecutionContext(workingDirectory);
+		this.contextInfo = execution.createExecutionContext(workingDirectory);
 		// TODO Petyr: Persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
 		// TODO Petyr: Release context sooner then on the end of the execution
 	}
@@ -157,23 +160,10 @@ class PipelineWorker implements Runnable {
 	/**
 	 * Do cleanup work after pipeline execution.
 	 * Also delete the worker directory it the pipeline
-	 * is not in debugMode.
+	 * if not in debugMode.
 	 */
 	private void cleanUp() {
 		LOG.debug("Clean up");
-		// save context if in debug mode
-		if (execution.isDebugging()) {
-			LOG.debug("Saving pipeline execution context");
-			// save DPURecord's contexts
-			for (ProcessingContext item : contexts.values()) {
-				if (item instanceof ExtendedContext) {
-					ExtendedContext exCtx = (ExtendedContext)item;
-					exCtx.save();
-				} else {
-					LOG.error("Unexpected ProcessingContext instance. Can't call release().");
-				}	
-			}
-		}
 		// release all contexts 
 		for (ProcessingContext item : contexts.values()) {
 			if (item instanceof ExtendedContext) {
@@ -183,6 +173,18 @@ class PipelineWorker implements Runnable {
 				LOG.error("Unexpected ProcessingContext instance. Can't call release().");
 			}	
 		}
+		// delete working folder ?
+		if (execution.isDebugging()) {
+			// do not delete anything
+		} else {
+			// try to delete the working directory
+			try {
+				FileUtils.deleteDirectory( contextInfo.getWorkingDirectory() );
+			} catch (IOException e) {
+				LOG.error("Can't delete directory after execution: " + execution.getId(), e);
+			}
+			// TODO Petyr: delete also directory with stored data units ?
+		}			
 	}
 	
 	/**
@@ -191,28 +193,28 @@ class PipelineWorker implements Runnable {
 	 */
 	@Override
 	public void run() {		
-		final String pipielineExecutionId = Long.toString( execution.getId() );
-		final String MDCDpuInstanceKey = "dpuInstance";
-
+		PipelineFacade pipelineFacade = database.getPipeline();
+		
 		// add marker to logs from this thread -> both must be specified !!
-		MDC.put("execution", pipielineExecutionId );
+		MDC.put(MDPU_EXECUTION_KEY_NAME, Long.toString( execution.getId() ) );
 		
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
-				
-		// TODO: Petyr, persist context into DO
 		LOG.debug("Started");
+
+		// contextInfo is in pipeline so by saving pipeline we also save context
+		pipelineFacade.save(execution);
 		
 		boolean executionFailed = false;
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
 			boolean result;
 			
-			// put dpuInstance id to MDC
-			MDC.put(MDCDpuInstanceKey, Long.toString(node.getDpuInstance().getId()) );
+			// put dpuInstance id to MDC, so we can identify logs related to the dpuInstance
+			MDC.put(MDC_DPU_INSTANCE_KEY_NAME, Long.toString(node.getDpuInstance().getId()) );
 			try {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
@@ -237,53 +239,55 @@ class PipelineWorker implements Runnable {
 				executionFailed = true;
 				break;
 			}
-			MDC.remove(MDCDpuInstanceKey);
-						
+			MDC.remove(MDC_DPU_INSTANCE_KEY_NAME);
+				
+			// TODO Petyr: save custom data .. !
 			if (result) {
 				// DPURecord executed successfully
+				
+				// save context after last execution
+				pipelineFacade.save(execution);
+				// also save new DataUnits
+				ProcessingContext lastContext = contexts.get(node);
+				if (lastContext instanceof ExtendedContext) {
+					ExtendedContext exCtx = (ExtendedContext)lastContext;
+					exCtx.save();
+				} else {
+					LOG.error("Unexpected ProcessingContext instance. Can't save context.");
+				}
+				
 			} else {
 				// error -> end pipeline
 				executionFailed = true;
 				eventPublisher.publishEvent(new PipelineFailedEvent("DPU execution failed.", node.getDpuInstance(), execution, this));
-				break;
+				// save data ?
+				if (execution.isDebugging()) {
+					// save new DataUnits
+					ProcessingContext lastContext = contexts.get(node);
+					if (lastContext instanceof ExtendedContext) {
+						ExtendedContext exCtx = (ExtendedContext)lastContext;
+						exCtx.save();
+					} else {
+						LOG.error("Unexpected ProcessingContext instance. Can't save context.");
+					}
+					// the context will be save at the end of the execution
+				}
+				// break execution
+				break;	
 			}
-			
-			// TODO Petyr:save contextWriter after every DPURecord to enable recovery
-			//		also save the new DataUnits .. 
 		}
 		// ending ..
-		
-		LOG.debug("Finished");
-	
-		if (execution.isDebugging()) {
-			// TODO Petyr: save contextWriter for the last time ..
-		}
-		
-		// and do clean up
-		cleanUp();
-        
+		LOG.debug("Finished");		
+		// do clean up
+		cleanUp();        
 		// clear all threads markers		
-		MDC.clear();		
-		
-		// delete working folder
-		if (execution.isDebugging()) {
-			// do not delete anything
-		} else {
-			// try to delete the working directory
-			try {
-				FileUtils.deleteDirectory( contextWriter.getWorkingDirectory() );
-			} catch (IOException e) {
-				LOG.error("Can't delete directory after execution: " + execution.getId(), e);
-			}
-			// TODO Petyr: delete also directory with stored data units ?
-		}		
-		
+		MDC.clear();
+		// save context into DB
         if (executionFailed) {
 			executionFailed();
 		} else {
 			executionSuccessful();
-		}
-        
+		}        
         // publish information for the rest of the application
         eventPublisher.publishEvent(new PipelineFinished(execution, this));
 	}
@@ -305,9 +309,7 @@ class PipelineWorker implements Runnable {
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedExtractContext extractContext;
-		extractContext = new ExtendedExtractContextImpl
-				(contextId, execution, dpuInstance, eventPublisher, contextWriter);
-		
+		extractContext = ContextFactory.create(contextId, execution, dpuInstance, eventPublisher, contextInfo, ExtendedExtractContext.class); 
 		// store context
 		contexts.put(node, extractContext);
 		return extractContext;		
@@ -330,8 +332,7 @@ class PipelineWorker implements Runnable {
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedTransformContext transformContext;
-		transformContext = new ExtendedTransformContextImpl
-				(contextId, execution, dpuInstance, eventPublisher, contextWriter);
+		transformContext = ContextFactory.create(contextId, execution, dpuInstance, eventPublisher, contextInfo, ExtendedTransformContext.class);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
@@ -367,8 +368,7 @@ class PipelineWorker implements Runnable {
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedLoadContext loadContext;
-		loadContext = new ExtendedLoadContextImpl
-				(contextId, execution, dpuInstance, eventPublisher, contextWriter);
+		loadContext = ContextFactory.create(contextId, execution, dpuInstance, eventPublisher, contextInfo, ExtendedLoadContext.class);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");

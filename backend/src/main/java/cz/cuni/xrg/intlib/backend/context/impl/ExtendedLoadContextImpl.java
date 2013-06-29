@@ -24,16 +24,12 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
+ * Implementation of ExtendedLoadContext.
  *
  * @author Petyr
  * 
  */
-public class ExtendedLoadContextImpl implements ExtendedLoadContext {
-
-	/**
-	 * Provide implementation for some common context methods.
-	 */
-	ExtendedCommonImpl extendedImp;
+class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoadContext {
 	
 	/**
 	 * Context input data units.
@@ -56,8 +52,8 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	private static final Logger LOG = Logger.getLogger(ExtendedLoadContextImpl.class);	
 	
 	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextInfo contextWriter) throws IOException {
-		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
+			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context) throws IOException {
+		super(id, execution, dpuInstance, context);
 		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
 	}
@@ -65,16 +61,6 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	@Override
 	public List<DataUnit> getInputs() {		
 		return this.inputs;
-	}
-
-	@Override
-	public String storeData(Object object) {
-		return null;
-	}
-
-	@Override
-	public Object loadData(String id) {
-		return null;
 	}
 
 	@Override
@@ -88,31 +74,6 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	}
 
 	@Override
-	public void storeDataForResult(String id, Object object) {
-		// TODO Petyr: storeDataForResult		
-	}
-
-	@Override
-	public boolean isDebugging() {		
-		return extendedImp.isDebugging();
-	}
-
-	@Override
-	public Map<String, Object> getCustomData() {
-		return extendedImp.getCustomData();
-	}
-	
-	@Override
-	public PipelineExecution getPipelineExecution() {		
-		return extendedImp.getPipelineExecution();
-	}
-
-	@Override
-	public DPUInstanceRecord getDPUInstance() {
-		return extendedImp.getDPUInstance();
-	}
-	
-	@Override
 	public void release() {
 		for (DataUnit item : inputs) {
 			item.release();
@@ -124,7 +85,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 		for (DataUnit item : inputs) {		
 			try {
 				// get directory
-				File directory = extendedImp.getContext().getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				File directory = context.getDataUnitStorage(getDPUInstance(), indexes.get(item));
 				// and save into directory
 				item.save(directory);
 			} catch (Exception e) {
@@ -144,7 +105,7 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 	public void addSource(ProcessingContext context, DataUnitMerger merger) throws ContextException {
 		// merge custom data
 		try {
-			extendedImp.getCustomData().putAll(context.getCustomData());
+			customData.putAll(context.getCustomData());
 		} catch(Exception e) {
 			throw new ContextException("Error while merging custom data.", e);
 		}
@@ -152,11 +113,11 @@ public class ExtendedLoadContextImpl implements ExtendedLoadContext {
 		if (context instanceof ExtendedExtractContext) {
 			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
 			// primitive merge .. 
-			merger.merger(inputs, extractContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, extractContext.getOutputs(), dataUnitFactory);
 		} else if (context instanceof ExtendedTransformContext) {
 			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
 			// primitive merge .. 
-			merger.merger(inputs, transformContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, transformContext.getOutputs(), dataUnitFactory);
 		} else {
 			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
 		}

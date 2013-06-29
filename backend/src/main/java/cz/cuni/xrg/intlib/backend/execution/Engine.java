@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.backend.execution;
 
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
@@ -50,16 +51,23 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 	 */
 	protected DatabaseAccess database;
 	
+	/**
+	 * True if startUp method has already been called.
+	 */
+	protected Boolean startUpDone;
+	
 	public Engine(ModuleFacade moduleFacade, DatabaseAccess database) {
 		this.moduleFacade = moduleFacade;		
     	this.executorService = Executors.newCachedThreadPool();
     	this.database = database;
+    	this.startUpDone = false;
     }
 
 	public Engine(ModuleFacade moduleFacade, DatabaseAccess database, ExecutorService executorService) {
 		this.moduleFacade = moduleFacade;
     	this.executorService = executorService;
     	this.database = database;
+    	this.startUpDone = false;
     }
 	
 	/**
@@ -72,7 +80,6 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 		if (workingDirectory.isDirectory()) {
 			workingDirectory.mkdirs();
 		}
-		// ..
 	}
 	
     /**
@@ -80,18 +87,15 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
      *
      * @param pipelineExecution
      */
-    private void run(PipelineExecution pipelineExecution) {
+	protected void run(PipelineExecution pipelineExecution) {
     	// mark pipeline execution as Started ..
     	pipelineExecution.setExecutionStatus(ExecutionStatus.RUNNING);
-    	
+    	pipelineExecution.setStart(new Date());
     	// prepare working directory for execution
     	File directory = new File(workingDirectory, "execution-" + pipelineExecution.getId() );    	
-    	// store workingDirectory    	
-    	pipelineExecution.setStart(new Date());
-    	
     	// update record in DB
-    	database.getPipeline().save(pipelineExecution);
-   	
+    	database.getPipeline().save(pipelineExecution);   	
+    	// run pipeline
     	this.executorService.execute(
     			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, database, directory));
     }
@@ -100,7 +104,7 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
      * Check database for new task (PipelineExecutions to run).
      * Can run concurrently.
      */
-    public synchronized void checkDatabase() {
+	protected void checkDatabase() {
     	List<PipelineExecution> toExecute = database.getPipeline().getAllExecutions();
     	// run pipeline executions ..   
     	for (PipelineExecution item : toExecute) {
@@ -110,20 +114,43 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
     		}
     	}
     }
-     
-	@Override
-	public void onApplicationEvent(EngineEvent event) {
-		// react on message from server
-		switch(event.getType()) {
+    
+    /**
+     * Check database for hanging running pipelines. Should
+     * be run just once before any execution starts.
+     */
+	protected void startUp() {
+		
+    }
+    
+    /**
+     * Take care about engine event.
+     * @param type
+     */
+    protected synchronized void onEvent(EngineEventType type) {
+    	switch(type) {
 		case CheckDatabase:
 			checkDatabase();
+			break;
+		case StartUp:
+			if (startUpDone) {
+				// already called
+			} else {
+				startUp();
+			}
 			break;
 		default:
 			// do nothing
 			break;
-		}
-		
+		}    	
+    }
+    
+    
+	@Override
+	public void onApplicationEvent(EngineEvent event) {
+		onEvent(event.getType());		
 	}
+	
 
 	@Override
 	public void setApplicationEventPublisher(

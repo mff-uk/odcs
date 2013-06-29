@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.data;
 
 /**
- * Exception related to creating DataUnits.
+ * Exception related to DataUnits creation.
  * 
  * @author Petyr
  *
