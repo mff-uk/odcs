@@ -6,14 +6,21 @@ import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.jena.atlas.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
@@ -55,6 +62,8 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 	 * True if startUp method has already been called.
 	 */
 	protected Boolean startUpDone;
+	
+	protected static Logger LOG = LoggerFactory.getLogger(Engine.class);
 	
 	public Engine(ModuleFacade moduleFacade, DatabaseAccess database) {
 		this.moduleFacade = moduleFacade;		
@@ -120,7 +129,52 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
      * be run just once before any execution starts.
      */
 	protected void startUp() {
-		
+		startUpDone = true;
+		// list executions
+		List<PipelineExecution> toExecute = database.getPipeline().getAllExecutions();
+		for (PipelineExecution execution : toExecute) {
+			if (execution.getExecutionStatus() == ExecutionStatus.RUNNING) {
+				// hanging pipeline .. 
+				
+				// schedule new pipeline start
+				execution.setExecutionStatus(ExecutionStatus.SCHEDULED);
+				
+				
+				// TODO Petyr: Run from last position
+				
+				// remove all from the previous execution
+				ExecutionContextInfo context = execution.getContextReadOnly();
+				if (context == null) {
+					// no context, just set update pipeline status
+				} else {
+					// delete old context files
+					try {
+						FileUtils.deleteDirectory( context.getRootDirectory() );
+					} catch (IOException e) {
+						LOG.error("Failed to delete old context directory. For execution: {}", execution.getId(), e);
+						// there should be at least one PDU in pipeline
+						if (execution.getPipeline().getGraph().getNodes().isEmpty()) {
+							// 
+							LOG.error("There are no DPUs on pipeline. Execution: {} Pipeline: {}", 
+									execution.getId(), execution.getPipeline().getId());
+						} else {
+							// use first node .. 
+							Node node = execution.getPipeline().getGraph().getNodes().get(0);
+							eventPublisher.publishEvent(
+									new PipelineFailedEvent(
+											"Failed to recover. The working directory can't be deleted.", 
+											null, execution, this));
+						}
+						// set pipeline execution to failed
+						execution.setExecutionStatus(ExecutionStatus.FAILED);
+						execution.setEnd(new Date());
+					}
+					// reset context
+					context.reset();
+				}
+				database.getPipeline().save(execution);
+			}
+		}		
     }
     
     /**
