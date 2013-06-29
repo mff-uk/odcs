@@ -32,7 +32,6 @@ public class EventListenerDatabase implements ApplicationListener {
 		Record record = event.getRecord();
 		// store in database
 		database.getDpu().save(record);
-		// publish event into database
 	}
 	
 	/**
