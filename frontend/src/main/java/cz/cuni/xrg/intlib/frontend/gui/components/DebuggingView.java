@@ -43,6 +43,7 @@ public class DebuggingView extends CustomComponent {
 	private TextArea logTextArea;
 	private QueryView queryView;
 	private HorizontalLayout refreshComponent;
+	private LogMessagesTable logMessagesTable;
 
 	public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug) {
 		//setCaption("Debug window");
@@ -74,15 +75,19 @@ public class DebuggingView extends CustomComponent {
 		
 		refreshComponent = buildRefreshComponent();
 
-		logTextArea = new TextArea();
-		logTextArea.setValue("Log file content");
+		//logTextArea = new TextArea();
+		//logTextArea.setValue("Log file content");
 		VerticalLayout logLayout = new VerticalLayout();
 		logLayout.addComponent(refreshComponent);
-		logLayout.addComponent(logTextArea);
+		
+		logMessagesTable = new LogMessagesTable();
+		logMessagesTable.setDpu(debugDpu);
+		logLayout.addComponent(logMessagesTable);
+		//logLayout.addComponent(logTextArea);
 		logLayout.setSizeFull();
-		logTextArea.setSizeFull();
-		logTextArea.setReadOnly(true);
-		logTextArea.setHeight(460, Unit.PIXELS);
+		//logTextArea.setSizeFull();
+		//logTextArea.setReadOnly(true);
+		//logTextArea.setHeight(460, Unit.PIXELS);
 		logTab = tabs.addTab(logLayout, "Log");
 
 		queryView = new QueryView(this);

@@ -6,6 +6,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
@@ -70,6 +71,13 @@ public class ContainerFactory {
 		container.setBeanIdProperty("id");
 		container.addAll(data);
 
+		return container;
+	}
+	
+	public static Container CreateLogMessages(List<LogMessage> data) {
+		BeanContainer<Long, LogMessage> container = new BeanContainer<>( LogMessage.class);
+		container.setBeanIdProperty("id");
+		container.addAll(data);
 		return container;
 	}
 
