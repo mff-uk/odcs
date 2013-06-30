@@ -34,21 +34,66 @@ public class AppEntry {
 	/**
 	 * Path to the spring configuration file.
 	 */
-	private final static String springConfigFile = "backend-context.xml";
+	private final static String SPRING_CONFIG_FILE = "backend-context.xml";
 	
 	/**
+	 * Logger class.
+	 */
+	private static Logger LOG = LoggerFactory.getLogger(AppEntry.class);
+
+	/**
+	 * Path to the configuration file.
+	 */
+	private String configFileLocation = null;
+	
+	/**
+	 * Spring context.
+	 */
+	private AbstractApplicationContext context = null;
+	
+	/**
+	 * Application configuration.
+	 */
+	private AppConfig appConfig = null;
+	
+	/**
+	 * Backend main execution class.
+	 */
+	private Engine engine = null;
+	
+	/**
+	 * Module facade.
+	 */
+	private ModuleFacade modeleFacade = null;
+			
+	/**
+	 * Server for network communication.
+	 */
+	private Server server = null;
+	
+	/**
+	 * Separate thread for network server.
+	 */
+	private Thread serverThread = null;
+	
+	/**
+	 * Heartbeat class instance.
+	 */
+	private Heartbeat heartbeat = null;	
+	
+	/**
+	 * Thread for heartbeat.
+	 */
+	private Thread heartbeatThread = null;
+	
+	/**
+	 * Parse program arguments.
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		// start with logger
-		Logger logger = LoggerFactory.getLogger(AppEntry.class);		
-		
-		String configFileLocation = null;
-		
+	private void parseArgs(String[] args) {
 		// define args
 		Options options = new Options();
 		options.addOption("c", "config", true, "path to the configuration file");
-		
 		// parse args
 		CommandLineParser parser = new org.apache.commons.cli.BasicParser();
 		try {
@@ -56,74 +101,103 @@ public class AppEntry {
 			// read args ..
 			configFileLocation = cmd.getOptionValue("config");
 		} catch (ParseException e) {			
-			logger.error("Unexpected exception:" + e.getMessage());
+			LOG.error("Unexpected exception:" + e.getMessage());
 		}
 		
-		// override default config path if it has been provided
+		// override default configuration path if it has been provided
 		if (configFileLocation != null) {
 			AppConfig.confPath = configFileLocation;
-		}
-		
+		}		
+	}
+	
+	/**
+	 * All initialization goes here.
+	 */
+	private void init() {
 		// load spring
-		AbstractApplicationContext context = new ClassPathXmlApplicationContext(springConfigFile);
+		context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
 		context.registerShutdownHook();
-		
 		// load configuration
-		AppConfig appConfig = (AppConfig)context.getBean("configuration");
-
+		appConfig = (AppConfig)context.getBean("configuration");
 		// set engine
-		logger.info("Configuring engine ...");
-		Engine engine = (Engine)context.getBean("engine");
+		LOG.info("Configuring engine ...");
+		engine = (Engine)context.getBean("engine");
 		engine.setup(appConfig);
-		
 		// set module facade
-		logger.info("Configuring dynamic module worker ...");
-
-		ModuleFacade modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
-		modeleFacade.start();
-
+		LOG.info("Configuring dynamic module worker ...");
+		modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
+		modeleFacade.start();		
+	}
+	
+	/**
+	 * Initialise and start network TCP/IP server.
+	 */
+	private void initNetworkServer() {
 		// set TCP/IP server
-		logger.info("Starting TCP/IP server ...");
-		Server server = (Server)context.getBean("server");
+		LOG.info("Starting TCP/IP server ...");
+		server = (Server)context.getBean("server");
 		try {
 			server.init();
 		} catch (CommunicationException e1) {
-			logger.error("Fatal error: Can't start server");
+			LOG.error("Fatal error: Can't start server");
 			context.close();
 			return;
 		}
 		// start server in another thread
-		Thread serverThread = new Thread(server);
-		serverThread.start();
-				
+		serverThread = new Thread(server);
+		serverThread.start();		
+	}
+	
+	/**
+	 * Get and start Heartbeat in other thread.
+	 */
+	private void initHeartbeat() {
 		// start heartbeat
-		Heartbeat heartbeat = (Heartbeat)context.getBean("heartbeat");
-		Thread heartbeatThread = new Thread(heartbeat);
+		heartbeat = (Heartbeat)context.getBean("heartbeat");
+		heartbeatThread = new Thread(heartbeat);
 		heartbeatThread.start();
-		logger.info("Heartbeat is running ... ");
+		LOG.info("Heartbeat is running ... ");		
+	}
+	
+	/**
+	 * Main execution method.
+	 * @param args
+	 */
+	private void run(String[] args) {
+		// parse args
+		parseArgs(args);
+		// initialise
+		init();
+		
+		// publish event for engine about start of the execution
+		context.publishEvent(new EngineEvent(EngineEventType.StartUp, AppEntry.class));
+				
+		// start server
+		initNetworkServer();
+		// start heartbeat
+		initHeartbeat();
 		
 		// print some information ..
-		logger.info("DPURecord directory:" + appConfig.getString(ConfigProperty.MODULE_PATH));
-		logger.info("Listening on port:" + appConfig.getInteger(ConfigProperty.BACKEND_PORT));
-		logger.info("Running ...");
+		LOG.info("DPURecord directory:" + appConfig.getString(ConfigProperty.MODULE_PATH));
+		LOG.info("Listening on port:" + appConfig.getInteger(ConfigProperty.BACKEND_PORT));
+		LOG.info("Running ...");
 		
-		// check for any pending jobs published before engine startup
-		context.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, AppEntry.class));
-				
+		// infinite loop
 		InputStreamReader converter = new InputStreamReader(System.in);
 		BufferedReader in = new BufferedReader(converter);		
 		while (true) {
-			// read line from input
-			String line = "";
 			try {
-				line = in.readLine();
+				in.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
 				continue;
 			}			
-			// ...
-		// TODO Petyr: Interact with user
-		}
-		
+		}		
 	}
+	
+	public static void main(String[] args) {
+		AppEntry app = new AppEntry();
+		app.run(args);				
+	}
+	
 }

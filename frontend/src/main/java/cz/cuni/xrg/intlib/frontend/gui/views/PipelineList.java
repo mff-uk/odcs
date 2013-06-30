@@ -3,9 +3,11 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Table;
@@ -21,7 +23,9 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
+import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
 
 class PipelineList extends ViewComponent {
 
@@ -129,11 +133,53 @@ class PipelineList extends ViewComponent {
 						}
 					});
 			layout.addComponent(runDebugButton);
+			
+			
+			Button schedulerButton = new Button();
+			schedulerButton.setCaption("scheduler");
+			schedulerButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+						@Override
+						public void buttonClick(ClickEvent event) {
+							// open scheduler dialog
+							
+							Pipeline pipeline = item.getBean();
+							SchedulePipeline  sch = new SchedulePipeline();
+							sch.setSelectePipeline(pipeline);
+							//sch.selectedPipeline=pipeline;
+							openScheduler(sch);
+							
+
+						}
+					});
+			layout.addComponent(schedulerButton);
 
 			return layout;
 		}
 
 	}
+	
+	private void openScheduler(final SchedulePipeline schedule) {
+		Window scheduleWindow = new Window("Schedule a pipeline", schedule);
+		scheduleWindow.setImmediate(true);
+		scheduleWindow.setWidth("820px");
+		scheduleWindow.setHeight("550px");
+		scheduleWindow.addCloseListener(new Window.CloseListener() {
+			@Override
+			public void windowClose(Window.CloseEvent e) {
+				//closeDebug();
+			}
+		});
+		scheduleWindow.addResizeListener(new Window.ResizeListener() {
+
+			@Override
+			public void windowResized(Window.ResizeEvent e) {
+				schedule.resize(e.getWindow().getHeight());
+			}
+		});
+		App.getApp().addWindow(scheduleWindow);
+	}
+
 
 	public PipelineList() {
 

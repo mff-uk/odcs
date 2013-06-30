@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
@@ -86,28 +88,35 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
             }
         }
     }
+    
     /**
      * Application configuration.
      */
     protected AppConfig appConfiguration;
+    
     /**
      * Server socket.
      */
     protected ServerSocket socket;
+    
     /**
      * Provide executors for handling incoming communications.
      */
     protected ExecutorService executorService;
+    
     /**
      * Event publisher used to publicise events.
      */
     protected ApplicationEventPublisher eventPublisher;
+    
     /**
      * True if continue in execution. Set to false to stop the loop in run
      * method.
      */
     protected boolean running;
 
+    protected static Logger LOG = LoggerFactory.getLogger(Server.class); 
+    
     /**
      * Create instance of Server. CachedThreadPool is used as ExecutorService.
      *
@@ -166,8 +175,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
                     executorService.execute(communicator);
                 }
             } catch (IOException e) {
-                // TODO Petyr: How to react on server IOException, now it's ignored
-                e.printStackTrace();
+            	LOG.error("Failed to accept incoming connection.", e);
             }
         }
 

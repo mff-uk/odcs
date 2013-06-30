@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -91,6 +92,7 @@ public class ExecutionContextInfo {
     	rootDirectory = directory;
     }
     
+    
 	/**
 	 * Return context for given DPUInstanceRecord. Create new context if need.
 	 * @param id DPUInstanceRecord's id.
@@ -117,7 +119,7 @@ public class ExecutionContextInfo {
 	public Integer createInput(DPUInstanceRecord dpuInstance, String name, DataUnitType type) {
 		return getContext(dpuInstance).addDataUnit(name, type, true);
 	}
-    
+    	
 	/**
 	 * Add info record for new output {@link cz.cuni.xrg.intlib.commons.data.DataUnit}.
 	 * @param dpuInstance The {@link DPUInstanceRecord} which will work with the DataUnit.
@@ -127,6 +129,22 @@ public class ExecutionContextInfo {
 	 */
 	public Integer createOutput(DPUInstanceRecord dpuInstance, String name, DataUnitType type)  {
 		return getContext(dpuInstance).addDataUnit(name, type, false);
+	}
+	
+	/**
+	 * Delete all data about execution except {@link #rootDirectory}
+ 	 * and {@link #id} Use to start execution from the very beginning.
+	 */
+	public void reset() {
+		contexts.clear();
+	}
+	
+	/**
+	 * Return set of indexes of stored DPU's execution information.
+	 * @return
+	 */
+	public Set<Long> getDPUIndexes() {
+		return contexts.keySet();
 	}
 	
 	/**
@@ -257,4 +275,11 @@ public class ExecutionContextInfo {
 		return workDir;
 	}
 	
+	/**
+	 * Return path to the root directory.
+	 * @return
+	 */
+	public File getRootDirectory() {
+		return rootDirectory;
+	}
 }

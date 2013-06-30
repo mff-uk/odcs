@@ -13,17 +13,16 @@ import java.io.FileNotFoundException;
 public interface DataUnit {
 
     /**
-     * Made this DataUnit read only. This copy will be used as a input for
-     * next DPU. The copy can be used multiple times. It's guaranteed that the
-     * original class will not be used anymore after this call.
-	 *
+     * Made this DataUnit read-only. This instance will be used as a input for
+     * some DPU.
      */
     public void madeReadOnly();
 
     /**
      * Merge (add) data from given DataUnit into this DataUnit. If the
      * unit has wrong type then the {@link IllegalArgumentException} should be thrown.
-     * The method must not modify the content parameter (unit). 
+     * The method must not modify the content parameter (unit). The given DataUnit
+     * is not in read-only mode.
      *
      * @param unit {@link DataUnit} to merge wit
      * @throws {@link IllegalArgumentException} In case of unsupported unit type.
@@ -32,8 +31,7 @@ public interface DataUnit {
         
     /**
      * Return type of data unit interface implementation.
-     *
-     * @return
+     * @return DataUnit type.
      */
     public DataUnitType getType();
 
@@ -45,7 +43,7 @@ public interface DataUnit {
     public boolean isReadOnly();
     
     /**
-     * Release all lock, prepare for being deleted.
+     * Release all locks, prepare for being deleted.
      * Can be called even when the DataUnit is in read only 
      * mode.
      */

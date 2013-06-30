@@ -1,9 +1,7 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,38 +28,38 @@ class ExtendedCommonImpl {
 	/**
 	 * Unique context id.
 	 */
-	private String id;
+	protected String id;
 	
     /**
      * Custom data holder.
      */
-    private Map<String, Object> customData;
+	protected Map<String, Object> customData;
 
     /**
      * True id the related DPURecord should be run in debug mode.
      */
-    private boolean isDebugging;
+	protected boolean isDebugging;
 	
     /**
      * PipelineExecution. The one who caused
      * run of this DPURecord.
      */
-	private PipelineExecution execution;
+	protected PipelineExecution execution;
 
 	/**
 	 * DPUInstanceRecord as owner of this context.
 	 */
-	private DPUInstanceRecord dpuInstance;
+	protected DPUInstanceRecord dpuInstance;
     	
 	/**
 	 * Used factory.
 	 */
-	private DataUnitFactory dataUnitFactory;
+	protected DataUnitFactory dataUnitFactory;
 	
 	/**
 	 * Manage mapping context into execution's directory. 
 	 */
-	private ExecutionContextInfo context;
+	protected ExecutionContextInfo context;
 	
 	/**
 	 * Log facade.
@@ -96,21 +94,14 @@ class ExtendedCommonImpl {
 		this.context = context;
 	}	
 	
-	public void storeDataForResult(String id, Object object) {
-		File resultDir = context.getResult(dpuInstance);
-		File file = new File(resultDir, id);
-		// save data into file
-		try (FileOutputStream fileOutStream = new FileOutputStream(file) ) {
-			ObjectOutputStream outStream = new ObjectOutputStream(fileOutStream);
-			outStream.writeObject(object);
-			outStream.close();
-		} catch (IOException e) {
-			LOG.error("loadData", e);
-			throw new RuntimeException("Can't save object.", e);
-		}		
-		
+	public File getWorkingDir() {
+		return context.getTmp(dpuInstance);
 	}
 
+	public File getResultDir() {
+		return context.getResult(dpuInstance);
+	}	
+	
 	public boolean isDebugging() {
 		return isDebugging;
 	}

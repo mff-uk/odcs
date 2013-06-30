@@ -32,7 +32,7 @@ public interface ExtendedContext {
     public void release();	
     
     /**
-     * Save all data units into their directories.
+     * Save all data units into their respective directories.
      */
     public void save();
 }

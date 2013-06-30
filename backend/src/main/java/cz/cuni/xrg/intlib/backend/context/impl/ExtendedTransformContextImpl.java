@@ -26,16 +26,12 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
+ * Implementation of ExtendedTransformContext. 
  *
  * @author Petyr
  * 
  */
-public class ExtendedTransformContextImpl implements ExtendedTransformContext {
-
-	/**
-	 * Provide implementation for some common context methods.
-	 */
-	ExtendedCommonImpl extendedImp;
+class ExtendedTransformContextImpl extends ExtendedCommonImpl implements ExtendedTransformContext {
 	
 	/**
 	 * Context input data units.
@@ -63,8 +59,8 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	private final static Logger LOG = Logger.getLogger(ExtendedTransformContextImpl.class);	
 	
 	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextInfo contextWriter) throws IOException {
-		this.extendedImp = new ExtendedCommonImpl(id, execution, dpuInstance, contextWriter);
+			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context) throws IOException {
+		super(id, execution, dpuInstance, context);
 		this.inputs = new LinkedList<>();
 		this.outputs = new LinkedList<>();
 		this.indexes = new HashMap<>();
@@ -77,16 +73,6 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	}
 
 	@Override
-	public String storeData(Object object) {
-		return null;
-	}
-
-	@Override
-	public Object loadData(String id) {
-		return null;
-	}
-
-	@Override
 	public void sendMessage(MessageType type, String shortMessage) {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );
 	}
@@ -94,32 +80,6 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	@Override
 	public void sendMessage(MessageType type, String shortMessage, String fullMessage) {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
-	}
-
-	@Override
-	public void storeDataForResult(String id, Object object) {
-		extendedImp.storeDataForResult(id, object);		
-	}
-
-	@Override
-	public boolean isDebugging() {		
-		return extendedImp.isDebugging();
-	}
-
-	@Override
-	public Map<String, Object> getCustomData() {
-		return extendedImp.getCustomData();
-	}
-
-	
-	@Override
-	public PipelineExecution getPipelineExecution() {		
-		return extendedImp.getPipelineExecution();
-	}
-
-	@Override
-	public DPUInstanceRecord getDPUInstance() {
-		return extendedImp.getDPUInstance();
 	}
 
 	@Override
@@ -137,7 +97,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 		for (DataUnit item : inputs) {		
 			try {
 				// get directory
-				File directory = extendedImp.getContext().getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				File directory = context.getDataUnitStorage(getDPUInstance(), indexes.get(item));
 				// and save into directory
 				item.save(directory);
 			} catch (Exception e) {
@@ -148,7 +108,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 		for (DataUnit item : outputs) {		
 			try {
 				// get directory
-				File directory = extendedImp.getContext().getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				File directory = context.getDataUnitStorage(getDPUInstance(), indexes.get(item));
 				// and save into directory
 				item.save(directory);
 			} catch (Exception e) {
@@ -168,7 +128,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	public void addSource(ProcessingContext context, DataUnitMerger merger) throws ContextException {
 		// merge custom data
 		try {
-			extendedImp.getCustomData().putAll(context.getCustomData());
+			customData.putAll(context.getCustomData());
 		} catch(Exception e) {
 			throw new ContextException("Error while merging custom data.", e);
 		}
@@ -176,11 +136,11 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 		if (context instanceof ExtendedExtractContext) {
 			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
 			// primitive merge .. 
-			merger.merger(inputs, extractContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, extractContext.getOutputs(), dataUnitFactory);
 		} else if (context instanceof ExtendedTransformContext) {
 			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
 			// primitive merge .. 
-			merger.merger(inputs, transformContext.getOutputs(), extendedImp.getDataUnitFactory());
+			merger.merger(inputs, transformContext.getOutputs(), dataUnitFactory);
 		} else {
 			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
 		}
@@ -190,7 +150,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	public DataUnit addOutputDataUnit(DataUnitType type)
 			throws DataUnitCreateException {
 		// create data unit
-		DataUnitContainer dataUnitContainer = extendedImp.getDataUnitFactory().createOutput(type);
+		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type);
 		// store mapping
 		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
 		// add to outputs
@@ -203,7 +163,7 @@ public class ExtendedTransformContextImpl implements ExtendedTransformContext {
 	public DataUnit addOutputDataUnit(DataUnitType type, Object config)
 			throws DataUnitCreateException {		
 		// create data unit
-		DataUnitContainer dataUnitContainer = extendedImp.getDataUnitFactory().createOutput(type, config);
+		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type, config);
 		// store mapping
 		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
 		// add to outputs

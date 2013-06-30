@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
@@ -110,6 +111,7 @@ public class Schedule {
 // TODO Honza: List of pipelines from Pipelines 	
 //	@ManyToOne
 //	@JoinColumn(name = "predPipeline", nullable = true)	
+	@Transient
     private List<Pipeline> predPipeline;	
 	
 	/**

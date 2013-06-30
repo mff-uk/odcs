@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons;
 
+import java.io.File;
 import java.util.Map;
 
 import cz.cuni.xrg.intlib.commons.message.MessageType;
@@ -13,25 +14,19 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
  */
 public interface ProcessingContext {
 	
-    /**
-     * Store given data object. The object is accessible. to the end of DPU run
-     * under id. If object can't be stored throw {@link RuntimeException}.
-     *
-     * @param object Object to store.
-     * @return object id
-     * throws RuntimeException
-     */
-	@Deprecated
-    public String storeData(Object object) throws RuntimeException;
-
-    /**
-     * Load object from repository.
-     *
-     * @param id Object's id.
-     * @return Loaded object or null in case of problems.
-     */
-	@Deprecated
-    public Object loadData(String id);
+	/**
+	 * Return path to the DPU working directory. The working
+	 * directory is unique for every DPU.
+	 * @return
+	 */
+	public File getWorkingDir();
+	
+	/**
+	 * Return path to the result directory. Result directory is 
+	 * shared by all DPU's in pipeline.
+	 * @return
+	 */
+	public File getResultDir();
 
     /**
      * Send message about execution. If the message type is DEBUG and the pipeline
@@ -51,17 +46,6 @@ public interface ProcessingContext {
      * @param fullMessage
      */
     public void sendMessage(MessageType type, String shortMessage, String fullMessage);
-    
-    /**
-     * Store data under id in pipeline summary execution storage. These data
-     * will be accessible together with pipeline execution results.
-     *
-     * @param id Object id.
-     * @param object Object data.
-     * @throws RuntimeException
-     */
-    @Deprecated
-    public void storeDataForResult(String id, Object object) throws RuntimeException;
 
     /**
      * Return true if the DPU is running in debugging mode.
@@ -71,7 +55,7 @@ public interface ProcessingContext {
         
     /**
      * Return access to custom data, this object
-     * live for the whole pipeline execution. In case of same 
+     * lives for the whole pipeline execution. In case of same 
      * keys the original value may be overwrite.
      * 
      * @return

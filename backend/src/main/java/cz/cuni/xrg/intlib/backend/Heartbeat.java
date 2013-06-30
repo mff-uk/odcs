@@ -7,6 +7,12 @@ import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
 import cz.cuni.xrg.intlib.backend.scheduling.event.SchedulerCheckDatabase;
 
+/**
+ * Class periodically emits events.
+ * 
+ * @author Petyr
+ *
+ */
 public class Heartbeat implements Runnable, ApplicationEventPublisherAware {
 
 	/**
@@ -14,25 +20,28 @@ public class Heartbeat implements Runnable, ApplicationEventPublisherAware {
 	 */
 	private ApplicationEventPublisher eventPublisher = null;	
 	
-	/*
-	 * Refresh interval. 
+	/**
+	 * Interval for events publishing. 
 	 */
-	private int checkInterval = 1000 * 60;
+	private static int CHECK_INTERVAL = 1000 * 60;
 	
 	@Override
 	public void run() {
+		// we start with sleeping, so the engine can perform startup checks,
+		// before we publish first event
 		while(!Thread.interrupted()) {
-			// let engine check database
-			eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, this));
-			// and also the scheduler as well
-			eventPublisher.publishEvent(new SchedulerCheckDatabase(this));
 			// sleep
 			try {
-				Thread.sleep(checkInterval);
+				Thread.sleep(CHECK_INTERVAL);
 			} catch (InterruptedException e) {
 				// it's time to end 
 				break;
 			}
+			
+			// let engine check database
+			eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, this));
+			// and the scheduler as well
+			eventPublisher.publishEvent(new SchedulerCheckDatabase(this));			
 		}
 	}
 	
