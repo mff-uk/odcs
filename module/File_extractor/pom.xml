@@ -7,7 +7,7 @@
         <artifactId>module_master</artifactId>
         <version>0.0.1</version>
     </parent>
-    <artifactId>File_Extractor</artifactId>
+    <artifactId>File_extractor</artifactId>
     <packaging>bundle</packaging>
     
     <properties>       
