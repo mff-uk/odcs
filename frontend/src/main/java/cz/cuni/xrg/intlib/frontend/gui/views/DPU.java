@@ -38,6 +38,7 @@ import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
+import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 
 import java.io.FileNotFoundException;
@@ -122,6 +123,8 @@ class DPU extends ViewComponent {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
+						DPUCreate createDPU = new DPUCreate();
+						App.getApp().addWindow(createDPU);
 					}
 				});
 		buttonBar.addComponent(buttonCreateDPU);
