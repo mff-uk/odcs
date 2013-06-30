@@ -2,11 +2,13 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.DownloadStreamResource;
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import java.io.File;
@@ -52,12 +54,7 @@ public class QueryView extends CustomComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					Map<String, List<String>> data = query();
-
-					IndexedContainer container = buildDataSource(data);
-					resultTable.setContainerDataSource(container);
-					prepareDownloadData(formatSelect.getValue());
-
+					doQuery();
 				} catch (InvalidQueryException e) {
 					Notification.show("Query Validator",
 							"Query is not valid: "
@@ -72,17 +69,13 @@ public class QueryView extends CustomComponent {
 
 		//Export options
 		formatSelect = new NativeSelect();
-		formatSelect.addItem("TTL");
-		formatSelect.addItem("RDF/XML");
+		for(RDFFormatType type : RDFFormatType.values()) {
+			if(type != RDFFormatType.AUTO) {
+				formatSelect.addItem(type);
+			}
+		}
 		formatSelect.setImmediate(true);
 		formatSelect.setNullSelectionAllowed(false);
-		formatSelect.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				Object newValue = event.getProperty().getValue();
-				prepareDownloadData(newValue);
-			}
-		});
 		topLine.addComponent(formatSelect);
 		export = new Link();
 		export.setVisible(false);
@@ -105,56 +98,68 @@ public class QueryView extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
-	private void prepareDownloadData(Object newValue) {
-		if (newValue.getClass() != String.class) {
-					return;
-				}
-		
-		String mimeType = null;
-		String filename = null;
-		byte[] data = null;
-		switch ((String) newValue) {
-			case "TTL":
-				mimeType = DownloadStreamResource.MIME_TYPE_TTL;
-				filename = "data.ttl";
-
-				break;
-			case "RDF/XML":
-				mimeType = DownloadStreamResource.MIME_TYPE_RDFXML;
-				filename = "data.rdf";
-				break;
-		}
-
-		final DownloadStreamResource streamResource =
-				new DownloadStreamResource(data, filename,
-				mimeType);
-
-		streamResource.setCacheTime(5 * 1000);
-		export = new Link("Download data", streamResource);
+	private void prepareDownloadData(File dataFile) {
+//		if (newValue.getClass() != String.class) {
+//			return;
+//		}
+//
+//		String mimeType = null;
+//		String filename = null;
+//		byte[] data = null;
+//		switch ((String) newValue) {
+//			case "TTL":
+//				mimeType = DownloadStreamResource.MIME_TYPE_TTL;
+//				filename = "data.ttl";
+//
+//				break;
+//			case "RDF/XML":
+//				mimeType = DownloadStreamResource.MIME_TYPE_RDFXML;
+//				filename = "data.rdf";
+//				break;
+//		}
+//
+//		final DownloadStreamResource streamResource =
+//				new DownloadStreamResource(data, filename,
+//				mimeType);
+//
+//		streamResource.setCacheTime(5 * 1000);
+		export = new Link("Download data", new FileResource(dataFile));
 		export.setVisible(true);
 	}
 
-	private Map<String, List<String>> query() throws InvalidQueryException {
+	private void doQuery() throws InvalidQueryException {
+
 		boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
 		String query = queryText.getValue();
 		String repoPath = parent.getRepositoryPath(onInputGraph);
 		File repoDir = parent.getRepositoryDirectory(onInputGraph);
 
+		String queryStart = query.trim().substring(0, 20).toLowerCase();
+		boolean isSelectQuery = queryStart.startsWith("select");
+
+		Map<String, List<String>> data = null;
+		File constructData = null;
 		if (repoPath == null || repoDir == null) {
-			return new HashMap<>();
+			data = new HashMap<>();
+		} else {
+			// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
+			LOG.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
+			try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath)) {
+				repository.load(repoDir);
+				if (isSelectQuery) {
+					data = repository.makeSelectQueryOverRepository(query);
+				} else {
+					constructData = repository.makeConstructQueryOverRepository(query, (RDFFormatType) formatSelect.getValue(), "data");
+				}
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
-
-		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-		LOG.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
-
-		try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath)) {
-
-			repository.load(repoDir);
-
-			Map<String, List<String>> data = repository.makeSelectQueryOverRepository(query);
-			return data;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		if (isSelectQuery) {
+			IndexedContainer container = buildDataSource(data);
+			resultTable.setContainerDataSource(container);
+		} else {
+			prepareDownloadData(constructData);
 		}
 	}
 
@@ -171,11 +176,10 @@ public class QueryView extends CustomComponent {
 			//		if (p.equals("exeid")==false)
 			result.addContainerProperty(column, String.class, "");
 		}
-
-
 		int count = data.get(columns.iterator().next()).size();
-
-		for (int i = 0; i < count; i++) {
+		for (int i = 0;
+				i < count;
+				i++) {
 			Object num = result.addItem();
 			result.getContainerProperty(num, "#").setValue(i);
 			for (String column : columns) {
@@ -183,7 +187,6 @@ public class QueryView extends CustomComponent {
 				result.getContainerProperty(num, column).setValue(value);
 			}
 		}
-
 		return result;
 	}
 
