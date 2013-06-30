@@ -406,7 +406,7 @@ class Scheduler extends ViewComponent {
 		Window scheduleWindow = new Window("Schedule a pipeline", schedule);
 		scheduleWindow.setImmediate(true);
 		scheduleWindow.setWidth("820px");
-		scheduleWindow.setHeight("440px");
+		scheduleWindow.setHeight("550px");
 		scheduleWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {

@@ -143,12 +143,10 @@ class PipelineList extends ViewComponent {
 						public void buttonClick(ClickEvent event) {
 							// open scheduler dialog
 							
-							/*	App.getApp()
-									.getNavigator()
-									.navigateTo(
-											ViewNames.PipelineEdit.getUrl()
-													+ "/" + itemId.toString());*/
+							Pipeline pipeline = item.getBean();
 							SchedulePipeline  sch = new SchedulePipeline();
+							sch.setSelectePipeline(pipeline);
+							//sch.selectedPipeline=pipeline;
 							openScheduler(sch);
 							
 
@@ -165,7 +163,7 @@ class PipelineList extends ViewComponent {
 		Window scheduleWindow = new Window("Schedule a pipeline", schedule);
 		scheduleWindow.setImmediate(true);
 		scheduleWindow.setWidth("820px");
-		scheduleWindow.setHeight("440px");
+		scheduleWindow.setHeight("550px");
 		scheduleWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {
