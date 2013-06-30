@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import com.jensjansson.pagedtable.ControlsLayout;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FileResource;
@@ -30,6 +31,7 @@ public class QueryView extends CustomComponent {
 	private DebuggingView parent;
 	private TextArea queryText;
 	private IntlibPagedTable resultTable;
+	private ControlsLayout resultTableControls;
 	private NativeSelect graphSelect;
 	private NativeSelect formatSelect;
 	private Link export;
@@ -77,9 +79,7 @@ public class QueryView extends CustomComponent {
 		formatSelect.setImmediate(true);
 		formatSelect.setNullSelectionAllowed(false);
 		topLine.addComponent(formatSelect);
-		export = new Link();
-		export.setVisible(false);
-		topLine.addComponent(export);
+		//topLine.addComponent(export);
 		mainLayout.addComponent(topLine);
 
 		queryText = new TextArea("SPARQL Query:");
@@ -90,41 +90,60 @@ public class QueryView extends CustomComponent {
 		resultTable = new IntlibPagedTable();
 		resultTable.setWidth("100%");
 		resultTable.setHeight("60%");
+		resultTable.setImmediate(true);
 		mainLayout.addComponent(resultTable);
-		mainLayout.addComponent(resultTable.createControls());
-
+		resultTableControls = resultTable.createControls();
+		resultTableControls.setImmediate(true);
+		mainLayout.addComponent(resultTableControls);
+		export = new Link("Download data", null);
+		export.setVisible(false);
+		export.setImmediate(true);
+		mainLayout.addComponent(export);
 
 		mainLayout.setSizeFull();
 		setCompositionRoot(mainLayout);
 	}
 
-	private void prepareDownloadData(File dataFile) {
-//		if (newValue.getClass() != String.class) {
-//			return;
-//		}
-//
-//		String mimeType = null;
-//		String filename = null;
-//		byte[] data = null;
-//		switch ((String) newValue) {
-//			case "TTL":
-//				mimeType = DownloadStreamResource.MIME_TYPE_TTL;
-//				filename = "data.ttl";
-//
-//				break;
-//			case "RDF/XML":
-//				mimeType = DownloadStreamResource.MIME_TYPE_RDFXML;
-//				filename = "data.rdf";
-//				break;
-//		}
-//
-//		final DownloadStreamResource streamResource =
-//				new DownloadStreamResource(data, filename,
-//				mimeType);
-//
-//		streamResource.setCacheTime(5 * 1000);
-		export = new Link("Download data", new FileResource(dataFile));
-		export.setVisible(true);
+	private void prepareDownloadData(LocalRDFRepo repository, String constructQuery) throws InvalidQueryException {
+		
+		Object o = formatSelect.getValue();
+		if(o.getClass() != RDFFormatType.class) {
+			//Do something
+		}
+		RDFFormatType format = (RDFFormatType)o;
+		
+		String mimeType = null;
+		String filename = null;
+		switch (format) {
+			case TTL:
+				mimeType = DownloadStreamResource.MIME_TYPE_TTL;
+				filename = "data.ttl";
+				break;
+			case RDFXML:
+				mimeType = DownloadStreamResource.MIME_TYPE_RDFXML;
+				filename = "data.rdf";
+				break;
+			case N3:
+				mimeType = "text/n3";
+				filename = "data.n3";
+				break;
+			case TRIG:
+				mimeType = "application/trig";
+				filename = "data.trig";
+				break;
+		}
+
+		//final DownloadStreamResource streamResource =
+		//		new DownloadStreamResource(data, filename,
+		//			mimeType);
+
+		//streamResource.setCacheTime(5 * 1000);
+		
+		File constructData = repository.makeConstructQueryOverRepository(constructQuery, format, filename);
+		FileResource resource = new FileResource(constructData);
+		resource.setCacheTime(5000);
+		
+		export.setResource(resource);
 	}
 
 	private void doQuery() throws InvalidQueryException {
@@ -138,7 +157,6 @@ public class QueryView extends CustomComponent {
 		boolean isSelectQuery = queryStart.startsWith("select");
 
 		Map<String, List<String>> data = null;
-		File constructData = null;
 		if (repoPath == null || repoDir == null) {
 			data = new HashMap<>();
 		} else {
@@ -149,7 +167,7 @@ public class QueryView extends CustomComponent {
 				if (isSelectQuery) {
 					data = repository.makeSelectQueryOverRepository(query);
 				} else {
-					constructData = repository.makeConstructQueryOverRepository(query, (RDFFormatType) formatSelect.getValue(), "data");
+					prepareDownloadData(repository, query);
 				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -158,9 +176,11 @@ public class QueryView extends CustomComponent {
 		if (isSelectQuery) {
 			IndexedContainer container = buildDataSource(data);
 			resultTable.setContainerDataSource(container);
-		} else {
-			prepareDownloadData(constructData);
 		}
+		export.setVisible(!isSelectQuery);
+		resultTable.setVisible(isSelectQuery);
+		resultTableControls.setVisible(isSelectQuery);
+		
 	}
 
 	private IndexedContainer buildDataSource(Map<String, List<String>> data) {
