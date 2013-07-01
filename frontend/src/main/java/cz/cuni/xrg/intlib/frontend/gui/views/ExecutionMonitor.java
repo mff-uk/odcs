@@ -402,6 +402,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			public void buttonClick(ClickEvent event) {
 				refreshData();
 				monitorTable.setVisibleColumns(visibleCols);
+				
 			}
 		});
 		monitorTableLayout.addComponent(refreshButton);
@@ -421,8 +422,14 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private void refreshData() {
 		int page = monitorTable.getCurrentPage();
 		tableData = getTableData(App.getApp().getPipelines().getAllExecutions());
+		tableData.addContainerFilter(tableDataFilter);
 		monitorTable.setContainerDataSource(tableData);
 		monitorTable.setCurrentPage(page);
+		Object property="date";
+		monitorTable.setSortContainerPropertyId(property);
+		monitorTable.setSortAscending(false);
+		monitorTable.sort();
+
 	}
 
 	private VerticalLayout buildlogLayout() {
