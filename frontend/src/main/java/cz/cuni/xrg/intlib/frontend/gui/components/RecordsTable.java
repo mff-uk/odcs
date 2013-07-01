@@ -59,7 +59,7 @@ public class RecordsTable extends CustomComponent {
 
 	/**
 	 * Sets data source.
-	 * @param data 
+	 * @param data List of {@link Record}s to show in table. 
 	 */
 	public void setDataSource(List<Record> data) {
 		loadMessageTable(data);
@@ -68,7 +68,7 @@ public class RecordsTable extends CustomComponent {
 	/**
 	 * Loads data to the table.
 	 * 
-	 * @param data Data to show.
+	 * @param data List of {@link Record}s to show in table. 
 	 */
 	private void loadMessageTable(List<Record> data) {
 		Container container = ContainerFactory.CreateExecutionMessages(data);
@@ -118,7 +118,7 @@ public class RecordsTable extends CustomComponent {
 	/**
 	 * Shows dialog with detail of selected record.
 	 * 
-	 * @param record
+	 * @param record {@link Record} which detail to show.
 	 */
 	private void showRecordDetail(Record record) {
 		final RecordDetail detail = new RecordDetail(record);

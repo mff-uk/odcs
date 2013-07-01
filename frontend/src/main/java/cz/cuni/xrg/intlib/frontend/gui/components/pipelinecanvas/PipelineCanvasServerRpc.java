@@ -10,46 +10,46 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 
 	/**
 	 * Occurs when new edge is created on graph canvas.
-	 * @param dpuFrom
-	 * @param dpuTo
+	 * @param dpuFrom Id of start node.
+	 * @param dpuTo Id of end node.
 	 */
 	public void onConnectionAdded(int dpuFrom, int dpuTo);
 
 	/**
 	 * Occurs when edge is removed from graph canvas.
-	 * @param connectionId
+	 * @param connectionId Id of removed edge.
 	 */
 	public void onConnectionRemoved(int connectionId);
 
 	/**
 	 * Occurs when detail of given DPUInstance is requested.
-	 * @param dpuId
+	 * @param dpuId Id of dpu which detail is requested.
 	 */
 	public void onDetailRequested(int dpuId);
 
 	/**
 	 * Occurs when DPUInstance is removed from graph canvas.
-	 * @param dpuId
+	 * @param dpuId Id of removed node.
 	 */
 	public void onDpuRemoved(int dpuId);
 
 	/**
 	 * Occurs when node on graph canvas is moved.
-	 * @param dpuId
-	 * @param newX
-	 * @param newY
+	 * @param dpuId Id of moved node.
+	 * @param newX New X coordinate of node.
+	 * @param newY New Y coordinate of node.
 	 */
 	public void onDpuMoved(int dpuId, int newX, int newY);
 
 	/**
 	 * Occurs on logging a message from graph canvas.
-	 * @param message
+	 * @param message Log message from JS part of the component.
 	 */
 	public void onLogMessage(String message);
 
 	/**
 	 * Occurs when debug up to given DPURecord is requested.
-	 * @param dpuId
+	 * @param dpuId Id of node, where debug should end.
 	 */
 	public void onDebugRequested(int dpuId);
 }

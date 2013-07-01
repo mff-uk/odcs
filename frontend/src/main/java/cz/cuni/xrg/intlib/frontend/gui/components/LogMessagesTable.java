@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- *	Component for viewing and filtering of log messages.
- * 
+ * Component for viewing and filtering of log messages.
+ *
  * @author Bogo
  */
 public class LogMessagesTable extends CustomComponent {
@@ -57,14 +57,15 @@ public class LogMessagesTable extends CustomComponent {
 
 	/**
 	 * Filters messages to show only messages of given level and more severe.
-	 * @param level 
+	 *
+	 * @param level {@link Level} to filter log messages.
 	 */
 	private void filterLogMessages(Level level) {
 		//TODO: Replace with Facade call X store last data and use&filter them
 		List<LogMessage> data = getData(dpu);
 		List<LogMessage> filteredData = new ArrayList<>();
-		for(LogMessage message : data) {
-			if(message.getLevel().intValue() >= level.intValue()) {
+		for (LogMessage message : data) {
+			if (message.getLevel().intValue() >= level.intValue()) {
 				filteredData.add(message);
 			}
 		}
@@ -72,8 +73,10 @@ public class LogMessagesTable extends CustomComponent {
 	}
 
 	/**
-	 * Show log messages related only to given DPU. If null is passed, data for whole pipeline are shown.
-	 * @param dpu DPU or null
+	 * Show log messages related only to given DPU. If null is passed, data for
+	 * whole pipeline are shown.
+	 *
+	 * @param dpu {@link DPUInstanceRecord} or null
 	 */
 	public void setDpu(DPUInstanceRecord dpu) {
 		this.dpu = dpu;
@@ -84,7 +87,8 @@ public class LogMessagesTable extends CustomComponent {
 
 	/**
 	 * Initializes the table.
-	 * @param data 
+	 *
+	 * @param data List of {@link LogMessages} to show in table.
 	 */
 	private void loadMessageTable(List<LogMessage> data) {
 		Container container = ContainerFactory.CreateLogMessages(data);
@@ -97,9 +101,13 @@ public class LogMessagesTable extends CustomComponent {
 	}
 
 	/**
-	 * Stub method for providing stub data, until LogFacade is completed.
-	 * @param dpu
-	 * @return 
+	 * Stub method for providing log messages associated with the given dpu
+	 * execution, until LogFacade is completed.
+	 *
+	 * @param dpu {@link DPUInstanceRecord} for which the log messages should be
+	 * obtained
+	 * @return Returns List of {@link LogMessages} associated with the given
+	 * {@link DPUInstanceRecord} execution
 	 */
 	private List<LogMessage> getData(DPUInstanceRecord dpu) {
 		List<LogMessage> data = new ArrayList<>();

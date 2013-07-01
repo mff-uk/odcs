@@ -61,8 +61,8 @@ public class RecordDetail extends CustomComponent {
 	/**
 	 * Resizes content due to resize of whole dialog.
 	 * 
-	 * @param height
-	 * @param unit 
+	 * @param height New height of whole dialog.
+	 * @param unit @{link Unit} of height.
 	 */
 	void setContentHeight(float height, Unit unit) {
 		fullMessageContent.setHeight(height - 170, unit);

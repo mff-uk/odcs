@@ -37,7 +37,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	int connCount = 0;
 	float currentZoom = 1.0f;
 	private PipelineGraph graph;
-	//TEMPORARY
 	private Pipeline pip;
 	private Stack<PipelineGraph> historyStack;
 
@@ -100,6 +99,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	}
 
+	/**
+	 * Start pipeline in debug mode and show debug window.
+	 * 
+	 * @param dpuId {@Link int} id of dpu, where debug should end.
+	 * @throws IllegalArgumentException
+	 * @throws NullPointerException 
+	 */
 	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
 		//TODO: Debug
 		pip.setGraph(graph);
@@ -120,16 +126,22 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		getRpcProxy(PipelineCanvasClientRpc.class).init();
 	}
 
+	/**
+	 * Method updating node position on server side.
+	 * @param dpuId Id of {@link Node} which was moved.
+	 * @param newX New X coordinate.
+	 * @param newY New Y coordinate.
+	 */
 	private void dpuMoved(int dpuId, int newX, int newY) {
 		graph.moveNode(dpuId, newX, newY);
 	}
 
 	/**
-	 * Adds new DPURecord to graph canvas.
+	 * Adds new DPUTemplateRecord to graph canvas.
 	 *
-	 * @param dpu
-	 * @param x
-	 * @param y
+	 * @param dpu Id of {@link DPUTemplateRecord} which should be added.
+	 * @param x X coordinate of position, where dpu should be added.
+	 * @param y Y coordinate of position, where dpu should be added.
 	 */
 	public void addDpu(DPUTemplateRecord dpu, int x, int y) {
 		DPUInstanceRecord dpuInstance = App.getDPUs().createInstanceFromTemplate(dpu);
@@ -141,8 +153,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Adds new edge to graph canvas.
 	 *
-	 * @param dpuFrom
-	 * @param dpuTo
+	 * @param dpuFrom Id of Node, where edge starts.
+	 * @param dpuTo Id of Node, where edge ends.
 	 */
 	public void addConnection(int dpuFrom, int dpuTo) {
 		String result = graph.validateNewEdge(dpuFrom, dpuTo);
@@ -158,13 +170,17 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Shows given pipeline on graph canvas.
 	 *
-	 * @param pipeline
+	 * @param pipeline {@link Pipeline} to show on graph canvas.
 	 */
 	public void showPipeline(Pipeline pipeline) {
 		this.pip = pipeline;
 		setGraph(pipeline.getGraph());
 	}
 	
+	/**
+	 * Initializes the canvas with given graph.
+	 * @param pg {@link PipelineGraph} to show on canvas.
+	 */
 	private void setGraph(PipelineGraph pg) {
 		if(this.graph != null) {
 			getRpcProxy(PipelineCanvasClientRpc.class).clearStage();
@@ -183,7 +199,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Saves graph from graph canvas.
 	 *
-	 * @param pipeline
+	 * @param pipeline {@link Pipeline} where graph should be saved.
 	 */
 	public void saveGraph(Pipeline pipeline) {
 //		for(DpuInstance dpu : pipeline.getDpus()) {
@@ -205,7 +221,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Shows detail of given DPUInstance in new sub-window
 	 *
-	 * @param dpu
+	 * @param node {@link Node} containing dpu, which detail should be showed.
 	 */
 	public void showDPUDetail(final Node node) {
 		final DPUInstanceRecord dpu = node.getDpuInstance();
@@ -218,15 +234,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			}
 		});
 		App.getApp().addWindow(detailDialog);
-
 	}
 
 	/**
 	 * Sets up parameters of pipeline execution and runs the pipeline.
 	 * 
-	 * @param pipeline
-	 * @param inDebugMode
-	 * @return 
+	 * @param pipeline {@link Pipeline} to run.
+	 * @param inDebugMode Run in debug/normal mode.
+	 * @return {@link PipelineExecution} of given {@link Pipeline}.
 	 */
 	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
 		//TODO: Pass DPU where execution should stop.
@@ -275,8 +290,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Inform listeners, that debug request was made.
-	 * @param execution
-	 * @param instance 
+	 * @param execution {@link PipelineExecution} representing current debug session.
+	 * @param instance {@link DPUInstanceRecord} where execution should end.
 	 */
 	protected void fireShowDebug(PipelineExecution execution, DPUInstanceRecord instance) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
@@ -292,8 +307,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Change canvas size.
-	 * @param height
-	 * @param width 
+	 * @param height New height of canvas in pixels.
+	 * @param width New width of canvas in pixels.
 	 */
 	public void resizeCanvas(int height, int width) {
 		getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(height, width);
@@ -302,7 +317,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Zoom the canvas.
 	 * @param isZoomIn +/- zoom.
-	 * @return New size of canvas.
+	 * @return {@link Position} with new size of canvas.
 	 */
 	public Position zoom(boolean isZoomIn) {
 		Position bounds = new Position(0, 0);
@@ -333,6 +348,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Undo changes on canvas.
+	 * 
 	 */
 	public void undo() {
 		if (!historyStack.isEmpty()) {

@@ -25,10 +25,19 @@ public class LogMessage {
 	 */
 	private Date date;
 	
+	/*
+	 * Source thread of log message.
+	 */
 	private String thread;
 	
+	/*
+	 * Source class of log message.
+	 */
 	private String source;
 	
+	/*
+	 * Text of log massage.
+	 */
 	private String message;
 
 	public LogMessage(Long id, Level lvl, Date dt, String thr, String src, String msg) {

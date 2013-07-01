@@ -41,7 +41,7 @@ public class QueryView extends CustomComponent {
 
 	/**
 	 * Constructor with parent view.
-	 * @param parent 
+	 * @param parent {@link DebuggingView} which is parent to this {@link QueryView}.
 	 */
 	public QueryView(DebuggingView parent) {
 		this.parent = parent;
@@ -111,9 +111,9 @@ public class QueryView extends CustomComponent {
 	/**
 	 * Prepare data file for download after CONSTRUCT query.
 	 * 
-	 * @param repository
-	 * @param constructQuery
-	 * @throws InvalidQueryException 
+	 * @param repository {@link LocalRDFRepo} of selected graph.
+	 * @param constructQuery {@link String} containing query to execute on repository.
+	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
 	private void prepareDownloadData(LocalRDFRepo repository, String constructQuery) throws InvalidQueryException {
 		
@@ -160,7 +160,7 @@ public class QueryView extends CustomComponent {
 	/**
 	 * Execute query on selected graph.
 	 * 
-	 * @throws InvalidQueryException 
+	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
 	private void doQuery() throws InvalidQueryException {
 
@@ -202,8 +202,8 @@ public class QueryView extends CustomComponent {
 	/**
 	 * Initializes table with data from SELECT query.
 	 * 
-	 * @param data
-	 * @return 
+	 * @param data Data with result of SELECT query.
+	 * @return {@link IndexedContainer} to serve as data source for {@link IntlibPagedTable}.
 	 */
 	private IndexedContainer buildDataSource(Map<String, List<String>> data) {
 		IndexedContainer result = new IndexedContainer();

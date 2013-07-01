@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Tree showing available DPUs. Contains filters by accessibility and name. It
- * is possible to make nodes draggable and to add custom clicklisteners.
+ * is possible to make nodes draggable and to add custom click listeners.
  *
  * @author Bogo
  */
@@ -102,7 +102,7 @@ public class DPUTree extends CustomComponent {
 	/**
 	 * Adds custom ItemClickListener to the DPUTRee.
 	 *
-	 * @param itemClickListener
+	 * @param itemClickListener {@link ItemClickEvent.ItemClickListener} to add to DPU tree.
 	 */
 	public void addItemClickListener(
 			ItemClickEvent.ItemClickListener itemClickListener) {
@@ -120,7 +120,7 @@ public class DPUTree extends CustomComponent {
 	/**
 	 * Fills tree with available DPUs.
 	 *
-	 * @param tree
+	 * @param tree {@link Tree} to fill. 
 	 */
 	private void fillTree(Tree tree) {
 
@@ -158,12 +158,12 @@ public class DPUTree extends CustomComponent {
 	}
 
 	/**
-	 * Sets nodes of the tree draggable.
+	 * Sets nodes of the tree drag-able.
 	 *
-	 * @param draggable
+	 * @param dragable True if the nodes should be drag-able, false otherwise.
 	 */
-	public void setDraggable(boolean draggable) {
-		if (draggable) {
+	public void setDragable(boolean dragable) {
+		if (dragable) {
 			dpuTree.setDragMode(Tree.TreeDragMode.NODE);
 		} else {
 			dpuTree.setDragMode(Tree.TreeDragMode.NONE);

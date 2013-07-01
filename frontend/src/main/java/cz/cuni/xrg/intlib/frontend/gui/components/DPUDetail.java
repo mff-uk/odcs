@@ -43,7 +43,7 @@ public class DPUDetail extends Window {
 
 	/**
 	 * Basic constructor, takes DPUInstance which detail should be showed.
-	 * @param dpu
+	 * @param dpu {@link DPUInstanceRecord} which detail will be showed.
 	 */
 	public DPUDetail(DPUInstanceRecord dpu) {
 
@@ -161,7 +161,7 @@ public class DPUDetail extends Window {
 
 	/**
 	 * Saves configuration of DPURecord Instance which was set in detail dialog.
-	 * @return
+	 * @return True if save was successful, false otherwise.
 	 */
 	protected boolean saveDPUInstance() {
 		dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue());
@@ -177,7 +177,7 @@ public class DPUDetail extends Window {
 
 	/**
 	 * Creates new DPU in tree with prefilled configuration taken from current configuration of this DPU.
-	 * @return 
+	 * @return True if save was successful, false otherwise.
 	 */
 	protected boolean saveDpuAsNew() {
 		if(saveDPUInstance()) {

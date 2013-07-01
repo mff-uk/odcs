@@ -58,7 +58,7 @@ class PipelineEdit extends ViewComponent {
 	/**
 	 * Builds main layout of the page.
 	 *
-	 * @return
+	 * @return {@link VerticalLayout} is the main layout of the view.
 	 */
 	private VerticalLayout buildMainLayout() {
 
@@ -167,7 +167,7 @@ class PipelineEdit extends ViewComponent {
 		dpuTree = new DPUTree();
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setWidth(220, Unit.PIXELS);
-		dpuTree.setDraggable(true);
+		dpuTree.setDragable(true);
 		left.addComponentAsFirst(dpuTree);
 
 		Button zoomIn = new Button("Zoom In", new Button.ClickListener() {
@@ -275,6 +275,11 @@ class PipelineEdit extends ViewComponent {
 		//verticalSplit.setLocked(true);
 	}
 
+	/**
+	 * Opens given {@link DebuggingView} in new window.
+	 * 
+	 * @param debug {@link DebuggingView} to show. 
+	 */
 	private void openDebug(final DebuggingView debug) {
 		Window debugWindow = new Window("Debug window", debug);
 		debugWindow.setImmediate(true);
@@ -299,7 +304,7 @@ class PipelineEdit extends ViewComponent {
 	/**
 	 * Builds part of layout with pipeline settings.
 	 *
-	 * @return
+	 * @return {@link GridLayout} contains controls with information about pipeline settings.
 	 * @throws com.vaadin.ui.GridLayout.OverlapsException
 	 * @throws com.vaadin.ui.GridLayout.OutOfBoundsException
 	 */
@@ -392,8 +397,8 @@ class PipelineEdit extends ViewComponent {
 	/**
 	 * Return true if given string is positive number.
 	 *
-	 * @param str
-	 * @return
+	 * @param str {@link String} to check
+	 * @return True if given string is positive number, false otherwise.
 	 */
 	public static boolean isInteger(String str) {
 		if (str == null) {
@@ -415,8 +420,8 @@ class PipelineEdit extends ViewComponent {
 	/**
 	 * Loads pipeline with given id from database.
 	 *
-	 * @param id
-	 * @return
+	 * @param id {@link String} with id of {@link Pipeline} to load
+	 * @return {@link Pipeline} with given id.
 	 */
 	protected Pipeline loadPipeline(String id) {
 		// get data from DB ..
@@ -431,7 +436,7 @@ class PipelineEdit extends ViewComponent {
 	 * this.entity. If /New parameter is passed in url, create just
 	 * representation for pipeline.
 	 *
-	 * @param event
+	 * @param event {@link ViewChangeEvent} passed from enter method.
 	 * @return Loaded pipeline class instance or null.
 	 */
 	protected Pipeline loadPipeline(ViewChangeEvent event) {
@@ -458,7 +463,7 @@ class PipelineEdit extends ViewComponent {
 	}
 
 	/**
-	 * Saves loaded pipeline.
+	 * Saves current pipeline.
 	 */
 	protected void savePipeline() {
 		if (!pipelineName.isValid()) {
@@ -472,6 +477,11 @@ class PipelineEdit extends ViewComponent {
 		App.getApp().getPipelines().save(this.pipeline);
 	}
 
+	/**
+	 * Enter method for PipelineEdit view.
+	 * 
+	 * @param event {@link ViewChangeEvent}
+	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
@@ -503,6 +513,11 @@ class PipelineEdit extends ViewComponent {
 
 	}
 	
+	/**
+	 * Calculates and sets canvas dimensions according to current size of browser window and pipeline graph's bounds.
+	 * 
+	 * @param zoomBounds {@link Position} with bounds of pipeline graph.
+	 */
 	private void calculateCanvasDimensions(Position zoomBounds) {
 		int browserWidth = 1050 + (UI.getCurrent().getPage().getBrowserWindowWidth() - 1350);
 		int browserHeight = 630;
@@ -524,6 +539,11 @@ class PipelineEdit extends ViewComponent {
 		//tabSheet.setHeight(browserHeight + 40, Unit.PIXELS);
 	}
 
+	/**
+	 * Resizes canvas according to changed width of browser window.
+	 * @param width New width of browser window.
+	 * 
+	 */
 	private void resizeCanvas(int width) {
 		if (width > 1350) {
 			int newWidth = 1050 + (width - 1350);

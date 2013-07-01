@@ -1,11 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.rdf.impl;
 
 /**
- * Stub class for representing RDF Triple for browsing in frontend.
+ * Class for representing RDF Triple for browsing in frontend.
  *
  * @author Bogo
  * @author Jiri Tomes
@@ -17,6 +13,13 @@ public class RDFTriple {
 	private String predicate;
 	private String object;
 
+	/**
+	 * Constructor with complete information about triple.
+	 * @param id Id of triple for indexing in container.
+	 * @param subject {@link String} with subject of triple.
+	 * @param predicate {@link String} with predicate of triple.
+	 * @param object {@link String} with object of triple. 
+	 */
 	public RDFTriple(int id, String subject, String predicate, String object) {
 		this.id = id;
 		this.subject = subject;

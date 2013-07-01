@@ -21,7 +21,7 @@ public class BrowserTable extends CustomComponent {
 	/**
 	 * Constructor with data to show.
 	 * 
-	 * @param data Triples to show.
+	 * @param data List of {@link RDFTriple}s to show.
 	 */
 	public BrowserTable(List<RDFTriple> data) {
 
@@ -44,7 +44,6 @@ public class BrowserTable extends CustomComponent {
 		dataTable = new IntlibPagedTable();
 		Container container = ContainerFactory.CreateRDFData(data);
 		dataTable.setContainerDataSource(container);
-
 
 		dataTable.setVisibleColumns(new String[]{ "subject", "predicate", "object" });
 		dataTable.setPageLength(3);

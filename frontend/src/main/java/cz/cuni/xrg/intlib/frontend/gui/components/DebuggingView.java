@@ -114,8 +114,7 @@ public class DebuggingView extends CustomComponent {
 	}
 
 	/**
-	 * Fills DebuggingView with data.
-	 * 
+	 * Fills DebuggingView with data, obtained from objects passed in constructor.
 	 */
 	public void fillContent() {
 		boolean loadSuccessful = loadExecutionContextReader();
@@ -186,7 +185,7 @@ public class DebuggingView extends CustomComponent {
 	}
 
 	/**
-	 * Reloads content.
+	 * Reloads content. Data are obtained from objects passed in constructor.
 	 */
 	private void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
@@ -209,7 +208,7 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Loads Browser tab content.
 	 * @param showInput Input/Output graph should be showed.
-	 * @return Browser
+	 * @return {@link DataUnitBrowser} for actual {@link DPUInstanceRecord}.
 	 */
 	private DataUnitBrowser loadBrowser(boolean showInput) {
 		if (debugDpu == null) {
@@ -225,8 +224,7 @@ public class DebuggingView extends CustomComponent {
 		while (iter.hasNext()) {
 		
 			DataUnitInfo dataUnitInfo = iter.next();
-			
-			
+
 			if (indexes.size() == 1 || showInput) {
 				DataUnitBrowser duBrowser;
 				try {
@@ -247,8 +245,8 @@ public class DebuggingView extends CustomComponent {
 
 	/**
 	 * Gets repository path from context.
-	 * @param onInputGraph
-	 * @return 
+	 * @param onInputGraph Repository path of Input/Output graph.
+	 * @return {@link String} containing path to repository.
 	 */
 	String getRepositoryPath(boolean onInputGraph) {
 		
@@ -274,8 +272,8 @@ public class DebuggingView extends CustomComponent {
 
 	/**
 	 * Gets repository directory from context.
-	 * @param onInputGraph
-	 * @return 
+	 * @param onInputGraph Repository path of Input/Output graph.
+	 * @return {@link File} representing directory of repository.
 	 */
 	File getRepositoryDirectory(boolean onInputGraph) {
 		
@@ -304,7 +302,7 @@ public class DebuggingView extends CustomComponent {
 	 * running. Contains refresh button, which updates the content of
 	 * debugging view and shows the most current data of given pipeline run.
 	 * 
-	 * @return layout with label and refresh button
+	 * @return Layout with label and refresh button.
 	 */
 	private HorizontalLayout buildRefreshComponent() {
 		
@@ -359,7 +357,7 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Resizes log area after window with DebuggingView was resized.
 	 * 
-	 * @param height 
+	 * @param height New height of log text area.
 	 */
 	public void resize(float height) {
 		float newLogHeight = height - 325;
