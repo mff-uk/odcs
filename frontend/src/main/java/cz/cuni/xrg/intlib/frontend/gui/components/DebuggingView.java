@@ -180,7 +180,7 @@ public class DebuggingView extends CustomComponent {
 
 		}
 		
-		boolean showRefresh = !loadSuccessful && isInDebugMode || !isRunFinished;
+		boolean showRefresh = !isRunFinished; //!loadSuccessful && isInDebugMode || !isRunFinished;
 		refreshComponent.setVisible(showRefresh);
 	}
 
