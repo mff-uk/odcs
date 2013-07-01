@@ -1,22 +1,28 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.util.Date;
 import java.util.logging.Level;
 
 /**
+ * Represents log message loaded from database. Shown in DebuggingView/Log tab by LogMessageTable.
  *
  * @author Bogo
  */
 public class LogMessage {
 	
+	/**
+	 * Primary key of message stored in database.
+	 */
 	private Long id;
 	
+	/*
+	 * Level of log message.
+	 */
 	private Level level;
 	
+	/*
+	 * Date of log message.
+	 */
 	private Date date;
 	
 	private String thread;

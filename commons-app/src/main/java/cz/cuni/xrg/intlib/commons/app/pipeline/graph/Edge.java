@@ -103,13 +103,4 @@ public class Edge {
     public Long getId() {
         return id;
     }
-
-    /**
-     * Temporary solution of id generation.
-     *
-     * @param getUniquePipelineConnectionId
-     */
-//    void setId(int getUniquePipelineConnectionId) {
-//        id = getUniquePipelineConnectionId;
-//    }
 }

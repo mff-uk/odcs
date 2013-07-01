@@ -4,7 +4,6 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.VerticalLayout;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
@@ -25,6 +24,9 @@ public class LogMessagesTable extends CustomComponent {
 	private IntlibPagedTable messageTable;
 	private DPUInstanceRecord dpu;
 
+	/**
+	 * Default constructor.
+	 */
 	public LogMessagesTable() {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
@@ -53,6 +55,10 @@ public class LogMessagesTable extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Filters messages to show only messages of given level and more severe.
+	 * @param level 
+	 */
 	private void filterLogMessages(Level level) {
 		//TODO: Replace with Facade call X store last data and use&filter them
 		List<LogMessage> data = getData(dpu);
@@ -65,13 +71,21 @@ public class LogMessagesTable extends CustomComponent {
 		loadMessageTable(filteredData);
 	}
 
+	/**
+	 * Show log messages related only to given DPU. If null is passed, data for whole pipeline are shown.
+	 * @param dpu DPU or null
+	 */
 	public void setDpu(DPUInstanceRecord dpu) {
 		this.dpu = dpu;
-		//TODO: Replace with Facade call
+		//TODO: Replace with Facade call - if null - get data for whole pipeline
 		List<LogMessage> data = getData(dpu);
 		loadMessageTable(data);
 	}
 
+	/**
+	 * Initializes the table.
+	 * @param data 
+	 */
 	private void loadMessageTable(List<LogMessage> data) {
 		Container container = ContainerFactory.CreateLogMessages(data);
 		messageTable.setContainerDataSource(container);
@@ -82,6 +96,11 @@ public class LogMessagesTable extends CustomComponent {
 			"source", "message"});
 	}
 
+	/**
+	 * Stub method for providing stub data, until LogFacade is completed.
+	 * @param dpu
+	 * @return 
+	 */
 	private List<LogMessage> getData(DPUInstanceRecord dpu) {
 		List<LogMessage> data = new ArrayList<>();
 		data.add(new LogMessage(1L, Level.INFO, new Date(), "[pool-2-thread-1]", "c.c.x.i.b.execution.PipelineWorker", "Started"));

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.io.FileNotFoundException;
@@ -26,6 +22,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 
 /**
+ * Detail of selected DPU. Consists of common properties, name and description and configuration dialog specific for DPU, which is loaded from DPU's jar file.
  *
  * @author Bogo
  */
@@ -124,17 +121,6 @@ public class DPUDetail extends Window {
 		buttonBar.setStyleName("dpuDetailButtonBar");
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
-//		Button saveButton = new Button("Develop", new Button.ClickListener() {
-//
-//			@Override
-//			public void buttonClick(Button.ClickEvent event) {
-//				if(saveDPUInstance()) {
-//					close();
-//				}
-//			}
-//		});
-//		buttonBar.addComponent(saveButton);
-
 		Button saveAndCommitButton = new Button("Save", new Button.ClickListener() {
 
 			@Override
@@ -189,6 +175,10 @@ public class DPUDetail extends Window {
 		return true;
 	}
 
+	/**
+	 * Creates new DPU in tree with prefilled configuration taken from current configuration of this DPU.
+	 * @return 
+	 */
 	protected boolean saveDpuAsNew() {
 		if(saveDPUInstance()) {
 			DPUTemplateRecord newDPU = App.getDPUs().creatTemplateFromInstance(dpuInstance.getDPUInstanceRecord());

@@ -1,10 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 /**
+ * Resource for providing file download to client.
+ * TODO: Test FileResource and if it works, delete this class.
  *
  * @author Bogo
  */

@@ -221,7 +221,16 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	}
 
+	/**
+	 * Sets up parameters of pipeline execution and runs the pipeline.
+	 * 
+	 * @param pipeline
+	 * @param inDebugMode
+	 * @return 
+	 */
 	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
+		//TODO: Pass DPU where execution should stop.
+		
 		PipelineExecution pipelineExec = new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
 		// do some settings here
@@ -249,6 +258,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		return pipelineExec;
 	}
 
+	/**
+	 * Inform listeners, that the detail is closing.
+	 */
 	protected void fireDetailClosed() {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
 		for (Listener l : ls) {
@@ -261,6 +273,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 	}
 
+	/**
+	 * Inform listeners, that debug request was made.
+	 * @param execution
+	 * @param instance 
+	 */
 	protected void fireShowDebug(PipelineExecution execution, DPUInstanceRecord instance) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
 		for (Listener l : ls) {
@@ -273,10 +290,20 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 	}
 
+	/**
+	 * Change canvas size.
+	 * @param height
+	 * @param width 
+	 */
 	public void resizeCanvas(int height, int width) {
 		getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(height, width);
 	}
 
+	/**
+	 * Zoom the canvas.
+	 * @param isZoomIn +/- zoom.
+	 * @return New size of canvas.
+	 */
 	public Position zoom(boolean isZoomIn) {
 		Position bounds = new Position(0, 0);
 		if (graph != null) {
@@ -304,6 +331,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		return new Position((int) (1600 * currentZoom), (int) (630 * currentZoom));
 	}
 
+	/**
+	 * Undo changes on canvas.
+	 */
 	public void undo() {
 		if (!historyStack.isEmpty()) {
 			PipelineGraph restoredGraph = historyStack.pop();
@@ -311,6 +341,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 	}
 
+	/**
+	 * Store graph in stack for undo.
+	 */
 	private void storeHistoryGraph() {
 		PipelineGraph clonedGraph = SerializationUtils.clone(graph);
 		historyStack.push(clonedGraph);

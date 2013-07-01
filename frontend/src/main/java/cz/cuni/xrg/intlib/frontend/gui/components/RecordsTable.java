@@ -19,6 +19,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import java.util.List;
 
 /**
+ * Table with event records related to given pipeline execution.
  *
  * @author Bogo
  */
@@ -28,6 +29,9 @@ public class RecordsTable extends CustomComponent {
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
 
+	/**
+	 * Default constructor. Initializes the layout.
+	 */
 	public RecordsTable() {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
@@ -53,10 +57,19 @@ public class RecordsTable extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Sets data source.
+	 * @param data 
+	 */
 	public void setDataSource(List<Record> data) {
 		loadMessageTable(data);
 	}
 
+	/**
+	 * Loads data to the table.
+	 * 
+	 * @param data Data to show.
+	 */
 	private void loadMessageTable(List<Record> data) {
 		Container container = ContainerFactory.CreateExecutionMessages(data);
 		messageTable.setContainerDataSource(container);
@@ -102,6 +115,11 @@ public class RecordsTable extends CustomComponent {
 				"shortMessage"});
 	}
 
+	/**
+	 * Shows dialog with detail of selected record.
+	 * 
+	 * @param record
+	 */
 	private void showRecordDetail(Record record) {
 		final RecordDetail detail = new RecordDetail(record);
 		Window detailWindow = new Window("Record detail", detail);

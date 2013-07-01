@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.jensjansson.pagedtable.ControlsLayout;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
@@ -22,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple query view for querying debug data.
+ * Simple query view for querying debug data. User can query data for given DPU. If DPU is Transformer, user can select if input or output graph should be queried.
+ * If SELECT query is used, data are shown in table. If CONSTRUCT query is used, data are provided as file for download. User can select format of data.
  *
  * @author Bogo
  */
@@ -39,6 +39,10 @@ public class QueryView extends CustomComponent {
 	private final static String OUT_GRAPH = "Output Graph";
 	private final static Logger LOG = LoggerFactory.getLogger(QueryView.class);
 
+	/**
+	 * Constructor with parent view.
+	 * @param parent 
+	 */
 	public QueryView(DebuggingView parent) {
 		this.parent = parent;
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -104,6 +108,13 @@ public class QueryView extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Prepare data file for download after CONSTRUCT query.
+	 * 
+	 * @param repository
+	 * @param constructQuery
+	 * @throws InvalidQueryException 
+	 */
 	private void prepareDownloadData(LocalRDFRepo repository, String constructQuery) throws InvalidQueryException {
 		
 		Object o = formatSelect.getValue();
@@ -146,6 +157,11 @@ public class QueryView extends CustomComponent {
 		export.setResource(resource);
 	}
 
+	/**
+	 * Execute query on selected graph.
+	 * 
+	 * @throws InvalidQueryException 
+	 */
 	private void doQuery() throws InvalidQueryException {
 
 		boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
@@ -183,6 +199,12 @@ public class QueryView extends CustomComponent {
 		
 	}
 
+	/**
+	 * Initializes table with data from SELECT query.
+	 * 
+	 * @param data
+	 * @return 
+	 */
 	private IndexedContainer buildDataSource(Map<String, List<String>> data) {
 		IndexedContainer result = new IndexedContainer();
 		if (data.isEmpty()) {

@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import java.util.List;
 
 /**
+ * Table showing triples from graph in debug.
  *
  * @author Bogo
  */
@@ -17,6 +18,11 @@ public class BrowserTable extends CustomComponent {
 	private IntlibPagedTable dataTable;
 	private VerticalLayout mainLayout;
 
+	/**
+	 * Constructor with data to show.
+	 * 
+	 * @param data Triples to show.
+	 */
 	public BrowserTable(List<RDFTriple> data) {
 
 		mainLayout = new VerticalLayout();
@@ -29,6 +35,11 @@ public class BrowserTable extends CustomComponent {
 
 	}
 
+	/*
+	 * Initializes the table and loads the data.
+	 * 
+	 * @param data Data to load.
+	 */
 	private void loadBrowserTable(List<RDFTriple> data) {
 		dataTable = new IntlibPagedTable();
 		Container container = ContainerFactory.CreateRDFData(data);

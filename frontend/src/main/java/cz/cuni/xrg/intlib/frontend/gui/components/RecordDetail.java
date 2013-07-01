@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.ui.CustomComponent;
@@ -11,6 +7,7 @@ import com.vaadin.ui.TextArea;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
 /**
+ * Shows detail of selected event record.
  *
  * @author Bogo
  */
@@ -18,6 +15,10 @@ public class RecordDetail extends CustomComponent {
 
 	TextArea fullMessageContent;
 
+	/**
+	 * Constructor with Record to show.
+	 * @param record Record which detail should be showed.
+	 */
 	public RecordDetail(Record record) {
 		GridLayout mainLayout = new GridLayout(2, 5);
 		mainLayout.setImmediate(true);
@@ -57,6 +58,12 @@ public class RecordDetail extends CustomComponent {
 
 	}
 
+	/**
+	 * Resizes content due to resize of whole dialog.
+	 * 
+	 * @param height
+	 * @param unit 
+	 */
 	void setContentHeight(float height, Unit unit) {
 		fullMessageContent.setHeight(height - 170, unit);
 	}

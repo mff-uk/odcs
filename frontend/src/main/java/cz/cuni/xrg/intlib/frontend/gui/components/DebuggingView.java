@@ -24,6 +24,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Shows complex debug information about current pipeline execution. Shows information about whole run or if specific DPU is selected only information related to this DPU.
+ * Top table shows events which occurred during pipeline execution. DPU selection is available if the pipeline is in debug mode. Bottom part consists of tabs. 
+ * Log tab shows log messages, which can be filtered by level. Browse tab shows triples from graph which selected DPU created. 
+ * Query tab allows to query data from graphs which were created during pipeline execution.
  *
  * @author Bogo
  */
@@ -45,16 +49,24 @@ public class DebuggingView extends CustomComponent {
 	private HorizontalLayout refreshComponent;
 	private LogMessagesTable logMessagesTable;
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @param pipelineExec Pipeline execution.
+	 * @param debugDpu Preselected DPU or null.
+	 * @param debug Is execution in debug mode?
+	 */
 	public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug) {
-		//setCaption("Debug window");
 		this.pipelineExec = pipelineExec;
 		this.debugDpu = debugDpu;
 		this.isInDebugMode = debug;
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
-		//this.setContent(mainLayout);
 	}
 
+	/**
+	 * Builds main layout.
+	 */
 	public final void buildMainLayout() {
 		mainLayout = new VerticalLayout();
 
@@ -81,7 +93,6 @@ public class DebuggingView extends CustomComponent {
 		logLayout.addComponent(refreshComponent);
 		
 		logMessagesTable = new LogMessagesTable();
-		logMessagesTable.setDpu(debugDpu);
 		logLayout.addComponent(logMessagesTable);
 		//logLayout.addComponent(logTextArea);
 		logLayout.setSizeFull();
@@ -131,6 +142,7 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Content of text log file
+		logMessagesTable.setDpu(debugDpu);
 		if (loadSuccessful) {
 // TODO !! List log			
 			/*
@@ -173,6 +185,9 @@ public class DebuggingView extends CustomComponent {
 		refreshComponent.setVisible(showRefresh);
 	}
 
+	/**
+	 * Reloads content.
+	 */
 	private void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		fillContent();
@@ -182,23 +197,20 @@ public class DebuggingView extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Tries to load context for given pipeline execution.
+	 * @return Load was successful.
+	 */
 	private boolean loadExecutionContextReader() {	
 		ctxReader = pipelineExec.getContextReadOnly();
 		return ctxReader != null;
-		/*
-		String workingDirPath = pipelineExec.getWorkingDirectory();
-		File workingDir = new File(workingDirPath);
-		try {
-			ctxReader = ExecutionContextFacade.restoreAsRead(workingDir);
-		} catch (FileNotFoundException ex) {
-			Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
-			return false;
-		}
-		return true; 
-		return false;
-		*/
 	}
 
+	/**
+	 * Loads Browser tab content.
+	 * @param showInput Input/Output graph should be showed.
+	 * @return Browser
+	 */
 	private DataUnitBrowser loadBrowser(boolean showInput) {
 		if (debugDpu == null) {
 			return null;
@@ -233,6 +245,11 @@ public class DebuggingView extends CustomComponent {
 		return null;
 	}
 
+	/**
+	 * Gets repository path from context.
+	 * @param onInputGraph
+	 * @return 
+	 */
 	String getRepositoryPath(boolean onInputGraph) {
 		
 		if (debugDpu == null) {
@@ -255,6 +272,11 @@ public class DebuggingView extends CustomComponent {
 		return null;
 	}
 
+	/**
+	 * Gets repository directory from context.
+	 * @param onInputGraph
+	 * @return 
+	 */
 	File getRepositoryDirectory(boolean onInputGraph) {
 		
 		if (debugDpu == null) {
@@ -334,11 +356,16 @@ public class DebuggingView extends CustomComponent {
 		mainLayout.addComponent(dpuSelector);
 	}
 
+	/**
+	 * Resizes log area after window with DebuggingView was resized.
+	 * 
+	 * @param height 
+	 */
 	public void resize(float height) {
 		float newLogHeight = height - 325;
 		if(newLogHeight < 400) {
 			newLogHeight = 400;
 		}
-		logTextArea.setHeight(newLogHeight, Unit.PIXELS);
+		//logTextArea.setHeight(newLogHeight, Unit.PIXELS);
 	}
 }

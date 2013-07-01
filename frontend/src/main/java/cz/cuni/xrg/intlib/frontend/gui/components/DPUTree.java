@@ -1,13 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
@@ -59,11 +54,6 @@ public class DPUTree extends CustomComponent {
 		CheckBox onlyMyDPU = new CheckBox();
 		onlyMyDPU.setCaption("Only My DPURecord");
 		filterBar.addComponent(onlyMyDPU, 0, 0, 1, 0);
-
-//		Label labelFilter = new Label();
-//		labelFilter.setContentMode(ContentMode.TEXT);
-//		labelFilter.setValue("Filter:");
-//		filterBar.addComponent(labelFilter, 0, 1);
 
 		TextField treeFilter = new TextField();
 		treeFilter.setImmediate(false);

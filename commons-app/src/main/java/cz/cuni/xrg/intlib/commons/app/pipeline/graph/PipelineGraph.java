@@ -199,17 +199,6 @@ public class PipelineGraph implements Serializable {
         return null;
     }
 
-//    /**
-//     * Gets DPUInstance of Node with given ID
-//     *
-//     * @param id
-//     * @return DPUIntance of Node with given id
-//     */
-//    public DPUInstance getDPUInstanceById(int id) {
-//        Node node = getNodeById(id);
-//        return (node == null) ? null : node.getDpuInstance();
-//    }
-
 	/**
 	 * Updates Node position in graph.
 	 *
@@ -313,6 +302,19 @@ public class PipelineGraph implements Serializable {
 		return false;
 	}
 	
+	private boolean sameEdgeExists(Node from, Node to) {
+		for(Edge e : edges) {
+			if(e.getFrom().equals(from) &&  e.getTo().equals(to)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets maximum coordinates of DPUs in graph.
+	 * @return 
+	 */
 	public Position getBounds() {
 		Position bounds = new Position(0, 0);
 		for(Node node : nodes) {
@@ -326,14 +328,4 @@ public class PipelineGraph implements Serializable {
 		}
 		return bounds;
 	}
-
-	private boolean sameEdgeExists(Node from, Node to) {
-		for(Edge e : edges) {
-			if(e.getFrom().equals(from) &&  e.getTo().equals(to)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 }
