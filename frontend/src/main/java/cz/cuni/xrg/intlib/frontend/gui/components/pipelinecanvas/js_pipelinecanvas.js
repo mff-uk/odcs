@@ -158,11 +158,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 * @param message
 	 **/
     function writeMessage(messageLayer, message) {
-//        var context = messageLayer.getContext();
-//        messageLayer.clear();
-//        context.font = '18pt Calibri';
-//        context.fillStyle = 'black';
-//        context.fillText(message, 10, 25);
+        var context = messageLayer.getContext();
+        messageLayer.clear();
+        context.font = '18pt Calibri';
+        context.fillStyle = 'black';
+        context.fillText(message, 10, 25);
 
 		rpcProxy.onLogMessage(message);
     }
@@ -200,9 +200,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             if(isDragging) {
                 // Takes care of repositioning connections on dragged DPU
                 var mousePos = stage.getMousePosition();
-                var x = mousePos.x;
-                var y = mousePos.y;
-                writeMessage(messageLayer, 'x: ' + x + ', y: ' + y);
+                var x = mousePos.x / scale;
+                var y = mousePos.y / scale;
+                //writeMessage(messageLayer, 'x: ' + x + ', y: ' + y);
                 moveLine(dragId, x, y);
             } else if(stageMode === NEW_CONNECTION_MODE) {
                 // Repositioning new connection line
@@ -364,7 +364,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 				posX = lastPositionX - 261;
 				posY = lastPositionY - 256;
 			}
-        }
+        } else {
+			posX = posX * scale;
+			posY = posY * scale;
+		}
 
         var group = new Kinetic.Group({
             x: posX / scale,
@@ -397,7 +400,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 writeMessage(messageLayer, 'action bar clicked');
                 var mousePosition = stage.getMousePosition();
                 newConnLine = new Kinetic.Line({
-                    points: computeConnectionPoints3(group, mousePosition.x, mousePosition.y),
+                    points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
                     stroke: '#555',
                     strokeWidth: 1.5
                 });
@@ -470,6 +473,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             dpuLayer.draw();
             return;
             var pos = stage.getMousePosition();
+			pos.x = pos.x / scale;
+			pos.y = pos.y / scale;
             var groupPos = group.getPosition();
 
             if(pos.x < groupPos.x || pos.x > groupPos.x + group.getWidth() || pos.y < groupPos.y || pos.y > groupPos.y + group.getHeight()) {
@@ -498,6 +503,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 evt.cancelBubble = true;
             } else {
 				rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y));
+				writeMessage(messageLayer, 'x: ' + endPosition.x + ', y: ' + endPosition.y);
 				actionBar.setVisible(true);
 				dpuLayer.draw();
 			}
@@ -526,7 +532,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     writeMessage(messageLayer, 'New Edge - SHIFT');
                     var mousePosition = stage.getMousePosition();
                     newConnLine = new Kinetic.Line({
-                        points: computeConnectionPoints3(group, mousePosition.x, mousePosition.y),
+                        points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
                         stroke: '#555',
                         strokeWidth: 1.5
                     });
@@ -551,7 +557,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 					lastClickedDpu = group;
 					lastClickedTime = now;
 				}
-				evt.cancelBubble = true;
+				if(!isDragging) {
+					evt.cancelBubble = true;
+				}
             }
         });
 
@@ -570,7 +578,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpuLayer.add(group);
         dpuLayer.draw();
 
-		rpcProxy.onDpuMoved(id, parseInt(posX), parseInt(posY));
+		rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale));
     }
 
     /** 

@@ -38,13 +38,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	float currentZoom = 1.0f;
 	private PipelineGraph graph;
 	private Pipeline pip;
-	private Stack<PipelineGraph> historyStack;
+	//private Stack<PipelineGraph> historyStack;
 
 	/**
 	 * Initial constructor with registering of server side RPC.
 	 */
 	public PipelineCanvas() {
-		this.historyStack = new Stack();
+		//this.historyStack = new Stack();
 
 		this.setId("container");
 		//this.setWidth(1500,  Unit.PIXELS);
@@ -147,7 +147,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		DPUInstanceRecord dpuInstance = App.getDPUs().createInstanceFromTemplate(dpu);
 		Node node = graph.addDpuInstance(dpuInstance);
 		getRpcProxy(PipelineCanvasClientRpc.class)
-				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), x, y);
+				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), (int)(x / currentZoom), (int)(y / currentZoom));
 	}
 
 	/**
@@ -351,17 +351,17 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * 
 	 */
 	public void undo() {
-		if (!historyStack.isEmpty()) {
-			PipelineGraph restoredGraph = historyStack.pop();
-			
-		}
+//		if (!historyStack.isEmpty()) {
+//			PipelineGraph restoredGraph = historyStack.pop();
+//			
+//		}
 	}
 
 	/**
 	 * Store graph in stack for undo.
 	 */
 	private void storeHistoryGraph() {
-		PipelineGraph clonedGraph = SerializationUtils.clone(graph);
-		historyStack.push(clonedGraph);
+		//PipelineGraph clonedGraph = SerializationUtils.clone(graph);
+		//historyStack.push(clonedGraph);
 	}
 }
