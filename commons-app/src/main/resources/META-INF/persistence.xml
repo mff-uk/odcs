@@ -31,7 +31,7 @@
       <!-- SQL dialect -->
       <property name="hibernate.dialect" value="virtuoso.hibernate.VirtuosoDialect"/>
       <!-- Echo and format all executed SQL to stdout -->
-      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.format_sql" value="true"/>
       <!-- Scan for annotated classes automatically -->
       <!-- works only for classes in the same namespace
