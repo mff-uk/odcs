@@ -7,7 +7,6 @@ import javax.persistence.*;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 
-//TODO Honza: Update
 
 /**
  * Information about executed pipeline and its states.
@@ -49,23 +48,22 @@ public class PipelineExecution  {
 	/**
 	 * Timestamp when this execution started, or null.
 	 */
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "t_start")
 	private Date start;
 	
 	/**
 	 * Timestamp when this execution started, or null.
 	 */
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "t_end")
 	private Date end;
 	
 	/**
 	 * Execution context, can be null.
 	 */
-	@Transient
-	//@OneToOne(optional = true)
-	//@JoinColumn(name="context_id", nullable = true)
+	@OneToOne(cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name="context_id", nullable = true)
 	private ExecutionContextInfo context;
 	
 	/**
@@ -110,16 +108,11 @@ public class PipelineExecution  {
      */
     public ExecutionContextInfo createExecutionContext(File directory) {
     	
-    	// TODO Petyr, Honza: Persist to DB
-    	
-    	/*
     	if (context == null) {
-    		context = new ExecutionContextImpl(directory);
+    		context = new ExecutionContextInfo(directory);
     	}    	
-    	return context;
-    	*/
-    	
-    	return new ExecutionContextInfo(directory);
+
+		return context;
     }
     
     public long getId() {

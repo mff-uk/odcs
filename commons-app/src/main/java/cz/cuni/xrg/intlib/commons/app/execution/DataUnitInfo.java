@@ -33,7 +33,7 @@ public class DataUnitInfo {
 	/**
 	 * Index of DataUnit. Used to determine folder.
 	 */
-	@Column(name="index")
+	@Column(name="idx")
 	private Integer index;
 	
 	/**

@@ -2,15 +2,11 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.util.LinkedList;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import java.util.List;
+import virtuoso.hibernate.VirtuosoDialect;
 
 /**
  * Contains and manage information about execution for single {@link DPU}.
@@ -18,30 +14,43 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  * @author Petyr
  *
  */
-//@Entity
-//@Table(name = "exec_context_dpu")
-class ProcessingUnitInfo {
+@Entity
+@Table(name = "exec_context_dpu")
+public class ProcessingUnitInfo {
 
 	/**
 	 * Unique id of pipeline execution.
 	 */
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;	
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	
+	/**
+	 * Dummy column to work around virtuoso's missing support for no-column
+	 * insert. To be removed in future if other persisted attributes are added.
+	 * 
+	 * @see VirtuosoDialect#getNoColumnsInsertString()
+	 */
+	@SuppressWarnings("unused")
+	@Column
+	private int dummy = 0;
 	
 	/**
 	 * Storage for dataUnits descriptors.
 	 */
-    //@OneToMany()
-    //@OrderBy("index")
-	private LinkedList<DataUnitInfo> dataUnits = new LinkedList<>();
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@JoinColumn(name = "exec_context_dpu_id")
+	@OrderBy("index")
+	private List<DataUnitInfo> dataUnits = new LinkedList<>();
 	
 	public ProcessingUnitInfo() { }
 	
 	/**
-	 * Create information about new DataUnit and return path to it's directory. 
-	 * The storage directory should be used to save data by method {@link cz.cuni.xrg.intlib.commons.data.DataUnit#save()} 
-	 * and load from by {@link cz.cuni.xrg.intlib.commons.data.DataUnit#load()}.
+	 * Create information about new DataUnit and return path to it's directory.
+	 * The storage directory should be used to save data by method
+	 * {@link cz.cuni.xrg.intlib.commons.data.DataUnit#save()} and load from by
+	 * {@link cz.cuni.xrg.intlib.commons.data.DataUnit#load()}.
+	 *
 	 * @param name
 	 * @param type
 	 * @param isInput
@@ -53,7 +62,7 @@ class ProcessingUnitInfo {
 		if (dataUnits.isEmpty()) {
 			
 		} else {
-			index = dataUnits.getLast().getIndex() + 1;
+			index = dataUnits.get(dataUnits.size()-1).getIndex() + 1;
 		}
 		DataUnitInfo dataUnitInfo = new DataUnitInfo(index, name, type, isInput);
 		dataUnits.add(dataUnitInfo);
@@ -75,8 +84,8 @@ class ProcessingUnitInfo {
 		return null;
 	}
 	
-	public LinkedList<DataUnitInfo> getDataUnits() {
+	public List<DataUnitInfo> getDataUnits() {
 		return dataUnits;
 	}
-
+	
 }

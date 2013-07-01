@@ -2,22 +2,14 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import java.util.List;
 
 /**
  * Hold and manage context for pipeline execution.
@@ -29,8 +21,8 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  * @author Petyr
  *
  */
-//@Entity
-//@Table(name = "exec_context_pipeline")
+@Entity
+@Table(name = "exec_context_pipeline")
 public class ExecutionContextInfo {
 
 	/**
@@ -54,7 +46,7 @@ public class ExecutionContextInfo {
 	private static final String RESULT_DIR = "result";
 	
 	/**
-	 * Prefix for dpu folder.
+	 * Prefix for DPU folder.
 	 */
 	private static final String DPU_ID_PREFIX = "dpu_";
 	
@@ -67,20 +59,31 @@ public class ExecutionContextInfo {
 	
 	/**
 	 * Root directory for execution.
+	 * Every time path is changed, {@link #rootPath} needs to be updated, so
+	 * that root directory is correctly persisted. Also with the same reasoning,
+	 * this attribute needs to be immutable.
 	 */
-    @Column(name="directory")
+	@Transient
 	private File rootDirectory;
+	
+	/**
+	 * Helper attribute to be able to persist root directory as a path string.
+	 * Must be synchronized with {@link #rootDirectory}.
+	 */
+	@SuppressWarnings("unused")
+    @Column(name="directory")
+	private String rootPath;
     
 	/**
-	 * Contexts for DPU's. Indexed by id's of DPUInstanceRecord.
+	 * Contexts for DPU's. Indexed by {@link DPUInstanceRecord}.
 	 */
-    @OneToMany()
-    @JoinTable(name="exec_context_proccontext")
-    @MapKeyColumn(name="dpu_execution")
-    private Map<Long, ProcessingUnitInfo> contexts = new HashMap<>();    
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@MapKeyJoinColumn(name = "dpu_instance_id", referencedColumnName = "id")
+	@JoinColumn(name = "exec_context_pipeline_id")
+	private Map<DPUInstanceRecord, ProcessingUnitInfo> contexts = new HashMap<>();
 
     /**
-     * Empty ctor for JPA.
+     * Empty constructor for JPA.
      */
     public ExecutionContextInfo() {}
     
@@ -90,6 +93,7 @@ public class ExecutionContextInfo {
      */
     public ExecutionContextInfo(File directory) {
     	rootDirectory = directory;
+		rootPath = directory.getAbsolutePath();
     }
     
     
@@ -100,13 +104,13 @@ public class ExecutionContextInfo {
 	 */
 	private ProcessingUnitInfo getContext(DPUInstanceRecord dpuInstance) {
 		// check existence
-		Long id = dpuInstance.getId();
-		if (!contexts.containsKey(id)) {
+		if (!contexts.containsKey(dpuInstance)) {
 			// unknown context -> add
-			contexts.put(id, new ProcessingUnitInfo());
+			ProcessingUnitInfo pui = new ProcessingUnitInfo();
+			contexts.put(dpuInstance, pui);
 		}
 		// return data
-		return contexts.get(id);
+		return contexts.get(dpuInstance);
 	}    
     
 	/**
@@ -143,7 +147,7 @@ public class ExecutionContextInfo {
 	 * Return set of indexes of stored DPU's execution information.
 	 * @return
 	 */
-	public Set<Long> getDPUIndexes() {
+	public Set<DPUInstanceRecord> getDPUIndexes() {
 		return contexts.keySet();
 	}
 	
@@ -228,17 +232,17 @@ public class ExecutionContextInfo {
 	 * @return 
 	 */	
 	public boolean containsData(DPUInstanceRecord dpuInstance) {
-		return contexts.containsKey(dpuInstance.getId());
+		return contexts.containsKey(dpuInstance);
 	}	
 	
 	/**
 	 * Return list of DataUnitInfo for DPUInstanceRecord that can be used in {@link #getInputInfo}.
 	 * @param dpuInstance Instance of DPU for which DataUnit retrieve DataUnit's indexes.
 	 * @return Set of indexes or null if there is no data for given dpuInstance.
-	 */	
-	public LinkedList<DataUnitInfo> getDataUnitsInfo(DPUInstanceRecord dpuInstance) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			return contexts.get(dpuInstance.getId()).getDataUnits();
+	 */
+	public List<DataUnitInfo> getDataUnitsInfo(DPUInstanceRecord dpuInstance) {
+		if (contexts.containsKey(dpuInstance)) {
+			return contexts.get(dpuInstance).getDataUnits();
 		} else {
 			return null;
 		}
@@ -251,8 +255,8 @@ public class ExecutionContextInfo {
 	 * @return DataUnitInfo or null of DataUnitInfo can't be found.
 	 */
 	public DataUnitInfo getDataUnitInfo(DPUInstanceRecord dpuInstance, Integer index) {
-		if (contexts.containsKey(dpuInstance.getId())) {
-			return contexts.get(dpuInstance.getId()).getDataUnit(index);
+		if (contexts.containsKey(dpuInstance)) {
+			return contexts.get(dpuInstance).getDataUnit(index);
 		} else {
 			return null;
 		}
@@ -277,9 +281,10 @@ public class ExecutionContextInfo {
 	
 	/**
 	 * Return path to the root directory.
-	 * @return
+	 * 
+	 * @return defensively copied file for root directory.
 	 */
 	public File getRootDirectory() {
-		return rootDirectory;
+		return new File(rootDirectory.getAbsolutePath());
 	}
 }
