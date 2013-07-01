@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
@@ -11,6 +13,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 
 /**
@@ -35,15 +38,16 @@ public class LogMessagesTable extends CustomComponent {
 		messageTable.setSizeFull();
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(25);
+		messageTable.setPageLength(19);
 
 		ComboBox levelSelector = new ComboBox();
 		levelSelector.setImmediate(true);
 		levelSelector.setNullSelectionAllowed(false);
 		levelSelector.addItem(Level.ALL);
-		levelSelector.addItem(Level.INFO);
-		levelSelector.addItem(Level.WARNING);
-		levelSelector.addItem(Level.SEVERE);
+		for(Level level : new Level[] { Level.INFO, Level.WARNING, Level.SEVERE }) {
+			levelSelector.addItem(level);
+			levelSelector.setItemCaption(level, level.getName() + "+");
+		}
 		levelSelector.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
