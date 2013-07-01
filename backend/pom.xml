@@ -11,15 +11,7 @@
     <name>backend</name>
     <description></description>
 
-    <repositories>
-        <!-- Apache-FUSEKI storage repository-->
-        <repository>
-            <id>apache-repo-snapshots</id>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-		
-    <dependencies>
+   <dependencies>
         <dependency> <!--  JUnit dependency -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -61,28 +53,6 @@
   			<version>1.4.01</version>
 		</dependency>        
         
-        <dependency> <!-- Apache-fuseki storage repository--> 
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-fuseki</artifactId>
-            <version>0.2.8-SNAPSHOT</version>
-            <type>jar</type>
-			<exclusions> <!-- fix bug: ClassNotFoundException: org.w3c.dom.ElementTraversal after running backend -->
-				<exclusion>
-					<artifactId>xml-apis</artifactId>
-					<groupId>xml-apis</groupId>
-				</exclusion>
-				<!-- exclude log4j and related -->
-				<exclusion>
-				  	<groupId>log4j</groupId>
-  					<artifactId>log4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>            
-        </dependency>
-               
     </dependencies>
 		
     <pluginRepositories>
