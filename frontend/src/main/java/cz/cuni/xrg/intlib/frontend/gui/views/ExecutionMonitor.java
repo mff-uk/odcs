@@ -132,19 +132,19 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				// TODO Auto-generated method stub
 
 				if (event.getProperty().getValue() != null) {
-					DateFormat df = DateFormat.getDateInstance(style, getLocale());
-					String s = df.format(event.getProperty().getValue());
+//					DateFormat df = DateFormat.getDateInstance(style, getLocale());
+//					String s = df.format(event.getProperty().getValue());
 
+					
 					//				Format formatter = new SimpleDateFormat("dd.MM.yyyy");
 					//				String s = formatter.format(event.getProperty().getValue().toString().toUpperCase(locale));
-
-					tableDataFilter.setDateFilter(s);
+					tableDataFilter.setDateFilter((Date)event.getProperty().getValue());
 					tableData.removeAllContainerFilters();
 					tableData.addContainerFilter(tableDataFilter);
 					monitorTable.refreshRowCache();
 
 				} else {
-					tableDataFilter.setDateFilter("");
+					tableDataFilter.setDateFilter(null);
 					tableData.removeAllContainerFilters();
 					tableData.addContainerFilter(tableDataFilter);
 					monitorTable.refreshRowCache();
@@ -310,6 +310,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		tableData = getTableData(App.getApp().getPipelines().getAllExecutions());
 
 
+
 		monitorTable = new IntlibPagedTable();
 		monitorTable.setSelectable(true);
 		monitorTable.setContainerDataSource(tableData);
@@ -318,6 +319,13 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setImmediate(true);
 		monitorTable.setVisibleColumns(visibleCols); // Set visible columns
 		monitorTable.setColumnHeaders(headers);
+		
+		Object property="date";
+		
+		monitorTable.setSortContainerPropertyId(property);
+		monitorTable.setSortAscending(false);
+		monitorTable.sort();
+
 		//"date", "name", "user",
 		//"status", "debug", "obsolete", "actions", "report"
 //		monitorTable.setColumnExpandRatio("date", 2);
@@ -481,8 +489,13 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			if (p.equals("status")) {
 				result.addContainerProperty(p, ExecutionStatus.class, null);
 			} else {
-				result.addContainerProperty(p, String.class, "");
+				if(p.equals("date")) {
+					result.addContainerProperty(p, Date.class, null);
+				} 
+				 else{
+				result.addContainerProperty(p, String.class, "");}
 			}
+
 		}
 		result.addContainerProperty("exeid", Long.class, "");
 
@@ -497,7 +510,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 //				Format formatter = new SimpleDateFormat();
 //			    String s = formatter.format(item.getStart());
 				result.getContainerProperty(num, "date").setValue(item
-						.getStart().toLocaleString());
+						.getStart());
 			}
 
 
@@ -616,18 +629,8 @@ class MonitorTableFilter implements Filter {
 
 	}
 
-	public void setDateFilter(String value) {
-		Date date = null;
-		if (value != "") {
-			try {
-				date = df.parse(value);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		this.dateFilter = date;
+	public void setDateFilter(Date value) {
+		this.dateFilter = value;
 
 	}
 
@@ -681,20 +684,13 @@ class MonitorTableFilter implements Filter {
 		}
 
 		if (dateIsSet(this.dateFilter)) {
-			String objectDate = ((String) item.getItemProperty("date")
-					.getValue()).toString();
+			Date objectDate =((Date) item.getItemProperty("date")
+					.getValue());
 
-			Date date = null;
-			if (objectDate != "") {
-				try {
-					date = df.parse(objectDate);
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return false;
-				}
+			if (objectDate != null) {
 
-				if (date.getTime() < this.dateFilter.getTime()) {
+
+				if (objectDate.getTime() < this.dateFilter.getTime()) {
 					return false;
 				}
 			} else
