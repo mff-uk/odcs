@@ -255,9 +255,9 @@
         </dependency>
 		
 		<dependency> <!-- Virtuoso dependency -->
-            <groupId>com.openlinksw</groupId>
-            <artifactId>virt_sesame2</artifactId>
-            <version>2.5.1</version>
+            <groupId>at.semantic-web</groupId>
+            <artifactId>virtuoso-sesame</artifactId>
+            <version>7.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.openlinksw</groupId>
