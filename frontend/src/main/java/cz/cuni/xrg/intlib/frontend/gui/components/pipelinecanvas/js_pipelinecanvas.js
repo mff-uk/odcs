@@ -158,11 +158,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 * @param message
 	 **/
     function writeMessage(messageLayer, message) {
-        var context = messageLayer.getContext();
-        messageLayer.clear();
-        context.font = '18pt Calibri';
-        context.fillStyle = 'black';
-        context.fillText(message, 10, 25);
+//        var context = messageLayer.getContext();
+//        messageLayer.clear();
+//        context.font = '18pt Calibri';
+//        context.fillStyle = 'black';
+//        context.fillText(message, 10, 25);
 
 		rpcProxy.onLogMessage(message);
     }
