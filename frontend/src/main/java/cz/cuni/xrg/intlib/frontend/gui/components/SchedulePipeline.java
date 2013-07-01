@@ -23,6 +23,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.TabIndexState;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
@@ -41,6 +42,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.scheduling.PeriodeUnit;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
@@ -67,6 +70,12 @@ public class SchedulePipeline extends CustomComponent {
 	private TwinColSelect selectPipe;
 	private TextField tfEvery;
 	private ComboBox comboEvery;
+	private OptionGroup scheduleType;
+	private CheckBox justOnce;
+	private OptionGroup intervalOption; 
+	
+	private InlineDateField date;
+	private Schedule schedule = null;
 	
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -86,8 +95,8 @@ public class SchedulePipeline extends CustomComponent {
 
 	public void setSelectePipeline(Pipeline selectedPipeline)
 	{
-		Integer i = (int) (long) selectedPipeline.getId();
-		comboPipeline.setValue(i);
+	//	Integer i = (int) (long) selectedPipeline.getId();
+		comboPipeline.setValue(selectedPipeline.getId());
 	}
 	
 	private ComboBox comboPipeline  = null;
@@ -124,9 +133,18 @@ public class SchedulePipeline extends CustomComponent {
 				
 		comboPipeline = new ComboBox();
 		comboPipeline.setImmediate(true);
-		comboPipeline.setContainerDataSource(comboboxData);
+		comboPipeline.setContainerDataSource(container);
 		comboPipeline.setNullSelectionAllowed(false);
 		comboPipeline.setItemCaptionPropertyId("name");
+		
+		comboPipeline.addValueChangeListener(new ValueChangeListener() {
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Object a = comboPipeline.getValue();
+				
+			}
+		});
 
 				
 		layoutPipeline.addComponent(new Label("Pipeline "));		
@@ -135,18 +153,19 @@ public class SchedulePipeline extends CustomComponent {
 		
 		mainLayout.addComponent(layoutPipeline, 0, 0);
 		
-		automatically = "Schedule the pipeline to run automatically in fixed interval.";
-		afterSelect ="Schedule the pipeline to after selected pipeline finishes.";
-		OptionGroup scheduleType = new OptionGroup();
+
+		scheduleType = new OptionGroup();
 		scheduleType.setImmediate(true);
-		scheduleType.addItem(automatically);
-		scheduleType.addItem(afterSelect);
-		scheduleType.setValue(automatically);
+		scheduleType.addItem(ScheduleType.Periodicaly);
+		scheduleType.addItem(ScheduleType.AfterPipeline);
+		scheduleType.setValue(ScheduleType.Periodicaly);
+		scheduleType.setItemCaption(ScheduleType.Periodicaly, "Schedule the pipeline to run automatically in fixed interval.");
+		scheduleType.setItemCaption(ScheduleType.AfterPipeline,"Schedule the pipeline to after selected pipeline finishes.");
 		scheduleType.addValueChangeListener(new ValueChangeListener() {
 			
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				if(event.getProperty().getValue().toString()== afterSelect){
+				if(event.getProperty().getValue() == ScheduleType.AfterPipeline){
 					
 					mainLayout.removeComponent(1, 1);
 					afterLayout = buildAfterLayout();
@@ -170,13 +189,34 @@ public class SchedulePipeline extends CustomComponent {
 		Button createRule = new Button();
 		createRule.setCaption("Create scheduler rule");
 		createRule.setImmediate(true);
+		createRule.addClickListener(new ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				schedule = new Schedule();
+				
+				schedule.setType((ScheduleType)scheduleType.getValue());
+				schedule.setJustOnce(justOnce.getValue());
+				
+				/*schedule.setName((String)comboPipeline.getValue());
+				schedule.setType((ScheduleType)scheduleType.getValue());
+					if(scheduleType.getValue() == ScheduleType.Periodicaly){
+						schedule.setFirstExecution(date.getValue());
+						schedule.setJustOnce(justOnce.getValue());
+						if(justOnce.getValue()==false){
+							schedule.setPeriodUnit((PeriodeUnit)intervalOption.getValue());
+						}
+					}*/
+			}
+		});
 		mainLayout.addComponent(createRule,1,2);
 		mainLayout.setComponentAlignment(createRule, Alignment.BOTTOM_RIGHT);		
 
 		
 		return mainLayout;
 	}
-	
+
 	private GridLayout buildAfterLayout(){
 		
 		afterLayout = new GridLayout(2,1);
@@ -226,27 +266,7 @@ public class SchedulePipeline extends CustomComponent {
         selectPipe.setLeftColumnCaption("Available pipelines");
         selectPipe.setRightColumnCaption("Selected pipelines"); 
 		
-		/*IntlibPagedTable tablePipe = new IntlibPagedTable();
-		tablePipe.setWidth("300px");
-//		tablePipe.setHeight("400px");
-		tablePipe.setSelectable(true);
-		tablePipe.setPageLength(10);
-		// assign data source
-		tablePipe.setContainerDataSource(container);
-		// set columns
-		tablePipe.setVisibleColumns(new String[] { "name" });
-		
-		// add column
-		tablePipe.addGeneratedColumn("", new actionColumnGenerator());
-
-		
-		VerticalLayout layoutTable = new VerticalLayout();
-		layoutTable.setSpacing(true);
-		
-		
-		layoutTable.addComponent(tablePipe);
-		layoutTable.addComponent(tablePipe.createControls());
-		tablePipe.setPageLength(10); */
+	
         
 		selectPipelineLayout.addComponent(selectPipe);
 		
@@ -275,13 +295,13 @@ public class SchedulePipeline extends CustomComponent {
 		autoLayout.addComponent(new Label("Date and time of first execution:"),0,0);
 
 		
-		InlineDateField date = new InlineDateField();
+		date = new InlineDateField();
 		date.setValue(new java.util.Date());
 		date.setResolution(date.RESOLUTION_SEC);
 //		date.setDateFormat("yyyy-MM-dd HH:mm:ss");
 		autoLayout.addComponent(date,1,0);
 		
-		CheckBox justOnce = new CheckBox();
+		justOnce = new CheckBox();
 		justOnce.setCaption("Just once");
 		justOnce.setValue(false);
 		justOnce.setImmediate(true);
@@ -307,13 +327,16 @@ public class SchedulePipeline extends CustomComponent {
 		
 		inervalLayout = new VerticalLayout();
 //  	inervalLayout.setSpacing(true);
-		OptionGroup intervalOption = new OptionGroup();
+		intervalOption = new OptionGroup();
 		intervalOption.setImmediate(true);
-		intervalOption.addItem("every day");
-		intervalOption.addItem("every week");
-		intervalOption.addItem("every month");
+		intervalOption.addItem(PeriodeUnit.Day);
+		intervalOption.setItemCaption(PeriodeUnit.Day, "every day");
+		intervalOption.addItem(PeriodeUnit.Week);
+		intervalOption.setItemCaption(PeriodeUnit.Week, "every week");
+		intervalOption.addItem(PeriodeUnit.Month);
+		intervalOption.setItemCaption(PeriodeUnit.Month, "every month");
 		intervalOption.addItem("every");
-		intervalOption.setValue("every day");
+		intervalOption.setValue(PeriodeUnit.Day);
 		intervalOption.addValueChangeListener(new ValueChangeListener() {
 			
 			@Override
@@ -356,9 +379,13 @@ public class SchedulePipeline extends CustomComponent {
 		comboEvery.setNullSelectionAllowed(false);
 		comboEvery.setImmediate(true);
 		comboEvery.addItem(PeriodeUnit.Minute);
+		comboEvery.setItemCaption(PeriodeUnit.Minute, "Minutes");
 		comboEvery.addItem(PeriodeUnit.Hour);
+		comboEvery.setItemCaption(PeriodeUnit.Hour, "Hours");
 		comboEvery.addItem(PeriodeUnit.Day);
+		comboEvery.setItemCaption(PeriodeUnit.Day, "Days");
 		comboEvery.addItem(PeriodeUnit.Month);
+		comboEvery.setItemCaption(PeriodeUnit.Month, "Months");
 		comboEvery.setValue(PeriodeUnit.Day);
 		comboEvery.setEnabled(false);
 
@@ -380,12 +407,8 @@ public class SchedulePipeline extends CustomComponent {
 		result.addContainerProperty("name", String.class, "");
 
 
-		for (Pipeline item : data)
-		{	
-
+		for (Pipeline item : data){	
 			Object num = result.addItem();
-			
-			
 			result.getContainerProperty(num, "name").setValue(item.getName());
 	
 		}
