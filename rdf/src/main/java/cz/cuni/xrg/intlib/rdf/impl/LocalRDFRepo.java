@@ -1188,7 +1188,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			logger.debug(message);
 			logger.debug(ex.getMessage());
 
-			throw new TransformException(message, ex);
+			throw new TransformException(message+ex.getMessage(), ex);
 
 
 		} catch (RepositoryException ex) {
