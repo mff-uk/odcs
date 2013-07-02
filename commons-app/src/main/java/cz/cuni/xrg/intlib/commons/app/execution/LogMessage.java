@@ -7,6 +7,7 @@ import java.util.logging.Level;
  * Represents log message loaded from database. Shown in DebuggingView/Log tab by LogMessageTable.
  *
  * @author Bogo
+ * TODO: Join with database representation of log messages.
  */
 public class LogMessage {
 	

@@ -9,6 +9,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +27,7 @@ public class LogMessagesTable extends CustomComponent {
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
 	private DPUInstanceRecord dpu;
+	private PipelineExecution pipelineExecution;
 
 	/**
 	 * Default constructor.
@@ -44,7 +46,7 @@ public class LogMessagesTable extends CustomComponent {
 		levelSelector.setImmediate(true);
 		levelSelector.setNullSelectionAllowed(false);
 		levelSelector.addItem(Level.ALL);
-		for(Level level : new Level[] { Level.INFO, Level.WARNING, Level.SEVERE }) {
+		for (Level level : new Level[]{Level.INFO, Level.WARNING, Level.SEVERE}) {
 			levelSelector.addItem(level);
 			levelSelector.setItemCaption(level, level.getName() + "+");
 		}
@@ -65,8 +67,8 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param level {@link Level} to filter log messages.
 	 */
 	private void filterLogMessages(Level level) {
-		//TODO: Replace with Facade call X store last data and use&filter them
-		List<LogMessage> data = getData(dpu);
+		//TODO: Replace with Facade call with level X store last data and use&filter them
+		List<LogMessage> data = getData(pipelineExecution, dpu);
 		List<LogMessage> filteredData = new ArrayList<>();
 		for (LogMessage message : data) {
 			if (message.getLevel().intValue() >= level.intValue()) {
@@ -80,12 +82,14 @@ public class LogMessagesTable extends CustomComponent {
 	 * Show log messages related only to given DPU. If null is passed, data for
 	 * whole pipeline are shown.
 	 *
-	 * @param dpu {@link DPUInstanceRecord} or null
+	 * @param exec {@link PipelineExecution} which log to show.
+	 * @param dpu {@link DPUInstanceRecord} or null.
 	 */
-	public void setDpu(DPUInstanceRecord dpu) {
+	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
 		this.dpu = dpu;
+		this.pipelineExecution = exec;
 		//TODO: Replace with Facade call - if null - get data for whole pipeline
-		List<LogMessage> data = getData(dpu);
+		List<LogMessage> data = getData(pipelineExecution, dpu);
 		loadMessageTable(data);
 	}
 
@@ -108,12 +112,14 @@ public class LogMessagesTable extends CustomComponent {
 	 * Stub method for providing log messages associated with the given dpu
 	 * execution, until LogFacade is completed.
 	 *
+	 * @param exec {@link PipelineExecution} for which the log messages should
+	 * be obtained
 	 * @param dpu {@link DPUInstanceRecord} for which the log messages should be
 	 * obtained
 	 * @return Returns List of {@link LogMessages} associated with the given
 	 * {@link DPUInstanceRecord} execution
 	 */
-	private List<LogMessage> getData(DPUInstanceRecord dpu) {
+	private List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu) {
 		List<LogMessage> data = new ArrayList<>();
 		data.add(new LogMessage(1L, Level.INFO, new Date(), "[pool-2-thread-1]", "c.c.x.i.b.execution.PipelineWorker", "Started"));
 		data.add(new LogMessage(2L, Level.WARNING, new Date(), "[pool-2-thread-1]", "o.h.type.descriptor.sql.BasicBinder", "binding parameter [5] as [TIMESTAMP] - Mon Jun 24 08:32:29 CEST 2013"));

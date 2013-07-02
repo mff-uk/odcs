@@ -24,10 +24,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Shows complex debug information about current pipeline execution. Shows information about whole run or if specific DPU is selected only information related to this DPU.
- * Top table shows events which occurred during pipeline execution. DPU selection is available if the pipeline is in debug mode. Bottom part consists of tabs. 
- * Log tab shows log messages, which can be filtered by level. Browse tab shows triples from graph which selected DPU created. 
- * Query tab allows to query data from graphs which were created during pipeline execution.
+ * Shows complex debug information about current pipeline execution. Shows
+ * information about whole run or if specific DPU is selected only information
+ * related to this DPU. Top table shows events which occurred during pipeline
+ * execution. DPU selection is available if the pipeline is in debug mode.
+ * Bottom part consists of tabs. Log tab shows log messages, which can be
+ * filtered by level. Browse tab shows triples from graph which selected DPU
+ * created. Query tab allows to query data from graphs which were created during
+ * pipeline execution.
  *
  * @author Bogo
  */
@@ -48,10 +52,11 @@ public class DebuggingView extends CustomComponent {
 	private QueryView queryView;
 	private HorizontalLayout refreshComponent;
 	private LogMessagesTable logMessagesTable;
+	private ComboBox dpuSelector;
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param pipelineExec Pipeline execution.
 	 * @param debugDpu Preselected DPU or null.
 	 * @param debug Is execution in debug mode?
@@ -74,7 +79,7 @@ public class DebuggingView extends CustomComponent {
 		executionRecordsTable.setWidth("100%");
 
 		mainLayout.addComponent(executionRecordsTable);
-		
+
 		// DPU selector is shown in debug mode only
 		if (isInDebugMode) {
 			buildDpuSelector();
@@ -84,14 +89,14 @@ public class DebuggingView extends CustomComponent {
 		tabs.setSizeFull();
 
 		browseTab = tabs.addTab(new Label("Browser"), "Browse");
-		
+
 		refreshComponent = buildRefreshComponent();
 
 		//logTextArea = new TextArea();
 		//logTextArea.setValue("Log file content");
 		VerticalLayout logLayout = new VerticalLayout();
 		logLayout.addComponent(refreshComponent);
-		
+
 		logMessagesTable = new LogMessagesTable();
 		logLayout.addComponent(logMessagesTable);
 		//logLayout.addComponent(logTextArea);
@@ -102,7 +107,7 @@ public class DebuggingView extends CustomComponent {
 		logTab = tabs.addTab(logLayout, "Log");
 
 		queryView = new QueryView(this);
-		if(debugDpu != null) {
+		if (debugDpu != null) {
 			queryView.setGraphs(debugDpu.getType());
 		}
 		queryTab = tabs.addTab(queryView, "Query");
@@ -110,11 +115,12 @@ public class DebuggingView extends CustomComponent {
 		mainLayout.setSizeFull();
 		mainLayout.addComponent(tabs);
 
-		fillContent();		
+		fillContent();
 	}
 
 	/**
-	 * Fills DebuggingView with data, obtained from objects passed in constructor.
+	 * Fills DebuggingView with data, obtained from objects passed in
+	 * constructor.
 	 */
 	public void fillContent() {
 		boolean loadSuccessful = loadExecutionContextReader();
@@ -140,29 +146,33 @@ public class DebuggingView extends CustomComponent {
 			browseTab.setEnabled(false);
 		}
 
+		if (loadSuccessful && isInDebugMode) {
+			refreshDpuSelector();
+		}
+
 		//Content of text log file
-		logMessagesTable.setDpu(debugDpu);
+		logMessagesTable.setDpu(pipelineExec, debugDpu);
 		if (loadSuccessful) {
 // TODO !! List log			
 			/*
-			File logFile = ctxReader.getLogFile();
-			String logText = "Log file is empty!";
-			if (logFile.exists()) {
-				try {
-					Scanner scanner = new Scanner(logFile).useDelimiter("\\A");
-					if (scanner.hasNext()) {
-						logText = scanner.next();
-					}
-				} catch (FileNotFoundException ex) {
-					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
-					logText = "Failed to load log file!";
-				}
-			} else {
-				logText = "Log file doesn't exist!";
-			}
-			logTextArea.setValue(logText);
-			logTab.setEnabled(true);
-			*/
+			 File logFile = ctxReader.getLogFile();
+			 String logText = "Log file is empty!";
+			 if (logFile.exists()) {
+			 try {
+			 Scanner scanner = new Scanner(logFile).useDelimiter("\\A");
+			 if (scanner.hasNext()) {
+			 logText = scanner.next();
+			 }
+			 } catch (FileNotFoundException ex) {
+			 Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+			 logText = "Failed to load log file!";
+			 }
+			 } else {
+			 logText = "Log file doesn't exist!";
+			 }
+			 logTextArea.setValue(logText);
+			 logTab.setEnabled(true);
+			 */
 		} else {
 			//logTab.setEnabled(false);
 		}
@@ -175,11 +185,11 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Create tab with information about running pipeline and refresh button
-		if(infoTab != null) {
+		if (infoTab != null) {
 			tabs.removeTab(infoTab);
 
 		}
-		
+
 		boolean showRefresh = !isRunFinished; //!loadSuccessful && isInDebugMode || !isRunFinished;
 		refreshComponent.setVisible(showRefresh);
 	}
@@ -190,7 +200,7 @@ public class DebuggingView extends CustomComponent {
 	private void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		fillContent();
-		if(debugDpu != null) {
+		if (debugDpu != null) {
 			queryView.setGraphs(debugDpu.getType());
 		}
 		setCompositionRoot(mainLayout);
@@ -198,15 +208,17 @@ public class DebuggingView extends CustomComponent {
 
 	/**
 	 * Tries to load context for given pipeline execution.
+	 *
 	 * @return Load was successful.
 	 */
-	private boolean loadExecutionContextReader() {	
+	private boolean loadExecutionContextReader() {
 		ctxReader = pipelineExec.getContextReadOnly();
 		return ctxReader != null;
 	}
 
 	/**
 	 * Loads Browser tab content.
+	 *
 	 * @param showInput Input/Output graph should be showed.
 	 * @return {@link DataUnitBrowser} for actual {@link DPUInstanceRecord}.
 	 */
@@ -215,27 +227,27 @@ public class DebuggingView extends CustomComponent {
 			return null;
 		}
 		List<DataUnitInfo> indexes = ctxReader.getDataUnitsInfo(debugDpu);
-		
+
 		if (indexes == null) {
 			return null;
 		}
 
 		Iterator<DataUnitInfo> iter = indexes.iterator();
 		while (iter.hasNext()) {
-		
+
 			DataUnitInfo dataUnitInfo = iter.next();
 
 			if (indexes.size() == 1 || showInput) {
 				DataUnitBrowser duBrowser;
 				try {
 					//File dumpDir = ctxReader.getDataUnitStorage(debugDpu, dataUnitInfo.getIndex());
-					duBrowser = 
+					duBrowser =
 							DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, showInput, dataUnitInfo);
 				} catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
-				
+
 				duBrowser.enter();
 				return duBrowser;
 			}
@@ -245,16 +257,17 @@ public class DebuggingView extends CustomComponent {
 
 	/**
 	 * Gets repository path from context.
+	 *
 	 * @param onInputGraph Repository path of Input/Output graph.
 	 * @return {@link String} containing path to repository.
 	 */
 	String getRepositoryPath(boolean onInputGraph) {
-		
+
 		if (debugDpu == null) {
 			return null;
 		}
 		List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
-				
+
 		if (infos == null) {
 			return null;
 		}
@@ -262,7 +275,7 @@ public class DebuggingView extends CustomComponent {
 		Iterator<DataUnitInfo> iter = infos.iterator();
 		while (iter.hasNext()) {
 			DataUnitInfo duInfo = iter.next();
-			
+
 			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
 				ctxReader.getDataUnitStorage(debugDpu, duInfo.getIndex());
 			}
@@ -272,16 +285,17 @@ public class DebuggingView extends CustomComponent {
 
 	/**
 	 * Gets repository directory from context.
+	 *
 	 * @param onInputGraph Repository path of Input/Output graph.
 	 * @return {@link File} representing directory of repository.
 	 */
 	File getRepositoryDirectory(boolean onInputGraph) {
-		
+
 		if (debugDpu == null) {
 			return null;
 		}
 		List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
-				
+
 		if (infos == null) {
 			return null;
 		}
@@ -289,23 +303,23 @@ public class DebuggingView extends CustomComponent {
 		Iterator<DataUnitInfo> iter = infos.iterator();
 		while (iter.hasNext()) {
 			DataUnitInfo duInfo = iter.next();
-			
+
 			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
 				duInfo.getDirectory();
 			}
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Refresh component factory. Is to be displayed while pipeline is still
-	 * running. Contains refresh button, which updates the content of
-	 * debugging view and shows the most current data of given pipeline run.
-	 * 
+	 * running. Contains refresh button, which updates the content of debugging
+	 * view and shows the most current data of given pipeline run.
+	 *
 	 * @return Layout with label and refresh button.
 	 */
 	private HorizontalLayout buildRefreshComponent() {
-		
+
 		Button refreshButton = new Button("Refresh",
 				new Button.ClickListener() {
 			@Override
@@ -313,19 +327,19 @@ public class DebuggingView extends CustomComponent {
 				refreshContent();
 			}
 		});
-		
+
 		Label label = new Label("Pipeline is still running. Please click refresh to update status.");
 		label.setStyleName("warning");
 		label.setWidth(450, Unit.PIXELS);
-		
+
 		HorizontalLayout refreshLayout = new HorizontalLayout();
 		refreshLayout.setWidth(100, Unit.PERCENTAGE);
 		refreshLayout.addComponent(label);
 		refreshLayout.addComponent(refreshButton);
 		refreshLayout.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
-		
+
 		refreshLayout.setVisible(false);
-		
+
 		return refreshLayout;
 	}
 
@@ -333,13 +347,10 @@ public class DebuggingView extends CustomComponent {
 	 * DPU select box factory.
 	 */
 	private void buildDpuSelector() {
-		ComboBox dpuSelector = new ComboBox("Select DPU:");
+		dpuSelector = new ComboBox("Select DPU:");
 		dpuSelector.setImmediate(true);
-		for (Node node : pipelineExec.getPipeline().getGraph().getNodes()) {
-			dpuSelector.addItem(node.getDpuInstance());
-		}
-		if(debugDpu != null) {
-			dpuSelector.select(debugDpu);
+		if (ctxReader != null) {
+			refreshDpuSelector();
 		}
 		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
@@ -356,14 +367,29 @@ public class DebuggingView extends CustomComponent {
 
 	/**
 	 * Resizes log area after window with DebuggingView was resized.
-	 * 
+	 *
 	 * @param height New height of log text area.
 	 */
 	public void resize(float height) {
 		float newLogHeight = height - 325;
-		if(newLogHeight < 400) {
+		if (newLogHeight < 400) {
 			newLogHeight = 400;
 		}
 		//logTextArea.setHeight(newLogHeight, Unit.PIXELS);
+	}
+
+	/**
+	 * Fills dpu selector with dpus for which there are debug information
+	 * available.
+	 */
+	private void refreshDpuSelector() {
+		dpuSelector.removeAllItems();
+		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
+		for (DPUInstanceRecord dpu : contextDpuIndexes) {
+			dpuSelector.addItem(dpu);
+		}
+		if (debugDpu != null) {
+			dpuSelector.select(debugDpu);
+		}
 	}
 }
