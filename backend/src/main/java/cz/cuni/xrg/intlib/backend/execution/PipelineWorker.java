@@ -37,7 +37,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.context.impl.ContextFactory;
-import cz.cuni.xrg.intlib.backend.context.impl.PrimitiveDataUniteMerger;
+import cz.cuni.xrg.intlib.backend.context.impl.PrimitiveDataUnitMerger;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractStartEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -125,7 +125,7 @@ class PipelineWorker implements Runnable {
 		this.eventPublisher = eventPublisher;
 		this.contexts = new HashMap<>();
 		// get working directory from pipelineExecution
-		this.dataUnitMerger = new PrimitiveDataUniteMerger();
+		this.dataUnitMerger = new PrimitiveDataUnitMerger();
 		this.database = database;
 		// create or get existing .. 
 		this.contextInfo = execution.createExecutionContext(workingDirectory);

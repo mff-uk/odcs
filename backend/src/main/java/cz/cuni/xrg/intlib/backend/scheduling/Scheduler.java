@@ -54,7 +54,7 @@ public class Scheduler implements ApplicationListener {
 				}
 			}			
 		} else if (event instanceof SchedulerCheckDatabase) {
-			
+			// check DB for pipelines based on time scheduling
 			
 		} else {
 			// unknown event .. ignore
