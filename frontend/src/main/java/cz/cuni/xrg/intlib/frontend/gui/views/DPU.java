@@ -9,6 +9,7 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -16,8 +17,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 import com.vaadin.data.Container.Filterable;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
@@ -28,6 +32,8 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
@@ -40,8 +46,12 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
+import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
+import cz.cuni.xrg.intlib.frontend.gui.views.Scheduler.actionColumnGenerator;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -62,7 +72,7 @@ class DPU extends ViewComponent {
 	private VerticalLayout mainLayout;
 	private VerticalLayout verticalLayoutData;
 	private VerticalLayout verticalLayoutConfigure;
-	private VerticalLayout verticalLayoutInfo;
+	private VerticalLayout verticalLayoutInstances;
 	private VerticalLayout dpuDetailLayout;
 	private DPUTree dpuTree;
 	private TextField dpuName;
@@ -73,6 +83,15 @@ class DPU extends ViewComponent {
 	private HorizontalLayout buttonDpuBar;
 	private Config conf;
 	private HorizontalLayout layoutInfo;
+	private IntlibPagedTable instancesTable;
+	private IndexedContainer tableData;
+	
+	static String[] visibleCols = new String[]{"id", "name", "description",
+		"author", "actions"};
+
+	static String[] headers = new String[]{"Id", "Name", "Description",
+		"Author", "Actions"};
+	
 
 	/**
 	 * Wrap for selected DPUTemplateRecord.
@@ -313,32 +332,10 @@ class DPU extends ViewComponent {
 			}
 		}
 
-		// DPURecord details: Info Tab
-		verticalLayoutInfo = new VerticalLayout();
-		verticalLayoutInfo.setImmediate(false);
-		verticalLayoutInfo.setWidth("100.0%");
-		verticalLayoutInfo.setMargin(true);
-		verticalLayoutInfo.setSpacing(true);
-		tabSheet.addTab(verticalLayoutInfo, "Info");
+		// Pipelines using the given DPU : DPU instances tab
+		verticalLayoutInstances = buildVerticalLayoutInstances();
+		tabSheet.addTab(verticalLayoutInstances, "DPU instances");
 
-		// JAR path
-		HorizontalLayout jarPathLayout = new HorizontalLayout();
-		jarPathLayout.setImmediate(false);
-		jarPathLayout.setSpacing(true);
-		jarPathLayout.setHeight("100%");
-
-		jarPathLayout.addComponent(new Label("JAR path:"));
-		Label jPath = new Label( selectedDpuWrap.getDPUTemplateRecord().getJarPath() );
-		jarPathLayout.addComponent(jPath);
-		
-		// created in "buildDPUDetailLayout"
-		verticalLayoutInfo.addComponent(jarPathLayout);
-		verticalLayoutInfo.addComponent(new Label("Description of JAR:"));
-		TextArea jDescription = new TextArea(selectedDpuWrap.getDPUTemplateRecord().getJarDescription());
-		jDescription.setReadOnly(true);
-		jDescription.setWidth("100%");
-		jDescription.setHeight("100%");		
-		verticalLayoutInfo.addComponent(jDescription);
 		
 		buttonDpuBar = buildDPUButtonBur();
 		dpuDetailLayout.addComponent(buttonDpuBar);
@@ -355,7 +352,7 @@ class DPU extends ViewComponent {
 		verticalLayoutData.setHeight("100%");
 		verticalLayoutData.setMargin(true);
 
-		GridLayout dpuSettingsLayout = new GridLayout(2, 4);
+		GridLayout dpuSettingsLayout = new GridLayout(2, 5);
 		dpuSettingsLayout.setStyleName("dpuSettingsLayout");
 		dpuSettingsLayout.setMargin(true);
 		dpuSettingsLayout.setSpacing(true);
@@ -404,11 +401,68 @@ class DPU extends ViewComponent {
 		groupVisibility.addItem(VisibilityType.PUBLIC);
 
 		dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
+		
+		
+		// JAR path
+		HorizontalLayout jarPathLayout = new HorizontalLayout();
+		jarPathLayout.setImmediate(false);
+		jarPathLayout.setSpacing(true);
+		jarPathLayout.setHeight("100%");
+
+		dpuSettingsLayout.addComponent(new Label("JAR path:"),0,3);
+		Label jPath = new Label( selectedDpuWrap.getDPUTemplateRecord().getJarPath() );
+		dpuSettingsLayout.addComponent(jPath,1,3);
+		
+		// created in "buildDPUDetailLayout"
+		
+		dpuSettingsLayout.addComponent(new Label("Description of JAR:"),0,4);
+		TextArea jDescription = new TextArea(selectedDpuWrap.getDPUTemplateRecord().getJarDescription());
+		jDescription.setReadOnly(true);
+		jDescription.setWidth("100%");
+		jDescription.setHeight("100%");		
+		dpuSettingsLayout.addComponent(jDescription,1,4);
+		
+		
+		
 
 		verticalLayoutData.addComponent(dpuSettingsLayout);
+		
+		
 
 		return verticalLayoutData;
 	}
+
+	private VerticalLayout buildVerticalLayoutInstances() {
+
+		// common part: create layout
+		verticalLayoutInstances = new VerticalLayout();
+		verticalLayoutInstances.setImmediate(false);
+		verticalLayoutInstances.setWidth("100.0%");
+		verticalLayoutInstances.setHeight("400px");
+		verticalLayoutInstances.setMargin(true);
+		
+		tableData = getTableData();
+		
+		instancesTable = new IntlibPagedTable();
+		instancesTable.setSelectable(true);
+		instancesTable.setCaption("Pipelines:");
+		instancesTable.setContainerDataSource(tableData);
+		
+		instancesTable.setWidth("100%");
+		instancesTable.setHeight("100%");
+		instancesTable.setImmediate(true);
+		instancesTable.setVisibleColumns(visibleCols); // Set visible columns
+		instancesTable.setColumnHeaders(headers);
+		
+		instancesTable.addGeneratedColumn("actions",
+				new actionColumnGenerator());
+		
+		verticalLayoutInstances.addComponent(instancesTable);
+		verticalLayoutInstances.addComponent(instancesTable.createControls());
+		instancesTable.setPageLength(8);
+
+	return verticalLayoutInstances;
+}
 
 	private HorizontalLayout buildDPUButtonBur() {
 
@@ -463,7 +517,7 @@ class DPU extends ViewComponent {
 
 									for (Node nitem : nodes) {
 
-										if (nitem.getDpuInstance().getId() == item.getId()) {
+										if (nitem.getDpuInstance().getTemplate().getId() == item.getId()) {
 											pipeName[j] = pitem.getName()
 													.toString();
 											j++;
@@ -583,6 +637,52 @@ class DPU extends ViewComponent {
 
 		return buttonDpuBar;
 	}
+	
+	public  IndexedContainer getTableData() {
+
+		IndexedContainer result = new IndexedContainer();
+
+		for (String p : visibleCols) {
+
+				result.addContainerProperty(p, String.class, "");
+			}
+
+		List<DPUInstanceRecord> instances = App.getDPUs()
+				.getAllDPUInstances();
+		for (DPUInstanceRecord item : instances) {
+
+			if (item.getTemplate().getId() == selectedDpuWrap.getDPUTemplateRecord().getId()) {
+				List<Pipeline> pipelines = App.getApp().getPipelines()
+						.getAllPipelines();
+
+				for (Pipeline pitem : pipelines) {
+
+					List<Node> nodes = pitem.getGraph()
+							.getNodes();
+
+					for (Node nitem : nodes) {
+
+						if (nitem.getDpuInstance().getTemplate().getId() == item.getId()) {
+							
+							Object num = result.addItem();
+							
+
+							result.getContainerProperty(num, "id").setValue(pitem.getId().toString());
+							result.getContainerProperty(num, "name").setValue(pitem.getName());
+							result.getContainerProperty(num, "description").setValue(pitem.getDescription());
+							result.getContainerProperty(num, "author").setValue("");
+
+						}
+					}
+
+				}
+				break;
+			}
+
+		}
+
+		return result;
+	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -590,4 +690,40 @@ class DPU extends ViewComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+		private ClickListener clickListener = null;
+		@Override
+		public Object generateCell(final Table source, final Object itemId,
+				Object columnId) {
+			
+			HorizontalLayout layout = new HorizontalLayout();
+			
+			Button detailButton = new Button();
+			detailButton.setCaption("Detail");
+			detailButton
+			.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// open scheduler dialog
+
+
+					
+
+				}
+			});
+			layout.addComponent(detailButton);
+
+			Button deleteButton = new Button();
+			deleteButton.setCaption("Delete");
+			layout.addComponent(deleteButton);
+			
+			
+			Button statusButton = new Button();
+			statusButton.setCaption("Status");
+			layout.addComponent(statusButton);
+
+			return layout;
+		}
+
+	}
 }
