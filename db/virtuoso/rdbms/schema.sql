@@ -92,6 +92,29 @@ CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
   PRIMARY KEY ("id")
 );
 
+CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE"
+(
+  "id" INTEGER IDENTITY,
+  "name" VARCHAR(45),
+  "description" VARCHAR(255),
+  "pipeline_id" INTEGER NOT NULL,
+  "just_once" SMALLINT,
+  "enabled" SMALLINT,
+  "type" SMALLINT,
+  "first_exec" DATETIME,
+  "last_exec" DATETIME,
+  "time_period" BIGINT,
+  "period_unit" SMALLINT,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE_AFTER"
+(
+  "schedule_id" INTEGER,
+  "pipeline_id" INTEGER,
+  PRIMARY KEY ("schedule_id", "pipeline_id")
+);
+
 CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,

@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 
 /**
@@ -36,7 +34,7 @@ public class ScheduleFacade {
 		
 		@SuppressWarnings("unchecked")
 		List<Schedule> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM schedule e").getResultList(),
+				em.createQuery("SELECT e FROM Schedule e").getResultList(),
 				Schedule.class
 		);
 
@@ -44,7 +42,8 @@ public class ScheduleFacade {
 	}
 	
 	/**
-	 * Fetches all Schedule that should be activated after given pipeline execution.
+	 * Fetches all {@link Schedule}s that should be activated after given
+	 * pipeline execution.
 	 *
 	 * @param pipeline
 	 * @return
@@ -52,9 +51,12 @@ public class ScheduleFacade {
 	public List<Schedule> getFollowers(Pipeline pipeline) {
 		@SuppressWarnings("unchecked")
 		List<Schedule> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM Record r WHERE r.pred = :pipeline AND r.type = :type")
-				.setParameter("pipeline", pipeline)
-				.setParameter("type", ScheduleType.AfterPipeline)
+			em.createQuery(
+				"SELECT s FROM Schedule s"
+					+ "	JOIN s.afterPipelines p"
+					+ " WHERE p.id = :pipeline AND s.type = :type"
+				).setParameter("pipeline", pipeline.getId())
+				.setParameter("type", ScheduleType.AFTER_PIPELINE)
 				.getResultList(),
 				Schedule.class
 		);

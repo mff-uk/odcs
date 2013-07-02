@@ -44,7 +44,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.scheduling.PeriodeUnit;
+import cz.cuni.xrg.intlib.commons.app.scheduling.PeriodUnit;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -163,16 +163,16 @@ public class SchedulePipeline extends CustomComponent {
 
 		scheduleType = new OptionGroup();
 		scheduleType.setImmediate(true);
-		scheduleType.addItem(ScheduleType.Periodicaly);
-		scheduleType.addItem(ScheduleType.AfterPipeline);
-		scheduleType.setValue(ScheduleType.Periodicaly);
-		scheduleType.setItemCaption(ScheduleType.Periodicaly, "Schedule the pipeline to run automatically in fixed interval.");
-		scheduleType.setItemCaption(ScheduleType.AfterPipeline,"Schedule the pipeline to after selected pipeline finishes.");
+		scheduleType.addItem(ScheduleType.PERIODICALLY);
+		scheduleType.addItem(ScheduleType.AFTER_PIPELINE);
+		scheduleType.setValue(ScheduleType.PERIODICALLY);
+		scheduleType.setItemCaption(ScheduleType.PERIODICALLY, "Schedule the pipeline to run automatically in fixed interval.");
+		scheduleType.setItemCaption(ScheduleType.AFTER_PIPELINE,"Schedule the pipeline to after selected pipeline finishes.");
 		scheduleType.addValueChangeListener(new ValueChangeListener() {
 			
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				if(event.getProperty().getValue() == ScheduleType.AfterPipeline){
+				if(event.getProperty().getValue() == ScheduleType.AFTER_PIPELINE){
 					
 					mainLayout.removeComponent(1, 1);
 					afterLayout = buildAfterLayout();
@@ -208,11 +208,11 @@ public class SchedulePipeline extends CustomComponent {
 				
 /*				schedule.setPipeline(comboPipeline.getValue());
 				schedule.setType((ScheduleType)scheduleType.getValue());
-					if(scheduleType.getValue() == ScheduleType.Periodicaly){
+					if(scheduleType.getValue() == ScheduleType.PERIODICALLY){
 						schedule.setFirstExecution(date.getValue());
 						schedule.setJustOnce(justOnce.getValue());
 						if(justOnce.getValue()==false){
-							schedule.setPeriodUnit((PeriodeUnit)intervalOption.getValue());
+							schedule.setPeriodUnit((PeriodUnit)intervalOption.getValue());
 						}
 					}*/
 			}
@@ -354,14 +354,14 @@ public class SchedulePipeline extends CustomComponent {
 //  	inervalLayout.setSpacing(true);
 		intervalOption = new OptionGroup();
 		intervalOption.setImmediate(true);
-		intervalOption.addItem(PeriodeUnit.Day);
-		intervalOption.setItemCaption(PeriodeUnit.Day, "every day");
-		intervalOption.addItem(PeriodeUnit.Week);
-		intervalOption.setItemCaption(PeriodeUnit.Week, "every week");
-		intervalOption.addItem(PeriodeUnit.Month);
-		intervalOption.setItemCaption(PeriodeUnit.Month, "every month");
+		intervalOption.addItem(PeriodUnit.DAY);
+		intervalOption.setItemCaption(PeriodUnit.DAY, "every day");
+		intervalOption.addItem(PeriodUnit.WEEK);
+		intervalOption.setItemCaption(PeriodUnit.WEEK, "every week");
+		intervalOption.addItem(PeriodUnit.MONTH);
+		intervalOption.setItemCaption(PeriodUnit.MONTH, "every month");
 		intervalOption.addItem("every");
-		intervalOption.setValue(PeriodeUnit.Day);
+		intervalOption.setValue(PeriodUnit.DAY);
 		intervalOption.addValueChangeListener(new ValueChangeListener() {
 			
 			@Override
@@ -403,15 +403,15 @@ public class SchedulePipeline extends CustomComponent {
 		comboEvery = new ComboBox();
 		comboEvery.setNullSelectionAllowed(false);
 		comboEvery.setImmediate(true);
-		comboEvery.addItem(PeriodeUnit.Minute);
-		comboEvery.setItemCaption(PeriodeUnit.Minute, "Minutes");
-		comboEvery.addItem(PeriodeUnit.Hour);
-		comboEvery.setItemCaption(PeriodeUnit.Hour, "Hours");
-		comboEvery.addItem(PeriodeUnit.Day);
-		comboEvery.setItemCaption(PeriodeUnit.Day, "Days");
-		comboEvery.addItem(PeriodeUnit.Month);
-		comboEvery.setItemCaption(PeriodeUnit.Month, "Months");
-		comboEvery.setValue(PeriodeUnit.Day);
+		comboEvery.addItem(PeriodUnit.MINUTE);
+		comboEvery.setItemCaption(PeriodUnit.MINUTE, "Minutes");
+		comboEvery.addItem(PeriodUnit.HOUR);
+		comboEvery.setItemCaption(PeriodUnit.HOUR, "Hours");
+		comboEvery.addItem(PeriodUnit.DAY);
+		comboEvery.setItemCaption(PeriodUnit.DAY, "Days");
+		comboEvery.addItem(PeriodUnit.MONTH);
+		comboEvery.setItemCaption(PeriodUnit.MONTH, "Months");
+		comboEvery.setValue(PeriodUnit.DAY);
 		comboEvery.setEnabled(false);
 
 		inervalEveryLayout.addComponent(comboEvery);

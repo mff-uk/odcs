@@ -1,22 +1,12 @@
 package cz.cuni.xrg.intlib.commons.app.scheduling;
 
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represent a scheduler plan. 
@@ -26,7 +16,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
  *
  */
 @Entity
-@Table(name = "schedule")
+@Table(name = "exec_schedule")
 public class Schedule {
 
     /**
@@ -52,13 +42,13 @@ public class Schedule {
      * Pipeline to execute.
      */
     @ManyToOne
-	@JoinColumn(name = "pipeline", unique = false, nullable = false)
+	@JoinColumn(name = "pipeline_id", nullable = false)
     private Pipeline pipeline;
 		
 	/**
 	 * Plan is active for just one execution.
 	 */
-	@Column(name = "justOnce")
+	@Column(name = "just_once")
 	private boolean justOnce;
 	
 	/**
@@ -76,46 +66,48 @@ public class Schedule {
 	private ScheduleType type;
 	
 	/**
-	 * Determine time o first execution.
-	 * Used only if {@link #type} = RunInTime.
+	 * Time o first planned execution. May be null if this plan is only supposed
+	 * to run after pipelines in {@link #afterPipelines}, but has no specific
+	 * time to be run at. Used only if {@link #type} is {@link ScheduleType#.
 	 */
 	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
-	@Column(name = "firstExec", nullable = true)
-	private Date firstExecution;	
+	@Column(name = "first_exec", nullable = true)
+	private Date firstExecution;
 	
 	/**
 	 * Time of the last execution.
 	 */
 	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
-	@Column(name = "lastExec", nullable = true)	
-	private Date lastExecution;	
+	@Column(name = "last_exec", nullable = true)
+	private Date lastExecution;
 	
 	/**
 	 * Execution period in {@link #periodUnit}.
 	 * Used only if {@link #type} = RunInTime.
 	 */
-	@Column(name = "period")
+	@Column(name = "time_period")
 	private Long period;
 	
 	/**
-	 * Period unit type.
+	 * Time period unit type.
 	 */
 	@Enumerated(EnumType.ORDINAL)
-	@Column(name = "periodUnit")	
-	private PeriodeUnit periodUnit;
+	@Column(name = "period_unit")	
+	private PeriodUnit periodUnit;
 	
     /**
-     * Pipeline after which activate this plan.
-	 * Used only if {@link #type} = RunAfterPipeline.
+     * Pipeline after which this job is supposed to run.
+	 * Applicable only if {@link #type} is {@link ScheduleType#AFTER_PIPELINE}.
      */
-// TODO Honza: List of pipelines from Pipelines 	
-//	@ManyToOne
-//	@JoinColumn(name = "predPipeline", nullable = true)	
-	@Transient
-    private List<Pipeline> predPipeline;	
+	@ManyToMany
+	@JoinTable(name="exec_schedule_after",
+        joinColumns = @JoinColumn(name="schedule_id", referencedColumnName="id"),
+        inverseJoinColumns = @JoinColumn(name="pipeline_id", referencedColumnName="id")
+    )
+    private Set<Pipeline> afterPipelines = new HashSet<>();
 	
 	/**
-	 * Empty ctor. Used by JPA. Do not use otherwise.
+	 * Empty constructor. Used by JPA. Do not use otherwise.
 	 */
 	public Schedule() { }
 
@@ -191,18 +183,33 @@ public class Schedule {
 		this.period = period;
 	}
 
-	public PeriodeUnit getPeriodUnit() {
+	public PeriodUnit getPeriodUnit() {
 		return periodUnit;
 	}
 
-	public void setPeriodUnit(PeriodeUnit periodUnit) {
+	public void setPeriodUnit(PeriodUnit periodUnit) {
 		this.periodUnit = periodUnit;
 	}
-
-	public List<Pipeline> getPredPipeline() {
-		return predPipeline;
+	
+	/**
+	 * Schedules this job after every run of given pipeline.
+	 *
+	 * @param pipeline to run this job after
+	 * @return <code>true</code> if this set did not already contain the
+	 *         specified element
+	 */
+	public boolean addAfterPipeline(Pipeline pipeline) {
+		return afterPipelines.add(pipeline);
 	}
 
+	public Set<Pipeline> getAfterPipelines() {
+		return new HashSet<>(afterPipelines);
+	}
+
+	public void setAfterPipelines(Set<Pipeline> afterPipelines) {
+		this.afterPipelines = afterPipelines;
+	}
+	
 	public Long getId() {
 		return id;
 	}

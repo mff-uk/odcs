@@ -7,12 +7,8 @@ package cz.cuni.xrg.intlib.commons.app.scheduling;
  *
  */
 public enum ScheduleType {
-	/**
-	 * Activate schedule after another pipeline run finish.
-	 */
-	AfterPipeline,
-	/**
-	 * Run in given period.
-	 */
-	Periodicaly
+	/** Activate schedule after another pipeline run finish. */
+	AFTER_PIPELINE,
+	/** Run in given period. */
+	PERIODICALLY
 }
