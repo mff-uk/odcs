@@ -13,6 +13,12 @@ public enum ConfigProperty {
 	BACKEND_HOST("backend.host"),
 	BACKEND_PORT("backend.port"),
 	
+	VIRTUOSO_HOSTNAME("virtuoso.hostname"),
+	VIRTUOSO_PORT("virtuoso.port"),
+	VIRTUOSO_USER("virtuoso.user"),
+	VIRTUOSO_PASSWORD("virtuoso.password"),
+	VIRTUOSO_DEFAULT_GRAPH("virtuoso.defautgraph"),
+	
 	MODULE_PATH("module.path"),
 	MODULE_LIBS("module.libs"),
 	MODULE_FRONT_EXPOSE("module.frontend.expose"),
