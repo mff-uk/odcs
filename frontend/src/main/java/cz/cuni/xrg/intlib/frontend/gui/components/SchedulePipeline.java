@@ -16,11 +16,13 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.TabIndexState;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -39,6 +41,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Button.ClickEvent;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.scheduling.PeriodeUnit;
@@ -49,6 +52,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.xrg.intlib.frontend.gui.views.SimpleTreeFilter;
 
 
 public class SchedulePipeline extends CustomComponent {
@@ -142,7 +146,10 @@ public class SchedulePipeline extends CustomComponent {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				Object a = comboPipeline.getValue();
-				
+			//	selectPipe.removeItem(a)
+				mainLayout.removeComponent(1, 1);
+				afterLayout= buildAfterLayout();
+				mainLayout.addComponent(afterLayout,1,1);
 			}
 		});
 
@@ -199,7 +206,7 @@ public class SchedulePipeline extends CustomComponent {
 				schedule.setType((ScheduleType)scheduleType.getValue());
 				schedule.setJustOnce(justOnce.getValue());
 				
-				/*schedule.setName((String)comboPipeline.getValue());
+/*				schedule.setPipeline(comboPipeline.getValue());
 				schedule.setType((ScheduleType)scheduleType.getValue());
 					if(scheduleType.getValue() == ScheduleType.Periodicaly){
 						schedule.setFirstExecution(date.getValue());
@@ -235,28 +242,46 @@ public class SchedulePipeline extends CustomComponent {
 		selectPipelineLayout.setSpacing(true);
 		
 		pipeFilter = new TextField();
-		pipeFilter.setImmediate(true);
-//		pipeFilter.setCaption("Pipeline:");
-		pipeFilter.setInputPrompt("pipeline filter");
-		pipeFilter.setWidth("110px");
+		pipeFilter.setImmediate(false);
+		pipeFilter.setInputPrompt("type to filter pipelines");
+		pipeFilter.setWidth("144px");
 		pipeFilter.setTextChangeEventMode(TextChangeEventMode.LAZY);
-		pipeFilter.addTextChangeListener(new TextChangeListener() {
-			@Override
-			public void textChange(TextChangeEvent event) {
+		pipeFilter.addTextChangeListener(new FieldEvents.TextChangeListener() {
+			SimpleTreeFilter filter = null;
 
+			@Override
+			public void textChange(FieldEvents.TextChangeEvent event) {
+				selectPipe.getItemCaptionPropertyId();
+				Container.Filterable f = (Container.Filterable) selectPipe.getContainerDataSource();
+				
+
+				// Remove old filter
+				if (filter != null) {
+					f.removeContainerFilter(filter);
+				}
+
+				// Set new filter
+				filter = new SimpleTreeFilter(event.getText(), true, false);
+				f.addContainerFilter(filter);
 
 			}
 		});
 		
 		selectPipelineLayout.addComponent(pipeFilter);
 
-//		afterLayout.addComponent(pipeFilter, 1, 0);
+
+		List<Pipeline> pipelines = App.getApp().getPipelines()
+				.getAllPipelines();
 		
 		
 		selectPipe = new TwinColSelect();
-       
-        selectPipe.setContainerDataSource(container);
-        selectPipe.setItemCaptionPropertyId("name");
+		
+		for (Pipeline item : pipelines) {
+			if(item.getId()!=comboPipeline.getValue()){
+			selectPipe.addItem(item.getName());}
+			}
+  //      selectPipe.setContainerDataSource(pipelines);
+ //       selectPipe.setItemCaptionPropertyId("name");
 
         selectPipe.setNullSelectionAllowed(true);
         selectPipe.setMultiSelect(true);
