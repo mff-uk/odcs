@@ -18,6 +18,12 @@ import java.util.List;
  * data into context and asking for directories. Provide methods
  * for creating file names for DataUnits.
  * 
+ * The directory structure used by context is following; 
+ * ./working/DPU_ID/DATAUNIT_INDEX/	- DataUnit working directory
+ * ./working/DPU_ID/tmp/			- DPU working directory
+ * ./storage/DPU_ID/DATAUNIT_INDEX/	- storage for DataUnit results
+ * ./result/						- place for DPU's files that should be accessible to the user
+ * 
  * @author Petyr
  *
  */
