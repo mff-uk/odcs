@@ -118,6 +118,17 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 		return graph;
 	}
 
+	public void setDefaultGraph(String defaultGraph) {
+		this.defaultGraph = defaultGraph;
+		setGraph(createNewGraph(defaultGraph));
+	}
+
+	public void setGraph(Resource graph) {
+		this.graph = graph;
+	}
+	
+	
+
 	private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
 
 		VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
