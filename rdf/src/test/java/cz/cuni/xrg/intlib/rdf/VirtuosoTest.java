@@ -15,21 +15,10 @@ import org.junit.experimental.categories.Category;
 @Category(IntegrationTest.class)
 public class VirtuosoTest extends LocalRDFRepoTest {
 
-	private static final String HOSTNAME = "localhost";
-
-	private static final String PORT = "1111";
-
-	private static final String USERNAME = "dba";
-
-	private static final String PASSWORD = "dba";
-
-	private static final String DEFAUTLGRAPH = "http://default";
-
 	@BeforeClass
 	public static void setUpLogger() {
 		rdfRepo = VirtuosoRDFRepo
-				.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD,
-				DEFAUTLGRAPH);
+				.createVirtuosoRDFRepo();
 		rdfRepo.cleanAllRepositoryData();
 	}
 
