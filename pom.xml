@@ -24,15 +24,15 @@
 	<modules>
 		<!-- commons -->
 		<module>commons</module>
-		<!-- libs -->
-		<module>rdf</module>
 		<!-- application -->
 		<module>commons-app</module>
+		<module>rdf</module>
 		<module>commons-module</module>
 		<module>commons-web</module>
 		<!-- frontend is the last build -->
 		<module>frontend</module>
 		<module>backend</module>
+		<!-- libs -->
 		<module>libs</module>
 		<!-- build modules -->
 		<module>module</module>
