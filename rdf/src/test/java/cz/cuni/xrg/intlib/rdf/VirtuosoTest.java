@@ -15,44 +15,78 @@ import org.junit.experimental.categories.Category;
 @Category(IntegrationTest.class)
 public class VirtuosoTest extends LocalRDFRepoTest {
 
-    private static final String HOSTNAME = "localhost";
+	private static final String HOSTNAME = "localhost";
 
-    private static final String PORT = "1111";
+	private static final String PORT = "1111";
 
-    private static final String USERNAME = "dba";
-    private static final String PASSWORD = "dba";
-    private static final String DEFAUTLGRAPH = "http://default";
-	
-    @BeforeClass
-    public static void setUpLogger() {
-        rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD, DEFAUTLGRAPH);
-        rdfRepo.cleanAllRepositoryData();
-    }
+	private static final String USERNAME = "dba";
 
-    @Override
-    public void setUp() {
-        try {
-            outDir = Files.createTempDirectory("intlib-out");
-            testFileDir = VirtuosoTest.class.getResource("/repository").getPath();
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+	private static final String PASSWORD = "dba";
 
-        }
-    }
+	private static final String DEFAUTLGRAPH = "http://default";
 
-    @Override
-    public void cleanUp() {
-        deleteDirectory(new File(outDir.toString()));
-    }
+	@BeforeClass
+	public static void setUpLogger() {
+		rdfRepo = VirtuosoRDFRepo
+				.createVirtuosoRDFRepo(HOSTNAME, PORT, USERNAME, PASSWORD,
+				DEFAUTLGRAPH);
+		rdfRepo.cleanAllRepositoryData();
+	}
 
-    @AfterClass
-    public static void cleaning() {
-        rdfRepo.release();
-    }
+	@Override
+	public void setUp() {
+		try {
+			outDir = Files.createTempDirectory("intlib-out");
+			testFileDir = VirtuosoTest.class.getResource("/repository")
+					.getPath();
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage());
 
-    @Test
-    @Override
-    public void BIGDataTest() {
-        super.BIGDataTest();
-    }
+		}
+	}
+
+	@Override
+	public void cleanUp() {
+		deleteDirectory(new File(outDir.toString()));
+	}
+
+	@AfterClass
+	public static void cleaning() {
+		rdfRepo.release();
+	}
+
+	@Test
+	@Override
+	public void BIGDataTest() {
+		super.BIGDataTest();
+	}
+
+	@Test
+	@Override
+	public void paralellPipelineRunning() {
+
+		for (int i = 0; i < THREAD_SIZE; i++) {
+
+			Thread task = new Thread(new Runnable() {
+				@Override
+				public void run() {
+
+					VirtuosoRDFRepo virtuosoRepo = VirtuosoRDFRepo
+							.createVirtuosoRDFRepo();
+					virtuosoRepo.setDefaultGraph("http://myDefault");
+
+					addParalelTripleToRepository(virtuosoRepo);
+					extractFromFileToRepository(virtuosoRepo);
+					transformOverRepository(virtuosoRepo);
+					loadToFile(virtuosoRepo);
+
+					virtuosoRepo.release();
+
+
+				}
+			});
+
+			task.start();
+		}
+	}
 }
