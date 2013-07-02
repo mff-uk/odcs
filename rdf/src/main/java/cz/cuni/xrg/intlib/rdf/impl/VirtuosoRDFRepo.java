@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryException;
@@ -13,30 +15,38 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
 public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
 	private String URL_Host_List;
+
 	private String user;
+
 	private String password;
+
 	private String defaultGraph;
+	
+	private static AppConfig config;
 
 	static {
 
 		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
+		config=new AppConfig();
 	}
 
 	public static VirtuosoRDFRepo createVirtuosoRDFRepo() {
-		// TODO: Load from AppConfiguration ... 
-		final String hostName = "localhost";
-		final String port = "1111";
-		final String user = "dba";
-		final String password = "dba";
-		final String defautGraph = "http://default";
+				
+		final String hostName = config.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+		final String port = config.getString(ConfigProperty.VIRTUOSO_PORT);
+		final String user = config.getString(ConfigProperty.VIRTUOSO_USER);
+		final String password = config.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+		final String defautGraph = config.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
 
 		return createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
 	}
 
-	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName, String port, String user, String password, String defaultGraph) {
+	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,
+			String port, String user, String password, String defaultGraph) {
 		final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port + "/charset=UTF-8/log_enable=2";
 
-		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password, defaultGraph);
+		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password,
+				defaultGraph);
 		return virtuosoRepo;
 	}
 
@@ -44,18 +54,19 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	 * Construct a VirtuosoRepository with a specified parameters.
 	 *
 	 * @param URL_Host_List the Virtuoso JDBC URL connection string or hostlist
-	 * for poolled connection.
+	 *                      for poolled connection.
 	 *
-	 * @param user the database user on whose behalf the connection is being
-	 * made.
+	 * @param user          the database user on whose behalf the connection is
+	 *                      being made.
 	 *
-	 * @param password the user's password.
+	 * @param password      the user's password.
 	 *
-	 * @param defaultGraph a default Graph name, used for Sesame calls, when
-	 * contexts list is empty, exclude exportStatements, hasStatement,
-	 * getStatements methods.
+	 * @param defaultGraph  a default Graph name, used for Sesame calls, when
+	 *                      contexts list is empty, exclude exportStatements,
+	 *                      hasStatement, getStatements methods.
 	 */
-	public VirtuosoRDFRepo(String URL_Host_List, String user, String password, String defaultGraph) {
+	public VirtuosoRDFRepo(String URL_Host_List, String user, String password,
+			String defaultGraph) {
 
 		this.URL_Host_List = URL_Host_List;
 		this.user = user;
@@ -64,7 +75,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
 		graph = createNewGraph(defaultGraph);
 
-		repository = new VirtuosoRepository(URL_Host_List, user, password, defaultGraph);
+		repository = new VirtuosoRepository(URL_Host_List, user, password,
+				defaultGraph);
 
 		try {
 			repository.initialize();
@@ -80,7 +92,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	/**
 	 *
 	 * @return the Virtuoso JDBC URL connection string or hostlist for poolled
-	 * connection.
+	 *         connection.
 	 */
 	public String getURL_Host_List() {
 		return URL_Host_List;
@@ -126,12 +138,11 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	public void setGraph(Resource graph) {
 		this.graph = graph;
 	}
-	
-	
 
 	private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
 
-		VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user, password, defaultGraph);
+		VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user,
+				password, defaultGraph);
 		copyAllDataToTargetRepository(newCopy);
 
 		return newCopy;
