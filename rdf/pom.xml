@@ -23,9 +23,9 @@
 			<scope>test</scope>
 		</dependency>
 		
-		<dependency> <!-- commons project -->
+		<dependency> <!-- commons-app project -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>commons</artifactId>
+			<artifactId>commons-app</artifactId>
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
