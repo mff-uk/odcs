@@ -236,7 +236,7 @@ public class DebuggingView extends CustomComponent {
 		while (iter.hasNext()) {
 
 			DataUnitInfo dataUnitInfo = iter.next();
-
+			//If I Have only one data unit, I use it, otherwise select the right input/output data unit.
 			if (indexes.size() == 1 || showInput) {
 				DataUnitBrowser duBrowser;
 				try {
