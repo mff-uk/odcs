@@ -186,7 +186,7 @@ public interface RDFDataRepository extends DataUnit {
 	 */
 	public void extractfromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
-			String query, String hostName, String password) throws ExtractException;
+			String query, String hostName, String password,boolean useStatisticHandler) throws ExtractException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
