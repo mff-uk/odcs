@@ -40,9 +40,10 @@ public class FileExtractor implements Extract,
 		final String path=config.Path;
 		final String fileSuffix=config.FileSuffix;
 		final boolean onlyThisSuffix=config.OnlyThisSuffix;
+		final boolean useStatisticHandler=config.UseStatisticalHandler;
 
 		repository.extractRDFfromFileToRepository(
-				path, fileSuffix, baseURI, onlyThisSuffix);
+				path, fileSuffix, baseURI, onlyThisSuffix,useStatisticHandler);
 	}
 
 	@Override
