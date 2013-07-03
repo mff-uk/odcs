@@ -32,11 +32,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
+import org.openrdf.model.*;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
@@ -286,7 +282,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 */
 	@Override
 	public void extractRDFfromFileToRepository(String path, String suffix,
-			String baseURI, boolean useSuffix) throws ExtractException {
+			String baseURI, boolean useSuffix, boolean useStatisticHandler)
+			throws ExtractException {
 
 		if (path == null) {
 			final String message = "Mandatory target path in extractor is null.";
@@ -307,73 +304,126 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		if (path.toLowerCase().startsWith("http")) {
 
-			URL urlPath;
-			try {
-				urlPath = new URL(path);
-			} catch (MalformedURLException ex) {
-				throw new ExtractException(ex.getMessage(), ex);
-			}
-
-			try (InputStreamReader inputStream = new InputStreamReader(urlPath
-					.openStream(), encode)) {
-
-				RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
-				RepositoryConnection connection = repository.getConnection();
-
-				if (graph != null) {
-					connection.add(inputStream, baseURI, format, graph);
-				} else {
-					connection.add(inputStream, baseURI, format);
-				}
-
-				inputStream.close();
-
-			} catch (IOException | RepositoryException | RDFParseException ex) {
-				throw new ExtractException(ex.getMessage(), ex);
-			}
+			extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
 		}
 
 		if (dirFile.isDirectory()) {
-			File[] files;
-
-			if (useSuffix) {
-				final String aceptedSuffix = suffix.toUpperCase();
-
-				FilenameFilter acceptedFileFilter = new FilenameFilter() {
-					@Override
-					public boolean accept(File dir, String name) {
-						if (name.toUpperCase().endsWith(aceptedSuffix)) {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				};
-
-				files = dirFile.listFiles(acceptedFileFilter);
-
-			} else {
-				files = dirFile.listFiles();
-			}
-
-			if (files == null) {
-				return;
-			}
-
-			for (int i = 0; i < files.length; i++) {
-				File nextFile = files[i];
-				addFileToRepository(nextFile, baseURI, graph);
-			}
+			File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
+			addFilesInDirectoryToRepository(files, baseURI, useStatisticHandler,
+					graph);
 
 		}
 		if (dirFile.isFile()) {
-			addFileToRepository(dirFile, baseURI, graph);
+			addFileToRepository(dirFile, baseURI, useStatisticHandler, graph);
+		}
+
+	}
+
+	private void extractDataFileFromHTTPSource(String path, String baseURI,
+			boolean useStatisticHandler) throws ExtractException {
+		URL urlPath;
+		try {
+			urlPath = new URL(path);
+		} catch (MalformedURLException ex) {
+			throw new ExtractException(ex.getMessage(), ex);
+		}
+
+		try (InputStreamReader inputStreamReader = new InputStreamReader(
+				urlPath.openStream(), encode)) {
+
+			RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
+			RepositoryConnection connection = repository.getConnection();
+
+			if (!useStatisticHandler) {
+				if (graph != null) {
+					connection.add(inputStreamReader, baseURI, format, graph);
+
+				} else {
+					connection.add(inputStreamReader, baseURI, format);
+				}
+			} else {
+				StatisticalHandler handler = new StatisticalHandler();
+
+				RDFParser parser = Rio.createParser(format);
+				parser.setRDFHandler(handler);
+
+				try {
+					parser.parse(inputStreamReader, baseURI);
+
+					if (graph != null) {
+						connection.add(handler.getStatements(), graph);
+					} else {
+						connection.add(handler.getStatements());
+					}
+
+				} catch (IOException | RDFParseException | RDFHandlerException ex) {
+					logger.error(ex.getMessage(), ex);
+					throw new ExtractException(ex.getMessage(), ex);
+
+				} finally {
+					inputStreamReader.close();
+				}
+			}
+
+
+		} catch (IOException | RepositoryException | RDFParseException ex) {
+			throw new ExtractException(ex.getMessage(), ex);
+		}
+	}
+
+	private void addFilesInDirectoryToRepository(File[] files, String baseURI,
+			boolean useStatisticHandler, Resource... graphs) throws ExtractException {
+
+		if (files == null) {
+			return; // nothing to add
+		}
+
+		for (int i = 0; i < files.length; i++) {
+			File nextFile = files[i];
+			addFileToRepository(nextFile, baseURI, useStatisticHandler,
+					graphs);
+		}
+	}
+
+	private File[] getFilesBySuffix(File dirFile, String suffix,
+			boolean useAceptedSuffix) {
+
+		if (useAceptedSuffix) {
+			final String aceptedSuffix = suffix.toUpperCase();
+
+			FilenameFilter acceptedFileFilter = new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					if (name.toUpperCase().endsWith(aceptedSuffix)) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			};
+
+			return dirFile.listFiles(acceptedFileFilter);
+
+		} else {
+			return dirFile.listFiles();
+		}
+
+	}
+
+	private void addInputStreamToRepository(RepositoryConnection connection,
+			InputStream inputStream, String baseURI, RDFFormat format,
+			Resource... graphs) throws IOException, RDFParseException, RepositoryException {
+
+		if (graphs != null) {
+			connection.add(inputStream, baseURI, format, graphs);
+		} else {
+			connection.add(inputStream, baseURI, format);
 		}
 
 	}
 
 	private void addFileToRepository(File dataFile, String baseURI,
-			Resource... graphs) throws ExtractException {
+			boolean useStatisticHandler, Resource... graphs) throws ExtractException {
 
 		RDFFormat fileFormat = RDFFormat.forFileName(
 				dataFile.getAbsolutePath(),
@@ -385,10 +435,26 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			connection = repository.getConnection();
 
-			if (graphs != null) {
-				connection.add(is, baseURI, fileFormat, graph);
+			if (!useStatisticHandler) {
+				addInputStreamToRepository(connection, is, baseURI, fileFormat,graphs);
+
 			} else {
-				connection.add(is, baseURI, fileFormat);
+				StatisticalHandler handler = new StatisticalHandler();
+
+				RDFParser parser = Rio.createParser(fileFormat);
+				parser.setRDFHandler(handler);
+				try {
+					parser.parse(is, baseURI);
+					if (graphs != null) {
+						connection.add(handler.getStatements(), graphs);
+					} else {
+						connection.add(handler.getStatements());
+					}
+				} catch (RDFParseException | RDFHandlerException ex) {
+					throw new ExtractException(ex.getMessage(), ex);
+				}
+
+
 			}
 
 			connection.commit();
@@ -396,7 +462,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		} catch (IOException | RDFParseException ex) {
 			logger.debug(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			throw new ExtractException("Error by adding file to repository", ex);
+			logger.debug(ex.getMessage(), ex);
+			throw new ExtractException(
+					"Error by adding file to repository " + ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
@@ -1525,9 +1593,17 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	@Override
 	public void load(File directory) {
 		File file = new File(directory, dumpName);
+
+		final String suffix = "";
+		final String baseURI = "";
+		final boolean useSuffix = false;
+		final boolean useStatisticHandler = true;
+
 		try {
-			extractRDFfromFileToRepository(file.getAbsolutePath(), "", "",
-					false);
+			extractRDFfromFileToRepository(file.getAbsolutePath(), suffix,
+					baseURI,
+					useSuffix, useStatisticHandler);
+
 		} catch (ExtractException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
