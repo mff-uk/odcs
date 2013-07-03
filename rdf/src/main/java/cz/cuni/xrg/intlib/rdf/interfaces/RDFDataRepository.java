@@ -42,16 +42,20 @@ public interface RDFDataRepository extends DataUnit {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param path      String path to file/directory
-	 * @param suffix    String suffix of fileName (example: ".ttl", ".xml", etc)
-	 * @param baseURI   String name of defined used URI
-	 * @param useSuffix boolean value, if extract files only with defined suffix
-	 *                  or not.
+	 * @param path                String path to file/directory
+	 * @param suffix              String suffix of fileName (example: ".ttl",
+	 *                            ".xml", etc)
+	 * @param baseURI             String name of defined used URI
+	 * @param useSuffix           boolean value, if extract files only with
+	 *                            defined suffix or not.
+	 * @param useStatisticHandler boolean value, if during extraction needed
+	 *                            detail statistic about RDF triples and
+	 *                            detailed log or not.
 	 * @throws ExtractException when extraction fail.
 	 */
 	public void extractRDFfromFileToRepository(String path, String suffix,
 			String baseURI,
-			boolean useSuffix) throws ExtractException;
+			boolean useSuffix, boolean useStatisticHandler) throws ExtractException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
