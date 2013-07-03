@@ -17,7 +17,7 @@ public class SPARQLValidator implements Validator {
 
     public SPARQLValidator(String query) {
         this.query = query;
-        this.message = "";
+        this.message = "No errors - valid query.";
     }
 
     /**
