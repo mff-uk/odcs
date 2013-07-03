@@ -40,8 +40,8 @@ public class RDFExtractor implements Extract,
 
 	@Override
 	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
-		
-		RDFDataRepository repository = 
+
+		RDFDataRepository repository =
 				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
 
 		try {
@@ -50,9 +50,10 @@ public class RDFExtractor implements Extract,
 			final String password = config.Password;
 			final List<String> defaultGraphsUri = config.GraphsUri;
 			final String query = config.SPARQL_query;
+			final boolean useStatisticHandler = config.UseStatisticalHandler;
 
 			repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri,
-					query, hostName, password);
+					query, hostName, password, useStatisticHandler);
 		} catch (MalformedURLException ex) {
 			context.sendMessage(MessageType.ERROR,
 					"MalformedURLException: " + ex.getMessage());
