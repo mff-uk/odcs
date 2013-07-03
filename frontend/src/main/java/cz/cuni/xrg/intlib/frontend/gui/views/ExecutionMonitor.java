@@ -511,7 +511,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 			Object num = result.addItem();
 			if (item.getStart() == null) {
-				result.getContainerProperty(num, "date").setValue("");
+				result.getContainerProperty(num, "date").setValue(null);
 			} else {
 
 //				Format formatter = new SimpleDateFormat();

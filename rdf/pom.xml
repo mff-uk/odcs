@@ -16,16 +16,17 @@
 	</properties>
 
 	<dependencies>
-		<dependency> <!--  JUnit dependency -->
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency> <!-- commons-app project -->
+
+        <dependency> <!--  JUnit dependency -->
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>	
+
+		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>commons-app</artifactId>
+			<artifactId>commons</artifactId>
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>

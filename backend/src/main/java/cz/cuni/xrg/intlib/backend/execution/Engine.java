@@ -62,20 +62,27 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 	 */
 	protected Boolean startUpDone;
 	
+	/**
+	 * Application's configuration.
+	 */
+	protected AppConfig appConfig;
+	
 	protected static Logger LOG = LoggerFactory.getLogger(Engine.class);
 	
-	public Engine(ModuleFacade moduleFacade, DatabaseAccess database) {
+	public Engine(ModuleFacade moduleFacade, DatabaseAccess database, AppConfig appConfig) {
 		this.moduleFacade = moduleFacade;		
     	this.executorService = Executors.newCachedThreadPool();
     	this.database = database;
     	this.startUpDone = false;
+    	this.appConfig = appConfig;
     }
 
-	public Engine(ModuleFacade moduleFacade, DatabaseAccess database, ExecutorService executorService) {
+	public Engine(ModuleFacade moduleFacade, DatabaseAccess database, AppConfig appConfig, ExecutorService executorService) {
 		this.moduleFacade = moduleFacade;
     	this.executorService = executorService;
     	this.database = database;
     	this.startUpDone = false;
+    	this.appConfig = appConfig;
     }
 	
 	/**
@@ -105,7 +112,8 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
     	database.getPipeline().save(pipelineExecution);   	
     	// run pipeline
     	this.executorService.execute(
-    			new PipelineWorker(pipelineExecution, moduleFacade, eventPublisher, database, directory));
+    			new PipelineWorker(pipelineExecution, moduleFacade, 
+    					eventPublisher, database, directory, appConfig));
     }
     
     /**
