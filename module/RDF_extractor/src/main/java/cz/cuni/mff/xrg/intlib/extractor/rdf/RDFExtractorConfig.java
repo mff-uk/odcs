@@ -24,4 +24,6 @@ public class RDFExtractorConfig implements Config {
 	public String SPARQL_query;
 
 	public Boolean ExtractFail;
+	
+	public Boolean UseStatisticalHandler; 
 }
