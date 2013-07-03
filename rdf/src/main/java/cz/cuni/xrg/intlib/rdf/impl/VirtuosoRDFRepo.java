@@ -1,7 +1,5 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import org.openrdf.model.Resource;
@@ -23,23 +21,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
 	private String defaultGraph;
 	
-	private static AppConfig config;
-
 	static {
-
 		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-		config=new AppConfig();
-	}
-
-	public static VirtuosoRDFRepo createVirtuosoRDFRepo() {
-				
-		final String hostName = config.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
-		final String port = config.getString(ConfigProperty.VIRTUOSO_PORT);
-		final String user = config.getString(ConfigProperty.VIRTUOSO_USER);
-		final String password = config.getString(ConfigProperty.VIRTUOSO_PASSWORD);
-		final String defautGraph = config.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
-
-		return createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
 	}
 
 	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,

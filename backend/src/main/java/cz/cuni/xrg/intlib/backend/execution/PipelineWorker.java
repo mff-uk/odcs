@@ -15,6 +15,7 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
@@ -110,7 +111,12 @@ class PipelineWorker implements Runnable {
 	 * Manage mapping execution context into {@link #workDirectory}. 
 	 */
 	private ExecutionContextInfo contextInfo;	
-		
+	
+	/**
+	 * Application's configuraiton.
+	 */
+	private AppConfig appConfig;
+	
 	/**
 	 * @param execution The pipeline execution record to run.
 	 * @param moduleFacade Module facade for obtaining DPUs instances.
@@ -119,7 +125,7 @@ class PipelineWorker implements Runnable {
 	 */
 	public PipelineWorker(PipelineExecution execution, ModuleFacade moduleFacade, 
 			ApplicationEventPublisher eventPublisher, DatabaseAccess database,
-			File workingDirectory) {
+			File workingDirectory, AppConfig appConfig) {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
@@ -129,6 +135,7 @@ class PipelineWorker implements Runnable {
 		this.database = database;
 		// create or get existing .. 
 		this.contextInfo = execution.createExecutionContext(workingDirectory);
+		this.appConfig = appConfig;
 		// TODO Petyr: Persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
 		// TODO Petyr: Release context sooner then on the end of the execution
 	}
@@ -309,7 +316,8 @@ class PipelineWorker implements Runnable {
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedExtractContext extractContext;
-		extractContext = ContextFactory.create(contextId, execution, dpuInstance, eventPublisher, contextInfo, ExtendedExtractContext.class); 
+		extractContext = ContextFactory.create(contextId, execution, dpuInstance, 
+				eventPublisher, contextInfo, ExtendedExtractContext.class, appConfig); 
 		// store context
 		contexts.put(node, extractContext);
 		return extractContext;		
@@ -332,7 +340,8 @@ class PipelineWorker implements Runnable {
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedTransformContext transformContext;
-		transformContext = ContextFactory.create(contextId, execution, dpuInstance, eventPublisher, contextInfo, ExtendedTransformContext.class);
+		transformContext = ContextFactory.create(contextId, execution, dpuInstance, 
+				eventPublisher, contextInfo, ExtendedTransformContext.class, appConfig);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
@@ -368,7 +377,8 @@ class PipelineWorker implements Runnable {
 		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
 		// ...
 		ExtendedLoadContext loadContext;
-		loadContext = ContextFactory.create(contextId, execution, dpuInstance, eventPublisher, contextInfo, ExtendedLoadContext.class);
+		loadContext = ContextFactory.create(contextId, execution, dpuInstance, 
+				eventPublisher, contextInfo, ExtendedLoadContext.class, appConfig);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");

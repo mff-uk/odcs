@@ -7,6 +7,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitContainer;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
@@ -59,8 +60,8 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 	private final static Logger LOG = Logger.getLogger(ExtendedTransformContextImpl.class);	
 	
 	public ExtendedTransformContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context) throws IOException {
-		super(id, execution, dpuInstance, context);
+			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
+		super(id, execution, dpuInstance, context, appConfig);
 		this.inputs = new LinkedList<>();
 		this.outputs = new LinkedList<>();
 		this.indexes = new HashMap<>();

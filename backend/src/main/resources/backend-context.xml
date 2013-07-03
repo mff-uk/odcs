@@ -22,6 +22,7 @@
 	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine">
 	    <constructor-arg ref="moduleFacade" index="0" />
 	    <constructor-arg ref="dbAccess" index="1" />
+	    <constructor-arg ref="configuration" index="2" />
 	</bean>
 
 	<!-- access to database on one place -->

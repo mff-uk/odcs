@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
@@ -72,10 +73,11 @@ class ExtendedCommonImpl {
 	 * @param execution Associated pipelineExecution.
 	 * @param dpuInstance Associated dpuInstanceRecord ~ owner.
 	 * @param context Access to context 'manager'.
+	 * @param appCofig Application's configuration.
 	 * @throws IOException 
 	 */
 	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ExecutionContextInfo context) throws IOException {
+			ExecutionContextInfo context, AppConfig appConfig) throws IOException {
 		this.id = id;
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
@@ -90,7 +92,7 @@ class ExtendedCommonImpl {
 				FileUtils.forceDelete(workingDir);
 			}
 		}
-		this.dataUnitFactory = new DataUnitFactory(this.id, dpuInstance, context);
+		this.dataUnitFactory = new DataUnitFactory(this.id, dpuInstance, context, appConfig);
 		this.context = context;
 	}	
 	

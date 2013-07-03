@@ -7,6 +7,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
@@ -52,8 +53,8 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoad
 	private static final Logger LOG = Logger.getLogger(ExtendedLoadContextImpl.class);	
 	
 	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context) throws IOException {
-		super(id, execution, dpuInstance, context);
+			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
+		super(id, execution, dpuInstance, context, appConfig);
 		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
 	}

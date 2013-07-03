@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.backend.data;
 
 import java.io.File;
 
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
@@ -34,12 +36,17 @@ public class DataUnitFactory {
 	private ExecutionContextInfo context;
 
 	/**
+	 * Application configuration.
+	 */
+	private static AppConfig appConfig;
+	
+	/**
 	 * Base constructor..
 	 *
 	 * @param id Unique id (Context id.)
 	 */
 	public DataUnitFactory(String id, DPUInstanceRecord instance,
-			ExecutionContextInfo context) {
+			ExecutionContextInfo context, AppConfig appConfig) {
 		this.id = id;
 		this.instance = instance;
 		this.context = context;
@@ -105,17 +112,34 @@ public class DataUnitFactory {
 		Integer index = context.createOutput(instance, "", type);
 		File tmpDir = context.getDataUnitTmp(instance, index);
 
+		if (type == DataUnitType.RDF) {
+			// use other based on configuration
+			if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("virtuoso") == 0) {
+				// use virtuoso
+				type = DataUnitType.RDF_Virtuoso; 
+			} else {
+				// use local
+				type = DataUnitType.RDF_Local;
+			}
+		}
+		
 		switch (type) {
-			case RDF:
 			case RDF_Local:
 				// create DataUnit
 				RDFDataRepository localRepository = LocalRDFRepo
 						.createLocalRepo(tmpDir.getAbsolutePath(), id);
 				// create container with DataUnit and index
 				return new DataUnitContainer(localRepository, index);
-			case RDF_Virtuoso:
+			case RDF_Virtuoso:				
+				// load configuration from appConfig
+				final String hostName = appConfig.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+				final String port = appConfig.getString(ConfigProperty.VIRTUOSO_PORT);
+				final String user = appConfig.getString(ConfigProperty.VIRTUOSO_USER);
+				final String password = appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+				final String defautGraph = appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);				
+				// create repository
 				RDFDataRepository virtosoRepository = VirtuosoRDFRepo
-						.createVirtuosoRDFRepo();
+						.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
 				return new DataUnitContainer(virtosoRepository, index);
 
 		}
@@ -137,10 +161,9 @@ public class DataUnitFactory {
 		switch (type) {
 			case RDF:
 			case RDF_Local: // RDF_Local does't support non-default configuration
-				throw new DataUnitCreateException(
-						"Can't create RDF_Local with configuration.");
 			case RDF_Virtuoso:
-				break;
+				throw new DataUnitCreateException(
+						"Can't create RDF with configuration.");
 		}
 		throw new DataUnitCreateException("Unknown DataUnit type.");
 	}
