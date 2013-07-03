@@ -273,11 +273,14 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param path      String path to file/directory
-	 * @param suffix    String suffix of fileName (example: ".ttl", ".xml", etc)
-	 * @param baseURI   String name of defined used URI
-	 * @param useSuffix boolean value, if extract files only with defined suffix
-	 *                  or not.
+	 * @param path                String path to file/directory
+	 * @param suffix              String suffix of fileName (example: ".ttl",
+	 *                            ".xml", etc)
+	 * @param baseURI             String name of defined used URI
+	 * @param useSuffix           boolean value, if extract files only with
+	 *                            defined suffix or not.
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
 	 * @throws ExtractException when extraction fail.
 	 */
 	@Override
@@ -436,7 +439,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			connection = repository.getConnection();
 
 			if (!useStatisticHandler) {
-				addInputStreamToRepository(connection, is, baseURI, fileFormat,graphs);
+				addInputStreamToRepository(connection, is, baseURI, fileFormat,
+						graphs);
 
 			} else {
 				StatisticalHandler handler = new StatisticalHandler();
@@ -991,7 +995,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphUri);
 
-		extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "");
+		extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "",
+				false);
 	}
 
 	/**
@@ -1016,22 +1021,24 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		endpointGraphsURI.add(defaultGraphUri);
 
 		extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query,
-				hostName, password);
+				hostName, password, false);
 	}
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
 	 * collection of URI graphs using authentication (name,password).
 	 *
-	 * @param endpointURL      Remote URL connection to SPARQL endpoint contains
-	 *                         RDF data.
-	 * @param defaultGraphsUri List with names of graph where RDF data are
-	 *                         loading.
-	 * @param query            String SPARQL query.
-	 * @param hostName         String name needed for authentication.
-	 * @param password         String password needed for authentication.
-	 * @param format           Type of RDF format for saving data (example:
-	 *                         TURTLE, RDF/XML,etc.)
+	 * @param endpointURL         Remote URL connection to SPARQL endpoint
+	 *                            contains RDF data.
+	 * @param defaultGraphsUri    List with names of graph where RDF data are
+	 *                            loading.
+	 * @param query               String SPARQL query.
+	 * @param hostName            String name needed for authentication.
+	 * @param password            String password needed for authentication.
+	 * @param format              Type of RDF format for saving data (example:
+	 *                            TURTLE, RDF/XML,etc.)
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
 	 * @throws ExtractException when extraction data fault.
 	 */
 	@Override
@@ -1040,7 +1047,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			List<String> endpointGraphsURI,
 			String query,
 			String hostName,
-			String password) throws ExtractException {
+			String password,
+			boolean useStatisticHandler) throws ExtractException {
 
 		if (endpointURL == null) {
 			final String message = "Mandatory URL path in extractor from SPARQL is null.";
@@ -1146,11 +1154,35 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				try (InputStreamReader inputStreamReader = new InputStreamReader(
 						httpConnection.getInputStream(), encode)) {
 
-					if (graph != null) {
-						connection.add(inputStreamReader, endpointGraph, format,
-								graph);
+					if (!useStatisticHandler) {
+						if (graph != null) {
+							connection.add(inputStreamReader, endpointGraph,
+									format,
+									graph);
+						} else {
+							connection.add(inputStreamReader, endpointGraph,
+									format);
+						}
 					} else {
-						connection.add(inputStreamReader, endpointGraph, format);
+						StatisticalHandler handler = new StatisticalHandler();
+
+						RDFParser parser = Rio.createParser(format);
+						parser.setRDFHandler(handler);
+
+						try {
+							parser.parse(inputStreamReader, endpointGraph);
+
+							if (graph != null) {
+								connection.add(handler.getStatements(), graph);
+							} else {
+								connection.add(handler.getStatements());
+							}
+						} catch (IOException | RepositoryException ex) {
+							logger.error(ex.getMessage(),ex);
+						} catch (RDFHandlerException | RDFParseException ex) {
+							logger.error(ex.getMessage(),ex);
+							throw new ExtractException(ex.getMessage(),ex);
+						}
 					}
 
 				} catch (IOException e) {
