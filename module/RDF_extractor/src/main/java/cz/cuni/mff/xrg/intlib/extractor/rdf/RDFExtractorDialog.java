@@ -46,6 +46,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     private TextField textFieldGraph;
     private Button buttonGraphRem;
     private Button buttonGraphAdd;
+	private CheckBox useHandler;  //Statistical handler
     int n = 1;
 
     public RDFExtractorDialog() {
@@ -377,6 +378,13 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         checkBoxFail.setWidth("-1px");
         checkBoxFail.setHeight("-1px");
         verticalLayoutDetails.addComponent(checkBoxFail);
+		
+		//Statistical handler
+		//TODO MARIA - set parameters and placement for this component
+		useHandler = new CheckBox("Use statistical handler");
+		useHandler.setWidth("-1px");
+		useHandler.setHeight("-1px");
+		verticalLayoutDetails.addComponent(useHandler);
 
         return verticalLayoutDetails;
     }
@@ -426,6 +434,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 			config.SPARQL_query = textAreaConstr.getValue();
 			config.GraphsUri = griddata;
 			config.ExtractFail = checkBoxFail.getValue();
+			config.UseStatisticalHandler = useHandler.getValue();
 			
 			return config;
 		}
@@ -445,6 +454,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
             passwordFieldPass.setValue(conf.Password);
             textAreaConstr.setValue(conf.SPARQL_query);
             checkBoxFail.setValue(conf.ExtractFail);
+			useHandler.setValue(conf.UseStatisticalHandler);
 
             griddata = conf.GraphsUri;
             if (griddata == null) {
