@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryException;
@@ -152,4 +153,10 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	public void release() {
 		shutDown();
 	}
+
+	@Override
+	public DataUnitType getType() {
+		return DataUnitType.RDF_Virtuoso;
+	}
+	
 }
