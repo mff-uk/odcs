@@ -198,17 +198,39 @@ public class LocalRDFRepoTest {
 	}
 
 	@Test
-	public void extractRDFFilesToRepository() {
-
+	public void extractUsingStatisticHandler()
+	{
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
+		boolean useStatisticHandler = true;
 
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
 			rdfRepo.extractRDFfromFileToRepository(
-					testFileDir, suffix, baseURI, useSuffix);
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+		} catch (ExtractException e) {
+			fail(e.getMessage());
+		}
+
+		long newSize = rdfRepo.getTripleCountInRepository();
+
+		assertTrue(newSize > size);
+	}
+	@Test
+	public void extractRDFFilesToRepository() {
+
+		String suffix = ".rdf";
+		String baseURI = "";
+		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
+
+		long size = rdfRepo.getTripleCountInRepository();
+
+		try {
+			rdfRepo.extractRDFfromFileToRepository(
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
 		}
@@ -224,12 +246,13 @@ public class LocalRDFRepoTest {
 		String suffix = ".n3";
 		String baseURI = "";
 		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
 
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
 			rdfRepo.extractRDFfromFileToRepository(
-					testFileDir, suffix, baseURI, useSuffix);
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
 
@@ -387,12 +410,13 @@ public class LocalRDFRepoTest {
 		String suffix = "ted4.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
 
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
 			rdfRepo.extractRDFfromFileToRepository(
-					testFileDir, suffix, baseURI, useSuffix);
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
 		}
@@ -407,12 +431,13 @@ public class LocalRDFRepoTest {
 		String suffix = "ted4b.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
 
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
 			rdfRepo.extractRDFfromFileToRepository(
-					testFileDir, suffix, baseURI, useSuffix);
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
 		}
@@ -544,12 +569,13 @@ public class LocalRDFRepoTest {
 		String suffix = "bigdata.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
+		boolean useStatisticHandler = true;
 
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
 			rdfRepo.extractRDFfromFileToRepository(
-					testFileDir, suffix, baseURI, useSuffix);
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
 		}
@@ -708,7 +734,7 @@ public class LocalRDFRepoTest {
 	}
 
 	protected void addParalelTripleToRepository(RDFDataRepository repository) {
-		
+
 		String namespace = "http://school/catedra/";
 		String subjectName = "KSI";
 		String predicateName = "isResposibleFor";
@@ -722,12 +748,13 @@ public class LocalRDFRepoTest {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
 
 		long size = repository.getTripleCountInRepository();
 
 		try {
 			repository.extractRDFfromFileToRepository(
-					testFileDir, suffix, baseURI, useSuffix);
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
 		}
