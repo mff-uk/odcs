@@ -311,7 +311,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			try {
 				urlPath = new URL(path);
 			} catch (MalformedURLException ex) {
-				throw new ExtractException(ex);
+				throw new ExtractException(ex.getMessage(), ex);
 			}
 
 			try (InputStreamReader inputStream = new InputStreamReader(urlPath
@@ -329,7 +329,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				inputStream.close();
 
 			} catch (IOException | RepositoryException | RDFParseException ex) {
-				throw new ExtractException(ex);
+				throw new ExtractException(ex.getMessage(), ex);
 			}
 		}
 
@@ -531,19 +531,19 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			connection.commit();
 
 		} catch (IOException | RDFHandlerException ex) {
-			throw new LoadException(ex);
+			throw new LoadException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			throw new LoadException(
-					"Repository connection failed while trying to load into XML file.",
-					ex);
+					"Repository connection failed while trying to load into XML file."
+					+ ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while trying to load into XML file.",
-							ex);
+							"Failed to close connection to RDF repository while trying to load into XML file."
+							+ ex.getMessage(), ex);
 				}
 			}
 		}
@@ -667,10 +667,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		try {
 			endpointRepo.initialize();
 		} catch (RepositoryException e) {
-			logger.debug("Endpoint repository is failed");
-			logger.debug(e.getMessage());
+			final String message = "Endpoint repository is failed. ";
+			logger.debug(message);
+			logger.debug(message + e.getMessage(), e);
 
-			throw new LoadException(e);
+			throw new LoadException(message + e.getMessage(), e);
 		}
 
 		RepositoryConnection connection = null;
@@ -719,7 +720,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					logger.debug(ex.getMessage());
 					isOK = false;
 
-					//throw new LoadException(ex);
+					//throw new LoadException(ex.getMessage(),ex);
 				}
 
 				if (isOK == false) {
@@ -738,7 +739,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 						myquery = URLEncoder.encode(query, encode);
 					} catch (UnsupportedEncodingException ex) {
 						String message = "Encoding " + encode + " is not supported.";
-						throw new LoadException(message, ex);
+						throw new LoadException(message + ex.getMessage(), ex);
 					}
 
 					URL call = null;
@@ -748,8 +749,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 								endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery);
 					} catch (MalformedURLException e) {
 						throw new LoadException(
-								"Malfolmed URL exception by construct load from URL",
-								e);
+								"Malfolmed URL exception by construct load from URL. "
+								+ e.getMessage(), e);
 					}
 
 					HttpURLConnection httpConnection = null;
@@ -766,7 +767,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 							httpConnection.disconnect();
 						}
 						throw new LoadException(
-								"Endpoint URL stream cannot be opened", e);
+								"Endpoint URL stream cannot be opened. "
+								+ e.getMessage(), e);
 					}
 
 					try {
@@ -784,8 +786,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					} catch (IOException ex) {
 						final String message = "Cannot open http connection stream at '"
 								+ call.toString()
-								+ "' - data not loaded";
-						throw new LoadException(message, ex);
+								+ "' - data not loaded. ";
+						throw new LoadException(message + ex.getMessage(), ex);
 
 					} finally {
 						httpConnection.disconnect();
@@ -795,14 +797,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 
 		} catch (RepositoryException ex) {
-			throw new LoadException("Repository connection failed.", ex);
+			throw new LoadException("Repository connection failed. " + ex
+					.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository.",
-							ex);
+					logger.warn("Failed to close connection to RDF repository. "
+							+ ex.getMessage(), ex);
 				}
 			}
 
@@ -834,12 +837,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				}
 
 			} catch (RepositoryException ex) {
-				logger.debug(ex.getMessage());
+				logger.debug(ex.getMessage(), ex);
 			} finally {
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (RepositoryException ex) {
+						logger.warn(
+								"Failed to close connection to RDF repository. "
+								+ ex.getMessage(), ex);
 					}
 				}
 			}
@@ -1012,9 +1018,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		try {
 			encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
 		} catch (UnsupportedEncodingException e) {
-			String message = "Encode " + encode + " is not support";
+			String message = "Encode " + encode + " is not support. ";
 			logger.debug(message);
-			throw new ExtractException(message, e);
+			throw new ExtractException(message + e.getMessage(), e);
 		}
 
 		RepositoryConnection connection = null;
@@ -1031,9 +1037,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					call = new URL(
 							endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
 				} catch (MalformedURLException e) {
-					logger.debug(
-							"Malfolmed URL exception by construct extract URL");
-					throw new ExtractException(e);
+					final String message = "Malfolmed URL exception by construct extract URL. ";
+					logger.debug(message);
+					throw new ExtractException(message + e.getMessage(), e);
 				}
 
 				HttpURLConnection httpConnection = null;
@@ -1047,7 +1053,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					if (httpConnection != null) {
 						httpConnection.disconnect();
 					}
-					throw new ExtractException(e);
+					throw new ExtractException(e.getMessage(), e);
 				}
 
 				boolean usePassword = !(hostName.isEmpty() && password.isEmpty());
@@ -1081,15 +1087,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				} catch (IOException e) {
 
-					final String message = "Http connection can can not open stream";
+					final String message = "Http connection can can not open stream. ";
 					logger.debug(message);
 
-					throw new ExtractException(message, e);
+					throw new ExtractException(message + e.getMessage(), e);
 
 				} catch (RDFParseException e) {
 					logger.debug(e.getMessage());
 
-					throw new ExtractException(e);
+					throw new ExtractException(e.getMessage(), e);
 
 				}
 			}
@@ -1102,7 +1108,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			logger.debug(message);
 
-			throw new ExtractException(e);
+			throw new ExtractException(message, e);
 
 		} finally {
 			if (connection != null) {
@@ -1180,7 +1186,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		} catch (MalformedQueryException e) {
 
 			logger.debug(e.getMessage());
-			throw new TransformException(e);
+			throw new TransformException(e.getMessage(), e);
 
 		} catch (UpdateExecutionException ex) {
 
@@ -1188,20 +1194,21 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			logger.debug(message);
 			logger.debug(ex.getMessage());
 
-			throw new TransformException(message+ex.getMessage(), ex);
+			throw new TransformException(message + ex.getMessage(), ex);
 
 
 		} catch (RepositoryException ex) {
 			throw new TransformException(
-					"Connection to repository is not available.", ex);
+					"Connection to repository is not available. "
+					+ ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while executing SPARQL transform.",
-							ex);
+							"Failed to close connection to RDF repository while executing SPARQL transform. "
+							+ ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1236,8 +1243,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while counting triples.",
-							ex);
+							"Failed to close connection to RDF repository while counting triples. "
+							+ ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1283,8 +1290,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while looking for triple.",
-							ex);
+							"Failed to close connection to RDF repository while looking for triple. "
+							+ ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1318,8 +1325,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while cleaning up.",
-							ex);
+							"Failed to close connection to RDF repository while cleaning up. "
+							+ ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1365,19 +1372,21 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				}
 			}
 		} catch (RepositoryException ex) {
-			logger.error(ex.getMessage());
+			logger.error(ex.getMessage(), ex);
 
 		} finally {
 			if (sourceConnection != null) {
 				try {
 					sourceConnection.close();
 				} catch (RepositoryException ex) {
+					logger.error(ex.getMessage(), ex);
 				}
 			}
 			if (targetConnection != null) {
 				try {
 					targetConnection.close();
 				} catch (RepositoryException ex) {
+					logger.error(ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1415,19 +1424,21 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 		} catch (RepositoryException ex) {
 
-			logger.debug(ex.getMessage());
+			logger.debug(ex.getMessage(), ex);
 
 		} finally {
 			if (sourceConnection != null) {
 				try {
 					sourceConnection.close();
 				} catch (RepositoryException ex) {
+					logger.debug(ex.getMessage(), ex);
 				}
 			}
 			if (targetConnection != null) {
 				try {
 					targetConnection.close();
 				} catch (RepositoryException ex) {
+					logger.debug(ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1498,7 +1509,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			loadRDFfromRepositoryToFile(directory.toString(), file.getName(),
 					format, true, false);
 		} catch (CannotOverwriteFileException | LoadException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -1518,7 +1529,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			extractRDFfromFileToRepository(file.getAbsolutePath(), "", "",
 					false);
 		} catch (ExtractException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -1537,7 +1548,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					logger.debug("Repository destroyed SUCCESSFULL");
 				} catch (RepositoryException ex) {
 					logger.debug(
-							"Repository was not destroyed - potencial problems with locks ");
+							"Repository was not destroyed - potencial problems with locks .");
 					logger.debug(ex.getMessage());
 				}
 			}
@@ -1547,7 +1558,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		destroyThread.start();
 	}
 
-	
 	@Override
 	public File makeConstructQueryOverRepository(String constructQuery,
 			RDFFormatType formatType, String fileName) throws InvalidQueryException {
@@ -1610,41 +1620,45 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
-						"This query is probably not valid", ex);
+						"This query is probably not valid. " + ex.getMessage(),
+						ex);
 			} catch (FileNotFoundException ex) {
-				logger.error("Creating fileStream fault - file not found", ex);
+				logger.error("Creating fileStream fault - file not found. "
+						+ ex.getMessage(), ex);
 			} catch (IOException ex) {
-				logger.error("Stream were not closed", ex);
+				logger.error("Stream were not closed. " + ex.getMessage(), ex);
 			} finally {
 				if (result != null) {
 					try {
 						result.close();
 					} catch (QueryEvaluationException ex) {
-						logger.warn("Failed to close RDF tuple result.", ex);
+						logger.warn("Failed to close RDF tuple result. "
+								+ ex.getMessage(), ex);
 					}
 				}
 			}
 
 		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException("This query is probably not valid",
-					ex);
+			throw new InvalidQueryException("This query is probably not valid. "
+					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			logger.error("Connection to RDF repository failed.", ex);
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
 		} catch (RDFHandlerException ex) {
-			logger.error("RDF handler failt", ex);
+			logger.error("RDF handler failt. " + ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while querying.",
-							ex);
+							"Failed to close connection to RDF repository while querying. "
+							+ ex.getMessage(), ex);
 				}
 			}
 		}
 
-		throw new InvalidQueryException("Creating File with RDF data fault");
+		throw new InvalidQueryException("Creating File with RDF data fault.");
 	}
 
 	/**
@@ -1657,7 +1671,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *         empty <code>Map</code>.
 	 */
 	@Override
-	public Map<String, List<String>> makeSelectQueryOverRepository(String selectQuery)
+	public Map<String, List<String>> makeSelectQueryOverRepository(
+			String selectQuery)
 			throws InvalidQueryException {
 
 		Map<String, List<String>> map = new HashMap<>();
@@ -1684,13 +1699,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				listBindings = result.asList();
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
-						"This query is probably not valid", ex);
+						"This query is probably not valid. " + ex.getMessage(),
+						ex);
 			} finally {
 				if (result != null) {
 					try {
 						result.close();
 					} catch (QueryEvaluationException ex) {
-						logger.warn("Failed to close RDF tuple result.", ex);
+						logger.warn("Failed to close RDF tuple result. "
+								+ ex.getMessage(), ex);
 					}
 				}
 			}
@@ -1709,18 +1726,19 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 
 		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException("This query is probably not valid",
-					ex);
+			throw new InvalidQueryException("This query is probably not valid. "
+					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			logger.error("Connection to RDF repository failed.", ex);
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while querying.",
-							ex);
+							"Failed to close connection to RDF repository while querying."
+							+ ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1754,7 +1772,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				mergeRepositoryData(rdfRepository);
 
 			} else {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException(
+						"DataUnit is not instance of RDFDataRepository.");
 			}
 		}
 	}
