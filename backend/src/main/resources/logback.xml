@@ -1,4 +1,14 @@
 <configuration>
+	
+	<appender name="DB" class="ch.qos.logback.classic.db.IntlibDBAppender">
+		<connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+			<driverClass>virtuoso.jdbc4.Driver</driverClass>
+			<url>jdbc:virtuoso://localhost:1111/intlib</url>
+			<user>dba</user>
+			<password>dba</password>
+		</connectionSource>
+	</appender>
+
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
@@ -8,37 +18,13 @@
 		</encoder>
 	</appender>
 
-	<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
-	    
-	    <!-- requiredKey must by in MDC to pass this filter -->	    
-		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcFilter">
-		   <requiredKey>execution</requiredKey>
-		</filter>
-		
-		<discriminator>
-		    <key>file</key>
-		    <defaultValue>unassigned.log</defaultValue>
-		</discriminator>
-		
-		<sift>
-			<appender name="FILE ${execution}" class="ch.qos.logback.core.FileAppender">
-				<file>${file}</file>
-				<append>false</append>
-				<layout class="ch.qos.logback.classic.PatternLayout">
-					<pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
-				</layout>
-			</appender>
-		</sift>
-	</appender>
 
 	<logger name="org.hibernate.type" level="ALL" />
 	<logger name="org.hibernate" level="DEBUG" />
 	
 	<root level="debug">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="SIFT" />
+		<appender-ref ref="DB" />
 	</root>
-
-
 
 </configuration>
