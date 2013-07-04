@@ -58,6 +58,7 @@ public class StatisticalHandler extends RDFHandlerBase {
 		try {
 			super.endRDF();
 			logger.debug("Ending parsing - SUCCESSFUL");
+			logger.debug("TOTAL ADDED:" + tripleCount + " triples");
 		} catch (RDFHandlerException e) {
 			logger.debug("Ending parsing - FAIL");
 			throw new RDFHandlerException(e.getMessage(), e);
@@ -65,23 +66,24 @@ public class StatisticalHandler extends RDFHandlerBase {
 	}
 
 	/**
-	 * 
-	 * @return count of extracted RDF triples 
+	 *
+	 * @return count of extracted RDF triples
 	 */
 	public long getTripleCount() {
 		return tripleCount;
 	}
 
 	/**
-	 * 
-	 * @return collection of all extracted RDF triples 
+	 *
+	 * @return collection of all extracted RDF triples
 	 */
 	public Collection<Statement> getStatements() {
 		return statements;
 	}
 
 	/**
-	 * Clean collection of contains statemensts and reset counter for RDF triples.
+	 * Clean collection of contains statemensts and reset counter for RDF
+	 * triples.
 	 */
 	public void clear() {
 		statements.clear();
