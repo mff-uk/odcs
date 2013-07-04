@@ -67,21 +67,18 @@ public class PipelineExecution  {
 	private ExecutionContextInfo context;
 	
 	/**
-	 * Schedule that crate this execution. Null for  
-	 * execution created by user.
+	 * Schedule that planned this execution. Null for execution created by user.
 	 */
-	@Transient
-	//@ManyToOne(optional = true)
-	//@JoinColumn(name="schedule_id", nullable = true)
+	@ManyToOne(optional = true)
+	@JoinColumn(name="schedule_id", nullable = true)
 	private Schedule schedule;
 	
 	/**
 	 * It true pipeline run in silent mode and the end 
 	 * of the execution can't be used to fire schedule.
 	 */
-	@Transient
-	//@Column(name = "silnetMode")
-	private Boolean silentMode; 
+	@Column(name = "silent_mode")
+	private boolean silentMode; 
 	
 	/** No-arg constructor for JPA */
 	public PipelineExecution() {}
@@ -175,11 +172,11 @@ public class PipelineExecution  {
 		this.schedule = schedule;
 	}
 
-	public Boolean getSilentMode() {
+	public boolean getSilentMode() {
 		return silentMode;
 	}
 
-	public void setSilentMode(Boolean silentMode) {
+	public void setSilentMode(boolean silentMode) {
 		this.silentMode = silentMode;
 	}    
 }
