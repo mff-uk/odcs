@@ -15,10 +15,21 @@ import org.junit.experimental.categories.Category;
 @Category(IntegrationTest.class)
 public class VirtuosoTest extends LocalRDFRepoTest {
 
+	private static final String hostName = "localhost";
+
+	private static final String port = "1111";
+
+	private static final String user = "dba";
+
+	private static final String password = "dba";
+
+	private static final String defaultGraph = "http://default";
+
 	@BeforeClass
 	public static void setUpLogger() {
-		rdfRepo = VirtuosoRDFRepo
-				.createVirtuosoRDFRepo();
+
+		rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName, port, user,
+				password, defaultGraph);
 		rdfRepo.cleanAllRepositoryData();
 	}
 
@@ -61,7 +72,8 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 				public void run() {
 
 					VirtuosoRDFRepo virtuosoRepo = VirtuosoRDFRepo
-							.createVirtuosoRDFRepo();
+							.createVirtuosoRDFRepo(hostName, port, user,
+							password, defaultGraph);
 					virtuosoRepo.setDefaultGraph("http://myDefault");
 
 					addParalelTripleToRepository(virtuosoRepo);
