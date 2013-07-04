@@ -64,6 +64,27 @@ public class ScheduleFacade {
 	}
 	
 	/**
+	 * Fetches all {@link Schedule}s which are activated in
+	 * certain time.
+	 *
+	 * @param pipeline
+	 * @return
+	 */	
+	public List<Schedule> getAllTimeBased() {
+		@SuppressWarnings("unchecked")
+		List<Schedule> resultList = Collections.checkedList(
+			em.createQuery(
+				"SELECT s FROM Schedule s"
+					+ "	JOIN s.afterPipelines p"
+					+ " s.type = :type"
+				).setParameter("type", ScheduleType.PERIODICALLY)
+				.getResultList(),
+				Schedule.class
+		);
+		return resultList;		
+	}
+	
+	/**
 	 * Find Schedule in database by ID and return it.
 	 * @param id
 	 * @return
@@ -77,11 +98,11 @@ public class ScheduleFacade {
 	 * @param schedule
 	 */
 	@Transactional
-	public void save(Schedule schdule) {
-		if (schdule.getId() == null) {
-			em.persist(schdule);
+	public void save(Schedule schedule) {
+		if (schedule.getId() == null) {
+			em.persist(schedule);
 		} else {
-			em.merge(schdule);
+			em.merge(schedule);
 		}
 	}
 
