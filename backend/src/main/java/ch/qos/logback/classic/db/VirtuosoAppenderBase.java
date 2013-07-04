@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.backend.logback.VirtuosoSQLDialect;
  *
  * @author Jan Vojt
  */
-public abstract class IntlibDBAppenderBase extends DBAppenderBase<ILoggingEvent> {
+public abstract class VirtuosoAppenderBase extends DBAppenderBase<ILoggingEvent> {
 
 	@Override
 	public void start() {

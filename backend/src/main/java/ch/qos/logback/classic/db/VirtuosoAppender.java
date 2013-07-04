@@ -38,7 +38,7 @@ import ch.qos.logback.core.CoreConstants;
  * @author Ray DeCampo
  * @author S&eacute;bastien Pennec
  */
-public class IntlibDBAppender extends IntlibDBAppenderBase {
+public class VirtuosoAppender extends VirtuosoAppenderBase {
   protected String insertPropertiesSQL;
   protected String insertExceptionSQL;
   protected String insertSQL;
