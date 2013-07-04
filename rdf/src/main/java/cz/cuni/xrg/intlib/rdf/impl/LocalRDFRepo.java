@@ -308,16 +308,16 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		if (path.toLowerCase().startsWith("http")) {
 
 			extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
-		}
-
-		if (dirFile.isDirectory()) {
+		} else if (dirFile.isDirectory()) {
 			File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
 			addFilesInDirectoryToRepository(files, baseURI, useStatisticHandler,
 					graph);
 
-		}
-		if (dirFile.isFile()) {
+		} else if (dirFile.isFile()) {
 			addFileToRepository(dirFile, baseURI, useStatisticHandler, graph);
+		} else {
+			throw new ExtractException(
+					"Path to file \"" + path + "\"doesnt exist");
 		}
 
 	}
@@ -1178,10 +1178,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 								connection.add(handler.getStatements());
 							}
 						} catch (IOException | RepositoryException ex) {
-							logger.error(ex.getMessage(),ex);
+							logger.error(ex.getMessage(), ex);
 						} catch (RDFHandlerException | RDFParseException ex) {
-							logger.error(ex.getMessage(),ex);
-							throw new ExtractException(ex.getMessage(),ex);
+							logger.error(ex.getMessage(), ex);
+							throw new ExtractException(ex.getMessage(), ex);
 						}
 					}
 

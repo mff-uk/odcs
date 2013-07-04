@@ -14,8 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
@@ -198,8 +197,7 @@ public class LocalRDFRepoTest {
 	}
 
 	@Test
-	public void extractUsingStatisticHandler()
-	{
+	public void extractUsingStatisticHandler() {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
@@ -218,6 +216,29 @@ public class LocalRDFRepoTest {
 
 		assertTrue(newSize > size);
 	}
+
+	@Test
+	public void extractNotExistedFile() {
+		File dirFile = new File("NotExistedFile");
+
+		String suffix = ".rdf";
+		String baseURI = "";
+		boolean useSuffix = true;
+		boolean useStatisticHandler = true;
+
+		long size = rdfRepo.getTripleCountInRepository();
+
+		try {
+			rdfRepo.extractRDFfromFileToRepository(
+					dirFile.getAbsolutePath(), suffix, baseURI, useSuffix,
+					useStatisticHandler);
+			fail();
+		} catch (ExtractException e) {
+			assertEquals(0, size);
+		}
+
+	}
+
 	@Test
 	public void extractRDFFilesToRepository() {
 
