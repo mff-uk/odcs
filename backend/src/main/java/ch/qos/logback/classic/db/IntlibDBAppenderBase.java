@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ch.qos.logback.classic.db;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -10,9 +5,10 @@ import ch.qos.logback.core.db.DBAppenderBase;
 import cz.cuni.xrg.intlib.backend.logback.VirtuosoSQLDialect;
 
 /**
+ * Database appender base. Overrides logback's implementation to be able to
+ * inject Virtuoso dialect.
  *
  * @author Jan Vojt
- * @copyright (c) 2013 Jan Vojt
  */
 public abstract class IntlibDBAppenderBase extends DBAppenderBase<ILoggingEvent> {
 
