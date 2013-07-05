@@ -38,6 +38,15 @@ public class DPUTemplateRecord extends DPURecord {
 	public DPUTemplateRecord() { }
 	
 	/**
+	 * Create DPUTemplateRecord.
+	 * @param name Template name.
+	 * @param type {@linkDPUType} of the template. 
+	 */
+	public DPUTemplateRecord(String name, DPUType type) {
+		super(name, type);
+	}
+	
+	/**
 	 * Create template from given instance.
 	 * @param dpuInstance
 	 */

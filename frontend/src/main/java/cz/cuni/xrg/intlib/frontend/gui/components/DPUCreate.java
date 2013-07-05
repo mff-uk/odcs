@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,9 +53,15 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
+import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
+import cz.cuni.xrg.intlib.commons.extractor.Extract;
+import cz.cuni.xrg.intlib.commons.loader.Load;
+import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
@@ -167,7 +174,6 @@ public class DPUCreate extends Window {
 
 			@Override
 			public void uploadStarted(final StartedEvent event) {
-				// TODO Auto-generated method stub
 				if (uploadInfoWindow.getParent() == null) {
 					UI.getCurrent().addWindow(uploadInfoWindow);
 				}
@@ -202,8 +208,8 @@ public class DPUCreate extends Window {
 		descriptionLabel.setHeight("-1px");
 		dpuGeneralSettingsLayout.addComponent(typeLabel, 0, 5);
 
-		Label DPUType = new Label(" ");
-		dpuGeneralSettingsLayout.addComponent(DPUType, 1, 5);
+		Label DPUTypeLabel = new Label(" ");
+		dpuGeneralSettingsLayout.addComponent(DPUTypeLabel, 1, 5);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
 				false));
@@ -224,23 +230,55 @@ public class DPUCreate extends Window {
 		    	File destFolder = new File(pojPath);
 		 
 		    	
-				try{
-		        	copyFolder(srcFolder,destFolder);
-		           }catch(IOException e){
-		        	e.printStackTrace();
-		        	//error, just exit
-		                System.exit(0);
-		           }
+				try {
+					copyFolder(srcFolder, destFolder);
+				} catch (IOException e) {
+					e.printStackTrace();
+					// error, just exit
+					System.exit(0);
+				}
 				
-				dpuTemplate = new DPUTemplateRecord();
-				dpuTemplate.setName(dpuName.getValue());
+				String relativePath = LineBreakCounter.fName;
+				// we try to load new DPU .. to find out more about it, start by obtaining ModuleFacade
+				Object dpuObject = null;
+				try {
+					dpuObject = App.getApp().getModules().getObject(relativePath);
+				} catch (BundleInstallFailedException
+						| ClassLoadFailedException | FileNotFoundException e) {
+					// for some reason we can't load bundle .. delete dpu and show message to the user
+					
+					// TODO Maria: Delete dpu, show error to the user, end
+				}
+				String jarDescription = App.getApp().getModules().getJarDescription(relativePath);
+				if (jarDescription == null) {
+					// failed to read description .. use empty string ? 
+					jarDescription = "";
+				}
+				
+				// check type ..
+				DPUType dpuType = null;
+				if (dpuObject instanceof Extract) {
+					dpuType = DPUType.Extractor;
+				} else if (dpuObject instanceof Transform) {
+					dpuType = DPUType.Transformer;
+				} else if(dpuObject instanceof Load) {
+					dpuType = DPUType.Loader;
+				} else {
+					// unknown type .. delete dpu and throw error
+					
+					// TODO Maria: Delete dpu, show error (unknown DPU type) to the user and end
+				}
+				
+				// now we know all what we need create record in Database
+				dpuTemplate = new DPUTemplateRecord(dpuName.getValue(), dpuType);
 				dpuTemplate.setDescription(dpuDescription.getValue());
 				dpuTemplate.setVisibility((VisibilityType) groupVisibility
 								.getValue());
 				dpuTemplate.setJarPath(LineBreakCounter.fName);
-				dpuTemplate.setJarDescription("");
-				// TODO Petyr: get from jar DPU type, desrciption, configutarion and set to dpuTemplate.
-
+				dpuTemplate.setJarDescription(jarDescription);				
+				
+				// TODO Petyr, Maria: Load the "default" configuration 
+				
 				App.getDPUs().save(dpuTemplate);
 				close();
 				}
@@ -468,7 +506,6 @@ class LineBreakCounter implements Receiver {
 		try {
 			path = Files.createTempDirectory("jarDPU");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -489,7 +526,6 @@ class LineBreakCounter implements Receiver {
 						try {
 							Thread.sleep(100);
 						} catch (final InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -505,7 +541,6 @@ class LineBreakCounter implements Receiver {
 			};
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			new Notification("Could not open file<br/>", e.getMessage(),
 					Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 			return null;
