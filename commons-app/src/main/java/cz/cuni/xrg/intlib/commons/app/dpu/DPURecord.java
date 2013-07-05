@@ -162,7 +162,7 @@ public class DPURecord {
     }
     
 	public Config getConf() throws ConfigException {
-		if (configuration == null) {
+		if (configuration.length == 0) {
 			return null;
 		}		
 		Config config  = null;

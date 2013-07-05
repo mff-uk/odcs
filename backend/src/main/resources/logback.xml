@@ -1,6 +1,6 @@
 <configuration>
 	
-	<appender name="DB" class="ch.qos.logback.classic.db.IntlibDBAppender">
+	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">
 		<connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
 			<driverClass>virtuoso.jdbc4.Driver</driverClass>
 			<url>jdbc:virtuoso://localhost:1111/intlib</url>
