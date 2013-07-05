@@ -120,14 +120,22 @@ public class ModuleFacade {
 	}
 	
     /**
-     * Return content of manifest for given bundle.
-     * @param uri Path to the bundle.
+     * Return content of manifest for given bundle that 
+     * is stored in DPU's directory.
+     * @param relativePath Relative path in DPU's directory.
      * @return Description stored in manifest file or null in case of error.
-     * @throws MalformedURLException 
      */
-    public String getJarDescription(String uri) throws MalformedURLException {
-    	// can throw
-        URL url = new URL(uri);
+    public String getJarDescription(String relativePath) {
+    	
+    	String uri = "file:///" + configuration.getDpuFolder() + relativePath;
+    	
+        URL url;
+		try {
+			url = new URL(uri);
+		} catch (MalformedURLException ex) {
+			LOG.error("Failed to read create utl from {}", relativePath, ex);
+			return null;
+		}
     	
         try ( InputStream is = url.openStream()) {        	        	
         	Manifest manifest = new Manifest(is);
