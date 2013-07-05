@@ -4,6 +4,7 @@ import com.vaadin.ui.UI;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
 
 /**
@@ -46,5 +47,13 @@ public class App {
 	 */	
 	public static DPUFacade getDPUs() {
 		return getApp().getDPUs();
-	}	
+	}
+	
+    /**
+     * Return facade, which provide services for manipulating with Schedules.
+     * @return schedules facade
+     */	
+	public ScheduleFacade getSchedules() {
+		return getApp().getSchedules();
+	}
 }

@@ -10,6 +10,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
@@ -123,7 +124,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Return facade, which provide services for manipulating with modules.
-	 * @return  modules facade
+	 * @return modules facade
 	 */
 	public ModuleFacade getModules() {
 		return (ModuleFacade) context.getBean("moduleFacade");
@@ -137,6 +138,14 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return (DPUFacade) context.getBean("dpuFacade");
     }
 
+    /**
+     * Return facade, which provide services for manipulating with Schedules.
+     * @return schedules facade
+     */
+    public ScheduleFacade getSchedules() {
+		return (ScheduleFacade) context.getBean("scheduleFacade");
+    }    
+    
     /**
      * Return application configuration class.
      * @return

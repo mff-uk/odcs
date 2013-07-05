@@ -30,7 +30,7 @@ public class ScheduleFacade {
 	 * Returns list of all Plans currently persisted in database.
 	 * @return Plans list
 	 */
-	public List<Schedule> getAllPlans() {
+	public List<Schedule> getAllSchedules() {
 		
 		@SuppressWarnings("unchecked")
 		List<Schedule> resultList = Collections.checkedList(
