@@ -1,10 +1,18 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -12,6 +20,7 @@ import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
@@ -38,10 +47,15 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Upload.StartedEvent;
 
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
+import cz.cuni.xrg.intlib.frontend.AppEntry;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 
 
@@ -56,12 +70,15 @@ public class DPUCreate extends Window {
 	private LineBreakCounter lineBreakCounter;
 	private UploadInfoWindow uploadInfoWindow;
 	private GridLayout dpuGeneralSettingsLayout;
+//	private AppConfig appConfig = null;
+
 
 	public DPUCreate() {
 
 		this.setResizable(false);
 		this.setModal(true);
 		this.setCaption("DPU Creation");
+		
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
@@ -197,6 +214,28 @@ public class DPUCreate extends Window {
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
 		Button saveButton = new Button("Save");
+		saveButton.addClickListener(new ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				
+				//Files.copy(LineBreakCounter.path, target);
+				
+				String  pojPath = App.getApp().getAppConfiguration().getString(ConfigProperty.MODULE_PATH);
+				File srcFolder = new File(LineBreakCounter.path.toString());
+		    	File destFolder = new File(pojPath);
+		 
+		    	
+				try{
+		        	copyFolder(srcFolder,destFolder);
+		           }catch(IOException e){
+		        	e.printStackTrace();
+		        	//error, just exit
+		                System.exit(0);
+		           }
+			}
+		});
 		buttonBar.addComponent(saveButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
@@ -218,6 +257,50 @@ public class DPUCreate extends Window {
 		this.setContent(mainLayout);
 		setSizeUndefined();
 	}
+	
+	
+	public static void copyFolder(File src, File dest)
+	    	throws IOException{
+	 
+	    	if(src.isDirectory()){
+	 
+	    		//if directory not exists, create it
+	    		if(!dest.exists()){
+	    		   dest.mkdir();
+	    		   System.out.println("Directory copied from " 
+	                              + src + "  to " + dest);
+	    		}
+	 
+	    		//list all the directory contents
+	    		String files[] = src.list();
+	 
+	    		for (String file : files) {
+	    		   //construct the src and dest file structure
+	    		   File srcFile = new File(src, file);
+	    		   File destFile = new File(dest, file);
+	    		   //recursive copy
+	    		   copyFolder(srcFile,destFile);
+	    		}
+	 
+	    	}else{
+	    		//if file, then copy it
+	    		//Use bytes stream to support all file types
+	    		FileInputStream in = new FileInputStream(src);
+	    	        OutputStream out = new FileOutputStream(dest); 
+	 
+	    	        byte[] buffer = new byte[1024];
+	 
+	    	        int length;
+	    	        //copy the file content in bytes 
+	    	        while ((length = in.read(buffer)) > 0){
+	    	    	   out.write(buffer, 0, length);
+	    	        }
+	 
+	    	        in.close();
+	    	        out.close();
+	    	        System.out.println("File copied from " + src + " to " + dest);
+	    	}
+	    }
 
 }
 
@@ -355,6 +438,7 @@ class LineBreakCounter implements Receiver {
 	private boolean sleep;
 	private File file;
 	private FileOutputStream fstream = null;
+	public static Path path;
 	/**
 	 * return an OutputStream that simply counts lineends
 	 */
@@ -364,8 +448,16 @@ class LineBreakCounter implements Receiver {
 		total = 0;
 		//FileOutputStream fos = null; // Stream to write to
 		OutputStream fos = null;
+		
 		try {
-			file = new File("C:/tmp/intlib/" + filename);
+			path = Files.createTempDirectory("jarDPU");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
+			file = new File("/"+ path + "/" + filename);
 			fstream = new FileOutputStream(file);
 			fos= new OutputStream() {
 				private static final int searchedByte = '\n';
