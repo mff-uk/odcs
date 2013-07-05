@@ -29,7 +29,7 @@ public class PrimitiveDataUnitMerger implements DataUnitMerger {
 			DataUnit newDataUnit;
 			try {
 				// we do not store reverse mapping for inputs
-				newDataUnit = factory.createInput(rightDataUnit.getType())
+				newDataUnit = factory.createInput(rightDataUnit.getType(), "")
 						.getDataUnit();
 			} catch (DataUnitCreateException e) {
 				throw new ContextException("Failed to create input object.", e);
