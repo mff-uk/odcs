@@ -42,7 +42,7 @@ public class RDFExtractor implements Extract,
 	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
 
 		RDFDataRepository repository =
-				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF, "output");
 
 		try {
 			final URL endpointURL = new URL(config.SPARQL_endpoint);

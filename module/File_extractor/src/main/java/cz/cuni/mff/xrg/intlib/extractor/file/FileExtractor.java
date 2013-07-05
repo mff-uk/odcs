@@ -34,7 +34,7 @@ public class FileExtractor implements Extract,
 	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
 
 		RDFDataRepository repository = 
-				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF, "output");
 		
 		final String baseURI = "";
 		final String path=config.Path;

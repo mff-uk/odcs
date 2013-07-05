@@ -41,7 +41,7 @@ public class SPARQLTransformer implements Transform,
 
 			// create output repository
 			RDFDataRepository outputRepository = 
-					(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+					(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF, "output");
 
 			final String updateQuery = config.SPARQL_Update_Query;
 

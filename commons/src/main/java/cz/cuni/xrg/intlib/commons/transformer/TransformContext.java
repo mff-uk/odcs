@@ -24,15 +24,17 @@ public interface TransformContext extends ProcessingContext {
 	/**
 	 * Request creating a new output DataUnit of given type.
 	 * @param type Type of DataUnit.
+	 * @param name DataUnit's name.
 	 * @return Created DataUnit.
 	 */
-	public DataUnit addOutputDataUnit(DataUnitType type) throws DataUnitCreateException;
+	public DataUnit addOutputDataUnit(DataUnitType type, String name) throws DataUnitCreateException;
 	
 	/**
 	 * Request creating a new output DataUnit of given type.
 	 * @param type Type of DataUnit.
+	 * @param name DataUnit's name.
 	 * @param configu DataUnit initial configuration object.
 	 * @return Created DataUnit.
 	 */
-	public DataUnit addOutputDataUnit(DataUnitType type, Object config) throws DataUnitCreateException;	
+	public DataUnit addOutputDataUnit(DataUnitType type, String name, Object config) throws DataUnitCreateException;	
 }

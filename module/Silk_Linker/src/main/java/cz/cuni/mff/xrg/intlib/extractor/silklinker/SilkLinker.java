@@ -87,21 +87,21 @@ public class SilkLinker implements Extract, Configurable<SilkLinkerConfig>, Conf
         //outputs confirmed
         RDFDataRepository outputRepositoryConfirmed;
         try {
-            outputRepositoryConfirmed = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+            outputRepositoryConfirmed = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF, "outputs_confirmed");
         } catch (DataUnitCreateException e) {
             throw new ExtractException("Can't create DataUnit", e);
         }
-        outputRepositoryConfirmed.extractRDFfromFileToRepository("/Users/tomasknap/.silk/confirmed.ttl", "", "", false);
+        outputRepositoryConfirmed.extractRDFfromFileToRepository("/Users/tomasknap/.silk/confirmed.ttl", "", "", false, false);
         /////////////
         
         //outputs to be verified
         RDFDataRepository outputRepositoryToVerify;
         try {
-            outputRepositoryToVerify = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
+            outputRepositoryToVerify = (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF, "outputs_to_verified");
         } catch (DataUnitCreateException e) {
             throw new ExtractException("Can't create DataUnit", e);
         }
-        outputRepositoryToVerify.extractRDFfromFileToRepository("/Users/tomasknap/.silk/verify.ttl", "", "", false);
+        outputRepositoryToVerify.extractRDFfromFileToRepository("/Users/tomasknap/.silk/verify.ttl", "", "", false, false);
         /////////////
         
 

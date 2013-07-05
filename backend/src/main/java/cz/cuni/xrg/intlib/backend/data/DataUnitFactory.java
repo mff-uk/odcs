@@ -56,60 +56,65 @@ public class DataUnitFactory {
 	 * Create input DataUnit.
 	 *
 	 * @param type DataUnit's type.
+	 * @param name DataUnit's name.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
 	 */
-	public DataUnitContainer createInput(DataUnitType type) throws DataUnitCreateException {
-		return create(type, true);
+	public DataUnitContainer createInput(DataUnitType type, String name) throws DataUnitCreateException {
+		return create(type, name, true);
 	}
 
 	/**
 	 * Create input DataUnit with given configuration.
 	 *
 	 * @param type   DataUnit's type.
+	 * @param name DataUnit's name.
 	 * @param config Initial configuration.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
 	 */
-	public DataUnitContainer createInput(DataUnitType type, Object config)
+	public DataUnitContainer createInput(DataUnitType type, String name, Object config)
 			throws DataUnitCreateException {
-		return create(type, true, config);
+		return create(type, name, true, config);
 	}
 
 	/**
 	 * Create output DataUnit.
 	 *
 	 * @param type DataUnit's type.
+	 * @param name DataUnit's name.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
 	 */
-	public DataUnitContainer createOutput(DataUnitType type) throws DataUnitCreateException {
-		return create(type, false);
+	public DataUnitContainer createOutput(DataUnitType type, String name) throws DataUnitCreateException {
+		return create(type, name, false);
 	}
 
 	/**
 	 * Create output DataUnit.
 	 *
-	 * @param type   DataUnit's type.
+	 * @param type DataUnit's type.
+	 * @param name DataUnit's name.
 	 * @param config Initial configuration.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
 	 */
-	public DataUnitContainer createOutput(DataUnitType type, Object config)
+	public DataUnitContainer createOutput(DataUnitType type, String name, Object config)
 			throws DataUnitCreateException {
-		return create(type, false, config);
+		return create(type, name, false, config);
 	}
 
 	/**
 	 * Create DataUnit.
 	 *
 	 * @param type  DataUnit's type.
+	 * @param name DataUnit's name.
 	 * @param input Should be DataUnit created as input?
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
 	 */
-	private DataUnitContainer create(DataUnitType type, boolean input) throws DataUnitCreateException {
-		Integer index = context.createOutput(instance, "", type);
+	private DataUnitContainer create(DataUnitType type, String name, boolean input) throws DataUnitCreateException {
+		Integer index = context.createOutput(instance, name, type);
 		File tmpDir = context.getDataUnitTmp(instance, index);
 
 		if (type == DataUnitType.RDF) {
@@ -132,11 +137,16 @@ public class DataUnitFactory {
 				return new DataUnitContainer(localRepository, index);
 			case RDF_Virtuoso:				
 				// load configuration from appConfig
-				final String hostName = appConfig.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
-				final String port = appConfig.getString(ConfigProperty.VIRTUOSO_PORT);
-				final String user = appConfig.getString(ConfigProperty.VIRTUOSO_USER);
-				final String password = appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
-				final String defautGraph = appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);				
+				final String hostName = 
+						appConfig.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+				final String port = 
+						appConfig.getString(ConfigProperty.VIRTUOSO_PORT);
+				final String user = 
+						appConfig.getString(ConfigProperty.VIRTUOSO_USER);
+				final String password = 
+						appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+				final String defautGraph = 
+						appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);				
 				// create repository
 				RDFDataRepository virtosoRepository = VirtuosoRDFRepo
 						.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
@@ -149,14 +159,15 @@ public class DataUnitFactory {
 	/**
 	 * Create DataUnit.
 	 *
-	 * @param type   DataUnit's type.
-	 * @param input  Should be DataUnit created as input?
+	 * @param type DataUnit's type.
+	 * @param name DataUnit's name.
+	 * @param input Should be DataUnit created as input?
 	 * @param config COnfiguration for DataUnit.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
 	 */
-	private DataUnitContainer create(DataUnitType type, boolean input,
-			Object config)
+	private DataUnitContainer create(DataUnitType type, String name,
+			boolean input, Object config)
 			throws DataUnitCreateException {
 		switch (type) {
 			case RDF:

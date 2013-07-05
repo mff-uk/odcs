@@ -148,10 +148,10 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 	}
 
 	@Override
-	public DataUnit addOutputDataUnit(DataUnitType type)
+	public DataUnit addOutputDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
 		// create data unit
-		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type);
+		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type, name);
 		// store mapping
 		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
 		// add to outputs
@@ -161,10 +161,10 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 	}
 
 	@Override
-	public DataUnit addOutputDataUnit(DataUnitType type, Object config)
+	public DataUnit addOutputDataUnit(DataUnitType type, String name, Object config)
 			throws DataUnitCreateException {		
 		// create data unit
-		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type, config);
+		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type, name, config);
 		// store mapping
 		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
 		// add to outputs
