@@ -51,6 +51,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
@@ -70,8 +71,7 @@ public class DPUCreate extends Window {
 	private LineBreakCounter lineBreakCounter;
 	private UploadInfoWindow uploadInfoWindow;
 	private GridLayout dpuGeneralSettingsLayout;
-//	private AppConfig appConfig = null;
-
+	private DPUTemplateRecord dpuTemplate;
 
 	public DPUCreate() {
 
@@ -218,10 +218,7 @@ public class DPUCreate extends Window {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				
-				//Files.copy(LineBreakCounter.path, target);
-				
+				if (LineBreakCounter.path!=null){
 				String  pojPath = App.getApp().getAppConfiguration().getString(ConfigProperty.MODULE_PATH);
 				File srcFolder = new File(LineBreakCounter.path.toString());
 		    	File destFolder = new File(pojPath);
@@ -234,7 +231,21 @@ public class DPUCreate extends Window {
 		        	//error, just exit
 		                System.exit(0);
 		           }
+				
+				dpuTemplate = new DPUTemplateRecord();
+				dpuTemplate.setName(dpuName.getValue());
+				dpuTemplate.setDescription(dpuDescription.getValue());
+				dpuTemplate.setVisibility((VisibilityType) groupVisibility
+								.getValue());
+				dpuTemplate.setJarPath(LineBreakCounter.fName);
+				dpuTemplate.setJarDescription("");
+				// TODO Petyr: get from jar DPU type, desrciption, configutarion and set to dpuTemplate.
+
+				App.getDPUs().save(dpuTemplate);
+				close();
+				}
 			}
+
 		});
 		buttonBar.addComponent(saveButton);
 
@@ -301,6 +312,9 @@ public class DPUCreate extends Window {
 	    	        System.out.println("File copied from " + src + " to " + dest);
 	    	}
 	    }
+
+	
+
 
 }
 
@@ -439,6 +453,7 @@ class LineBreakCounter implements Receiver {
 	private File file;
 	private FileOutputStream fstream = null;
 	public static Path path;
+	public static String fName;
 	/**
 	 * return an OutputStream that simply counts lineends
 	 */
@@ -446,6 +461,7 @@ class LineBreakCounter implements Receiver {
 			final String MIMEType) {
 		counter = 0;
 		total = 0;
+		fName=filename;
 		//FileOutputStream fos = null; // Stream to write to
 		OutputStream fos = null;
 		
