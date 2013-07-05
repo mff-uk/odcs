@@ -234,7 +234,8 @@ public class LocalRDFRepoTest {
 					useStatisticHandler);
 			fail();
 		} catch (ExtractException e) {
-			assertEquals(0, size);
+			long newSize=rdfRepo.getTripleCountInRepository();
+			assertEquals(size, newSize);
 		}
 
 	}
