@@ -135,8 +135,8 @@ public class DPUTree extends CustomComponent {
 
 		List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
 		for (DPUTemplateRecord dpu : dpus) {
+			if(dpu.getType()!=null){
 			tree.addItem(dpu);
-
 			switch (dpu.getType()) {
 				case Extractor:
 					tree.setParent(dpu, rootExtractor);
@@ -155,6 +155,7 @@ public class DPUTree extends CustomComponent {
 		tree.expandItem(rootExtractor);
 		tree.expandItem(rootTransformer);
 		tree.expandItem(rootLoader);
+		}
 	}
 
 	/**
