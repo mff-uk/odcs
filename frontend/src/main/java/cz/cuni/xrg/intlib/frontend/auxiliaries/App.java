@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.auxiliaries;
 import com.vaadin.ui.UI;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
+import cz.cuni.xrg.intlib.commons.app.execution.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.frontend.AppEntry;
@@ -53,7 +54,15 @@ public class App {
      * Return facade, which provide services for manipulating with Schedules.
      * @return schedules facade
      */	
-	public ScheduleFacade getSchedules() {
+	public static ScheduleFacade getSchedules() {
 		return getApp().getSchedules();
+	}
+	
+    /**
+     * Return facade, which provide services for manipulating with Logs.
+     * @return log facade
+     */	
+	public static LogFacade getLogs() {
+		return getApp().getLogs();
 	}
 }

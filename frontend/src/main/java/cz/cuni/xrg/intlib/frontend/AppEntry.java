@@ -8,6 +8,7 @@ import com.vaadin.ui.Panel;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
+import cz.cuni.xrg.intlib.commons.app.execution.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
@@ -144,8 +145,16 @@ public class AppEntry extends com.vaadin.ui.UI {
      */
     public ScheduleFacade getSchedules() {
 		return (ScheduleFacade) context.getBean("scheduleFacade");
-    }    
-    
+    }
+
+    /**
+     * Return facade, which provide services for manipulating with Logs.
+     * @return log facade
+     */
+    public LogFacade getLogs() {
+		return (LogFacade) context.getBean("logFacade");
+    }
+
     /**
      * Return application configuration class.
      * @return
@@ -156,7 +165,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Fetches spring bean.
-	 *
 	 * @param name
 	 * @return bean
 	 */
