@@ -178,7 +178,7 @@ public class QueryView extends CustomComponent {
 		} else {
 			// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
 			LOG.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
-			try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath)) {
+			try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath, "")) {
 				repository.load(repoDir);
 				if (isSelectQuery) {
 					data = repository.makeSelectQueryOverRepository(query);

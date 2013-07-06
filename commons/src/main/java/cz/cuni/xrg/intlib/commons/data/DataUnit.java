@@ -28,20 +28,7 @@ public interface DataUnit {
      * @throws {@link IllegalArgumentException} In case of unsupported unit type.
      */
     public void merge(DataUnit unit) throws IllegalArgumentException;
-        
-    /**
-     * Return type of data unit interface implementation.
-     * @return DataUnit type.
-     */
-    public DataUnitType getType();
-
-    /**
-     * Return true if DataUnit is in read only state.
-     * @see {@link #madeReadOnly}
-     * @return True if data in DataUnit are read only.
-     */
-    public boolean isReadOnly();
-    
+            
     /**
      * Release all locks, prepare for being deleted.
      * Can be called even when the DataUnit is in read only 
@@ -74,5 +61,25 @@ public interface DataUnit {
      * @throws RuntimeException
      */
     public void load(File directory) throws FileNotFoundException, RuntimeException;
+    
+    /**
+     * Return type of data unit interface implementation.
+     * @return DataUnit type.
+     */
+    public DataUnitType getType();
+
+    /**
+     * Return dataUnit's name. The DataUnit name
+     * should be set in constructor.
+     * @return
+     */
+    public String getName();
+    
+    /**
+     * Return true if DataUnit is in read only state.
+     * @see {@link #madeReadOnly}
+     * @return True if data in DataUnit are read only.
+     */
+    public boolean isReadOnly();    
 }
 

@@ -33,7 +33,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	public static void setUpLogger() {
 
 		rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName, port, user,
-				password, defaultGraph);
+				password, defaultGraph, "");
 		rdfRepo.cleanAllRepositoryData();
 	}
 
@@ -105,7 +105,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 					VirtuosoRDFRepo virtuosoRepo = VirtuosoRDFRepo
 							.createVirtuosoRDFRepo(hostName, port, user,
-							password, defaultGraph);
+							password, defaultGraph, "");
 					virtuosoRepo.setDefaultGraph("http://myDefault");
 
 					addParalelTripleToRepository(virtuosoRepo);

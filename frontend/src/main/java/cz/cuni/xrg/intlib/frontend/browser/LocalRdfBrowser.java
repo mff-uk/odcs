@@ -32,7 +32,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
 		logger.debug("Create LocalRDFRepo in directory={} dumpDirname={}", directory.toString(), dumpDirName);
 
-		LocalRDFRepo repository = LocalRDFRepo.createLocalRepo(directory.getAbsolutePath(), dumpDirName);
+		LocalRDFRepo repository = LocalRDFRepo.createLocalRepo(directory.getAbsolutePath(), dumpDirName, "");
 
 		try {
 			repository.load(directory);
@@ -70,7 +70,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
 	public void loadDataUnit(File directory) throws Exception {
 		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
 		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());
-		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), "dump_dat.ttl");
+		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), "dump_dat.ttl", "");
 		// TODO Petyr, Jirka : load repository from folder ..
 		// get triples
 		data = repository.getRDFTriplesInRepository();

@@ -114,11 +114,17 @@ public class DataUnitFactory {
 	 * @throws DataUnitCreateException
 	 */
 	private DataUnitContainer create(DataUnitType type, String name, boolean input) throws DataUnitCreateException {
-		Integer index = context.createOutput(instance, name, type);
+		// get index, also register in ExecutionContextInfo
+		Integer index = null;
+		if (input) {
+			index = context.createInput(instance, name, type);
+		} else {
+			index = context.createOutput(instance, name, type);
+		}		
 		File tmpDir = context.getDataUnitTmp(instance, index);
 
 		if (type == DataUnitType.RDF) {
-			// use other based on configuration
+			// select other DataUnit based on configuration
 			if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("virtuoso") == 0) {
 				// use virtuoso
 				type = DataUnitType.RDF_Virtuoso; 
@@ -132,7 +138,7 @@ public class DataUnitFactory {
 			case RDF_Local:
 				// create DataUnit
 				RDFDataRepository localRepository = LocalRDFRepo
-						.createLocalRepo(tmpDir.getAbsolutePath(), id);
+						.createLocalRepo(tmpDir.getAbsolutePath(), id, name);
 				// create container with DataUnit and index
 				return new DataUnitContainer(localRepository, index);
 			case RDF_Virtuoso:				
@@ -149,7 +155,7 @@ public class DataUnitFactory {
 						appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);				
 				// create repository
 				RDFDataRepository virtosoRepository = VirtuosoRDFRepo
-						.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph);
+						.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph, name);
 				return new DataUnitContainer(virtosoRepository, index);
 
 		}

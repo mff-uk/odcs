@@ -63,7 +63,7 @@ public class LocalRDFRepoTest {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		rdfRepo = LocalRDFRepo.createLocalRepo(pathRepo.toString(), "localRepo");
+		rdfRepo = LocalRDFRepo.createLocalRepo(pathRepo.toString(), "localRepo", "");
 	}
 
 	@Test
@@ -824,7 +824,7 @@ public class LocalRDFRepoTest {
 
 						LocalRDFRepo localRepository = LocalRDFRepo
 								.createLocalRepo(path
-								.toString(), "local");
+								.toString(), "local", "");
 
 						addParalelTripleToRepository(localRepository);
 						extractFromFileToRepository(localRepository);

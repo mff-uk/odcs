@@ -21,16 +21,21 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
 	private String defaultGraph;
 	
+	/**
+	 * DataUnit's name.
+	 */
+	private String dataUnitName;
+	
 	static {
 		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
 	}
 
 	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,
-			String port, String user, String password, String defaultGraph) {
+			String port, String user, String password, String defaultGraph, String dataUnitName) {
 		final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port + "/charset=UTF-8/log_enable=2";
 
 		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password,
-				defaultGraph);
+				defaultGraph, dataUnitName);
 		return virtuosoRepo;
 	}
 
@@ -48,14 +53,16 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	 * @param defaultGraph  a default Graph name, used for Sesame calls, when
 	 *                      contexts list is empty, exclude exportStatements,
 	 *                      hasStatement, getStatements methods.
+	 * @param dataUnitName	DataUnit's name. If not used in Pipeline can be empty String.
 	 */
 	public VirtuosoRDFRepo(String URL_Host_List, String user, String password,
-			String defaultGraph) {
+			String defaultGraph, String dataUnitName) {
 
 		this.URL_Host_List = URL_Host_List;
 		this.user = user;
 		this.password = password;
 		this.defaultGraph = defaultGraph;
+		this.dataUnitName = dataUnitName;
 
 		graph = createNewGraph(defaultGraph);
 
@@ -124,9 +131,9 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
-
+		// TODO Jirka: (from Petyr) This method is not used. Why is here? How should be used?
 		VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user,
-				password, defaultGraph);
+				password, defaultGraph, "");
 		copyAllDataToTargetRepository(newCopy);
 
 		return newCopy;
@@ -142,4 +149,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 		return DataUnitType.RDF_Virtuoso;
 	}
 	
+	@Override
+    public String getName() {
+    	return dataUnitName;
+    }	
 }

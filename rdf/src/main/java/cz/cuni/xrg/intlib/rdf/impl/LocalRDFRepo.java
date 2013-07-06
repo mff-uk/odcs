@@ -102,14 +102,19 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	protected Resource graph;
 
 	/**
+	 * DataUnit's name.
+	 */
+	private String dataUnitName;
+		
+	/**
 	 * Create local repository in default path.
-	 *
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
 	 * @return
 	 */
-	public static LocalRDFRepo createLocalRepo() {
+	public static LocalRDFRepo createLocalRepo(String dataUnitName) {
 
 		return LocalRDFRepo.createLocalRepoInTempDirectory(repoDirName,
-				repoFileName);
+				repoFileName, dataUnitName);
 	}
 
 	/**
@@ -118,10 +123,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 * @param dirName
 	 * @param fileName
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
 	 * @return
 	 */
 	public static LocalRDFRepo createLocalRepoInTempDirectory(String dirName,
-			String fileName) {
+			String fileName, String dataUnitName) {
 		Path repoPath = null;
 
 		try {
@@ -131,7 +137,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			throw new RuntimeException(e);
 		}
 
-		return LocalRDFRepo.createLocalRepo(repoPath.toString(), fileName);
+		return LocalRDFRepo.createLocalRepo(repoPath.toString(), fileName, dataUnitName);
 	}
 
 	/**
@@ -141,10 +147,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param repoPath String path to directory where can be repository stored.
 	 * @param fileName String file name, where is repository in directory
 	 *                 stored.
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
 	 * @return
 	 */
-	public static LocalRDFRepo createLocalRepo(String repoPath, String fileName) {
-		LocalRDFRepo localrepo = new LocalRDFRepo(repoPath, fileName);
+	public static LocalRDFRepo createLocalRepo(String repoPath, String fileName, String dataUnitName) {
+		LocalRDFRepo localrepo = new LocalRDFRepo(repoPath, fileName, dataUnitName);
 		return localrepo;
 	}
 
@@ -160,13 +167,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 * @param repositoryPath
 	 * @param fileName
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
 	 */
-	public LocalRDFRepo(String repositoryPath, String fileName) {
-
-		callConstructorSetting(repositoryPath, fileName);
+	public LocalRDFRepo(String repositoryPath, String fileName, String dataUnitName) {
+		callConstructorSetting(repositoryPath, fileName, dataUnitName);
 	}
 
-	private void callConstructorSetting(String repoPath, String fileName) {
+	private void callConstructorSetting(String repoPath, String fileName, String dataUnitName) {
 		setReadOnly(false);
 
 		long timeToStart = 1000L;
@@ -180,6 +187,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		graph = createNewGraph("http://default");
 		WorkingRepoDirectory = dataFile.getParentFile();
 
+		this.dataUnitName = dataUnitName;
+		
 		try {
 			repository.initialize();
 			logger.info("New repository incicialized");
@@ -1891,6 +1900,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		return DataUnitType.RDF_Local;
 	}
 
+	@Override
+    public String getName() {
+    	return dataUnitName;
+    }
+	
 	@Override
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
