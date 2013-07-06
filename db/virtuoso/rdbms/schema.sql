@@ -240,7 +240,7 @@ CREATE TABLE "DB"."INTLIB"."LOGGING_EVENT_PROPERTY"
 (
   event_id BIGINT NOT NULL,
   mapped_key VARCHAR(254) NOT NULL,
-  mapped_value LONG VARCHAR,
+  mapped_value VARCHAR(254),
   PRIMARY KEY (event_id, mapped_key),
   FOREIGN KEY (event_id) REFERENCES "DB"."INTLIB"."LOGGING_EVENT"(event_id)
 );
