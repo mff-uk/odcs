@@ -33,6 +33,9 @@
 
 	<!-- Facade for managing DPUs -->
 	<bean id="dpuFacade" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade" />
+	
+	<!-- Facade for viewing log messages -->
+	<bean id="logFacade" class="cz.cuni.xrg.intlib.commons.app.execution.LogFacade" />
 
 	<!-- Facade for managing plans -->
 	<!-- <bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" /> -->	
