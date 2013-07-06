@@ -29,7 +29,7 @@ public class SPARQLValidator implements Validator {
     public boolean isQueryValid() {
 
         boolean isValid = true;
-        LocalRDFRepo emptyRepo= LocalRDFRepo.createLocalRepo();
+        LocalRDFRepo emptyRepo = LocalRDFRepo.createLocalRepo("");
         try {
             emptyRepo.makeSelectQueryOverRepository(query);
         } catch (InvalidQueryException e) {
