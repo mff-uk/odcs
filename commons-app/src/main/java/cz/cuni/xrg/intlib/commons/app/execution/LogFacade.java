@@ -72,6 +72,27 @@ public class LogFacade {
 	}
 	
 	/**
+	 * Returns all log messages for given pipeline execution.
+	 * 
+	 * @param exec pipeline execution to show logs for
+	 * @return log messages
+	 */
+	public List<LogMessage> getLogs(PipelineExecution exec) {
+				
+		@SuppressWarnings("unchecked")
+		List<LogMessage> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM LogMessage e"
+					+ " WHERE e.properties[:propKey] = :propVal")
+					.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
+					.setParameter("propVal", Long.toString(exec.getId()))
+					.getResultList(),
+				LogMessage.class
+		);
+		
+		return resultList;
+	}
+	
+	/**
 	 * Returns all log messages of given levels for given pipeline execution.
 	 * 
 	 * @param exec pipeline execution to show logs for

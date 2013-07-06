@@ -47,6 +47,19 @@ public class LogFacadeTest {
 	}
 	
 	@Test
+	public void testLogsForExecution() {
+		
+		long execId = 1L;
+		PipelineExecution exec = mock(PipelineExecution.class);
+		when(exec.getId()).thenReturn(execId);
+		
+		List<LogMessage> logs = facade.getLogs(exec);
+		for (LogMessage log : logs) {
+			hasExecutionProperty(log, execId);
+		}
+	}
+	
+	@Test
 	public void testExecutionLogsWarningOrInfo() {
 		
 		long execId = 1L;
