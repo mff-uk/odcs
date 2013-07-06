@@ -17,8 +17,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.Validator;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
@@ -81,7 +79,6 @@ public class DPUCreate extends Window {
 	private UploadInfoWindow uploadInfoWindow;
 	private GridLayout dpuGeneralSettingsLayout;
 	private DPUTemplateRecord dpuTemplate;
-	private TextField uploadFile;
 
 	public DPUCreate() {
 
@@ -110,16 +107,11 @@ public class DPUCreate extends Window {
 		dpuName.setImmediate(false);
 		dpuName.setWidth("310px");
 		dpuName.setHeight("-1px");
-		dpuName.addValidator(new Validator() {
-			
+		dpuName.addValueChangeListener(new Property.ValueChangeListener() {
+
 			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class
-						&& !((String) value).isEmpty()) {
-					return;
-				}
-				throw new InvalidValueException("Name must be filled!");
-				
+			public void valueChange(ValueChangeEvent event) {
+				setCaption(dpuName.getValue());
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
@@ -134,18 +126,6 @@ public class DPUCreate extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("310px");
 		dpuDescription.setHeight("60px");
-		dpuDescription.addValidator(new Validator() {
-			
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class
-						&& !((String) value).isEmpty()) {
-					return;
-				}
-				throw new InvalidValueException("Description must be filled!");
-				
-			}
-		});
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
 		Label visibilityLabel = new Label("Visibility");
@@ -162,9 +142,9 @@ public class DPUCreate extends Window {
 		dpuGeneralSettingsLayout.addComponent(groupVisibility, 1, 2);
 
 		Label selectLabel = new Label("Select .jar file");
-		selectLabel.setImmediate(false);
-		selectLabel.setWidth("-1px");
-		selectLabel.setHeight("-1px");
+		descriptionLabel.setImmediate(false);
+		descriptionLabel.setWidth("-1px");
+		descriptionLabel.setHeight("-1px");
 		dpuGeneralSettingsLayout.addComponent(selectLabel, 0, 3);
 
 		lineBreakCounter = new LineBreakCounter();
@@ -173,7 +153,17 @@ public class DPUCreate extends Window {
 		selectFile = new Upload(null, lineBreakCounter);
 		selectFile.addStyleName("horizontalgroup");
 
-
+		/*
+		 * Panel panel = new Panel("Cool Image Storage"); 
+		 * Layout panelContent = new VerticalLayout(); 
+		 * panel.setContent(panelContent);
+		 * panelContent.addComponent(selectFile);
+		 * 
+		 * // Show uploaded file in this placeholder final 
+		 * Embedded  image = new Embedded("Uploaded Image"); 
+		 * image.setVisible(false);
+		 * panelContent.addComponent(image);
+		 */
 
 		selectFile.addStartedListener(new StartedListener() {
 
@@ -201,15 +191,10 @@ public class DPUCreate extends Window {
 			@Override
 			public void uploadFinished(final FinishedEvent event) {
 				uploadInfoWindow.setClosable(true);
-//				dpuGeneralSettingsLayout.removeComponent(1, 4);
-//				dpuGeneralSettingsLayout.addComponent(new Label(" Upload file: "+ event.getFilename()), 1, 4);
-				uploadFile.setReadOnly(false);
-				uploadFile.setValue(event.getFilename());
-				uploadFile.setReadOnly(true);
+				dpuGeneralSettingsLayout.removeComponent(1, 4);
+				dpuGeneralSettingsLayout.addComponent(new Label(" Upload file: "+ event.getFilename()), 1, 4);
 			}
 		});
-		
-		
 
 		uploadInfoWindow = new UploadInfoWindow(selectFile, lineBreakCounter);
 
@@ -217,33 +202,14 @@ public class DPUCreate extends Window {
 
 		dpuGeneralSettingsLayout.addComponent(selectFile, 1, 3);
 
-		Label uploadLabel = new Label("Upload file");
-		uploadLabel.setImmediate(false);
-		uploadLabel.setWidth("-1px");
-		uploadLabel.setHeight("-1px");
-		dpuGeneralSettingsLayout.addComponent(uploadLabel, 0, 4);
-		
-		uploadFile = new TextField();
-		uploadFile.setWidth("310px");
-		uploadFile.setInputPrompt("file_name.jar");
-		uploadFile.setReadOnly(true);
+		Label typeLabel = new Label("Type");
+		descriptionLabel.setImmediate(false);
+		descriptionLabel.setWidth("-1px");
+		descriptionLabel.setHeight("-1px");
+		dpuGeneralSettingsLayout.addComponent(typeLabel, 0, 5);
 
-		uploadFile.addValidator(new Validator() {
-			
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class
-						&& !((String) value).isEmpty()) {
-					return;
-				}
-				throw new InvalidValueException("Upload file must be filled!");
-				
-			}
-		});
-		dpuGeneralSettingsLayout.addComponent(uploadFile, 1, 4);
-
-//		Label DPUTypeLabel = new Label(" ");
-//		dpuGeneralSettingsLayout.addComponent(DPUTypeLabel, 1, 5);
+		Label DPUTypeLabel = new Label(" ");
+		dpuGeneralSettingsLayout.addComponent(DPUTypeLabel, 1, 5);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
 				false));
@@ -258,11 +224,6 @@ public class DPUCreate extends Window {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if ((!dpuName.isValid())||(!dpuDescription.isValid())||(!uploadFile.isValid())) {
-					Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-								
 				if (LineBreakCounter.path!=null){
 				String  pojPath = App.getApp().getAppConfiguration().getString(ConfigProperty.MODULE_PATH);
 				File srcFolder = new File(LineBreakCounter.path.toString());
@@ -320,7 +281,6 @@ public class DPUCreate extends Window {
 				
 				App.getDPUs().save(dpuTemplate);
 				close();
-
 				}
 			}
 
@@ -387,7 +347,7 @@ public class DPUCreate extends Window {
 	 
 	    	        in.close();
 	    	        out.close();
-
+	    	        System.out.println("File copied from " + src + " to " + dest);
 	    	}
 	    }
 
