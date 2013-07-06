@@ -13,11 +13,14 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component.Event;
+import com.vaadin.ui.Window.CloseListener;
 
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.util.IndexedContainer;
@@ -48,10 +51,12 @@ import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
+import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.DetailClosedListener;
 import cz.cuni.xrg.intlib.frontend.gui.views.Scheduler.actionColumnGenerator;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
+import java.util.EventObject;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -124,6 +129,7 @@ class DPU extends ViewComponent {
 		mainLayout.setHeight("100%");
 		mainLayout.setStyleName("mainLayout");
 
+
 		// top-level component properties
 	//	setSizeUndefined();
 		setWidth("100%");
@@ -144,6 +150,14 @@ class DPU extends ViewComponent {
 					public void buttonClick(ClickEvent event) {
 						DPUCreate createDPU = new DPUCreate();
 						App.getApp().addWindow(createDPU);
+						createDPU.addListener(new CloseListener() {
+							
+							@Override
+							public void windowClose(CloseEvent e) {
+								// TODO Auto-generated method stub
+								dpuTree.refresh();
+							}
+						});
 					}
 				});
 		buttonBar.addComponent(buttonCreateDPU);
@@ -593,7 +607,11 @@ class DPU extends ViewComponent {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-					
+						if (!dpuName.isValid()) {
+							Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
+							return;
+						}
+						
 						if ((selectedDpuWrap != null )
 								&& (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
 							selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue());
