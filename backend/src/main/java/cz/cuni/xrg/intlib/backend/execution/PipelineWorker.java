@@ -53,6 +53,7 @@ import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformStartEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
+import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -67,10 +68,6 @@ import org.springframework.context.ApplicationEventPublisher;
  * 
  */
 class PipelineWorker implements Runnable {
-	
-	private static final String MDC_DPU_INSTANCE_KEY_NAME = "dpuInstance"; 
-	
-	private static final String MDPU_EXECUTION_KEY_NAME = "execution";
 	
 	/**
 	 * PipelineExecution record, determine pipeline to run.
@@ -203,7 +200,7 @@ class PipelineWorker implements Runnable {
 		PipelineFacade pipelineFacade = database.getPipeline();
 		
 		// add marker to logs from this thread -> both must be specified !!
-		MDC.put(MDPU_EXECUTION_KEY_NAME, Long.toString( execution.getId() ) );
+		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, Long.toString( execution.getId() ) );
 		
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
@@ -221,7 +218,7 @@ class PipelineWorker implements Runnable {
 			boolean result;
 			
 			// put dpuInstance id to MDC, so we can identify logs related to the dpuInstance
-			MDC.put(MDC_DPU_INSTANCE_KEY_NAME, Long.toString(node.getDpuInstance().getId()) );
+			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, Long.toString(node.getDpuInstance().getId()) );
 			try {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
@@ -246,7 +243,7 @@ class PipelineWorker implements Runnable {
 				executionFailed = true;
 				break;
 			}
-			MDC.remove(MDC_DPU_INSTANCE_KEY_NAME);
+			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
 				
 			// TODO Petyr: save custom data .. !
 			if (result) {

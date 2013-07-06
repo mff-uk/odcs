@@ -18,6 +18,19 @@ import javax.persistence.*;
 public class LogMessage {
 
 	/**
+	 * Log property name for logging messages produced by
+	 * {@link PipelineExecution}.
+	 */
+	public static final String MDPU_EXECUTION_KEY_NAME = "execution";
+
+	/**
+	 * Log property name for logging messages produced
+	 * by {@link DPUInstanceRecord}. Such logs usually contain
+	 * a {@link #MDPU_EXECUTION_KEY_NAME} as well.
+	 */
+	public static final String MDC_DPU_INSTANCE_KEY_NAME = "dpuInstance";
+
+	/**
 	 * Primary key of message stored in database.
 	 */
 	@Id
