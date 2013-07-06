@@ -241,7 +241,7 @@ public class LocalRDFRepoTest {
 	}
 
 	@Test
-	public void extractRDFFilesToRepository() {
+	public void extract_RDFXML_FilesToRepository() {
 
 		String suffix = ".rdf";
 		String baseURI = "";
@@ -261,9 +261,9 @@ public class LocalRDFRepoTest {
 
 		assertTrue(newSize > size);
 	}
-
+	
 	@Test
-	public void extractN3FilesToRepository() {
+	public void extract_N3_FilesToRepository() {
 
 		String suffix = ".n3";
 		String baseURI = "";
@@ -284,6 +284,98 @@ public class LocalRDFRepoTest {
 
 		assertTrue(newSize > size);
 	}
+	@Test
+	public void extract_TTL_FilesToRepository() {
+
+		String suffix = ".ttl";
+		String baseURI = "";
+		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
+
+		long size = rdfRepo.getTripleCountInRepository();
+
+		try {
+			rdfRepo.extractRDFfromFileToRepository(
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+		} catch (ExtractException e) {
+			fail(e.getMessage());
+
+		}
+
+		long newSize = rdfRepo.getTripleCountInRepository();
+
+		assertTrue(newSize > size);
+	}
+	
+	@Test
+	public void extract_NTRIPLES_FilesToRepository() {
+		
+		String suffix = ".nt";
+		String baseURI = "";
+		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
+
+		long size = rdfRepo.getTripleCountInRepository();
+
+		try {
+			rdfRepo.extractRDFfromFileToRepository(
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+		} catch (ExtractException e) {
+			fail(e.getMessage());
+
+		}
+
+		long newSize = rdfRepo.getTripleCountInRepository();
+
+		assertTrue(newSize > size);
+	}
+	
+	@Test
+	public void extract_TRIG_FilesToRepository() {
+
+		String suffix = ".trig";
+		String baseURI = "";
+		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
+
+		long size = rdfRepo.getTripleCountInRepository();
+
+		try {
+			rdfRepo.extractRDFfromFileToRepository(
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+		} catch (ExtractException e) {
+			fail(e.getMessage());
+
+		}
+
+		long newSize = rdfRepo.getTripleCountInRepository();
+
+		assertTrue(newSize > size);
+	}
+	
+	@Test
+	public void extract_TRIX_FilesToRepository() {
+
+		String suffix = ".trix";
+		String baseURI = "";
+		boolean useSuffix = true;
+		boolean useStatisticHandler = false;
+
+		long size = rdfRepo.getTripleCountInRepository();
+
+		try {
+			rdfRepo.extractRDFfromFileToRepository(
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+		} catch (ExtractException e) {
+			fail(e.getMessage());
+
+		}
+
+		long newSize = rdfRepo.getTripleCountInRepository();
+
+		assertTrue(newSize > size);
+	}
+	
 
 	@Test
 	public void loadAllToXMLfile() {

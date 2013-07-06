@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.rdf;
 
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
+import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import java.io.File;
 import java.io.IOException;
@@ -8,11 +9,14 @@ import java.nio.file.Files;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 
+import static cz.cuni.xrg.intlib.rdf.LocalRDFRepoTest.rdfRepo;
+import static org.junit.Assert.fail;
+
 /**
  *
  * @author Jiri Tomes
  */
-@Category(IntegrationTest.class)
+//@Category(IntegrationTest.class)
 public class VirtuosoTest extends LocalRDFRepoTest {
 
 	private static final String hostName = "localhost";
@@ -59,6 +63,34 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@Override
 	public void BIGDataTest() {
 		super.BIGDataTest();
+	}
+
+	@Test
+	public void BIGTwoGigaFileExtraction() {
+		//extractTwoGigaFile();
+
+	}
+
+	private void extractTwoGigaFile() {
+		String suffix = "ted1.n3";
+		String baseURI = "";
+		boolean useSuffix = true;
+		boolean useStatisticHandler = true;
+
+		long size = rdfRepo.getTripleCountInRepository();
+
+		try {
+			rdfRepo.extractRDFfromFileToRepository(
+					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+		} catch (ExtractException e) {
+			fail(e.getMessage());
+		}
+
+		long newSize = rdfRepo.getTripleCountInRepository();
+
+		LOG.debug("EXTRACTING from FILE - OK");
+		LOG.debug(
+				"EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
 	}
 
 	@Test

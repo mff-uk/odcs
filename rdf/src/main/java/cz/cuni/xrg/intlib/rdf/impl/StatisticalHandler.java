@@ -61,6 +61,7 @@ public class StatisticalHandler extends RDFHandlerBase {
 			logger.debug("TOTAL ADDED:" + tripleCount + " triples");
 		} catch (RDFHandlerException e) {
 			logger.debug("Ending parsing - FAIL");
+			logger.debug("TOTAL ADDED:" + tripleCount + " triples");
 			throw new RDFHandlerException(e.getMessage(), e);
 		}
 	}

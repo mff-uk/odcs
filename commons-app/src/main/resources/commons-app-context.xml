@@ -37,8 +37,8 @@
 	<!-- Facade for viewing log messages -->
 	<bean id="logFacade" class="cz.cuni.xrg.intlib.commons.app.execution.LogFacade" />
 
-	<!-- Facade for managing plans -->
-	<!-- <bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" /> -->	
+	<!-- Facade for managing shedules -->
+	<bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" />	
 	
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
 	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig">
