@@ -225,7 +225,6 @@ public class DPUCreate extends Window {
 		
 		uploadFile = new TextField();
 		uploadFile.setWidth("310px");
-		uploadFile.setInputPrompt("file_name.jar");
 		uploadFile.setReadOnly(true);
 
 		uploadFile.addValidator(new Validator() {
@@ -267,6 +266,7 @@ public class DPUCreate extends Window {
 				String  pojPath = App.getApp().getAppConfiguration().getString(ConfigProperty.MODULE_PATH);
 				File srcFolder = new File(LineBreakCounter.path.toString());
 		    	File destFolder = new File(pojPath);
+				File wrongFile = new File(pojPath+ LineBreakCounter.fName);
 		 
 		    	
 				try {
@@ -285,8 +285,14 @@ public class DPUCreate extends Window {
 				} catch (BundleInstallFailedException
 						| ClassLoadFailedException | FileNotFoundException e) {
 					// for some reason we can't load bundle .. delete dpu and show message to the user
+					wrongFile.delete();
+					uploadFile.setReadOnly(false);
+					uploadFile.setValue("");
+					uploadFile.setReadOnly(true);
+					Notification.show("Can't load bundle because of exception:",e.getMessage(), Notification.Type.ERROR_MESSAGE);
+					return;
 					
-					// TODO Maria: Delete dpu, show error to the user, end
+					
 				}
 				String jarDescription = App.getApp().getModules().getJarDescription(relativePath);
 				if (jarDescription == null) {
@@ -304,8 +310,13 @@ public class DPUCreate extends Window {
 					dpuType = DPUType.Loader;
 				} else {
 					// unknown type .. delete dpu and throw error
+					wrongFile.delete();
+					uploadFile.setReadOnly(false);
+					uploadFile.setValue("");
+					uploadFile.setReadOnly(true);
+					Notification.show("Unknown DPURecord type.","Upload another file", Notification.Type.ERROR_MESSAGE);
+					return;
 					
-					// TODO Maria: Delete dpu, show error (unknown DPU type) to the user and end
 				}
 				
 				// now we know all what we need create record in Database
