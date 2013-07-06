@@ -8,13 +8,17 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -67,8 +71,13 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param level {@link Level} to filter log messages.
 	 */
 	private void filterLogMessages(Level level) {
-		//TODO: Replace with Facade call with level X store last data and use&filter them
-		List<LogMessage> data = getData(pipelineExecution, dpu);
+		
+		Set<Level> levels = new HashSet<>();
+		levels.add(level);
+		
+		List<LogMessage> data = getData(pipelineExecution, dpu, levels);
+		
+		// ... filter
 		List<LogMessage> filteredData = new ArrayList<>();
 		for (LogMessage message : data) {
 			if (message.getLevel().intValue() >= level.intValue()) {
@@ -88,11 +97,20 @@ public class LogMessagesTable extends CustomComponent {
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
 		this.dpu = dpu;
 		this.pipelineExecution = exec;
-		//TODO: Replace with Facade call - if null - get data for whole pipeline
-		List<LogMessage> data = getData(pipelineExecution, dpu);
+		
+		Set<Level> levels = new HashSet<>();
+		levels.add(Level.ALL);
+		
+		List<LogMessage> data = getData(pipelineExecution, dpu, levels);		
 		loadMessageTable(data);
 	}
 
+	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Set<Level> level) {
+		LogFacade facade = App.getLogs();
+		// TODO Add information about DPUInstanceRecord
+		return facade.getLogs(exec, level);
+	}
+	
 	/**
 	 * Initializes the table.
 	 *
@@ -100,31 +118,11 @@ public class LogMessagesTable extends CustomComponent {
 	 */
 	private void loadMessageTable(List<LogMessage> data) {
 		Container container = ContainerFactory.CreateLogMessages(data);
+		
 		messageTable.setContainerDataSource(container);
-
-
 		messageTable.setVisibleColumns(
 				new String[]{"date", "thread", "level",
 			"source", "message"});
 	}
 
-	/**
-	 * Stub method for providing log messages associated with the given dpu
-	 * execution, until LogFacade is completed.
-	 *
-	 * @param exec {@link PipelineExecution} for which the log messages should
-	 * be obtained
-	 * @param dpu {@link DPUInstanceRecord} for which the log messages should be
-	 * obtained
-	 * @return Returns List of {@link LogMessages} associated with the given
-	 * {@link DPUInstanceRecord} execution
-	 */
-	private List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu) {
-		List<LogMessage> data = new ArrayList<>();
-		data.add(new LogMessage(1L, Level.INFO, new Date(), "[pool-2-thread-1]", "c.c.x.i.b.execution.PipelineWorker", "Started"));
-		data.add(new LogMessage(2L, Level.WARNING, new Date(), "[pool-2-thread-1]", "o.h.type.descriptor.sql.BasicBinder", "binding parameter [5] as [TIMESTAMP] - Mon Jun 24 08:32:29 CEST 2013"));
-		data.add(new LogMessage(3L, Level.SEVERE, new Date(), "[pool-2-thread-1]", "o.o.rio.helpers.ParseErrorLogger", "'http://dbpedia.org/datatype/squareKilometre' is not recognized as a supported xsd datatype. (57, -1)"));
-
-		return data;
-	}
 }
