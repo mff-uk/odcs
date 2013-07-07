@@ -14,7 +14,7 @@ public class FileExtractorConfig implements Config {
 
 	public String FileSuffix;
 
-	public String OnlyThisText;
+	public String RDFFormatValue;
 
 	public boolean OnlyThisSuffix;
 

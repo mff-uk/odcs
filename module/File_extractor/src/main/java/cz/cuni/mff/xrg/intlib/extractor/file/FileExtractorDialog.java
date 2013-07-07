@@ -58,9 +58,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		} else {
 			FileExtractorConfig conf = new FileExtractorConfig();
 			conf.Path = textFieldPath.getValue();
-			conf.FileSuffix = (String) comboBoxFormat.getValue();
-			conf.OnlyThisText = textFieldOnly.getValue();
-			conf.OnlyThisSuffix = false;
+			conf.FileSuffix = textFieldOnly.getValue();
+			conf.RDFFormatValue=(String)comboBoxFormat.getValue();
+			conf.OnlyThisSuffix = textFieldOnly.getValue().isEmpty();
 			conf.UseStatisticalHandler = useHandler.getValue();
 
 			return conf;
@@ -71,8 +71,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	public void setConfiguration(FileExtractorConfig conf) {
 		try {
 			textFieldPath.setValue(conf.Path);
-			comboBoxFormat.setValue(conf.FileSuffix);
-			textFieldOnly.setValue(conf.OnlyThisText);
+			comboBoxFormat.setValue(conf.RDFFormatValue);
+			textFieldOnly.setValue(conf.FileSuffix);
 			useHandler.setValue(conf.UseStatisticalHandler);
 		} catch (Property.ReadOnlyException | Converter.ConversionException ex) {
 			// throw setting exception
@@ -149,7 +149,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		textFieldOnly.setImmediate(false);
 		textFieldOnly.setWidth("50px");
 		textFieldOnly.setHeight("-1px");
-		textFieldOnly.setInputPrompt("*.ttl");
+		textFieldOnly.setInputPrompt(".ttl");
 		horizontalLayoutOnly.addComponent(textFieldOnly);
 		horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
 				Alignment.TOP_RIGHT);
