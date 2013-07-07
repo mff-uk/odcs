@@ -29,10 +29,12 @@ public class StatisticalHandler extends RDFHandlerBase {
 		try {
 			super.handleStatement(st);
 			statements.add(st);
-			logger.debug(
-					"Added next triple: subject:" + st.getSubject() + " predicate:"
-					+ st.getPredicate() + " object:" + st.getObject());
 			tripleCount++;
+			
+			logger.debug(
+					"Added next triple n."+tripleCount+": subject:" + st.getSubject() + " predicate:"
+					+ st.getPredicate() + " object:" + st.getObject());
+			
 
 		} catch (RDFHandlerException e) {
 			logger.error("Error by adding next triple");
