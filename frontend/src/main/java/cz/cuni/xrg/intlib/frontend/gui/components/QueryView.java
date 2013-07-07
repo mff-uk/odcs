@@ -130,6 +130,7 @@ public class QueryView extends CustomComponent {
 				mimeType = DownloadStreamResource.MIME_TYPE_TTL;
 				filename = "data.ttl";
 				break;
+			case AUTO:
 			case RDFXML:
 				mimeType = DownloadStreamResource.MIME_TYPE_RDFXML;
 				filename = "data.rdf";
