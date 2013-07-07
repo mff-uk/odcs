@@ -80,7 +80,7 @@ public class DPUCreate extends Window {
 	private GridLayout dpuGeneralSettingsLayout;
 	private DPUTemplateRecord dpuTemplate;
 	private TextField uploadFile;
-	int fl=0;
+	public static int fl=0;
 
 	public DPUCreate() {
 
@@ -218,6 +218,9 @@ public class DPUCreate extends Window {
 					uploadFile.setReadOnly(true);
 				}
 				else{
+					uploadFile.setReadOnly(false);
+					uploadFile.setValue("");
+					uploadFile.setReadOnly(true);
 					fl=0;
 				}
 			}
@@ -277,7 +280,7 @@ public class DPUCreate extends Window {
 							.getString(ConfigProperty.MODULE_PATH);
 					File srcFile = new File(LineBreakCounter.file.toString());
 					File destFile = new File(pojPath + LineBreakCounter.fName);
-					File wrongFile = new File(pojPath + LineBreakCounter.fName);
+
 
 					boolean exists = destFile.exists();
 					if (!exists) {
@@ -307,7 +310,7 @@ public class DPUCreate extends Window {
 							| ClassLoadFailedException | FileNotFoundException e) {
 						// for some reason we can't load bundle .. delete dpu
 						// and show message to the user
-						wrongFile.delete();
+						destFile.delete();
 						uploadFile.setReadOnly(false);
 						uploadFile.setValue("");
 						uploadFile.setReadOnly(true);
@@ -334,7 +337,7 @@ public class DPUCreate extends Window {
 						dpuType = DPUType.Loader;
 					} else {
 						// unknown type .. delete dpu and throw error
-						wrongFile.delete();
+						destFile.delete();
 						uploadFile.setReadOnly(false);
 						uploadFile.setValue("");
 						uploadFile.setReadOnly(true);
@@ -458,6 +461,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				upload.interruptUpload();
+				DPUCreate.fl=1;
 			}
 		});
 		cancelButton.setVisible(false);
