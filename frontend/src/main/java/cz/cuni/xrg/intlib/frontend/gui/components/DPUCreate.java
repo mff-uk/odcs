@@ -68,8 +68,6 @@ import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 
-
-
 public class DPUCreate extends Window {
 
 	private TextField dpuName;
@@ -88,7 +86,6 @@ public class DPUCreate extends Window {
 		this.setResizable(false);
 		this.setModal(true);
 		this.setCaption("DPU Creation");
-		
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
@@ -111,7 +108,7 @@ public class DPUCreate extends Window {
 		dpuName.setWidth("310px");
 		dpuName.setHeight("-1px");
 		dpuName.addValidator(new Validator() {
-			
+
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class
@@ -119,7 +116,7 @@ public class DPUCreate extends Window {
 					return;
 				}
 				throw new InvalidValueException("Name must be filled!");
-				
+
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
@@ -135,7 +132,7 @@ public class DPUCreate extends Window {
 		dpuDescription.setWidth("310px");
 		dpuDescription.setHeight("60px");
 		dpuDescription.addValidator(new Validator() {
-			
+
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class
@@ -143,7 +140,7 @@ public class DPUCreate extends Window {
 					return;
 				}
 				throw new InvalidValueException("Description must be filled!");
-				
+
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
@@ -173,8 +170,6 @@ public class DPUCreate extends Window {
 		selectFile = new Upload(null, lineBreakCounter);
 		selectFile.addStyleName("horizontalgroup");
 
-
-
 		selectFile.addStartedListener(new StartedListener() {
 
 			/**
@@ -201,19 +196,13 @@ public class DPUCreate extends Window {
 			@Override
 			public void uploadFinished(final FinishedEvent event) {
 				uploadInfoWindow.setClosable(true);
-//				dpuGeneralSettingsLayout.removeComponent(1, 4);
-//				dpuGeneralSettingsLayout.addComponent(new Label(" Upload file: "+ event.getFilename()), 1, 4);
 				uploadFile.setReadOnly(false);
 				uploadFile.setValue(event.getFilename());
 				uploadFile.setReadOnly(true);
 			}
 		});
-		
-		
 
 		uploadInfoWindow = new UploadInfoWindow(selectFile, lineBreakCounter);
-
-		
 
 		dpuGeneralSettingsLayout.addComponent(selectFile, 1, 3);
 
@@ -222,13 +211,13 @@ public class DPUCreate extends Window {
 		uploadLabel.setWidth("-1px");
 		uploadLabel.setHeight("-1px");
 		dpuGeneralSettingsLayout.addComponent(uploadLabel, 0, 4);
-		
+
 		uploadFile = new TextField();
 		uploadFile.setWidth("310px");
 		uploadFile.setReadOnly(true);
 
 		uploadFile.addValidator(new Validator() {
-			
+
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class
@@ -236,13 +225,10 @@ public class DPUCreate extends Window {
 					return;
 				}
 				throw new InvalidValueException("Upload file must be filled!");
-				
+
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(uploadFile, 1, 4);
-
-//		Label DPUTypeLabel = new Label(" ");
-//		dpuGeneralSettingsLayout.addComponent(DPUTypeLabel, 1, 5);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
 				false));
@@ -254,83 +240,103 @@ public class DPUCreate extends Window {
 
 		Button saveButton = new Button("Save");
 		saveButton.addClickListener(new ClickListener() {
-			
+
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if ((!dpuName.isValid())||(!dpuDescription.isValid())||(!uploadFile.isValid())) {
-					Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
+				if ((!dpuName.isValid()) || (!dpuDescription.isValid())
+						|| (!uploadFile.isValid())) {
+					Notification.show("Failed to save DPURecord",
+							"Mandatory fields should be filled",
+							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-								
-				if (LineBreakCounter.path!=null){
-				String  pojPath = App.getApp().getAppConfiguration().getString(ConfigProperty.MODULE_PATH);
-				File srcFolder = new File(LineBreakCounter.path.toString());
-		    	File destFolder = new File(pojPath);
-				File wrongFile = new File(pojPath+ LineBreakCounter.fName);
-		 
-		    	
-				try {
-					copyFolder(srcFolder, destFolder);
-				} catch (IOException e) {
-					e.printStackTrace();
-					// error, just exit
-					System.exit(0);
-				}
-				
-				String relativePath = LineBreakCounter.fName;
-				// we try to load new DPU .. to find out more about it, start by obtaining ModuleFacade
-				Object dpuObject = null;
-				try {
-					dpuObject = App.getApp().getModules().getObject(relativePath);
-				} catch (BundleInstallFailedException
-						| ClassLoadFailedException | FileNotFoundException e) {
-					// for some reason we can't load bundle .. delete dpu and show message to the user
-					wrongFile.delete();
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue("");
-					uploadFile.setReadOnly(true);
-					Notification.show("Can't load bundle because of exception:",e.getMessage(), Notification.Type.ERROR_MESSAGE);
-					return;
-					
-					
-				}
-				String jarDescription = App.getApp().getModules().getJarDescription(relativePath);
-				if (jarDescription == null) {
-					// failed to read description .. use empty string ? 
-					jarDescription = "";
-				}
-				
-				// check type ..
-				DPUType dpuType = null;
-				if (dpuObject instanceof Extract) {
-					dpuType = DPUType.Extractor;
-				} else if (dpuObject instanceof Transform) {
-					dpuType = DPUType.Transformer;
-				} else if(dpuObject instanceof Load) {
-					dpuType = DPUType.Loader;
-				} else {
-					// unknown type .. delete dpu and throw error
-					wrongFile.delete();
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue("");
-					uploadFile.setReadOnly(true);
-					Notification.show("Unknown DPURecord type.","Upload another file", Notification.Type.ERROR_MESSAGE);
-					return;
-					
-				}
-				
-				// now we know all what we need create record in Database
-				dpuTemplate = new DPUTemplateRecord(dpuName.getValue(), dpuType);
-				dpuTemplate.setDescription(dpuDescription.getValue());
-				dpuTemplate.setVisibility((VisibilityType) groupVisibility
-								.getValue());
-				dpuTemplate.setJarPath(LineBreakCounter.fName);
-				dpuTemplate.setJarDescription(jarDescription);				
-				
-				// TODO Petyr, Maria: Load the "default" configuration 
-				
-				App.getDPUs().save(dpuTemplate);
-				close();
+
+				if (LineBreakCounter.path != null) {
+					String pojPath = App.getApp().getAppConfiguration()
+							.getString(ConfigProperty.MODULE_PATH);
+					File srcFile = new File(LineBreakCounter.file.toString());
+					File destFile = new File(pojPath + LineBreakCounter.fName);
+					File wrongFile = new File(pojPath + LineBreakCounter.fName);
+
+					boolean exists = destFile.exists();
+					if (!exists) {
+						try {
+							copyFile(srcFile, destFile);
+						} catch (IOException e) {
+							e.printStackTrace();
+							// error, just exit
+							System.exit(0);
+						}
+					} else {
+						Notification.show(
+								"File " + LineBreakCounter.fName +" already exist",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+
+					}
+
+					String relativePath = LineBreakCounter.fName;
+					// we try to load new DPU .. to find out more about it,
+					// start by obtaining ModuleFacade
+					Object dpuObject = null;
+					try {
+						dpuObject = App.getApp().getModules()
+								.getObject(relativePath);
+					} catch (BundleInstallFailedException
+							| ClassLoadFailedException | FileNotFoundException e) {
+						// for some reason we can't load bundle .. delete dpu
+						// and show message to the user
+						wrongFile.delete();
+						uploadFile.setReadOnly(false);
+						uploadFile.setValue("");
+						uploadFile.setReadOnly(true);
+						Notification.show(
+								"Can't load bundle because of exception:",
+								e.getMessage(), Notification.Type.ERROR_MESSAGE);
+						return;
+
+					}
+					String jarDescription = App.getApp().getModules()
+							.getJarDescription(relativePath);
+					if (jarDescription == null) {
+						// failed to read description .. use empty string ?
+						jarDescription = "";
+					}
+
+					// check type ..
+					DPUType dpuType = null;
+					if (dpuObject instanceof Extract) {
+						dpuType = DPUType.Extractor;
+					} else if (dpuObject instanceof Transform) {
+						dpuType = DPUType.Transformer;
+					} else if (dpuObject instanceof Load) {
+						dpuType = DPUType.Loader;
+					} else {
+						// unknown type .. delete dpu and throw error
+						wrongFile.delete();
+						uploadFile.setReadOnly(false);
+						uploadFile.setValue("");
+						uploadFile.setReadOnly(true);
+						Notification.show("Unknown DPURecord type.",
+								"Upload another file",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+
+					}
+
+					// now we know all what we need create record in Database
+					dpuTemplate = new DPUTemplateRecord(dpuName.getValue(),
+							dpuType);
+					dpuTemplate.setDescription(dpuDescription.getValue());
+					dpuTemplate.setVisibility((VisibilityType) groupVisibility
+							.getValue());
+					dpuTemplate.setJarPath(LineBreakCounter.fName);
+					dpuTemplate.setJarDescription(jarDescription);
+
+					// TODO Petyr, Maria: Load the "default" configuration
+
+					App.getDPUs().save(dpuTemplate);
+					close();
 
 				}
 			}
@@ -357,53 +363,33 @@ public class DPUCreate extends Window {
 		this.setContent(mainLayout);
 		setSizeUndefined();
 	}
-	
-	
-	public static void copyFolder(File src, File dest)
-	    	throws IOException{
-	 
-	    	if(src.isDirectory()){
-	 
-	    		//if directory not exists, create it
-	    		if(!dest.exists()){
-	    		   dest.mkdir();
-	    		   System.out.println("Directory copied from " 
-	                              + src + "  to " + dest);
-	    		}
-	 
-	    		//list all the directory contents
-	    		String files[] = src.list();
-	 
-	    		for (String file : files) {
-	    		   //construct the src and dest file structure
-	    		   File srcFile = new File(src, file);
-	    		   File destFile = new File(dest, file);
-	    		   //recursive copy
-	    		   copyFolder(srcFile,destFile);
-	    		}
-	 
-	    	}else{
-	    		//if file, then copy it
-	    		//Use bytes stream to support all file types
-	    		FileInputStream in = new FileInputStream(src);
-	    	        OutputStream out = new FileOutputStream(dest); 
-	 
-	    	        byte[] buffer = new byte[1024];
-	 
-	    	        int length;
-	    	        //copy the file content in bytes 
-	    	        while ((length = in.read(buffer)) > 0){
-	    	    	   out.write(buffer, 0, length);
-	    	        }
-	 
-	    	        in.close();
-	    	        out.close();
 
-	    	}
-	    }
+	public static void copyFile(File src, File dest) throws IOException {
 
-	
+		InputStream inStream = null;
+		OutputStream outStream = null;
+		try {
 
+			inStream = new FileInputStream(src);
+			outStream = new FileOutputStream(dest); 
+
+			byte[] buffer = new byte[1024];
+
+			int length;
+			while ((length = inStream.read(buffer)) > 0) {
+				outStream.write(buffer, 0, length);
+			}
+
+			if (inStream != null)
+				inStream.close();
+			if (outStream != null)
+				outStream.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 }
 
@@ -463,7 +449,6 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 		fileName.setCaption("File name");
 		l.addComponent(fileName);
-		
 
 		result.setCaption("Line breaks counted");
 		l.addComponent(result);
@@ -519,7 +504,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	@Override
 	public void uploadSucceeded(final SucceededEvent event) {
 		result.setValue(counter.getLineBreakCount() + " (total)");
-		
+
 	}
 
 	@Override
@@ -539,10 +524,11 @@ class LineBreakCounter implements Receiver {
 	private int counter;
 	private int total;
 	private boolean sleep;
-	private File file;
+	public static File file;
 	private FileOutputStream fstream = null;
 	public static Path path;
 	public static String fName;
+
 	/**
 	 * return an OutputStream that simply counts lineends
 	 */
@@ -550,20 +536,20 @@ class LineBreakCounter implements Receiver {
 			final String MIMEType) {
 		counter = 0;
 		total = 0;
-		fName=filename;
-		//FileOutputStream fos = null; // Stream to write to
+		fName = filename;
+
 		OutputStream fos = null;
-		
+
 		try {
 			path = Files.createTempDirectory("jarDPU");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		try {
-			file = new File("/"+ path + "/" + filename);
+			file = new File("/" + path + "/" + filename);
 			fstream = new FileOutputStream(file);
-			fos= new OutputStream() {
+			fos = new OutputStream() {
 				private static final int searchedByte = '\n';
 
 				@Override
@@ -580,17 +566,16 @@ class LineBreakCounter implements Receiver {
 							e.printStackTrace();
 						}
 					}
-					
+
 				}
-				
+
 				@Override
-				public void close() throws IOException
-				{
+				public void close() throws IOException {
 					fstream.close();
 					super.close();
 				}
 			};
-			
+
 		} catch (FileNotFoundException e) {
 			new Notification("Could not open file<br/>", e.getMessage(),
 					Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
