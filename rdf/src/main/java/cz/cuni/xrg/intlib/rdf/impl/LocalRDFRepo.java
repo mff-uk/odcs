@@ -105,10 +105,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * DataUnit's name.
 	 */
 	private String dataUnitName;
-		
+
 	/**
 	 * Create local repository in default path.
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
+	 *
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
+	 *                     String.
 	 * @return
 	 */
 	public static LocalRDFRepo createLocalRepo(String dataUnitName) {
@@ -123,7 +125,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 * @param dirName
 	 * @param fileName
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
+	 *                     String.
 	 * @return
 	 */
 	public static LocalRDFRepo createLocalRepoInTempDirectory(String dirName,
@@ -137,21 +140,26 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			throw new RuntimeException(e);
 		}
 
-		return LocalRDFRepo.createLocalRepo(repoPath.toString(), fileName, dataUnitName);
+		return LocalRDFRepo.createLocalRepo(repoPath.toString(), fileName,
+				dataUnitName);
 	}
 
 	/**
 	 * Create local repository in string path 'repoPath' in the file named
 	 * 'fileName', where is repository stored.
 	 *
-	 * @param repoPath String path to directory where can be repository stored.
-	 * @param fileName String file name, where is repository in directory
-	 *                 stored.
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
+	 * @param repoPath     String path to directory where can be repository
+	 *                     stored.
+	 * @param fileName     String file name, where is repository in directory
+	 *                     stored.
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
+	 *                     String.
 	 * @return
 	 */
-	public static LocalRDFRepo createLocalRepo(String repoPath, String fileName, String dataUnitName) {
-		LocalRDFRepo localrepo = new LocalRDFRepo(repoPath, fileName, dataUnitName);
+	public static LocalRDFRepo createLocalRepo(String repoPath, String fileName,
+			String dataUnitName) {
+		LocalRDFRepo localrepo = new LocalRDFRepo(repoPath, fileName,
+				dataUnitName);
 		return localrepo;
 	}
 
@@ -167,13 +175,16 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 * @param repositoryPath
 	 * @param fileName
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty String.
+	 * @param dataUnitName   DataUnit's name. If not used in Pipeline can be
+	 *                       empty String.
 	 */
-	public LocalRDFRepo(String repositoryPath, String fileName, String dataUnitName) {
+	public LocalRDFRepo(String repositoryPath, String fileName,
+			String dataUnitName) {
 		callConstructorSetting(repositoryPath, fileName, dataUnitName);
 	}
 
-	private void callConstructorSetting(String repoPath, String fileName, String dataUnitName) {
+	private void callConstructorSetting(String repoPath, String fileName,
+			String dataUnitName) {
 		setReadOnly(false);
 
 		long timeToStart = 1000L;
@@ -188,7 +199,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		WorkingRepoDirectory = dataFile.getParentFile();
 
 		this.dataUnitName = dataUnitName;
-		
+
 		try {
 			repository.initialize();
 			logger.info("New repository incicialized");
@@ -456,6 +467,24 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				RDFParser parser = Rio.createParser(fileFormat);
 				parser.setRDFHandler(handler);
+				
+				parser.setStopAtFirstError(false);
+				parser.setParseErrorListener(new ParseErrorListener() {
+					@Override
+					public void warning(String msg, int lineNo, int colNo) {
+						logger.warn(msg + "line:" + lineNo + "column:" + colNo);
+					}
+
+					@Override
+					public void error(String msg, int lineNo, int colNo) {
+						logger.error(msg + "line:" + lineNo + "column:" + colNo);
+					}
+
+					@Override
+					public void fatalError(String msg, int lineNo, int colNo) {
+						logger.error(msg + "line:" + lineNo + "column:" + colNo);
+					}
+				});
 				try {
 					parser.parse(is, baseURI);
 					if (graphs != null) {
@@ -1901,10 +1930,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	@Override
-    public String getName() {
-    	return dataUnitName;
-    }
-	
+	public String getName() {
+		return dataUnitName;
+	}
+
 	@Override
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
