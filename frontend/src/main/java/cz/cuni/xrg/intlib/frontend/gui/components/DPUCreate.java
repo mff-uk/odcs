@@ -80,6 +80,7 @@ public class DPUCreate extends Window {
 	private GridLayout dpuGeneralSettingsLayout;
 	private DPUTemplateRecord dpuTemplate;
 	private TextField uploadFile;
+	int fl=0;
 
 	public DPUCreate() {
 
@@ -179,6 +180,20 @@ public class DPUCreate extends Window {
 
 			@Override
 			public void uploadStarted(final StartedEvent event) {
+				String filename = event.getFilename();
+				String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
+				String jar = "jar";
+				
+				if(!jar.equals(extension)){
+					selectFile.interruptUpload();
+					fl=1;
+					Notification.show(
+							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
+
+					return;
+					
+				}
+				
 				if (uploadInfoWindow.getParent() == null) {
 					UI.getCurrent().addWindow(uploadInfoWindow);
 				}
@@ -195,10 +210,16 @@ public class DPUCreate extends Window {
 
 			@Override
 			public void uploadFinished(final FinishedEvent event) {
+				
 				uploadInfoWindow.setClosable(true);
-				uploadFile.setReadOnly(false);
-				uploadFile.setValue(event.getFilename());
-				uploadFile.setReadOnly(true);
+				if(fl==0){
+					uploadFile.setReadOnly(false);
+					uploadFile.setValue(event.getFilename());
+					uploadFile.setReadOnly(true);
+				}
+				else{
+					fl=0;
+				}
 			}
 		});
 
