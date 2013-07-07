@@ -145,11 +145,11 @@ public class SchedulePipeline extends CustomComponent {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				Object a = comboPipeline.getValue();
-			//	selectPipe.removeItem(a)
-				mainLayout.removeComponent(1, 1);
-				afterLayout= buildAfterLayout();
-				mainLayout.addComponent(afterLayout,1,1);
+				if (scheduleType.getValue().equals(ScheduleType.AFTER_PIPELINE)){
+					mainLayout.removeComponent(1, 1);
+					afterLayout= buildAfterLayout();
+					mainLayout.addComponent(afterLayout,1,1);
+				}
 			}
 		});
 
@@ -203,8 +203,10 @@ public class SchedulePipeline extends CustomComponent {
 				// TODO Auto-generated method stub
 				schedule = new Schedule();
 				
-				schedule.setType((ScheduleType)scheduleType.getValue());
+	//			schedule.setType((ScheduleType)scheduleType.getValue());
 				schedule.setJustOnce(justOnce.getValue());
+				
+				App.getApp().getSchedules().save(schedule);
 				
 /*				schedule.setPipeline(comboPipeline.getValue());
 				schedule.setType((ScheduleType)scheduleType.getValue());

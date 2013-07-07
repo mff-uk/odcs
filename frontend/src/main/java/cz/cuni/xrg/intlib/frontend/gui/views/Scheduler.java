@@ -480,11 +480,7 @@ class Scheduler extends ViewComponent {
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
 			layout.addComponent(deleteButton);
-			
-			
-			Button monitorButton = new Button();
-			monitorButton.setCaption("View monitor");
-			layout.addComponent(monitorButton);
+
 
 			return layout;
 		}
