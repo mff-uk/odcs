@@ -342,6 +342,7 @@ public class SchedulePipeline extends Window {
 					schedule.setPeriodUnit(null);
 					schedule.setPeriod(null);
 				}
+				schedule.setEnabled(true);
 
 				App.getApp().getSchedules().save(schedule);
 				close();
