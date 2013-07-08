@@ -147,7 +147,8 @@ class PipelineList extends ViewComponent {
 							SchedulePipeline  sch = new SchedulePipeline();
 							sch.setSelectePipeline(pipeline);
 							//sch.selectedPipeline=pipeline;
-							openScheduler(sch);
+							//openScheduler(sch);
+							App.getApp().addWindow(sch);
 							
 
 						}
@@ -159,7 +160,7 @@ class PipelineList extends ViewComponent {
 
 	}
 	
-	private void openScheduler(final SchedulePipeline schedule) {
+/*	private void openScheduler(final SchedulePipeline schedule) {
 		Window scheduleWindow = new Window("Schedule a pipeline", schedule);
 		scheduleWindow.setImmediate(true);
 		scheduleWindow.setWidth("820px");
@@ -178,7 +179,7 @@ class PipelineList extends ViewComponent {
 			}
 		});
 		App.getApp().addWindow(scheduleWindow);
-	}
+	}*/
 
 
 	public PipelineList() {
