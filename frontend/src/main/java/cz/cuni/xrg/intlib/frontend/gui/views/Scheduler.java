@@ -450,6 +450,8 @@ class Scheduler extends ViewComponent {
 					}
 				}
 			} else {
+				
+	
 				 result.getContainerProperty(num,
 				 "rule").setValue("Run after pipeline(s) " );
 			}
@@ -569,18 +571,27 @@ class Scheduler extends ViewComponent {
 							// open scheduler dialog
 
 							SchedulePipeline sch = new SchedulePipeline();
+
 							//openScheduler(sch);
+							schId = (Long) tableData.getContainerProperty(itemId, "schid")
+									.getValue();
+							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
+							for(Schedule item:schedulers)
+								{	if(item.getId().equals(schId)){
+									sch.setSelectedSchedule(item);	
+									break;
+									}
+								}
 
 							App.getApp().addWindow(sch);
 							sch.addListener(new CloseListener() {
-								
-								@Override
-								public void windowClose(CloseEvent e) {
-									// TODO Auto-generated method stub
-									refreshData();
-								}
-							});
-
+									
+									@Override
+									public void windowClose(CloseEvent e) {
+										// TODO Auto-generated method stub
+										refreshData();
+									}
+								});
 						}
 					});
 			layout.addComponent(editButton);
