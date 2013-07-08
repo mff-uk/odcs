@@ -50,6 +50,7 @@ public class DataUnitFactory {
 		this.id = id;
 		this.instance = instance;
 		this.context = context;
+		this.appConfig = appConfig;
 	}
 
 	/**
@@ -114,6 +115,24 @@ public class DataUnitFactory {
 	 * @throws DataUnitCreateException
 	 */
 	private DataUnitContainer create(DataUnitType type, String name, boolean input) throws DataUnitCreateException {
+		
+		if (type == DataUnitType.RDF) {
+			// select other DataUnit based on configuration
+			if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF) == null) {
+				// use local 
+				type = DataUnitType.RDF_Local;
+			} else {
+				// chose based on option			
+				if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("virtuoso") == 0) {
+					// use virtuoso
+					type = DataUnitType.RDF_Virtuoso; 
+				} else {
+					// use local
+					type = DataUnitType.RDF_Local;
+				}
+			}
+		}		
+		
 		// get index, also register in ExecutionContextInfo
 		Integer index = null;
 		if (input) {
@@ -122,17 +141,6 @@ public class DataUnitFactory {
 			index = context.createOutput(instance, name, type);
 		}		
 		File tmpDir = context.getDataUnitTmp(instance, index);
-
-		if (type == DataUnitType.RDF) {
-			// select other DataUnit based on configuration
-			if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("virtuoso") == 0) {
-				// use virtuoso
-				type = DataUnitType.RDF_Virtuoso; 
-			} else {
-				// use local
-				type = DataUnitType.RDF_Local;
-			}
-		}
 		
 		switch (type) {
 			case RDF_Local:
