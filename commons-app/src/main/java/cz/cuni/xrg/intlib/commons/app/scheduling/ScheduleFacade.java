@@ -119,7 +119,7 @@ public class ScheduleFacade {
 		if (s != null) {
 			em.remove(s);
 		} else {
-			logger.warn("Schedule with ID " + s.getId() + " was not found and so cannot be deleted!");
+			logger.warn("Schedule with ID " + schedule.getId() + " was not found and so cannot be deleted!");
 		}
 	}	
 	

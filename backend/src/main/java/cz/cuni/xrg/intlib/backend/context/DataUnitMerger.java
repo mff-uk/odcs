@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.backend.context;
 import java.util.List;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
-import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 
 /**

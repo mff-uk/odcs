@@ -7,8 +7,6 @@ import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
-import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType.*;
-
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.GraphNotEmptyException;

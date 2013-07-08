@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
 
 /**

@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.osgi.framework.Bundle;

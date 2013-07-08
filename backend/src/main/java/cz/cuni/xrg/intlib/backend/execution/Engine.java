@@ -170,7 +170,7 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 							eventPublisher.publishEvent(
 									new PipelineFailedEvent(
 											"Failed to recover. The working directory can't be deleted.", 
-											null, execution, this));
+											node.getDpuInstance(), execution, this));
 						}
 						// set pipeline execution to failed
 						execution.setExecutionStatus(ExecutionStatus.FAILED);

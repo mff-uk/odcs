@@ -76,7 +76,6 @@ public class ExecutionContextInfo {
 	 * Helper attribute to be able to persist root directory as a path string.
 	 * Must be synchronized with {@link #rootDirectory}.
 	 */
-	@SuppressWarnings("unused")
     @Column(name="directory")
 	private String rootPath;
     

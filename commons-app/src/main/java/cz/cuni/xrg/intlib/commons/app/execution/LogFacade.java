@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import java.util.Collections;
 import java.util.HashSet;

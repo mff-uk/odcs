@@ -8,7 +8,6 @@ import java.util.Set;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import java.awt.Point;
 import java.io.Serializable;
 import javax.persistence.*;
 

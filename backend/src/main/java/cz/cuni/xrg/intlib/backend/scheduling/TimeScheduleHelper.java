@@ -56,6 +56,9 @@ class TimeScheduleHelper {
 			case HOUR:
 				// in case of hours just use time from last execution
 				return (timeDiffMinutes / 60) > period;
+			default:
+				// solve in following code
+				break;
 		}
 		// in the following we will need calendar support
 		Calendar firstExecCalendar = Calendar.getInstance();

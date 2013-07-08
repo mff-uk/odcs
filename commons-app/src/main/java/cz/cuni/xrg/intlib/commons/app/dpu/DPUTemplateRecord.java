@@ -6,9 +6,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
-import javax.persistence.Transient;
-
 /**
  * 
  * 
