@@ -1,6 +1,13 @@
 <configuration>
 	
 	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">
+	    
+	    <!-- requiredKey must by in MDC to pass this filter, 
+	    	so only messages related to executions will pass-->	    
+		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcFilter">
+		   <requiredKey>execution</requiredKey>
+		</filter>	    
+	    
 		<connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
 			<driverClass>virtuoso.jdbc4.Driver</driverClass>
 			<url>jdbc:virtuoso://localhost:1111/intlib</url>
