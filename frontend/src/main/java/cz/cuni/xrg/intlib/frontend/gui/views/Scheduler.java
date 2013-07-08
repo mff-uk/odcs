@@ -440,19 +440,19 @@ class Scheduler extends ViewComponent {
 			if (item.getType().equals(ScheduleType.PERIODICALLY)) {
 				if (item.isJustOnce()) {
 					result.getContainerProperty(num, "rule").setValue(
-							"Run on " + item.getFirstExecution().toString());
+							"Run on " + item.getFirstExecution().toLocaleString());
 				} else {
 					if (item.getPeriod().equals((long)1)) {
 						result.getContainerProperty(num, "rule").setValue(
 								"Run on "
-										+ item.getFirstExecution().toString()
+										+ item.getFirstExecution().toLocaleString()
 										+ " and then repeat every "
 										+ item.getPeriodUnit().toString()
 												.toLowerCase());
 					} else {
 						result.getContainerProperty(num, "rule").setValue(
 								"Run on "
-										+ item.getFirstExecution().toString()
+										+ item.getFirstExecution().toLocaleString()
 										+ " and then repeat every "
 										+ item.getPeriod().toString()
 										+ " "
@@ -461,9 +461,8 @@ class Scheduler extends ViewComponent {
 					}
 				}
 			} else {
-				// result.getContainerProperty(num,
-				// "rule").setValue("Run after pipeline(s) " +
-				// item.getAfterPipelines().toString() + " finishes.");
+				 result.getContainerProperty(num,
+				 "rule").setValue("Run after pipeline(s) " );
 			}
 
 			result.getContainerProperty(num, "schid").setValue(item.getId());
