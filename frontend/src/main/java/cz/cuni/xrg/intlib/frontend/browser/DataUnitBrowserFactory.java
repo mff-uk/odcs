@@ -18,15 +18,14 @@ public class DataUnitBrowserFactory {
 	 * Return browser for specified DataUnit.
 	 * @param context The pipelineExecution context.
 	 * @param dpuInstance Owner of DataUnit.
-	 * @param isInput True if use inputs.
 	 * @param dataUnitIndex Index of data unit.
-	 * @return
+	 * @return Browser or null if there is no browser for given type.
 	 * @throws DataUnitNotFoundException
 	 * @throws BrowserInitFailedException
 	 */
 	public static DataUnitBrowser getBrowser(
 			ExecutionContextInfo context, DPUInstanceRecord dpuInstance, 
-			boolean isInput, DataUnitInfo info)
+			DataUnitInfo info)
 		throws DataUnitNotFoundException, BrowserInitFailedException{
 		// get type and directory
 		
@@ -35,7 +34,7 @@ public class DataUnitBrowserFactory {
 			throw new DataUnitNotFoundException();
 		}
 		File directory = info.getDirectory();
-		// TODO Petyr : return some component like "The data unit context can't be read ... " ?
+
 		switch(info.getType()) {
 		case RDF_Local:
 			DataUnitBrowser localRdfBrowser = new LocalRdfBrowser();
@@ -52,5 +51,4 @@ public class DataUnitBrowserFactory {
 		}
 	}
 
-	// TODO Petyr provide function like getBrowser(DataUnitInfo .. )
 }

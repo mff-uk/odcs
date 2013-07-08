@@ -242,7 +242,7 @@ public class DebuggingView extends CustomComponent {
 				try {
 					//File dumpDir = ctxReader.getDataUnitStorage(debugDpu, dataUnitInfo.getIndex());
 					duBrowser =
-							DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, showInput, dataUnitInfo);
+							DataUnitBrowserFactory.getBrowser(ctxReader, debugDpu, dataUnitInfo);
 				} catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
