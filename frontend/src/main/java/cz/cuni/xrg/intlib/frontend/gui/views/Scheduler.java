@@ -342,7 +342,7 @@ class Scheduler extends ViewComponent {
 
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
-		schedulerTable.setPageLength(10);
+		schedulerTable.setPageLength(20);
 
 		Button addRuleButton = new Button();
 		addRuleButton.setCaption("Add new scheduling rule");
@@ -383,18 +383,6 @@ class Scheduler extends ViewComponent {
 	}
 
 	public static IndexedContainer getTableData(List<Schedule> data) {
-
-		// String[] pipeline = { "Extract data from TED", "Legal pipeline 1",
-		// "Legal data cleaner" };
-		// String[] rule = {
-		// "Run on 1.9.2013 at 6:00 and then repeat every day",
-		// "Run on 3.9.2013 at 0:00 and then repeat every week",
-		// "Run after Legal pipeline 1 finishes" };
-		// String[] user = { "tomask", "tomask", "jirit" };
-		// String[] last = { "6.9.2013 6:06", "3.9.2013 1:56", "3.9.2013 2:22"
-		// };
-		// String[] next = { "7.9.2013 6:00", "10.9.2013 0:00", "N/A" };
-		// String[] status = { "Enabled", "Enabled", "Disabled" };
 
 		IndexedContainer result = new IndexedContainer();
 
@@ -599,6 +587,26 @@ class Scheduler extends ViewComponent {
 
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
+			deleteButton.addClickListener(new ClickListener() {
+				
+				@Override
+				public void buttonClick(ClickEvent event) {
+					
+					
+					schId = (Long) tableData.getContainerProperty(itemId, "schid")
+							.getValue();
+
+					List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
+					for(Schedule item:schedulers)
+						{	if(item.getId().equals(schId)){
+
+							App.getApp().getSchedules().delete(item);
+							}
+						}
+					refreshData();
+					
+				}
+			});
 			layout.addComponent(deleteButton);
 
 			return layout;
