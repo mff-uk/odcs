@@ -79,6 +79,7 @@ class Scheduler extends ViewComponent {
 
 	private ComboBox debugFilter;
 	int style = DateFormat.MEDIUM;
+	private Long schId;
 
 	static String filter;
 
@@ -525,11 +526,47 @@ class Scheduler extends ViewComponent {
 
 				if (testStatus == "Disabled") {
 					Button enableButton = new Button("Enable");
+					enableButton.addClickListener(new ClickListener() {
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							
+							schId = (Long) tableData.getContainerProperty(itemId, "schid")
+									.getValue();
+							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
+							for(Schedule item:schedulers)
+								{	if(item.getId().equals(schId)){
+									item.setEnabled(true);
+									App.getApp().getSchedules().save(item);
+									}
+								}
+							refreshData();
+							
+						}
+					});
 					layout.addComponent(enableButton);
 
 				} else {
 					Button disableButton = new Button();
 					disableButton.setCaption("Disable");
+					disableButton.addClickListener(new ClickListener() {
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							
+							schId = (Long) tableData.getContainerProperty(itemId, "schid")
+									.getValue();
+							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
+							for(Schedule item:schedulers)
+								{	if(item.getId().equals(schId)){
+									item.setEnabled(false);
+									App.getApp().getSchedules().save(item);
+									}
+								}
+							refreshData();
+							
+						}
+					});
 					layout.addComponent(disableButton);
 				}
 
@@ -553,7 +590,6 @@ class Scheduler extends ViewComponent {
 								public void windowClose(CloseEvent e) {
 									// TODO Auto-generated method stub
 									refreshData();
-									schedulerTable.setVisibleColumns(visibleCols);
 								}
 							});
 
