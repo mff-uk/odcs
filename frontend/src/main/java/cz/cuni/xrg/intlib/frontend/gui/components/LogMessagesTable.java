@@ -100,6 +100,9 @@ public class LogMessagesTable extends CustomComponent {
 		
 		Set<Level> levels = new HashSet<>();
 		levels.add(Level.ALL);
+		levels.add(Level.INFO);
+		levels.add(Level.WARNING);
+		levels.add(Level.SEVERE);
 		
 		List<LogMessage> data = getData(pipelineExecution, dpu, levels);		
 		loadMessageTable(data);
