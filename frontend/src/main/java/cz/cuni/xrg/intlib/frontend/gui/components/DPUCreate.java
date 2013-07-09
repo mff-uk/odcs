@@ -360,6 +360,7 @@ public class DPUCreate extends Window {
 					// TODO Petyr, Maria: Load the "default" configuration
 
 					App.getDPUs().save(dpuTemplate);
+					uploadInfoWindow.close();
 					close();
 
 				}
