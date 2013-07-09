@@ -149,6 +149,18 @@ public class ExecutionContextInfo {
 	}
 	
 	/**
+	 * Return instance of {@link #rootDirectory} if it's not 
+	 * initialised then create it first from {@link #rootPath}
+	 * @return
+	 */
+	private File getRootDirectoryInstance() {
+		if (rootDirectory == null) {
+			rootDirectory = new File(rootPath);
+		} 
+		return rootDirectory;		
+	}
+	
+	/**
 	 * Return set of indexes of stored DPU's execution information.
 	 * @return
 	 */
@@ -167,7 +179,7 @@ public class ExecutionContextInfo {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		//
-		File tmpDir = new File(rootDirectory, 
+		File tmpDir = new File(getRootDirectoryInstance(), 
 				WORKING_DIR + File.separatorChar + 
 				DPU_ID_PREFIX + dpuInstance.getId().toString() + 
 				File.separatorChar + WORKING_TMP_DIR);
@@ -187,7 +199,7 @@ public class ExecutionContextInfo {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		//		
-		File tmpDir = new File(rootDirectory, 
+		File tmpDir = new File(getRootDirectoryInstance(), 
 				WORKING_DIR + File.separatorChar + 
 				DPU_ID_PREFIX + dpuInstance.getId().toString() + 
 				File.separatorChar + index.toString());
@@ -207,7 +219,7 @@ public class ExecutionContextInfo {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		//		
-		File storageDir = new File(rootDirectory, 
+		File storageDir = new File(getRootDirectoryInstance(), 
 				STORAGE_DIR + File.separatorChar + 
 				DPU_ID_PREFIX + dpuInstance.getId().toString() + 
 				File.separatorChar + index.toString());
@@ -224,7 +236,7 @@ public class ExecutionContextInfo {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		//		
-		File storageDir = new File(rootDirectory, 
+		File storageDir = new File(getRootDirectoryInstance(), 
 				RESULT_DIR + File.separatorChar + 
 				DPU_ID_PREFIX+ dpuInstance.getId().toString() );
 		return storageDir;			
@@ -272,7 +284,7 @@ public class ExecutionContextInfo {
 	 * @return
 	 */
 	public File getDirectoryForResults() {
-		return new File(rootDirectory, RESULT_DIR);
+		return new File(getRootDirectoryInstance(), RESULT_DIR);
 	}
 
 	/**
@@ -280,7 +292,7 @@ public class ExecutionContextInfo {
 	 * @return
 	 */
 	public File getWorkingDirectory() {
-		File workDir = new File(rootDirectory, WORKING_DIR);
+		File workDir = new File(getRootDirectoryInstance(), WORKING_DIR);
 		return workDir;
 	}
 	
@@ -290,6 +302,6 @@ public class ExecutionContextInfo {
 	 * @return defensively copied file for root directory.
 	 */
 	public File getRootDirectory() {
-		return new File(rootDirectory.getAbsolutePath());
+		return getRootDirectoryInstance();
 	}
 }
