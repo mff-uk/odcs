@@ -269,12 +269,6 @@ class PipelineEdit extends ViewComponent {
 		return mainLayout;
 	}
 
-	private void closeDebug() {
-		//verticalSplit.setSplitPosition(100, Unit.PERCENTAGE);
-		//verticalSplit.setSecondComponent(null);
-		//verticalSplit.setLocked(true);
-	}
-
 	/**
 	 * Opens given {@link DebuggingView} in new window.
 	 *

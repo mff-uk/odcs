@@ -20,22 +20,21 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
+import org.vaadin.dialogs.ConfirmDialog;
 
 /**
- * Detail of selected DPU. Consists of common properties, name and description and configuration dialog specific for DPU, which is loaded from DPU's jar file.
+ * Detail of selected DPU. Consists of common properties, name and description
+ * and configuration dialog specific for DPU, which is loaded from DPU's jar
+ * file.
  *
  * @author Bogo
  */
 public class DPUDetail extends Window {
 
 	private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
-
 	private DPUInstanceWrap dpuInstance;
-
 	private TextField dpuName;
-
 	private TextArea dpuDescription;
-
 	/**
 	 * DPU's configuration dialog.
 	 */
@@ -43,6 +42,7 @@ public class DPUDetail extends Window {
 
 	/**
 	 * Basic constructor, takes DPUInstance which detail should be showed.
+	 *
 	 * @param dpu {@link DPUInstanceRecord} which detail will be showed.
 	 */
 	public DPUDetail(DPUInstanceRecord dpu) {
@@ -70,8 +70,9 @@ public class DPUDetail extends Window {
 		dpuName.setWidth("200px");
 		dpuName.setHeight("-1px");
 		dpuName.setValue(dpu.getName());
+		dpuName.setRequired(true);
+		dpuName.setRequiredError("DPU name must be filled!");
 		dpuName.addValueChangeListener(new Property.ValueChangeListener() {
-
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				setCaption(dpuName.getValue());
@@ -101,16 +102,15 @@ public class DPUDetail extends Window {
 			confDialog = dpuInstance.getDialog();
 		} catch (ModuleException e) {
 			Notification.show("Failed to load configuration dialog.", e.getMessage(), Type.ERROR_MESSAGE);
-			LOG.error("Failed to load dialog for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
-		} catch(FileNotFoundException e) {
+			LOG.error("Failed to load dialog for {}", dpuInstance.getDPUInstanceRecord().getId(), e);
+		} catch (FileNotFoundException e) {
 			Notification.show("Failed to load DPU.", e.getMessage(), Type.ERROR_MESSAGE);
-		} catch(ConfigException e) {
-			Notification.show("Failed to load configuration. The dialog defaul configuration is used.",	e.getMessage(), Type.WARNING_MESSAGE);
-			LOG.error("Failed to load configuration for {}", dpuInstance.getDPUInstanceRecord().getId(),  e);
+		} catch (ConfigException e) {
+			Notification.show("Failed to load configuration. The dialog defaul configuration is used.", e.getMessage(), Type.WARNING_MESSAGE);
+			LOG.error("Failed to load configuration for {}", dpuInstance.getDPUInstanceRecord().getId(), e);
 		}
 
 		if (confDialog == null) {
-
 		} else {
 			// add to layout
 			confDialog.setWidth("100%");
@@ -122,36 +122,42 @@ public class DPUDetail extends Window {
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
 		Button saveAndCommitButton = new Button("Save", new Button.ClickListener() {
-
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				if(saveDPUInstance()) {
+				if (saveDPUInstance()) {
 					close();
 				}
 			}
 		});
 		buttonBar.addComponent(saveAndCommitButton);
 
-		
-		Button saveAsNewButton = new Button("Save and store to DPU tree", new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if(saveDpuAsNew()) {
-					close();
-				}
-			}
-		});
-		buttonBar.addComponent(saveAsNewButton);
-		
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
-
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				close();
 			}
 		});
 		buttonBar.addComponent(cancelButton);
+
+		Label placeFiller = new Label(" ");
+		buttonBar.addComponent(placeFiller);
+
+		Button saveAsNewButton = new Button("Save and store to DPU tree", new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				ConfirmDialog.show(UI.getCurrent(), "Save to DPU tree as new DPU?", new ConfirmDialog.Listener() {
+					@Override
+					public void onClose(ConfirmDialog cd) {
+						if (cd.isConfirmed()) {
+							if (saveDpuAsNew()) {
+								close();
+							}
+						}
+					}
+				});
+			}
+		});
+		buttonBar.addComponent(saveAsNewButton);
 
 		mainLayout.addComponent(buttonBar);
 
@@ -161,26 +167,32 @@ public class DPUDetail extends Window {
 
 	/**
 	 * Saves configuration of DPURecord Instance which was set in detail dialog.
+	 *
 	 * @return True if save was successful, false otherwise.
 	 */
 	protected boolean saveDPUInstance() {
-		dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue());
-		dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription.getValue());
 		try {
+			if(!dpuName.isValid()) {
+				throw new ConfigException(dpuName.getRequiredError());
+			}
+			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue());
+			dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription.getValue());
 			dpuInstance.saveConfig();
 		} catch (ConfigException ce) {
-			Notification.show("ConfigException:", ce.getMessage(), Type.ERROR_MESSAGE);
+			Notification.show("Failed to save configuration. Reason:", ce.getMessage(), Type.ERROR_MESSAGE);
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Creates new DPU in tree with prefilled configuration taken from current configuration of this DPU.
+	 * Creates new DPU in tree with prefilled configuration taken from current
+	 * configuration of this DPU.
+	 *
 	 * @return True if save was successful, false otherwise.
 	 */
 	protected boolean saveDpuAsNew() {
-		if(saveDPUInstance()) {
+		if (saveDPUInstance()) {
 			DPUTemplateRecord newDPU = App.getDPUs().creatTemplateFromInstance(dpuInstance.getDPUInstanceRecord());
 			App.getDPUs().save(newDPU);
 			return true;
