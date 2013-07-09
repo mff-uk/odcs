@@ -115,7 +115,7 @@ class PipelineEdit extends ViewComponent {
 			public void componentEvent(Event event) {
 			}
 		});
-		
+
 		pc.zoom(true);
 
 		dadWrapper = new DragAndDropWrapper(pc);
@@ -185,7 +185,6 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 		Button undo = new Button("Undo", new Button.ClickListener() {
-
 			@Override
 			public void buttonClick(ClickEvent event) {
 				pc.undo();
@@ -247,8 +246,9 @@ class PipelineEdit extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
-				savePipeline();
-				App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
+				if (savePipeline()) {
+					App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
+				}
 			}
 		});
 		buttonBar.addComponent(button);
@@ -262,7 +262,7 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonCancel);
-		
+
 		buttonBar.setSpacing(true);
 		mainLayout.addComponent(buttonBar);
 
@@ -277,8 +277,8 @@ class PipelineEdit extends ViewComponent {
 
 	/**
 	 * Opens given {@link DebuggingView} in new window.
-	 * 
-	 * @param debug {@link DebuggingView} to show. 
+	 *
+	 * @param debug {@link DebuggingView} to show.
 	 */
 	private void openDebug(final DebuggingView debug) {
 		Window debugWindow = new Window("Debug window", debug);
@@ -292,7 +292,6 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 		debugWindow.addResizeListener(new Window.ResizeListener() {
-
 			@Override
 			public void windowResized(Window.ResizeEvent e) {
 				debug.resize(e.getWindow().getHeight());
@@ -304,7 +303,8 @@ class PipelineEdit extends ViewComponent {
 	/**
 	 * Builds part of layout with pipeline settings.
 	 *
-	 * @return {@link GridLayout} contains controls with information about pipeline settings.
+	 * @return {@link GridLayout} contains controls with information about
+	 * pipeline settings.
 	 * @throws com.vaadin.ui.GridLayout.OverlapsException
 	 * @throws com.vaadin.ui.GridLayout.OutOfBoundsException
 	 */
@@ -465,21 +465,22 @@ class PipelineEdit extends ViewComponent {
 	/**
 	 * Saves current pipeline.
 	 */
-	protected void savePipeline() {
+	protected boolean savePipeline() {
 		if (!pipelineName.isValid()) {
 			Notification.show("Error saving pipeline", "Pipeline name is required!", Notification.Type.ERROR_MESSAGE);
-			return;
+			return false;
 		}
 		this.pipeline.setName(pipelineName.getValue());
 		this.pipeline.setDescription(pipelineDescription.getValue());
 		pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
+		return true;
 	}
 
 	/**
 	 * Enter method for PipelineEdit view.
-	 * 
+	 *
 	 * @param event {@link ViewChangeEvent}
 	 */
 	@Override
@@ -512,20 +513,21 @@ class PipelineEdit extends ViewComponent {
 		// work with pipeline here ...
 
 	}
-	
+
 	/**
-	 * Calculates and sets canvas dimensions according to current size of browser window and pipeline graph's bounds.
-	 * 
+	 * Calculates and sets canvas dimensions according to current size of
+	 * browser window and pipeline graph's bounds.
+	 *
 	 * @param zoomBounds {@link Position} with bounds of pipeline graph.
 	 */
 	private void calculateCanvasDimensions(Position zoomBounds) {
 		int browserWidth = 1050 + (UI.getCurrent().getPage().getBrowserWindowWidth() - 1350);
 		int browserHeight = 630;
-		if(zoomBounds.getX() > browserWidth) {
+		if (zoomBounds.getX() > browserWidth) {
 			browserWidth = zoomBounds.getX();
 			//enable horizontal scrollbar
 		}
-		if(zoomBounds.getY() > browserHeight) {
+		if (zoomBounds.getY() > browserHeight) {
 			browserHeight = zoomBounds.getY();
 			//enable vertical scrollbar
 		}
@@ -533,7 +535,7 @@ class PipelineEdit extends ViewComponent {
 		pc.setHeight(browserHeight, Unit.PIXELS);
 		dadWrapper.setSizeUndefined();
 		tabSheet.markAsDirty();
-		
+
 		//pc.resizeCanvas(browserHeight, browserWidth);
 		//tabSheet.setWidth(browserWidth + 20, Unit.PIXELS);
 		//tabSheet.setHeight(browserHeight + 40, Unit.PIXELS);
@@ -541,8 +543,9 @@ class PipelineEdit extends ViewComponent {
 
 	/**
 	 * Resizes canvas according to changed width of browser window.
+	 *
 	 * @param width New width of browser window.
-	 * 
+	 *
 	 */
 	private void resizeCanvas(int width) {
 		if (width > 1350) {
