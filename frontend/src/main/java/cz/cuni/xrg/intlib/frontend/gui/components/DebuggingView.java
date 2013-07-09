@@ -247,8 +247,9 @@ public class DebuggingView extends CustomComponent {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
-
-				duBrowser.enter();
+				if(duBrowser != null) {
+					duBrowser.enter();
+				}
 				return duBrowser;
 			}
 		}
@@ -383,6 +384,10 @@ public class DebuggingView extends CustomComponent {
 	 * available.
 	 */
 	private void refreshDpuSelector() {
+		 Collection<?> o = dpuSelector.getVisibleItemIds();
+		if(o != null && !o.isEmpty()) {
+			return;
+		}
 		dpuSelector.removeAllItems();
 		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
 		for (DPUInstanceRecord dpu : contextDpuIndexes) {
