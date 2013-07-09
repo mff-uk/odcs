@@ -49,18 +49,20 @@ public class Scheduler implements ApplicationListener {
 		
 		// save data into DB -> in next DB check Engine start the execution
 		database.getPipeline().save(pipelineExec);
-		database.getPlan().save(schedule);
+		database.getSchedule().save(schedule);
 	}
 		
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
+	
+		
 		if (event instanceof PipelineFinished) {
 			PipelineFinished pipelineFinishedEvent = (PipelineFinished)event;
 			if (pipelineFinishedEvent.getExecution().getSilentMode()) {
 				// pipeline run in silent mode .. ignore
 			} else {
 				List<Schedule> toRun = 
-						database.getPlan().getFollowers(
+						database.getSchedule().getFollowers(
 								pipelineFinishedEvent.getExecution().getPipeline());
 				// for each .. run 
 				for (Schedule schedule : toRun) {
@@ -70,10 +72,12 @@ public class Scheduler implements ApplicationListener {
 				}
 			}			
 		} else if (event instanceof SchedulerCheckDatabase) {
+			List<Schedule> all = database.getSchedule().getAllSchedules();
+			
 			// check DB for pipelines based on time scheduling
 			Date now = new Date();
 			// get all pipelines that are time based
-			List<Schedule> candidates = database.getPlan().getAllTimeBased();
+			List<Schedule> candidates = database.getSchedule().getAllTimeBased();
 			// check .. 
 			for (Schedule schedule : candidates) {
 				if (schedule.getLastExecution() == null) {

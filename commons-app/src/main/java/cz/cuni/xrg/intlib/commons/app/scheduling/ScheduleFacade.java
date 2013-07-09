@@ -75,8 +75,7 @@ public class ScheduleFacade {
 		List<Schedule> resultList = Collections.checkedList(
 			em.createQuery(
 				"SELECT s FROM Schedule s"
-					+ "	JOIN s.afterPipelines p"
-					+ " s.type = :type"
+					+ " WHERE s.type = :type"
 				).setParameter("type", ScheduleType.PERIODICALLY)
 				.getResultList(),
 				Schedule.class

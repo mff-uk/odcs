@@ -23,7 +23,7 @@ public class Heartbeat implements Runnable, ApplicationEventPublisherAware {
 	/**
 	 * Interval for events publishing. 
 	 */
-	private static int CHECK_INTERVAL = 1000 * 60;
+	private static int CHECK_INTERVAL = 1000 * 30;
 	
 	@Override
 	public void run() {

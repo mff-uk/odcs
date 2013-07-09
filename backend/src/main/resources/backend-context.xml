@@ -35,5 +35,9 @@
 	
 	<!-- periodically send message to event to check DB for new tasks -->
 	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" />
-		
+
+	<!-- scheduler -->
+	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" >
+	    <constructor-arg ref="dbAccess"/>
+	</bean>		
 </beans>

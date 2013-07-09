@@ -28,8 +28,7 @@ public class DatabaseAccess {
 	/**
 	 * Facade for working with plans.
 	 */
-	//@Autowired
-	// TODO Petyr: Scheduling
+	@Autowired
 	private ScheduleFacade plan;
 	
 	public DPUFacade getDpu() {
@@ -40,7 +39,7 @@ public class DatabaseAccess {
 		return pipeline;
 	}
 	
-	public ScheduleFacade getPlan() {
+	public ScheduleFacade getSchedule() {
 		return plan;
 	}
 }
