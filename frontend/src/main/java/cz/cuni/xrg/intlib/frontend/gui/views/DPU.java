@@ -155,7 +155,9 @@ class DPU extends ViewComponent {
 							@Override
 							public void windowClose(CloseEvent e) {
 								// TODO Auto-generated method stub
+								DPUCreate.uploadInfoWindow.close();
 								dpuTree.refresh();
+
 							}
 						});
 					}
