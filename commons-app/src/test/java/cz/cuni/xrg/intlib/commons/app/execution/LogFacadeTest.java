@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
+import org.apache.log4j.Level;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class LogFacadeTest {
 	@Test
 	public void testLogsWarningOrInfo() {
 		Set<Level> levels = new HashSet<>(2);
-		levels.add(Level.WARNING);
+		levels.add(Level.WARN);
 		levels.add(Level.INFO);
 		
 		List<LogMessage> logs = facade.getLogs(levels);
@@ -67,7 +67,7 @@ public class LogFacadeTest {
 		when(exec.getId()).thenReturn(execId);
 		
 		Set<Level> levels = new HashSet<>(2);
-		levels.add(Level.WARNING);
+		levels.add(Level.WARN);
 		levels.add(Level.INFO);
 		
 		List<LogMessage> logs = facade.getLogs(exec, levels);

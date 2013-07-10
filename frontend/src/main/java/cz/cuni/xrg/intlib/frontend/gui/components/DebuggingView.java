@@ -359,8 +359,10 @@ public class DebuggingView extends CustomComponent {
 				Object value = event.getProperty().getValue();
 				if (value != null && value.getClass() == DPUInstanceRecord.class) {
 					debugDpu = (DPUInstanceRecord) value;
-					refreshContent();
+				} else {
+					debugDpu = null;
 				}
+				refreshContent();
 			}
 		});
 		mainLayout.addComponent(dpuSelector);
