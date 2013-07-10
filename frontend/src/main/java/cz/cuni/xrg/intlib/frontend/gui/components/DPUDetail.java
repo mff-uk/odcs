@@ -20,6 +20,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
+import cz.cuni.xrg.intlib.rdf.exceptions.SPARQLValidationException;
 import org.vaadin.dialogs.ConfirmDialog;
 
 /**
@@ -32,9 +33,13 @@ import org.vaadin.dialogs.ConfirmDialog;
 public class DPUDetail extends Window {
 
 	private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
+
 	private DPUInstanceWrap dpuInstance;
+
 	private TextField dpuName;
+
 	private TextArea dpuDescription;
+
 	/**
 	 * DPU's configuration dialog.
 	 */
@@ -93,7 +98,8 @@ public class DPUDetail extends Window {
 		dpuDescription.setValue(dpu.getDescription());
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
-		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true, false));
+		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
+				false));
 		mainLayout.addComponent(dpuGeneralSettingsLayout);
 
 		// load instance
@@ -101,13 +107,19 @@ public class DPUDetail extends Window {
 		try {
 			confDialog = dpuInstance.getDialog();
 		} catch (ModuleException e) {
-			Notification.show("Failed to load configuration dialog.", e.getMessage(), Type.ERROR_MESSAGE);
-			LOG.error("Failed to load dialog for {}", dpuInstance.getDPUInstanceRecord().getId(), e);
+			Notification.show("Failed to load configuration dialog.", e
+					.getMessage(), Type.ERROR_MESSAGE);
+			LOG.error("Failed to load dialog for {}", dpuInstance
+					.getDPUInstanceRecord().getId(), e);
 		} catch (FileNotFoundException e) {
-			Notification.show("Failed to load DPU.", e.getMessage(), Type.ERROR_MESSAGE);
+			Notification.show("Failed to load DPU.", e.getMessage(),
+					Type.ERROR_MESSAGE);
 		} catch (ConfigException e) {
-			Notification.show("Failed to load configuration. The dialog defaul configuration is used.", e.getMessage(), Type.WARNING_MESSAGE);
-			LOG.error("Failed to load configuration for {}", dpuInstance.getDPUInstanceRecord().getId(), e);
+			Notification.show(
+					"Failed to load configuration. The dialog defaul configuration is used.",
+					e.getMessage(), Type.WARNING_MESSAGE);
+			LOG.error("Failed to load configuration for {}", dpuInstance
+					.getDPUInstanceRecord().getId(), e);
 		}
 
 		if (confDialog == null) {
@@ -121,7 +133,8 @@ public class DPUDetail extends Window {
 		buttonBar.setStyleName("dpuDetailButtonBar");
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
-		Button saveAndCommitButton = new Button("Save", new Button.ClickListener() {
+		Button saveAndCommitButton = new Button("Save",
+				new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				if (saveDPUInstance()) {
@@ -142,10 +155,13 @@ public class DPUDetail extends Window {
 		Label placeFiller = new Label(" ");
 		buttonBar.addComponent(placeFiller);
 
-		Button saveAsNewButton = new Button("Save and store to DPU tree", new Button.ClickListener() {
+		Button saveAsNewButton = new Button("Save and store to DPU tree",
+				new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				ConfirmDialog.show(UI.getCurrent(), "Save to DPU tree as new DPU?", new ConfirmDialog.Listener() {
+				ConfirmDialog.show(UI.getCurrent(),
+						"Save to DPU tree as new DPU?",
+						new ConfirmDialog.Listener() {
 					@Override
 					public void onClose(ConfirmDialog cd) {
 						if (cd.isConfirmed()) {
@@ -172,14 +188,24 @@ public class DPUDetail extends Window {
 	 */
 	protected boolean saveDPUInstance() {
 		try {
-			if(!dpuName.isValid()) {
+			if (!dpuName.isValid()) {
 				throw new ConfigException(dpuName.getRequiredError());
 			}
 			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue());
-			dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription.getValue());
+			dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription
+					.getValue());
 			dpuInstance.saveConfig();
 		} catch (ConfigException ce) {
-			Notification.show("Failed to save configuration. Reason:", ce.getMessage(), Type.ERROR_MESSAGE);
+			if (ce instanceof SPARQLValidationException) {
+
+				Notification.show("Query Validator",
+						"Query is not valid: "
+						+ ce.getMessage(),
+						Notification.Type.ERROR_MESSAGE);
+			} else {
+				Notification.show("Failed to save configuration. Reason:", ce
+						.getMessage(), Type.ERROR_MESSAGE);
+			}
 			return false;
 		}
 		return true;
@@ -193,7 +219,8 @@ public class DPUDetail extends Window {
 	 */
 	protected boolean saveDpuAsNew() {
 		if (saveDPUInstance()) {
-			DPUTemplateRecord newDPU = App.getDPUs().creatTemplateFromInstance(dpuInstance.getDPUInstanceRecord());
+			DPUTemplateRecord newDPU = App.getDPUs().creatTemplateFromInstance(
+					dpuInstance.getDPUInstanceRecord());
 			App.getDPUs().save(newDPU);
 			return true;
 		}
