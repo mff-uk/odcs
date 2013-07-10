@@ -105,7 +105,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	private String dataUnitName;
 
 	/**
-	 * Create local repository in default path.
+	 * Create local repository in default set temp directory path. Each directory
+	 * path have to constains more that one RDF repository.
 	 *
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
@@ -465,7 +466,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				RDFParser parser = Rio.createParser(fileFormat);
 				parser.setRDFHandler(handler);
-				
+
 				parser.setStopAtFirstError(false);
 				parser.setParseErrorListener(new ParseErrorListener() {
 					@Override
