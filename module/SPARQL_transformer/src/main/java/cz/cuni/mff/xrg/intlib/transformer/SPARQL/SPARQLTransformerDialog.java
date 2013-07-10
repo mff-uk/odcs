@@ -4,7 +4,8 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
-import cz.cuni.xrg.intlib.rdf.impl.SPARQLValidator;
+import cz.cuni.xrg.intlib.rdf.exceptions.SPARQLValidationException;
+import cz.cuni.xrg.intlib.rdf.impl.SPARQLUpdateValidator;
 import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
 
 /**
@@ -22,6 +23,8 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 	private Label labelUpQuer;
 
 	private boolean isQueryValid = false;
+
+	private String errorMessage = "no errors";
 
 	public SPARQLTransformerDialog() {
 		buildMainLayout();
@@ -57,16 +60,19 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 			public void valueChange(Property.ValueChangeEvent event) {
 				final String query = txtQuery.getValue();
 
-				Validator validator = new SPARQLValidator(query);
+				Validator validator = new SPARQLUpdateValidator(query);
 
 				if (!validator.isQueryValid()) {
 
 					isQueryValid = false;
+					errorMessage = validator.getErrorMessage();
 
-					Notification.show("Query Validator",
-							"Query is not valid: "
-							+ validator.getErrorMessage(),
-							Notification.Type.ERROR_MESSAGE);
+					/*
+					 Notification.show("Query Validator",
+					 "Query is not valid: "
+					 + validator.getErrorMessage(),
+					 Notification.Type.ERROR_MESSAGE);
+					 */
 				} else {
 					isQueryValid = true;
 				}
@@ -99,7 +105,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 
 		//Right SPARQL VALIDATOR - default false
 		if (!isQueryValid) {
-			throw new ConfigException();
+			throw new SPARQLValidationException(errorMessage);
 		} else {
 
 			SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
