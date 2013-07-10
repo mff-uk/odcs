@@ -110,9 +110,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
+	 * @throws RuntimeException if temp directory for repository can not create.
 	 * @return
 	 */
-	public static LocalRDFRepo createLocalRepo(String dataUnitName) {
+	public static LocalRDFRepo createLocalRepo(String dataUnitName) throws RuntimeException{
 
 		return LocalRDFRepo.createLocalRepoInTempDirectory(repoDirName,
 				repoFileName, dataUnitName);
@@ -126,16 +127,16 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param fileName
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
-	 * @return
+	 * @throws RuntimeException if temp directory for repository can not create.
+	 * @return 
 	 */
 	public static LocalRDFRepo createLocalRepoInTempDirectory(String dirName,
-			String fileName, String dataUnitName) {
+			String fileName, String dataUnitName) throws RuntimeException {
 		Path repoPath = null;
 
 		try {
 			repoPath = Files.createTempDirectory(dirName);
 		} catch (IOException e) {
-			// TODO why not throw IOException?
 			throw new RuntimeException(e);
 		}
 
