@@ -10,12 +10,12 @@ import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
  * @author Jiri Tomes
  *
  */
-public class SPARQLValidator implements Validator {
+public class SPARQLQueryValidator implements Validator {
 
     private String query;
     private String message;
 
-    public SPARQLValidator(String query) {
+    public SPARQLQueryValidator(String query) {
         this.query = query;
         this.message = "No errors - valid query.";
     }
