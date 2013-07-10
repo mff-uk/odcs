@@ -2,8 +2,6 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
@@ -13,13 +11,9 @@ import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.logging.Level;
+import org.apache.log4j.Level;
 
 /**
  * Component for viewing and filtering of log messages.
@@ -32,6 +26,8 @@ public class LogMessagesTable extends CustomComponent {
 	private IntlibPagedTable messageTable;
 	private DPUInstanceRecord dpu;
 	private PipelineExecution pipelineExecution;
+	
+	private ComboBox levelSelector;
 
 	/**
 	 * Default constructor.
@@ -46,14 +42,15 @@ public class LogMessagesTable extends CustomComponent {
 		mainLayout.addComponent(messageTable.createControls());
 		messageTable.setPageLength(19);
 
-		ComboBox levelSelector = new ComboBox();
+		levelSelector = new ComboBox();
 		levelSelector.setImmediate(true);
 		levelSelector.setNullSelectionAllowed(false);
 		levelSelector.addItem(Level.ALL);
-		for (Level level : new Level[]{Level.INFO, Level.WARNING, Level.SEVERE}) {
+		for (Level level : App.getLogs().getAllLevels(false)) {
 			levelSelector.addItem(level);
-			levelSelector.setItemCaption(level, level.getName() + "+");
+			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
+		levelSelector.setValue(Level.INFO);
 		levelSelector.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
@@ -72,19 +69,16 @@ public class LogMessagesTable extends CustomComponent {
 	 */
 	private void filterLogMessages(Level level) {
 		
-		Set<Level> levels = new HashSet<>();
-		levels.add(level);
-		
-		List<LogMessage> data = getData(pipelineExecution, dpu, levels);
+		List<LogMessage> data = getData(pipelineExecution, dpu, level);
 		
 		// ... filter
-		List<LogMessage> filteredData = new ArrayList<>();
-		for (LogMessage message : data) {
-			if (message.getLevel().intValue() >= level.intValue()) {
-				filteredData.add(message);
-			}
-		}
-		loadMessageTable(filteredData);
+//		List<LogMessage> filteredData = new ArrayList<>();
+//		for (LogMessage message : data) {
+//			if (message.getLevel().isGreaterOrEqual(level)) {
+//				filteredData.add(message);
+//			}
+//		}
+		loadMessageTable(data);
 	}
 
 	/**
@@ -98,20 +92,26 @@ public class LogMessagesTable extends CustomComponent {
 		this.dpu = dpu;
 		this.pipelineExecution = exec;
 		
-		Set<Level> levels = new HashSet<>();
-		levels.add(Level.ALL);
-		levels.add(Level.INFO);
-		levels.add(Level.WARNING);
-		levels.add(Level.SEVERE);
+		Level level = Level.ALL;
+		if(levelSelector.getValue() != null) {
+			level = (Level)levelSelector.getValue();
+		}
 		
-		List<LogMessage> data = getData(pipelineExecution, dpu, levels);		
+		List<LogMessage> data = getData(pipelineExecution, dpu, level);		
 		loadMessageTable(data);
 	}
 
-	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Set<Level> level) {
+	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {
 		LogFacade facade = App.getLogs();
-		// TODO Add information about DPUInstanceRecord
-		return facade.getLogs(exec, level);
+		
+		Set<Level> levels = facade.getLevels(level);
+
+		if(dpu == null) {
+			return facade.getLogs(exec, levels);
+		} else {
+			return facade.getLogs(exec, dpu, levels);
+		}
+		
 	}
 	
 	/**

@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.persistence.*;
+import org.apache.log4j.Level;
 
 /**
  * Represents log message loaded from database. Shown in DebuggingView/Log tab
@@ -117,27 +117,27 @@ public class LogMessage {
 	 * @return the level
 	 */
 	public Level getLevel() {
-
 		if (level == null && levelString != null) {
-			switch (levelString) {
-				case "SEVERE":
-					level = Level.SEVERE;
-					break;
-				case "WARNING":
-					level = Level.WARNING;
-					break;
-				case "INFO":
-					level = Level.INFO;
-					break;
-				case "CONFIG":
-					level = Level.CONFIG;
-					break;
-				case "FINE":
-					level = Level.FINE;
-					break;
-				default:
-					level = Level.ALL;
-			}
+			level = Level.toLevel(levelString);
+//			switch (levelString) {
+//				case "SEVERE":
+//					level = Level.SEVERE;
+//					break;
+//				case "WARNING":
+//					level = Level.WARNING;
+//					break;
+//				case "INFO":
+//					level = Level.INFO;
+//					break;
+//				case "CONFIG":
+//					level = Level.CONFIG;
+//					break;
+//				case "FINE":
+//					level = Level.FINE;
+//					break;
+//				default:
+//					level = Level.ALL;
+//			}
 		}
 
 		return level;
