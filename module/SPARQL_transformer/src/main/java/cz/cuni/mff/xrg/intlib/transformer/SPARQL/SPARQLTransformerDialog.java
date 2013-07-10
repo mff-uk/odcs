@@ -4,7 +4,7 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
-import cz.cuni.xrg.intlib.rdf.impl.SPARQLValidator;
+import cz.cuni.xrg.intlib.rdf.impl.SPARQLUpdateValidator;
 import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
 
 /**
@@ -57,7 +57,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 			public void valueChange(Property.ValueChangeEvent event) {
 				final String query = txtQuery.getValue();
 
-				Validator validator = new SPARQLValidator(query);
+				Validator validator = new SPARQLUpdateValidator(query);
 
 				if (!validator.isQueryValid()) {
 
