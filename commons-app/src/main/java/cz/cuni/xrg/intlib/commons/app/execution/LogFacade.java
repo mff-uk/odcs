@@ -149,6 +149,13 @@ public class LogFacade {
 		return resultList;
 	}
 
+	/**
+	 * Returns all {@link Level}s of same or higher priority than given level.
+	 * 
+	 * @param level level with lowest priority in return list
+	 * @return List of {@link Level}s with same or higher priority than given level.
+	 * 
+	 */
 	public Set<Level> getLevels(Level level) {
 		Set<Level> levels = new HashSet<>();
 		List<Level> allLevels = getAllLevels(true);
@@ -160,6 +167,12 @@ public class LogFacade {
 		return levels;
 	}
 
+	/**
+	 * Returns all levels of log massages, ordered by priority.
+	 * 
+	 * @param includeAggregates True for including Level.ALL and Level.OFF in result, false otherwise
+	 * @return List of all {@link Level}s for log messages, ordered by priority.
+	 */
 	public List<Level> getAllLevels(boolean includeAggregates) {
 
 		List<Level> levels = new ArrayList<>(8);

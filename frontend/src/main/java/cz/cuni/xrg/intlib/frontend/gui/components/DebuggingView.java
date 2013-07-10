@@ -386,17 +386,20 @@ public class DebuggingView extends CustomComponent {
 	 * available.
 	 */
 	private void refreshDpuSelector() {
-		 Collection<?> o = dpuSelector.getVisibleItemIds();
-		if(o != null && !o.isEmpty()) {
-			return;
-		}
-		dpuSelector.removeAllItems();
+		
+//		 Collection<?> o = dpuSelector.getVisibleItemIds();
+//		if(o != null && !o.isEmpty()) {
+//			return;
+//		}
+		//dpuSelector.removeAllItems();
 		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
 		for (DPUInstanceRecord dpu : contextDpuIndexes) {
-			dpuSelector.addItem(dpu);
+			if(!dpuSelector.containsId(dpu)) {
+				dpuSelector.addItem(dpu);
+			}
 		}
-		if (debugDpu != null) {
-			dpuSelector.select(debugDpu);
-		}
+//		if (debugDpu != null) {
+//			dpuSelector.select(debugDpu);
+//		}
 	}
 }
