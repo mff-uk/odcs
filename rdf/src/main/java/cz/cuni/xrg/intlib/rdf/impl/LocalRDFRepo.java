@@ -1626,28 +1626,34 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		return triples;
 	}
 
-	/**
-	 * Save data from repository into given file.
-	 *
-	 * @param file
-	 */
-	@Override
-	public void save(File file) {
-
-		RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(),
-				RDFFormat.RDFXML);
-
-		File directory = file.getParentFile();
-
+	private File getFileForDirectory(File directory) {
+		
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
 
-		logger.debug("saving directory:" + directory.toString());
-		logger.debug("saving fileName:" + file.getName());
+		File file = new File(directory, dumpName);
+		return file;
+	}
 
+	/**
+	 * Save data from repository into given file.
+	 *
+	 * @param directory
+	 */
+	@Override
+	public void save(File directory) {
+
+		File file = getFileForDirectory(directory);
+
+		RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(),
+				RDFFormat.RDFXML);
+
+		logger.debug("saving to directory:" + directory.getAbsolutePath());
+		
 		try {
-			loadRDFfromRepositoryToFile(directory.toString(), file.getName(),
+			loadRDFfromRepositoryToFile(directory.getAbsolutePath(), file
+					.getName(),
 					format, true, false);
 		} catch (CannotOverwriteFileException | LoadException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -1665,7 +1671,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 */
 	@Override
 	public void load(File directory) {
-		File file = new File(directory, dumpName);
+		File file = getFileForDirectory(directory);
 
 		final String suffix = "";
 		final String baseURI = "";
@@ -1947,7 +1953,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	@Override
 	public void save() throws Exception {
-		File file = new File(WorkingRepoDirectory, dumpName);
-		save(file);
+		save(WorkingRepoDirectory);
 	}
 }
