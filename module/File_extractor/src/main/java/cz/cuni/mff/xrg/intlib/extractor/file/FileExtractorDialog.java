@@ -144,8 +144,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		horizontalLayoutOnly.addComponent(labelOnly);
 
 		// textFieldOnly
-		textFieldOnly = new TextField();
-		textFieldOnly.setNullRepresentation("");
+		textFieldOnly = new TextField("");
+		//textFieldOnly.setNullRepresentation("");
 		textFieldOnly.setImmediate(false);
 		textFieldOnly.setWidth("50px");
 		textFieldOnly.setHeight("-1px");
