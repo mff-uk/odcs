@@ -47,7 +47,7 @@ class TimeScheduleHelper {
 	 * @param unit Used time units in period.
 	 * @return True if it's time to execute pipeline.
 	 */
-	public static Boolean runExecution(Date firstExecution, Date lastExecution, Date now, Long period, PeriodUnit unit) {
+	public static Boolean runExecution(Date firstExecution, Date lastExecution, Date now, int period, PeriodUnit unit) {
 		Long timeDiffMinutes = (now.getTime() - lastExecution.getTime()) / (1000 * 60);
 		switch(unit) {
 			case MINUTE:

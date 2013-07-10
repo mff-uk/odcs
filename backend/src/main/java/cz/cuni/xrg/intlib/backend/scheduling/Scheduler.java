@@ -83,7 +83,7 @@ public class Scheduler implements ApplicationListener {
 				if (schedule.getLastExecution() == null) {
 					// use first execution to determine when run pipeline
 					// run as soon as possible
-					if (schedule.getFirstExecution().after(now)) {
+					if (schedule.getFirstExecution().before(now)) {
 						execute(schedule);
 					}
 				} else if (TimeScheduleHelper.runExecution(schedule.getFirstExecution(), schedule.getLastExecution(), 

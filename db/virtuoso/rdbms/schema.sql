@@ -107,7 +107,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE"
   "type" SMALLINT,
   "first_exec" DATETIME,
   "last_exec" DATETIME,
-  "time_period" BIGINT,
+  "time_period" INTEGER,
   "period_unit" SMALLINT,
   PRIMARY KEY ("id")
 );

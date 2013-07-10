@@ -89,8 +89,7 @@ public class SchedulePipeline extends Window {
 
 	private InlineDateField date;
 	private Schedule schedule = null;
-	private Long convertedValue;
-	private ObjectProperty<Long> value;
+	private ObjectProperty<Integer> value;
 
 	private List<Pipeline> pipelines;
 	private Set<Pipeline> afterPipelines = null;
@@ -137,7 +136,7 @@ public class SchedulePipeline extends Window {
 						|| (selectedSchedule.getPeriodUnit()
 								.equals(PeriodUnit.WEEK)) || (selectedSchedule
 							.getPeriodUnit().equals(PeriodUnit.MONTH)))
-						&& (selectedSchedule.getPeriod().equals((long) 1))) {
+						&& (selectedSchedule.getPeriod().equals(1))) {
 					intervalOption.setValue(selectedSchedule.getPeriodUnit());
 				}
 				else{
@@ -310,8 +309,7 @@ public class SchedulePipeline extends Window {
 
 							schedule.setPeriodUnit((PeriodUnit) intervalOption
 									.getValue());
-							long i = 1;
-							schedule.setPeriod(i);
+							schedule.setPeriod(1);
 
 						} else {
 							schedule.setPeriodUnit((PeriodUnit) comboEvery
@@ -516,9 +514,9 @@ public class SchedulePipeline extends Window {
 		inervalEveryLayout.setSpacing(true);
 		inervalEveryLayout.setMargin(true);
 
-		value = new ObjectProperty<Long>((long) 1);
+		value = new ObjectProperty<Integer>(1);
 		tfEvery = new TextField(value);
-		tfEvery.setConverter(Long.class);
+		tfEvery.setConverter(Integer.class);
 		tfEvery.setWidth("50px");
 		tfEvery.setImmediate(true);
 		tfEvery.setEnabled(false);
@@ -526,7 +524,7 @@ public class SchedulePipeline extends Window {
 
 			@Override
 			public void validate(Object val) throws InvalidValueException {
-				if (((Long) val != null) && ((Long) val > 0)) {
+				if (((Integer) val != null) && ((Integer) val > 0)) {
 					return;
 				}
 				throw new InvalidValueException("Value must be positive");

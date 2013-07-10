@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -86,7 +88,7 @@ public class Schedule {
 	 * Used only if {@link #type} = RunInTime.
 	 */
 	@Column(name = "time_period")
-	private Long period;
+	private Integer period;
 	
 	/**
 	 * Time period unit type.
@@ -175,11 +177,11 @@ public class Schedule {
 		this.lastExecution = lastExecution;
 	}
 
-	public Long getPeriod() {
+	public Integer getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Long period) {
+	public void setPeriod(Integer period) {
 		this.period = period;
 	}
 
@@ -214,4 +216,49 @@ public class Schedule {
 		return id;
 	}
 	
+	/**
+	 * Return estimate of time when the schedule 
+	 * fire. If the schedule is not time dependent 
+	 * return null.
+	 * @return Estimate of time for next execution or null.
+	 */
+	public Date getNextExecutionTimeInfo() {
+		if (type == ScheduleType.AFTER_PIPELINE) {
+			return null;
+		} else { // ScheduleType.PERIODICALLY
+			if (lastExecution == null) {
+				// no execution so far .. so we run in time of first execution
+				return firstExecution;
+			} else {
+				Calendar calendarNextExec = Calendar.getInstance();
+				calendarNextExec.setTime(lastExecution);
+				// add value based on period
+				switch(periodUnit) {
+				case DAY:
+					calendarNextExec.add(Calendar.DAY_OF_YEAR, period);
+					break;
+				case HOUR:
+					calendarNextExec.add(Calendar.HOUR_OF_DAY, period);
+					break;
+				case MINUTE:
+					calendarNextExec.add(Calendar.MINUTE, period);
+					break;
+				case MONTH:
+					calendarNextExec.add(Calendar.MONTH, period);
+					break;
+				case SECOND:
+					calendarNextExec.add(Calendar.SECOND, period);
+					break;
+				case WEEK:
+					calendarNextExec.add(Calendar.WEEK_OF_YEAR, period);
+					break;
+				case YEAR:
+					calendarNextExec.add(Calendar.YEAR, period);
+					break;
+				}
+				return calendarNextExec.getTime();
+			}
+		}
+
+	}
 }
