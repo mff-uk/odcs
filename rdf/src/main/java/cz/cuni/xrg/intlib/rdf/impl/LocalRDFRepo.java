@@ -105,15 +105,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	private String dataUnitName;
 
 	/**
-	 * Create local repository in default set temp directory path. Each directory
-	 * path have to constains more that one RDF repository.
+	 * Create local repository in default set temp directory path. Each
+	 * directory path have to constains more that one RDF repository.
 	 *
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
 	 * @throws RuntimeException if temp directory for repository can not create.
 	 * @return
 	 */
-	public static LocalRDFRepo createLocalRepo(String dataUnitName) throws RuntimeException{
+	public static LocalRDFRepo createLocalRepo(String dataUnitName) throws RuntimeException {
 
 		return LocalRDFRepo.createLocalRepoInTempDirectory(repoDirName,
 				repoFileName, dataUnitName);
@@ -640,7 +640,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			connection.commit();
 
-		} catch (IOException | RDFHandlerException ex) {
+		} catch (IOException ex) {
+			throw new LoadException("Problems with file stream:" + ex
+					.getMessage(), ex);
+		} catch (RDFHandlerException ex) {
 			throw new LoadException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			throw new LoadException(
