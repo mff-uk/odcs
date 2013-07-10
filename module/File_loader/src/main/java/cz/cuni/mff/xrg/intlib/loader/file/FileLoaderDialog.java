@@ -218,7 +218,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
             comboBoxFormat.setValue(conf.RDFFileFormat);
         } catch (Property.ReadOnlyException | Converter.ConversionException ex) {
             // throw setting exception
-            throw new ConfigException();
+            throw new ConfigException(ex.getMessage(),ex);
         }
     }	
 }
