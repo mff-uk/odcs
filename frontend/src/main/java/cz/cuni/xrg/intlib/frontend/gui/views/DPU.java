@@ -628,7 +628,7 @@ class DPU extends ViewComponent {
 								selectedDpuWrap.saveConfig();
 								
 							} catch (ConfigException e) {
-
+								selectedDpuWrap.getDPUTemplateRecord().setConf(null);
 //								Notification.show(
 //										"Failed to save DPURecord.", "Mandatory fields should be filled", Type.ERROR_MESSAGE);
 

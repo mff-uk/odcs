@@ -404,12 +404,8 @@ class Scheduler extends ViewComponent {
 			if (item.getFirstExecution() == null) {
 				result.getContainerProperty(num, "next").setValue(null);
 			} else {
-				// TODO: if just ones checked set to "next" first execution if
-				// date > then the present date
-				// TODO: else if "last"== null set to "next" first execution
-				// TODO: if "last"!= null set to "next" ("last" + period)
 				result.getContainerProperty(num, "next").setValue(
-						item.getFirstExecution());
+						item.getNextExecutionTimeInfo() );
 			}
 
 			if (item.getLastExecution() == null) {
