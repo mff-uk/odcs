@@ -105,13 +105,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	private String dataUnitName;
 
 	/**
-	 * Create local repository in default path.
+	 * Create local repository in default set temp directory path. Each
+	 * directory path have to constains more that one RDF repository.
 	 *
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
+	 * @throws RuntimeException if temp directory for repository can not create.
 	 * @return
 	 */
-	public static LocalRDFRepo createLocalRepo(String dataUnitName) {
+	public static LocalRDFRepo createLocalRepo(String dataUnitName) throws RuntimeException {
 
 		return LocalRDFRepo.createLocalRepoInTempDirectory(repoDirName,
 				repoFileName, dataUnitName);
@@ -125,16 +127,16 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param fileName
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
+	 * @throws RuntimeException if temp directory for repository can not create.
 	 * @return
 	 */
 	public static LocalRDFRepo createLocalRepoInTempDirectory(String dirName,
-			String fileName, String dataUnitName) {
+			String fileName, String dataUnitName) throws RuntimeException {
 		Path repoPath = null;
 
 		try {
 			repoPath = Files.createTempDirectory(dirName);
 		} catch (IOException e) {
-			// TODO why not throw IOException?
 			throw new RuntimeException(e);
 		}
 
@@ -465,7 +467,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				RDFParser parser = Rio.createParser(fileFormat);
 				parser.setRDFHandler(handler);
-				
+
 				parser.setStopAtFirstError(false);
 				parser.setParseErrorListener(new ParseErrorListener() {
 					@Override
@@ -638,7 +640,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			connection.commit();
 
-		} catch (IOException | RDFHandlerException ex) {
+		} catch (IOException ex) {
+			throw new LoadException("Problems with file stream:" + ex
+					.getMessage(), ex);
+		} catch (RDFHandlerException ex) {
 			throw new LoadException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			throw new LoadException(

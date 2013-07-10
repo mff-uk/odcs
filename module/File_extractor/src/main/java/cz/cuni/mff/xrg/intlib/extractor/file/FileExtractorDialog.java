@@ -59,8 +59,13 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 			FileExtractorConfig conf = new FileExtractorConfig();
 			conf.Path = textFieldPath.getValue();
 			conf.FileSuffix = textFieldOnly.getValue();
-			conf.RDFFormatValue=(String)comboBoxFormat.getValue();
-			conf.OnlyThisSuffix = textFieldOnly.getValue().isEmpty();
+			conf.RDFFormatValue = (String) comboBoxFormat.getValue();
+			if (textFieldOnly.getValue().isEmpty()) {
+				conf.OnlyThisSuffix = false;
+			} else {
+				conf.OnlyThisSuffix = true;
+			}
+
 			conf.UseStatisticalHandler = useHandler.getValue();
 
 			return conf;
@@ -144,8 +149,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		horizontalLayoutOnly.addComponent(labelOnly);
 
 		// textFieldOnly
-		textFieldOnly = new TextField();
-		textFieldOnly.setNullRepresentation("");
+		textFieldOnly = new TextField("");
+		//textFieldOnly.setNullRepresentation("");
 		textFieldOnly.setImmediate(false);
 		textFieldOnly.setWidth("50px");
 		textFieldOnly.setHeight("-1px");
