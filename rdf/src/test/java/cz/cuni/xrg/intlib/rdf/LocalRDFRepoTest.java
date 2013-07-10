@@ -265,7 +265,7 @@ public class LocalRDFRepoTest {
 	@Test
 	public void extract_N3_FilesToRepository() {
 
-		String suffix = ".n3";
+		String suffix = "shakespeare.n3";
 		String baseURI = "";
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
