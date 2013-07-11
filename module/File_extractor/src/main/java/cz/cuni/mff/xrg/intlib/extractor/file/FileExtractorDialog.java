@@ -366,7 +366,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 	private static final long serialVersionUID = 1L;
 	private final Label state = new Label();
-	private final Label result = new Label();
+//	private final Label result = new Label();
 	private final Label fileName = new Label();
 	private final Label textualProgress = new Label();
 
@@ -414,8 +414,8 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		fileName.setCaption("File name");
 		l.addComponent(fileName);
 
-		result.setCaption("Line breaks counted");
-		l.addComponent(result);
+//		result.setCaption("Line breaks counted");
+//		l.addComponent(result);
 
 		pi.setCaption("Progress");
 		pi.setVisible(false);
@@ -462,20 +462,20 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		pi.setValue(new Float(readBytes / (float) contentLength));
 		textualProgress.setValue("Processed " + readBytes + " bytes of "
 				+ contentLength);
-		result.setValue(counter.getLineBreakCount() + " (counting...)");
+//		result.setValue(counter.getLineBreakCount() + " (counting...)");
 	}
 
 	@Override
 	public void uploadSucceeded(final SucceededEvent event) {
-		result.setValue(counter.getLineBreakCount() + " (total)");
+//		result.setValue(counter.getLineBreakCount() + " (total)");
 
 	}
 
 	@Override
 	public void uploadFailed(final FailedEvent event) {
-		result.setValue(counter.getLineBreakCount()
-				+ " (counting interrupted at "
-				+ Math.round(100 * pi.getValue()) + "%)");
+//		result.setValue(counter.getLineBreakCount()
+//				+ " (counting interrupted at "
+//				+ Math.round(100 * pi.getValue()) + "%)");
 	}
 
 }
