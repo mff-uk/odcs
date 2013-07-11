@@ -34,6 +34,14 @@ public class Edge {
 	@JoinColumn(name="graph_id")
 	private PipelineGraph graph;
 	
+	//@Column(name="dataname", nullable = true)
+	@Transient
+	private String dataName;
+	
+	public void setDataName(String name) {
+		dataName = name;
+	}
+	
 	/**
 	 * No-arg public constructor for JPA
 	 */

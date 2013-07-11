@@ -674,19 +674,19 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 * @param id id of connection to remove
 	 **/
     function removeConnection(id) {
-        var con = connections[id];
-        var idx = dpus[con.from].connectionFrom.indexOf(id);
-        dpus[con.from].connectionFrom.splice(idx, 1);
-        idx = dpus[con.to].connectionTo.indexOf(id);
-        dpus[con.to].connectionTo.splice(idx, 1);
-        con.line.destroy();
-        con.arrowLeft.destroy();
-        con.arrowRight.destroy();
-        con.cmdDelete.destroy();
-		con.hitLine.destroy();
-        connections[id] = null;
+//        var con = connections[id];
+//        var idx = dpus[con.from].connectionFrom.indexOf(id);
+//        dpus[con.from].connectionFrom.splice(idx, 1);
+//        idx = dpus[con.to].connectionTo.indexOf(id);
+//        dpus[con.to].connectionTo.splice(idx, 1);
+//        con.line.destroy();
+//        con.arrowLeft.destroy();
+//        con.arrowRight.destroy();
+//        con.cmdDelete.destroy();
+//		con.hitLine.destroy();
+//        connections[id] = null;
 		rpcProxy.onConnectionRemoved(id);
-        lineLayer.draw();
+        //lineLayer.draw();
     }
 
     /** 

@@ -64,8 +64,19 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onConnectionRemoved(int connectionId) {
-				storeHistoryGraph();
-				graph.removeEdge(connectionId);
+				//storeHistoryGraph();
+				//graph.removeEdge(connectionId);
+				
+				//TODO: Petr
+				Edge edgeToName = null;
+				for(Edge e : graph.getEdges()) {
+					if(e.getId() == connectionId) {
+						edgeToName = e;
+						break;
+					}
+				}
+				Notification.show("INSERT DIALOG WITH NAME!");
+				//Use edgeToName, method setDataName /*change for suitable name */
 			}
 
 			@Override
