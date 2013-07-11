@@ -206,7 +206,12 @@ class PipelineWorker implements Runnable {
 		Pipeline pipeline = execution.getPipeline();
 
 		// get dependency graph -> determine run order
-		DependencyGraph dependencyGraph = new DependencyGraph(pipeline.getGraph());
+		DependencyGraph dependencyGraph = null;
+		if(execution.isDebugging() && execution.getDebugNode() != null) {
+			dependencyGraph = new DependencyGraph(pipeline.getGraph(), execution.getDebugNode());
+		} else {
+			dependencyGraph = new DependencyGraph(pipeline.getGraph());
+		}
 		LOG.debug("Started");
 
 		// contextInfo is in pipeline so by saving pipeline we also save context

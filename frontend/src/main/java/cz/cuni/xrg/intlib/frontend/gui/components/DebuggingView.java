@@ -130,6 +130,10 @@ public class DebuggingView extends CustomComponent {
 
 		boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
 
+		if (loadSuccessful && isInDebugMode) {
+			refreshDpuSelector();
+		}
+		
 		//Table with data
 		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
 			DataUnitBrowser browser = loadBrowser(false);
@@ -144,10 +148,6 @@ public class DebuggingView extends CustomComponent {
 			}
 		} else {
 			browseTab.setEnabled(false);
-		}
-
-		if (loadSuccessful && isInDebugMode) {
-			refreshDpuSelector();
 		}
 
 		//Content of text log file
@@ -396,6 +396,9 @@ public class DebuggingView extends CustomComponent {
 		for (DPUInstanceRecord dpu : contextDpuIndexes) {
 			if(!dpuSelector.containsId(dpu)) {
 				dpuSelector.addItem(dpu);
+				if(dpu.equals(debugDpu)) {
+					dpuSelector.select(debugDpu);
+				}
 			}
 		}
 //		if (debugDpu != null) {

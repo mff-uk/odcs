@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 
 
@@ -38,7 +39,14 @@ public class PipelineExecution  {
 	@ManyToOne
 	@JoinColumn(name="pipeline_id")
     private Pipeline pipeline;
-    
+	
+	/**
+	 * Node where execution should end. Only for debug mode.
+	 */
+    @ManyToOne(optional = true)
+	@JoinColumn(name="debugnode_id", nullable = true)
+	private Node debugNode;
+	
     /**
      * Run in debug mode?
      */
@@ -178,5 +186,13 @@ public class PipelineExecution  {
 
 	public void setSilentMode(boolean silentMode) {
 		this.silentMode = silentMode;
-	}    
+	}  
+	
+	public Node getDebugNode() {
+		return debugNode;
+	}
+	
+	public void setDebugNode(Node debugNode) {
+		this.debugNode = debugNode;
+	}
 }

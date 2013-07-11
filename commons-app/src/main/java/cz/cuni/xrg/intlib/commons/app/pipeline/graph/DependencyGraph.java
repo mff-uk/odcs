@@ -34,6 +34,11 @@ public class DependencyGraph implements Iterable<Node> {
 	 */
 	private Map<Node, Set<Node>> cacheAncestors = new HashMap<>();
 
+	/**
+	 * Node where graph should end. Optional.
+	 */
+	private Node finalNode;
+	
     /**
      * Constructs dependency graph from given pipeline graph.
      *
@@ -44,6 +49,11 @@ public class DependencyGraph implements Iterable<Node> {
         buildDependencyGraph();
         findExtractors();
     }
+
+	public DependencyGraph(PipelineGraph graph, Node debugNode) {
+		this(graph);
+		finalNode = debugNode;
+	}
 
     /**
      * Returns iterator, which iterates over pipeline graph in a way that all
@@ -143,4 +153,11 @@ public class DependencyGraph implements Iterable<Node> {
 
         return dNode;
     }
+
+	/*
+	 * returns the final node
+	 */
+	Node getFinalNode() {
+		return finalNode;
+	}
 }

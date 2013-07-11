@@ -94,6 +94,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
   "context_id" INTEGER,
   "schedule_id" INTEGER,
   "silent_mode" SMALLINT,
+  "debugnode_id" INTEGER,
   PRIMARY KEY ("id")
 );
 

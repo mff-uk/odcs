@@ -109,13 +109,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
 		//TODO: Debug
 		pip.setGraph(graph);
-		PipelineExecution pExec = runPipeline(pip, true);
+		Node debugNode = graph.getNodeById(dpuId);
+		PipelineExecution pExec = runPipeline(pip, true, debugNode);
 		if (pExec == null) {
 			Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
 			return;
 		}
 
-		DPUInstanceRecord debugDpu = graph.getNodeById(dpuId).getDpuInstance();
+		DPUInstanceRecord debugDpu = debugNode.getDpuInstance();
 		fireShowDebug(pExec, debugDpu);
 	}
 
@@ -241,13 +242,16 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * 
 	 * @param pipeline {@link Pipeline} to run.
 	 * @param inDebugMode Run in debug/normal mode.
-	 * @return {@link PipelineExecution} of given {@link Pipeline}.
+	 * @param debugNode {@link Node} where debug execution should stop. Valid only for debug mode.
+  	 * @return {@link PipelineExecution} of given {@link Pipeline}.
 	 */
-	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
-		//TODO: Pass DPU where execution should stop.
+	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
 		
 		PipelineExecution pipelineExec = new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
+		if(inDebugMode && debugNode != null) {
+			pipelineExec.setDebugNode(debugNode);
+		}
 		// do some settings here
 
 		// store into DB

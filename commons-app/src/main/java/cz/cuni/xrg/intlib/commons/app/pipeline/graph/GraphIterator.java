@@ -4,7 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Iterates over dependency graph in an order that satisfies all dependencies.
+ * Iterates over dependency graph in an order that satisfies all dependencies. 
+ * If final node is set, iteration may end before all nodes are iterated, immediately after final node is iterated.
  * @author Jan Vojt
  *
  */
@@ -16,11 +17,19 @@ public class GraphIterator implements Iterator<Node> {
 	private List<DependencyNode> stack;
 	
 	/**
+	 * Node where graph should end. Optional.
+	 */
+	private Node finalNode;
+	
+	private boolean isFinalNodeProcessed = false;
+	
+	/**
 	 * Constructs iterator from dependency graph.
 	 * @param graph
 	 */
 	public GraphIterator(DependencyGraph graph) {
 		this.stack = graph.getExtractors();
+		this.finalNode = graph.getFinalNode();
 	}
 
 	/**
@@ -28,7 +37,7 @@ public class GraphIterator implements Iterator<Node> {
 	 */
 	@Override
 	public boolean hasNext() {
-		return ! stack.isEmpty();
+		return !isFinalNodeProcessed && !stack.isEmpty();
 	}
 
 	/**
@@ -39,6 +48,10 @@ public class GraphIterator implements Iterator<Node> {
 		for (DependencyNode n : stack) {
 			if (n.hasMetDependencies()) {
 				replaceWithDependants(n);
+				Node node = n.getNode();
+				if(node.equals(finalNode)) {
+					isFinalNodeProcessed = true;
+				}
 				return n.getNode();
 			}
 		}
