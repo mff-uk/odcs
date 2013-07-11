@@ -84,10 +84,10 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		comboBoxFormat.addItem("TriG");
 		comboBoxFormat.setValue("TTL");
 		
-		pathType.addItem("Upload file");
-		pathType.addItem("Specify path to file");
-		pathType.addItem("Specify path to directory");
-		pathType.addItem("HTTP URL");
+		pathType.addItem("Extract uploaded file");
+		pathType.addItem("Extract file based on the path to file");
+		pathType.addItem("Extract file based on the path to the directory");
+		pathType.addItem("Extract file from the given HTTP URL");
 		pathType.setValue("Upload file");
 
 	}
