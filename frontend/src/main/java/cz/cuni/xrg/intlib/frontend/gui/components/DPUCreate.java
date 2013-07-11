@@ -93,11 +93,11 @@ public class DPUCreate extends Window {
 		mainLayout.setStyleName("dpuDetailMainLayout");
 		mainLayout.setMargin(true);
 
-		dpuGeneralSettingsLayout = new GridLayout(2, 6);
+		dpuGeneralSettingsLayout = new GridLayout(2, 4);
 		dpuGeneralSettingsLayout.setSpacing(true);
 		dpuGeneralSettingsLayout.setWidth("400px");
-		dpuGeneralSettingsLayout.setColumnExpandRatio(0, 0.5f);
-		dpuGeneralSettingsLayout.setColumnExpandRatio(1, 0.5f);
+		dpuGeneralSettingsLayout.setHeight("200px");
+
 
 		Label nameLabel = new Label("Name");
 		nameLabel.setImmediate(false);
@@ -168,9 +168,15 @@ public class DPUCreate extends Window {
 
 		lineBreakCounter = new LineBreakCounter();
 		lineBreakCounter.setSlow(true);
+		
+		HorizontalLayout uploadFileLayout = new HorizontalLayout();
+		uploadFileLayout.setSpacing(true);
 
 		selectFile = new Upload(null, lineBreakCounter);
+		selectFile.setImmediate(true);
+		selectFile.setButtonCaption("Choose file");
 		selectFile.addStyleName("horizontalgroup");
+		selectFile.setHeight("40px");
 
 		selectFile.addStartedListener(new StartedListener() {
 
@@ -214,6 +220,7 @@ public class DPUCreate extends Window {
 			public void uploadFinished(final FinishedEvent event) {
 				
 				uploadInfoWindow.setClosable(true);
+				uploadInfoWindow.close();
 				if(fl==0){
 					uploadFile.setReadOnly(false);
 					uploadFile.setValue(event.getFilename());
@@ -229,17 +236,11 @@ public class DPUCreate extends Window {
 		});
 
 		uploadInfoWindow = new UploadInfoWindow(selectFile, lineBreakCounter);
-
-		dpuGeneralSettingsLayout.addComponent(selectFile, 1, 3);
-
-		Label uploadLabel = new Label("Upload file");
-		uploadLabel.setImmediate(false);
-		uploadLabel.setWidth("-1px");
-		uploadLabel.setHeight("-1px");
-		dpuGeneralSettingsLayout.addComponent(uploadLabel, 0, 4);
+		
+		uploadFileLayout.addComponent(selectFile);
 
 		uploadFile = new TextField();
-		uploadFile.setWidth("310px");
+		uploadFile.setWidth("210px");
 		uploadFile.setReadOnly(true);
 
 		uploadFile.addValidator(new Validator() {
@@ -254,7 +255,10 @@ public class DPUCreate extends Window {
 
 			}
 		});
-		dpuGeneralSettingsLayout.addComponent(uploadFile, 1, 4);
+		
+		uploadFileLayout.addComponent(uploadFile);
+		
+		dpuGeneralSettingsLayout.addComponent(uploadFileLayout, 1, 3);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
 				false));

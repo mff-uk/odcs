@@ -88,7 +88,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		pathType.addItem("Extract file based on the path to file");
 		pathType.addItem("Extract file based on the path to the directory");
 		pathType.addItem("Extract file from the given HTTP URL");
-		pathType.setValue("Upload file");
+		pathType.setValue("Extract uploaded file");
 
 	}
 
@@ -171,14 +171,16 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					}
 				});
 				
-				//If selected "Upload file" option
-				if(event.getProperty().getValue().equals("Upload file")){
+				//If selected "Extract uploaded file" option
+				if(event.getProperty().getValue().equals("Extract uploaded file")){
 					
 					lineBreakCounter = new LineBreakCounter();
 					lineBreakCounter.setSlow(true);
 					
 					//Upload component
 					fileUpload = new Upload(null, lineBreakCounter);
+					fileUpload.setImmediate(true);
+					fileUpload.setButtonCaption("Choose file");
 					//Upload started event listener
 					fileUpload.addStartedListener(new StartedListener() {
 
@@ -228,26 +230,23 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					uploadInfoWindow = new UploadInfoWindow(fileUpload, lineBreakCounter);
 					
 					//Adding upload component
-					mainLayout.addComponent(fileUpload, 0, 1);
+//					mainLayout.addComponent(fileUpload, 0, 1);
 					
 					HorizontalLayout uploadFileLayout = new HorizontalLayout();
 					uploadFileLayout.setWidth("100%");
 					uploadFileLayout.setSpacing(true);
 					
-					Label uploadLable = new Label();
-					uploadLable.setCaption("Upload file:");
-					uploadFileLayout.addComponent(uploadLable);
-					
 					textFieldPath.setReadOnly(true);
+					uploadFileLayout.addComponent(fileUpload);
 					uploadFileLayout.addComponent(textFieldPath);
-					uploadFileLayout.setExpandRatio(uploadLable, 0.1f);
+					uploadFileLayout.setExpandRatio(fileUpload, 0.1f);
 					uploadFileLayout.setExpandRatio(textFieldPath, 0.9f);
 					
 					//Adding component with path to upload file in read only mode
-					mainLayout.addComponent(uploadFileLayout, 0, 2);
+					mainLayout.addComponent(uploadFileLayout, 0, 1);
 
-					//If selected "Specify path to file" option
-				}else if (event.getProperty().getValue().equals("Specify path to file")){
+					//If selected "Extract file based on the path to file" option
+				}else if (event.getProperty().getValue().equals("Extract file based on the path to file")){
 					
 					textFieldPath.setInputPrompt("C:\\ted\\test.ttl");
 					
@@ -255,8 +254,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					mainLayout.addComponent(textFieldPath, 0, 1);
 
 					
-					//If selected "Specify path to directory" option
-				}else if (event.getProperty().getValue().equals("Specify path to directory")){
+					//If selected "Extract file based on the path to the directory" option
+				}else if (event.getProperty().getValue().equals("Extract file based on the path to the directory")){
 					
 					textFieldPath.setInputPrompt("C:\\ted\\");
 					
@@ -268,8 +267,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					//Adding component for specify file extension
 					mainLayout.addComponent(horizontalLayoutOnly, 0, 2);
 
-					//If selected "HTTP URL" option
-				}else if(event.getProperty().getValue().equals("HTTP URL")){
+					//If selected "Extract file from the given HTTP URL" option
+				}else if(event.getProperty().getValue().equals("Extract file from the given HTTP URL")){
 
 					textFieldPath.setInputPrompt("http://");
 					
