@@ -126,10 +126,12 @@ public class DataUnitFactory {
 				if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("virtuoso") == 0) {
 					// use virtuoso
 					type = DataUnitType.RDF_Virtuoso; 
-				} else {
+				} else if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("localRDF") == 0) {
 					// use local
 					type = DataUnitType.RDF_Local;
-				}
+				} else {
+                                    throw new DataUnitCreateException("The data unit type is unknown. Check the value of the parameter backend.defaultRDF in config.properties");
+                                }
 			}
 		}		
 		
