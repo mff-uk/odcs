@@ -22,28 +22,32 @@ import org.slf4j.LoggerFactory;
  */
 class LocalRdfBrowser extends DataUnitBrowser {
 
+	/**
+	 * Data from repository.
+	 */
 	private List<RDFTriple> data = null;
+	
+	/**
+	 * Table for data presentation.
+	 */
 	private IntlibPagedTable dataTable;
 
+	private static Logger LOG = LoggerFactory.getLogger(LocalRdfBrowser.class);
+	
 	@Override
-	public void loadDataUnit(File directory, String dumpDirName) {
+	public void loadDataUnit(File directory) {
 		Logger logger = LoggerFactory.getLogger(LocalRdfBrowser.class);
-
-		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-		logger.debug("Create LocalRDFRepo in directory={} dumpDirname={}", directory.toString(), dumpDirName);
-
-		LocalRDFRepo repository = LocalRDFRepo.createLocalRepo(directory.getAbsolutePath(), dumpDirName, "");
-
+		// create repository in default path - in tmp directory
+		LocalRDFRepo repository = LocalRDFRepo.createLocalRepo("");
 		try {
+			// load data from stora
 			repository.load(directory);
 		} catch (Exception e) {
 		}
+		// load triple
 		data = repository.getRDFTriplesInRepository();
-
-		logger.debug("Number of triples: {}", data.size());
-
+		// close reporistory
 		repository.shutDown();
-
 	}
 
 	@Override
@@ -63,20 +67,6 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		dataTable.setContainerDataSource(container);
 
 		dataTable.setVisibleColumns(new String[]{"subject", "predicate", "object"});
-	}
-
-
-	@Override
-	public void loadDataUnit(File directory) throws Exception {
-		// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-		LoggerFactory.getLogger(LocalRdfBrowser.class).debug("Create LocalRDFRepo in directory {}", directory.toString());
-		LocalRDFRepo repository = new LocalRDFRepo(directory.toString(), "dump_dat.ttl", "");
-		// TODO Petyr, Jirka : load repository from folder ..
-		// get triples
-		data = repository.getRDFTriplesInRepository();
-
-		repository.shutDown();
-		//data = buildStubRDFData();
 	}
 
 }

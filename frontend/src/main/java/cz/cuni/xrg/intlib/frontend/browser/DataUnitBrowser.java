@@ -21,7 +21,6 @@ public abstract class DataUnitBrowser extends CustomComponent {
 	 */
 	public abstract void loadDataUnit(File directory) throws Exception;
 
-	public abstract void loadDataUnit(File directory, String dumpDirName) throws Exception;
 
 	/**
 	 * The method is called before the component is shown. Initialise

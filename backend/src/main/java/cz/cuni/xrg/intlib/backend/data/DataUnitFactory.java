@@ -38,7 +38,7 @@ public class DataUnitFactory {
 	/**
 	 * Application configuration.
 	 */
-	private static AppConfig appConfig;
+	private AppConfig appConfig;
 	
 	/**
 	 * Base constructor..
@@ -118,20 +118,21 @@ public class DataUnitFactory {
 		
 		if (type == DataUnitType.RDF) {
 			// select other DataUnit based on configuration
-			if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF) == null) {
+			String defRdfRepo = appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF);
+			if (defRdfRepo == null) {
 				// use local 
 				type = DataUnitType.RDF_Local;
 			} else {
 				// chose based on option			
-				if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("virtuoso") == 0) {
+				if (defRdfRepo.compareToIgnoreCase("virtuoso") == 0) {
 					// use virtuoso
 					type = DataUnitType.RDF_Virtuoso; 
-				} else if (appConfig.getString(ConfigProperty.BACKEND_DEFAULTRDF).compareToIgnoreCase("localRDF") == 0) {
+				} else if (defRdfRepo.compareToIgnoreCase("localRDF") == 0) {
 					// use local
 					type = DataUnitType.RDF_Local;
 				} else {
-                                    throw new DataUnitCreateException("The data unit type is unknown. Check the value of the parameter backend.defaultRDF in config.properties");
-                                }
+                    throw new DataUnitCreateException("The data unit type is unknown. Check the value of the parameter backend.defaultRDF in config.properties");
+                }
 			}
 		}		
 		

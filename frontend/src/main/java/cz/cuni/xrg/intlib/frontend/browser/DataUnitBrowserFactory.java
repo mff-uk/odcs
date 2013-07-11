@@ -33,15 +33,15 @@ public class DataUnitBrowserFactory {
 			// the context doesn't exist
 			throw new DataUnitNotFoundException();
 		}
-		File directory = info.getDirectory();
 
 		switch(info.getType()) {
 		case RDF_Local:
 			DataUnitBrowser localRdfBrowser = new LocalRdfBrowser();
 			try {
-				File workingPath = context.getRootDirectory(); // /working
-				String path = String.format("storage\\dpu_%d\\%s", dpuInstance.getId(), info.getDirectory().getName());
-				localRdfBrowser.loadDataUnit(new File(workingPath, path));
+				// get storage directory for DataUnit
+				File dpuStorage = context.getDataUnitStorage(dpuInstance, info.getIndex());
+				// load data
+				localRdfBrowser.loadDataUnit(dpuStorage);
 			} catch (Exception e) {
 				throw new BrowserInitFailedException(e);
 			}
