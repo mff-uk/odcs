@@ -36,12 +36,7 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoad
 	 * Context input data units.
 	 */
     private List<DataUnit> inputs = new LinkedList<>();
-    
-    /**
-     * Mapping from {@link outputs} to indexes.
-     */
-    private Map<DataUnit, Integer> indexes;    
-    
+        
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
@@ -55,7 +50,6 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoad
 	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
 		super(id, execution, dpuInstance, context, appConfig);
-		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -83,10 +77,12 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoad
 	
 	@Override
 	public void save() {
+		// we have no mapping from input to indexes .. so we just assign numbers
+		Integer index = 0;
 		for (DataUnit item : inputs) {		
 			try {
 				// get directory
-				File directory = context.getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				File directory = context.getDataUnitStorage(getDPUInstance(), index++);
 				// and save into directory
 				item.save(directory);
 			} catch (Exception e) {

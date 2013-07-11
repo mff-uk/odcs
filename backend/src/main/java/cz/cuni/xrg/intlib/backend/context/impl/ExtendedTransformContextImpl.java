@@ -95,10 +95,12 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 	
 	@Override
 	public void save() {
+		// we have no mapping from input to indexes .. so we just assign numbers
+		Integer index = 0;
 		for (DataUnit item : inputs) {		
 			try {
 				// get directory
-				File directory = context.getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				File directory = context.getDataUnitStorage(getDPUInstance(), ++index);
 				// and save into directory
 				item.save(directory);
 			} catch (Exception e) {
