@@ -38,10 +38,10 @@ public class DPUFacade {
 	 */
 	public DPUTemplateRecord creatTemplateFromInstance(DPUInstanceRecord instance) {
 		DPUTemplateRecord template = new DPUTemplateRecord(instance);
-		if(instance.getTemplate().getParentId() == null) {
-			template.setParentId(instance.getTemplate().getId());
+		if(instance.getTemplate().getParent() == null) {
+			template.setParent(instance.getTemplate());
 		} else {
-			template.setParentId(instance.getTemplate().getParentId());
+			template.setParent(instance.getTemplate().getParent());
 		}
 		return template;
 	}

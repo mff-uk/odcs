@@ -29,13 +29,15 @@ public class DPUTemplateRecord extends DPURecord {
 	 * Parent DPURecord. If parent is set, this DPURecord is under its parent in DPU tree.
 	 * 
 	 */
-	@Transient
-//	@ManyToOne(optional = true)
-//	@JoinColumn(name="parent_id")
-	private DPURecord parent;
+	//@Transient
+	@ManyToOne(optional = true)
+	@JoinColumn(name="parent_id", nullable = true)
+	private DPUTemplateRecord parent;
 	
-	@Column(name="parent_id", nullable = true)
-	private Long parentId;
+	
+	
+//	@Column(name="parent_id", nullable = true)
+//	private Long parentId;
 	
 	
 	/**
@@ -85,11 +87,11 @@ public class DPUTemplateRecord extends DPURecord {
 		this.jarDescription = jarDescription;
 	}
 	
-	public Long getParentId() {
-		return parentId;
+	public DPUTemplateRecord getParent() {
+		return parent;
 	}
 	
-	public void setParentId(Long parentId) {
-		this.parentId = parentId;
+	public void setParent(DPUTemplateRecord parent) {
+		this.parent = parent;
 	}
 }

@@ -137,15 +137,15 @@ public class DPUTree extends CustomComponent {
 		for (DPUTemplateRecord dpu : dpus) {
 			if (dpu.getType() != null) {
 				tree.addItem(dpu);
-				Long parentId = dpu.getParentId();
-				if (parentId != null) {
-					DPUTemplateRecord parent = null;
-					for(DPUTemplateRecord candidate : dpus) {
-						if(candidate.getId() == parentId) {
-							parent = candidate;
-							break;
-						}
-					}
+				DPUTemplateRecord parent = dpu.getParent();
+				if (parent != null) {
+//					DPUTemplateRecord parent = null;
+//					for(DPUTemplateRecord candidate : dpus) {
+//						if(candidate.getId() == parentId) {
+//							parent = candidate;
+//							break;
+//						}
+//					}
 					tree.setParent(dpu, parent);
 				} else {
 					switch (dpu.getType()) {
