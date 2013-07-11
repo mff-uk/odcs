@@ -36,6 +36,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
   "type" SMALLINT,
   "jar_path" VARCHAR(255),
   "configuration" LONG VARBINARY,
+  "parent_id" INTEGER,
 -- DPUTemplateRecord
   "visibility" SMALLINT,
   "jar_description" VARCHAR(512),

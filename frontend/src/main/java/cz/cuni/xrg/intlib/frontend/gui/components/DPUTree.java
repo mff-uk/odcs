@@ -22,7 +22,6 @@ import java.util.List;
 public class DPUTree extends CustomComponent {
 
 	VerticalLayout layoutTree;
-
 	Tree dpuTree;
 
 	/**
@@ -102,7 +101,8 @@ public class DPUTree extends CustomComponent {
 	/**
 	 * Adds custom ItemClickListener to the DPUTRee.
 	 *
-	 * @param itemClickListener {@link ItemClickEvent.ItemClickListener} to add to DPU tree.
+	 * @param itemClickListener {@link ItemClickEvent.ItemClickListener} to add
+	 * to DPU tree.
 	 */
 	public void addItemClickListener(
 			ItemClickEvent.ItemClickListener itemClickListener) {
@@ -120,7 +120,7 @@ public class DPUTree extends CustomComponent {
 	/**
 	 * Fills tree with available DPUs.
 	 *
-	 * @param tree {@link Tree} to fill. 
+	 * @param tree {@link Tree} to fill.
 	 */
 	private void fillTree(Tree tree) {
 
@@ -135,26 +135,38 @@ public class DPUTree extends CustomComponent {
 
 		List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
 		for (DPUTemplateRecord dpu : dpus) {
-			if(dpu.getType()!=null){
-			tree.addItem(dpu);
-			switch (dpu.getType()) {
-				case Extractor:
-					tree.setParent(dpu, rootExtractor);
-					break;
-				case Transformer:
-					tree.setParent(dpu, rootTransformer);
-					break;
-				case Loader:
-					tree.setParent(dpu, rootLoader);
-					break;
-				default:
-					throw new IllegalArgumentException();
+			if (dpu.getType() != null) {
+				tree.addItem(dpu);
+				Long parentId = dpu.getParentId();
+				if (parentId != null) {
+					DPUTemplateRecord parent = null;
+					for(DPUTemplateRecord candidate : dpus) {
+						if(candidate.getId() == parentId) {
+							parent = candidate;
+							break;
+						}
+					}
+					tree.setParent(dpu, parent);
+				} else {
+					switch (dpu.getType()) {
+						case Extractor:
+							tree.setParent(dpu, rootExtractor);
+							break;
+						case Transformer:
+							tree.setParent(dpu, rootTransformer);
+							break;
+						case Loader:
+							tree.setParent(dpu, rootLoader);
+							break;
+						default:
+							throw new IllegalArgumentException();
+					}
+				}
 			}
-		}
 
-		tree.expandItem(rootExtractor);
-		tree.expandItem(rootTransformer);
-		tree.expandItem(rootLoader);
+			for (Object itemId : tree.rootItemIds()) {
+				tree.expandItemsRecursively(itemId);
+			}
 		}
 	}
 

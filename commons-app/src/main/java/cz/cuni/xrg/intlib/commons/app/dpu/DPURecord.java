@@ -63,6 +63,7 @@ public class DPURecord {
 	@Column(name="jar_path")
     private String jarPath;
 	
+	
 	/**
 	 * DPU's configuration in serialized version.
 	 */

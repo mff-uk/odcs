@@ -41,11 +41,11 @@ FOREACH HEXADECIMAL BLOB INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,
 END
 -- Table DB.INTLIB.DPU_INSTANCE 2 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_TEMPLATE
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,visibility,jar_description) VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar','',1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,visibility,jar_description) VALUES(2,'RDF File Extractor','Extracts RDF data from a file.',0,'File_extractor-0.0.1.jar','',1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,visibility,jar_description) VALUES(3,'SPARQL Transformer','SPARQL Transformer.',1,'SPARQL_transformer-0.0.1.jar','',1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,visibility,jar_description) VALUES(4,'SPARQL Loader','Loads RDF data.',2,'RDF_loader-0.0.1.jar','',1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,visibility,jar_description) VALUES(5,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar','',1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(2,'RDF File Extractor','Extracts RDF data from a file.',0,'File_extractor-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(3,'SPARQL Transformer','SPARQL Transformer.',1,'SPARQL_transformer-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(4,'SPARQL Loader','Loads RDF data.',2,'RDF_loader-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(5,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar','',NULL,1,'No description in manifest.');
 -- Table DB.INTLIB.DPU_TEMPLATE 5 rows output.
 -- SELECT * FROM DB.INTLIB.EXEC_CONTEXT_DPU
 -- Table DB.INTLIB.EXEC_CONTEXT_DPU 0 rows output.

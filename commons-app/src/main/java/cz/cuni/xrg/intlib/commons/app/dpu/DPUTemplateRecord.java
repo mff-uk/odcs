@@ -1,10 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 
@@ -28,6 +24,19 @@ public class DPUTemplateRecord extends DPURecord {
 	 */
 	@Column(name="jar_description")
 	private String jarDescription;
+	
+	/**
+	 * Parent DPURecord. If parent is set, this DPURecord is under its parent in DPU tree.
+	 * 
+	 */
+	@Transient
+//	@ManyToOne(optional = true)
+//	@JoinColumn(name="parent_id")
+	private DPURecord parent;
+	
+	@Column(name="parent_id", nullable = true)
+	private Long parentId;
+	
 	
 	/**
 	 * Empty ctor for JPA.
@@ -74,5 +83,13 @@ public class DPUTemplateRecord extends DPURecord {
 
 	public void setJarDescription(String jarDescription) {
 		this.jarDescription = jarDescription;
+	}
+	
+	public Long getParentId() {
+		return parentId;
+	}
+	
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
 	}
 }
