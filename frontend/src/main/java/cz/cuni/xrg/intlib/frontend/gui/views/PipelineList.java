@@ -3,15 +3,14 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Label;
 
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
@@ -23,7 +22,6 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
-import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
 
@@ -213,6 +211,21 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setPageLength(10);
 		// add column
 		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
+		tablePipelines.setImmediate(true);
+		tablePipelines.addGeneratedColumn("description", new Table.ColumnGenerator() {
+
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				String description = (String) source.getItem(itemId).getItemProperty(columnId).getValue();
+				if(description.length() > App.MAX_TABLE_COLUMN_LENGTH) {
+					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH));
+					descriptionLabel.setDescription(description);
+					return descriptionLabel;
+				} else {
+					return description;
+				}
+			}
+		});
 
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("create pipeline");

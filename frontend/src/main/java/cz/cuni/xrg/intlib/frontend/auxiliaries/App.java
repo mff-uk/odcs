@@ -65,4 +65,6 @@ public class App {
 	public static LogFacade getLogs() {
 		return getApp().getLogs();
 	}
+	
+	public static final int MAX_TABLE_COLUMN_LENGTH = 100;
 }

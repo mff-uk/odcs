@@ -552,6 +552,11 @@ class PipelineEdit extends ViewComponent {
 		}
 	}
 
+	/**
+	 * Validates fields with requirements on input. Shows errors as notification.
+	 * @return validation result
+	 * 
+	 */
 	private boolean validate() {
 		try {
 			pipelineName.validate();
