@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -19,6 +20,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 import cz.cuni.xrg.intlib.rdf.exceptions.SPARQLValidationException;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -96,6 +98,7 @@ public class DPUDetail extends Window {
 		dpuDescription.setWidth("400px");
 		dpuDescription.setHeight("60px");
 		dpuDescription.setValue(dpu.getDescription());
+		dpuDescription.addValidator(new MaxLengthValidator(255));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
@@ -188,8 +191,8 @@ public class DPUDetail extends Window {
 	 */
 	protected boolean saveDPUInstance() {
 		try {
-			if (!dpuName.isValid()) {
-				throw new ConfigException(dpuName.getRequiredError());
+			if (!validate()) {
+				return false;
 			}
 			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue());
 			dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription
@@ -225,5 +228,16 @@ public class DPUDetail extends Window {
 			return true;
 		}
 		return false;
+	}
+	
+	private boolean validate() {
+		try {
+			dpuName.validate();
+			dpuDescription.validate();
+		} catch (Validator.InvalidValueException e) {
+			Notification.show("Error saving DPU configuration. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 }

@@ -22,6 +22,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
@@ -333,6 +334,7 @@ class PipelineEdit extends ViewComponent {
 		pipelineDescription.setImmediate(false);
 		pipelineDescription.setWidth("400px");
 		pipelineDescription.setHeight("60px");
+		pipelineDescription.addValidator(new MaxLengthValidator(255));
 		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
 //		Label permissionLabel = new Label("Permissions");
@@ -460,8 +462,8 @@ class PipelineEdit extends ViewComponent {
 	 * Saves current pipeline.
 	 */
 	protected boolean savePipeline() {
-		if (!pipelineName.isValid()) {
-			Notification.show("Error saving pipeline", "Pipeline name is required!", Notification.Type.ERROR_MESSAGE);
+		if (!validate()) {
+			//Notification.show("Error saving pipeline", "Pipeline name is required!", Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
 		this.pipeline.setName(pipelineName.getValue());
@@ -548,5 +550,16 @@ class PipelineEdit extends ViewComponent {
 			pc.resizeCanvas(630, newWidth);
 			tabSheet.setWidth(1070 + (width - 1350), Unit.PIXELS);
 		}
+	}
+
+	private boolean validate() {
+		try {
+			pipelineName.validate();
+			pipelineDescription.validate();
+		} catch (Validator.InvalidValueException e) {
+			Notification.show("Error saving pipeline", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 }
