@@ -13,7 +13,7 @@ public enum ConfigProperty {
 	BACKEND_HOST("backend.host"),
 	BACKEND_PORT("backend.port"),
 	
-	BACKEND_DEFAULTRDF("backend.dafaultRdf"),
+	BACKEND_DEFAULTRDF("backend.defaultRdf"),
 	
 	VIRTUOSO_HOSTNAME("virtuoso.hostname"),
 	VIRTUOSO_PORT("virtuoso.port"),
