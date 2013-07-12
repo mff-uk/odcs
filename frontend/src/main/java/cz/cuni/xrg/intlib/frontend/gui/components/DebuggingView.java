@@ -141,7 +141,7 @@ public class DebuggingView extends CustomComponent {
 				tabs.removeTab(browseTab);
 				browseTab = tabs.addTab(browser, "Browse");
 				browseTab.setEnabled(true);
-				tabs.setSelectedTab(browseTab);
+				//tabs.setSelectedTab(browseTab);
 			} else {
 				browseTab.setEnabled(false);
 				loadSuccessful = false;
