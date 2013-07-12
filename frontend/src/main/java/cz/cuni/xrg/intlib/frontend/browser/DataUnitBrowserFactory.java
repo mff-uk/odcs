@@ -36,6 +36,7 @@ public class DataUnitBrowserFactory {
 
 		switch(info.getType()) {
 		case RDF_Local:
+		case RDF_Virtuoso: // local can be used for virtuoso as well
 			DataUnitBrowser localRdfBrowser = new LocalRdfBrowser();
 			try {
 				// get storage directory for DataUnit
@@ -46,8 +47,6 @@ public class DataUnitBrowserFactory {
 				throw new BrowserInitFailedException(e);
 			}
 			return localRdfBrowser;
-		case RDF_Virtuoso:
-			return null;
 		default:
 			return null;
 		}
