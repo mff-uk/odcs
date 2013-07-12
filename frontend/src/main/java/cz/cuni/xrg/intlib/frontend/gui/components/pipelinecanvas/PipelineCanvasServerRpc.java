@@ -52,4 +52,10 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 	 * @param dpuId Id of node, where debug should end.
 	 */
 	public void onDebugRequested(int dpuId);
+	
+	/**
+	 * Occurs when edit dialog for DataUnit name is requested.
+	 * @param edgeId Id of edge, which DataUnit name should be edited.
+	 */
+	public void onDataUnitNameEditRequested(int edgeId);
 }

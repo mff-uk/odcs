@@ -67,6 +67,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		private  UploadInfoWindow uploadInfoWindow;
 		
 	static int fl=0;
+    private TabSheet tabSheet;
+    private GridLayout gridLayoutCore;
+    private VerticalLayout verticalLayoutDetails;
 	
 	
 
@@ -99,15 +102,17 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 			throw new ConfigException();
 		} else {
 			FileExtractorConfig conf = new FileExtractorConfig();
+			conf.PathType = (String) pathType.getValue();
 			conf.Path = textFieldPath.getValue();
-			conf.FileSuffix = textFieldOnly.getValue();
-			conf.RDFFormatValue = (String) comboBoxFormat.getValue();
-			if (textFieldOnly.getValue().isEmpty()) {
-				conf.OnlyThisSuffix = false;
-			} else {
-				conf.OnlyThisSuffix = true;
+			if(conf.PathType.equals("Extract file based on the path to the directory")){
+				conf.FileSuffix = textFieldOnly.getValue();
+				if (textFieldOnly.getValue().isEmpty()) {
+					conf.OnlyThisSuffix = false;
+				} else {
+					conf.OnlyThisSuffix = true;
+				}
 			}
-
+			conf.RDFFormatValue = (String) comboBoxFormat.getValue();
 			conf.UseStatisticalHandler = useHandler.getValue();
 
 			return conf;
@@ -116,21 +121,35 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	@Override
 	public void setConfiguration(FileExtractorConfig conf) {
+		
 		try {
-			textFieldPath.setValue(conf.Path);
+			
+			pathType.setValue(conf.PathType);
+			if(pathType.getValue().equals("Extract uploaded file")){
+				textFieldPath.setReadOnly(false);
+				textFieldPath.setValue(conf.Path);
+				textFieldPath.setReadOnly(true);
+
+			}
+			else
+				textFieldPath.setValue(conf.Path);
+
 			comboBoxFormat.setValue(conf.RDFFormatValue);
-			textFieldOnly.setValue(conf.FileSuffix);
+			if(conf.PathType.equals("Extract file based on the path to the directory"))
+				textFieldOnly.setValue(conf.FileSuffix);
 			useHandler.setValue(conf.UseStatisticalHandler);
 		} catch (Property.ReadOnlyException | Converter.ConversionException ex) {
 			// throw setting exception
 			throw new ConfigException(ex.getMessage(), ex);
 		}
+		
 	}
 
 	private GridLayout buildMainLayout() {
 
 		// common part: create layout
-		mainLayout = new GridLayout(1, 4);
+//		mainLayout = new GridLayout(1, 4);
+		mainLayout = new GridLayout(1,1);
 		mainLayout.setImmediate(false);
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
@@ -140,6 +159,96 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		// top-level component properties
 		setWidth("100%");
 		setHeight("100%");
+		
+        // common part: create layout
+        tabSheet = new TabSheet();
+        tabSheet.setImmediate(true);
+        tabSheet.setWidth("100%");
+        tabSheet.setHeight("100%");
+
+        // verticalLayoutCore
+        gridLayoutCore = buildGridLayoutCore();
+        tabSheet.addTab(gridLayoutCore, "Core", null);
+
+        // verticalLayoutDetails
+        verticalLayoutDetails = buildVerticalLayoutDetails();
+        tabSheet.addTab(verticalLayoutDetails, "Details", null);
+
+        mainLayout.addComponent(tabSheet, 0, 0);
+
+
+		return mainLayout;
+	}
+
+	private HorizontalLayout buildHorizontalLayoutOnly() {
+		// common part: create layout
+		horizontalLayoutOnly = new HorizontalLayout();
+		horizontalLayoutOnly.setImmediate(false);
+		horizontalLayoutOnly.setWidth("-1px");
+		horizontalLayoutOnly.setHeight("-1px");
+		horizontalLayoutOnly.setMargin(false);
+		horizontalLayoutOnly.setSpacing(true);
+
+		// labelOnly
+		labelOnly = new Label();
+		labelOnly.setImmediate(false);
+		labelOnly.setWidth("240px");
+		labelOnly.setHeight("-1px");
+		labelOnly.setValue("If directory, process only files with extension:");
+		horizontalLayoutOnly.addComponent(labelOnly);
+
+		// textFieldOnly
+		textFieldOnly = new TextField("");
+		//textFieldOnly.setNullRepresentation("");
+		textFieldOnly.setImmediate(false);
+		textFieldOnly.setWidth("50px");
+		textFieldOnly.setHeight("-1px");
+		textFieldOnly.setInputPrompt(".ttl");
+		horizontalLayoutOnly.addComponent(textFieldOnly);
+		horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
+				Alignment.TOP_RIGHT);
+
+		return horizontalLayoutOnly;
+	}
+
+	private HorizontalLayout buildHorizontalLayoutFormat() {
+		// common part: create layout
+		horizontalLayoutFormat = new HorizontalLayout();
+		horizontalLayoutFormat.setImmediate(false);
+		horizontalLayoutFormat.setWidth("-1px");
+		horizontalLayoutFormat.setHeight("-1px");
+		horizontalLayoutFormat.setMargin(false);
+		horizontalLayoutFormat.setSpacing(true);
+
+		// labelFormat
+		labelFormat = new Label();
+		labelFormat.setImmediate(false);
+		labelFormat.setWidth("74px");
+		labelFormat.setHeight("-1px");
+		labelFormat.setValue("RDF Format:");
+		horizontalLayoutFormat.addComponent(labelFormat);
+
+		// comboBoxFormat
+		comboBoxFormat = new ComboBox();
+		comboBoxFormat.setImmediate(true);
+		comboBoxFormat.setWidth("-1px");
+		comboBoxFormat.setHeight("-1px");
+		comboBoxFormat.setNewItemsAllowed(false);
+		comboBoxFormat.setNullSelectionAllowed(false);
+		horizontalLayoutFormat.addComponent(comboBoxFormat);
+
+
+		return horizontalLayoutFormat;
+	}
+	
+    private GridLayout buildGridLayoutCore() {
+        // common part: create layout
+    	gridLayoutCore = new GridLayout(1, 4);
+    	gridLayoutCore.setImmediate(false);
+    	gridLayoutCore.setWidth("100%");
+    	gridLayoutCore.setHeight("100%");
+    	gridLayoutCore.setMargin(true);
+    	gridLayoutCore.setSpacing(true);
 
 		// OptionGroup for path type definition
 		pathType = new OptionGroup();
@@ -151,8 +260,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				
-				mainLayout.removeComponent(0, 1);
-				mainLayout.removeComponent(0, 2);
+				gridLayoutCore.removeComponent(0, 1);
+				gridLayoutCore.removeComponent(0, 2);
 				
 				// text field for path to file/directory, HTTP URL or path to upload file
 				textFieldPath = new TextField();
@@ -229,8 +338,6 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					// The window with upload information
 					uploadInfoWindow = new UploadInfoWindow(fileUpload, lineBreakCounter);
 					
-					//Adding upload component
-//					mainLayout.addComponent(fileUpload, 0, 1);
 					
 					HorizontalLayout uploadFileLayout = new HorizontalLayout();
 					uploadFileLayout.setWidth("100%");
@@ -239,11 +346,11 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					textFieldPath.setReadOnly(true);
 					uploadFileLayout.addComponent(fileUpload);
 					uploadFileLayout.addComponent(textFieldPath);
-					uploadFileLayout.setExpandRatio(fileUpload, 0.1f);
-					uploadFileLayout.setExpandRatio(textFieldPath, 0.9f);
+					uploadFileLayout.setExpandRatio(fileUpload, 0.2f);
+					uploadFileLayout.setExpandRatio(textFieldPath, 0.8f);
 					
-					//Adding component with path to upload file in read only mode
-					mainLayout.addComponent(uploadFileLayout, 0, 1);
+					//Adding uploading component
+					gridLayoutCore.addComponent(uploadFileLayout, 0, 1);
 
 					//If selected "Extract file based on the path to file" option
 				}else if (event.getProperty().getValue().equals("Extract file based on the path to file")){
@@ -251,7 +358,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					textFieldPath.setInputPrompt("C:\\ted\\test.ttl");
 					
 					//Adding component for specify path to file
-					mainLayout.addComponent(textFieldPath, 0, 1);
+					gridLayoutCore.addComponent(textFieldPath, 0, 1);
 
 					
 					//If selected "Extract file based on the path to the directory" option
@@ -260,12 +367,12 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					textFieldPath.setInputPrompt("C:\\ted\\");
 					
 					//Adding component for specify path to directory
-					mainLayout.addComponent(textFieldPath, 0, 1);
+					gridLayoutCore.addComponent(textFieldPath, 0, 1);
 					
 					// layoutOnly
 					horizontalLayoutOnly = buildHorizontalLayoutOnly();
 					//Adding component for specify file extension
-					mainLayout.addComponent(horizontalLayoutOnly, 0, 2);
+					gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
 
 					//If selected "Extract file from the given HTTP URL" option
 				}else if(event.getProperty().getValue().equals("Extract file from the given HTTP URL")){
@@ -273,89 +380,39 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					textFieldPath.setInputPrompt("http://");
 					
 					//Adding component for specify HTTP URL
-					mainLayout.addComponent(textFieldPath, 0, 1);
+					gridLayoutCore.addComponent(textFieldPath, 0, 1);
 				}
 			}
 			
 		});
-		mainLayout.addComponent(pathType, 0, 0);
+		gridLayoutCore.addComponent(pathType, 0, 0);
 
 
 		// horizontalLayoutFormat
 		horizontalLayoutFormat = buildHorizontalLayoutFormat();
-		mainLayout.addComponent(horizontalLayoutFormat, 0, 3);
+		gridLayoutCore.addComponent(horizontalLayoutFormat, 0, 3);
 
-		return mainLayout;
-	}
 
-	private HorizontalLayout buildHorizontalLayoutOnly() {
-		// common part: create layout
-		horizontalLayoutOnly = new HorizontalLayout();
-		horizontalLayoutOnly.setImmediate(false);
-		horizontalLayoutOnly.setWidth("-1px");
-		horizontalLayoutOnly.setHeight("-1px");
-		horizontalLayoutOnly.setMargin(false);
-		horizontalLayoutOnly.setSpacing(true);
-
-		// labelOnly
-		labelOnly = new Label();
-		labelOnly.setImmediate(false);
-		labelOnly.setWidth("240px");
-		labelOnly.setHeight("-1px");
-		labelOnly.setValue("If directory, process only files with extension:");
-		horizontalLayoutOnly.addComponent(labelOnly);
-
-		// textFieldOnly
-		textFieldOnly = new TextField("");
-		//textFieldOnly.setNullRepresentation("");
-		textFieldOnly.setImmediate(false);
-		textFieldOnly.setWidth("50px");
-		textFieldOnly.setHeight("-1px");
-		textFieldOnly.setInputPrompt(".ttl");
-		horizontalLayoutOnly.addComponent(textFieldOnly);
-		horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
-				Alignment.TOP_RIGHT);
-
-		return horizontalLayoutOnly;
-	}
-
-	private HorizontalLayout buildHorizontalLayoutFormat() {
-		// common part: create layout
-		horizontalLayoutFormat = new HorizontalLayout();
-		horizontalLayoutFormat.setImmediate(false);
-		horizontalLayoutFormat.setWidth("-1px");
-		horizontalLayoutFormat.setHeight("-1px");
-		horizontalLayoutFormat.setMargin(false);
-		horizontalLayoutFormat.setSpacing(true);
-
-		// labelFormat
-		labelFormat = new Label();
-		labelFormat.setImmediate(false);
-		labelFormat.setWidth("74px");
-		labelFormat.setHeight("-1px");
-		labelFormat.setValue("RDF Format:");
-		horizontalLayoutFormat.addComponent(labelFormat);
-
-		// comboBoxFormat
-		comboBoxFormat = new ComboBox();
-//        comboBoxFormat.setNullSelectionItemId("TTL");
-		comboBoxFormat.setImmediate(true);
-		comboBoxFormat.setWidth("-1px");
-		comboBoxFormat.setHeight("-1px");
-		comboBoxFormat.setNewItemsAllowed(false);
-		comboBoxFormat.setNullSelectionAllowed(false);
-		horizontalLayoutFormat.addComponent(comboBoxFormat);
-		//     horizontalLayoutFormat.setComponentAlignment(comboBoxFormat,Alignment.TOP_RIGHT);   
+        return gridLayoutCore;
+    }
+    
+    private VerticalLayout buildVerticalLayoutDetails() {
+        // common part: create layout
+        verticalLayoutDetails = new VerticalLayout();
+        verticalLayoutDetails.setImmediate(false);
+        verticalLayoutDetails.setWidth("100%");
+        verticalLayoutDetails.setHeight("-1px");
+        verticalLayoutDetails.setMargin(true);
+        verticalLayoutDetails.setSpacing(true);
 
 		//Statistical handler
-		//TODO MARIA - set parameters and placement for this component
 		useHandler = new CheckBox("Use statistical handler");
 		useHandler.setWidth("-1px");
 		useHandler.setHeight("-1px");
-		horizontalLayoutFormat.addComponent(useHandler);
+		verticalLayoutDetails.addComponent(useHandler);
 
-		return horizontalLayoutFormat;
-	}
+        return verticalLayoutDetails;
+    }
 }
 
 

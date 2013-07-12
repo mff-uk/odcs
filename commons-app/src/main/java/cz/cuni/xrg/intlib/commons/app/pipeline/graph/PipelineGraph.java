@@ -174,7 +174,7 @@ public class PipelineGraph implements Serializable {
      * @param id
      * @return
      */
-    private Edge getEdgeById(int id) {
+    public Edge getEdgeById(int id) {
         for (Edge el : edges) {
             if (el.hashCode() == id) {
                 return el;

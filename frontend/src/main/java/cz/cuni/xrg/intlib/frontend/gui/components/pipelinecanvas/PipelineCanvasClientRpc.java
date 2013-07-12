@@ -26,8 +26,9 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * @param connId Id of edge.
 	 * @param dpuFrom Id of start node.
 	 * @param dpuTo Id of end node.
+	 * @param dataUnitName Name of corresponding DataUnit or null.
 	 */
-	public void addEdge(int connId, int dpuFrom, int dpuTo);
+	public void addEdge(int connId, int dpuFrom, int dpuTo, String dataUnitName);
 
 	/**
 	 * Initializes JS part of graph canvas component.
@@ -41,6 +42,13 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * @param description New description of corresponding dpu.
 	 */
 	public void updateNode(int id, String name, String description);
+	
+	/**
+	 * Updates information of given Edge.
+	 * @param id Id of edge.
+	 * @param dataUnitName New name of corresponding DataUnit or null.
+	 */
+	public void updateEdge(int id, String dataUnitName);
 	
 	/**
 	 * Resizes stage.

@@ -20,6 +20,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
@@ -96,9 +98,12 @@ class PipelineEdit extends ViewComponent {
 		pc.addListener(new DetailClosedListener() {
 			@Override
 			public void detailClosed(EventObject e) {
-				dpuTree.refresh();
-				dpuTree.markAsDirty();
-				App.getApp().push();
+				Class klass = (Class)e.getSource();
+				if(klass == Node.class) {
+					dpuTree.refresh();
+					dpuTree.markAsDirty();
+					App.getApp().push();
+				}
 			}
 
 			@Override

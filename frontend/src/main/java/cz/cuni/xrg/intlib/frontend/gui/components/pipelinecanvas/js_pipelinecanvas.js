@@ -43,18 +43,19 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 *  @param from
 	 *  @param to
 	 *  @param line
-	 *  @param cmdDelete
+	 *  @param actionBar
 	 *  @param hitLine
 	 **/
-    function Connection(id, from, to, line, cmdDelete, hitLine) {
+    function Connection(id, from, to, line, actionBar, hitLine) {
         this.id = id;
         this.from = from;
         this.to = to;
         this.line = line;
-        this.cmdDelete = cmdDelete;
+        this.actionBar = actionBar;
 		this.hitLine = hitLine;
         this.arrowLeft = null;
         this.arrowRight = null;
+		this.dataUnitNameText = null;
     }
 
     /** RPC proxy for calling server-side methods from client **/
@@ -79,12 +80,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         addNode: function(dpuId, name, description, type, x , y) {
             addDpu(dpuId, name, description, type, x , y);
         },
-        addEdge: function(id, dpuFrom, dpuTo) {
-            addConnection(id, dpuFrom, dpuTo);
+        addEdge: function(id, dpuFrom, dpuTo, dataUnitName) {
+            addConnection(id, dpuFrom, dpuTo, dataUnitName);
         },
 		updateNode: function(id, name, description) {
 			updateDpu(id, name, description);
 		},
+		updateEdge: function(id, dataUnitName) {
+			updateEdge(id, dataUnitName);
+		},		
 		resizeStage: function(height, width) {
 			resizeStage(height, width);
 		},
@@ -123,50 +127,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var newConnLine = null;
     var newConnStart = null;
 
-
-    /** 
-	 * Function for moving connection lines after DPU is dragged 
-	 * @param dpuId id of dpu which was moved
-	 * @param x x coordinate of new position
-	 * @param y y coordinate of new position
-	 **/
-    function moveLine(dpuId, x, y) {
-        var dpu = dpus[dpuId];
-        var dpuGroup = dpu.group;
-        for(lineId in dpu.connectionFrom) {
-            var conn = connections[dpu.connectionFrom[lineId]];
-            var dpuTo = dpus[conn.to].group;
-            var newPoints = computeConnectionPoints2(dpuGroup, dpuTo);
-            conn.line.setPoints(newPoints);
-            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
-            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
-        }
-        for(lineId in dpu.connectionTo) {
-            conn = connections[dpu.connectionTo[lineId]];
-            var dpuFrom = dpus[conn.from].group;
-            newPoints = computeConnectionPoints2(dpuFrom, dpuGroup);
-            conn.line.setPoints(newPoints);
-            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
-            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
-        }
-    }
-
-    /** 
-	 * Writes message on given message layer 
-	 * 
-	 * @param messageLayer
-	 * @param message
-	 **/
-    function writeMessage(messageLayer, message) {
-//        var context = messageLayer.getContext();
-//        messageLayer.clear();
-//        context.font = '18pt Calibri';
-//        context.fillStyle = 'black';
-//        context.fillText(message, 10, 25);
-
-		rpcProxy.onLogMessage(message);
-    }
-
     /** Kinetic stage and layers accessed from different functions **/
     var stage = null;
     /** Layer with DPUs**/
@@ -179,6 +139,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	var addConnectionIcon = null;
 	var removeConnectionIcon = null;
 	var debugIcon = null;
+	var detailIcon = null;
 	
 	var backgroundRect = null;
 
@@ -275,7 +236,59 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		removeConnectionIcon.src = basePath + "TrashFull.png";
 
 		debugIcon = new Image();
-		debugIcon.src = basePath + "Gear.png";
+		debugIcon.src = basePath + "debug.png";
+		
+		detailIcon = new Image();
+		detailIcon.src = basePath + "Gear.png";
+    }
+	
+	    /** 
+	 * Function for moving connection lines after DPU is dragged 
+	 * @param dpuId id of dpu which was moved
+	 * @param x x coordinate of new position
+	 * @param y y coordinate of new position
+	 **/
+    function moveLine(dpuId, x, y) {
+        var dpu = dpus[dpuId];
+        var dpuGroup = dpu.group;
+        for(lineId in dpu.connectionFrom) {
+            var conn = connections[dpu.connectionFrom[lineId]];
+            var dpuTo = dpus[conn.to].group;
+            var newPoints = computeConnectionPoints2(dpuGroup, dpuTo);
+            conn.line.setPoints(newPoints);
+            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
+            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
+			if(conn.dataUnitNameText !== null) {
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+			}
+        }
+        for(lineId in dpu.connectionTo) {
+            conn = connections[dpu.connectionTo[lineId]];
+            var dpuFrom = dpus[conn.from].group;
+            newPoints = computeConnectionPoints2(dpuFrom, dpuGroup);
+            conn.line.setPoints(newPoints);
+            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
+            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
+			if(conn.dataUnitNameText !== null) {
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+			}
+        }
+    }
+
+    /** 
+	 * Writes message on given message layer 
+	 * 
+	 * @param messageLayer
+	 * @param message
+	 **/
+    function writeMessage(messageLayer, message) {
+//        var context = messageLayer.getContext();
+//        messageLayer.clear();
+//        context.font = '18pt Calibri';
+//        context.fillStyle = 'black';
+//        context.fillText(message, 10, 25);
+
+		rpcProxy.onLogMessage(message);
     }
 
 	/** Updates text in DPU visualization
@@ -289,6 +302,30 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		dpu.text.setText(name + '\n\n'+ description);
 		dpu.rect.setHeight(dpu.text.getHeight());
 		dpuLayer.draw();
+	}
+	
+	/**
+	 * Updates text in edge visualization
+	 * 
+	 * @param {type} id Id of edge to update
+	 * @param {type} dataUnitName new DataUnit name
+	 */
+	function updateEdge(id, dataUnitName) {
+		var con = connections[id];
+		if(dataUnitName === null && con.dataUnitNameText !== null) {
+			con.dataUnitNameText.destroy();
+			con.dataUnitNameText = null;
+			lineLayer.draw();
+			return;
+		} 
+		if(con.dataUnitNameText === null) {
+			linePoints = con.line.getPoints();
+			var points = [ linePoints[0].x , linePoints[0].y, linePoints[1].x ,linePoints[1].y ];
+			con.dataUnitNameText = createDataUnitNameText(id, dataUnitName, points);
+		} else {
+			con.dataUnitNameText.setText(dataUnitName);
+		}
+		lineLayer.draw();
 	}
 	
 	function getDpuColor(type) {
@@ -563,14 +600,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             }
         });
 
-//        group.on('dblclick', function(evt) {
-//            if(stageMode == NORMAL_MODE) {
-//                writeMessage(messageLayer, 'Detail requested');
-//                rpcProxy.onDetailRequested(dpu.id);
-//                evt.cancelBubble = true;
-//            }
-//        });
-
 		dpu.rect = rect;
 		dpu.text = complexText;
         dpu.group = group;
@@ -587,8 +616,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 * @param id ID of new connection
 	 * @param from ID of connection's start Dpu 
 	 * @param to ID of connection's end Dpu
+	 * @param dataUnitName name of connection's DataUnit
 	 **/
-    function addConnection(id, from, to) {
+    function addConnection(id, from, to, dataUnitName) {
 
         var dpuFrom = dpus[from].group;
         var dpuTo = dpus[to].group;
@@ -610,13 +640,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
         hitLine.on('click', function(evt) {
-            var del = connections[id].cmdDelete;
+            var ab = connections[id].actionBar;
             var pos = stage.getMousePosition();
             pos.x = (pos.x - 8) / scale;
-            pos.y = (pos.y - 8) / scale;
-            del.setPosition(pos);
-            del.moveToTop();
-            del.setVisible(true);
+            pos.y = (pos.y - 16) / scale;
+            ab.setPosition(pos);
+            ab.moveToTop();
+            ab.setVisible(true);
             lineLayer.draw();
         });
 
@@ -631,31 +661,60 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             stroke: '#555',
             strokeWidth: 1
         });
+		
+		var dataUnitNameText = null;
+		if(dataUnitName !== null) {
+			dataUnitNameText = createDataUnitNameText(id, dataUnitName, linePoints);
+		}
 
-
-        // Delete command for connection
+		// Action bar on Edge
+        var actionBar = new Kinetic.Group({
+            x: 0,
+            y:0,
+            width: 16,
+            height: 32,
+            visible : false
+        });
+		
+		var cmdName = new Kinetic.Image({
+			x:0,
+			y:0,
+			image: detailIcon,
+			width: 16,
+			height: 16,
+			startScale: 1
+		});
+		
+		cmdName.on('click', function(evt) {
+			rpcProxy.onDataUnitNameEditRequested(id);
+			evt.cancelBubble = true;
+		});
+		
+		actionBar.add(cmdName);
+		
+		// Delete command for connection
         var cmdDelete = new Kinetic.Image({
 			x: 0,
-			y: 0,
+			y: 16,
 			image: removeConnectionIcon,
 			width: 16,
 			height: 16,
 			startScale: 1
 		});
-
-        cmdDelete.on('mouseleave', function(evt) {
-            cmdDelete.setVisible(false);
-            lineLayer.draw();
-        });
-
-        cmdDelete.on('click', function(evt) {
+		
+		cmdDelete.on('click', function(evt) {
             removeConnection(id);
             evt.cancelBubble = true;
         });
+		
+		actionBar.add(cmdDelete);
 
-		cmdDelete.setVisible(false);
+        actionBar.on('mouseleave', function(evt) {
+            actionBar.setVisible(false);
+            lineLayer.draw();
+        });		
 
-        var con = new Connection(id, from, to, line, cmdDelete, hitLine);
+        var con = new Connection(id, from, to, line, actionBar, hitLine);
         con.arrowLeft = lineArrowLeft;
         con.arrowRight = lineArrowRight;
         connections[id] = con;
@@ -663,9 +722,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpus[to].connectionTo.push(id);
         lineLayer.add(lineArrowLeft);
         lineLayer.add(lineArrowRight);
-        lineLayer.add(cmdDelete);
+        lineLayer.add(actionBar);
 		lineLayer.add(hitLine);
         lineLayer.add(line);
+		if(dataUnitNameText !== null) {
+			con.dataUnitNameText = dataUnitNameText;
+			lineLayer.add(dataUnitNameText);
+		}
         lineLayer.draw();
     }
 
@@ -674,19 +737,19 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 * @param id id of connection to remove
 	 **/
     function removeConnection(id) {
-//        var con = connections[id];
-//        var idx = dpus[con.from].connectionFrom.indexOf(id);
-//        dpus[con.from].connectionFrom.splice(idx, 1);
-//        idx = dpus[con.to].connectionTo.indexOf(id);
-//        dpus[con.to].connectionTo.splice(idx, 1);
-//        con.line.destroy();
-//        con.arrowLeft.destroy();
-//        con.arrowRight.destroy();
-//        con.cmdDelete.destroy();
-//		con.hitLine.destroy();
-//        connections[id] = null;
+        var con = connections[id];
+        var idx = dpus[con.from].connectionFrom.indexOf(id);
+        dpus[con.from].connectionFrom.splice(idx, 1);
+        idx = dpus[con.to].connectionTo.indexOf(id);
+        dpus[con.to].connectionTo.splice(idx, 1);
+        con.line.destroy();
+        con.arrowLeft.destroy();
+        con.arrowRight.destroy();
+        con.actionBar.destroy();
+		con.hitLine.destroy();
+        connections[id] = null;
 		rpcProxy.onConnectionRemoved(id);
-        //lineLayer.draw();
+        lineLayer.draw();
     }
 
     /** 
@@ -807,6 +870,50 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		 stage.setWidth(1600 * zoom);
 		 stage.setHeight(630 * zoom);
 		 stage.draw();
+	 }
+	 
+	 /**
+	  * Creates new Text for given dataUnitName.
+	  * @param {int} id Id of corresponding edge.
+	  * @param {String} dataUnitName Name of DataUnit. 
+	  * @param {type} points
+	  * @returns {undefined} Text
+	  */
+	 function createDataUnitNameText(id, dataUnitName, points) {
+		 var width = 100;
+		 var textPosition = computeTextPosition(points, width);
+		 var text = new Kinetic.Text({
+            x: textPosition[0],
+            y: textPosition[1],
+            text: dataUnitName,
+            fontSize: 10,
+            fontFamily: 'Calibri',
+            fill: '#555',
+            width: width,
+            padding: 6,
+            align: 'center'
+        });
+		
+		text.on('click', function(evt) {
+			rpcProxy.onDataUnitNameEditRequested(id);
+			evt.cancelBubble = true;
+		});
+		lineLayer.add(text);
+		lineLayer.draw();
+		
+		return text; 
+	 }
+	 
+	 /**
+	  * Computes coordinates for text placement on edge.
+	  * @param {type} linePoints Points of edge.
+	  * @param {int} width Width of Text.
+	  * @returns {undefined} Coordinates for text placement on edge.
+	  */
+	 function computeTextPosition(linePoints, width) {
+		 var x = linePoints[0] + ((linePoints[2] - linePoints[0]) / 2);
+		 var y = linePoints[1] + ((linePoints[3] - linePoints[1]) / 2);
+		 return [x - (width / 2), y];
 	 }
 
     /** 

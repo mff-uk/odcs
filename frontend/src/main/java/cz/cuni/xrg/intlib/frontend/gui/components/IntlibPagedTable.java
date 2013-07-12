@@ -22,4 +22,5 @@ public class IntlibPagedTable extends PagedTable {
 		controls.getItemsPerPageSelect().setVisible(false);
 		return controls;
 	}
+	
 }

@@ -74,7 +74,7 @@ INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configurati
 -- SELECT * FROM DB.INTLIB.LOGGING_EVENT_PROPERTY
 -- Table DB.INTLIB.LOGGING_EVENT_PROPERTY 0 rows output.
 -- SELECT * FROM DB.INTLIB.PPL_EDGE
-INSERT INTO DB.INTLIB.PPL_EDGE(id,graph_id,node_from_id,node_to_id) VALUES(1,1,1,2);
+INSERT INTO DB.INTLIB.PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name) VALUES(1,1,1,2,NULL);
 -- Table DB.INTLIB.PPL_EDGE 1 rows output.
 -- SELECT * FROM DB.INTLIB.PPL_GRAPH
 INSERT INTO DB.INTLIB.PPL_GRAPH(id,pipeline_id) VALUES(1,1);

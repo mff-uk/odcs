@@ -35,11 +35,11 @@ public class LogMessagesTable extends CustomComponent {
 	public LogMessagesTable() {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
-		//messageTable.setSelectable(true);
+		messageTable.setSelectable(true);
 
 		messageTable.setSizeFull();
 		mainLayout.addComponent(messageTable);
-		mainLayout.addComponent(messageTable.createControls());
+		//mainLayout.addComponent(messageTable.createControls());
 		messageTable.setPageLength(19);
 
 		levelSelector = new ComboBox();
@@ -123,9 +123,8 @@ public class LogMessagesTable extends CustomComponent {
 		Container container = ContainerFactory.CreateLogMessages(data);
 		
 		messageTable.setContainerDataSource(container);
-		messageTable.setVisibleColumns(
-				new String[]{"date", "thread", "level",
-			"source", "message"});
+		messageTable.setVisibleColumns("date", "thread", "level",
+			"source", "message");
 	}
 
 }
