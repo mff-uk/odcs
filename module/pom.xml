@@ -101,7 +101,7 @@
 						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}",*</Import-Package>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<!-- dependencies embedding -->
-						<Embed-Dependency>*;scope=compile</Embed-Dependency> <!-- use runtime for dependencies that are provided by application -->
+						<Embed-Dependency>*;scope=compile</Embed-Dependency> <!-- use provided for dependencies that are provided by application -->
 						<Embed-Transitive>false</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->
 						<!-- dependencies location in output file -->
 						<Embed-Directory>dependency</Embed-Directory>
