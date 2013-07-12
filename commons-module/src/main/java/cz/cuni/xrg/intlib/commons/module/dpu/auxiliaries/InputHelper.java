@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
  * 
  * @author Petyr
  */
+@Deprecated
 public class InputHelper {
 
 	private InputHelper() { }
