@@ -165,8 +165,13 @@ public class DataUnitFactory {
 				final String defautGraph = 
 						appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);				
 				// create repository
-				RDFDataRepository virtosoRepository = VirtuosoRDFRepo
+				VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
 						.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph, name);
+				// set default graph .. for this we need unique identifier
+				// in "id" is unique id for context (execution and DPU) .. we add number to make it 
+				// unique between data units
+				String dataUnitId = id + "_" + index.toString();
+				virtosoRepository.setDefaultGraph( "http://" + dataUnitId);
 				return new DataUnitContainer(virtosoRepository, index);
 
 		}
