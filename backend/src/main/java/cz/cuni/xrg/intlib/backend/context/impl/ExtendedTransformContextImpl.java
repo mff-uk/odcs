@@ -128,7 +128,8 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 	}
 	
 	@Override
-	public void addSource(ProcessingContext context, DataUnitMerger merger) throws ContextException {
+	public void addSource(ProcessingContext context, DataUnitMerger merger, 
+			String instruction) throws ContextException {
 		// merge custom data
 		try {
 			customData.putAll(context.getCustomData());
@@ -139,11 +140,11 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 		if (context instanceof ExtendedExtractContext) {
 			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
 			// primitive merge .. 
-			merger.merger(inputs, extractContext.getOutputs(), dataUnitFactory);
+			merger.merger(inputs, extractContext.getOutputs(), dataUnitFactory, instruction);
 		} else if (context instanceof ExtendedTransformContext) {
 			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
 			// primitive merge .. 
-			merger.merger(inputs, transformContext.getOutputs(), dataUnitFactory);
+			merger.merger(inputs, transformContext.getOutputs(), dataUnitFactory, instruction);
 		} else {
 			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
 		}

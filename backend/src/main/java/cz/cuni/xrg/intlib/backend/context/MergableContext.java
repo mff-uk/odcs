@@ -17,8 +17,9 @@ public interface MergableContext {
 	 * 
 	 * @param context Source context, do not change!
 	 * @param merger Class used to merge DataUnits.
+	 * @param instruction Instruction for adding the data source.
 	 * @throws ContextException
 	 */
-	public void addSource(ProcessingContext context, DataUnitMerger merger) throws ContextException;	
+	public void addSource(ProcessingContext context, DataUnitMerger merger, String instruction) throws ContextException;	
 	
 }

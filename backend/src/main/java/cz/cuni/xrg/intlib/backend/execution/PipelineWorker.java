@@ -25,6 +25,7 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
@@ -207,6 +208,8 @@ class PipelineWorker implements Runnable {
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = null;
+		
+		// if in debug mode then pass the final DPU
 		if(execution.isDebugging() && execution.getDebugNode() != null) {
 			dependencyGraph = new DependencyGraph(pipeline.getGraph(), execution.getDebugNode());
 		} else {
@@ -302,6 +305,43 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
+	 * Return edge that connects the given nodes.
+	 * @param source
+	 * @param target
+	 * @return Edge or null if there is no connection between the given nodes.
+	 */
+	private Edge getEdge(Node source, Node target) {
+		for (Edge edge : execution.getPipeline().getGraph().getEdges()) {
+			if (edge.getFrom() == source && edge.getTo() == target) {
+				return edge;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Return command associated with edge that connect given nodes.
+	 * @param source
+	 * @param target
+	 * @return
+	 */
+	private String getCommandForEdge(Node source, Node target) {
+		// try to get Edge that leads from item to node
+		Edge edge = getEdge(source, target);			
+		String command;
+		if (edge == null) {
+			// there is no edge for this connection ?
+			command = "";
+			LOG.error("Can't find edge between {} and {}",
+					source.getDpuInstance().getName(),
+					target.getDpuInstance().getName());
+		} else {
+			command = edge.getDataUnitName();
+		}
+		return command;
+	}
+	
+	/**
 	 * Return context that should be used when executing given Extractor.
 	 * The context is also stored in {@link #contexts }
 	 * 
@@ -349,8 +389,11 @@ class PipelineWorker implements Runnable {
 			throw new StructureException("No inputs.");
 		}
 		for (Node item : ancestors) {
-			if (contexts.containsKey(item)) {
-				transformContext.addSource(contexts.get(item), dataUnitMerger);
+			// try to get Edge that leads from item to node
+			String command = getCommandForEdge(item, node);
+			// if there is context for given data ..
+			if (contexts.containsKey(item)) {				
+				transformContext.addSource(contexts.get(item), dataUnitMerger, command);
 			} else {
 				// can't find context ..
 				throw new StructureException("Can't find context.");
@@ -386,8 +429,11 @@ class PipelineWorker implements Runnable {
 			throw new StructureException("No inputs.");
 		}				
 		for (Node item : ancestors) {
+			// try to get Edge that leads from item to node
+			String command = getCommandForEdge(item, node);
+			// if there is context for given data ..
 			if (contexts.containsKey(item)) {
-				loadContext.addSource(contexts.get(item), dataUnitMerger); 
+				loadContext.addSource(contexts.get(item), dataUnitMerger, command); 
 			} else {
 				// can't find context ..
 				throw new StructureException("Can't find context.");
