@@ -262,34 +262,6 @@ public class DebuggingView extends CustomComponent {
 	 * @param onInputGraph Repository path of Input/Output graph.
 	 * @return {@link String} containing path to repository.
 	 */
-	String getRepositoryPath(boolean onInputGraph) {
-
-		if (debugDpu == null) {
-			return null;
-		}
-		List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
-
-		if (infos == null) {
-			return null;
-		}
-
-		Iterator<DataUnitInfo> iter = infos.iterator();
-		while (iter.hasNext()) {
-			DataUnitInfo duInfo = iter.next();
-
-			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
-				ctxReader.getDataUnitStorage(debugDpu, duInfo.getIndex());
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Gets repository directory from context.
-	 *
-	 * @param onInputGraph Repository path of Input/Output graph.
-	 * @return {@link File} representing directory of repository.
-	 */
 	File getRepositoryDirectory(boolean onInputGraph) {
 
 		if (debugDpu == null) {
@@ -306,11 +278,39 @@ public class DebuggingView extends CustomComponent {
 			DataUnitInfo duInfo = iter.next();
 
 			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
-				duInfo.getDirectory();
+				return ctxReader.getDataUnitStorage(debugDpu, duInfo.getIndex());
 			}
 		}
 		return null;
 	}
+
+	/**
+	 * Gets repository directory from context.
+	 *
+	 * @param onInputGraph Repository path of Input/Output graph.
+	 * @return {@link File} representing directory of repository.
+	 */
+	/*File getRepositoryDirectory(boolean onInputGraph) {
+	 * 
+	 * if (debugDpu == null) {
+	 * return null;
+	 * }
+	 * List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
+	 * 
+	 * if (infos == null) {
+	 * return null;
+	 * }
+	 * 
+	 * Iterator<DataUnitInfo> iter = infos.iterator();
+	 * while (iter.hasNext()) {
+	 * DataUnitInfo duInfo = iter.next();
+	 * 
+	 * if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
+	 * duInfo.getDirectory();
+	 * }
+	 * }
+	 * return null;
+	 * }*/
 
 	/**
 	 * Refresh component factory. Is to be displayed while pipeline is still

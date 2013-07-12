@@ -21,8 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple query view for querying debug data. User can query data for given DPU. If DPU is Transformer, user can select if input or output graph should be queried.
- * If SELECT query is used, data are shown in table. If CONSTRUCT query is used, data are provided as file for download. User can select format of data.
+ * Simple query view for querying debug data. User can query data for given DPU.
+ * If DPU is Transformer, user can select if input or output graph should be
+ * queried. If SELECT query is used, data are shown in table. If CONSTRUCT query
+ * is used, data are provided as file for download. User can select format of
+ * data.
  *
  * @author Bogo
  */
@@ -41,7 +44,9 @@ public class QueryView extends CustomComponent {
 
 	/**
 	 * Constructor with parent view.
-	 * @param parent {@link DebuggingView} which is parent to this {@link QueryView}.
+	 *
+	 * @param parent {@link DebuggingView} which is parent to this
+	 * {@link QueryView}.
 	 */
 	public QueryView(DebuggingView parent) {
 		this.parent = parent;
@@ -74,9 +79,9 @@ public class QueryView extends CustomComponent {
 		topLine.setSpacing(true);
 
 		//Export options
-		formatSelect = new NativeSelect();
-		for(RDFFormatType type : RDFFormatType.values()) {
-			if(type != RDFFormatType.AUTO) {
+		formatSelect = new NativeSelect("Format:");
+		for (RDFFormatType type : RDFFormatType.values()) {
+			if (type != RDFFormatType.AUTO) {
 				formatSelect.addItem(type);
 			}
 		}
@@ -110,19 +115,21 @@ public class QueryView extends CustomComponent {
 
 	/**
 	 * Prepare data file for download after CONSTRUCT query.
-	 * 
+	 *
 	 * @param repository {@link LocalRDFRepo} of selected graph.
-	 * @param constructQuery {@link String} containing query to execute on repository.
+	 * @param constructQuery {@link String} containing query to execute on
+	 * repository.
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
-	private void prepareDownloadData(LocalRDFRepo repository, String constructQuery) throws InvalidQueryException {
-		
+	private boolean prepareDownloadData(LocalRDFRepo repository, String constructQuery) throws InvalidQueryException {
+
 		Object o = formatSelect.getValue();
-		if(o.getClass() != RDFFormatType.class) {
-			//Do something
+		if (o == null) {
+			Notification.show("Format not selected!", "Format must be selected for CONSTRUCT query!", Notification.Type.ERROR_MESSAGE);
+			return false;
 		}
-		RDFFormatType format = (RDFFormatType)o;
-		
+		RDFFormatType format = (RDFFormatType) o;
+
 		String mimeType = null;
 		String filename = null;
 		switch (format) {
@@ -150,43 +157,53 @@ public class QueryView extends CustomComponent {
 		//			mimeType);
 
 		//streamResource.setCacheTime(5 * 1000);
-		
+
 		File constructData = repository.makeConstructQueryOverRepository(constructQuery, format, filename);
 		FileResource resource = new FileResource(constructData);
 		resource.setCacheTime(5000);
-		
+
 		export.setResource(resource);
+		return true;
 	}
 
 	/**
 	 * Execute query on selected graph.
-	 * 
+	 *
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
 	private void doQuery() throws InvalidQueryException {
 
 		boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
 		String query = queryText.getValue();
-		String repoPath = parent.getRepositoryPath(onInputGraph);
 		File repoDir = parent.getRepositoryDirectory(onInputGraph);
 
-		String queryStart = query.trim().substring(0, 20).toLowerCase();
+		if(query.length() < 9) {
+			//Due to expected exception format in catch block
+			throw new InvalidQueryException(new InvalidQueryException("Invalid query."));
+		}
+		String queryStart = query.trim().substring(0, 9).toLowerCase();
 		boolean isSelectQuery = queryStart.startsWith("select");
-
+		boolean isQuerySuccessful = true;
+		
 		Map<String, List<String>> data = null;
-		if (repoPath == null || repoDir == null) {
+		if (repoDir == null) {
 			data = new HashMap<>();
 		} else {
 			// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-			LOG.debug("Create LocalRDFRepo in directory={} dumpDirname={}", repoDir.toString(), repoPath);
-			try (LocalRDFRepo repository = new LocalRDFRepo(repoDir.getAbsolutePath(), repoPath, "")) {
+			LOG.debug("Create LocalRDFRepo in directory={} ", repoDir.toString());
+			try {
+				LocalRDFRepo repository = LocalRDFRepo.createLocalRepo("");
+				// load data from stora
 				repository.load(repoDir);
+				
 				if (isSelectQuery) {
 					data = repository.makeSelectQueryOverRepository(query);
 				} else {
-					prepareDownloadData(repository, query);
+					isQuerySuccessful = prepareDownloadData(repository, query);
 				}
-			} catch (IOException e) {
+				// close reporistory
+				repository.shutDown();
+			} catch(RuntimeException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -194,17 +211,19 @@ public class QueryView extends CustomComponent {
 			IndexedContainer container = buildDataSource(data);
 			resultTable.setContainerDataSource(container);
 		}
-		export.setVisible(!isSelectQuery);
-		resultTable.setVisible(isSelectQuery);
-		resultTableControls.setVisible(isSelectQuery);
-		
+		boolean visibility = isSelectQuery || !isQuerySuccessful;
+		export.setVisible(!visibility);
+		resultTable.setVisible(visibility);
+		resultTableControls.setVisible(visibility);
+
 	}
 
 	/**
 	 * Initializes table with data from SELECT query.
-	 * 
+	 *
 	 * @param data Data with result of SELECT query.
-	 * @return {@link IndexedContainer} to serve as data source for {@link IntlibPagedTable}.
+	 * @return {@link IndexedContainer} to serve as data source for
+	 * {@link IntlibPagedTable}.
 	 */
 	private IndexedContainer buildDataSource(Map<String, List<String>> data) {
 		IndexedContainer result = new IndexedContainer();
