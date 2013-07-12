@@ -13,7 +13,7 @@ package cz.cuni.xrg.intlib.commons.app.execution;
  *
  */
 public enum DataUnitMergerInstructions {
-	Rename("raname"),
+	Rename("rename"),
 	Drop("drop"),
 	Separator(";");
 	
