@@ -34,12 +34,15 @@ public class Edge {
 	@JoinColumn(name="graph_id")
 	private PipelineGraph graph;
 	
-	//@Column(name="dataname", nullable = true)
-	@Transient
-	private String dataName;
+	@Column(name="data_unit_name", nullable = true)
+	private String dataUnitName;
 	
-	public void setDataName(String name) {
-		dataName = name;
+	public void setDataUnitName(String name) {
+		dataUnitName = name;
+	}
+	
+	public String getDataUnitName() {
+		return dataUnitName;
 	}
 	
 	/**

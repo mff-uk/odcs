@@ -18,7 +18,9 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
+import cz.cuni.xrg.intlib.frontend.gui.components.EdgeDetail;
 import java.util.Collection;
+import java.util.EventObject;
 import java.util.Stack;
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -64,19 +66,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onConnectionRemoved(int connectionId) {
-				//storeHistoryGraph();
-				//graph.removeEdge(connectionId);
-				
-				//TODO: Petr
-				Edge edgeToName = null;
-				for(Edge e : graph.getEdges()) {
-					if(e.getId() == connectionId) {
-						edgeToName = e;
-						break;
-					}
-				}
-				Notification.show("INSERT DIALOG WITH NAME!");
-				//Use edgeToName, method setDataName /*change for suitable name */
+				storeHistoryGraph();
+				graph.removeEdge(connectionId);
 			}
 
 			@Override
@@ -106,16 +97,22 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDebugRequested(int dpuId) {
 				showDebugWindow(dpuId);
 			}
+
+			@Override
+			public void onDataUnitNameEditRequested(int edgeId) {
+				Edge edge = graph.getEdgeById(edgeId);
+				showEdgeDetail(edge);
+			}
 		});
 
 	}
 
 	/**
 	 * Start pipeline in debug mode and show debug window.
-	 * 
+	 *
 	 * @param dpuId {@Link int} id of dpu, where debug should end.
 	 * @throws IllegalArgumentException
-	 * @throws NullPointerException 
+	 * @throws NullPointerException
 	 */
 	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
 		//TODO: Debug
@@ -140,6 +137,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Method updating node position on server side.
+	 *
 	 * @param dpuId Id of {@link Node} which was moved.
 	 * @param newX New X coordinate.
 	 * @param newY New Y coordinate.
@@ -159,7 +157,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		DPUInstanceRecord dpuInstance = App.getDPUs().createInstanceFromTemplate(dpu);
 		Node node = graph.addDpuInstance(dpuInstance);
 		getRpcProxy(PipelineCanvasClientRpc.class)
-				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), (int)(x / currentZoom), (int)(y / currentZoom));
+				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), (int) (x / currentZoom), (int) (y / currentZoom));
 	}
 
 	/**
@@ -172,7 +170,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		String result = graph.validateNewEdge(dpuFrom, dpuTo);
 		if (result == null) {
 			int connectionId = graph.addEdge(dpuFrom, dpuTo);
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo);
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, null);
 		} else {
 			Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
 		}
@@ -188,13 +186,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		this.pip = pipeline;
 		setGraph(pipeline.getGraph());
 	}
-	
+
 	/**
 	 * Initializes the canvas with given graph.
+	 *
 	 * @param pg {@link PipelineGraph} to show on canvas.
 	 */
 	private void setGraph(PipelineGraph pg) {
-		if(this.graph != null) {
+		if (this.graph != null) {
 			getRpcProxy(PipelineCanvasClientRpc.class).clearStage();
 		}
 		this.graph = pg;
@@ -204,7 +203,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY());
 		}
 		for (Edge edge : graph.getEdges()) {
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode());
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getDataUnitName());
 		}
 	}
 
@@ -231,9 +230,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Shows detail of given DPUInstance in new sub-window
+	 * Shows detail of given {@link DPUInstance} in new sub-window.
 	 *
-	 * @param node {@link Node} containing dpu, which detail should be showed.
+	 * @param node {@link Node} containing DPU, which detail should be showed.
 	 */
 	public void showDPUDetail(final Node node) {
 		final DPUInstanceRecord dpu = node.getDpuInstance();
@@ -241,7 +240,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				fireDetailClosed();
+				fireDetailClosed(Node.class);
 				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
 		});
@@ -249,18 +248,36 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
+	 * Shows detail of given {@link Edge} in new sub-window.
+	 * @param edge {@link Edge} which detail should be showed.
+	 */
+	private void showEdgeDetail(final Edge edge) {
+		EdgeDetail edgeDetailDialog = new EdgeDetail(edge);
+		edgeDetailDialog.addCloseListener(new Window.CloseListener() {
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				//fireDetailClosed(Edge.class);
+				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getDataUnitName());
+			}
+		});
+		App.getApp().addWindow(edgeDetailDialog);
+	}
+
+	/**
 	 * Sets up parameters of pipeline execution and runs the pipeline.
-	 * 
+	 *
 	 * @param pipeline {@link Pipeline} to run.
 	 * @param inDebugMode Run in debug/normal mode.
-	 * @param debugNode {@link Node} where debug execution should stop. Valid only for debug mode.
-  	 * @return {@link PipelineExecution} of given {@link Pipeline}.
+	 * @param debugNode {@link Node} where debug execution should stop. Valid
+	 * only for debug mode.
+	 * @return {@link PipelineExecution} of given {@link Pipeline}.
 	 */
 	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
-		
+
 		PipelineExecution pipelineExec = new PipelineExecution(pipeline);
 		pipelineExec.setDebugging(inDebugMode);
-		if(inDebugMode && debugNode != null) {
+		if (inDebugMode && debugNode != null) {
 			pipelineExec.setDebugNode(debugNode);
 		}
 		// do some settings here
@@ -291,12 +308,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Inform listeners, that the detail is closing.
 	 */
-	protected void fireDetailClosed() {
+	protected void fireDetailClosed(Class klass) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
 		for (Listener l : ls) {
 			try {
 				DetailClosedListener dcl = (DetailClosedListener) l;
-				dcl.detailClosed(null);
+				dcl.detailClosed(new EventObject(klass));
 			} catch (Exception ex) {
 				//TODO: Solve better!
 			}
@@ -305,7 +322,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Inform listeners, that debug request was made.
-	 * @param execution {@link PipelineExecution} representing current debug session.
+	 *
+	 * @param execution {@link PipelineExecution} representing current debug
+	 * session.
 	 * @param instance {@link DPUInstanceRecord} where execution should end.
 	 */
 	protected void fireShowDebug(PipelineExecution execution, DPUInstanceRecord instance) {
@@ -322,6 +341,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Change canvas size.
+	 *
 	 * @param height New height of canvas in pixels.
 	 * @param width New width of canvas in pixels.
 	 */
@@ -331,6 +351,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Zoom the canvas.
+	 *
 	 * @param isZoomIn +/- zoom.
 	 * @return {@link Position} with new size of canvas.
 	 */
@@ -363,7 +384,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Undo changes on canvas.
-	 * 
+	 *
 	 */
 	public void undo() {
 //		if (!historyStack.isEmpty()) {
