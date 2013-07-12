@@ -20,18 +20,19 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	private String password;
 
 	private String defaultGraph;
-	
+
 	/**
 	 * DataUnit's name.
 	 */
 	private String dataUnitName;
-	
+
 	static {
 		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
 	}
 
 	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,
-			String port, String user, String password, String defaultGraph, String dataUnitName) {
+			String port, String user, String password, String defaultGraph,
+			String dataUnitName) {
 		final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port + "/charset=UTF-8/log_enable=2";
 
 		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password,
@@ -53,7 +54,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	 * @param defaultGraph  a default Graph name, used for Sesame calls, when
 	 *                      contexts list is empty, exclude exportStatements,
 	 *                      hasStatement, getStatements methods.
-	 * @param dataUnitName	DataUnit's name. If not used in Pipeline can be empty String.
+	 * @param dataUnitName	 DataUnit's name. If not used in Pipeline can be
+	 *                      empty String.
 	 */
 	public VirtuosoRDFRepo(String URL_Host_List, String user, String password,
 			String defaultGraph, String dataUnitName) {
@@ -121,11 +123,22 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 		return graph;
 	}
 
+	/**
+	 * Set new graph as default for working data in RDF format.
+	 *
+	 * @param defaultGraph String name of graph as URI - starts with prefix
+	 *                     http://).
+	 */
 	public void setDefaultGraph(String defaultGraph) {
 		this.defaultGraph = defaultGraph;
 		setGraph(createNewGraph(defaultGraph));
 	}
 
+	/**
+	 * Set new graph as default for working data in RDF format.
+	 *
+	 * @param graph New default graph defined as Resource - instance of URIImpl.
+	 */
 	public void setGraph(Resource graph) {
 		this.graph = graph;
 	}
@@ -148,9 +161,9 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	public DataUnitType getType() {
 		return DataUnitType.RDF_Virtuoso;
 	}
-	
+
 	@Override
-    public String getName() {
-    	return dataUnitName;
-    }	
+	public String getName() {
+		return dataUnitName;
+	}
 }
