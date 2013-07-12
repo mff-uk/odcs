@@ -127,56 +127,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var newConnLine = null;
     var newConnStart = null;
 
-
-    /** 
-	 * Function for moving connection lines after DPU is dragged 
-	 * @param dpuId id of dpu which was moved
-	 * @param x x coordinate of new position
-	 * @param y y coordinate of new position
-	 **/
-    function moveLine(dpuId, x, y) {
-        var dpu = dpus[dpuId];
-        var dpuGroup = dpu.group;
-        for(lineId in dpu.connectionFrom) {
-            var conn = connections[dpu.connectionFrom[lineId]];
-            var dpuTo = dpus[conn.to].group;
-            var newPoints = computeConnectionPoints2(dpuGroup, dpuTo);
-            conn.line.setPoints(newPoints);
-            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
-            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
-			if(conn.dataUnitNameText !== null) {
-				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
-			}
-        }
-        for(lineId in dpu.connectionTo) {
-            conn = connections[dpu.connectionTo[lineId]];
-            var dpuFrom = dpus[conn.from].group;
-            newPoints = computeConnectionPoints2(dpuFrom, dpuGroup);
-            conn.line.setPoints(newPoints);
-            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
-            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
-			if(conn.dataUnitNameText !== null) {
-				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
-			}
-        }
-    }
-
-    /** 
-	 * Writes message on given message layer 
-	 * 
-	 * @param messageLayer
-	 * @param message
-	 **/
-    function writeMessage(messageLayer, message) {
-//        var context = messageLayer.getContext();
-//        messageLayer.clear();
-//        context.font = '18pt Calibri';
-//        context.fillStyle = 'black';
-//        context.fillText(message, 10, 25);
-
-		rpcProxy.onLogMessage(message);
-    }
-
     /** Kinetic stage and layers accessed from different functions **/
     var stage = null;
     /** Layer with DPUs**/
@@ -189,6 +139,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	var addConnectionIcon = null;
 	var removeConnectionIcon = null;
 	var debugIcon = null;
+	var detailIcon = null;
 	
 	var backgroundRect = null;
 
@@ -285,7 +236,59 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		removeConnectionIcon.src = basePath + "TrashFull.png";
 
 		debugIcon = new Image();
-		debugIcon.src = basePath + "Gear.png";
+		debugIcon.src = basePath + "debug.png";
+		
+		detailIcon = new Image();
+		detailIcon.src = basePath + "Gear.png";
+    }
+	
+	    /** 
+	 * Function for moving connection lines after DPU is dragged 
+	 * @param dpuId id of dpu which was moved
+	 * @param x x coordinate of new position
+	 * @param y y coordinate of new position
+	 **/
+    function moveLine(dpuId, x, y) {
+        var dpu = dpus[dpuId];
+        var dpuGroup = dpu.group;
+        for(lineId in dpu.connectionFrom) {
+            var conn = connections[dpu.connectionFrom[lineId]];
+            var dpuTo = dpus[conn.to].group;
+            var newPoints = computeConnectionPoints2(dpuGroup, dpuTo);
+            conn.line.setPoints(newPoints);
+            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
+            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
+			if(conn.dataUnitNameText !== null) {
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+			}
+        }
+        for(lineId in dpu.connectionTo) {
+            conn = connections[dpu.connectionTo[lineId]];
+            var dpuFrom = dpus[conn.from].group;
+            newPoints = computeConnectionPoints2(dpuFrom, dpuGroup);
+            conn.line.setPoints(newPoints);
+            conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
+            conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
+			if(conn.dataUnitNameText !== null) {
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+			}
+        }
+    }
+
+    /** 
+	 * Writes message on given message layer 
+	 * 
+	 * @param messageLayer
+	 * @param message
+	 **/
+    function writeMessage(messageLayer, message) {
+//        var context = messageLayer.getContext();
+//        messageLayer.clear();
+//        context.font = '18pt Calibri';
+//        context.fillStyle = 'black';
+//        context.fillText(message, 10, 25);
+
+		rpcProxy.onLogMessage(message);
     }
 
 	/** Updates text in DPU visualization
@@ -597,14 +600,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             }
         });
 
-//        group.on('dblclick', function(evt) {
-//            if(stageMode == NORMAL_MODE) {
-//                writeMessage(messageLayer, 'Detail requested');
-//                rpcProxy.onDetailRequested(dpu.id);
-//                evt.cancelBubble = true;
-//            }
-//        });
-
 		dpu.rect = rect;
 		dpu.text = complexText;
         dpu.group = group;
@@ -684,7 +679,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		var cmdName = new Kinetic.Image({
 			x:0,
 			y:0,
-			image: debugIcon,
+			image: detailIcon,
 			width: 16,
 			height: 16,
 			startScale: 1
