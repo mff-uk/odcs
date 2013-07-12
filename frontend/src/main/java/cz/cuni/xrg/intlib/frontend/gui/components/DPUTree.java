@@ -51,7 +51,7 @@ public class DPUTree extends CustomComponent {
 		filterBar.setSpacing(false);
 
 		CheckBox onlyMyDPU = new CheckBox();
-		onlyMyDPU.setCaption("Only My DPURecord");
+		onlyMyDPU.setCaption("Only my DPU templates");
 		filterBar.addComponent(onlyMyDPU, 0, 0, 1, 0);
 
 		TextField treeFilter = new TextField();
@@ -83,7 +83,7 @@ public class DPUTree extends CustomComponent {
 		layoutTree.setExpandRatio(filterBar, 0.05f);
 
 		// DPURecord tree 
-		dpuTree = new Tree("DPUs");
+		dpuTree = new Tree("DPU Templates");
 		dpuTree.setImmediate(true);
 		dpuTree.setHeight("100%");
 		//	dpuTree.setHeight(600, Unit.PIXELS);

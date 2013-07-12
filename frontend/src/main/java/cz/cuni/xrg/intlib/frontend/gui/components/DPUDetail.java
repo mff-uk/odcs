@@ -158,12 +158,12 @@ public class DPUDetail extends Window {
 		Label placeFiller = new Label(" ");
 		buttonBar.addComponent(placeFiller);
 
-		Button saveAsNewButton = new Button("Save and store to DPU tree",
+		Button saveAsNewButton = new Button("Save as DPU template",
 				new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ConfirmDialog.show(UI.getCurrent(),
-						"Save to DPU tree as new DPU?",
+						"Save as new DPU template?",
 						new ConfirmDialog.Listener() {
 					@Override
 					public void onClose(ConfirmDialog cd) {

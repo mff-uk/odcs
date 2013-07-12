@@ -74,7 +74,7 @@ public class MenuLayout extends CustomComponent {
 		setCompositionRoot(mainLayout);
 		// init menuBar
 		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PipelineList.getUrl()) );
-		menuBar.addItem("DPUs", new NavigateToCommand(ViewNames.DPU.getUrl()) );
+		menuBar.addItem("DPU Templates", new NavigateToCommand(ViewNames.DPU.getUrl()) );
 		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.ExecutionMonitor.getUrl()) );
 		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DataBrowser.getUrl()) );
 		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.Scheduler.getUrl()) );
