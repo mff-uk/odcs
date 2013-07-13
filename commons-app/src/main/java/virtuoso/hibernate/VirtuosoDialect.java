@@ -407,6 +407,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return True if IDENTITY columns are supported; false otherwise.
 	 */
+	@Override
 	public boolean supportsIdentityColumns() {
 		return true;
 	}
@@ -418,6 +419,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return The appropriate select command
 	 * @throws MappingException If IDENTITY generation is not supported.
 	 */
+	@Override
 	protected String getIdentitySelectString() throws MappingException{
 		return "select identity_value()";
 	}
@@ -428,6 +430,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return The appropriate DDL fragment.
 	 * @throws MappingException If IDENTITY generation is not supported.
 	 */
+	@Override
 	protected String getIdentityColumnString() throws MappingException {
 		// The keyword used to specify an identity column, if identity column key generation is supported.
 		return " identity";
@@ -440,6 +443,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if the dialect supports selecting the just
 	 * generated IDENTITY in the insert statement.
 	 */
+	@Override
 	public boolean supportsInsertSelectIdentity() {
 		return false;
 	}
@@ -451,6 +455,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return True if sequences supported; false otherwise.
 	 */
+	@Override
 	public boolean supportsSequences() {
 		return true;
 	}
@@ -462,6 +467,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if such "pooled" sequences are supported; false otherwise.
 	 * @see #getCreateSequenceString(String, int, int)
 	 */
+	@Override
 	public boolean supportsPooledSequences() {
 	    return true;
 	}
@@ -481,6 +487,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return The sequence creation command
 	 * @throws MappingException If sequences are not supported.
 	 */
+	@Override
 	protected String getCreateSequenceString(String sequenceName) throws MappingException {
 		return "sequence_set('" + sequenceName+"', 0, 1)";
 	}
@@ -501,6 +508,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return The "nextval" fragment.
 	 * @throws MappingException If sequences are not supported.
 	 */
+	@Override
 	public String getSelectSequenceNextValString(String sequenceName) throws MappingException {
 		return "sequence_next('" + sequenceName +"')";
 	}
@@ -515,6 +523,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return String The "nextval" select string.
 	 * @throws MappingException If sequences are not supported.
 	 */
+	@Override
 	public String getSequenceNextValString(String sequenceName) throws MappingException {
 		return "select sequence_next('" + sequenceName +"')";
 	}
@@ -529,6 +538,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return True if this dialect supports some form of LIMIT.
 	 */
+	@Override
 	public boolean supportsLimit() {
 		// TODO Limit support is causing error in Virtuoso JDBC while
 		// constructing TOP clause. This is circumvented by disabling
@@ -544,6 +554,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return true if limit parameters should come before other parameters
 	 */
+	@Override
 	public boolean bindLimitParametersFirst() {
 		return true;
 	}
@@ -557,9 +568,10 @@ public class VirtuosoDialect extends Dialect {
 	 * @param limit The limit of the limit ;)
 	 * @return The modified query statement with the limit applied.
 	 */
+	@Override
 	public String getLimitString(String sql, int offset, int limit) {
 		int insertionPoint = sql.toLowerCase().startsWith( "select distinct" ) ? 15 : 6;
-		StringBuffer ret = new StringBuffer(sql.length() + 64);
+		StringBuilder ret = new StringBuilder(sql.length() + 64);
 
 		ret.append(sql);
 
@@ -588,6 +600,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @param hasOffset Is the query requesting an offset?
 	 * @return the modified SQL
 	 */
+	@Override
 	protected String getLimitString(String sql, boolean hasOffset) {
 		int insertionPoint = sql.toLowerCase().startsWith( "select distinct" ) ? 15 : 6;
 
@@ -611,6 +624,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return The number of (contiguous) bind positions used.
 	 * @throws SQLException Indicates problems registering the OUT param.
 	 */
+	@Override
 	public int registerResultSetOutParameter(CallableStatement statement, int position) throws SQLException {
 		return position;
 	}
@@ -623,6 +637,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return The extracted result set.
 	 * @throws SQLException Indicates problems extracting the result set.
 	 */
+	@Override
 	public ResultSet getResultSet(CallableStatement ps) throws SQLException {
 		boolean isResultSet = ps.execute();
 		// This assumes you will want to ignore any update counts
@@ -643,6 +658,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return True if the current timestamp can be retrieved; false otherwise.
 	 */
+	@Override
 	public boolean supportsCurrentTimestampSelection() {
 		return true;
 	}
@@ -655,6 +671,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if the {@link #getCurrentTimestampSelectString} return
 	 * is callable; false otherwise.
 	 */
+	@Override
 	public boolean isCurrentTimestampSelectStringCallable() {
 		return false;
 	}
@@ -665,6 +682,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return The command.
 	 */
+	@Override
 	public String getCurrentTimestampSelectString() {
 		return "select getdate()";
 	}
@@ -675,6 +693,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return The function name.
 	 */
+	@Override
 	public String getCurrentTimestampSQLFunctionName() {
 		// the standard SQL function name is current_timestamp...
 		return "getdate";
@@ -683,6 +702,7 @@ public class VirtuosoDialect extends Dialect {
 
 
 	// SQLException support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	@Override
 	public ViolatedConstraintNameExtracter getViolatedConstraintNameExtracter() {
 		return EXTRACTER;
 	}
@@ -690,6 +710,7 @@ public class VirtuosoDialect extends Dialect {
 
 
 	private static ViolatedConstraintNameExtracter EXTRACTER = new TemplatedViolatedConstraintNameExtracter() {
+		@Override
 		public String extractConstraintName(SQLException sqle) {
 			int er = sqle.getErrorCode();
 			String mess = sqle.getMessage();
@@ -729,6 +750,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @param sqlType The {@link java.sql.Types} type code.
 	 * @return The appropriate select clause value fragment.
 	 */
+	@Override
 	public String getSelectClauseNullString(int sqlType) {
 
 		switch ( sqlType ) {
@@ -779,6 +801,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return True if UNION ALL is supported; false otherwise.
 	 */
+	@Override
 	public boolean supportsUnionAll() {
 		return true;
 	}
@@ -793,6 +816,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return The appropriate empty values clause.
 	 */
+	@Override
 	public String getNoColumnsInsertString() {
 		throw new UnsupportedOperationException( "Database can not insert a row without specifying any column values" );
 	}
@@ -803,6 +827,7 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return The maximum length.
 	 */
+	@Override
 	public int getMaxAliasLength() {
 		return 100;
 	}
@@ -813,6 +838,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @param bool The boolean value
 	 * @return The appropriate SQL literal.
 	 */
+	@Override
 	public String toBooleanValueString(boolean bool) {
 		return bool ? "1" : "0";
 	}
@@ -827,6 +853,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if constraints must be dropped prior to dropping
 	 * the table; false otherwise.
 	 */
+	@Override
 	public boolean dropConstraints() {
 		return false;
 	}
@@ -836,6 +863,7 @@ public class VirtuosoDialect extends Dialect {
          * Does this dialect support adding Unique constraints via create and alter table ?
          * @return boolean
          */
+	@Override
 	public boolean supportsUniqueConstraintInCreateAlterTable() {
 	    return true;
 	}
@@ -845,10 +873,12 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return The "add column" fragment.
 	 */
+	@Override
 	public String getAddColumnString() {
 		return "add";
 	}
 
+	@Override
 	public String getDropForeignKeyString() {
 		return " drop foreign key ";
 	}
@@ -866,13 +896,14 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return the "add FK" fragment
 	 */
+	@Override
 	public String getAddForeignKeyConstraintString(
 			String constraintName,
 			String[] foreignKey,
 			String referencedTable,
 			String[] primaryKey,
 			boolean referencesPrimaryKey) {
-		StringBuffer res = new StringBuffer( 300 );
+		StringBuilder res = new StringBuilder( 300 );
 
 		res.append( " add foreign key (" )
 				.append( StringUtils.join( foreignKey, ", " ) )
@@ -894,10 +925,12 @@ public class VirtuosoDialect extends Dialect {
 	 * @param constraintName The name of the PK constraint.
 	 * @return The "add PK" fragment
 	 */
+	@Override
 	public String getAddPrimaryKeyConstraintString(String constraintName) {
 		return " modify primary key ";
 	}
 
+	@Override
 	public boolean hasSelfReferentialForeignKeyBug() {
 		return true;
 	}
@@ -907,14 +940,17 @@ public class VirtuosoDialect extends Dialect {
 	 *
 	 * @return String
 	 */
+	@Override
 	public String getNullColumnString() {
 		return " null";
 	}
 
+	@Override
 	public boolean supportsIfExistsBeforeTableName() {
 		return false;
 	}
 
+	@Override
 	public boolean supportsIfExistsAfterTableName() {
 		return false;
 	}
@@ -931,6 +967,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if empty in lists are supported; false otherwise.
 	 * @since 3.2
 	 */
+	@Override
 	public boolean supportsEmptyInList() {
 		return false;
 	}
@@ -943,6 +980,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if comparisons are case insensitive.
 	 * @since 3.2
 	 */
+	@Override
 	public boolean areStringComparisonsCaseInsensitive() {
 		return false;
 	}
@@ -954,6 +992,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if BLOBs and CLOBs should be bound using stream operations.
 	 * @since 3.2
 	 */
+	@Override
 	public boolean useInputStreamToInsertBlob() {
 		return false;
 	}
@@ -968,6 +1007,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @since 3.2
 	 */
 //??
+	@Override
 	public boolean supportsCircularCascadeDeleteConstraints() {
 		return true;
 	}
@@ -1000,6 +1040,7 @@ public class VirtuosoDialect extends Dialect {
 	 * database; false otherwise.
 	 * @since 3.2
 	 */
+	@Override
 	public boolean supportsLobValueChangePropogation() {
 		return false;
 	}
@@ -1017,6 +1058,7 @@ public class VirtuosoDialect extends Dialect {
 	 * @return True if unbounded materialization is supported; false otherwise.
 	 * @since 3.2
 	 */
+	@Override
 	public boolean supportsUnboundedLobLocatorMaterialization() {
 		return false;
 	}
