@@ -15,6 +15,7 @@
 		<!-- define used vaadin version -->
 		<vaadin.version>7.1.0</vaadin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- define output dirs -->
 		<project.output.lib>target\lib\</project.output.lib>
 		<project.output.dpu>target\dpu\</project.output.dpu>
