@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -9,75 +10,76 @@ import javax.persistence.*;
  * @author Bogo
  */
 @Entity
-@Table(name="ppl_edge")
-public class Edge {
+@Table(name = "ppl_edge")
+public class Edge implements Serializable {
 
-    /**
-     * Primary key of graph stored in db
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+	/**
+	 * Primary key of graph stored in db
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-	@ManyToOne(optional=false)
-	@JoinColumn(name="node_from_id")
-    private Node from;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "node_from_id")
+	private Node from;
 
-	@ManyToOne(optional=false)
-	@JoinColumn(name="node_to_id")
-    private Node to;
-	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "node_to_id")
+	private Node to;
+
 	/**
 	 * Reference to owning graph
 	 */
 	@ManyToOne
-	@JoinColumn(name="graph_id")
+	@JoinColumn(name = "graph_id")
 	private PipelineGraph graph;
-	
-	@Column(name="data_unit_name", nullable = true)
+
+	@Column(name = "data_unit_name", nullable = true)
 	private String dataUnitName;
-	
+
 	public void setDataUnitName(String name) {
 		dataUnitName = name;
 	}
-	
+
 	public String getDataUnitName() {
 		return dataUnitName;
 	}
-	
+
 	/**
 	 * No-arg public constructor for JPA
 	 */
-	public Edge() {}
+	public Edge() {
+	}
 
-    /**
-     * Constructor with specification of connecting nodes.
-     *
-     * @param from
-     * @param to
-     */
-    public Edge(Node from, Node to) {
-        this.from = from;
-        this.to = to;
-    }
+	/**
+	 * Constructor with specification of connecting nodes.
+	 *
+	 * @param from
+	 * @param to
+	 */
+	public Edge(Node from, Node to) {
+		this.from = from;
+		this.to = to;
+	}
 
-    /**
-     * Returns start node of edge
-     *
-     * @return
-     */
-    public Node getFrom() {
-        return from;
-    }
+	/**
+	 * Returns start node of edge
+	 *
+	 * @return
+	 */
+	public Node getFrom() {
+		return from;
+	}
 
-    /**
-     * Returns end node of edge
-     *
-     * @return
-     */
-    public Node getTo() {
-        return to;
-    }
+	/**
+	 * Returns end node of edge
+	 *
+	 * @return
+	 */
+	public Node getTo() {
+		return to;
+	}
 
 	public PipelineGraph getGraph() {
 		return graph;
@@ -86,22 +88,22 @@ public class Edge {
 	public void setGraph(PipelineGraph graph) {
 		this.graph = graph;
 	}
-	
-    @Override
-    public boolean equals(Object other) {
-        if (other.getClass() != Edge.class) {
-            return false;
-        }
-        Edge o = (Edge) other;
-        if (this.id != null && this.id.equals(o.getId())) {
-            return true;
-        } else if (this.from.hashCode() == o.from.hashCode()
-                && this.to.hashCode() == o.to.hashCode()) {
-            return true;
-        } else {
-            return this.from == o.from && this.to == o.to;
-        }
-    }
+
+	@Override
+	public boolean equals(Object other) {
+		if (other.getClass() != Edge.class) {
+			return false;
+		}
+		Edge o = (Edge) other;
+		if (this.id != null && this.id.equals(o.getId())) {
+			return true;
+		} else if (this.from.hashCode() == o.from.hashCode()
+				&& this.to.hashCode() == o.to.hashCode()) {
+			return true;
+		} else {
+			return this.from == o.from && this.to == o.to;
+		}
+	}
 
 	@Override
 	public int hashCode() {
@@ -111,7 +113,7 @@ public class Edge {
 		return hash;
 	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 }

@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "exec_context_pipeline")
-public class ExecutionContextInfo {
+public class ExecutionContextInfo implements Serializable {
 
 	/**
 	 * Name of working sub directory.

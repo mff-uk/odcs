@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
+import java.io.Serializable;
 
 /**
  * Represents a fixed workflow composed of one or several {@link Extract}s,
@@ -40,83 +41,83 @@ import cz.cuni.xrg.intlib.commons.app.user.Resource;
  */
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements Resource {
-
-    /**
-     * Unique ID for each pipeline
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Pipeline implements Resource, Serializable {
 
 	/**
-     * Human-readable pipeline name
-     */
-	@Column
-    private String name;
-	
-    /**
-     * Human-readable pipeline description
-     */
-	@Column
-    private String description;
-	
-    @OneToOne(cascade=CascadeType.ALL, mappedBy="pipeline", fetch= FetchType.EAGER)
-    private PipelineGraph graph;
+	 * Unique ID for each pipeline
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-    //@ManyToOne(cascade=CascadeType.ALL, mappedBy="pipeline", fetch= FetchType.EAGER)
-    //private Plan plan;
-    
-    /**
-     * Default constructor for JPA
-     */
-    public Pipeline() {
+	/**
+	 * Human-readable pipeline name
+	 */
+	@Column
+	private String name;
+
+	/**
+	 * Human-readable pipeline description
+	 */
+	@Column
+	private String description;
+
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.EAGER)
+	private PipelineGraph graph;
+
+	//@ManyToOne(cascade=CascadeType.ALL, mappedBy="pipeline", fetch= FetchType.EAGER)
+	//private Plan plan;
+	/**
+	 * Default constructor for JPA
+	 */
+	public Pipeline() {
 		graph = new PipelineGraph();
 	}
 
 	/**
 	 * Constructor with given pipeline name and description.
+	 *
 	 * @param name
 	 * @param description
 	 */
-    public Pipeline(String name, String description) {
+	public Pipeline(String name, String description) {
 		this();
 		this.name = name;
-        this.description = description;
-    }
+		this.description = description;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String newName) {
-        name = newName;
-    }
+	public void setName(String newName) {
+		name = newName;
+	}
 
-    public String getDescription() {
+	public String getDescription() {
 
-        return description;
-    }
+		return description;
+	}
 
-    public void setDescription(String newDescription) {
-        description = newDescription;
-    }
+	public void setDescription(String newDescription) {
+		description = newDescription;
+	}
 
-    public PipelineGraph getGraph() {
-        return graph;
-    }
+	public PipelineGraph getGraph() {
+		return graph;
+	}
 
-    public void setGraph(PipelineGraph graph) {
-        this.graph = graph;
+	public void setGraph(PipelineGraph graph) {
+		this.graph = graph;
 		graph.setPipeline(this);
-    }
+	}
 
-    public Long getId() {
-        return id;
-    }
-	
-    @Override
-    public String getResourceId() {
-        return Pipeline.class.toString();
-    }
+	public Long getId() {
+		return id;
+	}
+
+	@Override
+	public String getResourceId() {
+		return Pipeline.class.toString();
+	}
 }

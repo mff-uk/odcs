@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import java.io.Serializable;
 import javax.persistence.*;
 
 /**
@@ -21,7 +22,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "exec_dataunit_info")
-public class DataUnitInfo {
+public class DataUnitInfo implements Serializable {
 	
 	/**
 	 * Primary key.

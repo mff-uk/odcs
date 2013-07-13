@@ -5,68 +5,68 @@ import java.util.Date;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import java.io.Serializable;
 
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represent a scheduler plan. 
- * A single plan execute just one pipeline.
- * 
+ * Represent a scheduler plan. A single plan execute just one pipeline.
+ *
  * @author Petyr
  *
  */
 @Entity
 @Table(name = "exec_schedule")
-public class Schedule {
+public class Schedule implements Serializable {
 
-    /**
-     * Unique ID for each plan.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)	
+	/**
+	 * Unique ID for each plan.
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-    /**
-     * Plan's name.
-     */
-    @Column
-    private String name;
-    
-    /**
-     * Plan's description.
-     */
-    @Column
-    private String description;
-    
-    /**
-     * Pipeline to execute.
-     */
-    @ManyToOne
+
+	/**
+	 * Plan's name.
+	 */
+	@Column
+	private String name;
+
+	/**
+	 * Plan's description.
+	 */
+	@Column
+	private String description;
+
+	/**
+	 * Pipeline to execute.
+	 */
+	@ManyToOne
 	@JoinColumn(name = "pipeline_id", nullable = false)
-    private Pipeline pipeline;
-		
+	private Pipeline pipeline;
+
 	/**
 	 * Plan is active for just one execution.
 	 */
 	@Column(name = "just_once")
 	private boolean justOnce;
-	
+
 	/**
-	 * True if the schedule is enabled. Disabled
-	 * (not enabled) schedules are ignored.
+	 * True if the schedule is enabled. Disabled (not enabled) schedules are
+	 * ignored.
 	 */
 	@Column(name = "enabled")
 	private boolean enabled;
-	
+
 	/**
 	 * Schedule rule type.
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "type")
 	private ScheduleType type;
-	
+
 	/**
 	 * Time o first planned execution. May be null if this plan is only supposed
 	 * to run after pipelines in {@link #afterPipelines}, but has no specific
@@ -75,43 +75,45 @@ public class Schedule {
 	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
 	@Column(name = "first_exec", nullable = true)
 	private Date firstExecution;
-	
+
 	/**
 	 * Time of the last execution.
 	 */
 	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
 	@Column(name = "last_exec", nullable = true)
 	private Date lastExecution;
-	
+
 	/**
-	 * Execution period in {@link #periodUnit}.
-	 * Used only if {@link #type} = RunInTime.
+	 * Execution period in {@link #periodUnit}. Used only if {@link #type} =
+	 * RunInTime.
 	 */
 	@Column(name = "time_period")
 	private Integer period;
-	
+
 	/**
 	 * Time period unit type.
 	 */
 	@Enumerated(EnumType.ORDINAL)
-	@Column(name = "period_unit")	
+	@Column(name = "period_unit")
 	private PeriodUnit periodUnit;
-	
-    /**
-     * Pipeline after which this job is supposed to run.
-	 * Applicable only if {@link #type} is {@link ScheduleType#AFTER_PIPELINE}.
-     */
+
+	/**
+	 * Pipeline after which this job is supposed to run. Applicable only if
+	 * {@link #type} is {@link ScheduleType#AFTER_PIPELINE}.
+	 */
 	@ManyToMany
-	@JoinTable(name="exec_schedule_after",
-        joinColumns = @JoinColumn(name="schedule_id", referencedColumnName="id"),
-        inverseJoinColumns = @JoinColumn(name="pipeline_id", referencedColumnName="id")
-    )
-    private Set<Pipeline> afterPipelines = new HashSet<>();
-	
+	@JoinTable(name = "exec_schedule_after",
+			joinColumns =
+			@JoinColumn(name = "schedule_id", referencedColumnName = "id"),
+			inverseJoinColumns =
+			@JoinColumn(name = "pipeline_id", referencedColumnName = "id"))
+	private Set<Pipeline> afterPipelines = new HashSet<>();
+
 	/**
 	 * Empty constructor. Used by JPA. Do not use otherwise.
 	 */
-	public Schedule() { }
+	public Schedule() {
+	}
 
 	public String getName() {
 		return name;
@@ -192,7 +194,7 @@ public class Schedule {
 	public void setPeriodUnit(PeriodUnit periodUnit) {
 		this.periodUnit = periodUnit;
 	}
-	
+
 	/**
 	 * Schedules this job after every run of given pipeline.
 	 *
@@ -211,15 +213,15 @@ public class Schedule {
 	public void setAfterPipelines(Set<Pipeline> afterPipelines) {
 		this.afterPipelines = afterPipelines;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
-	
+
 	/**
-	 * Return estimate of time when the schedule 
-	 * fire. If the schedule is not time dependent 
-	 * return null.
+	 * Return estimate of time when the schedule fire. If the schedule is not
+	 * time dependent return null.
+	 *
 	 * @return Estimate of time for next execution or null.
 	 */
 	public Date getNextExecutionTimeInfo() {
@@ -233,28 +235,28 @@ public class Schedule {
 				Calendar calendarNextExec = Calendar.getInstance();
 				calendarNextExec.setTime(lastExecution);
 				// add value based on period
-				switch(periodUnit) {
-				case DAY:
-					calendarNextExec.add(Calendar.DAY_OF_YEAR, period);
-					break;
-				case HOUR:
-					calendarNextExec.add(Calendar.HOUR_OF_DAY, period);
-					break;
-				case MINUTE:
-					calendarNextExec.add(Calendar.MINUTE, period);
-					break;
-				case MONTH:
-					calendarNextExec.add(Calendar.MONTH, period);
-					break;
-				case SECOND:
-					calendarNextExec.add(Calendar.SECOND, period);
-					break;
-				case WEEK:
-					calendarNextExec.add(Calendar.WEEK_OF_YEAR, period);
-					break;
-				case YEAR:
-					calendarNextExec.add(Calendar.YEAR, period);
-					break;
+				switch (periodUnit) {
+					case DAY:
+						calendarNextExec.add(Calendar.DAY_OF_YEAR, period);
+						break;
+					case HOUR:
+						calendarNextExec.add(Calendar.HOUR_OF_DAY, period);
+						break;
+					case MINUTE:
+						calendarNextExec.add(Calendar.MINUTE, period);
+						break;
+					case MONTH:
+						calendarNextExec.add(Calendar.MONTH, period);
+						break;
+					case SECOND:
+						calendarNextExec.add(Calendar.SECOND, period);
+						break;
+					case WEEK:
+						calendarNextExec.add(Calendar.WEEK_OF_YEAR, period);
+						break;
+					case YEAR:
+						calendarNextExec.add(Calendar.YEAR, period);
+						break;
 				}
 				return calendarNextExec.getTime();
 			}

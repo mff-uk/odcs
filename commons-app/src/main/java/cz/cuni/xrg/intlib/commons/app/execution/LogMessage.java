@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ import org.apache.log4j.Level;
  */
 @Entity
 @Table(name = "logging_event")
-public class LogMessage {
+public class LogMessage implements Serializable {
 
 	/**
 	 * Log property name for logging messages produced by
