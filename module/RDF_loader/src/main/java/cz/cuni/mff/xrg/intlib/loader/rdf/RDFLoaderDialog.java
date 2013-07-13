@@ -379,7 +379,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         buttonGraphAdd.setImmediate(true);
         buttonGraphAdd.setWidth("55px");
         buttonGraphAdd.setHeight("-1px");
-        buttonGraphAdd.addListener(new Button.ClickListener() {
+	    buttonGraphAdd.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 saveEditedTexts();
@@ -450,6 +450,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
      * @throws ConfigException
      * @param conf
      */
+	@Override
     public void setConfiguration(RDFLoaderConfig conf) {
         try {
             String endp = conf.SPARQL_endpoint;

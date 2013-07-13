@@ -322,7 +322,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         buttonGraphAdd.setImmediate(true);
         buttonGraphAdd.setWidth("55px");
         buttonGraphAdd.setHeight("-1px");
-        buttonGraphAdd.addListener(new Button.ClickListener() {
+        buttonGraphAdd.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 saveEditedTexts();
