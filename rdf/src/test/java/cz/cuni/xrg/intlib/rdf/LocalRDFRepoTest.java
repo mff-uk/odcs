@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jiri Tomes
  */
+@Category(IntegrationTest.class)
 public class LocalRDFRepoTest {
 
 	/**
