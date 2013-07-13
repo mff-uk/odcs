@@ -23,6 +23,7 @@
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency> <!-- commons project -->
@@ -31,6 +32,7 @@
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>		
 
 	</dependencies>
@@ -49,9 +51,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- export just packages under cz.cuni.xrg.intlib.commons.web -->
-                       	<Export-Package>cz.cuni.xrg.intlib.commons.module.*;version="${project.version}"</Export-Package>
-                        <!-- import vaadin, commons and web -->
-                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}",cz.cuni.xrg.intlib.commons.web.*;version="${project.version}"</Import-Package>
+                       	<Export-Package>cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries;version="${project.version}"</Export-Package>
+                        <!-- import vaadin, commons, web, RDF -->
+                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}",cz.cuni.xrg.intlib.commons.web.*;version="${project.version}",cz.cuni.xrg.intlib.rdf.*;version="${project.version}"</Import-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>						
                     </instructions>
                 </configuration>
