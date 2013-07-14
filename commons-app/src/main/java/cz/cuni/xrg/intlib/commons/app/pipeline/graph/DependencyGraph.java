@@ -1,9 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,45 +14,66 @@ import java.util.Set;
 public class DependencyGraph implements Iterable<Node> {
 
     /**
-     * DPURecord Graph
-     */
-    private PipelineGraph graph;
-    /**
-     * Structure for building dependency graph with dependency nodes indexed by
-     * nodes
+     * Structure for building dependency graph mapping nodes to dependency
+	 * nodes.
      */
     private Map<Node, DependencyNode> dGraph = new HashMap<>();
+	
     /**
      * List of Extractor nodes - nodes without dependencies
      */
-    private List<DependencyNode> extractors = new ArrayList<>();
+    private Set<DependencyNode> extractors = new HashSet<>();
 	
 	/**
-	 * Cache used for fast searching of node ancestors.
+	 * Cache used for fast searching of node ancestors. A {@link Node} with no
+	 * ancestor (no incoming {@link Edge}) is not indexed here at all.
 	 */
-	private Map<Node, Set<Node>> cacheAncestors = new HashMap<>();
-
-	/**
-	 * Node where graph should end. Optional.
-	 */
-	private Node finalNode;
+	private Map<Node, Set<Node>> ancestorCache = new HashMap<>();
 	
     /**
      * Constructs dependency graph from given pipeline graph.
      *
-     * @param graph
+     * @param graph pipeline graph
      */
     public DependencyGraph(PipelineGraph graph) {
-        this.graph = graph;
-        buildDependencyGraph();
+        buildDependencyGraph(graph);
         findExtractors();
     }
 
+	/**
+	 * Constructs dependency graph containing only dependencies required to run
+	 * given  debugNode.
+	 * 
+	 * @param graph pipeline graph to build dependencies from
+	 * @param debugNode node whose dependencies are used exclusively
+	 */
 	public DependencyGraph(PipelineGraph graph, Node debugNode) {
-		this(graph);
-		finalNode = debugNode;
+		
+		// first build complete dependency graph
+		buildDependencyGraph(graph);
+		
+		// now create trimmed PipelineGraph containing only nodes needed to run
+		// debugNode
+		Set<Node> tNodes = getAllAncestors(debugNode);
+		tNodes.add(debugNode);
+		
+		Set<Edge> tEdges = new HashSet<>(graph.getEdges().size());
+		for (Edge edge : graph.getEdges()) {
+			if (tNodes.contains(edge.getFrom())
+					&& tNodes.contains(edge.getTo())) {
+				tEdges.add(edge);
+			}
+		}
+		
+		PipelineGraph tGraph = new PipelineGraph();
+		tGraph.setNodes(tNodes);
+		tGraph.setEdges(tEdges);
+		
+		// rebuild dependencies in trimmed graph
+		buildDependencyGraph(tGraph);
+		findExtractors();
 	}
-
+	
     /**
      * Returns iterator, which iterates over pipeline graph in a way that all
      * dependencies come before the nodes they depend on.
@@ -67,7 +86,7 @@ public class DependencyGraph implements Iterable<Node> {
     /**
      * @return the extractors
      */
-    public List<DependencyNode> getExtractors() {
+    public Set<DependencyNode> getExtractors() {
         return extractors;
     }
 
@@ -77,7 +96,7 @@ public class DependencyGraph implements Iterable<Node> {
      * @return set of ancestors
      */
     public Set<Node> getAncestors(Node node) {
-		return cacheAncestors.get(node);
+		return ancestorCache.get(node);
     }
     
     /**
@@ -85,6 +104,7 @@ public class DependencyGraph implements Iterable<Node> {
      * graph is built!
      */
     private void findExtractors() {
+		extractors = new HashSet<>();
         for (DependencyNode node : dGraph.values()) {
             // extractors have no dependencies
             if (node.getDependencies().isEmpty()) {
@@ -94,18 +114,31 @@ public class DependencyGraph implements Iterable<Node> {
     }
 
     /**
-     * Builds dependency graph.
+     * Builds dependency graph consisting of mapping from {@link Node}s to
+	 * their corresponding newly created {@link DependencyNode}s.
+	 * 
+	 * @param graph to build dependencies from
      */
-    private void buildDependencyGraph() {
+    private void buildDependencyGraph(PipelineGraph graph) {
+		
+		// clear all previous data
+		int noOfNodes = graph.getNodes().size();
+		dGraph = new HashMap<>(noOfNodes);
+		ancestorCache = new HashMap<>(noOfNodes);
+		
+		// initialize map for dependency nodes
+		for (Node node : graph.getNodes()) {
+			dGraph.put(node, new DependencyNode(node));
+		}
 
-        // iterate over all edges
+        // iterate over all edges and reflect them in dependency nodes
         for (Edge e : graph.getEdges()) {
 
             // find the target node in the dependency graph
-            DependencyNode tNode = addDependency(e.getTo());
+            DependencyNode tNode = dGraph.get(e.getTo());
 
             // find the source node in the dependency graph
-            DependencyNode sNode = addDependency(e.getFrom());
+            DependencyNode sNode = dGraph.get(e.getFrom());
 
             // add the dependency
             tNode.addDependency(sNode);
@@ -125,39 +158,34 @@ public class DependencyGraph implements Iterable<Node> {
 	 * @param tNode 
 	 */
 	private void cacheAncestor(Node sNode, Node tNode) {
-		Set<Node> nodes = cacheAncestors.get(tNode);
+		Set<Node> nodes = ancestorCache.get(tNode);
 		if (nodes == null) {
 			nodes = new HashSet<>();
-			cacheAncestors.put(tNode, nodes);
+			ancestorCache.put(tNode, nodes);
 		}
 		nodes.add(sNode);
 	}
-
-    /**
-     * Adds a dependency into dependency graph and returns it. If dependency
-     * does not exist, it is created.
-     *
-     * @param node
-     * @return the dependency
-     */
-    private DependencyNode addDependency(Node node) {
-
-        // find the node in dependency graph
-        DependencyNode dNode = dGraph.get(node);
-
-        // if we have not encountered this node yet, create it
-        if (dNode == null) {
-            dNode = new DependencyNode(node);
-            dGraph.put(node, dNode);
-        }
-
-        return dNode;
-    }
-
-	/*
-	 * returns the final node
+	
+	/**
+	 * Returns all nodes on which given node depends. In other words, it returns
+	 * all nodes that need to be run before given node. This does not include
+	 * given node itself.
+	 * 
+	 * @param node
+	 * @return all dependencies of given node
 	 */
-	Node getFinalNode() {
-		return finalNode;
+	private Set<Node> getAllAncestors(Node node) {
+		
+		Set<Node> oAncestors = ancestorCache.get(node);
+		Set<Node> ancestors = new HashSet<>();
+		
+		if (oAncestors != null) {
+			ancestors.addAll(oAncestors);
+			for (Node ancestor : oAncestors) {
+				ancestors.addAll(getAllAncestors(ancestor));
+			}
+		}
+		
+		return ancestors;
 	}
 }

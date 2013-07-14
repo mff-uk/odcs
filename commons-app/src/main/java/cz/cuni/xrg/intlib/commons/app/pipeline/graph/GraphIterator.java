@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Iterates over dependency graph in an order that satisfies all dependencies. 
@@ -14,14 +14,7 @@ public class GraphIterator implements Iterator<Node> {
 	/**
 	 * Stack of nodes used to perform breath-first search.
 	 */
-	private List<DependencyNode> stack;
-	
-	/**
-	 * Node where graph should end. Optional.
-	 */
-	private Node finalNode;
-	
-	private boolean isFinalNodeProcessed = false;
+	private Set<DependencyNode> stack;
 	
 	/**
 	 * Constructs iterator from dependency graph.
@@ -29,7 +22,6 @@ public class GraphIterator implements Iterator<Node> {
 	 */
 	public GraphIterator(DependencyGraph graph) {
 		this.stack = graph.getExtractors();
-		this.finalNode = graph.getFinalNode();
 	}
 
 	/**
@@ -37,7 +29,7 @@ public class GraphIterator implements Iterator<Node> {
 	 */
 	@Override
 	public boolean hasNext() {
-		return !isFinalNodeProcessed && !stack.isEmpty();
+		return !stack.isEmpty();
 	}
 
 	/**
@@ -48,10 +40,6 @@ public class GraphIterator implements Iterator<Node> {
 		for (DependencyNode n : stack) {
 			if (n.hasMetDependencies()) {
 				replaceWithDependants(n);
-				Node node = n.getNode();
-				if(node.equals(finalNode)) {
-					isFinalNodeProcessed = true;
-				}
 				return n.getNode();
 			}
 		}

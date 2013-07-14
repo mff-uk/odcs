@@ -17,7 +17,7 @@ import javax.persistence.*;
  *
  * @author Jiri Tomes
  * @author Bogo
- * @author Jan Vojt <jan@vojt.net>
+ * @author Jan Vojt
  *
  */
 @Entity
@@ -40,17 +40,17 @@ public class PipelineGraph implements Serializable {
 	private Pipeline pipeline;
 
 	/**
-	 * List of nodes which represent DPUs
+	 * Set of nodes which represent DPUs
 	 */
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch=FetchType.EAGER, orphanRemoval = true)
-    private List<Node> nodes = new ArrayList<>();
+    private Set<Node> nodes = new HashSet<>();
 
     /**
      * Set of edges which represent data flow between DPUs.
      */
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch= FetchType.EAGER, orphanRemoval = true)
     private Set<Edge> edges = new HashSet<>();
-
+	
     public void addNode(Node node) {
         nodes.add(node);
 		node.setGraph(this);
@@ -67,12 +67,13 @@ public class PipelineGraph implements Serializable {
 		return nodes.remove(node);
 	}
 
-    public List<Node> getNodes() {
+    public Set<Node> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<Node> newNodes) {
+    public void setNodes(Set<Node> newNodes) {
         nodes = newNodes;
+		// update on owning side
 		for (Node node : nodes) {
 			node.setGraph(this);
 		}
@@ -127,6 +128,8 @@ public class PipelineGraph implements Serializable {
         Edge edge = new Edge(from, to);
         // adds unless it is present already
         boolean added = edges.add(edge);
+		
+		// update on owning side
 		edge.setGraph(this);
 
         //TODO Find existing edge for this connection

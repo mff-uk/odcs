@@ -166,7 +166,7 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 									execution.getId(), execution.getPipeline().getId());
 						} else {
 							// use first node .. 
-							Node node = execution.getPipeline().getGraph().getNodes().get(0);
+							Node node = execution.getPipeline().getGraph().getNodes().iterator().next();
 							eventPublisher.publishEvent(
 									new PipelineFailedEvent(
 											"Failed to recover. The working directory can't be deleted.", 

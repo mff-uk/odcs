@@ -1,14 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -17,28 +14,10 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
  */
 public class DependencyTest {
 	
-	private Pipeline pipe;
-	
-	private Node[] nodes;
-	
 	/**
-	 * Prepare some nodes
+	 * Nodes in pipeline graph created by factory {@link #buildGraph(int)}.
 	 */
-	@Before
-	public void setUp() {
-
-		PipelineGraph graph = new PipelineGraph();
-		
-		pipe = new Pipeline();
-		pipe.setGraph(graph);
-		
-		nodes = new Node[5];
-		for (int i = 0; i<5; i++) {
-			Node node = new Node();
-			nodes[i] = node;
-			graph.addNode(node);
-		}
-	}
+	private Node[] nodes;
 	
 	/**
 	 * Test dependency resolution for serialized DPURecord setup.
@@ -47,7 +26,7 @@ public class DependencyTest {
 	@Test
 	public void testInlineDependencyResolution() {
 		
-		PipelineGraph graph = pipe.getGraph();
+		PipelineGraph graph = buildGraph(5);
 		graph.addEdge(nodes[2], nodes[3]);
 		graph.addEdge(nodes[0], nodes[1]);
 		graph.addEdge(nodes[1], nodes[2]);
@@ -76,7 +55,7 @@ public class DependencyTest {
 	@Test
 	public void testComplexDependencyResolution() {
 		
-		PipelineGraph graph = pipe.getGraph();
+		PipelineGraph graph = buildGraph(5);
 		graph.addEdge(nodes[0], nodes[1]);
 		graph.addEdge(nodes[1], nodes[2]);
 		graph.addEdge(nodes[2], nodes[3]);
@@ -120,7 +99,7 @@ public class DependencyTest {
 	@Test
 	public void testCircularDependencyResolution() {
 		
-		PipelineGraph graph = pipe.getGraph();
+		PipelineGraph graph = buildGraph(5);
 		graph.addEdge(nodes[0], nodes[1]);
 		graph.addEdge(nodes[1], nodes[2]);
 		graph.addEdge(nodes[2], nodes[3]);
@@ -142,4 +121,80 @@ public class DependencyTest {
 		assertNull(iter.next());
 	}
 
+	
+	/**
+	 * Test debugging till given DPU instance in a graph with a single node.
+	 *			 !
+	 * Scenario: E -> L
+	 */
+	@Test
+	public void testDebugNodeInTrivialGraph() {
+		
+		PipelineGraph graph = buildGraph(5);
+		graph.addEdge(nodes[0], nodes[1]);
+
+		DependencyGraph dGraph = new DependencyGraph(graph, nodes[0]);
+		GraphIterator iter = dGraph.iterator();
+		
+		assertTrue(iter.hasNext());
+		assertEquals(nodes[0], iter.next());
+		
+		assertFalse(iter.hasNext());
+		assertNull(iter.next());
+	}
+	
+	/**
+	 * Test debugging till given DPU instance in a more complex graph.
+	 *			            !
+	 * Scenario:      E0 -> T1 -> T2 -> L3
+	 *			 E4 -> T5 ---^ E6 -^
+	 */
+	@Test
+	public void testDebugNodeInComplexGraph() {
+		
+		PipelineGraph graph = buildGraph(7);
+		graph.addEdge(nodes[0], nodes[1]);
+		graph.addEdge(nodes[1], nodes[2]);
+		graph.addEdge(nodes[2], nodes[3]);
+		graph.addEdge(nodes[4], nodes[5]);
+		graph.addEdge(nodes[5], nodes[1]);
+		graph.addEdge(nodes[6], nodes[2]);
+
+		DependencyGraph dGraph = new DependencyGraph(graph, nodes[1]);
+		GraphIterator iter = dGraph.iterator();
+		
+		Set<Node> nodesToRun = new HashSet<>();
+		nodesToRun.add(nodes[0]);
+		nodesToRun.add(nodes[1]);
+		nodesToRun.add(nodes[4]);
+		nodesToRun.add(nodes[5]);
+		
+		for (int i = 0; i<4; i++) {
+			assertTrue(iter.hasNext());
+			assertTrue(nodesToRun.contains(iter.next()));
+		}
+		
+		assertFalse(iter.hasNext());
+		assertNull(iter.next());
+	}
+	
+	/**
+	 * Pipeline graph helper factory.
+	 * 
+	 * @param size number of nodes in graph
+	 * @return 
+	 */
+	private PipelineGraph buildGraph(int size) {
+
+		PipelineGraph graph = new PipelineGraph();
+		
+		nodes = new Node[size];
+		for (int i = 0; i<size; i++) {
+			Node node = new Node();
+			nodes[i] = node;
+			graph.addNode(node);
+		}
+		
+		return graph;
+	}
 }
