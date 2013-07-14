@@ -16,7 +16,7 @@ public class FileExtractorConfig implements Config {
 
 	public String RDFFormatValue;
 	
-	public String PathType;
+	public FileExtractType fileExtractType;
 
 	public boolean OnlyThisSuffix;
 
