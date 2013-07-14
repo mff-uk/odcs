@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
+import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 import org.slf4j.Logger;
@@ -33,17 +34,20 @@ public class FileExtractor implements Extract,
 	@Override
 	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
 
-		RDFDataRepository repository = 
-				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF, "output");
-		
-		final String baseURI = "";
-		final String path=config.Path;
-		final String fileSuffix=config.FileSuffix;
-		final boolean onlyThisSuffix=config.OnlyThisSuffix;
-		final boolean useStatisticHandler=config.UseStatisticalHandler;
+		RDFDataRepository repository =
+				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF,
+				"output");
 
-		repository.extractRDFfromFileToRepository(
-				path, fileSuffix, baseURI, onlyThisSuffix,useStatisticHandler);
+		final String baseURI = "";
+		final FileExtractType extractType = config.fileExtractType;
+		final String path = config.Path;
+		final String fileSuffix = config.FileSuffix;
+		final boolean onlyThisSuffix = config.OnlyThisSuffix;
+		final boolean useStatisticHandler = config.UseStatisticalHandler;
+
+
+		repository.extractRDFfromFileToRepository(extractType,
+				path, fileSuffix, baseURI, onlyThisSuffix, useStatisticHandler);
 	}
 
 	@Override

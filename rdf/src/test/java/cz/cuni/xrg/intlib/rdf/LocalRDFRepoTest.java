@@ -279,7 +279,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_FILE,
+			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
@@ -539,7 +539,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_FILE,
+			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
