@@ -8,13 +8,18 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord</class>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord</class>
-		<class>cz.cuni.xrg.intlib.commons.app.execution.Record</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.LogMessage</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.ProcessingUnitInfo</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.Record</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position</class>
+		<class>cz.cuni.xrg.intlib.commons.app.scheduling.Schedule</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 
