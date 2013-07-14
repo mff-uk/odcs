@@ -150,7 +150,15 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
 
-		textFieldPath.setValue(conf.Path);
+		if (extractType == FileExtractType.UPLOAD_FILE) {
+
+			textFieldPath.setReadOnly(false); // allow value settings
+			textFieldPath.setValue(conf.Path); // set value
+			textFieldPath.setReadOnly(true); // forbid
+
+		} else {
+			textFieldPath.setValue(conf.Path);
+		}
 
 		if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
 			textFieldOnly.setValue(conf.FileSuffix);
