@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.rdf;
 
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import java.io.File;
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_FILE,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());

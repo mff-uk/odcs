@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
@@ -42,6 +43,8 @@ public interface RDFDataRepository extends DataUnit {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
+	 * @param extractType         One of defined enum type for extraction data
+	 *                            from file.
 	 * @param path                String path to file/directory
 	 * @param suffix              String suffix of fileName (example: ".ttl",
 	 *                            ".xml", etc)
@@ -53,7 +56,8 @@ public interface RDFDataRepository extends DataUnit {
 	 *                            detailed log or not.
 	 * @throws ExtractException when extraction fail.
 	 */
-	public void extractRDFfromFileToRepository(String path, String suffix,
+	public void extractRDFfromFileToRepository(FileExtractType extractType,
+			String path, String suffix,
 			String baseURI,
 			boolean useSuffix, boolean useStatisticHandler) throws ExtractException;
 
@@ -186,7 +190,8 @@ public interface RDFDataRepository extends DataUnit {
 	 */
 	public void extractfromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
-			String query, String hostName, String password,boolean useStatisticHandler) throws ExtractException;
+			String query, String hostName, String password,
+			boolean useStatisticHandler) throws ExtractException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
