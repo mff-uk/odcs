@@ -126,9 +126,9 @@ class DPU extends ViewComponent {
 	//	buttonBar.setWidth("100%");
 
 		Button buttonCreateDPU = new Button();
-		buttonCreateDPU.setCaption("Create DPU");
+		buttonCreateDPU.setCaption("Create DPU template");
 		buttonCreateDPU.setHeight("25px");
-		buttonCreateDPU.setWidth("100px");
+		buttonCreateDPU.setWidth("150px");
 		buttonCreateDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -151,9 +151,9 @@ class DPU extends ViewComponent {
 		buttonBar.addComponent(buttonCreateDPU);
 
 		Button buttonImportDPU = new Button();
-		buttonImportDPU.setCaption("Import DPU");
+		buttonImportDPU.setCaption("Import DPU template");
 		buttonImportDPU.setHeight("25px");
-		buttonImportDPU.setWidth("100px");
+		buttonImportDPU.setWidth("150px");
 		buttonImportDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -167,7 +167,7 @@ class DPU extends ViewComponent {
 		Button buttonExportAll = new Button();
 		buttonExportAll.setCaption("Export All");
 		buttonExportAll.setHeight("25px");
-		buttonExportAll.setWidth("100px");
+		buttonExportAll.setWidth("150px");
 		buttonExportAll
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -288,14 +288,14 @@ class DPU extends ViewComponent {
 
 		tabSheet = new TabSheet();
 		verticalLayoutData = buildVerticalLayoutData();
-		Tab dataTab = tabSheet.addTab(verticalLayoutData, "Data");
+		Tab dataTab = tabSheet.addTab(verticalLayoutData, "General");
 
 		verticalLayoutConfigure = new VerticalLayout();
 		verticalLayoutConfigure.setImmediate(false);
 		verticalLayoutConfigure.setWidth("100.0%");
 		verticalLayoutConfigure.setHeight("100%");
 		verticalLayoutConfigure.setMargin(true);
-		tabSheet.addTab(verticalLayoutConfigure, "Configure");
+		tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
 		tabSheet.setSelectedTab(dataTab);
 
 		tabSheet.setWidth(600, Unit.PIXELS);
@@ -474,7 +474,7 @@ class DPU extends ViewComponent {
 		buttonDpuBar.setSpacing(false);
 
 		Button buttonCopyDPU = new Button();
-		buttonCopyDPU.setCaption("Copy DPU");
+		buttonCopyDPU.setCaption("Copy");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
 		buttonCopyDPU
@@ -490,7 +490,7 @@ class DPU extends ViewComponent {
 				.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
 
 		Button buttonDeleteDPU = new Button();
-		buttonDeleteDPU.setCaption("Delete DPU");
+		buttonDeleteDPU.setCaption("Delete");
 		buttonDeleteDPU.setHeight("25px");
 		buttonDeleteDPU.setWidth("100px");
 		buttonDeleteDPU
@@ -570,7 +570,7 @@ class DPU extends ViewComponent {
 				Alignment.BOTTOM_LEFT);
 
 		Button buttonExportDPU = new Button();
-		buttonExportDPU.setCaption("Export DPU");
+		buttonExportDPU.setCaption("Export");
 		buttonExportDPU.setHeight("25px");
 		buttonExportDPU.setWidth("100px");
 		buttonExportDPU

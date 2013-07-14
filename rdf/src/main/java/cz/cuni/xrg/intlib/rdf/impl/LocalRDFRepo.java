@@ -5,6 +5,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
@@ -293,6 +294,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
+	 * @param extractType         One of defined enum type for extraction data
+	 *                            from file.
 	 * @param path                String path to file/directory
 	 * @param suffix              String suffix of fileName (example: ".ttl",
 	 *                            ".xml", etc)
@@ -304,7 +307,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws ExtractException when extraction fail.
 	 */
 	@Override
-	public void extractRDFfromFileToRepository(String path, String suffix,
+	public void extractRDFfromFileToRepository(FileExtractType extractType,
+			String path, String suffix,
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws ExtractException {
 
@@ -325,19 +329,31 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		File dirFile = new File(path);
 
-		if (path.toLowerCase().startsWith("http")) {
-
-			extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
-		} else if (dirFile.isDirectory()) {
-			File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
-			addFilesInDirectoryToRepository(files, baseURI, useStatisticHandler,
-					graph);
-
-		} else if (dirFile.isFile()) {
-			addFileToRepository(dirFile, baseURI, useStatisticHandler, graph);
-		} else {
-			throw new ExtractException(
-					"Path to file \"" + path + "\"doesnt exist");
+		switch (extractType) {
+			case HTTP_URL:
+				extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
+				break;
+			case PATH_TO_DIRECTORY:
+				if (dirFile.isDirectory()) {
+					File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
+					addFilesInDirectoryToRepository(files, baseURI,
+							useStatisticHandler,
+							graph);
+				} else {
+					throw new ExtractException(
+							"Path to directory \"" + path + "\" doesnt exist");
+				}
+				break;
+			case PATH_TO_FILE:
+			case UPLOAD_FILE:
+				if (dirFile.isFile()) {
+					addFileToRepository(dirFile, baseURI, useStatisticHandler,
+							graph);
+				} else {
+					throw new ExtractException(
+							"Path to file \"" + path + "\"doesnt exist");
+				}
+				break;
 		}
 
 	}
@@ -1627,7 +1643,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	private File getFileForDirectory(File directory) {
-		
+
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
@@ -1650,7 +1666,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				RDFFormat.RDFXML);
 
 		logger.debug("saving to directory:" + directory.getAbsolutePath());
-		
+
 		try {
 			loadRDFfromRepositoryToFile(directory.getAbsolutePath(), file
 					.getName(),
@@ -1679,7 +1695,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		final boolean useStatisticHandler = true;
 
 		try {
-			extractRDFfromFileToRepository(file.getAbsolutePath(), suffix,
+			extractRDFfromFileToRepository(FileExtractType.PATH_TO_FILE,
+					file.getAbsolutePath(), suffix,
 					baseURI,
 					useSuffix, useStatisticHandler);
 

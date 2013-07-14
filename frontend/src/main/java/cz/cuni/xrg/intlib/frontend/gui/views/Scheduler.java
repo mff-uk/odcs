@@ -447,9 +447,24 @@ class Scheduler extends ViewComponent {
 				}
 			} else {
 				
-	
+				 Set<Pipeline> after = item.getAfterPipelines();
+				 String afterPipelines = "";
+				 after.size();
+				 int i = 0;
+				  for (Pipeline afteritem : after){
+					  i++;
+					  if(i < after.size())
+						  afterPipelines = afterPipelines + afteritem.getName() + ", ";
+					  else
+						  afterPipelines = afterPipelines + afteritem.getName() + ". ";
+				  }
+				 if(after.size()>1){
+					 result.getContainerProperty(num,
+							 "rule").setValue("Run after pipelines: " + afterPipelines);
+				 }
+				 else
 				 result.getContainerProperty(num,
-				 "rule").setValue("Run after pipeline(s) " );
+				 "rule").setValue("Run after pipeline: " + afterPipelines);
 			}
 
 			result.getContainerProperty(num, "schid").setValue(item.getId());

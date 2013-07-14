@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -149,7 +150,15 @@ public class SchedulePipeline extends Window {
 			
 		}
 		else{
-	//		selectedSchedule.getAfterPipelines();
+			Set<Pipeline> after = selectedSchedule.getAfterPipelines();
+			List<String> afterNames = new ArrayList<String>();
+			  for (Pipeline afteritem : after){
+				  afterNames.add(afteritem.getName());
+			  }
+			
+			
+			selectPipe.setValue(afterNames);
+			
 		}
 		
 		selectSch = selectedSchedule;

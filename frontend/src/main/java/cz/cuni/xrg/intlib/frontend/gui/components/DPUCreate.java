@@ -86,7 +86,7 @@ public class DPUCreate extends Window {
 
 		this.setResizable(false);
 		this.setModal(true);
-		this.setCaption("DPU Creation");
+		this.setCaption("DPU Template Creation");
 		
 
 		VerticalLayout mainLayout = new VerticalLayout();
