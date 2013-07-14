@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -298,11 +299,36 @@ public class DPUCreate extends Window {
 							// error, just exit
 							System.exit(0);
 						}
+						
 					} else {
-						Notification.show(
-								"File " + LineBreakCounter.fName +" already exist",
-								Notification.Type.ERROR_MESSAGE);
-						return;
+						
+						List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
+						String dpuName ="";
+						for (DPUTemplateRecord dpu : dpus){
+							if(dpu.getJarPath().equals(LineBreakCounter.fName)){
+								dpuName = dpu.getName();
+								break;
+							}			
+						}
+						
+						if (dpuName!=""){
+							
+							Notification.show(
+									"File " + LineBreakCounter.fName +" is already used in the DPU template " + dpuName,
+									Notification.Type.ERROR_MESSAGE);
+							return;
+						}
+						else{
+							try {
+								copyFile(srcFile, destFile);
+							} catch (IOException e) {
+								e.printStackTrace();
+								// error, just exit
+								System.exit(0);
+							}
+							
+						}
+
 
 					}
 
