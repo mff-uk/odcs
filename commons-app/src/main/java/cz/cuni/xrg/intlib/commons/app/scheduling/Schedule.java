@@ -101,7 +101,7 @@ public class Schedule implements Serializable {
 	 * Pipeline after which this job is supposed to run. Applicable only if
 	 * {@link #type} is {@link ScheduleType#AFTER_PIPELINE}.
 	 */
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "exec_schedule_after",
 			joinColumns =
 			@JoinColumn(name = "schedule_id", referencedColumnName = "id"),

@@ -157,7 +157,7 @@ public class LogFacade {
 	 */
 	public Set<Level> getLevels(Level level) {
 		Set<Level> levels = new HashSet<>();
-		List<Level> allLevels = getAllLevels(true);
+		LinkedHashSet<Level> allLevels = getAllLevels(true);
 		for (Level l : allLevels) {
 			if (l.isGreaterOrEqual(level)) {
 				levels.add(l);
@@ -170,11 +170,11 @@ public class LogFacade {
 	 * Returns all levels of log massages, ordered by priority.
 	 * 
 	 * @param includeAggregates True for including Level.ALL and Level.OFF in result, false otherwise
-	 * @return List of all {@link Level}s for log messages, ordered by priority.
+	 * @return LinkedHashSet of all {@link Level}s for log messages, ordered by priority.
 	 */
-	public List<Level> getAllLevels(boolean includeAggregates) {
+	public LinkedHashSet<Level> getAllLevels(boolean includeAggregates) {
 
-		List<Level> levels = new ArrayList<>(8);
+		LinkedHashSet<Level> levels = new LinkedHashSet<>(8);
 		if (includeAggregates) {
 			levels.add(Level.ALL);
 			levels.add(Level.OFF);
