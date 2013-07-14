@@ -518,7 +518,7 @@ class DPU extends ViewComponent {
 
 									for (Node nitem : nodes) {
 
-										if (nitem.getDpuInstance().getTemplate().getId() == item.getId()) {
+										if (nitem.getDpuInstance().getTemplate().getId() == item.getTemplate().getId()) {
 											pipeName[j] = pitem.getName()
 													.toString();
 											j++;
@@ -663,7 +663,7 @@ class DPU extends ViewComponent {
 
 					for (Node nitem : nodes) {
 
-						if (nitem.getDpuInstance().getTemplate().getId() == item.getId()) {
+						if (nitem.getDpuInstance().getTemplate().getId() == item.getTemplate().getId()) {
 							
 							Object num = result.addItem();
 							
