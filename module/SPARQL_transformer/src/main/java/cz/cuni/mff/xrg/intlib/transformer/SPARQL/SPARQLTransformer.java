@@ -4,7 +4,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries.InputHelper;
+import cz.cuni.xrg.intlib.commons.module.data.InputHelper;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;

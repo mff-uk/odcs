@@ -5,7 +5,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries.InputHelper;
+//import cz.cuni.xrg.intlib.commons.module.data.InputHelper;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
@@ -35,9 +35,11 @@ public class FileLoader implements Load,
 	public void load(LoadContext context) throws LoadException {
 
 		// get input repository
-		RDFDataRepository repository = 
-				InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
+		//RDFDataRepository repository = 
+		//		InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
 
+		RDFDataRepository repository = (RDFDataRepository) context.getInputs().get(0); 
+		
 		String directoryPath = config.DirectoryPath;
 		String fileName = config.FileName;
 

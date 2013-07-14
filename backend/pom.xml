@@ -1,140 +1,130 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>cz.cuni.xrg.intlib</groupId>
-        <artifactId>intlib</artifactId>
-        <version>0.0.1</version>
-    </parent>	
-    <artifactId>backend</artifactId>
-    <packaging>jar</packaging>
-    <name>backend</name>
-    <description></description>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cz.cuni.xrg.intlib</groupId>
+		<artifactId>intlib</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<artifactId>backend</artifactId>
+	<packaging>jar</packaging>
+	<name>backend</name>
+	<description></description>
 
-   <dependencies>
-        <dependency> <!--  JUnit dependency -->
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>	
-	
-        <dependency> <!-- commons project -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>commons</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>	
-	
-        <dependency> <!-- commons-app project -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>commons-app</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
-		
+	<dependencies>
+		<dependency> <!-- JUnit dependency -->
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency> <!-- commons project -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>commons</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency> <!-- commons-app project -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>commons-app</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+
 		<dependency> <!-- RDF project -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>RDF</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
-		
-        <dependency> <!-- apache.commons : parse cmd. args -->
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>1.2</version>
-            <type>jar</type>
-        </dependency>
-        
+			<groupId>${project.groupId}</groupId>
+			<artifactId>RDF</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency> <!-- apache.commons : parse cmd. args -->
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+			<type>jar</type>
+		</dependency>
+
 		<dependency> <!-- because of wrong version used by Apache-fuseki -->
-   			<groupId>xml-apis</groupId>
-   			<artifactId>xml-apis</artifactId>
-  			<version>1.4.01</version>
-		</dependency>        
-        
-    </dependencies>
-		
-    <pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-        </pluginRepository>
-    </pluginRepositories>		
-		
-    <build>	
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <!-- nothing here -->
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>cz.cuni.xrg.intlib.backend.AppEntry</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>				
-            </plugin>
-			
-            <plugin>
-                <groupId>org.dstovall</groupId>
-                <artifactId>onejar-maven-plugin</artifactId>
-                <version>1.4.4</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <!-- Optional -->
-                            <onejarVersion>0.97</onejarVersion>
-                            <!-- Optional, default is false -->
-                            <attachToBuild>true</attachToBuild>
-                            <!-- Optional, default is "onejar" -->
-                            <classifier>onejar</classifier>
-                        </configuration>
-                        <goals>
-                            <goal>one-jar</goal>                            
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-			
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>1.4.01</version>
+		</dependency>
+
+	</dependencies>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>onejar-maven-plugin.googlecode.com</id>
+			<url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>cz.cuni.xrg.intlib.backend.AppEntry</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
-            
-            <!--
-           <plugin>
-                   <groupId>org.apache.maven.plugins</groupId>
-                   <artifactId>maven-assembly-plugin</artifactId>
-                   <version>2.4</version>
-                   <configuration>
-                   <archive>
-                       <manifest>
-                           <addClasspath>true</addClasspath>
-                           <mainClass>cz.cuni.xrg.intlib.backend.AppEntry</mainClass>
-                           </manifest>
-                   </archive>  				
-                   <descriptorRefs>
-                           <descriptorRef>jar-with-dependencies</descriptorRef>
-                   </descriptorRefs>    				
-                   </configuration>
-                   <executions>
-                       <execution>
-                         <id>make-assembly</id>
-                         <goals>
-                           <goal>single</goal>
-                         </goals>
-                       </execution>
-                     </executions>
-           </plugin>
-            -->
-        </plugins>
+
+		</plugins>
 	</build>
-		
+
+	<profiles>
+		<!-- use maven property backend-onejar=true to create stand-alone jar file for backend -->
+		<profile>
+			<id>one-jar-build</id>
+			<activation>
+				<property>
+					<name>backend-onejar</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.dstovall</groupId>
+						<artifactId>onejar-maven-plugin</artifactId>
+						<version>1.4.4</version>
+						<executions>
+							<execution>
+								<configuration>
+									<!-- Optional -->
+									<onejarVersion>0.97</onejarVersion>
+									<!-- Optional, default is false -->
+									<attachToBuild>true</attachToBuild>
+									<!-- Optional, default is "onejar" -->
+									<classifier>onejar</classifier>
+								</configuration>
+								<goals>
+									<goal>one-jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>

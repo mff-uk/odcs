@@ -101,14 +101,7 @@
                                     <artifactId>com.springsource.javax.servlet</artifactId>
                                     <version>2.4.0</version>
                                 </dependency>
-								
-								<dependency> <!-- RDF data unit -->
-									<groupId>cz.cuni.xrg.intlib</groupId>
-									<artifactId>RDF</artifactId>
-									<version>${project.version}</version>
-									<type>jar</type>
-								</dependency>
-								
+																
                             </artifactItems>
                         </configuration>
                     </execution>

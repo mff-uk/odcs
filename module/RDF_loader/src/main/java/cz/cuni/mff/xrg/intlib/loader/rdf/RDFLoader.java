@@ -5,7 +5,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries.InputHelper;
+import cz.cuni.xrg.intlib.commons.module.data.InputHelper;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;

@@ -51,7 +51,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- export just packages under cz.cuni.xrg.intlib.commons.web -->
-                       	<Export-Package>cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries;version="${project.version}"</Export-Package>
+                       	<Export-Package>cz.cuni.xrg.intlib.commons.module.*;version="${project.version}"</Export-Package>
                         <!-- import vaadin, commons, web, RDF -->
                         <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}",cz.cuni.xrg.intlib.commons.web.*;version="${project.version}",cz.cuni.xrg.intlib.rdf.*;version="${project.version}"</Import-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>						

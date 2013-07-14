@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries;
+package cz.cuni.xrg.intlib.commons.module.data;
 
 import java.util.List;
 

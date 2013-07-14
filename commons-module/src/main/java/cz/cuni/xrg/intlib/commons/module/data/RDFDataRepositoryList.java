@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.module.dpu.auxiliaries;
+package cz.cuni.xrg.intlib.commons.module.data;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
