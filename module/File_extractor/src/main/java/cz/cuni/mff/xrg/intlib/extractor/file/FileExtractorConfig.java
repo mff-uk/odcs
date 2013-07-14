@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.intlib.extractor.file;
 
+import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 
 /**

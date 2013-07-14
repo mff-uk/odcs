@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.intlib.extractor.file;
+package cz.cuni.xrg.intlib.rdf.enums;
 
 import java.util.HashMap;
 import java.util.Map;

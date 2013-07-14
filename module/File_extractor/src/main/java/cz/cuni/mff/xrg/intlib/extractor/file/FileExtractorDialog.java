@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.intlib.extractor.file;
 
+import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,7 +23,7 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.Upload.SucceededEvent;
 
-import static cz.cuni.mff.xrg.intlib.extractor.file.FileExtractType.*;
+import static cz.cuni.xrg.intlib.rdf.enums.FileExtractType.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
