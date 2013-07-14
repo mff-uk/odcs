@@ -157,6 +157,7 @@ public class DPUCreate extends Window {
 		groupVisibility.addStyleName("horizontalgroup");
 		groupVisibility.addItem(VisibilityType.PRIVATE);
 		groupVisibility.addItem(VisibilityType.PUBLIC);
+		groupVisibility.setValue(VisibilityType.PUBLIC);
 
 		dpuGeneralSettingsLayout.addComponent(groupVisibility, 1, 2);
 
