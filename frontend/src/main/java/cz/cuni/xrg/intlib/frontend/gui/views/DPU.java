@@ -281,27 +281,25 @@ class DPU extends ViewComponent {
 		dpuDetailLayout = new VerticalLayout();
 		dpuDetailLayout.setImmediate(true);
 		dpuDetailLayout.setStyleName("dpuDetailLayout");
-		dpuDetailLayout.setWidth("100.0%");
-		dpuDetailLayout.setHeight("100%");
+	//	dpuDetailLayout.setWidth("100.0%");
+	//	dpuDetailLayout.setHeight("100%");
 	//	dpuDetailLayout.setHeight(630, Unit.PIXELS);
 		dpuDetailLayout.setMargin(true);
 
 		tabSheet = new TabSheet();
+		tabSheet.setWidth(630, Unit.PIXELS);
+		tabSheet.setHeight(350, Unit.PIXELS);
+
 		verticalLayoutData = buildVerticalLayoutData();
 		Tab dataTab = tabSheet.addTab(verticalLayoutData, "General");
 
 		verticalLayoutConfigure = new VerticalLayout();
 		verticalLayoutConfigure.setImmediate(false);
-		verticalLayoutConfigure.setWidth("100.0%");
-		verticalLayoutConfigure.setHeight("100%");
+//		verticalLayoutConfigure.setWidth("100.0%");
+//		verticalLayoutConfigure.setHeight("100%");
 		verticalLayoutConfigure.setMargin(true);
 		tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
 		tabSheet.setSelectedTab(dataTab);
-
-		tabSheet.setWidth(600, Unit.PIXELS);
-		tabSheet.setHeight("100.0%");
-
-		dpuDetailLayout.addComponent(tabSheet);
 
 		if (selectedDpuWrap != null) {
 			AbstractConfigDialog<Config> configDialog = null;
@@ -338,7 +336,7 @@ class DPU extends ViewComponent {
 		verticalLayoutInstances = buildVerticalLayoutInstances();
 		tabSheet.addTab(verticalLayoutInstances, "DPU instances");
 
-		
+		dpuDetailLayout.addComponent(tabSheet);
 		buttonDpuBar = buildDPUButtonBur();
 		dpuDetailLayout.addComponent(buttonDpuBar);
 
@@ -359,6 +357,7 @@ class DPU extends ViewComponent {
 		dpuSettingsLayout.setMargin(true);
 		dpuSettingsLayout.setSpacing(true);
 		dpuSettingsLayout.setWidth("100%");
+		dpuSettingsLayout.setHeight("100%");
 		dpuSettingsLayout.setColumnExpandRatio(0, 0.10f);
 		dpuSettingsLayout.setColumnExpandRatio(1, 0.90f);
 
@@ -440,7 +439,7 @@ class DPU extends ViewComponent {
 		verticalLayoutInstances = new VerticalLayout();
 		verticalLayoutInstances.setImmediate(false);
 		verticalLayoutInstances.setWidth("100.0%");
-		verticalLayoutInstances.setHeight("400px");
+//		verticalLayoutInstances.setHeight("300px");
 		verticalLayoutInstances.setMargin(true);
 		
 		tableData = getTableData();
@@ -451,7 +450,7 @@ class DPU extends ViewComponent {
 		instancesTable.setContainerDataSource(tableData);
 		
 		instancesTable.setWidth("100%");
-		instancesTable.setHeight("100%");
+//		instancesTable.setHeight("200%");
 		instancesTable.setImmediate(true);
 		instancesTable.setVisibleColumns(visibleCols); // Set visible columns
 		instancesTable.setColumnHeaders(headers);
@@ -461,7 +460,7 @@ class DPU extends ViewComponent {
 		
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());
-		instancesTable.setPageLength(8);
+		instancesTable.setPageLength(6);
 
 	return verticalLayoutInstances;
 }
@@ -519,7 +518,7 @@ class DPU extends ViewComponent {
 
 									for (Node nitem : nodes) {
 
-										if (nitem.getDpuInstance().getId() == item.getId()) {
+										if (nitem.getDpuInstance().getTemplate().getId() == item.getId()) {
 											pipeName[j] = pitem.getName()
 													.toString();
 											j++;
@@ -664,7 +663,7 @@ class DPU extends ViewComponent {
 
 					for (Node nitem : nodes) {
 
-						if (nitem.getDpuInstance().getId() == item.getId()) {
+						if (nitem.getDpuInstance().getTemplate().getId() == item.getId()) {
 							
 							Object num = result.addItem();
 							
