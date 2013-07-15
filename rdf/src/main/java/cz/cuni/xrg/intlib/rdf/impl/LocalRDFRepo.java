@@ -1524,7 +1524,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				if (targetConnection != null) {
 
 					for (Statement nextStatement : sourceStatemens) {
-						targetConnection.add(nextStatement);
+
+						if (graph != null) {
+							targetConnection.add(nextStatement, graph);
+						} else {
+							targetConnection.add(nextStatement);
+						}
 					}
 				}
 			}
@@ -1573,9 +1578,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				List<Statement> sourceStatemens = this.getRepositoryStatements();
 
 				targetConnection = targetRepository.getConnection();
+				
+				Resource targetGraph = targetRepo.getDataGraph();
 
 				for (Statement nextStatement : sourceStatemens) {
-					targetConnection.add(nextStatement);
+					if (targetGraph != null) {
+						targetConnection.add(nextStatement, targetGraph);
+					} else {
+						targetConnection.add(nextStatement);
+					}
 				}
 
 			}
@@ -1971,5 +1982,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	@Override
 	public void save() throws Exception {
 		save(WorkingRepoDirectory);
+	}
+
+	@Override
+	public Resource getDataGraph() {
+		return graph;
 	}
 }

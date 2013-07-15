@@ -116,14 +116,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	/**
-	 *
-	 * @return defaultGraphURI
-	 */
-	public Resource getGraph() {
-		return graph;
-	}
-
-	/**
 	 * Set new graph as default for working data in RDF format.
 	 *
 	 * @param defaultGraph String name of graph as URI - starts with prefix
