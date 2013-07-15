@@ -6,8 +6,8 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Page;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -40,6 +40,7 @@ import java.util.EventObject;
  */
 class PipelineEdit extends ViewComponent {
 
+	private View incomingView = null;
 	private VerticalLayout mainLayout;
 	private Label label;
 	private TextField pipelineName;
@@ -90,11 +91,11 @@ class PipelineEdit extends ViewComponent {
 		CssLayout layout = new CssLayout() {
 			@Override
 			protected String getCss(Component c) {
-				if(c instanceof TabSheet) {
+				if (c instanceof TabSheet) {
 					return "margin-left: 260px;";
-				} else if(c instanceof VerticalLayout) {
+				} else if (c instanceof VerticalLayout) {
 					return "position: fixed; left: 1px; top: 256px";
-				} else if(c instanceof HorizontalLayout) {
+				} else if (c instanceof HorizontalLayout) {
 					return "position: fixed; bottom: 18px; right: 18px; height: 30px; width: 100%; background: #eee; padding: 10px";
 				}
 				return null;
@@ -109,8 +110,8 @@ class PipelineEdit extends ViewComponent {
 		pc.addListener(new DetailClosedListener() {
 			@Override
 			public void detailClosed(EventObject e) {
-				Class klass = (Class)e.getSource();
-				if(klass == Node.class) {
+				Class klass = (Class) e.getSource();
+				if (klass == Node.class) {
 					dpuTree.refresh();
 					dpuTree.markAsDirty();
 					App.getApp().push();
@@ -132,7 +133,7 @@ class PipelineEdit extends ViewComponent {
 			public void componentEvent(Event event) {
 			}
 		});
-		
+
 		dadWrapper = new DragAndDropWrapper(pc);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
 		dadWrapper.setWidth(1060, Unit.PIXELS);
@@ -210,7 +211,7 @@ class PipelineEdit extends ViewComponent {
 		left.addComponent(undo);
 
 		layout.addComponentAsFirst(left);
-		
+
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidth("100%");
@@ -263,7 +264,7 @@ class PipelineEdit extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
 				if (savePipeline()) {
-					App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
+					closeView();
 				}
 			}
 		});
@@ -274,7 +275,7 @@ class PipelineEdit extends ViewComponent {
 		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
+				closeView();
 			}
 		});
 		buttonBar.addComponent(buttonCancel);
@@ -282,11 +283,23 @@ class PipelineEdit extends ViewComponent {
 		buttonBar.setSpacing(true);
 		layout.addComponent(buttonBar);
 		mainLayout.addComponent(layout);
-		
+
 		Position bounds = pc.zoom(true);
 		calculateCanvasDimensions(bounds);
 
 		return mainLayout;
+	}
+
+	/**
+	 * Closes the view and returns to View which user came from, if any.
+	 * 
+	 */
+	private void closeView() {
+		if(incomingView != null) {
+			App.getApp().getNavigator().getDisplay().showView(incomingView);
+		} else {
+			App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
+		}
 	}
 
 	/**
@@ -501,6 +514,9 @@ class PipelineEdit extends ViewComponent {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
+		if(event.getOldView().getClass() != PipelineEdit.class) {
+			incomingView = event.getOldView();
+		}
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// ..
@@ -576,9 +592,11 @@ class PipelineEdit extends ViewComponent {
 	}
 
 	/**
-	 * Validates fields with requirements on input. Shows errors as notification.
+	 * Validates fields with requirements on input. Shows errors as
+	 * notification.
+	 *
 	 * @return validation result
-	 * 
+	 *
 	 */
 	private boolean validate() {
 		try {
