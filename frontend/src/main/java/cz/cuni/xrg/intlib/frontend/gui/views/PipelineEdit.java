@@ -514,7 +514,7 @@ class PipelineEdit extends ViewComponent {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		if(event.getOldView().getClass() != PipelineEdit.class) {
+		if(event.getOldView() != null && event.getOldView().getClass() != PipelineEdit.class) {
 			incomingView = event.getOldView();
 		}
 		buildMainLayout();

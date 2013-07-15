@@ -224,6 +224,7 @@ public class DPUDetail extends Window {
 		if (saveDPUInstance()) {
 			DPUTemplateRecord newDPU = App.getDPUs().creatTemplateFromInstance(
 					dpuInstance.getDPUInstanceRecord());
+			dpuInstance.getDPUInstanceRecord().setTemplate(newDPU);
 			App.getDPUs().save(newDPU);
 			return true;
 		}
