@@ -9,6 +9,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -47,6 +48,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * @author Maria Kukhar
@@ -497,69 +499,19 @@ class DPU extends ViewComponent {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-
-						List<DPUInstanceRecord> instances = App.getDPUs()
-								.getAllDPUInstances();
-						List<Pipeline> pipelines = App.getApp().getPipelines()
-								.getAllPipelines();
-
-						int fl = 0, i = 0;
-						int j = 0;
-						String[] pipeName = new String[100];
-						for (DPUInstanceRecord item : instances) {
-
-							if (item.getTemplate().getId() == selectedDpuWrap.getDPUTemplateRecord().getId()) {
-								fl = 1;
-
-								for (Pipeline pitem : pipelines) {
-
-									Set<Node> nodes = pitem.getGraph()
-											.getNodes();
-
-									for (Node nitem : nodes) {
-
-										if (nitem.getDpuInstance().getTemplate().getId() == item.getTemplate().getId()) {
-											pipeName[j] = pitem.getName()
-													.toString();
-											j++;
-										}
-									}
-
+						ConfirmDialog.show(UI.getCurrent(),
+								"Delete this DPU template?",
+								new ConfirmDialog.Listener() {
+							@Override
+							public void onClose(ConfirmDialog cd) {
+								if (cd.isConfirmed()) {
+									deleteDPU();
+									
 								}
-								break;
 							}
+						});
 
-						}
-						if (fl == 0) {
 
-							App.getApp().getDPUs().delete(selectedDpuWrap.getDPUTemplateRecord());
-							dpuTree.refresh();
-							dpuDetailLayout.removeAllComponents();
-							Notification.show("DPURecord was removed",
-									Notification.Type.HUMANIZED_MESSAGE);
-						} else {
-							String names = "";
-
-							for (i = 0; i < j; i++) {
-								if (i != j - 1)
-									names = names + " " + pipeName[i] + ",";
-								else
-									names = names + " " + pipeName[i] + ".";
-
-							}
-
-							if (j > 1)
-								Notification
-										.show("DPURecord can not be removed because it has been used in Pipelines: ",
-												names,
-												Notification.Type.WARNING_MESSAGE);
-							else
-								Notification
-										.show("DPURecord can not be removed because it has been used in Pipeline: ",
-												names,
-												Notification.Type.WARNING_MESSAGE);
-
-						}
 
 					}
 				});
@@ -684,6 +636,72 @@ class DPU extends ViewComponent {
 
 		return result;
 	}
+	
+	public void deleteDPU() {
+		List<DPUInstanceRecord> instances = App.getDPUs()
+				.getAllDPUInstances();
+		List<Pipeline> pipelines = App.getApp().getPipelines()
+				.getAllPipelines();
+
+		int fl = 0, i = 0;
+		int j = 0;
+		String[] pipeName = new String[pipelines.size()];
+		for (DPUInstanceRecord item : instances) {
+
+			if (item.getTemplate().getId() == selectedDpuWrap.getDPUTemplateRecord().getId()) {
+				fl = 1;
+
+				for (Pipeline pitem : pipelines) {
+
+					Set<Node> nodes = pitem.getGraph()
+							.getNodes();
+
+					for (Node nitem : nodes) {
+
+						if (nitem.getDpuInstance().getTemplate().getId() == item.getTemplate().getId()) {
+							pipeName[j] = pitem.getName()
+									.toString();
+							j++;
+						}
+					}
+
+				}
+				break;
+			}
+
+		}
+		if (fl == 0) {
+
+			App.getApp().getDPUs().delete(selectedDpuWrap.getDPUTemplateRecord());
+			dpuTree.refresh();
+			dpuDetailLayout.removeAllComponents();
+			Notification.show("DPURecord was removed",
+					Notification.Type.HUMANIZED_MESSAGE);
+		} else {
+			String names = "";
+
+			for (i = 0; i < j; i++) {
+				if (i != j - 1)
+					names = names + " " + pipeName[i] + ",";
+				else
+					names = names + " " + pipeName[i] + ".";
+
+			}
+
+			if (j > 1)
+				Notification
+						.show("DPURecord can not be removed because it has been used in Pipelines: ",
+								names,
+								Notification.Type.WARNING_MESSAGE);
+			else
+				Notification
+						.show("DPURecord can not be removed because it has been used in Pipeline: ",
+								names,
+								Notification.Type.WARNING_MESSAGE);
+
+		}
+	}
+	
 
 	@Override
 	public void enter(ViewChangeEvent event) {
