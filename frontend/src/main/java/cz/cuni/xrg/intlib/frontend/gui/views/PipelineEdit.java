@@ -20,7 +20,6 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -88,8 +87,20 @@ class PipelineEdit extends ViewComponent {
 		GridLayout pipelineSettingsLayout = buildPipelineSettingsLayout();
 		mainLayout.addComponent(pipelineSettingsLayout);
 
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setMargin(true);
+		CssLayout layout = new CssLayout() {
+			@Override
+			protected String getCss(Component c) {
+				if(c instanceof TabSheet) {
+					return "margin-left: 260px;";
+				} else if(c instanceof VerticalLayout) {
+					return "position: fixed; left: 1px; top: 256px";
+				} else if(c instanceof HorizontalLayout) {
+					return "position: fixed; bottom: 18px; right: 18px; height: 30px; width: 100%; background: #eee; padding: 10px";
+				}
+				return null;
+			}
+		};
+		//layout.setMargin(true);
 		pc = new PipelineCanvas();
 		pc.setImmediate(true);
 		pc.setWidth(1060, Unit.PIXELS);
@@ -121,9 +132,7 @@ class PipelineEdit extends ViewComponent {
 			public void componentEvent(Event event) {
 			}
 		});
-
-		pc.zoom(true);
-
+		
 		dadWrapper = new DragAndDropWrapper(pc);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
 		dadWrapper.setWidth(1060, Unit.PIXELS);
@@ -201,13 +210,14 @@ class PipelineEdit extends ViewComponent {
 		left.addComponent(undo);
 
 		layout.addComponentAsFirst(left);
-		mainLayout.addComponent(layout);
+		
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidth("100%");
 		Label labelFiller = new Label(" ");
 		//labelFiller.setWidth("100%");
 		buttonBar.addComponent(labelFiller);
+		buttonBar.setExpandRatio(labelFiller, 1.0f);
 
 
 		Button buttonRevert = new Button("Revert to last commit");
@@ -270,7 +280,11 @@ class PipelineEdit extends ViewComponent {
 		buttonBar.addComponent(buttonCancel);
 
 		buttonBar.setSpacing(true);
-		mainLayout.addComponent(buttonBar);
+		layout.addComponent(buttonBar);
+		mainLayout.addComponent(layout);
+		
+		Position bounds = pc.zoom(true);
+		calculateCanvasDimensions(bounds);
 
 		return mainLayout;
 	}
@@ -311,6 +325,7 @@ class PipelineEdit extends ViewComponent {
 	private GridLayout buildPipelineSettingsLayout() throws OverlapsException, OutOfBoundsException {
 
 		GridLayout pipelineSettingsLayout = new GridLayout(2, 3);
+		pipelineSettingsLayout.setWidth(600, Unit.PIXELS);
 		Label nameLabel = new Label("Name");
 		nameLabel.setImmediate(false);
 		nameLabel.setWidth("-1px");
@@ -391,7 +406,7 @@ class PipelineEdit extends ViewComponent {
 		pipelineSettingsLayout.setStyleName("pipelineSettingsLayout");
 		pipelineSettingsLayout.setMargin(true);
 		pipelineSettingsLayout.setSpacing(true);
-		pipelineSettingsLayout.setWidth("100%");
+		//pipelineSettingsLayout.setWidth("100%");
 		return pipelineSettingsLayout;
 	}
 
@@ -500,14 +515,14 @@ class PipelineEdit extends ViewComponent {
 
 		//Resizing canvas
 		UI.getCurrent().setImmediate(true);
-		resizeCanvas(UI.getCurrent().getPage().getBrowserWindowWidth());
-		UI.getCurrent().getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
-			@Override
-			public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
-				int width = event.getWidth();
-				resizeCanvas(width);
-			}
-		});
+//		resizeCanvas(UI.getCurrent().getPage().getBrowserWindowWidth());
+//		UI.getCurrent().getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
+//			@Override
+//			public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
+//				int width = event.getWidth();
+//				resizeCanvas(width);
+//			}
+//		});
 
 
 
@@ -535,7 +550,10 @@ class PipelineEdit extends ViewComponent {
 		pc.setWidth(browserWidth, Unit.PIXELS);
 		pc.setHeight(browserHeight, Unit.PIXELS);
 		dadWrapper.setSizeUndefined();
-		tabSheet.markAsDirty();
+		tabSheet.setWidth(browserWidth + 40, Unit.PIXELS);
+		tabSheet.setHeight(browserHeight + 60, Unit.PIXELS);
+		mainLayout.setSizeUndefined();
+		mainLayout.markAsDirty();
 
 		//pc.resizeCanvas(browserHeight, browserWidth);
 		//tabSheet.setWidth(browserWidth + 20, Unit.PIXELS);
@@ -549,12 +567,12 @@ class PipelineEdit extends ViewComponent {
 	 *
 	 */
 	private void resizeCanvas(int width) {
-		if (width > 1350) {
-			int newWidth = 1050 + (width - 1350);
-			pc.setWidth(newWidth, Unit.PIXELS);
-			pc.resizeCanvas(630, newWidth);
-			tabSheet.setWidth(1070 + (width - 1350), Unit.PIXELS);
-		}
+//		if (width > 1350) {
+//			int newWidth = 1050 + (width - 1350);
+//			pc.setWidth(newWidth, Unit.PIXELS);
+//			pc.resizeCanvas(630, newWidth);
+//			tabSheet.setWidth(1070 + (width - 1350), Unit.PIXELS);
+//		}
 	}
 
 	/**

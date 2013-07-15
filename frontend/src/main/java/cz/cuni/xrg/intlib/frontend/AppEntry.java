@@ -80,7 +80,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 		// create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
 		MenuLayout main = new MenuLayout();
-        Panel mainPanel = new Panel(main);
+        Panel mainPanel = new Panel();
+		mainPanel.setContent(main);
 		setContent(mainPanel);
 
         // create a navigator to control the views
