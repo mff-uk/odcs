@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -642,10 +643,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		RepositoryConnection connection = null;
 		try (OutputStreamWriter os = new OutputStreamWriter(
-				new FileOutputStream(dataFile.getAbsoluteFile()), encode)) {
+				new FileOutputStream(dataFile.getAbsoluteFile()), Charset
+				.forName(encode))) {
 
 			RDFWriter writer = Rio.createWriter(format, os);
-
 			connection = repository.getConnection();
 
 			if (graph != null) {
@@ -1209,7 +1210,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				}
 
 				try (InputStreamReader inputStreamReader = new InputStreamReader(
-						httpConnection.getInputStream(), encode)) {
+						httpConnection.getInputStream(), Charset.forName(
+						encode))) {
 
 					if (!useStatisticHandler) {
 						if (graph != null) {
@@ -1578,7 +1580,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				List<Statement> sourceStatemens = this.getRepositoryStatements();
 
 				targetConnection = targetRepository.getConnection();
-				
+
 				Resource targetGraph = targetRepo.getDataGraph();
 
 				for (Statement nextStatement : sourceStatemens) {
