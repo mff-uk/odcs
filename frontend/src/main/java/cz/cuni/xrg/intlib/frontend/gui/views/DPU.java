@@ -39,6 +39,7 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
+import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
@@ -733,8 +734,13 @@ class DPU extends ViewComponent {
 			.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					// open scheduler dialog
-
+					// navigate to PipelineEdit
+					App.getApp()
+							.getNavigator()
+							.navigateTo(
+									ViewNames.PipelineEdit.getUrl()
+											+ "/" + itemId.toString());
+				
 
 					
 
