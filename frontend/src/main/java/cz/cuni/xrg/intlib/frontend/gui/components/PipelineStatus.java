@@ -38,7 +38,10 @@ public class PipelineStatus extends Window {
 //				break;
 			}
 		}
-		lastRunTimeStr = maxDate.toLocaleString();
+		if(maxDate!=null)
+			lastRunTimeStr = maxDate.toLocaleString();
+		else
+			lastRunTimeStr="";
 		lastRunTime.setCaption(lastRunTimeStr);	
 		
 		List<PipelineExecution> executions = App.getApp().getPipelines().getAllExecutions();
