@@ -1,1 +1,0 @@
-Project prepare third party libraries to be used as a libs in OSGi.
