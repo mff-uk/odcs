@@ -32,6 +32,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
@@ -41,8 +42,10 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.xrg.intlib.frontend.gui.components.PipelineStatus;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -78,6 +81,7 @@ class DPU extends ViewComponent {
 	private HorizontalLayout layoutInfo;
 	private IntlibPagedTable instancesTable;
 	private IndexedContainer tableData;
+	private Long pipeId;
 	
 	static String[] visibleCols = new String[]{"id", "name", "description",
 		"author", "actions"};
@@ -116,7 +120,7 @@ class DPU extends ViewComponent {
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
 		mainLayout.setStyleName("mainLayout");
-
+	
 
 		// top-level component properties
 	//	setSizeUndefined();
@@ -596,8 +600,14 @@ class DPU extends ViewComponent {
 		IndexedContainer result = new IndexedContainer();
 
 		for (String p : visibleCols) {
-
+			
+			if (p.equals("id")) {
+				result.addContainerProperty(p, Long.class, null);
+			} else {
 				result.addContainerProperty(p, String.class, "");
+			}
+
+		
 			}
 
 		List<DPUInstanceRecord> instances = App.getDPUs()
@@ -620,7 +630,7 @@ class DPU extends ViewComponent {
 							Object num = result.addItem();
 							
 
-							result.getContainerProperty(num, "id").setValue(pitem.getId().toString());
+							result.getContainerProperty(num, "id").setValue(pitem.getId());
 							result.getContainerProperty(num, "name").setValue(pitem.getName());
 							result.getContainerProperty(num, "description").setValue(pitem.getDescription());
 							result.getContainerProperty(num, "author").setValue("");
@@ -739,6 +749,27 @@ class DPU extends ViewComponent {
 			
 			Button statusButton = new Button();
 			statusButton.setCaption("Status");
+			statusButton.addClickListener(new ClickListener() {
+				
+				@Override
+				public void buttonClick(ClickEvent event) {
+					PipelineStatus pipelineStatus = new PipelineStatus();
+					
+					pipeId = (Long) tableData.getContainerProperty(itemId, "id")
+							.getValue();
+					List<Pipeline> pipelines = App.getApp().getPipelines().getAllPipelines();
+					for(Pipeline item:pipelines)
+						{	if(item.getId().equals(pipeId)){
+							pipelineStatus.setSelectedPipeline(item);	
+							break;
+							}
+						}
+					
+					App.getApp().addWindow(pipelineStatus);
+
+					
+				}
+			});
 			layout.addComponent(statusButton);
 
 			return layout;
