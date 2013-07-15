@@ -58,6 +58,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		dataTable.setHeight("100%");
 		mainLayout.addComponent(dataTable);
 		mainLayout.addComponent(dataTable.createControls());
+		dataTable.setPageLength(20);
 		setCompositionRoot(mainLayout);
 	}
 
@@ -65,8 +66,9 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		dataTable = new IntlibPagedTable();
 		Container container = ContainerFactory.CreateRDFData(data);
 		dataTable.setContainerDataSource(container);
+		
 
-		dataTable.setVisibleColumns(new String[]{"subject", "predicate", "object"});
+		dataTable.setVisibleColumns("subject", "predicate", "object");
 	}
 
 }
