@@ -42,8 +42,8 @@ public class Record implements Serializable {
 	/**
 	 * DPURecord which emitted the message.
 	 */
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "dpu_id", nullable = false)
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "dpu_id", nullable = true)
 	private DPUInstanceRecord dpuInstance;
 
 	/**

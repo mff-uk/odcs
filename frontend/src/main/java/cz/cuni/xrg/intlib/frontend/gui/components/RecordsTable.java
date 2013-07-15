@@ -110,9 +110,7 @@ public class RecordsTable extends CustomComponent {
 			// set columns
 			isInitialized = true;
 		}
-		messageTable.setVisibleColumns(
-					new String[]{"time", "type", "dpuInstance",
-				"shortMessage"});
+		messageTable.setVisibleColumns("time", "type", "dpuInstance", "shortMessage");
 	}
 
 	/**
