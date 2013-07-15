@@ -150,31 +150,7 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Content of text log file
-		logMessagesTable.setDpu(pipelineExec, debugDpu);
-		if (loadSuccessful) {
-// TODO !! List log			
-			/*
-			 File logFile = ctxReader.getLogFile();
-			 String logText = "Log file is empty!";
-			 if (logFile.exists()) {
-			 try {
-			 Scanner scanner = new Scanner(logFile).useDelimiter("\\A");
-			 if (scanner.hasNext()) {
-			 logText = scanner.next();
-			 }
-			 } catch (FileNotFoundException ex) {
-			 Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
-			 logText = "Failed to load log file!";
-			 }
-			 } else {
-			 logText = "Log file doesn't exist!";
-			 }
-			 logTextArea.setValue(logText);
-			 logTab.setEnabled(true);
-			 */
-		} else {
-			//logTab.setEnabled(false);
-		}
+		logMessagesTable.setDpu(pipelineExec, (DPUInstanceRecord)dpuSelector.getValue());
 
 		//Query View
 		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {

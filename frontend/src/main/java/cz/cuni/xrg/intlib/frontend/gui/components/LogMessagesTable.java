@@ -125,6 +125,7 @@ public class LogMessagesTable extends CustomComponent {
 		messageTable.setContainerDataSource(container);
 		messageTable.setVisibleColumns("date", "thread", "level",
 			"source", "message");
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
 }
