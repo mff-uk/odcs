@@ -14,6 +14,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import org.openrdf.model.Resource;
 
 import org.openrdf.model.Statement;
 import org.openrdf.repository.Repository;
@@ -250,6 +251,13 @@ public interface RDFDataRepository extends DataUnit {
 	 * @return openRDF repository.
 	 */
 	public Repository getDataRepository();
+	
+	/**
+	 * Return URI representation of graph where RDF data are stored.
+	 * 
+	 * @return graph as resource
+	 */
+	public Resource getDataGraph();
 
 	/**
 	 * Return all triples(statements) in reposiotory as list.
