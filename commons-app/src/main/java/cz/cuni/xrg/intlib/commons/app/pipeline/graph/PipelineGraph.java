@@ -9,6 +9,8 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.*;
 
 /**
@@ -50,6 +52,36 @@ public class PipelineGraph implements Serializable {
      */
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch= FetchType.EAGER, orphanRemoval = true)
     private Set<Edge> edges = new HashSet<>();
+
+	/**
+	 * Empty constructor for JPA.
+	 */
+	public PipelineGraph() {}
+
+	/**
+	 * Copy constructor. Note that newly created graph is NOT associated with
+	 * any pipeline, as graph should always be unique.
+	 * 
+	 * @param graph 
+	 */
+	public PipelineGraph(PipelineGraph graph) {
+		
+		// create mapping from old nodes to new nodes to be able to correctly
+		// reference source and target nodes for new edges
+		Map<Node,Node> nMap = new HashMap<>(graph.nodes.size());
+		for (Node n : graph.getNodes()) {
+			nMap.put(n, new Node(n));
+		}
+		
+		// create edges
+		edges = new HashSet(graph.edges.size());
+		for (Edge e : graph.getEdges()) {
+			edges.add(new Edge(nMap.get(e.getFrom()), nMap.get(e.getTo())));
+		}
+		
+		// assign nodes
+		nodes = new HashSet(nMap.values());
+	}
 	
     public void addNode(Node node) {
         nodes.add(node);

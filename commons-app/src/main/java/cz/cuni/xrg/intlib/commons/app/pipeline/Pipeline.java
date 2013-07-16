@@ -36,7 +36,7 @@ import java.io.Serializable;
  * @see Transform
  * @see Load
  * @author Jiri Tomes
- * @author Jan Vojt <jan@vojt.net>
+ * @author Jan Vojt
  * @author Bogo
  */
 @Entity
@@ -75,6 +75,17 @@ public class Pipeline implements Resource, Serializable {
 	}
 
 	/**
+	 * Copy constructor. Creates a deep copy of given pipeline.
+	 * 
+	 * @param pipeline to copy
+	 */
+	public Pipeline(Pipeline pipeline) {
+		name = pipeline.getName();
+		description = pipeline.getDescription();
+		graph = new PipelineGraph(pipeline.graph);
+	}
+
+	/**
 	 * Constructor with given pipeline name and description.
 	 *
 	 * @param name
@@ -85,7 +96,7 @@ public class Pipeline implements Resource, Serializable {
 		this.name = name;
 		this.description = description;
 	}
-
+	
 	public String getName() {
 		return name;
 	}

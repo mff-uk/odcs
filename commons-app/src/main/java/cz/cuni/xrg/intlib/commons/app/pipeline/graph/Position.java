@@ -46,6 +46,16 @@ public class Position implements Serializable {
 		this.x = x;
 		this.y = y;
 	}
+	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param position 
+	 */
+	public Position(Position position) {
+		x = position.x;
+		y = position.y;
+	}
 
 	public void changePosition(int newX, int newY) {
 		x = newX;

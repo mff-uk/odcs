@@ -25,7 +25,20 @@ public class DPUInstanceRecord extends DPURecord {
 	/**
 	 * Empty ctor because of JPA.
 	 */
-	public DPUInstanceRecord() { }
+	public DPUInstanceRecord() {}
+	
+	/**
+	 * Copy constructor. Creates a copy of given <code>DPUInstanceRecord</code>.
+	 * Primary key {@link #id} of newly created object is <code>null</code>.
+	 * Copying is NOT propagated on {@link #template}, original reference is
+	 * preserved.
+	 * 
+	 * @param dpuInstance 
+	 */
+	public DPUInstanceRecord(DPUInstanceRecord dpuInstance) {
+		super(dpuInstance);
+		template = dpuInstance.getTemplate();
+	}
 	
 	/**
 	 * Create new DPUInstanceRecord with given name and type.

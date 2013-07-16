@@ -11,7 +11,7 @@ import javax.persistence.*;
  *
  * @author Jiri Tomes
  * @author Bogo
- * @author Jan Vojt <jan@vojt.net>
+ * @author Jan Vojt
  */
 @Entity
 @Table(name = "ppl_node")
@@ -44,6 +44,18 @@ public class Node implements Serializable {
 	 * Empty constructor for JPA.
 	 */
 	public Node() {
+	}
+
+	/**
+	 * Copy constructor. Creates a deep copy of given <code>Node</code>. Primary
+	 * key {@link #id} and {@link #graph} of newly created object are both
+	 * <code>null</code>.
+	 * 
+	 * @param node to copy
+	 */
+	public Node(Node node) {
+		position = new Position(node.getPosition());
+		dpuInstance = new DPUInstanceRecord(node.getDpuInstance());
 	}
 
 	/**
