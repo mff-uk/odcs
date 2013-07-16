@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
-	version="2.0">
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+			 version="2.0">
 
 	<persistence-unit name="intlib">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
@@ -23,25 +23,20 @@
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 
-			<!-- Database connection parameters -->
-			<property name="hibernate.connection.username" value="dba" />
-			<property name="hibernate.connection.password" value="dba" />
-			<property name="hibernate.connection.url" value="jdbc:virtuoso://localhost:1111/" />
+			<!-- Database connection parameters are loaded at runtime from AppConfiguration -->
 
 			<!-- Determine which element is auto discovered
-			 by Hibernate Entity Manager while parsing the .par archive. -->
-      <property name="hibernate.archive.autodetection" value="class"/>
-      <!-- JDBC database driver for hibernate to use -->
-      <property name="hibernate.connection.driver_class" value="virtuoso.jdbc4.Driver"/>
-      <!-- SQL dialect -->
-      <property name="hibernate.dialect" value="virtuoso.hibernate.VirtuosoDialect"/>
-      <!-- Echo and format all executed SQL to stdout -->
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.format_sql" value="true"/>
-      <!-- Scan for annotated classes automatically -->
-      <!-- works only for classes in the same namespace
-				 as persistence.xml ends up after build -->
-      <!--<property name="hibernate.archive.autodetection" value="class"/>-->
-    </properties>
-  </persistence-unit>
+			by Hibernate Entity Manager while parsing the .par archive. -->
+			<property name="hibernate.archive.autodetection" value="class"/>
+			<!-- SQL dialect -->
+			<property name="hibernate.dialect" value="virtuoso.hibernate.VirtuosoDialect"/>
+			<!-- Echo and format all executed SQL to stdout -->
+			<property name="hibernate.show_sql" value="false"/>
+			<property name="hibernate.format_sql" value="true"/>
+			<!-- Scan for annotated classes automatically -->
+			<!-- works only for classes in the same namespace
+			as persistence.xml ends up after build -->
+			<!--<property name="hibernate.archive.autodetection" value="class"/>-->
+		</properties>
+	</persistence-unit>
 </persistence>

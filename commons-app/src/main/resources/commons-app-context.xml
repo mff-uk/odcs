@@ -13,9 +13,15 @@
 	<!-- application configuration -->
 	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig" />
 	
+	<!-- data source with db login properties loaded from application configuration -->
+	<bean id="dataSource" class="virtuoso.ConfigurableDataSource">
+		<constructor-arg ref="configuration" />
+	</bean>
+	
 	<!-- EntityManager factory -->
 	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="intlib"/>
+		<property name="dataSource" ref="dataSource" />
 	</bean>
 
 	<!-- Manager for database transactions -->
