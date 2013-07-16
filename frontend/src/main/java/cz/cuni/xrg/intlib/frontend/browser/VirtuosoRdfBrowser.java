@@ -5,10 +5,14 @@ import com.vaadin.ui.VerticalLayout;
 import java.io.File;
 import java.util.List;
 
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
+import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Petyr
  *
  */
-class LocalRdfBrowser extends DataUnitBrowser {
+class VirtuosoRdfBrowser extends DataUnitBrowser {
 
 	/**
 	 * Data from repository.
@@ -32,22 +36,31 @@ class LocalRdfBrowser extends DataUnitBrowser {
 	 */
 	private IntlibPagedTable dataTable;
 
-	private static Logger LOG = LoggerFactory.getLogger(LocalRdfBrowser.class);
+	private static Logger LOG = LoggerFactory.getLogger(VirtuosoRdfBrowser.class);
 	
 	@Override
 	public void loadDataUnit(File directory, String dataUnitId) {
-		Logger logger = LoggerFactory.getLogger(LocalRdfBrowser.class);
-		// create repository in default path - in tmp directory
-		LocalRDFRepo repository = LocalRDFRepo.createLocalRepo("");
-		try {
-			// load data from stora
-			repository.load(directory);
-		} catch (Exception e) {
-		}
-		// load triple
-		data = repository.getRDFTriplesInRepository();
-		// close reporistory
-		repository.shutDown();
+		AppConfig appConfig = App.getAppConfig();
+		
+		// load configuration from appConfig
+		final String hostName = 
+				appConfig.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+		final String port = 
+				appConfig.getString(ConfigProperty.VIRTUOSO_PORT);
+		final String user = 
+				appConfig.getString(ConfigProperty.VIRTUOSO_USER);
+		final String password = 
+				appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+		final String defautGraph = 
+				appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);		
+		
+		VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
+				.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph, "");		
+		virtosoRepository.setDefaultGraph("http://" + dataUnitId);
+		
+		data = virtosoRepository.getRDFTriplesInRepository();
+		// close repository
+		virtosoRepository.shutDown();
 	}
 
 	@Override

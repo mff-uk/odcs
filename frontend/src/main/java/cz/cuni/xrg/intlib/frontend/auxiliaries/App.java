@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import com.vaadin.ui.UI;
 
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
@@ -64,6 +65,14 @@ public class App {
      */	
 	public static LogFacade getLogs() {
 		return getApp().getLogs();
+	}
+	
+	/**
+	 * Return application configuration.
+	 * @return
+	 */
+	public static AppConfig getAppConfig() {
+		return 	getApp().getAppConfiguration();
 	}
 	
 	public static final int MAX_TABLE_COLUMN_LENGTH = 100;

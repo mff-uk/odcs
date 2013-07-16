@@ -21,7 +21,8 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 public class DataUnitFactory {
 
 	/**
-	 * Related context id, is unique.
+	 * Related context id for given
+	 * execution and DPU. It's unique.
 	 */
 	private String id;
 
@@ -145,11 +146,12 @@ public class DataUnitFactory {
 		}		
 		File tmpDir = context.getDataUnitTmp(instance, index);
 		
+		String dataUnitId = context.generateDataUnitId(id, index); 
 		switch (type) {
-			case RDF_Local:
+			case RDF_Local:				
 				// create DataUnit
 				RDFDataRepository localRepository = LocalRDFRepo
-						.createLocalRepo(tmpDir.getAbsolutePath(), id, name);
+						.createLocalRepo(tmpDir.getAbsolutePath(), dataUnitId, name);
 				// create container with DataUnit and index
 				return new DataUnitContainer(localRepository, index);
 			case RDF_Virtuoso:				
@@ -170,8 +172,7 @@ public class DataUnitFactory {
 				// set default graph .. for this we need unique identifier
 				// in "id" is unique id for context (execution and DPU) .. we add number to make it 
 				// unique between data units
-				String dataUnitId = id + "_" + index.toString();
-				virtosoRepository.setDefaultGraph( "http://" + dataUnitId);
+				virtosoRepository.setDefaultGraph("http://" + dataUnitId);
 				return new DataUnitContainer(virtosoRepository, index);
 
 		}

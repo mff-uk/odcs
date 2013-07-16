@@ -17,9 +17,10 @@ public abstract class DataUnitBrowser extends CustomComponent {
 	/**
 	 * Load DataUnit context from given directory and show it in directory.
 	 * @param directory Directory with stored @{link cz.cuni.xrg.intlib.commons.data.DataUnit} context.
+	 * @param dataUnitId Identifier for given data unit.
 	 * @throws Exception
 	 */
-	public abstract void loadDataUnit(File directory) throws Exception;
+	public abstract void loadDataUnit(File directory, String dataUnitId) throws Exception;
 
 
 	/**

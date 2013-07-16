@@ -355,7 +355,7 @@ class PipelineWorker implements Runnable {
 	private ExtendedExtractContext getContextForNodeExtractor(Node node, 
 			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
-		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
+		String contextId = contextInfo.generateDPUId(execution.getId(), dpuInstance.getId());
 		// ...
 		ExtendedExtractContext extractContext;
 		extractContext = ContextFactory.create(contextId, execution, dpuInstance, 
@@ -379,7 +379,7 @@ class PipelineWorker implements Runnable {
 	private ExtendedTransformContext getContextForNodeTransform(Node node,
 			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
-		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
+		String contextId = contextInfo.generateDPUId(execution.getId(), dpuInstance.getId());
 		// ...
 		ExtendedTransformContext transformContext;
 		transformContext = ContextFactory.create(contextId, execution, dpuInstance, 
@@ -419,7 +419,7 @@ class PipelineWorker implements Runnable {
 	private ExtendedLoadContext getContextForNodeLoader(Node node, 
 			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
-		String contextId = "ex" + execution.getId() + "_dpu-" + dpuInstance.getId();
+		String contextId = contextInfo.generateDPUId(execution.getId(), dpuInstance.getId());
 		// ...
 		ExtendedLoadContext loadContext;
 		loadContext = ContextFactory.create(contextId, execution, dpuInstance, 

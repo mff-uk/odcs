@@ -149,6 +149,14 @@ public class ExecutionContextInfo implements Serializable {
 		contexts.clear();
 	}
 	
+	public String generateDPUId(Long executionId, Long dpuId) {
+		return "ex" +  executionId.toString() + "_dpu" + dpuId.toString();
+	}
+	
+	public String generateDataUnitId(String DPUId, Integer index) {
+		return DPUId + "_du" + index.toString();
+	}
+	
 	/**
 	 * Return instance of {@link #rootDirectory} if it's not 
 	 * initialised then create it first from {@link #rootPath}
