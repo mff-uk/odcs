@@ -14,9 +14,9 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import org.openrdf.model.Resource;
 
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
 
@@ -68,7 +68,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param directoryPath Path to directory, where file with RDF data will be
 	 *                      saved.
 	 * @param fileName      Name of file for saving RDF data.
-	 * @param format        Type of RDF format for saving data (example: TURTLE,
+	 * @param formatType    Type of RDF format for saving data (example: TURTLE,
 	 *                      RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
@@ -76,7 +76,7 @@ public interface RDFDataRepository extends DataUnit {
 	 */
 	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName,
-			org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException, LoadException;
+			RDFFormatType formatType) throws CannotOverwriteFileException, LoadException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -84,7 +84,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param directoryPath    Path to directory, where file with RDF data will
 	 *                         be saved.
 	 * @param fileName         Name of file for saving RDF data.
-	 * @param format           Type of RDF format for saving data (example:
+	 * @param formatType       Type of RDF format for saving data (example:
 	 *                         TURTLE, RDF/XML,etc.)
 	 * @param canFileOverWrite boolean value, if existing file can be
 	 *                         overwritten.
@@ -95,7 +95,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @throws LoadException                when loading data fault.
 	 */
 	public void loadRDFfromRepositoryToFile(String directoryPath,
-			String fileName, org.openrdf.rio.RDFFormat format,
+			String fileName, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException;
 
 	/**
@@ -251,13 +251,28 @@ public interface RDFDataRepository extends DataUnit {
 	 * @return openRDF repository.
 	 */
 	public Repository getDataRepository();
-	
+
 	/**
 	 * Return URI representation of graph where RDF data are stored.
-	 * 
-	 * @return graph as resource
+	 *
+	 * @return graph with stored data as URI.
 	 */
-	public Resource getDataGraph();
+	public URI getDataGraph();
+
+	/**
+	 * Set data graph storage for given data in RDF format.
+	 *
+	 * @param newDataGraph new graph representated as URI.
+	 */
+	public void setDataGraph(URI newDataGraph);
+
+	/**
+	 * Set new data graph as default storage for data in RDF format.
+	 *
+	 * @param newStringDataGraph String name of graph as URI - starts with
+	 *                           prefix http://).
+	 */
+	public void setDataGraph(String newStringDataGraph);
 
 	/**
 	 * Return all triples(statements) in reposiotory as list.
