@@ -172,7 +172,8 @@ public class DataUnitFactory {
 				// set default graph .. for this we need unique identifier
 				// in "id" is unique id for context (execution and DPU) .. we add number to make it 
 				// unique between data units
-				virtosoRepository.setDefaultGraph("http://" + dataUnitId);
+
+				virtosoRepository.setDataGraph("http://" + dataUnitId);
 				return new DataUnitContainer(virtosoRepository, index);
 
 		}

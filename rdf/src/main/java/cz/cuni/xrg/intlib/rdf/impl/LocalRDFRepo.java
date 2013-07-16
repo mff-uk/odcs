@@ -36,17 +36,13 @@ import org.openrdf.model.*;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.http.HTTPRepository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
-import org.openrdf.rio.n3.N3Writer;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
-import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
-import org.openrdf.rio.trig.TriGWriter;
-import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +95,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	/**
 	 * Graph resource for saving RDF triples.
 	 */
-	protected Resource graph;
+	protected URI graph;
 
 	/**
 	 * DataUnit's name.
@@ -196,8 +192,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		memStore.setSyncDelay(timeToStart);
 
 		repository = new SailRepository(memStore);
+		repository.setDataDir(dataFile);
 
-		graph = createNewGraph("http://default");
+		setDataGraph("http://default");
 		WorkingRepoDirectory = dataFile.getParentFile();
 
 		this.dataUnitName = dataUnitName;
@@ -212,9 +209,18 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
-	protected Resource createNewGraph(String graphURI) {
-		Resource newGraph = new URIImpl(graphURI);
-		return newGraph;
+	protected URI createNewGraph(String graphURI) {
+		if (graphURI.toLowerCase().startsWith("http://")) {
+
+			URI newGraph = new URIImpl(graphURI);
+			return newGraph;
+
+		} else {
+
+			String newGraphUri = "http://" + graphURI;
+			return createNewGraph(newGraphUri);
+
+		}
 	}
 
 	protected void createNewFile(File file) {
@@ -542,7 +548,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param directoryPath Path to directory, where file with RDF data will be
 	 *                      saved.
 	 * @param fileName      Name of file for saving RDF data.
-	 * @param format        Type of RDF format for saving data (example: TURTLE,
+	 * @param formatType    Type of RDF format for saving data (example: TURTLE,
 	 *                      RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
@@ -551,9 +557,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	@Override
 	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName,
-			org.openrdf.rio.RDFFormat format) throws CannotOverwriteFileException, LoadException {
+			RDFFormatType formatType) throws CannotOverwriteFileException, LoadException {
 
-		loadRDFfromRepositoryToFile(directoryPath, fileName, format, false,
+		loadRDFfromRepositoryToFile(directoryPath, fileName, formatType, false,
 				false);
 	}
 
@@ -575,7 +581,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 */
 	@Override
 	public void loadRDFfromRepositoryToFile(String directoryPath,
-			String fileName, org.openrdf.rio.RDFFormat format,
+			String fileName, RDFFormatType format,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException {
 
 		if (directoryPath == null || fileName == null) {
@@ -642,17 +648,22 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 
 		RepositoryConnection connection = null;
+
 		try (OutputStreamWriter os = new OutputStreamWriter(
-				new FileOutputStream(dataFile.getAbsoluteFile()), Charset
+				new FileOutputStream(
+				dataFile.getAbsoluteFile()), Charset
 				.forName(encode))) {
 
-			RDFWriter writer = Rio.createWriter(format, os);
+			MyRDFHandler myHandler = new MyRDFHandler(os, format);
+
+			RDFHandler handler = myHandler.getRDFHandler();
+
 			connection = repository.getConnection();
 
 			if (graph != null) {
-				connection.export(writer, graph);
+				connection.export(handler, graph);
 			} else {
-				connection.export(writer);
+				connection.export(handler);
 			}
 
 			connection.commit();
@@ -1678,12 +1689,14 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(),
 				RDFFormat.RDFXML);
 
+		RDFFormatType formatType = RDFFormatType.getTypeByRDFFormat(format);
+
 		logger.debug("saving to directory:" + directory.getAbsolutePath());
 
 		try {
 			loadRDFfromRepositoryToFile(directory.getAbsolutePath(), file
 					.getName(),
-					format, true, false);
+					formatType, true, false);
 		} catch (CannotOverwriteFileException | LoadException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
@@ -1728,8 +1741,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		Thread destroyThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				File dataDir = repository.getDataDir();
 				try {
 					repository.shutDown();
+					deleteDataDirectory(dataDir);
+
 					logger.debug("Repository destroyed SUCCESSFULL");
 				} catch (RepositoryException ex) {
 					logger.debug(
@@ -1741,6 +1757,34 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		destroyThread.setDaemon(true);
 		destroyThread.start();
+	}
+
+	private void deleteDataDirectory(File dir) {
+
+		if (dir == null) {
+			return;
+		}
+
+		if (dir.isFile()) {
+			dir.delete();
+		} else if (dir.isDirectory()) {
+			File[] files = dir.listFiles();
+
+			if (files != null) {
+				for (File file : files) {
+					deleteDataDirectory(file);
+				}
+
+				dir.delete();
+			}
+		}
+	}
+
+	private Dataset getDataSetForGraph() {
+		DatasetImpl dataSet = new DatasetImpl();
+		dataSet.addDefaultGraph(graph);
+
+		return dataSet;
 	}
 
 	@Override
@@ -1756,48 +1800,29 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					QueryLanguage.SPARQL,
 					constructQuery);
 
+			graphQuery.setDataset(getDataSetForGraph());
+
 			logger.debug("Query " + constructQuery + " is valid.");
 
 			try {
 
 				File file = new File(fileName);
+				createNewFile(file);
 
-				if (!file.exists()) {
-					file.createNewFile();
-				}
+				FileOutputStream os = new FileOutputStream(file);
 
-				try (FileOutputStream os = new FileOutputStream(file)) {
+				MyRDFHandler myGoal = new MyRDFHandler(os, formatType);
+				RDFHandler goal = myGoal.getRDFHandler();
 
-					RDFHandler goal = null;
+				graphQuery.evaluate(goal);
 
-					switch (formatType) {
-						case AUTO:
-							goal = new RDFXMLPrettyWriter(os);
-							break;
-						case N3:
-							goal = new N3Writer(os);
-							break;
-						case RDFXML:
-							goal = new RDFXMLWriter(os);
-							break;
-						case TRIG:
-							goal = new TriGWriter(os);
-							break;
-						case TTL:
-							goal = new TurtleWriter(os);
-							break;
-
-
-					}
-
-					graphQuery.evaluate(goal);
-
-					logger.debug(
-							"Query " + constructQuery + " has not null result.");
-
-				}
+				logger.debug(
+						"Query " + constructQuery + " has not null result.");
 
 				return file;
+
+
+
 
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
@@ -1827,7 +1852,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 		}
 
-		throw new InvalidQueryException("Creating File with RDF data fault.");
+		throw new InvalidQueryException(
+				"Creating File with RDF data fault.");
 	}
 
 	/**
@@ -1851,6 +1877,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, selectQuery);
+
+			tupleQuery.setDataset(getDataSetForGraph());
 
 			logger.debug("Query " + selectQuery + " is valid.");
 
@@ -1970,8 +1998,34 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		save(WorkingRepoDirectory);
 	}
 
+	/**
+	 * Return URI representation of graph where RDF data are stored.
+	 *
+	 * @return graph with stored data as URI.
+	 */
 	@Override
-	public Resource getDataGraph() {
+	public URI getDataGraph() {
 		return graph;
+	}
+
+	/**
+	 * Set data graph storage for given data in RDF format.
+	 *
+	 * @param newDataGraph new graph representated as URI.
+	 */
+	@Override
+	public void setDataGraph(URI newDataGraph) {
+		graph = newDataGraph;
+	}
+
+	/**
+	 * Set new graph as default for working data in RDF format.
+	 *
+	 * @param defaultGraph String name of graph as URI - starts with prefix
+	 *                     http://).
+	 */
+	@Override
+	public void setDataGraph(String newStringDataGraph) {
+		setDataGraph(createNewGraph(newStringDataGraph));
 	}
 }

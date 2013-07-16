@@ -5,6 +5,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
@@ -110,7 +111,7 @@ public class LocalRDFRepoTest {
 	public void loadRDFtoXMLFile() {
 
 		String fileName = "RDF_output.rdf";
-		RDFFormat format = RDFFormat.RDFXML;
+		RDFFormatType format = RDFFormatType.RDFXML;
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;
 
@@ -129,7 +130,7 @@ public class LocalRDFRepoTest {
 	public void loadRDFtoN3File() {
 
 		String fileName = "N3_output.n3";
-		RDFFormat format = RDFFormat.N3;
+		RDFFormatType format = RDFFormatType.N3;
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;
 
@@ -147,7 +148,7 @@ public class LocalRDFRepoTest {
 	public void loadRDFtoTRIGFile() {
 
 		String fileName = "TRIG_output.trig";
-		RDFFormat format = RDFFormat.TRIG;
+		RDFFormatType format = RDFFormatType.TRIG;
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;
 
@@ -165,7 +166,7 @@ public class LocalRDFRepoTest {
 	public void loadRDFtoTURTLEFile() {
 
 		String fileName = "TURTLE_output.ttl";
-		RDFFormat format = RDFFormat.TURTLE;
+		RDFFormatType format = RDFFormatType.TTL;
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;
 
@@ -183,7 +184,7 @@ public class LocalRDFRepoTest {
 	public void loadOverWriteFail() {
 
 		String fileName = "CanNotOverWrite_output.rdf";
-		RDFFormat format = RDFFormat.RDFXML;
+		RDFFormatType format = RDFFormatType.RDFXML;
 
 		try {
 			rdfRepo.loadRDFfromRepositoryToFile(outDir.toString(), fileName,
@@ -279,7 +280,8 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_DIRECTORY,
+			rdfRepo.extractRDFfromFileToRepository(
+					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
@@ -391,7 +393,7 @@ public class LocalRDFRepoTest {
 	public void loadAllToXMLfile() {
 
 		String fileName = "AllData_output.rdf";
-		RDFFormat format = RDFFormat.RDFXML;
+		RDFFormatType format = RDFFormatType.RDFXML;
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;
 
@@ -539,7 +541,8 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCountInRepository();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_DIRECTORY,
+			rdfRepo.extractRDFfromFileToRepository(
+					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (ExtractException e) {
 			fail(e.getMessage());
@@ -593,7 +596,7 @@ public class LocalRDFRepoTest {
 	private void TEDloadtoTTLFile() {
 
 		String fileName = "output-ted-test.ttl";
-		RDFFormat format = RDFFormat.TURTLE;
+		RDFFormatType format = RDFFormatType.TTL;
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;
 
@@ -795,7 +798,7 @@ public class LocalRDFRepoTest {
 	private void loadBigDataToN3File() {
 
 		String fileName = "BIG_Data.n3";
-		RDFFormat format = RDFFormat.N3;
+		RDFFormatType format = RDFFormatType.N3;
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;
 
@@ -914,7 +917,7 @@ public class LocalRDFRepoTest {
 
 	protected void loadToFile(RDFDataRepository repository) {
 		String fileName = "TTL_output.ttl";
-		RDFFormat format = RDFFormat.TURTLE;
+		RDFFormatType format = RDFFormatType.TTL;
 
 		boolean canBeOverWriten = true;
 		boolean isNameUnique = false;

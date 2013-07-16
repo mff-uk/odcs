@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
@@ -66,8 +65,8 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 		this.defaultGraph = defaultGraph;
 		this.dataUnitName = dataUnitName;
 
-		graph = createNewGraph(defaultGraph);
-
+		setDataGraph(defaultGraph);
+		
 		repository = new VirtuosoRepository(URL_Host_List, user, password,
 				defaultGraph);
 
@@ -121,18 +120,10 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	 * @param defaultGraph String name of graph as URI - starts with prefix
 	 *                     http://).
 	 */
-	public void setDefaultGraph(String defaultGraph) {
-		this.defaultGraph = defaultGraph;
-		setGraph(createNewGraph(defaultGraph));
-	}
-
-	/**
-	 * Set new graph as default for working data in RDF format.
-	 *
-	 * @param graph New default graph defined as Resource - instance of URIImpl.
-	 */
-	public void setGraph(Resource graph) {
-		this.graph = graph;
+	@Override
+	public final void setDataGraph(String newStringDataGraph) {
+		this.defaultGraph = newStringDataGraph;
+		setDataGraph(createNewGraph(defaultGraph));
 	}
 
 	private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {

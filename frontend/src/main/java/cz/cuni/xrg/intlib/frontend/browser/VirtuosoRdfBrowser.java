@@ -56,7 +56,7 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 		
 		VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
 				.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph, "");		
-		virtosoRepository.setDefaultGraph("http://" + dataUnitId);
+		virtosoRepository.setDataGraph("http://" + dataUnitId);
 		
 		data = virtosoRepository.getRDFTriplesInRepository();
 		// close repository

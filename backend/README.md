@@ -1,6 +1,9 @@
 Intlib backend
 ==============
+Backend is responsible for pipeline execution. 
 
+Configuration file
+-------------------
 Backend requires loading configuration from properties configuration file.
 Sample configuration file is located in `/conf/config.properties` in the root of
 the project. Configuration is to be stored in `$HOME/.intlib/config.properties`.
