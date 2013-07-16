@@ -7,6 +7,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 //import cz.cuni.xrg.intlib.commons.module.data.InputHelper;
 import cz.cuni.xrg.intlib.commons.web.*;
+import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
@@ -43,31 +44,14 @@ public class FileLoader implements Load,
 		String directoryPath = config.DirectoryPath;
 		String fileName = config.FileName;
 
-		RDFFormat format;
-
-		switch (config.RDFFileFormat) {
-			default:
-			case AUTO:
-			case RDFXML:
-				format = RDFFormat.RDFXML;
-				break;
-			case N3:
-				format = RDFFormat.N3;
-				break;
-			case TRIG:
-				format = RDFFormat.TRIG;
-				break;
-			case TTL:
-				format = RDFFormat.TURTLE;
-				break;
-		}
+		RDFFormatType formatType=config.RDFFileFormat;
 
 		boolean isNameUnique = config.DiffName;
 		boolean canFileOverwritte = true;
 
 		try {
 			repository.loadRDFfromRepositoryToFile(directoryPath, fileName,
-					format, canFileOverwritte, isNameUnique);
+					formatType, canFileOverwritte, isNameUnique);
 		} catch (CannotOverwriteFileException ex) {
 			throw new LoadException(ex);
 		}
