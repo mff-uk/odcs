@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import java.io.File;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
@@ -66,7 +67,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 		this.dataUnitName = dataUnitName;
 
 		setDataGraph(defaultGraph);
-		
+
 		repository = new VirtuosoRepository(URL_Host_List, user, password,
 				defaultGraph);
 
@@ -148,5 +149,15 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	@Override
 	public String getName() {
 		return dataUnitName;
+	}
+
+	@Override
+	public void load(File directory) {
+		//no load from file - using Virtuoso for intermediate results.
+	}
+
+	@Override
+	public void save(File directory) {
+		//no save to file - using Virtuoso for intermediate results.
 	}
 }
