@@ -24,17 +24,6 @@
 		<constructor-arg value="BACKEND" />
 	</bean>
 
-<!--	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-		<property name="driverClass" value="org.h2.Driver"/>
-		<property name="url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;CASE_SENSITIVE_COLUMN=FALSE"/>
-		<property name="username" value="sa"/>
-		<property name="password" value=""/>
-	</bean>
-
-	<jdbc:initialize-database data-source="dataSource" ignore-failures="DROPS">
-		<jdbc:script location="classpath:db/schema.sql" />
-	</jdbc:initialize-database>-->
-
 	<!-- Creates an in-memory database populated with test data for fast testing -->
 	<jdbc:embedded-database id="dataSource" type="H2">
 		<jdbc:script location="classpath:db/schema.sql"/>
