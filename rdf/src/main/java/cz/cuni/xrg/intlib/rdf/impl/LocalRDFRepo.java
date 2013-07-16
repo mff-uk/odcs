@@ -375,40 +375,27 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 
 		try (InputStreamReader inputStreamReader = new InputStreamReader(
-				urlPath.openStream(), encode)) {
+				urlPath.openStream(), Charset.forName(encode))) {
 
 			RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
 			RepositoryConnection connection = repository.getConnection();
 
 			if (!useStatisticHandler) {
-				if (graph != null) {
-					connection.add(inputStreamReader, baseURI, format, graph);
 
-				} else {
-					connection.add(inputStreamReader, baseURI, format);
-				}
+				addInputStreamToRepository(connection, inputStreamReader,
+						baseURI, format, graph);
 			} else {
-				StatisticalHandler handler = new StatisticalHandler();
+				StatisticalHandler handler = parseFileUsingStatisticalHandler(
+						format, inputStreamReader, baseURI);
 
-				RDFParser parser = Rio.createParser(format);
-				parser.setRDFHandler(handler);
-
-				try {
-					parser.parse(inputStreamReader, baseURI);
-
-					if (graph != null) {
-						connection.add(handler.getStatements(), graph);
-					} else {
-						connection.add(handler.getStatements());
-					}
-
-				} catch (IOException | RDFParseException | RDFHandlerException ex) {
-					logger.error(ex.getMessage(), ex);
-					throw new ExtractException(ex.getMessage(), ex);
-
-				} finally {
-					inputStreamReader.close();
+				if (graph != null) {
+					connection.add(handler.getStatements(), graph);
+				} else {
+					connection.add(handler.getStatements());
 				}
+
+				inputStreamReader.close();
+
 			}
 
 
@@ -457,13 +444,14 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	private void addInputStreamToRepository(RepositoryConnection connection,
-			InputStream inputStream, String baseURI, RDFFormat format,
+			InputStreamReader inputStreamReader, String baseURI,
+			RDFFormat format,
 			Resource... graphs) throws IOException, RDFParseException, RepositoryException {
 
 		if (graphs != null) {
-			connection.add(inputStream, baseURI, format, graphs);
+			connection.add(inputStreamReader, baseURI, format, graphs);
 		} else {
-			connection.add(inputStream, baseURI, format);
+			connection.add(inputStreamReader, baseURI, format);
 		}
 
 	}
@@ -477,48 +465,27 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		RepositoryConnection connection = null;
 
-		try (InputStream is = new FileInputStream(dataFile)) {
+
+		try (InputStreamReader is = new InputStreamReader(new FileInputStream(
+				dataFile), Charset.forName(encode))) {
 
 			connection = repository.getConnection();
 
 			if (!useStatisticHandler) {
+
 				addInputStreamToRepository(connection, is, baseURI, fileFormat,
 						graphs);
 
 			} else {
-				StatisticalHandler handler = new StatisticalHandler();
+				
+				StatisticalHandler handler = parseFileUsingStatisticalHandler(
+						fileFormat, is, baseURI);
 
-				RDFParser parser = Rio.createParser(fileFormat);
-				parser.setRDFHandler(handler);
-
-				parser.setStopAtFirstError(false);
-				parser.setParseErrorListener(new ParseErrorListener() {
-					@Override
-					public void warning(String msg, int lineNo, int colNo) {
-						logger.warn(msg + "line:" + lineNo + "column:" + colNo);
-					}
-
-					@Override
-					public void error(String msg, int lineNo, int colNo) {
-						logger.error(msg + "line:" + lineNo + "column:" + colNo);
-					}
-
-					@Override
-					public void fatalError(String msg, int lineNo, int colNo) {
-						logger.error(msg + "line:" + lineNo + "column:" + colNo);
-					}
-				});
-				try {
-					parser.parse(is, baseURI);
-					if (graphs != null) {
-						connection.add(handler.getStatements(), graphs);
-					} else {
-						connection.add(handler.getStatements());
-					}
-				} catch (RDFParseException | RDFHandlerException ex) {
-					throw new ExtractException(ex.getMessage(), ex);
+				if (graphs != null) {
+					connection.add(handler.getStatements(), graphs);
+				} else {
+					connection.add(handler.getStatements());
 				}
-
 
 			}
 
@@ -539,6 +506,41 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 							ex);
 				}
 			}
+		}
+	}
+
+	private StatisticalHandler parseFileUsingStatisticalHandler(
+			RDFFormat fileFormat,
+			InputStreamReader is, String baseURI) throws ExtractException {
+		
+		StatisticalHandler handler = new StatisticalHandler();
+
+		RDFParser parser = Rio.createParser(fileFormat);
+		parser.setRDFHandler(handler);
+
+		parser.setStopAtFirstError(false);
+		parser.setParseErrorListener(new ParseErrorListener() {
+			@Override
+			public void warning(String msg, int lineNo, int colNo) {
+				logger.warn(msg + "line:" + lineNo + "column:" + colNo);
+			}
+
+			@Override
+			public void error(String msg, int lineNo, int colNo) {
+				logger.error(msg + "line:" + lineNo + "column:" + colNo);
+			}
+
+			@Override
+			public void fatalError(String msg, int lineNo, int colNo) {
+				logger.error(msg + "line:" + lineNo + "column:" + colNo);
+			}
+		});
+		try {
+			parser.parse(is, baseURI);
+		} catch (IOException | RDFParseException | RDFHandlerException ex) {
+			throw new ExtractException(ex.getMessage(), ex);
+		} finally {
+			return handler;
 		}
 	}
 
