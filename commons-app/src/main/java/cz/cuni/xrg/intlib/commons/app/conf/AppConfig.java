@@ -17,7 +17,7 @@ public class AppConfig {
 	
 	/**
 	 * Path to configuration file.
-	 * Not final, so that it can be overriden by run arguments (in backend).
+	 * Not final, so that it can be overridden by run arguments (in backend).
 	 */
 	public static String confPath = System.getProperty("user.home") + "/.intlib/config.properties";
 
@@ -32,7 +32,7 @@ public class AppConfig {
 	private static final Logger LOG = Logger.getLogger(AppConfig.class.getName());
 	
 	/**
-	 * Constructor reads config file.
+	 * Constructor reads configuration file.
 	 */
 	public AppConfig() {
 		try {
@@ -71,15 +71,5 @@ public class AppConfig {
 		} catch (NumberFormatException ex) {
 			throw new InvalidConfigPropertyException(key, value);
 		}
-	}
-	
-	@Deprecated
-	public Integer getBackendPort() {
-		return getInteger(ConfigProperty.BACKEND_PORT);
-	}
-
-	@Deprecated
-	public String getWorkingDirectory() {
-		return getString(ConfigProperty.GENERAL_WORKINGDIR);
 	}
 }
