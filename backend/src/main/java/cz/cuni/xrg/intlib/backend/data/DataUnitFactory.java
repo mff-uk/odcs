@@ -171,7 +171,7 @@ public class DataUnitFactory {
 				// in "id" is unique id for context (execution and DPU) .. we add number to make it 
 				// unique between data units
 				String dataUnitId = id + "_" + index.toString();
-				virtosoRepository.setDefaultGraph( "http://" + dataUnitId);
+				virtosoRepository.setDataGraph("http://" + dataUnitId);
 				return new DataUnitContainer(virtosoRepository, index);
 
 		}

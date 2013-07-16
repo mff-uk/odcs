@@ -68,7 +68,6 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@Test
 	public void BIGTwoGigaFileExtraction() {
 		//extractTwoGigaFile();
-
 	}
 
 	private void extractTwoGigaFile() {
@@ -106,7 +105,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 					VirtuosoRDFRepo virtuosoRepo = VirtuosoRDFRepo
 							.createVirtuosoRDFRepo(hostName, port, user,
 							password, defaultGraph, "");
-					virtuosoRepo.setDefaultGraph("http://myDefault");
+					virtuosoRepo.setDataGraph("http://myDefault");
 
 					addParalelTripleToRepository(virtuosoRepo);
 					extractFromFileToRepository(virtuosoRepo);
