@@ -1756,20 +1756,16 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					QueryLanguage.SPARQL,
 					constructQuery);
 
-
 			logger.debug("Query " + constructQuery + " is valid.");
 
-			GraphQueryResult result = null;
-
 			try {
-				result = graphQuery.evaluate();
-
-				logger.debug(
-						"Query " + constructQuery + " has not null result.");
-
-				List<Statement> statements = result.asList();
 
 				File file = new File(fileName);
+
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+
 				try (FileOutputStream os = new FileOutputStream(file)) {
 
 					RDFHandler goal = null;
@@ -1794,11 +1790,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 					}
 
-					for (Statement next : statements) {
+					graphQuery.evaluate(goal);
 
-						connection.exportStatements(next.getSubject(), next
-								.getPredicate(), next.getObject(), true, goal);
-					}
+					logger.debug(
+							"Query " + constructQuery + " has not null result.");
+
 				}
 
 				return file;
@@ -1807,20 +1803,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				throw new InvalidQueryException(
 						"This query is probably not valid. " + ex.getMessage(),
 						ex);
-			} catch (FileNotFoundException ex) {
-				logger.error("Creating fileStream fault - file not found. "
-						+ ex.getMessage(), ex);
 			} catch (IOException ex) {
 				logger.error("Stream were not closed. " + ex.getMessage(), ex);
-			} finally {
-				if (result != null) {
-					try {
-						result.close();
-					} catch (QueryEvaluationException ex) {
-						logger.warn("Failed to close RDF tuple result. "
-								+ ex.getMessage(), ex);
-					}
-				}
 			}
 
 		} catch (MalformedQueryException ex) {
