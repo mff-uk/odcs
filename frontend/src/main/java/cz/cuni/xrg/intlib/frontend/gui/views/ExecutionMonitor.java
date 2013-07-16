@@ -204,13 +204,31 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		statusFilter.setInputPrompt("execution status");
 		statusFilter.setWidth("110px");
 		statusFilter.setTextInputAllowed(false);
+		statusFilter.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_ICON_ONLY);
+		
+        IndexedContainer icStatus = new IndexedContainer();
+        icStatus.addItem("CANCELLED");
+        icStatus.addItem("FAILED");
+        icStatus.addItem("FINISHED_SUCCESS");
+        icStatus.addItem("FINISHED_WARNING");
+        icStatus.addItem("RUNNING");
+        icStatus.addItem("SCHEDULED");
+        
+        statusFilter.setContainerDataSource(icStatus);
+        
+        statusFilter.setItemIcon("CANCELLED", new ThemeResource("icons/cancelled.png"));
+        statusFilter.setItemIcon("FAILED", new ThemeResource("icons/error.png"));
+        statusFilter.setItemIcon("FINISHED_SUCCESS", new ThemeResource("icons/ok.png"));
+        statusFilter.setItemIcon("FINISHED_WARNING", new ThemeResource("icons/warning.png"));
+        statusFilter.setItemIcon("RUNNING", new ThemeResource("icons/running.png"));
+        statusFilter.setItemIcon("SCHEDULED", new ThemeResource("icons/scheduled.png"));
 
-		statusFilter.addItem("CANCELLED");
-		statusFilter.addItem("FAILED");
-		statusFilter.addItem("FINISHED_SUCCESS");
-		statusFilter.addItem("FINISHED_WARNING");
-		statusFilter.addItem("RUNNING");
-		statusFilter.addItem("SCHEDULED");
+//		statusFilter.addItem("CANCELLED");
+//		statusFilter.addItem("FAILED");
+//		statusFilter.addItem("FINISHED_SUCCESS");
+//		statusFilter.addItem("FINISHED_WARNING");
+//		statusFilter.addItem("RUNNING");
+//		statusFilter.addItem("SCHEDULED");
 		statusFilter.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -242,9 +260,20 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		debugFilter.setInputPrompt("true/false");
 		debugFilter.setWidth("110px");
 		debugFilter.setTextInputAllowed(false);
+		debugFilter.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_ICON_ONLY);
 		
-		debugFilter.addItem("true");
-		debugFilter.addItem("false");
+        IndexedContainer icDebug = new IndexedContainer();
+        icDebug.addItem("true");
+        icDebug.addItem("false");
+        
+        debugFilter.setContainerDataSource(icDebug);
+        
+        debugFilter.setItemIcon("true", new ThemeResource("icons/debug.png"));
+        debugFilter.setItemIcon("false", new ThemeResource("icons/no_debug.png"));
+
+		
+//		debugFilter.addItem("true");
+//		debugFilter.addItem("false");
 		debugFilter.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
