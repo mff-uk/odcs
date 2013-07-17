@@ -90,7 +90,6 @@ public class MenuLayout extends CustomComponent {
 
 		// top-level component properties
 		this.setWidth("100.0%");
-		//this.setHeight("100.0%");
 		//this.setSizeUndefined();
 
 		// menuBar

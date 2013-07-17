@@ -17,6 +17,8 @@ import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
+import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
@@ -234,11 +236,9 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Gets repository path from context.
 	 *
-	 * @param onInputGraph Repository path of Input/Output graph.
-	 * @return {@link String} containing path to repository.
+	 * @return {@link ExecutionContextInfo} containing current execution information.
 	 */
-	File getRepositoryDirectory(boolean onInputGraph) {
-
+	LocalRDFRepo getRepository(boolean onInputGraph) {
 		if (debugDpu == null) {
 			return null;
 		}
@@ -253,7 +253,7 @@ public class DebuggingView extends CustomComponent {
 			DataUnitInfo duInfo = iter.next();
 
 			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
-				return ctxReader.getDataUnitStorage(debugDpu, duInfo.getIndex());
+				return DataUnitBrowserFactory.getRepository(ctxReader, pipelineExec, debugDpu, duInfo);
 			}
 		}
 		return null;

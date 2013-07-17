@@ -7,13 +7,17 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
+import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.DownloadStreamResource;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -175,8 +179,7 @@ public class QueryView extends CustomComponent {
 
 		boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
 		String query = queryText.getValue();
-		File repoDir = parent.getRepositoryDirectory(onInputGraph);
-
+		
 		if(query.length() < 9) {
 			//Due to expected exception format in catch block
 			throw new InvalidQueryException(new InvalidQueryException("Invalid query."));
@@ -186,15 +189,13 @@ public class QueryView extends CustomComponent {
 		boolean isQuerySuccessful = true;
 		
 		Map<String, List<String>> data = null;
-		if (repoDir == null) {
-			data = new HashMap<>();
-		} else {
-			// FileName is from backend LocalRdf.dumpName = "dump_dat.ttl"; .. store somewhere else ?
-			LOG.debug("Create LocalRDFRepo in directory={} ", repoDir.toString());
+	
+		
 			try {
-				LocalRDFRepo repository = LocalRDFRepo.createLocalRepo("");
-				// load data from stora
-				repository.load(repoDir);
+				LocalRDFRepo repository = parent.getRepository(onInputGraph);
+				if(repository == null) {
+					return;
+				}
 				
 				if (isSelectQuery) {
 					data = repository.makeSelectQueryOverRepository(query);
@@ -206,7 +207,6 @@ public class QueryView extends CustomComponent {
 			} catch(RuntimeException e) {
 				throw new RuntimeException(e);
 			}
-		}
 		if (isSelectQuery) {
 			IndexedContainer container = buildDataSource(data);
 			resultTable.setContainerDataSource(container);
