@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.rdf;
 
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import java.io.File;
@@ -57,6 +58,17 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@AfterClass
 	public static void cleaning() {
 		rdfRepo.release();
+	}
+	
+	@Test
+	public void addDataUsingTransformer()
+	{
+		String query="insert data {<http://test>  <http://test>  <http://test> .}";
+		try {
+			rdfRepo.transformUsingSPARQL(query);
+		} catch (TransformException ex) {
+			fail(ex.getMessage());
+		}
 	}
 
 	@Test
