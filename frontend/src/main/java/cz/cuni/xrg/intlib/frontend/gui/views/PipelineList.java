@@ -8,8 +8,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
 
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
@@ -65,10 +65,10 @@ class PipelineList extends ViewComponent {
 	 * @author Petyr
 	 *
 	 */
-	class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+	class actionColumnGenerator implements CustomTable.ColumnGenerator {
 
 		@Override
-		public Object generateCell(final Table source, final Object itemId,
+		public Object generateCell(final CustomTable source, final Object itemId,
 				Object columnId) {
 			HorizontalLayout layout = new HorizontalLayout();
 
@@ -204,18 +204,17 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setContainerDataSource(container);
 
 		// set columns
-		tablePipelines.setVisibleColumns(new String[] { "id", "name",
-				"description" });
+		tablePipelines.setVisibleColumns("id", "name", "description");
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(10);
 		// add column
 		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 		tablePipelines.setImmediate(true);
-		tablePipelines.addGeneratedColumn("description", new Table.ColumnGenerator() {
+		tablePipelines.addGeneratedColumn("description", new CustomTable.ColumnGenerator() {
 
 			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				String description = (String) source.getItem(itemId).getItemProperty(columnId).getValue();
 				if(description.length() > App.MAX_TABLE_COLUMN_LENGTH) {
 					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH));
@@ -226,6 +225,7 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
+		tablePipelines.setFilterBarVisible(true);
 
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("create pipeline");

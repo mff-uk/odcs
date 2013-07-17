@@ -5,6 +5,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -30,7 +31,7 @@ public class MenuLayout extends CustomComponent {
 	/**
 	 * Layout for application views.
 	 */
-	private VerticalLayout viewLayout;
+	private Panel viewLayout;
 
 	/**
 	 * Class use as command to change sub-pages.
@@ -58,7 +59,7 @@ public class MenuLayout extends CustomComponent {
 	 * Return layout for application views.
 	 * @return
 	 */
-	public AbstractLayout getViewLayout() {
+	public Panel getViewLayout() {
 		return this.viewLayout;
 	}
 
@@ -90,6 +91,7 @@ public class MenuLayout extends CustomComponent {
 		// top-level component properties
 		this.setWidth("100.0%");
 		this.setHeight("100.0%");
+		//this.setSizeUndefined();
 
 		// menuBar
 		this.menuBar = new MenuBar();
@@ -98,10 +100,10 @@ public class MenuLayout extends CustomComponent {
 		this.menuBar.setHeight("20px");
 		this.mainLayout.addComponent(menuBar);
 		// viewLayout
-		this.viewLayout = new VerticalLayout();
-		this.viewLayout.setWidth("100.0%");
-		this.viewLayout.setHeight("100.0%");
-		this.viewLayout.setMargin(false);
+		this.viewLayout = new Panel();
+		//this.viewLayout.setWidth("100.0%");
+		//this.viewLayout.setHeight("100.0%");
+		//this.viewLayout.setMargin(false);
 		this.viewLayout.setStyleName("viewLayout");
 		this.mainLayout.addComponent(viewLayout);
 

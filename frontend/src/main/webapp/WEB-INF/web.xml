@@ -6,6 +6,8 @@
 		<param-name>productionMode</param-name>
 		<param-value>false</param-value>
 	</context-param>
+	
+	
 
 	<servlet>
 		<servlet-name>Vaadin Application Servlet</servlet-name>
@@ -14,6 +16,10 @@
 			<description>Vaadin UI to display</description>
 			<param-name>UI</param-name>
 			<param-value>cz.cuni.xrg.intlib.frontend.AppEntry</param-value>
+		</init-param>
+		<init-param>
+			<param-name>widgetset</param-name>
+			<param-value>cz.cuni.xrg.intlib.frontend.AppWidgetSet</param-value>
 		</init-param>
 		<async-supported>true</async-supported>
 	</servlet>

@@ -720,10 +720,10 @@ class DPU extends ViewComponent {
 		setCompositionRoot(mainLayout);
 	}
 
-	class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+	class actionColumnGenerator implements com.vaadin.ui.CustomTable.ColumnGenerator {
 		private ClickListener clickListener = null;
 		@Override
-		public Object generateCell(final Table source, final Object itemId,
+		public Object generateCell(final CustomTable source, final Object itemId,
 				Object columnId) {
 			
 			HorizontalLayout layout = new HorizontalLayout();

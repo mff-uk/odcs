@@ -34,7 +34,7 @@ public class QueryView extends CustomComponent {
 	private DebuggingView parent;
 	private TextArea queryText;
 	private IntlibPagedTable resultTable;
-	private ControlsLayout resultTableControls;
+	private HorizontalLayout resultTableControls;
 	private NativeSelect graphSelect;
 	private NativeSelect formatSelect;
 	private Link export;

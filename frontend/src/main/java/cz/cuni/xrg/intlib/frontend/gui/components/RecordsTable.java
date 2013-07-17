@@ -5,6 +5,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -74,9 +75,9 @@ public class RecordsTable extends CustomComponent {
 		Container container = ContainerFactory.CreateExecutionMessages(data);
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
-			messageTable.addGeneratedColumn("type", new Table.ColumnGenerator() {
+			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
 				@Override
-				public Object generateCell(Table source, Object itemId,
+				public Object generateCell(CustomTable source, Object itemId,
 						Object columnId) {
 
 					RecordType type = (RecordType) source.getItem(itemId).getItemProperty(columnId).getValue();

@@ -92,11 +92,11 @@ class PipelineEdit extends ViewComponent {
 			@Override
 			protected String getCss(Component c) {
 				if (c instanceof TabSheet) {
-					return "margin-left: 260px;";
+					return "margin-left: 230px;";
 				} else if (c instanceof VerticalLayout) {
-					return "position: fixed; left: 1px; top: 256px";
+					return "position: fixed; left: 1px; top: 230px;";
 				} else if (c instanceof HorizontalLayout) {
-					return "position: fixed; bottom: 18px; right: 18px; height: 30px; width: 100%; background: #eee; padding: 10px";
+					return "position: fixed; bottom: 16px; right: 16px; height: 30px; width: 100%; background: #eee; padding: 10px;";
 				}
 				return null;
 			}
@@ -180,6 +180,7 @@ class PipelineEdit extends ViewComponent {
 		layout.addComponent(tabSheet);
 
 		VerticalLayout left = new VerticalLayout();
+		left.setWidth(250, Unit.PIXELS);
 		dpuTree = new DPUTree();
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setWidth(220, Unit.PIXELS);
@@ -210,7 +211,7 @@ class PipelineEdit extends ViewComponent {
 		left.addComponent(zoomOut);
 		left.addComponent(undo);
 
-		layout.addComponentAsFirst(left);
+		layout.addComponent(left);
 
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
