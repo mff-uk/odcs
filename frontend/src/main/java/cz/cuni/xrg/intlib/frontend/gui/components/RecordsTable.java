@@ -144,7 +144,7 @@ public class RecordsTable extends CustomComponent {
 
 		@Override
 		public Resource getEnumFilterIcon(Object propertyId, Object value) {
-			if (propertyId == "type") {
+			//if (propertyId.equals("type")) {
 				ThemeResource img = null;
 				RecordType type = (RecordType) value;
 				switch (type) {
@@ -169,8 +169,8 @@ public class RecordsTable extends CustomComponent {
 						break;
 				}
 				return img;
-			}
-			return super.getEnumFilterIcon(propertyId, value);
+			//}
+			//return super.getEnumFilterIcon(propertyId, value);
 		}
 	};
 }
