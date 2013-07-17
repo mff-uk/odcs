@@ -45,8 +45,8 @@ public class BrowserTable extends CustomComponent {
 		Container container = ContainerFactory.CreateRDFData(data);
 		dataTable.setContainerDataSource(container);
 
-		dataTable.setVisibleColumns(new String[]{ "subject", "predicate", "object" });
-		dataTable.setPageLength(3);
+		dataTable.setVisibleColumns("subject", "predicate", "object");
+		dataTable.setPageLength(18);
 	}
 
 

@@ -40,7 +40,7 @@ public class LogMessagesTable extends CustomComponent {
 		messageTable.setSizeFull();
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(19);
+		messageTable.setPageLength(16);
 
 		levelSelector = new ComboBox();
 		levelSelector.setImmediate(true);

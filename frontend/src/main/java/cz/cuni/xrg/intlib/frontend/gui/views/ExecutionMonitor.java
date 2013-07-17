@@ -412,7 +412,6 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTableLayout.addComponent(monitorTable);
 		monitorTableLayout.addComponent(monitorTable.createControls());
 		monitorTable.setPageLength(20);
-		monitorTable.setFilterBarVisible(true);
 		monitorTable.setFilterDecorator(new filterDecorator());
 		monitorTable.setFilterFieldVisible("actions", false);
 		Button refreshButton = new Button("Refresh", new ClickListener() {
@@ -601,14 +600,14 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		}
 	}
 
-	class filterDecorator implements FilterDecorator {
+	class filterDecorator extends IntlibFilterDecorator {
 
 		@Override
 		public String getEnumFilterDisplayName(Object propertyId, Object value) {
 			if (propertyId == "status") {
 				return ((ExecutionStatus) value).name();
 			}
-			return null;
+			return super.getEnumFilterDisplayName(propertyId, value);
 		}
 
 		@Override
@@ -641,7 +640,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				}
 				return img;
 			}
-			return null;
+			return super.getEnumFilterIcon(propertyId, value);
 		}
 
 		@Override
@@ -652,13 +651,8 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				} else {
 					return "Run";
 				}
-			} else {
-				if (value) {
-					return "True";
-				} else {
-					return "False";
-				}
 			}
+			return super.getBooleanFilterDisplayName(propertyId, value);
 		}
 
 		@Override
@@ -670,69 +664,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 					return new ThemeResource("icons/no_debug.png");
 				}
 			}
-
-			return null;
-		}
-
-		@Override
-		public boolean isTextFilterImmediate(Object propertyId) {
-			return true;
-		}
-
-		@Override
-		public int getTextChangeTimeout(Object propertyId) {
-			return 500;
-		}
-
-		@Override
-		public String getFromCaption() {
-			return "From";
-		}
-
-		@Override
-		public String getToCaption() {
-			return "To";
-		}
-
-		@Override
-		public String getSetCaption() {
-			return "Set";
-		}
-
-		@Override
-		public String getClearCaption() {
-			return "Clear";
-		}
-
-		@Override
-		public Resolution getDateFieldResolution(Object propertyId) {
-			return Resolution.DAY;
-		}
-
-		@Override
-		public String getDateFormatPattern(Object propertyId) {
-			return "dd.MM.yyyy";
-		}
-
-		@Override
-		public Locale getLocale() {
-			return Locale.getDefault();
-		}
-
-		@Override
-		public String getAllItemsVisibleString() {
-			return "ALL";
-		}
-
-		@Override
-		public NumberFilterPopupConfig getNumberFilterPopupConfig() {
-			NumberFilterPopupConfig config = new NumberFilterPopupConfig();
-			return config;
-		}
-
-		@Override
-		public boolean usePopupForNumericProperty(Object propertyId) {
-			return true;
+			return super.getBooleanFilterIcon(propertyId, value);
 		}
 	};
 }

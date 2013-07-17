@@ -58,7 +58,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		dataTable.setHeight("100%");
 		mainLayout.addComponent(dataTable);
 		mainLayout.addComponent(dataTable.createControls());
-		dataTable.setPageLength(20);
+		dataTable.setPageLength(17);
 		setCompositionRoot(mainLayout);
 	}
 

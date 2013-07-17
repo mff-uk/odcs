@@ -312,7 +312,7 @@ class Scheduler extends ViewComponent {
 		filtersLayout.setColumnExpandRatio(5, 0.7f);
 		filtersLayout.setComponentAlignment(buttonDeleteFilters,
 				Alignment.BOTTOM_RIGHT);
-		mainLayout.addComponent(filtersLayout);
+		//mainLayout.addComponent(filtersLayout);
 
 		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());
 

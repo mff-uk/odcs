@@ -1,17 +1,22 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.jensjansson.pagedtable.ControlsLayout;
-import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.ui.HorizontalLayout;
 import org.tepi.filtertable.paged.PagedFilterTable;
 
 /**
- * Intlib extension of PagedTable add-on. PagedTable provides paging for
- * standard Vaadin Table.
+ * Intlib extension of FilterTable add-on. PagedFilterTable provides paging for
+ * custom Vaadin Table.
  *
  * @author Bogo
  */
 public class IntlibPagedTable extends PagedFilterTable {
+	
+	public IntlibPagedTable() {
+		super();
+		setFilterBarVisible(true);
+		setFilterDecorator(new IntlibFilterDecorator());
+	}
 
 	/**
 	 * Creates controls for navigating between pages of table. Hides the page size selector.

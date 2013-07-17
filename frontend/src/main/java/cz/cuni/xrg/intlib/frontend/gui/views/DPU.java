@@ -8,7 +8,6 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
@@ -32,7 +31,6 @@ import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
-import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
@@ -46,7 +44,6 @@ import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.PipelineStatus;
 
 import java.io.FileNotFoundException;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -467,6 +464,7 @@ class DPU extends ViewComponent {
 		
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());
+		instancesTable.setFilterFieldVisible("actions", false);
 		instancesTable.setPageLength(6);
 
 	return verticalLayoutInstances;

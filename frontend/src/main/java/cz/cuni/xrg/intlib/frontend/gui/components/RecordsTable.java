@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
@@ -18,6 +19,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
 import java.util.List;
+import org.tepi.filtertable.FilterDecorator;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -42,7 +44,7 @@ public class RecordsTable extends CustomComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				//if (event.isDoubleClick()) {
-				if(!messageTable.isSelected(event.getItemId())) {
+				if (!messageTable.isSelected(event.getItemId())) {
 					BeanItem beanItem = (BeanItem) event.getItem();
 					long recordId = (long) beanItem.getItemProperty("id")
 							.getValue();
@@ -60,7 +62,8 @@ public class RecordsTable extends CustomComponent {
 
 	/**
 	 * Sets data source.
-	 * @param data List of {@link Record}s to show in table. 
+	 *
+	 * @param data List of {@link Record}s to show in table.
 	 */
 	public void setDataSource(List<Record> data) {
 		loadMessageTable(data);
@@ -68,8 +71,8 @@ public class RecordsTable extends CustomComponent {
 
 	/**
 	 * Loads data to the table.
-	 * 
-	 * @param data List of {@link Record}s to show in table. 
+	 *
+	 * @param data List of {@link Record}s to show in table.
 	 */
 	private void loadMessageTable(List<Record> data) {
 		Container container = ContainerFactory.CreateExecutionMessages(data);
@@ -108,15 +111,17 @@ public class RecordsTable extends CustomComponent {
 					return emb;
 				}
 			});
+			messageTable.setFilterDecorator(new filterDecorator());
 			// set columns
 			isInitialized = true;
 		}
 		messageTable.setVisibleColumns("time", "type", "dpuInstance", "shortMessage");
+		messageTable.refreshRowCache();
 	}
 
 	/**
 	 * Shows dialog with detail of selected record.
-	 * 
+	 *
 	 * @param record {@link Record} which detail to show.
 	 */
 	private void showRecordDetail(Record record) {
@@ -127,12 +132,45 @@ public class RecordsTable extends CustomComponent {
 		detailWindow.setImmediate(true);
 		detail.setContentHeight(600, Unit.PIXELS);
 		detailWindow.addResizeListener(new Window.ResizeListener() {
-
 			@Override
 			public void windowResized(Window.ResizeEvent e) {
-			 	detail.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+				detail.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
 			}
 		});
 		App.getApp().addWindow(detailWindow);
 	}
+
+	private class filterDecorator extends IntlibFilterDecorator {
+
+		@Override
+		public Resource getEnumFilterIcon(Object propertyId, Object value) {
+			if (propertyId == "type") {
+				ThemeResource img = null;
+				RecordType type = (RecordType) value;
+				switch (type) {
+					case DPU_INFO:
+						img = new ThemeResource("icons/ok.png");
+						break;
+					case DPU_LOG:
+						img = new ThemeResource("icons/log.png");
+						break;
+					case DPU_DEBUG:
+						img = new ThemeResource("icons/debug.png");
+						break;
+					case DPU_WARNING:
+						img = new ThemeResource("icons/warning.png");
+						break;
+					case DPU_ERROR:
+					case PIPELINE_ERROR:
+						img = new ThemeResource("icons/error.png");
+						break;
+					default:
+						//no img
+						break;
+				}
+				return img;
+			}
+			return super.getEnumFilterIcon(propertyId, value);
+		}
+	};
 }
