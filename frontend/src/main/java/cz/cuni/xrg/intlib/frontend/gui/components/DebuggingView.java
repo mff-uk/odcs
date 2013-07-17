@@ -152,7 +152,7 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Content of text log file
-		logMessagesTable.setDpu(pipelineExec, (DPUInstanceRecord)dpuSelector.getValue());
+		logMessagesTable.setDpu(pipelineExec, isInDebugMode ? (DPUInstanceRecord)dpuSelector.getValue() : null);
 
 		//Query View
 		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
