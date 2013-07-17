@@ -2,9 +2,12 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
@@ -26,7 +29,6 @@ public class LogMessagesTable extends CustomComponent {
 	private IntlibPagedTable messageTable;
 	private DPUInstanceRecord dpu;
 	private PipelineExecution pipelineExecution;
-	
 	private ComboBox levelSelector;
 
 	/**
@@ -41,6 +43,21 @@ public class LogMessagesTable extends CustomComponent {
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
 		messageTable.setPageLength(16);
+		messageTable.setSelectable(true);
+		messageTable.addItemClickListener(
+				new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				//if (event.isDoubleClick()) {
+				if (!messageTable.isSelected(event.getItemId())) {
+					BeanItem beanItem = (BeanItem) event.getItem();
+					long logId = (long) beanItem.getItemProperty("id")
+							.getValue();
+					LogMessage log = App.getLogs().getLog(logId);
+					showLogMessageDetail(log);
+				}
+			}
+		});
 
 		levelSelector = new ComboBox();
 		levelSelector.setImmediate(true);
@@ -68,9 +85,9 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param level {@link Level} to filter log messages.
 	 */
 	private void filterLogMessages(Level level) {
-		
+
 		List<LogMessage> data = getData(pipelineExecution, dpu, level);
-		
+
 		// ... filter
 //		List<LogMessage> filteredData = new ArrayList<>();
 //		for (LogMessage message : data) {
@@ -91,29 +108,29 @@ public class LogMessagesTable extends CustomComponent {
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
 		this.dpu = dpu;
 		this.pipelineExecution = exec;
-		
+
 		Level level = Level.ALL;
-		if(levelSelector.getValue() != null) {
-			level = (Level)levelSelector.getValue();
+		if (levelSelector.getValue() != null) {
+			level = (Level) levelSelector.getValue();
 		}
-		
-		List<LogMessage> data = getData(pipelineExecution, dpu, level);		
+
+		List<LogMessage> data = getData(pipelineExecution, dpu, level);
 		loadMessageTable(data);
 	}
 
 	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {
 		LogFacade facade = App.getLogs();
-		
+
 		Set<Level> levels = facade.getLevels(level);
 
-		if(dpu == null) {
+		if (dpu == null) {
 			return facade.getLogs(exec, levels);
 		} else {
 			return facade.getLogs(exec, dpu, levels);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Initializes the table.
 	 *
@@ -121,11 +138,30 @@ public class LogMessagesTable extends CustomComponent {
 	 */
 	private void loadMessageTable(List<LogMessage> data) {
 		Container container = ContainerFactory.CreateLogMessages(data);
-		
+
 		messageTable.setContainerDataSource(container);
 		messageTable.setVisibleColumns("date", "thread", "level",
-			"source", "message");
+				"source", "message");
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
+	/*
+	 * Creates {@link LogMessageDetail} for given log message.
+	 * 
+	 * @param log Log message to show detail of.
+	 */
+	private void showLogMessageDetail(LogMessage log) {
+		final LogMessageDetail detailWindow = new LogMessageDetail(log);
+		detailWindow.setHeight(600, Unit.PIXELS);
+		detailWindow.setWidth(400, Unit.PIXELS);
+		detailWindow.setImmediate(true);
+		detailWindow.setContentHeight(600, Unit.PIXELS);
+		detailWindow.addResizeListener(new Window.ResizeListener() {
+			@Override
+			public void windowResized(Window.ResizeEvent e) {
+				detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+			}
+		});
+		App.getApp().addWindow(detailWindow);
+	}
 }

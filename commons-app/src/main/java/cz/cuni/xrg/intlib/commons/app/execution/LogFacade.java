@@ -188,4 +188,14 @@ public class LogFacade {
 
 		return levels;
 	}
+
+	/**
+	 * Find {@link LogMessage} in database by ID and return it.
+	 * 
+	 * @param id Id of log message to find.
+	 * @return Found log message.
+	 */
+	public LogMessage getLog(long id) {
+		return em.find(LogMessage.class, id);
+	}
 }

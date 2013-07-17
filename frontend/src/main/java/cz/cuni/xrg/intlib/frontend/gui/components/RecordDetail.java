@@ -1,9 +1,11 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
 /**
@@ -11,7 +13,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.Record;
  *
  * @author Bogo
  */
-public class RecordDetail extends CustomComponent {
+public class RecordDetail extends Window {
 
 	TextArea fullMessageContent;
 
@@ -20,7 +22,8 @@ public class RecordDetail extends CustomComponent {
 	 * @param record Record which detail should be showed.
 	 */
 	public RecordDetail(Record record) {
-		GridLayout mainLayout = new GridLayout(2, 5);
+		this.setCaption("Record detail");
+		GridLayout mainLayout = new GridLayout(2, 6);
 		mainLayout.setImmediate(true);
 		mainLayout.setSpacing(true);
 		mainLayout.setSizeFull();
@@ -48,13 +51,24 @@ public class RecordDetail extends CustomComponent {
 		mainLayout.addComponent(shortMessageContent, 1, 3);
 
 		fullMessageContent = new TextArea("Full Message:", record.getFullMessage());
+		fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
 		mainLayout.addComponent(fullMessageContent, 0, 4, 1, 4);
 		
 		mainLayout.setColumnExpandRatio(1, 1.0f);
 		mainLayout.setRowExpandRatio(4, 1.0f);
+		
+		Button closeButton = new Button("Close", new Button.ClickListener() {
 
-		setCompositionRoot(mainLayout);
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				close();
+			}
+		});
+		mainLayout.addComponent(closeButton, 1, 5);
+		mainLayout.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
+
+		this.setContent(mainLayout);
 
 	}
 
@@ -65,7 +79,7 @@ public class RecordDetail extends CustomComponent {
 	 * @param unit @{link Unit} of height.
 	 */
 	void setContentHeight(float height, Unit unit) {
-		fullMessageContent.setHeight(height - 170, unit);
+		fullMessageContent.setHeight(height - 200, unit);
 	}
 
 }

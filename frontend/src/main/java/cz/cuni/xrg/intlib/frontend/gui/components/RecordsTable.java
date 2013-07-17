@@ -125,16 +125,15 @@ public class RecordsTable extends CustomComponent {
 	 * @param record {@link Record} which detail to show.
 	 */
 	private void showRecordDetail(Record record) {
-		final RecordDetail detail = new RecordDetail(record);
-		Window detailWindow = new Window("Record detail", detail);
+		final RecordDetail detailWindow = new RecordDetail(record);
 		detailWindow.setHeight(600, Unit.PIXELS);
 		detailWindow.setWidth(400, Unit.PIXELS);
 		detailWindow.setImmediate(true);
-		detail.setContentHeight(600, Unit.PIXELS);
+		detailWindow.setContentHeight(600, Unit.PIXELS);
 		detailWindow.addResizeListener(new Window.ResizeListener() {
 			@Override
 			public void windowResized(Window.ResizeEvent e) {
-				detail.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+				detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
 			}
 		});
 		App.getApp().addWindow(detailWindow);
