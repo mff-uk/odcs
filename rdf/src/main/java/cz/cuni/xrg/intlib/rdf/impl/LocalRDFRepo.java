@@ -477,7 +477,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 						graphs);
 
 			} else {
-				
+
 				StatisticalHandler handler = parseFileUsingStatisticalHandler(
 						fileFormat, is, baseURI);
 
@@ -512,7 +512,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	private StatisticalHandler parseFileUsingStatisticalHandler(
 			RDFFormat fileFormat,
 			InputStreamReader is, String baseURI) throws ExtractException {
-		
+
 		StatisticalHandler handler = new StatisticalHandler();
 
 		RDFParser parser = Rio.createParser(fileFormat);
@@ -1321,6 +1321,31 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			return newQuery;
 
 
+		} else {
+
+			regex = "(insert|delete)\\sdata\\s\\{";
+			pattern = Pattern.compile(regex);
+			matcher = pattern.matcher(updateQuery.toLowerCase());
+
+			hasResult = matcher.find();
+
+			if (hasResult) {
+
+				int start = matcher.start();
+				int end = matcher.end();
+
+				String first = updateQuery.substring(0, start);
+				String second = updateQuery.substring(end, updateQuery.length());
+
+				String myString = updateQuery.substring(start, end);
+				String graphName = myString.replace("{",
+						"in graph <" + graph.stringValue() + "> {");
+
+				String newQuery = first + graphName + second;
+
+				return newQuery;
+
+			}
 		}
 		return updateQuery;
 
