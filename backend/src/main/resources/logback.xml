@@ -8,12 +8,7 @@
 		   <requiredKey>execution</requiredKey>
 		</filter>	    
 	    
-		<connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
-			<driverClass>virtuoso.jdbc4.Driver</driverClass>
-			<url>jdbc:virtuoso://localhost:1111/intlib</url>
-			<user>dba</user>
-			<password>dba</password>
-		</connectionSource>
+		<connectionSource class="ch.qos.logback.classic.db.ConfigurableConnectionSource" />
 	</appender>
 
 
