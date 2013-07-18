@@ -92,9 +92,9 @@ class PipelineEdit extends ViewComponent {
 			@Override
 			protected String getCss(Component c) {
 				if (c instanceof TabSheet) {
-					return "margin-left: 230px;";
+					return "margin-left: 0px; margin-top: 20px;";
 				} else if (c instanceof VerticalLayout) {
-					return "position: fixed; left: 1px; top: 230px;";
+					return "position: fixed; left: 20px; top: 280px;";
 				} else if (c instanceof HorizontalLayout) {
 					return "position: fixed; bottom: 16px; right: 16px; height: 30px; width: 100%; background: #eee; padding: 10px;";
 				}
@@ -155,7 +155,7 @@ class PipelineEdit extends ViewComponent {
 				if (obj.getClass() == DPUTemplateRecord.class) {
 					DPUTemplateRecord dpu = (DPUTemplateRecord) obj;
 					if (App.getApp().getDPUs().getAllTemplates().contains(dpu)) {
-						pc.addDpu(dpu, mouse.getClientX() - 261 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 256 + UI
+						pc.addDpu(dpu, mouse.getClientX() - 20 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 280 + UI
 								.getCurrent().getScrollTop());
 					} else {
 						// TODO log unknown DPURecord
