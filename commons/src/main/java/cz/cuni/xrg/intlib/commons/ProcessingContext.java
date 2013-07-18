@@ -62,4 +62,10 @@ public interface ProcessingContext {
      */
     public Map<String, Object> getCustomData();    
         
+    /**
+     * Return path to the jar-file which contains implementation
+     * of this DPU. 
+     * @return Path to the this DPU's jar.
+     */
+    public File getJarPath();
 }

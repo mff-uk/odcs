@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
@@ -63,6 +64,11 @@ class ExtendedCommonImpl {
 	protected ExecutionContextInfo context;
 	
 	/**
+	 * App configuration.
+	 */
+	protected AppConfig appConfig;
+	
+	/**
 	 * Log facade.
 	 */
 	private static final Logger LOG = Logger.getLogger(ExtendedCommonImpl.class);
@@ -74,10 +80,11 @@ class ExtendedCommonImpl {
 	 * @param dpuInstance Associated dpuInstanceRecord ~ owner.
 	 * @param context Access to context 'manager'.
 	 * @param appCofig Application's configuration.
+	 * @param jarFile Path to the jar file.
 	 * @throws IOException 
 	 */
 	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ExecutionContextInfo context, AppConfig appConfig) throws IOException {
+			ExecutionContextInfo context, AppConfig appConfig, File jarFile) throws IOException {
 		this.id = id;
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
@@ -94,6 +101,7 @@ class ExtendedCommonImpl {
 		}
 		this.dataUnitFactory = new DataUnitFactory(this.id, dpuInstance, context, appConfig);
 		this.context = context;
+		this.appConfig = appConfig;
 	}	
 	
 	public File getWorkingDir() {
@@ -126,5 +134,10 @@ class ExtendedCommonImpl {
 	
 	public ExecutionContextInfo getContext() {
 		return context;
+	}
+	
+	public File getJarPath() {
+		File path = new File (appConfig.getString(ConfigProperty.MODULE_PATH) + dpuInstance.getJarPath());
+		return path;
 	}
 }
