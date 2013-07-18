@@ -27,10 +27,11 @@ import org.tepi.filtertable.FilterDecorator;
  * @author Bogo
  */
 public class RecordsTable extends CustomComponent {
-
+	
 	private boolean isInitialized = false;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
+	private RecordDetail detail = null;
 
 	/**
 	 * Default constructor. Initializes the layout.
@@ -82,7 +83,7 @@ public class RecordsTable extends CustomComponent {
 				@Override
 				public Object generateCell(CustomTable source, Object itemId,
 						Object columnId) {
-
+					
 					RecordType type = (RecordType) source.getItem(itemId).getItemProperty(columnId).getValue();
 					ThemeResource img = null;
 					switch (type) {
@@ -125,49 +126,60 @@ public class RecordsTable extends CustomComponent {
 	 * @param record {@link Record} which detail to show.
 	 */
 	private void showRecordDetail(Record record) {
-		final RecordDetail detailWindow = new RecordDetail(record);
-		detailWindow.setHeight(600, Unit.PIXELS);
-		detailWindow.setWidth(400, Unit.PIXELS);
-		detailWindow.setImmediate(true);
-		detailWindow.setContentHeight(600, Unit.PIXELS);
-		detailWindow.addResizeListener(new Window.ResizeListener() {
-			@Override
-			public void windowResized(Window.ResizeEvent e) {
-				detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
-			}
-		});
-		App.getApp().addWindow(detailWindow);
+		if (detail == null) {
+			final RecordDetail detailWindow = new RecordDetail(record);
+			detailWindow.setHeight(600, Unit.PIXELS);
+			detailWindow.setWidth(400, Unit.PIXELS);
+			detailWindow.setImmediate(true);
+			detailWindow.setContentHeight(600, Unit.PIXELS);
+			detailWindow.addResizeListener(new Window.ResizeListener() {
+				@Override
+				public void windowResized(Window.ResizeEvent e) {
+					detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+				}
+			});
+			detailWindow.addCloseListener(new Window.CloseListener() {
+				@Override
+				public void windowClose(Window.CloseEvent e) {
+					detail = null;
+				}
+			});
+			detail = detailWindow;
+			App.getApp().addWindow(detailWindow);
+		} else {
+			detail.loadMessage(record);
+		}
 	}
-
+	
 	private class filterDecorator extends IntlibFilterDecorator {
-
+		
 		@Override
 		public Resource getEnumFilterIcon(Object propertyId, Object value) {
 			//if (propertyId.equals("type")) {
-				ThemeResource img = null;
-				RecordType type = (RecordType) value;
-				switch (type) {
-					case DPU_INFO:
-						img = new ThemeResource("icons/ok.png");
-						break;
-					case DPU_LOG:
-						img = new ThemeResource("icons/log.png");
-						break;
-					case DPU_DEBUG:
-						img = new ThemeResource("icons/debug.png");
-						break;
-					case DPU_WARNING:
-						img = new ThemeResource("icons/warning.png");
-						break;
-					case DPU_ERROR:
-					case PIPELINE_ERROR:
-						img = new ThemeResource("icons/error.png");
-						break;
-					default:
-						//no img
-						break;
-				}
-				return img;
+			ThemeResource img = null;
+			RecordType type = (RecordType) value;
+			switch (type) {
+				case DPU_INFO:
+					img = new ThemeResource("icons/ok.png");
+					break;
+				case DPU_LOG:
+					img = new ThemeResource("icons/log.png");
+					break;
+				case DPU_DEBUG:
+					img = new ThemeResource("icons/debug.png");
+					break;
+				case DPU_WARNING:
+					img = new ThemeResource("icons/warning.png");
+					break;
+				case DPU_ERROR:
+				case PIPELINE_ERROR:
+					img = new ThemeResource("icons/error.png");
+					break;
+				default:
+					//no img
+					break;
+			}
+			return img;
 			//}
 			//return super.getEnumFilterIcon(propertyId, value);
 		}
