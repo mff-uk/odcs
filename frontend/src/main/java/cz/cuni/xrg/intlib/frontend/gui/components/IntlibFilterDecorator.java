@@ -97,7 +97,7 @@ public class IntlibFilterDecorator implements FilterDecorator {
 
 	@Override
 	public String getAllItemsVisibleString() {
-		return "ALL";
+		return "";
 	}
 
 	@Override
