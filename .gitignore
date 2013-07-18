@@ -11,6 +11,10 @@
 nbactions.xml
 nb-configuration.xml
 
+# Frontend generated sources
+frontend/src/main/webapp/VAADIN/
+
+
 # Build Directories #
 target/
 bin/
