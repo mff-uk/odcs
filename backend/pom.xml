@@ -68,11 +68,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
 				<configuration>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<mainClass>cz.cuni.xrg.intlib.backend.AppEntry</mainClass>
+							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
 					</archive>
 				</configuration>
@@ -80,51 +82,58 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<!-- the two lines below tell Maven not to include test scoped dependencies -->
+							<includeScope>runtime</includeScope>
+							<excludeScope>provided</excludeScope>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<!-- Fix m2e not supporting copy-dependency plugin -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
-
-	<profiles>
-		<!-- use maven property backend-onejar=true to create stand-alone jar file for backend -->
-		<profile>
-			<id>one-jar-build</id>
-			<activation>
-				<property>
-					<name>backend-onejar</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.dstovall</groupId>
-						<artifactId>onejar-maven-plugin</artifactId>
-						<version>1.4.4</version>
-						<executions>
-							<execution>
-								<configuration>
-									<!-- Optional -->
-									<onejarVersion>0.97</onejarVersion>
-									<!-- Optional, default is false -->
-									<attachToBuild>true</attachToBuild>
-									<!-- Optional, default is "onejar" -->
-									<classifier>onejar</classifier>
-								</configuration>
-								<goals>
-									<goal>one-jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
+	
 </project>
