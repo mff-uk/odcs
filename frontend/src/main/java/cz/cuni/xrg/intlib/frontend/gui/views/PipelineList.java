@@ -4,6 +4,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -195,6 +196,47 @@ class PipelineList extends ViewComponent {
 		// top-level component properties
 		setWidth("100%");
 		setHeight("100%");
+		
+		HorizontalLayout topLine = new HorizontalLayout();
+		topLine.setSpacing(true);
+		topLine.setWidth(100, Unit.PERCENTAGE);
+		
+		btnCreatePipeline = new Button();
+		btnCreatePipeline.setCaption("Create pipeline");
+		btnCreatePipeline.setHeight("25px");
+		btnCreatePipeline.setWidth("150px");
+		btnCreatePipeline
+				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+					@Override
+					public void buttonClick(ClickEvent event) {
+						// navigate to PipelineEdit/New
+						App.getApp()
+								.getNavigator()
+								.navigateTo(ViewNames.PipelineEdit_New.getUrl());
+					}
+				});
+		topLine.addComponent(btnCreatePipeline);
+		topLine.setComponentAlignment(btnCreatePipeline, Alignment.MIDDLE_RIGHT);
+
+		Button buttonDeleteFilters = new Button();
+		buttonDeleteFilters.setCaption("Clear Filters");
+		buttonDeleteFilters.setHeight("25px");
+		buttonDeleteFilters.setWidth("110px");
+		buttonDeleteFilters
+				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				tablePipelines.resetFilters();
+
+			}
+		});
+		topLine.addComponent(buttonDeleteFilters);
+		topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
+		
+		Label topLineFiller = new Label();
+		topLine.addComponentAsFirst(topLineFiller);
+		topLine.setExpandRatio(topLineFiller, 1.0f);
+		mainLayout.addComponent(topLine);
 
 		tablePipelines = new IntlibPagedTable();
 		tablePipelines.setWidth("99%");
@@ -241,23 +283,7 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
-
-		btnCreatePipeline = new Button();
-		btnCreatePipeline.setCaption("create pipeline");
-		btnCreatePipeline.setHeight("25px");
-		btnCreatePipeline.setWidth("150px");
-		btnCreatePipeline
-				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						// navigate to PipelineEdit/New
-						App.getApp()
-								.getNavigator()
-								.navigateTo(ViewNames.PipelineEdit_New.getUrl());
-					}
-				});
-		mainLayout.addComponent(btnCreatePipeline);
-
+		
 		return mainLayout;
 	}
 

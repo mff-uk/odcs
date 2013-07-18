@@ -98,6 +98,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		setHeight("100%");
 
 		HorizontalLayout topLine = new HorizontalLayout();
+		topLine.setSpacing(true);
 		topLine.setWidth(100, Unit.PERCENTAGE);
 		
 		Button refreshButton = new Button("Refresh", new ClickListener() {
@@ -109,7 +110,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 			}
 		});
 		topLine.addComponent(refreshButton);
-		topLine.setComponentAlignment(refreshButton, Alignment.MIDDLE_LEFT);
+		topLine.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
 
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
@@ -126,8 +127,9 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 		topLine.addComponent(buttonDeleteFilters);
 		topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
 		
-		
-		
+		Label topLineFiller = new Label();
+		topLine.addComponentAsFirst(topLineFiller);
+		topLine.setExpandRatio(topLineFiller, 1.0f);
 		monitorTableLayout.addComponent(topLine);
 
 		tableData = getTableData(App.getApp().getPipelines().getAllExecutions());
