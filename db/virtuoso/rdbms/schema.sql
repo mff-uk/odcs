@@ -90,7 +90,6 @@ CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
   "debug_mode" SMALLINT,
   "t_start" DATETIME,
   "t_end" DATETIME,
-  "execution_directory" VARCHAR(255),
   "context_id" INTEGER,
   "schedule_id" INTEGER,
   "silent_mode" SMALLINT,
