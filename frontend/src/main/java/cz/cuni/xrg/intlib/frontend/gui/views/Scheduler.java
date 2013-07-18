@@ -13,6 +13,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -42,33 +43,24 @@ import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
 class Scheduler extends ViewComponent {
 
 	private VerticalLayout mainLayout;
-
 	private Label label;
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
-
-	static String[] visibleCols = new String[] { "pipeline", "rule", "user",
-			"last", "next", "status", "commands" };
-
-	static String[] headers = new String[] { "pipeline", "Rule", "User",
-			"Last", "Next", "Status", "Commands" };
+	static String[] visibleCols = new String[]{"pipeline", "rule", "user",
+		"last", "next", "status", "commands"};
+	static String[] headers = new String[]{"pipeline", "Rule", "User",
+		"Last", "Next", "Status", "Commands"};
 	private SchedulerTableFilter tableDataFilter = null;
 	private DateFormat localDateFormat = null;
-
 	private DateField dateLastFilter;
 	private DateField dateNextFilter;
-
 	private TextField pipelineFilter;
 	private TextField ruleFilter;
-
 	private TextField userFilter;
-
 	private ComboBox statusFilter;
-
 	private ComboBox debugFilter;
 	int style = DateFormat.MEDIUM;
 	private Long schId;
-
 	static String filter;
 
 	public Scheduler() {
@@ -170,16 +162,16 @@ class Scheduler extends ViewComponent {
 				// TODO Auto-generated method stub
 
 				if (event.getProperty().getValue() != null) {
-/*					DateFormat df = DateFormat.getDateInstance(style,
-							getLocale());
-					String s = df.format(event.getProperty().getValue());
+					/*					DateFormat df = DateFormat.getDateInstance(style,
+					 getLocale());
+					 String s = df.format(event.getProperty().getValue());
 
-					tableDataFilter.setDateLastFilter(s);
-					tableData.removeAllContainerFilters();
-					tableData.addContainerFilter(tableDataFilter);
-					schedulerTable.refreshRowCache();*/
-					
-					tableDataFilter.setDateLastFilter((Date)event.getProperty().getValue());
+					 tableDataFilter.setDateLastFilter(s);
+					 tableData.removeAllContainerFilters();
+					 tableData.addContainerFilter(tableDataFilter);
+					 schedulerTable.refreshRowCache();*/
+
+					tableDataFilter.setDateLastFilter((Date) event.getProperty().getValue());
 					tableData.removeAllContainerFilters();
 					tableData.addContainerFilter(tableDataFilter);
 					refreshData();
@@ -208,20 +200,20 @@ class Scheduler extends ViewComponent {
 				// TODO Auto-generated method stub
 
 				if (event.getProperty().getValue() != null) {
-/*					DateFormat df = DateFormat.getDateInstance(style,
-							getLocale());
-					String s = df.format(event.getProperty().getValue());
+					/*					DateFormat df = DateFormat.getDateInstance(style,
+					 getLocale());
+					 String s = df.format(event.getProperty().getValue());
 
-					// Format formatter = new SimpleDateFormat("dd.MM.yyyy");
-					// String s =
-					// formatter.format(event.getProperty().getValue().toString().toUpperCase(locale));
+					 // Format formatter = new SimpleDateFormat("dd.MM.yyyy");
+					 // String s =
+					 // formatter.format(event.getProperty().getValue().toString().toUpperCase(locale));
 
-					tableDataFilter.setDateNextFilter(s);
-					tableData.removeAllContainerFilters();
-					tableData.addContainerFilter(tableDataFilter);
-					schedulerTable.refreshRowCache();*/
-					
-					tableDataFilter.setDateNextFilter((Date)event.getProperty().getValue());
+					 tableDataFilter.setDateNextFilter(s);
+					 tableData.removeAllContainerFilters();
+					 tableData.addContainerFilter(tableDataFilter);
+					 schedulerTable.refreshRowCache();*/
+
+					tableDataFilter.setDateNextFilter((Date) event.getProperty().getValue());
 					tableData.removeAllContainerFilters();
 					tableData.addContainerFilter(tableDataFilter);
 					refreshData();
@@ -287,27 +279,27 @@ class Scheduler extends ViewComponent {
 		buttonDeleteFilters.setWidth("110px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						// TODO Auto-generated method stub
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
 
-						dateLastFilter.setValue(null);
-						dateNextFilter.setValue(null);
-						pipelineFilter.setValue("");
-						userFilter.setValue("");
-						statusFilter.setValue(null);
-						tableDataFilter.setPipelineFilter("");
-						tableDataFilter.setRuleFilter("");
-						tableDataFilter.setUserFilter("");
+				dateLastFilter.setValue(null);
+				dateNextFilter.setValue(null);
+				pipelineFilter.setValue("");
+				userFilter.setValue("");
+				statusFilter.setValue(null);
+				tableDataFilter.setPipelineFilter("");
+				tableDataFilter.setRuleFilter("");
+				tableDataFilter.setUserFilter("");
 
-						tableData.removeAllContainerFilters();
-						tableData.addContainerFilter(tableDataFilter);
+				tableData.removeAllContainerFilters();
+				tableData.addContainerFilter(tableDataFilter);
 
-						refreshData();
+				refreshData();
 
 
-					}
-				});
+			}
+		});
 		filtersLayout.addComponent(buttonDeleteFilters, 6, 0);
 		filtersLayout.setColumnExpandRatio(5, 0.7f);
 		filtersLayout.setComponentAlignment(buttonDeleteFilters,
@@ -331,35 +323,45 @@ class Scheduler extends ViewComponent {
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
 		schedulerTable.setPageLength(20);
+		schedulerTable.addItemClickListener(
+				new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				//if (event.isDoubleClick()) {
+				if (!schedulerTable.isSelected(event.getItemId())) {
+					schId = (Long) event.getItem().getItemProperty("schid").getValue();
+					showSchedulePipeline(schId);
+				} 
+			}
+		});
 
 		Button addRuleButton = new Button();
 		addRuleButton.setCaption("Add new scheduling rule");
 		addRuleButton
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// open scheduler dialog
+
+				SchedulePipeline sch = new SchedulePipeline();
+				//openScheduler(sch);
+				App.getApp().addWindow(sch);
+				sch.addCloseListener(new CloseListener() {
 					@Override
-					public void buttonClick(ClickEvent event) {
-						// open scheduler dialog
-
-						SchedulePipeline sch = new SchedulePipeline();
-						//openScheduler(sch);
-						App.getApp().addWindow(sch);
-						sch.addListener(new CloseListener() {
-							
-							@Override
-							public void windowClose(CloseEvent e) {
-								// TODO Auto-generated method stub
-								refreshData();
-
-							}
-						});
+					public void windowClose(CloseEvent e) {
+						// TODO Auto-generated method stub
+						refreshData();
 
 					}
 				});
+
+			}
+		});
 		mainLayout.addComponent(addRuleButton);
 
 		return mainLayout;
 	}
-	
+
 	private void refreshData() {
 		int page = schedulerTable.getCurrentPage();
 		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());
@@ -393,7 +395,7 @@ class Scheduler extends ViewComponent {
 				result.getContainerProperty(num, "next").setValue(null);
 			} else {
 				result.getContainerProperty(num, "next").setValue(
-						item.getNextExecutionTimeInfo() );
+						item.getNextExecutionTimeInfo());
 			}
 
 			if (item.getLastExecution() == null) {
@@ -415,44 +417,45 @@ class Scheduler extends ViewComponent {
 					result.getContainerProperty(num, "rule").setValue(
 							"Run on " + item.getFirstExecution().toLocaleString());
 				} else {
-					if (item.getPeriod().equals((long)1)) {
+					if (item.getPeriod().equals((long) 1)) {
 						result.getContainerProperty(num, "rule").setValue(
 								"Run on "
-										+ item.getFirstExecution().toLocaleString()
-										+ " and then repeat every "
-										+ item.getPeriodUnit().toString()
-												.toLowerCase());
+								+ item.getFirstExecution().toLocaleString()
+								+ " and then repeat every "
+								+ item.getPeriodUnit().toString()
+								.toLowerCase());
 					} else {
 						result.getContainerProperty(num, "rule").setValue(
 								"Run on "
-										+ item.getFirstExecution().toLocaleString()
-										+ " and then repeat every "
-										+ item.getPeriod().toString()
-										+ " "
-										+ item.getPeriodUnit().toString()
-												.toLowerCase()+"s");
+								+ item.getFirstExecution().toLocaleString()
+								+ " and then repeat every "
+								+ item.getPeriod().toString()
+								+ " "
+								+ item.getPeriodUnit().toString()
+								.toLowerCase() + "s");
 					}
 				}
 			} else {
-				
-				 Set<Pipeline> after = item.getAfterPipelines();
-				 String afterPipelines = "";
-				 after.size();
-				 int i = 0;
-				  for (Pipeline afteritem : after){
-					  i++;
-					  if(i < after.size())
-						  afterPipelines = afterPipelines + afteritem.getName() + ", ";
-					  else
-						  afterPipelines = afterPipelines + afteritem.getName() + ". ";
-				  }
-				 if(after.size()>1){
-					 result.getContainerProperty(num,
-							 "rule").setValue("Run after pipelines: " + afterPipelines);
-				 }
-				 else
-				 result.getContainerProperty(num,
-				 "rule").setValue("Run after pipeline: " + afterPipelines);
+
+				Set<Pipeline> after = item.getAfterPipelines();
+				String afterPipelines = "";
+				after.size();
+				int i = 0;
+				for (Pipeline afteritem : after) {
+					i++;
+					if (i < after.size()) {
+						afterPipelines = afterPipelines + afteritem.getName() + ", ";
+					} else {
+						afterPipelines = afterPipelines + afteritem.getName() + ". ";
+					}
+				}
+				if (after.size() > 1) {
+					result.getContainerProperty(num,
+							"rule").setValue("Run after pipelines: " + afterPipelines);
+				} else {
+					result.getContainerProperty(num,
+							"rule").setValue("Run after pipeline: " + afterPipelines);
+				}
 			}
 
 			result.getContainerProperty(num, "schid").setValue(item.getId());
@@ -468,29 +471,26 @@ class Scheduler extends ViewComponent {
 
 	}
 
+	/*	private void openScheduler(final SchedulePipeline schedule) {
+	 Window scheduleWindow = new Window("Schedule a pipeline", schedule);
+	 scheduleWindow.setImmediate(true);
+	 scheduleWindow.setWidth("820px");
+	 scheduleWindow.setHeight("550px");
+	 scheduleWindow.addCloseListener(new Window.CloseListener() {
+	 @Override
+	 public void windowClose(Window.CloseEvent e) {
+	 // closeDebug();
+	 }
+	 });
+	 scheduleWindow.addResizeListener(new Window.ResizeListener() {
 
-
-/*	private void openScheduler(final SchedulePipeline schedule) {
-		Window scheduleWindow = new Window("Schedule a pipeline", schedule);
-		scheduleWindow.setImmediate(true);
-		scheduleWindow.setWidth("820px");
-		scheduleWindow.setHeight("550px");
-		scheduleWindow.addCloseListener(new Window.CloseListener() {
-			@Override
-			public void windowClose(Window.CloseEvent e) {
-				// closeDebug();
-			}
-		});
-		scheduleWindow.addResizeListener(new Window.ResizeListener() {
-
-			@Override
-			public void windowResized(Window.ResizeEvent e) {
-				schedule.resize(e.getWindow().getHeight());
-			}
-		});
-		App.getApp().addWindow(scheduleWindow);
-	}*/
-
+	 @Override
+	 public void windowResized(Window.ResizeEvent e) {
+	 schedule.resize(e.getWindow().getHeight());
+	 }
+	 });
+	 App.getApp().addWindow(scheduleWindow);
+	 }*/
 	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
@@ -498,6 +498,7 @@ class Scheduler extends ViewComponent {
 	}
 
 	class actionColumnGenerator implements CustomTable.ColumnGenerator {
+
 		private ClickListener clickListener = null;
 
 		@Override
@@ -516,21 +517,20 @@ class Scheduler extends ViewComponent {
 				if (testStatus == "Disabled") {
 					Button enableButton = new Button("Enable");
 					enableButton.addClickListener(new ClickListener() {
-						
 						@Override
 						public void buttonClick(ClickEvent event) {
-							
+
 							schId = (Long) tableData.getContainerProperty(itemId, "schid")
 									.getValue();
 							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
-							for(Schedule item:schedulers)
-								{	if(item.getId().equals(schId)){
+							for (Schedule item : schedulers) {
+								if (item.getId().equals(schId)) {
 									item.setEnabled(true);
 									App.getApp().getSchedules().save(item);
-									}
 								}
+							}
 							refreshData();
-							
+
 						}
 					});
 					layout.addComponent(enableButton);
@@ -539,21 +539,20 @@ class Scheduler extends ViewComponent {
 					Button disableButton = new Button();
 					disableButton.setCaption("Disable");
 					disableButton.addClickListener(new ClickListener() {
-						
 						@Override
 						public void buttonClick(ClickEvent event) {
-							
+
 							schId = (Long) tableData.getContainerProperty(itemId, "schid")
 									.getValue();
 							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
-							for(Schedule item:schedulers)
-								{	if(item.getId().equals(schId)){
+							for (Schedule item : schedulers) {
+								if (item.getId().equals(schId)) {
 									item.setEnabled(false);
 									App.getApp().getSchedules().save(item);
-									}
 								}
+							}
 							refreshData();
-							
+
 						}
 					});
 					layout.addComponent(disableButton);
@@ -565,65 +564,56 @@ class Scheduler extends ViewComponent {
 			editButton.setCaption("Edit");
 			editButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							// open scheduler dialog
-
-							SchedulePipeline sch = new SchedulePipeline();
-
-							//openScheduler(sch);
-							schId = (Long) tableData.getContainerProperty(itemId, "schid")
-									.getValue();
-							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
-							for(Schedule item:schedulers)
-								{	if(item.getId().equals(schId)){
-									sch.setSelectedSchedule(item);	
-									break;
-									}
-								}
-
-							App.getApp().addWindow(sch);
-							sch.addListener(new CloseListener() {
-									
-									@Override
-									public void windowClose(CloseEvent e) {
-										// TODO Auto-generated method stub
-										refreshData();
-									}
-								});
-						}
-					});
+				@Override
+				public void buttonClick(ClickEvent event) {
+					schId = (Long) tableData.getContainerProperty(itemId, "schid")
+							.getValue();
+					showSchedulePipeline(schId);
+				}
+			});
 			layout.addComponent(editButton);
 
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
 			deleteButton.addClickListener(new ClickListener() {
-				
 				@Override
 				public void buttonClick(ClickEvent event) {
 					
-					
 					schId = (Long) tableData.getContainerProperty(itemId, "schid")
 							.getValue();
-
-					List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
-					for(Schedule item:schedulers)
-						{	if(item.getId().equals(schId)){
-
-							App.getApp().getSchedules().delete(item);
-							}
-						}
+					Schedule schedule = App.getApp().getSchedules().getSchedule(schId);
+					App.getApp().getSchedules().delete(schedule);
 					refreshData();
-					
 				}
 			});
 			layout.addComponent(deleteButton);
 
 			return layout;
 		}
-
 	}
 
+	/**
+	 * Shows dialog for scheduling pipeline with given scheduling rule.
+	 * 
+	 * @param id Id of schedule to show.
+	 */
+	private void showSchedulePipeline(Long id) {
+		
+		// open scheduler dialog
+		SchedulePipeline sch = new SchedulePipeline();
+
+		//openScheduler(sch);
+		Schedule schedule = App.getApp().getSchedules().getSchedule(id);
+		sch.setSelectedSchedule(schedule);
+
+		App.getApp().addWindow(sch);
+		sch.addCloseListener(new CloseListener() {
+			@Override
+			public void windowClose(CloseEvent e) {
+				refreshData();
+			}
+		});
+	}
 }
 
 class SchedulerTableFilter implements Filter {
@@ -633,19 +623,13 @@ class SchedulerTableFilter implements Filter {
 	 */
 	private static final long serialVersionUID = 1L;
 	// private String needle;
-
 	private Date dateLastFilter;
 	private Date dateNextFilter;
-
 	private String userFilter;
-
 	private String pipelineFilter;
 	private String ruleFilter;
-
 	private String statusFilter;
-
 	private String debugFilter;
-
 	private DateFormat df = null;
 
 	public SchedulerTableFilter(DateFormat dateFormat) {
@@ -744,8 +728,8 @@ class SchedulerTableFilter implements Filter {
 		}
 
 		if (dateIsSet(this.dateLastFilter)) {
-	
-			Date objectLastDate =((Date) item.getItemProperty("last")
+
+			Date objectLastDate = ((Date) item.getItemProperty("last")
 					.getValue());
 
 			if (objectLastDate != null) {
@@ -754,13 +738,14 @@ class SchedulerTableFilter implements Filter {
 				if (objectLastDate.getTime() < this.dateLastFilter.getTime()) {
 					return false;
 				}
-			} else
+			} else {
 				return false;
+			}
 		}
 
 		if (dateIsSet(this.dateNextFilter)) {
-			
-			Date objectNextDate =((Date) item.getItemProperty("next")
+
+			Date objectNextDate = ((Date) item.getItemProperty("next")
 					.getValue());
 
 			if (objectNextDate != null) {
@@ -769,8 +754,9 @@ class SchedulerTableFilter implements Filter {
 				if (objectNextDate.getTime() < this.dateNextFilter.getTime()) {
 					return false;
 				}
-			} else
+			} else {
 				return false;
+			}
 		}
 
 		return true;

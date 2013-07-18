@@ -41,6 +41,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private PipelineGraph graph;
 	private Pipeline pip;
 	//private Stack<PipelineGraph> historyStack;
+	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -79,8 +80,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDpuRemoved(int dpuId) {
 				storeHistoryGraph();
 				Node removedNode = graph.removeDpu(dpuId);
-				App.getDPUs().delete(removedNode.getDpuInstance());
-
+				dpusToDelete.add(removedNode.getDpuInstance());
 			}
 
 			@Override
@@ -214,14 +214,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param pipeline {@link Pipeline} where graph should be saved.
 	 */
 	public void saveGraph(Pipeline pipeline) {
-//		for(DpuInstance dpu : pipeline.getDpus()) {
-//			int[] position = getRpcProxy(PipelineCanvasClientRpc.class).getDpuPosition(dpu.Id);
-//			dpu.setX(position[0]);
-//			dpu.setY(position[1]);
-//		}
-		//pipeline.setWidth(Math.round(this.getWidth()));
-		//pipeline.setHeight(Math.round(this.getHeight()));
-
+		for(DPUInstanceRecord instance : dpusToDelete) {
+			App.getDPUs().delete(instance);
+		}
 		pipeline.setGraph(graph);
 	}
 

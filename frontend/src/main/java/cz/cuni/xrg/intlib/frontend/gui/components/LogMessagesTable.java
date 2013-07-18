@@ -30,6 +30,7 @@ public class LogMessagesTable extends CustomComponent {
 	private DPUInstanceRecord dpu;
 	private PipelineExecution pipelineExecution;
 	private ComboBox levelSelector;
+	private LogMessageDetail detail = null;
 
 	/**
 	 * Default constructor.
@@ -151,17 +152,29 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param log Log message to show detail of.
 	 */
 	private void showLogMessageDetail(LogMessage log) {
-		final LogMessageDetail detailWindow = new LogMessageDetail(log);
-		detailWindow.setHeight(600, Unit.PIXELS);
-		detailWindow.setWidth(400, Unit.PIXELS);
-		detailWindow.setImmediate(true);
-		detailWindow.setContentHeight(600, Unit.PIXELS);
-		detailWindow.addResizeListener(new Window.ResizeListener() {
-			@Override
-			public void windowResized(Window.ResizeEvent e) {
-				detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
-			}
-		});
-		App.getApp().addWindow(detailWindow);
+		if (detail == null) {
+			final LogMessageDetail detailWindow = new LogMessageDetail(log);
+			detailWindow.setHeight(600, Unit.PIXELS);
+			detailWindow.setWidth(400, Unit.PIXELS);
+			detailWindow.setImmediate(true);
+			detailWindow.setContentHeight(600, Unit.PIXELS);
+			detailWindow.addResizeListener(new Window.ResizeListener() {
+				@Override
+				public void windowResized(Window.ResizeEvent e) {
+					detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+				}
+			});
+			detailWindow.addCloseListener(new Window.CloseListener() {
+
+				@Override
+				public void windowClose(Window.CloseEvent e) {
+					detail = null;
+				}
+			});
+			detail = detailWindow;
+			App.getApp().addWindow(detailWindow);
+		} else {
+			detail.loadMessage(log);
+		}
 	}
 }

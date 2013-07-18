@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -226,6 +227,20 @@ class PipelineList extends ViewComponent {
 			}
 		});
 		tablePipelines.setFilterBarVisible(true);
+		tablePipelines.setSelectable(true);
+		tablePipelines.addItemClickListener(
+				new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				//if (event.isDoubleClick()) {
+				if (!tablePipelines.isSelected(event.getItemId())) {
+					BeanItem beanItem = (BeanItem) event.getItem();
+					long pipelineId = (long) beanItem.getItemProperty("id")
+							.getValue();
+					App.getApp().getNavigator().navigateTo(ViewNames.PipelineEdit.getUrl()+ "/" + pipelineId);
+				}
+			}
+		});
 
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("create pipeline");

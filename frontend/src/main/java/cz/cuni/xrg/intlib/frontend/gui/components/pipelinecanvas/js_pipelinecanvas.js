@@ -418,7 +418,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             x: rect.getWidth() - 16,
             y:0,
             width: 16,
-            height: 48,
+            height: 64,
             visible : false
         });
 
@@ -451,10 +451,28 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
         actionBar.add(cmdConnection);
 
+		// DPU Detail command
+        var cmdDetail = new Kinetic.Image({
+			x: 0,
+            y: 16,
+			image: detailIcon,
+			width: 16,
+			height: 16,
+			startScale: 1
+		});
+
+        cmdDetail.on('click', function(evt) {
+            writeMessage(messageLayer, 'DPU detail requested');
+            rpcProxy.onDetailRequested(dpu.id);
+            evt.cancelBubble = true;
+        });
+
+        actionBar.add(cmdDetail);
+
         // DPU Remove command
         var cmdRemove = new Kinetic.Image({
 			x: 0,
-            y: 16,
+            y: 48,
 			image: removeConnectionIcon,
 			width: 16,
 			height: 16,
