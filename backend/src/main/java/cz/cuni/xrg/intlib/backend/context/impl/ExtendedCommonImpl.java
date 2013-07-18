@@ -84,7 +84,7 @@ class ExtendedCommonImpl {
 	 * @throws IOException 
 	 */
 	public ExtendedCommonImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ExecutionContextInfo context, AppConfig appConfig, File jarFile) throws IOException {
+			ExecutionContextInfo context, AppConfig appConfig) throws IOException {
 		this.id = id;
 		this.customData = new HashMap<String, Object>();
 		this.isDebugging = execution.isDebugging();
