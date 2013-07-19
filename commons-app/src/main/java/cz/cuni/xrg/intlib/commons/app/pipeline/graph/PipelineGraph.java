@@ -64,19 +64,28 @@ public class PipelineGraph implements Serializable {
 	 * 
 	 * @param graph 
 	 */
+	@SuppressWarnings("LeakingThisInConstructor")
 	public PipelineGraph(PipelineGraph graph) {
 		
 		// create mapping from old nodes to new nodes to be able to correctly
 		// reference source and target nodes for new edges
 		Map<Node,Node> nMap = new HashMap<>(graph.nodes.size());
-		for (Node n : graph.getNodes()) {
-			nMap.put(n, new Node(n));
+		for (Node oldNode : graph.getNodes()) {
+			Node newNode = new Node(oldNode);
+			newNode.setGraph(this);
+			nMap.put(oldNode, newNode);
 		}
 		
 		// create edges
 		edges = new HashSet(graph.edges.size());
-		for (Edge e : graph.getEdges()) {
-			edges.add(new Edge(nMap.get(e.getFrom()), nMap.get(e.getTo())));
+		for (Edge oldEdge : graph.getEdges()) {
+			Edge newEdge = new Edge(
+				nMap.get(oldEdge.getFrom()),
+				nMap.get(oldEdge.getTo()),
+				oldEdge.getDataUnitName()
+			);
+			newEdge.setGraph(this);
+			edges.add(newEdge);
 		}
 		
 		// assign nodes

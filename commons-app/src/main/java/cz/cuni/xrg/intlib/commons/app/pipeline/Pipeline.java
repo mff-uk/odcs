@@ -79,10 +79,12 @@ public class Pipeline implements Resource, Serializable {
 	 * 
 	 * @param pipeline to copy
 	 */
+	@SuppressWarnings("LeakingThisInConstructor")
 	public Pipeline(Pipeline pipeline) {
 		name = pipeline.getName();
 		description = pipeline.getDescription();
 		graph = new PipelineGraph(pipeline.graph);
+		graph.setPipeline(this);
 	}
 
 	/**

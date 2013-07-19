@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
@@ -59,8 +60,21 @@ public class Edge implements Serializable {
 	 * @param to
 	 */
 	public Edge(Node from, Node to) {
+		this(from, to, "");
+	}
+
+	/**
+	 * Constructor with specification of connecting nodes and {@link DataUnit}
+	 * name.
+	 *
+	 * @param from
+	 * @param to
+	 * @param dataUnitName
+	 */
+	public Edge(Node from, Node to, String dataUnitName) {
 		this.from = from;
 		this.to = to;
+		this.dataUnitName = dataUnitName;
 	}
 
 	/**
