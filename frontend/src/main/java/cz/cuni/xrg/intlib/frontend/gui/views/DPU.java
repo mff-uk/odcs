@@ -158,6 +158,7 @@ class DPU extends ViewComponent {
 		buttonImportDPU.setCaption("Import DPU template");
 		buttonImportDPU.setHeight("25px");
 		buttonImportDPU.setWidth("150px");
+		buttonImportDPU.setEnabled(false);
 		buttonImportDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -172,6 +173,7 @@ class DPU extends ViewComponent {
 		buttonExportAll.setCaption("Export All");
 		buttonExportAll.setHeight("25px");
 		buttonExportAll.setWidth("150px");
+		buttonExportAll.setEnabled(false);
 		buttonExportAll
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -481,6 +483,7 @@ class DPU extends ViewComponent {
 		buttonCopyDPU.setCaption("Copy");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
+		buttonCopyDPU.setEnabled(false);
 		buttonCopyDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -527,6 +530,7 @@ class DPU extends ViewComponent {
 		buttonExportDPU.setCaption("Export");
 		buttonExportDPU.setHeight("25px");
 		buttonExportDPU.setWidth("100px");
+		buttonExportDPU.setEnabled(false);
 		buttonExportDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
