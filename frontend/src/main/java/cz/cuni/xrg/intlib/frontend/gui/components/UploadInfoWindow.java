@@ -118,10 +118,9 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	public void updateProgress(final long readBytes, final long contentLength) {
 		// this method gets called several times during the update
 		pi.setValue(new Float(readBytes / (float) contentLength));
-		textualProgress.setValue("Processed " + readBytes + " bytes of "
-				+ contentLength);
-// 		result.setValue(counter.getLineBreakCount() + " (counting...)");
-//		result.setValue("");
+		textualProgress.setValue("Processed " + (readBytes/1024) + " k bytes of "
+				+ (contentLength/1024) +" k");
+
 	}
 
 	@Override

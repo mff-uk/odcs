@@ -602,9 +602,8 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	public void updateProgress(final long readBytes, final long contentLength) {
 		// this method gets called several times during the update
 		pi.setValue(new Float(readBytes / (float) contentLength));
-		textualProgress.setValue("Processed " + readBytes + " bytes of "
-				+ contentLength);
-//		result.setValue(counter.getLineBreakCount() + " (counting...)");
+		textualProgress.setValue("Processed " + (readBytes/1024) + " k bytes of "
+				+ (contentLength/1024) +" k");
 	}
 
 	@Override
@@ -664,21 +663,30 @@ class LineBreakCounter implements Receiver {
 
 			fos = new OutputStream() {
 				@Override
+				
 				public void write(final int b) throws IOException {
 					total++;
-					if (b == searchedByte) {
-						counter++;
-					}
+					
 					fstream.write(b);
-					if (sleep && total % 1000 == 0) {
-						try {
-							Thread.sleep(100);
-						} catch (final InterruptedException e) {
-							e.fillInStackTrace();
-						}
-					}
+					
 
 				}
+				
+				 public void write(byte b[], int off, int len) throws IOException {
+			        if (b == null) {
+			            throw new NullPointerException();
+			        } else if ((off < 0) || (off > b.length) || (len < 0) ||
+			                   ((off + len) > b.length) || ((off + len) < 0)) {
+			            throw new IndexOutOfBoundsException();
+			        } else if (len == 0) {
+			            return;
+			        }
+			        fstream.write(b, off, len);
+			        total+=len;
+			        
+			        
+			    }
+
 
 				@Override
 				public void close() throws IOException {
