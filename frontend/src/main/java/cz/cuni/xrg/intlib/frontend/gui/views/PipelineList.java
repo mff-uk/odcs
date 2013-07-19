@@ -89,12 +89,29 @@ class PipelineList extends ViewComponent {
 						}
 					});
 			layout.addComponent(updateButton);
+			
+
+			
 			// get item
 			final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
-
+			
+			Button copyButton = new Button();
+			copyButton.setCaption("copy");
+			copyButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+						@Override
+						public void buttonClick(ClickEvent event) {
+							
+							Pipeline pipeline = item.getBean();
+							Pipeline newPpl = new Pipeline(pipeline);
+							App.getApp().getPipelines().save(newPpl);
+							source.refreshRowCache();
+						}
+					});
+			layout.addComponent(copyButton); 
 
 			// TODO Petyr, Maria, Bohuslav, Honza: Pipeline delete
-/*			Button deleteButton = new Button();
+			Button deleteButton = new Button();
 			deleteButton.setCaption("delete");
 			deleteButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -106,7 +123,7 @@ class PipelineList extends ViewComponent {
 							source.removeItem(itemId);
 						}
 					});
-			layout.addComponent(deleteButton);*/
+			layout.addComponent(deleteButton);
 
 			Button runButton = new Button();
 			runButton.setCaption("run");
