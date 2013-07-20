@@ -48,7 +48,7 @@ public class DPUTemplateRecord extends DPURecord {
 	/**
 	 * Create DPUTemplateRecord.
 	 * @param name Template name.
-	 * @param type {@linkDPUType} of the template. 
+	 * @param type {@link DPUType} of the template. 
 	 */
 	public DPUTemplateRecord(String name, DPUType type) {
 		super(name, type);
@@ -61,14 +61,10 @@ public class DPUTemplateRecord extends DPURecord {
 	public DPUTemplateRecord(DPUInstanceRecord dpuInstance) {
 		super(dpuInstance);
 		this.visibility = VisibilityType.PRIVATE;
+	
 		// copy jarDescription from template of previous one ..
-		DPUTemplateRecord dpuInstanceTemplate =
-				dpuInstance.getTemplate();
-		if (dpuInstanceTemplate == null) {
-			// TODO Petyr, Honza: This should not happen .. use some default jarDescription 
-		} else {
-			this.jarDescription = dpuInstanceTemplate.getJarDescription();
-		}		 
+		this.jarDescription = dpuInstance.getTemplate() == null
+				? null : dpuInstance.getTemplate().getJarDescription();
 	}
 	
 	public VisibilityType getVisibility() {
