@@ -1,7 +1,9 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.*;
 
@@ -54,8 +56,10 @@ public class Node implements Serializable {
 	 * @param node to copy
 	 */
 	public Node(Node node) {
-		position = new Position(node.getPosition());
-		dpuInstance = new DPUInstanceRecord(node.getDpuInstance());
+		position = node.getPosition() == null
+				? null : new Position(node.getPosition());
+		dpuInstance = node.getDpuInstance() == null
+				? null : new DPUInstanceRecord(node.getDpuInstance());
 	}
 
 	/**
@@ -89,5 +93,45 @@ public class Node implements Serializable {
 
 	public void setGraph(PipelineGraph graph) {
 		this.graph = graph;
+	}
+
+	/**
+	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
+	 * 
+	 * @return hashcode
+	 */
+	@Override
+	public int hashCode() {
+		if (this.id == null) {
+			return super.hashCode();
+		}
+		int hash = 8;
+		hash = 97 * hash + Objects.hashCode(this.id);
+		return hash;
+	}
+
+	/**
+	 * Returns true if two objects represent the same node. This holds if
+	 * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 * 
+	 * @param o
+	 * @return true if both objects represent the same node
+	 */
+	@Override
+	public boolean equals(Object o) {
+		
+		if (o == null) {
+			return false;
+		}
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+		
+		final Node other = (Node) o;
+		if (this.id == null) {
+			return super.equals(other);
+		}
+		
+		return Objects.equals(this.id, other.id);
 	}
 }

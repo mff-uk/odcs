@@ -128,6 +128,8 @@ public class PipelineGraph implements Serializable {
         this.edges = edges;
 		for (Edge edge : edges) {
 			edge.setGraph(this);
+			nodes.add(edge.getFrom());
+			nodes.add(edge.getTo());
 		}
     }
 	
@@ -167,8 +169,13 @@ public class PipelineGraph implements Serializable {
      */
     public Edge addEdge(Node from, Node to) {
         Edge edge = new Edge(from, to);
+		
         // adds unless it is present already
         boolean added = edges.add(edge);
+		
+		// make sure nodes are members of this graph
+		nodes.add(from);
+		nodes.add(to);
 		
 		// update on owning side
 		edge.setGraph(this);

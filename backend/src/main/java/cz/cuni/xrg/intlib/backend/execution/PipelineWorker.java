@@ -471,7 +471,7 @@ class PipelineWorker implements Runnable {
 		
 		// get instance
 		Object dpuInstance = dpuInstanceRecord.getInstance();		
-		Config configuration = dpuInstanceRecord.getConf();
+		Config configuration = dpuInstanceRecord.getConfiguration();
 		// set configuration
 		if (dpuInstance instanceof Configurable<?>) {
 			Configurable<Config> configurable = (Configurable<Config>)dpuInstance;			

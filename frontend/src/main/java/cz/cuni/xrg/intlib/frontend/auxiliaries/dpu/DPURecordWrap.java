@@ -99,7 +99,7 @@ class DPURecordWrap {
 			// no dialog .. nothing to do 
 			return;
 		}
-		Config conf = dpuRecord.getConf();
+		Config conf = dpuRecord.getConfiguration();
 		if (conf == null) {
 			// use default configuration
 		} else {
@@ -117,7 +117,7 @@ class DPURecordWrap {
 		if (configDialog == null) {
 			return;
 		}
-		dpuRecord.setConf( configDialog.getConfiguration() );
+		dpuRecord.setConfiguration(configDialog.getConfiguration());
 	}
 
 }

@@ -68,10 +68,14 @@ public class DPURecord {
 	 * DPU's configuration in serialized version.
 	 */
 	@Column(name="configuration", nullable = true)
-	private byte[] configuration;	
+	private byte[] serializedConfiguration;
+	
+	@Transient
+	private Config configuration;
 	
 	/**
 	 * ModuleFacade. Set in {{@link #loadInstance(ModuleFacade)}.
+	 * TODO redesign/refactor
 	 */
 	@Transient
 	private ModuleFacade moduleFacade;
@@ -107,7 +111,8 @@ public class DPURecord {
     	this.description = dpuRecord.description;
     	this.type = dpuRecord.type;
     	this.jarPath = dpuRecord.jarPath;
-    	this.configuration = dpuRecord.configuration;
+    	this.serializedConfiguration = dpuRecord.serializedConfiguration;
+		this.configuration = getConf();
     }
     
     /**
@@ -161,24 +166,52 @@ public class DPURecord {
     public Object getInstance() {
     	return instance;
     }
-    
-	public Config getConf() throws ConfigException {
+	
+	/**
+	 * @param configuration 
+	 */
+	public void setConfiguration(Config configuration) {
+		if (this.configuration == null || this.configuration != configuration) {
+			setConf(configuration);
+			this.configuration = configuration;
+		}
+	}
+	
+	/**
+	 * Internal cache for configuration to prevent unserializing on every call.
+	 * 
+	 * @return DPU configuration
+	 */
+	public Config getConfiguration() {
 		if (configuration == null) {
+			configuration = getConf();
+		}
+		return configuration;
+	}
+    
+	/**
+	 * Unserializes DPU configuration from byte array.
+	 * 
+	 * @return DPU configuration
+	 * @throws ConfigException 
+	 */
+	private Config getConf() throws ConfigException {
+		if (serializedConfiguration == null) {
 			return null;
 		}
-		if (configuration.length == 0) {
+		if (serializedConfiguration.length == 0) {
 			return null;
 		}		
 		Config config  = null;
 		// reconstruct object form byte[]
-		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(configuration)) {
+		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(serializedConfiguration)) {
 			// use XStream for serialisation
 			XStream xstream = new XStream();
 			// add class loader for bundle
 			xstream.setClassLoader(moduleFacade.getClassLoader(jarPath));
 			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);
-			Object obj = objIn.readObject();
-			config = (Config)obj;
+				Object obj = objIn.readObject();
+				config = (Config)obj;
 			objIn.close();
 		} catch (IOException e) {
 			throw new ConfigException("Can't deserialize configuration.", e);
@@ -188,16 +221,16 @@ public class DPURecord {
 		return config;
 	}
 
-	public void setConf(Config config) throws ConfigException {		
+	private void setConf(Config config) throws ConfigException {		
 		// serialize object into byte[]
 		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {	
 			// use XStream for serialisation
 // TODO Petyr: use do not create XStream instance every time .. 			
 			XStream xstream = new XStream();
 			ObjectOutputStream objOut = xstream.createObjectOutputStream(byteOut);
-			objOut.writeObject(config);
+				objOut.writeObject(config);
 			objOut.close();
-			configuration = byteOut.toByteArray();
+			serializedConfiguration = byteOut.toByteArray();
 		} catch (IOException e) {
 			throw new ConfigException("Can't serialize configuration.", e);
 		}		
@@ -217,7 +250,7 @@ public class DPURecord {
 			hash = 83 * hash + Objects.hashCode(this.description);
 			hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
 			hash = 83 * hash + Objects.hashCode(this.jarPath);
-			hash = 83 * hash + Objects.hashCode(this.configuration);
+			hash = 83 * hash + Objects.hashCode(this.serializedConfiguration);
 		} else {
 			hash = 83 * hash + Objects.hashCode(this.id);
 		}
@@ -268,7 +301,7 @@ public class DPURecord {
 		if (!Objects.equals(this.jarPath, other.jarPath)) {
 			return false;
 		}
-		if (!Objects.equals(this.configuration, other.configuration)) {
+		if (!Objects.equals(this.serializedConfiguration, other.serializedConfiguration)) {
 			return false;
 		}
 		return true;
