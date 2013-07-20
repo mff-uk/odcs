@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Information about executed pipeline and its states.
@@ -25,7 +26,7 @@ public class PipelineExecution implements Serializable {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 
 	/**
 	 * Actual status for executed pipeline.
@@ -124,7 +125,7 @@ public class PipelineExecution implements Serializable {
 		return context;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -200,4 +201,41 @@ public class PipelineExecution implements Serializable {
 	public void setDebugNode(Node debugNode) {
 		this.debugNode = debugNode;
 	}
+
+	/**
+	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
+	 * 
+	 * @return hashcode
+	 */
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 23 * hash + (int) (this.id ^ (this.id >>> 32));
+		return hash;
+	}
+
+	/**
+	 * Returns true if two objects represent the same pipeline execution. This
+	 * holds if and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 * 
+	 * @param o
+	 * @return true if both objects represent the same pipeline execution
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+		
+		final PipelineExecution other = (PipelineExecution) o;
+		if (this.id == null) {
+			return super.equals(other);
+		}
+		
+		return Objects.equals(this.id, other.id);
+	}
+	
 }

@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import java.util.List;
 
 import org.junit.Test;
@@ -10,10 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 /**
  * Test suite for pipeline facade interface.
@@ -57,6 +55,22 @@ public class PipelineFacadeTest {
 	
 	@Test
 	@Transactional
+	public void testExecutionsOfPipeline() {
+		Pipeline pipe = facade.createPipeline();
+		PipelineExecution exec = new PipelineExecution(pipe);
+		
+		facade.save(pipe);
+		facade.save(exec);
+		
+		List<PipelineExecution> execs = facade.getExecutions(pipe);
+		
+		assertNotNull(execs);
+		assertEquals(1, execs.size());
+		assertEquals(exec, execs.get(0));
+	}
+	
+	@Test
+	@Transactional
 	public void testDeletePipeline() {
 		
 		Pipeline[] pipes = new Pipeline[3];
@@ -74,18 +88,40 @@ public class PipelineFacadeTest {
 	
 	@Test
 	@Transactional
+	public void testDeepDeletePipeline() {
+		
+		long pid = 1;
+		Pipeline pipe = facade.getPipeline(pid);
+		assertNotNull(pipe);
+		List<PipelineExecution> execs = facade.getExecutions(pipe);
+		
+		facade.delete(pipe);
+		assertNull(facade.getPipeline(pid));
+		for (PipelineExecution exec : execs) {
+			assertNull(facade.getExecution(exec.getId()));
+		}
+	}
+	
+	@Test
+	@Transactional
 	public void testPipelineList() {
 		
-		Pipeline[] pipes = new Pipeline[3];
+		List<Pipeline> pipes = facade.getAllPipelines();
+		
 		for (int i = 0; i<3; i++) {
-			pipes[i] = facade.createPipeline();
-			facade.save(pipes[i]);
+			Pipeline newPpl = facade.createPipeline();
+			pipes.add(newPpl);
+			facade.save(newPpl);
 		}
 		
+		// refetch entities
 		List<Pipeline> resPipes = facade.getAllPipelines();
 		
-		assertEquals(pipes.length, resPipes.size());
-		assertArrayEquals(pipes, resPipes.toArray());
+		// test
+		assertEquals(pipes.size(), resPipes.size());
+		for (Pipeline pipe : pipes) {
+			assertTrue(resPipes.contains(pipe));
+		}
 	}
 
 }

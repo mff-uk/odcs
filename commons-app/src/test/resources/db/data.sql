@@ -1,4 +1,33 @@
 
+-- Testing piepline (DBpedia with empty configurations)
+INSERT INTO DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description)
+ VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description)
+ VALUES(2,'RDF File Extractor','Extracts RDF data from a file.',0,'File_extractor-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description)
+ VALUES(3,'SPARQL Transformer','SPARQL Transformer.',1,'SPARQL_transformer-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description)
+ VALUES(4,'SPARQL Loader','Loads RDF data.',2,'RDF_loader-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description)
+ VALUES(5,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar','',NULL,1,'No description in manifest.');
+
+INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
+ VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar',NULL,1);
+INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
+ VALUES(2,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar',NULL,5);
+
+INSERT INTO PPL_MODEL(id,name,description) VALUES(1,'DBpedia','Loads 100 triples from DBpedia.');
+
+INSERT INTO PPL_GRAPH(id,pipeline_id) VALUES(1,1);
+
+INSERT INTO PPL_POSITION(id,pos_x,pos_y) VALUES(1,138,52);
+INSERT INTO PPL_POSITION(id,pos_x,pos_y) VALUES(2,487,132);
+
+INSERT INTO PPL_NODE(id,graph_id,instance_id,position_id) VALUES(1,1,1,1);
+INSERT INTO PPL_NODE(id,graph_id,instance_id,position_id) VALUES(2,1,2,2);
+
+INSERT INTO PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name) VALUES(1,1,1,2,NULL);
+
 -- Log messages
 INSERT INTO LOGGING_EVENT (timestmp,formatted_message,logger_name,level_string,thread_name,reference_flag,arg0,arg1,arg2,arg3,caller_filename,caller_class,caller_method,caller_line,event_id)
  VALUES(1373056400664,'Started','cz.cuni.xrg.intlib.backend.execution.PipelineWorker','DEBUG','pool-2-thread-1',0,NULL,NULL,NULL,NULL,'PipelineWorker.java','cz.cuni.xrg.intlib.backend.execution.PipelineWorker','run','213',1);

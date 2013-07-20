@@ -140,6 +140,26 @@ public class PipelineFacade {
 	}
 
 	/**
+	 * Fetch all executions for given pipeline.
+	 * 
+	 * @param pipeline
+	 * @return pipeline executions
+	 */
+	public List<PipelineExecution> getExecutions(Pipeline pipeline) {
+
+		@SuppressWarnings("unchecked")
+		List<PipelineExecution> resultList = Collections.checkedList(
+			em.createQuery("SELECT e FROM PipelineExecution e"
+				+ " WHERE e.pipeline = :pipe")
+			.setParameter("pipe", pipeline)
+			.getResultList(),
+			PipelineExecution.class
+		);
+
+		return resultList;
+	}
+
+	/**
 	 * Persists new {@link PipelineExecution} or updates it if it was already
 	 * persisted before.
 	 *
@@ -147,7 +167,7 @@ public class PipelineFacade {
 	 */
 	@Transactional
 	public void save(PipelineExecution exec) {
-		if (exec.getId() == 0) {
+		if (exec.getId() == null) {
 			em.persist(exec);
 		} else {
 			em.merge(exec);
@@ -164,7 +184,7 @@ public class PipelineFacade {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
 		// TODO this is just a workaround -> resolve in future release!
-		PipelineExecution e = exec.getId() == 0
+		PipelineExecution e = exec.getId() == null
 				? exec : getExecution(exec.getId());
 		if (e != null) {
 			em.remove(e);

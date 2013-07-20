@@ -5,6 +5,7 @@ import javax.persistence.*;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents a fixed workflow composed of one or several {@link Extract}s,
@@ -133,4 +134,45 @@ public class Pipeline implements Resource, Serializable {
 	public String getResourceId() {
 		return Pipeline.class.toString();
 	}
+
+	/**
+	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
+	 * 
+	 * @return hashcode
+	 */
+	@Override
+	public int hashCode() {
+		if (this.id == null) {
+			return super.hashCode();
+		}
+		int hash = 7;
+		hash = 97 * hash + Objects.hashCode(this.id);
+		return hash;
+	}
+
+	/**
+	 * Returns true if two objects represent the same pipeline. This holds if
+	 * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 * 
+	 * @param o
+	 * @return true if both objects represent the same pipeline
+	 */
+	@Override
+	public boolean equals(Object o) {
+		
+		if (o == null) {
+			return false;
+		}
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+		
+		final Pipeline other = (Pipeline) o;
+		if (this.id == null) {
+			return super.equals(other);
+		}
+		
+		return Objects.equals(this.id, other.id);
+	}
+	
 }
