@@ -104,29 +104,32 @@ public class Edge implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (other.getClass() != Edge.class) {
-			return false;
-		}
-		Edge o = (Edge) other;
-		if (this.id != null && this.id.equals(o.getId())) {
-			return true;
-		} else if (this.from.hashCode() == o.from.hashCode()
-				&& this.to.hashCode() == o.to.hashCode()) {
-			return true;
-		} else {
-			return this.from == o.from && this.to == o.to;
-		}
-	}
-
-	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 97 * hash + Objects.hashCode(this.from);
-		hash = 97 * hash + Objects.hashCode(this.to);
+		if (this.id == null) {
+			return super.hashCode();
+		}
+		int hash = 5;
+		hash = 17 * hash + Objects.hashCode(this.id);
 		return hash;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+		
+		final Edge other = (Edge) o;
+		if (this.id == null) {
+			return super.equals(other);
+		}
+		
+		return Objects.equals(this.id, other.id);
+	}
+	
 	public Long getId() {
 		return id;
 	}
