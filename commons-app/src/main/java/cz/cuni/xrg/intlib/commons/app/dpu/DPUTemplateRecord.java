@@ -3,7 +3,13 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 import javax.persistence.*;
 
 /**
- * 
+ * Representation of template for creating {@link DPUInstanceRecord}s.
+ * The purpose of templating DPUs is to unburden user from manually edit and
+ * configure all DPU properties when creating pipelines. Template's properties
+ * are propagated to {@link DPUInstanceRecord} everytime it is created as
+ * an instance of given {@link DPUTemplateRecord}. Reference to template is
+ * preserved in each DPU instance, so that updates of configuration can be
+ * propagated to template's children.
  * 
  * @author Petyr
  * 
@@ -26,27 +32,21 @@ public class DPUTemplateRecord extends DPURecord {
 	private String jarDescription;
 	
 	/**
-	 * Parent DPURecord. If parent is set, this DPURecord is under its parent in DPU tree.
-	 * 
+	 * Parent {@link DPUTemplateRecord}. If parent is set, this DPURecord is
+	 * rendered under its parent in DPU tree.
 	 */
-	//@Transient
 	@ManyToOne(optional = true)
 	@JoinColumn(name="parent_id", nullable = true)
 	private DPUTemplateRecord parent;
-	
-	
-	
-//	@Column(name="parent_id", nullable = true)
-//	private Long parentId;
-	
-	
+		
 	/**
 	 * Empty ctor for JPA.
 	 */
 	public DPUTemplateRecord() { }
 	
 	/**
-	 * Create DPUTemplateRecord.
+	 * Creates new {@link DPUTemplateRecord}.
+	 * 
 	 * @param name Template name.
 	 * @param type {@link DPUType} of the template. 
 	 */
