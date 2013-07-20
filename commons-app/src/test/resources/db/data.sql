@@ -28,6 +28,8 @@ INSERT INTO PPL_NODE(id,graph_id,instance_id,position_id) VALUES(2,1,2,2);
 
 INSERT INTO PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name) VALUES(1,1,1,2,NULL);
 
+INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context_id,schedule_id,silent_mode,debugnode_id) VALUES(1,5,1,0,NULL,NULL,NULL,NULL,1,NULL);
+
 -- Log messages
 INSERT INTO LOGGING_EVENT (timestmp,formatted_message,logger_name,level_string,thread_name,reference_flag,arg0,arg1,arg2,arg3,caller_filename,caller_class,caller_method,caller_line,event_id)
  VALUES(1373056400664,'Started','cz.cuni.xrg.intlib.backend.execution.PipelineWorker','DEBUG','pool-2-thread-1',0,NULL,NULL,NULL,NULL,'PipelineWorker.java','cz.cuni.xrg.intlib.backend.execution.PipelineWorker','run','213',1);

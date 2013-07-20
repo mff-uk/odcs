@@ -92,6 +92,13 @@ public class PipelineFacade {
 		Pipeline p = pipeline.getId() == null
 			? pipeline : getPipeline(pipeline.getId());
 		if (p != null) {
+			// remove all pipeline's executions first
+			List<PipelineExecution> execs = getExecutions(p);
+			for (PipelineExecution e : execs) {
+				delete(e);
+			}
+			
+			// remove pipeline itself
 			em.remove(p);
 		} else {
 			LOG.warn("Pipeline with ID " + pipeline.getId() + " was not found and so cannot be deleted!");
