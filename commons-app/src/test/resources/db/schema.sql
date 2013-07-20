@@ -26,6 +26,7 @@ CREATE TABLE `DPU_TEMPLATE`
   `type` SMALLINT,
   `jar_path` VARCHAR(255),
   `configuration` BLOB,
+  `parent_id` INTEGER,
 -- DPUTemplateRecord
   `visibility` SMALLINT,
   `jar_description` VARCHAR(512),
@@ -78,10 +79,10 @@ CREATE TABLE `EXEC_PIPELINE`
   `debug_mode` SMALLINT,
   `t_start` DATETIME,
   `t_end` DATETIME,
-  `execution_directory` VARCHAR(255),
   `context_id` INTEGER,
   `schedule_id` INTEGER,
   `silent_mode` SMALLINT,
+  `debugnode_id` INTEGER,
   PRIMARY KEY (`id`)
 );
 
@@ -96,7 +97,7 @@ CREATE TABLE `EXEC_SCHEDULE`
   `type` SMALLINT,
   `first_exec` DATETIME,
   `last_exec` DATETIME,
-  `time_period` BIGINT,
+  `time_period` INTEGER,
   `period_unit` SMALLINT,
   PRIMARY KEY (`id`)
 );
@@ -122,6 +123,7 @@ CREATE TABLE `PPL_EDGE`
   `graph_id` INTEGER,
   `node_from_id` INTEGER,
   `node_to_id` INTEGER,
+  `data_unit_name` VARCHAR(45),
   PRIMARY KEY (`id`)
 );
 
@@ -222,7 +224,7 @@ CREATE TABLE `LOGGING_EVENT_PROPERTY`
 (
   event_id BIGINT NOT NULL,
   mapped_key VARCHAR(254) NOT NULL,
-  mapped_value TEXT,
+  mapped_value VARCHAR(254),
   PRIMARY KEY (event_id, mapped_key),
   FOREIGN KEY (event_id) REFERENCES `LOGGING_EVENT`(event_id)
 );
