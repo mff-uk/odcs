@@ -1,10 +1,16 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
+import java.io.FileNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.mockito.Mockito.*;
 
 /**
@@ -12,7 +18,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jan Vojt
  */
+@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class DPUInstanceRecordTest {
+	
+	@Autowired
+	private ModuleFacade mf;
 	
 	/**
 	 * Tested instance.
@@ -20,31 +31,35 @@ public class DPUInstanceRecordTest {
 	private DPUInstanceRecord instance;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws ModuleException {
 		instance = new DPUInstanceRecord();
+		try {
+			// TODO THIS IS EXTREMELY BAD DESIGN -> REDESIGN
+			instance.loadInstance(mf);
+		} catch (FileNotFoundException ex) {
+			// ignore, loadInstance is used just to set moduleFacade ...
+		}
 	}
 
-	/**
-	 * THIS TEST FAILS, BUT IS INTENTIONALLY IGNORED!
-	 * It fails because we do not have the implementation of {@link Config} and
-	 * so we cannot clone it. We also cannot serialize and unserialize DPU
-	 * config, because mocked instance cannot be unserialized.
-	 * TODO repair test or redesign configuration
-	 */
 	@Test
-	@Ignore
-	public void testCopy() {
+	public void testCopy() throws ModuleException {
 		// initialize contained objects
-		Config config = mock(Config.class);
+		Config config = mock(Config.class, withSettings().serializable());
 		DPUTemplateRecord dpu = new DPUTemplateRecord();
 		
 		instance.setName("testname");
 		instance.setDescription("testdescription");
-		instance.setJarPath("testjarpath");
+//		instance.setJarPath("testjarpath"); // TODO must be loadable jar to pass
 		instance.setConfiguration(config);
 		instance.setTemplate(dpu);
 		
 		DPUInstanceRecord copy = new DPUInstanceRecord(instance);
+		try {
+			// TODO THIS IS EXTREMELY BAD DESIGN -> REDESIGN
+			copy.loadInstance(mf);
+		} catch (FileNotFoundException ex) {
+			// ignore, loadInstance is used just to set moduleFacade ...
+		}
 		
 		assertNotSame(instance, copy);
 		assertNotNull(copy);

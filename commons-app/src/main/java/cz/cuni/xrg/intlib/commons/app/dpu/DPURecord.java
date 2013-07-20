@@ -15,6 +15,8 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represent imported DPU in database.
@@ -85,6 +87,8 @@ public class DPURecord {
 	 */
 	@Transient
 	private Object instance;
+
+	private static final Logger LOG = LoggerFactory.getLogger(DPURecord.class.getName());
 	
     /**
      * Allow empty constructor for JPA.
@@ -112,7 +116,7 @@ public class DPURecord {
     	this.type = dpuRecord.type;
     	this.jarPath = dpuRecord.jarPath;
     	this.serializedConfiguration = dpuRecord.serializedConfiguration;
-		this.configuration = getConf();
+		this.configuration = dpuRecord.getConf();
     }
     
     /**
@@ -208,7 +212,13 @@ public class DPURecord {
 			// use XStream for serialisation
 			XStream xstream = new XStream();
 			// add class loader for bundle
-			xstream.setClassLoader(moduleFacade.getClassLoader(jarPath));
+			if (moduleFacade == null) {
+				LOG.warn("Unserializing DPU configuration without classloader (missing moduleFacade).");
+			} else if (jarPath == null) {
+				LOG.warn("Unserializing DPU configuration without classloader (cannot load jar file).");
+			} else {
+				xstream.setClassLoader(moduleFacade.getClassLoader(jarPath));
+			}
 			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);
 				Object obj = objIn.readObject();
 				config = (Config)obj;
