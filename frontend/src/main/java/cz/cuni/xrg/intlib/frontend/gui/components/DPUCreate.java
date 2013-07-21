@@ -69,6 +69,13 @@ import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 
+/**
+ * Dialog for the DPU template creation. Called from the {@link DPU}.  Allows to upload a JAR file
+ * and on base of it create a new DPU template that will be stored to the DPU template tree.
+ * 
+ * @author Maria Kukhar
+ *
+ */
 public class DPUCreate extends Window {
 
 	private TextField dpuName;
@@ -76,12 +83,16 @@ public class DPUCreate extends Window {
 	private TextArea dpuDescription;
 	private OptionGroup groupVisibility;
 	private Upload selectFile;
-	private LineBreakCounter lineBreakCounter;
+	private FileUploadReceiver fileUploadReceiver;
 	public static UploadInfoWindow uploadInfoWindow;
 	private GridLayout dpuGeneralSettingsLayout;
 	private DPUTemplateRecord dpuTemplate;
 	private TextField uploadFile;
 	public static int fl=0;
+
+	/**
+	 *  Basic constructor.
+	 */
 
 	public DPUCreate() {
 
@@ -99,7 +110,7 @@ public class DPUCreate extends Window {
 		dpuGeneralSettingsLayout.setWidth("400px");
 		dpuGeneralSettingsLayout.setHeight("200px");
 
-
+		//Name of DPU Template: label & TextField
 		Label nameLabel = new Label("Name");
 		nameLabel.setImmediate(false);
 		nameLabel.setWidth("-1px");
@@ -110,6 +121,7 @@ public class DPUCreate extends Window {
 		dpuName.setImmediate(false);
 		dpuName.setWidth("310px");
 		dpuName.setHeight("-1px");
+		//settings of mandatory
 		dpuName.addValidator(new Validator() {
 
 			@Override
@@ -123,7 +135,8 @@ public class DPUCreate extends Window {
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
-
+		
+		//Description of DPU Template: label & TextArea
 		Label descriptionLabel = new Label("Description");
 		descriptionLabel.setImmediate(false);
 		descriptionLabel.setWidth("-1px");
@@ -134,6 +147,7 @@ public class DPUCreate extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("310px");
 		dpuDescription.setHeight("60px");
+		//settings of mandatory
 		dpuDescription.addValidator(new Validator() {
 
 			@Override
@@ -147,7 +161,8 @@ public class DPUCreate extends Window {
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
-
+		
+		//Visibility of DPU Template: label & OptionGroup
 		Label visibilityLabel = new Label("Visibility");
 		descriptionLabel.setImmediate(false);
 		descriptionLabel.setWidth("-1px");
@@ -168,13 +183,13 @@ public class DPUCreate extends Window {
 		selectLabel.setHeight("-1px");
 		dpuGeneralSettingsLayout.addComponent(selectLabel, 0, 3);
 
-		lineBreakCounter = new LineBreakCounter();
-		lineBreakCounter.setSlow(true);
+		fileUploadReceiver = new FileUploadReceiver();
 		
 		HorizontalLayout uploadFileLayout = new HorizontalLayout();
 		uploadFileLayout.setSpacing(true);
 
-		selectFile = new Upload(null, lineBreakCounter);
+		//JAR file uploader
+		selectFile = new Upload(null, fileUploadReceiver);
 		selectFile.setImmediate(true);
 		selectFile.setButtonCaption("Choose file");
 		selectFile.addStyleName("horizontalgroup");
@@ -183,7 +198,10 @@ public class DPUCreate extends Window {
 		selectFile.addStartedListener(new StartedListener() {
 
 			/**
-			 * 
+			 * Upload start listener. If selected file has JAR extension then 
+			 * an upload status window with upload progress bar will be shown. 
+			 * If selected file has other extension, then upload will be interrupted and 
+			 * error notification will be shown.
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -214,6 +232,9 @@ public class DPUCreate extends Window {
 
 		selectFile.addFinishedListener(new Upload.FinishedListener() {
 			/**
+			 * Upload finished listener. Upload window will be closed after upload finished.
+			 * If an upload process wasn't interrupted then will be
+			 * show the name of an uploaded file on the DPU template creation dialogue. 
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
@@ -236,15 +257,15 @@ public class DPUCreate extends Window {
 				}
 			}
 		});
-
-		uploadInfoWindow = new UploadInfoWindow(selectFile, lineBreakCounter);
+		// Upload status window
+		uploadInfoWindow = new UploadInfoWindow(selectFile);
 		
 		uploadFileLayout.addComponent(selectFile);
 
 		uploadFile = new TextField();
 		uploadFile.setWidth("210px");
 		uploadFile.setReadOnly(true);
-
+		//set mandatory to uploadFile text field.
 		uploadFile.addValidator(new Validator() {
 
 			@Override
@@ -266,6 +287,7 @@ public class DPUCreate extends Window {
 				false));
 		mainLayout.addComponent(dpuGeneralSettingsLayout);
 
+		//Layout with buttons Save and Cancel
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setStyleName("dpuDetailButtonBar");
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
@@ -273,8 +295,19 @@ public class DPUCreate extends Window {
 		Button saveButton = new Button("Save");
 		saveButton.addClickListener(new ClickListener() {
 
+			/**
+			 * After pushing the button Save will be checked validation of the mandatory fields:
+			 * Name, Description and uploadFile. 
+			 * JAR file will be copied from template folder to  the /target/dpu/ folder 
+			 * if there no conflicts.
+			 * After getting all information from JAR file needed to store new DPUTemplateRecord,
+			 * the record in Database will be created
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
+				// checking validation of the mandatory fields
 				if ((!dpuName.isValid()) || (!dpuDescription.isValid())
 						|| (!uploadFile.isValid())) {
 					Notification.show("Failed to save DPURecord",
@@ -283,16 +316,18 @@ public class DPUCreate extends Window {
 					return;
 				}
 
-				if (LineBreakCounter.path != null) {
+				if (FileUploadReceiver.path != null) {
 					String pojPath = App.getApp().getAppConfiguration()
 							.getString(ConfigProperty.MODULE_PATH);
-					File srcFile = new File(LineBreakCounter.file.toString());
-					File destFile = new File(pojPath + LineBreakCounter.fName);
+					File srcFile = new File(FileUploadReceiver.file.toString());
+					File destFile = new File(pojPath + FileUploadReceiver.fName);
 
-
+					//checking if uploaded file already exist in the /target/dpu/ 
 					boolean exists = destFile.exists();
+					//if uploaded file doesn't exist in the /target/dpu/
 					if (!exists) {
 						try {
+							//copy file from template folder to the  /target/dpu/ 
 							copyFile(srcFile, destFile);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -301,23 +336,24 @@ public class DPUCreate extends Window {
 						}
 						
 					} else {
-						
+						//uploaded file already exist in the /target/dpu/ 
 						List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
 						String dpuName ="";
 						for (DPUTemplateRecord dpu : dpus){
-							if(dpu.getJarPath().equals(LineBreakCounter.fName)){
+							//if find DPUTemplateRecord that used this file, get it name 
+							if(dpu.getJarPath().equals(FileUploadReceiver.fName)){
 								dpuName = dpu.getName();
 								break;
 							}			
 						}
-						
+						//if we get the name of DPUTemplateRecord that used this file, show notification
 						if (dpuName!=""){
-							
 							Notification.show(
-									"File " + LineBreakCounter.fName +" is already used in the DPU template " + dpuName,
+									"File " + FileUploadReceiver.fName +" is already used in the DPU template " + dpuName,
 									Notification.Type.ERROR_MESSAGE);
 							return;
 						}
+						//else, copy file from template folder to the  /target/dpu/ 
 						else{
 							try {
 								copyFile(srcFile, destFile);
@@ -332,7 +368,7 @@ public class DPUCreate extends Window {
 
 					}
 
-					String relativePath = LineBreakCounter.fName;
+					String relativePath = FileUploadReceiver.fName;
 					// we try to load new DPU .. to find out more about it,
 					// start by obtaining ModuleFacade
 					Object dpuObject = null;
@@ -387,7 +423,7 @@ public class DPUCreate extends Window {
 					dpuTemplate.setDescription(dpuDescription.getValue());
 					dpuTemplate.setVisibility((VisibilityType) groupVisibility
 							.getValue());
-					dpuTemplate.setJarPath(LineBreakCounter.fName);
+					dpuTemplate.setJarPath(FileUploadReceiver.fName);
 					dpuTemplate.setJarDescription(jarDescription);
 
 					// TODO Petyr, Maria: Load the "default" configuration
@@ -404,7 +440,7 @@ public class DPUCreate extends Window {
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
 
 			/**
-			 * 
+			 * Closes DPU Template creation window
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -422,6 +458,13 @@ public class DPUCreate extends Window {
 		setSizeUndefined();
 	}
 
+	/**
+	 * Copy file from src to dest. 
+	 * 
+	 * @param src. File that we want to copy.
+	 * @param dest. Destination where we want to copy src.
+	 * @throws IOException
+	 */
 	public static void copyFile(File src, File dest) throws IOException {
 
 		InputStream inStream = null;
@@ -452,13 +495,15 @@ public class DPUCreate extends Window {
 }
 
 
+/**
+ * Upload selected file to template directory
+ * 
+ * @author Maria Kukhar
+ *
+ */
+class FileUploadReceiver implements Receiver {
 
-class LineBreakCounter implements Receiver {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5099459605355200117L;
-	private int counter;
 	private int total;
 	private boolean sleep;
 	public static File file;
@@ -467,17 +512,17 @@ class LineBreakCounter implements Receiver {
 	public static String fName;
 
 	/**
-	 * return an OutputStream that simply counts lineends
+	 * return an OutputStream 
 	 */
 	public OutputStream receiveUpload(final String filename,
 			final String MIMEType) {
-		counter = 0;
 		total = 0;
 		fName = filename;
 
 		OutputStream fos = null;
 
 		try {
+			//create template directory
 			path = Files.createTempDirectory("jarDPU");
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -492,13 +537,10 @@ class LineBreakCounter implements Receiver {
 				@Override
 				public void write(final int b) throws IOException {
 					total++;
-					
 					fstream.write(b);
-					
-
 				}
 				
-				 public void write(byte b[], int off, int len) throws IOException {
+				public void write(byte b[], int off, int len) throws IOException {
 			        if (b == null) {
 			            throw new NullPointerException();
 			        } else if ((off < 0) || (off > b.length) || (len < 0) ||
@@ -509,8 +551,6 @@ class LineBreakCounter implements Receiver {
 			        }
 			        fstream.write(b, off, len);
 			        total+=len;
-			        
-			        
 			    }
 
 				@Override
@@ -526,14 +566,6 @@ class LineBreakCounter implements Receiver {
 			return null;
 		}
 		return fos;
-	}
-
-	public int getLineBreakCount() {
-		return counter;
-	}
-
-	public void setSlow(final boolean value) {
-		sleep = value;
 	}
 
 }

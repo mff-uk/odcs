@@ -13,27 +13,32 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 
+/**
+ * Dialog for uploading status. Appear automatically after file upload start.
+ * @author Maria Kukhar
+ *
+ */
 public class UploadInfoWindow extends Window implements Upload.StartedListener,
-		Upload.ProgressListener, Upload.FailedListener,
-		Upload.SucceededListener, Upload.FinishedListener {
-	/**
-* 
-*/
+		Upload.ProgressListener, Upload.FinishedListener {
+
 	private static final long serialVersionUID = 1L;
 	private final Label state = new Label();
-//	private final Label result = new Label();
 	private final Label fileName = new Label();
 	private final Label textualProgress = new Label();
 
 	private final ProgressIndicator pi = new ProgressIndicator();
 	private final Button cancelButton;
-	private final LineBreakCounter counter;
+
 	final FormLayout l;
 
-	public UploadInfoWindow(final Upload upload,
-			final LineBreakCounter lineBreakCounter) {
+
+	/**
+	 * Basic constructor
+	 * 
+	 * @param upload. Upload component
+	 */
+	public UploadInfoWindow(final Upload upload) {
 		super("Status");
-		this.counter = lineBreakCounter;
 
 		addStyleName("upload-info");
 
@@ -51,8 +56,8 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 		cancelButton = new Button("Cancel");
 		cancelButton.addClickListener(new Button.ClickListener() {
 			/**
-	 * 
-	 */
+			 * Upload interruption
+			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -71,10 +76,8 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 		fileName.setCaption("File name");
 		l.addComponent(fileName);
-
-//		result.setCaption("Line breaks counted");
-//		l.addComponent(result);
-
+		
+		//progress indicator
 		pi.setCaption("Progress");
 		pi.setVisible(false);
 		l.addComponent(pi);
@@ -84,11 +87,14 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 		upload.addStartedListener(this);
 		upload.addProgressListener(this);
-		upload.addFailedListener(this);
-		upload.addSucceededListener(this);
 		upload.addFinishedListener(this);
 
 	}
+	
+	/**
+	 *  this method gets called immediately after upload is
+	 *  finished
+	 */
 
 	@Override
 	public void uploadFinished(final FinishedEvent event) {
@@ -98,14 +104,17 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 		cancelButton.setVisible(false);
 
 	}
+	/**
+	 *  this method gets called immediately after upload is
+	 *  started
+	 */
 
 	@Override
 	public void uploadStarted(final StartedEvent event) {
-		// this method gets called immediatedly after upload is
-		// started
+
 		pi.setValue(0f);
 		pi.setVisible(true);
-		pi.setPollingInterval(500); // hit server frequantly to get
+		pi.setPollingInterval(500); // hit server frequently to get
 		textualProgress.setVisible(true);
 		// updates to client
 		state.setValue("Uploading");
@@ -114,27 +123,14 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 		cancelButton.setVisible(true);
 	}
 
+	/**
+	 *  this method shows update progress
+	 */
 	@Override
 	public void updateProgress(final long readBytes, final long contentLength) {
-		// this method gets called several times during the update
 		pi.setValue(new Float(readBytes / (float) contentLength));
 		textualProgress.setValue("Processed " + (readBytes/1024) + " k bytes of "
 				+ (contentLength/1024) +" k");
-
-	}
-
-	@Override
-	public void uploadSucceeded(final SucceededEvent event) {
-		// result.setValue(counter.getLineBreakCount() + " (total)");
-		// result.setValue("File uploaded successfully");
-
-
-	}
-
-	@Override
-	public void uploadFailed(final FailedEvent event) {
-//		 result.setValue("Upload was interrupted at "
-//		 + Math.round(100 * pi.getValue()) + "%");
 
 	}
 
