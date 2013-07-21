@@ -18,12 +18,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jan Vojt
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
 public class DPUInstanceRecordTest {
-	
-	@Autowired
-	private ModuleFacade mf;
 	
 	/**
 	 * Tested instance.
@@ -33,12 +28,6 @@ public class DPUInstanceRecordTest {
 	@Before
 	public void setUp() throws ModuleException {
 		instance = new DPUInstanceRecord();
-		try {
-			// TODO THIS IS EXTREMELY BAD DESIGN -> REDESIGN
-			instance.loadInstance(mf);
-		} catch (FileNotFoundException ex) {
-			// ignore, loadInstance is used just to set moduleFacade ...
-		}
 	}
 
 	@Test
@@ -49,17 +38,11 @@ public class DPUInstanceRecordTest {
 		
 		instance.setName("testname");
 		instance.setDescription("testdescription");
-//		instance.setJarPath("testjarpath"); // TODO must be loadable jar to pass
+		instance.setJarPath("testjarpath");
 		instance.setConfiguration(config);
 		instance.setTemplate(dpu);
 		
 		DPUInstanceRecord copy = new DPUInstanceRecord(instance);
-		try {
-			// TODO THIS IS EXTREMELY BAD DESIGN -> REDESIGN
-			copy.loadInstance(mf);
-		} catch (FileNotFoundException ex) {
-			// ignore, loadInstance is used just to set moduleFacade ...
-		}
 		
 		assertNotSame(instance, copy);
 		assertNotNull(copy);

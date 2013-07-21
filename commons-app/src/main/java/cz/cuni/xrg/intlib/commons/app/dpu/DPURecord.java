@@ -116,7 +116,6 @@ public class DPURecord {
     	this.type = dpuRecord.type;
     	this.jarPath = dpuRecord.jarPath;
     	this.serializedConfiguration = dpuRecord.serializedConfiguration;
-		this.configuration = dpuRecord.getConf();
     }
     
     /**
