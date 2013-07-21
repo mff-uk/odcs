@@ -1,6 +1,13 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-
+/**
+ * Dialog for pipeline status information. 
+ * Opens from DPU Template Details Instances tab in {@link DPU}.
+ * Contains information about pipeline status and last run of pipeline
+ * 
+ * @author Maria Kukhar
+ *
+ */
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,17 +32,23 @@ public class PipelineStatus extends Window {
 	private Label runsNumber;
 	private int i;
 	
+	/** 
+	 * Get date of the last execution and number of run for specific pipeline.
+	 * 
+	 * @param selectedPipeline. Pipeline that locate in the row of Instances table 
+	 * in which has been pressed the button Status.
+	 */
 	public void setSelectedPipeline(Pipeline selectedPipeline){
 		
 		List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
 		Date maxDate = null;  
+		
+		//getting date of the last pipeline execution
 		for (Schedule item : schedulers) {
 			if ((item.getPipeline().getId().equals(selectedPipeline.getId()))&&(item.getLastExecution()!=null) ){
-//				lastRunTimeStr = item.getLastExecution().toLocaleString();
 				if (maxDate==null || maxDate.getTime()<item.getLastExecution().getTime()){
 					maxDate=item.getLastExecution();
 				}
-//				break;
 			}
 		}
 		if(maxDate!=null)
@@ -46,6 +59,8 @@ public class PipelineStatus extends Window {
 		
 		List<PipelineExecution> executions = App.getApp().getPipelines().getAllExecutions();
 		i=0;
+		
+		//getting number of pipeline run 
 		for (PipelineExecution item : executions) {
 			if (item.getPipeline().getId().equals(selectedPipeline.getId()) ){
 				i++;
@@ -54,6 +69,9 @@ public class PipelineStatus extends Window {
 		runsNumber.setCaption(Integer.toString(i));	
 	}
 	
+	/**
+	 * Basic constructor
+	 */
 	public PipelineStatus(){
 		
 		this.setResizable(false);
