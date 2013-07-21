@@ -6,25 +6,40 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 
+/**
+ * Generate the column "actions" in the table with pipeline execution records 
+ * in  {@link ExecutionMonitor} with buttons: Stop, Show log, Debug data.  
+ * 
+ * @author Maria Kukhar
+ *
+ */
 public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator {
 
 	private ClickListener clickListener = null;
 
 	private Object execID;
 
+	/**
+	 * Set listener
+	 * @param outclickListerner. 
+	 */
 	public GenerateActionColumnMonitor(ClickListener outclickListerner) {
 		super();
 		this.clickListener = outclickListerner;
 	}
 
+
+	/**
+	 * Generate cell on the "actions" column for each table item.
+	 */
 	@Override
 	public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 		Property propStatus = source.getItem(itemId).getItemProperty("status");
 		Property prop2 = source.getItem(itemId).getItemProperty("debug");
 		ExecutionStatus testStatus = null;
 		boolean testDebug = false;
-		// execID=itemId;
 		execID = itemId;
 
 		HorizontalLayout box = new HorizontalLayout();
@@ -34,6 +49,8 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 				|| (prop2.getType().equals(Boolean.class))) {
 			testStatus = (ExecutionStatus) propStatus.getValue();
 			testDebug = (boolean) prop2.getValue();
+			
+			//If item execution status is SCHEDULED then for that item will be shown Stop button
 			if ((testStatus== ExecutionStatus.SCHEDULED)
 					&& !testDebug) {
 				Button stopButton = new Button("Stop");
@@ -44,6 +61,7 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 					stopButton.addClickListener(this.clickListener);
 
 			}
+			//If item execution status is FAILED or FINISHED_SUCCESS then for that item will be shown Show log button
 			if (((testStatus == ExecutionStatus.FAILED) || (testStatus == ExecutionStatus.FINISHED_SUCCESS))
 					&& !testDebug) {
 				Button logButton = new Button("Show log");
@@ -56,7 +74,8 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 				box.addComponent(logButton);
 
 			}
-
+			
+			//If item debug is true then for that item will be shown Debug data button
 			if (testDebug) {
 				Button debugButton = new Button("Debug data");
 

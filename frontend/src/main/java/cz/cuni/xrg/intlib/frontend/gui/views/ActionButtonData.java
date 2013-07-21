@@ -1,5 +1,14 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
+/**
+ * Preserves buttons type and table row on which the button on Execution Monitor was pressed.
+ * Parameters String action and Object data are setting in {@link GenerateActionColumnMonitor}
+ * after button click event in {@link ExecutionMonitor} this data will be get.
+ * 
+ * @author Maria Kukhar
+ */
+
+
 public class ActionButtonData {
 
 	public String action;
