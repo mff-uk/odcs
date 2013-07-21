@@ -53,7 +53,7 @@ public final class SimpleTreeFilter implements Filter {
         }
         final SimpleTreeFilter o = (SimpleTreeFilter) obj;
 
-        
+        // Checks the properties one by one
         if (filterString != o.filterString && o.filterString != null
                 && !o.filterString.equals(filterString)) {
             return false;
@@ -72,17 +72,35 @@ public final class SimpleTreeFilter implements Filter {
     public int hashCode() {
         return  (filterString != null ? filterString.hashCode() : 0);
     }
-
     
+    /**
+     * Returns the filter string.
+     * 
+     * @return filter string given to the constructor
+     */
 
     public String getFilterString() {
         return filterString;
     }
+    
+    /**
+     * Returns whether the filter is case-insensitive or case-sensitive.
+     * 
+     * @return true if performing case-insensitive filtering, false for
+     *         case-sensitive
+     */
 
     public boolean isIgnoreCase() {
         return ignoreCase;
     }
 
+    /**
+     * Returns true if the filter only applies to the beginning of the value
+     * string, false for any location in the value.
+     * 
+     * @return true if checking for matches at the beginning of the value only,
+     *         false if matching any part of value
+     */
     
     public boolean isOnlyMatchPrefix() {
         return onlyMatchPrefix;
@@ -90,7 +108,7 @@ public final class SimpleTreeFilter implements Filter {
 
 	@Override
 	public boolean appliesToProperty(Object propertyId) {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 }
