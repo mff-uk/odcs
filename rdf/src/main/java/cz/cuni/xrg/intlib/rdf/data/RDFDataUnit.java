@@ -35,7 +35,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param predicateName String name of predicate
 	 * @param objectName    String name of object
 	 */
-	public void addTripleToRepository(String namespace, String subjectName,
+	public void add(String namespace, String subjectName,
 			String predicateName,
 			String objectName) {
 		
