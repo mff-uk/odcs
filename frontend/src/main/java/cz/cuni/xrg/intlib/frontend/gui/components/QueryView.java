@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple query view for querying debug data. User can query data for given DPU.
- * If DPU is Transformer, user can select if input or output graph should be
+ * If DPU is TRANSFORMER, user can select if input or output graph should be
  * queried. If SELECT query is used, data are shown in table. If CONSTRUCT query
  * is used, data are provided as file for download. User can select format of
  * data.
@@ -259,14 +259,14 @@ public class QueryView extends CustomComponent {
 	 */
 	public void setGraphs(DPUType type) {
 		graphSelect.removeAllItems();
-		if (DPUType.Extractor.equals(type)) {
+		if (DPUType.EXTRACTOR.equals(type)) {
 			graphSelect.addItem(IN_GRAPH);
 			graphSelect.select(IN_GRAPH);
-		} else if (DPUType.Transformer.equals(type)) {
+		} else if (DPUType.TRANSFORMER.equals(type)) {
 			graphSelect.addItem(IN_GRAPH);
 			graphSelect.addItem(OUT_GRAPH);
 			graphSelect.select(OUT_GRAPH);
-		} else if (DPUType.Loader.equals(type)) {
+		} else if (DPUType.LOADER.equals(type)) {
 			graphSelect.addItem(OUT_GRAPH);
 			graphSelect.select(OUT_GRAPH);
 		}

@@ -252,7 +252,7 @@ public class DebuggingView extends CustomComponent {
 		while (iter.hasNext()) {
 			DataUnitInfo duInfo = iter.next();
 
-			if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
+			if (debugDpu.getType() != DPUType.TRANSFORMER || duInfo.isInput() == onInputGraph) {
 				return DataUnitBrowserFactory.getRepository(ctxReader, pipelineExec, debugDpu, duInfo);
 			}
 		}
@@ -280,7 +280,7 @@ public class DebuggingView extends CustomComponent {
 	 * while (iter.hasNext()) {
 	 * DataUnitInfo duInfo = iter.next();
 	 * 
-	 * if (debugDpu.getType() != DPUType.Transformer || duInfo.isInput() == onInputGraph) {
+	 * if (debugDpu.getType() != DPUType.TRANSFORMER || duInfo.isInput() == onInputGraph) {
 	 * duInfo.getDirectory();
 	 * }
 	 * }
