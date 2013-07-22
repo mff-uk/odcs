@@ -103,14 +103,16 @@ class PipelineList extends ViewComponent {
 						public void buttonClick(ClickEvent event) {
 							
 							Pipeline pipeline = item.getBean();
-							Pipeline newPpl = new Pipeline(pipeline);
-							App.getApp().getPipelines().save(newPpl);
-							source.refreshRowCache();
+							Pipeline newPipeline = new Pipeline(pipeline);
+							newPipeline.setName("Copy of " + pipeline.getName());
+							App.getApp().getPipelines().save(newPipeline);
+							refreshData();
+							tablePipelines.setVisibleColumns("id", "name", "description","");
 						}
 					});
 			layout.addComponent(copyButton); 
 
-			// TODO Petyr, Maria, Bohuslav, Honza: Pipeline delete
+
 			Button deleteButton = new Button();
 			deleteButton.setCaption("delete");
 			deleteButton
@@ -177,26 +179,18 @@ class PipelineList extends ViewComponent {
 
 	}
 	
-/*	private void openScheduler(final SchedulePipeline schedule) {
-		Window scheduleWindow = new Window("Schedule a pipeline", schedule);
-		scheduleWindow.setImmediate(true);
-		scheduleWindow.setWidth("820px");
-		scheduleWindow.setHeight("550px");
-		scheduleWindow.addCloseListener(new Window.CloseListener() {
-			@Override
-			public void windowClose(Window.CloseEvent e) {
-				//closeDebug();
-			}
-		});
-		scheduleWindow.addResizeListener(new Window.ResizeListener() {
+	/**
+	 * Refresh data on the pipeline list table
+	 */
+	private void refreshData() {
+		int page = tablePipelines.getCurrentPage();
+		Container container = ContainerFactory.CreatePipelines(App.getApp()
+				.getPipelines().getAllPipelines());
+		tablePipelines.setContainerDataSource(container);
+		tablePipelines.setFilterFieldVisible("", false);
+		tablePipelines.setCurrentPage(page);
 
-			@Override
-			public void windowResized(Window.ResizeEvent e) {
-				schedule.resize(e.getWindow().getHeight());
-			}
-		});
-		App.getApp().addWindow(scheduleWindow);
-	}*/
+	}
 
 
 	public PipelineList() {
