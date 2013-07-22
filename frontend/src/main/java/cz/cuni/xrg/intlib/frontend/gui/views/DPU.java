@@ -19,6 +19,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseListener;
 
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
@@ -781,9 +782,31 @@ class DPU extends ViewComponent {
 					});
 			layout.addComponent(detailButton);
 			
-			//Delete button
+			
+			//Delete button. Delete pipeline.
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
+			deleteButton.addClickListener(new ClickListener() {
+				
+				@Override
+				public void buttonClick(ClickEvent event) {
+					pipeId = (Long) tableData
+							.getContainerProperty(itemId, "id").getValue();
+					List<Pipeline> pipelines = App.getApp().getPipelines()
+							.getAllPipelines();
+					for (Pipeline item : pipelines) {
+						if (item.getId().equals(pipeId)) {
+							// navigate to PipelineEdit/New
+							App.getApp().getPipelines().delete(item);
+							break;
+						}
+					}					
+					
+					// now we have to remove pipeline from table
+					source.removeItem(itemId);
+					
+				}
+			});
 			layout.addComponent(deleteButton);
 
 			//Status button
