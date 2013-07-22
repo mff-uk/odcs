@@ -1,7 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.junit.Test;
 
@@ -24,8 +28,14 @@ import static org.junit.Assert.*;
 @TransactionConfiguration(defaultRollback=true)
 public class PipelineFacadeTest {
 	
+	@PersistenceContext
+	private EntityManager em;
+	
 	@Autowired
 	private PipelineFacade facade;
+	
+	@Autowired
+	private ScheduleFacade scheduler;
 	
 	@Test
 	@Transactional
@@ -94,11 +104,26 @@ public class PipelineFacadeTest {
 		Pipeline pipe = facade.getPipeline(pid);
 		assertNotNull(pipe);
 		List<PipelineExecution> execs = facade.getExecutions(pipe);
+		List<Schedule> jobs = scheduler.getSchedulesFor(pipe);
 		
 		facade.delete(pipe);
+		
+		// Cascading of deletes is happenning on DB level, so we need to flush
+		// changes to DB and clear netityManager to reread from DB.
+		em.flush();
+		em.clear();
+		
+		// make sure pipeline was deleted
 		assertNull(facade.getPipeline(pid));
+		
+		// check that all pipeline executions were deleted
 		for (PipelineExecution exec : execs) {
 			assertNull(facade.getExecution(exec.getId()));
+		}
+		
+		// check that all scheduled jobs were deleted
+		for (Schedule job : jobs) {
+			assertNull(scheduler.getSchedule(job.getId()));
 		}
 	}
 	

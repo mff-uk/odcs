@@ -16,9 +16,11 @@ INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
 INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
  VALUES(2,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar',NULL,5);
 
-INSERT INTO PPL_MODEL(id,name,description) VALUES(1,'DBpedia','Loads 100 triples from DBpedia.');
+INSERT INTO PPL_MODEL(id,name,description) VALUES(1,'Test 1','Testing pipeline 1.');
+INSERT INTO PPL_MODEL(id,name,description) VALUES(2,'Test 2','Testing pipeline 2.');
 
 INSERT INTO PPL_GRAPH(id,pipeline_id) VALUES(1,1);
+INSERT INTO PPL_GRAPH(id,pipeline_id) VALUES(2,2);
 
 INSERT INTO PPL_POSITION(id,pos_x,pos_y) VALUES(1,138,52);
 INSERT INTO PPL_POSITION(id,pos_x,pos_y) VALUES(2,487,132);
@@ -26,9 +28,22 @@ INSERT INTO PPL_POSITION(id,pos_x,pos_y) VALUES(2,487,132);
 INSERT INTO PPL_NODE(id,graph_id,instance_id,position_id) VALUES(1,1,1,1);
 INSERT INTO PPL_NODE(id,graph_id,instance_id,position_id) VALUES(2,1,2,2);
 
-INSERT INTO PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name) VALUES(1,1,1,2,NULL);
+INSERT INTO PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name)
+ VALUES(1,1,1,2,NULL);
 
-INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context_id,schedule_id,silent_mode,debugnode_id) VALUES(1,5,1,0,NULL,NULL,NULL,NULL,1,NULL);
+INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context_id,schedule_id,silent_mode,debugnode_id)
+ VALUES(1,5,1,0,NULL,NULL,NULL,NULL,1,NULL);
+
+-- schedule define by times when to run pipeline
+INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
+ VALUES(1,NULL,NULL,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3);
+
+-- schedule defined by "run after pipeline"
+-- Test 2 should run after Test 1
+INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
+ VALUES(2,NULL,NULL,2,1,1,0,NULL,NULL,NULL,NULL);
+INSERT INTO EXEC_SCHEDULE_AFTER(schedule_id,pipeline_id) VALUES(1,1);
+
 
 -- Log messages
 INSERT INTO LOGGING_EVENT (timestmp,formatted_message,logger_name,level_string,thread_name,reference_flag,arg0,arg1,arg2,arg3,caller_filename,caller_class,caller_method,caller_line,event_id)

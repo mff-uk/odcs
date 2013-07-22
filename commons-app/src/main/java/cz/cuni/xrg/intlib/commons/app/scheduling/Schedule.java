@@ -72,14 +72,14 @@ public class Schedule implements Serializable {
 	 * to run after pipelines in {@link #afterPipelines}, but has no specific
 	 * time to be run at. Used only if {@link #type} is {@link ScheduleType#.
 	 */
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "first_exec", nullable = true)
 	private Date firstExecution;
 
 	/**
 	 * Time of the last execution.
 	 */
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "last_exec", nullable = true)
 	private Date lastExecution;
 
