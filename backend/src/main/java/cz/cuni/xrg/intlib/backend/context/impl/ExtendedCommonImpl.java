@@ -105,11 +105,16 @@ class ExtendedCommonImpl {
 	}	
 	
 	public File getWorkingDir() {
-		return context.getTmp(dpuInstance);
+		File directory = context.getTmp(dpuInstance);
+		directory.mkdirs();
+		return directory;
 	}
 
 	public File getResultDir() {
-		return context.getResult(dpuInstance);
+		File directory = context.getResult(dpuInstance);
+		directory.mkdirs();
+		return directory;
+
 	}	
 	
 	public boolean isDebugging() {
