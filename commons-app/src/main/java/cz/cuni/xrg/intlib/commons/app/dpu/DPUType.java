@@ -7,7 +7,7 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
  *
  */
 public enum DPUType {
-	Extractor,
-	Transformer,
-	Loader
+	EXTRACTOR,
+	TRANSFORMER,
+	LOADER
 }

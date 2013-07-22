@@ -17,9 +17,9 @@ import com.vaadin.data.util.converter.Converter;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 
 /**
- * Config dialog.
+ * Configuration dialog for DPU SPARQL Extractor.
  *
- * @author Maria
+ * @author Maria Kukhar
  *
  */
 public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig> {
@@ -33,7 +33,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     private GridLayout gridLayoutConstr;
     private TextArea textAreaConstr;
     private Label labelConstr;
-    private VerticalLayout verticalLayoutCore;
+    private GridLayout gridLayoutCore;
     private GridLayout gridLayoutAdm;
     private Label labelGraph;
     private PasswordField passwordFieldPass;
@@ -49,11 +49,17 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	private CheckBox useHandler;  //Statistical handler
     int n = 1;
 
+	/**
+	 *  Basic constructor.
+	 */
     public RDFExtractorDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
     }
     
+    /**
+     * IndexedContainer with the data for comboBoxSparql
+     */
     public static IndexedContainer getFridContainer() {
 
         String[] visibleCols = new String[]{"endpoint"};
@@ -66,6 +72,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         return result;
     }
 
+	/**
+	 * Builds main layout contains tabSheet with components.
+	 */
     private GridLayout buildMainLayout() {
         // common part: create layout
 
@@ -86,6 +95,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         return mainLayout;
     }
 
+	/**
+	 *  Builds tabSheet
+	 */
     private TabSheet buildTabSheet() {
         // common part: create layout
         tabSheet = new TabSheet();
@@ -93,43 +105,32 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         tabSheet.setWidth("100%");
         tabSheet.setHeight("100%");
 
-        // verticalLayoutCore
-        verticalLayoutCore = buildVerticalLayoutCore();
-        tabSheet.addTab(verticalLayoutCore, "Core", null);
+        // Core tab
+        gridLayoutCore = buildGridLayoutCore();
+        tabSheet.addTab(gridLayoutCore, "Core", null);
 
-        // verticalLayoutDetails
+        // Details tab
         verticalLayoutDetails = buildVerticalLayoutDetails();
         tabSheet.addTab(verticalLayoutDetails, "Details", null);
 
         return tabSheet;
     }
 
-    private VerticalLayout buildVerticalLayoutCore() {
+	/**
+	 * Builds layout contains Core tab components
+	 */
+    private GridLayout buildGridLayoutCore() {
+
         // common part: create layout
-        verticalLayoutCore = new VerticalLayout();
-        verticalLayoutCore.setImmediate(false);
-        verticalLayoutCore.setWidth("100.0%");
-        verticalLayoutCore.setHeight("100%");
-        verticalLayoutCore.setMargin(true);
-
-        // gridLayoutAdm
-        gridLayoutAdm = buildGridLayoutAdm();
-        verticalLayoutCore.addComponent(gridLayoutAdm);
-
-        return verticalLayoutCore;
-    }
-
-    private GridLayout buildGridLayoutAdm() {
-        // common part: create layout
-        gridLayoutAdm = new GridLayout();
-        gridLayoutAdm.setImmediate(false);
-        gridLayoutAdm.setWidth("100%");
-        gridLayoutAdm.setHeight("100%");
-        gridLayoutAdm.setMargin(false);
-        gridLayoutAdm.setColumns(2);
-        gridLayoutAdm.setRows(4);
-        gridLayoutAdm.setColumnExpandRatio(0, 0.10f);
-        gridLayoutAdm.setColumnExpandRatio(1, 0.90f);
+    	gridLayoutCore = new GridLayout();
+    	gridLayoutCore.setImmediate(false);
+    	gridLayoutCore.setWidth("100%");
+    	gridLayoutCore.setHeight("100%");
+    	gridLayoutCore.setMargin(true);
+    	gridLayoutCore.setColumns(2);
+    	gridLayoutCore.setRows(4);
+    	gridLayoutCore.setColumnExpandRatio(0, 0.10f);
+    	gridLayoutCore.setColumnExpandRatio(1, 0.90f);
 
         // labelSparql
         labelSparql = new Label();
@@ -137,10 +138,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         labelSparql.setWidth("-1px");
         labelSparql.setHeight("-1px");
         labelSparql.setValue("SPARQL endpoint:");
-        gridLayoutAdm.addComponent(labelSparql, 0, 0);
-        gridLayoutAdm.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
+        gridLayoutCore.addComponent(labelSparql, 0, 0);
+        gridLayoutCore.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
 
-        // comboBoxSparql
+        // SPARQL endpoint ComboBox
         Container cont = getFridContainer();
         comboBoxSparql = new ComboBox();
         comboBoxSparql.setContainerDataSource(cont);
@@ -186,7 +187,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
                 }
             }
         });
-
+        //comboBoxSparql is mandatory fields
         comboBoxSparql.addValidator(new Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
@@ -196,7 +197,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 				throw new InvalidValueException("SPARQL endpoint must be filled!");
 			}
 		});
-        gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
+        gridLayoutCore.addComponent(comboBoxSparql, 1, 0);
 
         // labelNameAdm
         labelNameAdm = new Label();
@@ -204,16 +205,16 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         labelNameAdm.setWidth("-1px");
         labelNameAdm.setHeight("-1px");
         labelNameAdm.setValue("Name:");
-        gridLayoutAdm.addComponent(labelNameAdm, 0, 1);
+        gridLayoutCore.addComponent(labelNameAdm, 0, 1);
 
-        // textFieldNameAdm
+        // Name textField 
         textFieldNameAdm = new TextField();
         textFieldNameAdm.setNullRepresentation("");
         textFieldNameAdm.setImmediate(false);
         textFieldNameAdm.setWidth("100%");
         textFieldNameAdm.setHeight("-1px");
         textFieldNameAdm.setInputPrompt("username to connect to SPARQL endpoints");
-        gridLayoutAdm.addComponent(textFieldNameAdm, 1, 1);
+        gridLayoutCore.addComponent(textFieldNameAdm, 1, 1);
 
         // labelPass
         labelPass = new Label();
@@ -221,16 +222,16 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         labelPass.setWidth("-1px");
         labelPass.setHeight("-1px");
         labelPass.setValue("Password:");
-        gridLayoutAdm.addComponent(labelPass, 0, 2);
+        gridLayoutCore.addComponent(labelPass, 0, 2);
 
-        // passwordFieldPass
+        //  Password field
         passwordFieldPass = new PasswordField();
         passwordFieldPass.setNullRepresentation("");
         passwordFieldPass.setImmediate(false);
         passwordFieldPass.setWidth("100%");
         passwordFieldPass.setHeight("-1px");
         passwordFieldPass.setInputPrompt("password");
-        gridLayoutAdm.addComponent(passwordFieldPass, 1, 2);
+        gridLayoutCore.addComponent(passwordFieldPass, 1, 2);
 
         // labelGraph
         labelGraph = new Label();
@@ -238,15 +239,22 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         labelGraph.setWidth("-1px");
         labelGraph.setHeight("-1px");
         labelGraph.setValue("Named Graph:");
-        gridLayoutAdm.addComponent(labelGraph, 0, 3);
+        gridLayoutCore.addComponent(labelGraph, 0, 3);
 
+        //Named Graph component
         initializeNamedGraphList();
-        gridLayoutAdm.addComponent(gridLayoutGraph, 1, 3);
+        gridLayoutCore.addComponent(gridLayoutGraph, 1, 3);
 
-        return gridLayoutAdm;
+  
+        return gridLayoutCore;
     }
+
+
     private List<String> griddata = initializeGridData();
 
+    /**
+     * Initializes data of the Named Graph component
+     */
     private static List<String> initializeGridData() {
         List<String> result = new LinkedList<>();
         result.add("");
@@ -255,10 +263,19 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
     }
 
+    /**
+     * Add new data to Named Graph component
+     * @param newData. String that will be added
+     */
     private void addDataToGridData(String newData) {
         griddata.add(newData);
     }
 
+    
+    /**
+     * Remove row from Named Graph component. Only if component contain more then 1 row.
+     * @param  row that will be removed. 
+     */
     private void removeDataFromGridData(Integer row) {
         int index = row;
         if (griddata.size() > 1) {
@@ -267,12 +284,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     }
     private List<TextField> listedEditText = null;
 
-    private void replaceText(int index, String newText) {
-        griddata.remove(index);
-        griddata.add(index, newText);
-        // griddata.insertElementAt(newText, index);
-    }
 
+    /**
+     * Save edited texts in the Named Graph component
+     */
     private void saveEditedTexts() {
         griddata = new LinkedList<>();
         for (TextField editText : listedEditText) {
@@ -280,7 +295,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         }
     }
 
-    // @SuppressWarnings("serial")
+
+    /**
+     * Refresh data of the Named Graph component
+     */
     private void refreshNamedGraphData() {
         gridLayoutGraph.removeAllComponents();
         int row = 0;
@@ -292,11 +310,14 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         for (String item : griddata) {
             textFieldGraph = new TextField();
             listedEditText.add(textFieldGraph);
+            
+            //text field for the graph
             textFieldGraph.setWidth("100%");
             textFieldGraph.setData(row);
             textFieldGraph.setValue(item);
             textFieldGraph.setInputPrompt("http://ld.opendata.cz/source1");
 
+            //remove button
             buttonGraphRem = new Button();
             buttonGraphRem.setWidth("55px");
             buttonGraphRem.setCaption("-");
@@ -317,6 +338,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
                     Alignment.TOP_RIGHT);
             row++;
         }
+        //add button
         buttonGraphAdd = new Button();
         buttonGraphAdd.setCaption("+");
         buttonGraphAdd.setImmediate(true);
@@ -334,6 +356,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
     }
 
+    /**
+     *  Initializes Named Graph component
+     */
     private void initializeNamedGraphList() {
 
         gridLayoutGraph = new GridLayout();
@@ -349,6 +374,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
     }
 
+	/**
+	 * Builds layout contains Details tab components
+	 */
     private VerticalLayout buildVerticalLayoutDetails() {
         // common part: create layout
         verticalLayoutDetails = new VerticalLayout();
@@ -358,7 +386,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         verticalLayoutDetails.setMargin(true);
         verticalLayoutDetails.setSpacing(true);
 
-        // gridLayoutConstr
+        // SPARQL Construct component
         gridLayoutConstr = buildGridLayoutConstr();
         verticalLayoutDetails.addComponent(gridLayoutConstr);
 
@@ -370,7 +398,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         labelOpt.setValue("Options:");
         verticalLayoutDetails.addComponent(labelOpt);
 
-        // checkBoxFail
+        // CheckBox Extraction fails if there is no triple extracted.
         checkBoxFail = new CheckBox();
         checkBoxFail
                 .setCaption("Extraction fails if there is no triple extracted.");
@@ -388,7 +416,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
         return verticalLayoutDetails;
     }
-
+    
+	/**
+	 * Builds layout contains SPARQL Construct component
+	 */
     private GridLayout buildGridLayoutConstr() {
         // common part: create layout
         gridLayoutConstr = new GridLayout();
@@ -421,6 +452,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         return gridLayoutConstr;
     }
 
+    
+	/**
+	 * Set values from from dialog to configuration.
+	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
 		if (!comboBoxSparql.isValid()) {
@@ -435,11 +470,18 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 			config.GraphsUri = griddata;
 			config.ExtractFail = checkBoxFail.getValue();
 			config.UseStatisticalHandler = useHandler.getValue();
-			
+						
 			return config;
 		}
 	}
 	
+	
+	/**
+	 * Load values from configuration into dialog.
+	 *
+	 * @throws ConfigException
+	 * @param conf
+	 */
 	@Override
     public void setConfiguration(RDFExtractorConfig conf) {
         try {

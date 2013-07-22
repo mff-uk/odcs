@@ -28,9 +28,9 @@ import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
 /**
- * FileExtractorConfig dialog.
+ * Configuration dialog for DPU RDF File Extractor.
  *
- * @author Maria
+ * @author Maria Kukhar
  * @author Jiri Tomes
  *
  *
@@ -61,7 +61,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	private InvalidValueException ex;
 
-	private LineBreakCounter lineBreakCounter;
+	private FileUploadReceiver fileUploadReceiver;
 
 	private Upload fileUpload;
 
@@ -75,6 +75,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	private VerticalLayout verticalLayoutDetails;
 
+	/**
+	 *  Basic constructor.
+	 */
 	public FileExtractorDialog() {
 		inicialize();
 		buildMainLayout();
@@ -82,11 +85,17 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		mapData();
 	}
 
+	/**
+	 * Initialization
+	 */
 	private void inicialize() {
 		extractType = FileExtractType.UPLOAD_FILE;
 		ex = new InvalidValueException("Valid");
 	}
 
+	/**
+	 * Set format data to Combobox comboBoxFormat and type data to OptionGroup pathType
+	 */
 	private void mapData() {
 
 		comboBoxFormat.addItem("AUTO");
@@ -112,6 +121,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	}
 
+	/**
+	 * Set values from from dialog to configuration.
+	 */
 	@Override
 	public FileExtractorConfig getConfiguration() throws ConfigException {
 
@@ -144,6 +156,12 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		}
 	}
 
+	/**
+	 * Load values from configuration into dialog.
+	 *
+	 * @throws ConfigException
+	 * @param conf
+	 */
 	@Override
 	public void setConfiguration(FileExtractorConfig conf) {
 
@@ -170,6 +188,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	}
 
+	/**
+	 * Builds main layout contains tabSheet with components.
+	 */
 	private GridLayout buildMainLayout() {
 
 		// common part: create layout
@@ -184,17 +205,17 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		setWidth("100%");
 		setHeight("100%");
 
-		// common part: create layout
+		// create tabSheet
 		tabSheet = new TabSheet();
 		tabSheet.setImmediate(true);
 		tabSheet.setWidth("100%");
 		tabSheet.setHeight("100%");
 
-		// verticalLayoutCore
+		// Core tab
 		gridLayoutCore = buildGridLayoutCore();
 		tabSheet.addTab(gridLayoutCore, "Core", null);
 
-		// verticalLayoutDetails
+		// Details tab
 		verticalLayoutDetails = buildVerticalLayoutDetails();
 		tabSheet.addTab(verticalLayoutDetails, "Details", null);
 
@@ -204,6 +225,10 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		return mainLayout;
 	}
 
+	/**
+	 * Builds layout contains components for setting file extension that will be 
+	 * processed in some directory. Uses in case of FileExtractType.PATH_TO_DIRECTORY
+	 */
 	private HorizontalLayout buildHorizontalLayoutOnly() {
 		// common part: create layout
 		horizontalLayoutOnly = new HorizontalLayout();
@@ -234,6 +259,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		return horizontalLayoutOnly;
 	}
 
+	/**
+	 * Builds layout contains component for setting RDF Format.
+	 */
 	private HorizontalLayout buildHorizontalLayoutFormat() {
 		// common part: create layout
 		horizontalLayoutFormat = new HorizontalLayout();
@@ -264,6 +292,12 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		return horizontalLayoutFormat;
 	}
 
+	/**
+	 * Get valid message by file extract type.
+	 * 
+	 * @param type
+	 * @return message
+	 */
 	private String getValidMessageByFileExtractType(FileExtractType type) {
 
 		String message = "";
@@ -287,6 +321,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	}
 
+	/**
+	 * Builds layout contains Core tab components
+	 */
 	private GridLayout buildGridLayoutCore() {
 		// common part: create layout
 		gridLayoutCore = new GridLayout(1, 4);
@@ -355,11 +392,11 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 						FileExtractType.UPLOAD_FILE))) {
 
 					extractType = FileExtractType.UPLOAD_FILE;
-					lineBreakCounter = new LineBreakCounter();
-					lineBreakCounter.setSlow(true);
+					fileUploadReceiver = new FileUploadReceiver();
+
 
 					//Upload component
-					fileUpload = new Upload(null, lineBreakCounter);
+					fileUpload = new Upload(null, fileUploadReceiver);
 					fileUpload.setImmediate(true);
 					fileUpload.setButtonCaption("Choose file");
 					//Upload started event listener
@@ -389,7 +426,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 								textFieldPath.setReadOnly(false);
 								//File was upload to the temp folder. 
 								//Path to this file is setting to the textFieldPath field
-								textFieldPath.setValue(LineBreakCounter.file
+								textFieldPath.setValue(FileUploadReceiver.file
 										.toString());
 								textFieldPath.setReadOnly(true);
 							} //If upload was interrupt by user
@@ -403,8 +440,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					});
 
 					// The window with upload information
-					uploadInfoWindow = new UploadInfoWindow(fileUpload,
-							lineBreakCounter);
+					uploadInfoWindow = new UploadInfoWindow(fileUpload);
 
 
 					HorizontalLayout uploadFileLayout = new HorizontalLayout();
@@ -473,7 +509,10 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 		return gridLayoutCore;
 	}
-
+	
+	/**
+	 * Builds layout contains Details tab components
+	 */
 	private VerticalLayout buildVerticalLayoutDetails() {
 		// common part: create layout
 		verticalLayoutDetails = new VerticalLayout();
@@ -493,31 +532,31 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 }
 
+/**
+ * Dialog for uploading status. Appear automatically after file upload start.
+ * 
+ *  @author Maria Kukhar
+ *
+ */
 class UploadInfoWindow extends Window implements Upload.StartedListener,
-		Upload.ProgressListener, Upload.FailedListener,
-		Upload.SucceededListener, Upload.FinishedListener {
+		Upload.ProgressListener, Upload.FinishedListener {
 
 	private static final long serialVersionUID = 1L;
-
 	private final Label state = new Label();
-
 	private final Label fileName = new Label();
-
 	private final Label textualProgress = new Label();
-
 	private final ProgressIndicator pi = new ProgressIndicator();
-
 	private final Button cancelButton;
-
-	private final LineBreakCounter counter;
-
 	private final Upload upload;
-
-	public UploadInfoWindow(Upload nextUpload,
-			final LineBreakCounter lineBreakCounter) {
+	
+	/**
+	 * Basic constructor
+	 * 
+	 * @param upload. Upload component
+	 */
+	public UploadInfoWindow(Upload nextUpload) {
 
 		super("Status");
-		this.counter = lineBreakCounter;
 		this.upload = nextUpload;
 		this.cancelButton = new Button("Cancel");
 
@@ -540,6 +579,11 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		stateLayout.addComponent(state);
 
 		cancelButton.addClickListener(new Button.ClickListener() {
+			/**
+			 * Upload interruption
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				upload.interruptUpload();
@@ -557,9 +601,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		fileName.setCaption("File name");
 		formLayout.addComponent(fileName);
 
-//		result.setCaption("Line breaks counted");
-//		l.addComponent(result);
-
+		//progress indicator
 		pi.setCaption("Progress");
 		pi.setVisible(false);
 		formLayout.addComponent(pi);
@@ -569,11 +611,13 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 		upload.addStartedListener(this);
 		upload.addProgressListener(this);
-		upload.addFailedListener(this);
-		upload.addSucceededListener(this);
 		upload.addFinishedListener(this);
 	}
-
+	
+	/**
+	 *  this method gets called immediately after upload is
+	 *  finished
+	 */
 	@Override
 	public void uploadFinished(final FinishedEvent event) {
 		state.setValue("Idle");
@@ -583,10 +627,13 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 	}
 
+	/**
+	 *  this method gets called immediately after upload is
+	 *  started
+	 */
 	@Override
 	public void uploadStarted(final StartedEvent event) {
-		// this method gets called immediatedly after upload is
-		// started
+
 		pi.setValue(0f);
 		pi.setVisible(true);
 		pi.setPollingInterval(500); // hit server frequantly to get
@@ -598,6 +645,9 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		cancelButton.setVisible(true);
 	}
 
+	/**
+	 *  this method shows update progress
+	 */
 	@Override
 	public void updateProgress(final long readBytes, final long contentLength) {
 		// this method gets called several times during the update
@@ -606,28 +656,22 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 				+ (contentLength/1024) +" k");
 	}
 
-	@Override
-	public void uploadSucceeded(final SucceededEvent event) {
-//		result.setValue(counter.getLineBreakCount() + " (total)");
-	}
 
-	@Override
-	public void uploadFailed(final FailedEvent event) {
-//		result.setValue(counter.getLineBreakCount()
-//				+ " (counting interrupted at "
-//				+ Math.round(100 * pi.getValue()) + "%)");
-	}
 }
 
-class LineBreakCounter implements Receiver {
+/**
+ * Upload selected file to template directory
+ * 
+ * @author Maria Kukhar
+ *
+ */
+class FileUploadReceiver implements Receiver {
 
 	private static final long serialVersionUID = 5099459605355200117L;
 
 	private static final int searchedByte = '\n';
 
 	private static int total = 0;
-
-	private int counter = 0;
 
 	private boolean sleep = false;
 
@@ -636,18 +680,16 @@ class LineBreakCounter implements Receiver {
 	public static File file;
 
 	/**
-	 * return an OutputStream that simply counts lineends
+	 * return an OutputStream 
 	 */
 	@Override
 	public OutputStream receiveUpload(final String filename,
 			final String MIMEType) {
-
-		counter = 0;
 		fileName = filename;
-
 		Path path;
 
 		try {
+			//create template directory
 			path = Files.createTempDirectory("Upload");
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -705,11 +747,4 @@ class LineBreakCounter implements Receiver {
 
 	}
 
-	public int getLineBreakCount() {
-		return counter;
-	}
-
-	public void setSlow(final boolean value) {
-		sleep = value;
-	}
 }

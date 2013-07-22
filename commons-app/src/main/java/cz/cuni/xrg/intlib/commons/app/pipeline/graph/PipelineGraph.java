@@ -280,10 +280,10 @@ public class PipelineGraph implements Serializable {
         Node to = getNodeById(toId);
 
 		// Rules validation with corresponding error messages.
-		if(to.getDpuInstance().getType() == DPUType.Extractor) {
+		if(to.getDpuInstance().getType() == DPUType.EXTRACTOR) {
 			return "Extractor cannot have an input edge!";
 		}
-		if(from.getDpuInstance().getType() == DPUType.Loader) {
+		if(from.getDpuInstance().getType() == DPUType.LOADER) {
 			return "Loader cannot have an output edge!";
 		}
 		if(from.equals(to)) {
