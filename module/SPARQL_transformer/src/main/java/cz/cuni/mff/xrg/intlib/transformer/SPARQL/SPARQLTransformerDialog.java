@@ -9,8 +9,10 @@ import cz.cuni.xrg.intlib.rdf.impl.SPARQLUpdateValidator;
 import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
 
 /**
+ * Configuration dialog for DPU SPARQL Transformer.
  *
  * @author Jiri Tomes
+ * @author Maria Kukhar
  */
 public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransformerConfig> {
 
@@ -26,11 +28,17 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 
 	private String errorMessage = "no errors";
 
+	/**
+	 *  Basic constructor.
+	 */
 	public SPARQLTransformerDialog() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Builds main layout.
+	 */
 	private GridLayout buildMainLayout() {
 		// common part: create layout
 		mainLayout = new GridLayout(2, 1);
@@ -52,7 +60,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 		labelUpQuer.setValue("SPARQL  Update Query");
 		mainLayout.addComponent(labelUpQuer, 0, 0);
 
-		// textAreaUpQuer
+		// SPARQL Update Query textArea
 		txtQuery = new TextArea();
 
 		txtQuery.addValueChangeListener(new Property.ValueChangeListener() {
@@ -94,12 +102,22 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 
 		return mainLayout;
 	}
-
+	
+	
+	/**
+	 * Load values from configuration into dialog.
+	 *
+	 * @param conf
+	 */
 	@Override
 	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
 		txtQuery.setValue(conf.SPARQL_Update_Query);
 	}
 
+	
+	/**
+	 * Set values from from dialog to configuration.
+	 */
 	@Override
 	public SPARQLTransformerConfig getConfiguration() throws ConfigException {
 

@@ -13,7 +13,7 @@ import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import java.util.List;
 
 /**
- * FileLoaderConfig dialog.
+ * Configuration dialog for DPU RDF File Loader. 
  *
  * @author Maria
  *
@@ -42,12 +42,19 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	private TextField textFieldDir;	//Directory
 
+	/**
+	 *  Basic constructor.
+	 */
 	public FileLoaderDialog() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
 	}
 
+	
+	/**
+	 * Set format data to Combobox comboBoxFormat
+	 */
 	private void mapData() {
 
 		List<RDFFormatType> formatTypes = RDFFormatType.getListOfRDFType();
@@ -61,6 +68,9 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	}
 
+	/**
+	 * Builds main layout contains tabSheet with components.
+	 */
 	private GridLayout buildMainLayout() {
 		// common part: create layout
 		mainLayout = new GridLayout(1, 1);
@@ -80,6 +90,9 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		return mainLayout;
 	}
 
+	/**
+	 *  Builds tabSheet
+	 */
 	private TabSheet buildTabSheet() {
 		// common part: create layout
 		tabSheet = new TabSheet();
@@ -87,14 +100,14 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		tabSheet.setWidth("100%");
 		tabSheet.setHeight("100%");
 
-		// verticalLayoutCore
+		// Core tab
 		verticalLayoutCore = buildVerticalLayoutCore();
 		verticalLayoutCore.setImmediate(false);
 		verticalLayoutCore.setWidth("100.0%");
 		verticalLayoutCore.setHeight("100.0%");
 		tabSheet.addTab(verticalLayoutCore, "Core", null);
 
-		// verticalLayoutDetails
+		// Details tab
 		verticalLayoutDetails = new VerticalLayout();
 		verticalLayoutDetails.setImmediate(false);
 		verticalLayoutDetails.setWidth("100.0%");
@@ -104,7 +117,10 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 		return tabSheet;
 	}
-
+	
+	/**
+	 * Builds layout contains Core tab components
+	 */
 	private VerticalLayout buildVerticalLayoutCore() {
 		// common part: create layout
 		verticalLayoutCore = new VerticalLayout();
@@ -115,7 +131,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		verticalLayoutCore.setSpacing(true);
 
 
-		// textFieldDir
+		//Directory TextField
 		textFieldDir = new TextField();
 		textFieldDir.setNullRepresentation("");
 		textFieldDir.setCaption("Directory:");
@@ -135,7 +151,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		});
 		verticalLayoutCore.addComponent(textFieldDir);
 
-		// textFieldFileName
+		//File name TextField
 		textFieldFileName = new TextField();
 		textFieldFileName.setNullRepresentation("");
 		textFieldFileName.setCaption("File name:");
@@ -155,7 +171,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		});
 		verticalLayoutCore.addComponent(textFieldFileName);
 
-		// checkBoxDiffName
+		// CheckBox selected for each pipeline execution generates a different name
 		checkBoxDiffName = new CheckBox();
 		checkBoxDiffName
 				.setCaption("Each pipeline execution generates a different name");
@@ -171,6 +187,9 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		return verticalLayoutCore;
 	}
 
+	/**
+	 * Builds layout contains component for setting RDF Format.
+	 */
 	private HorizontalLayout buildHorizontalLayoutFormat() {
 		// common part: create layout
 		horizontalLayoutFormat = new HorizontalLayout();
@@ -190,7 +209,6 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 		// comboBoxFormat
 		comboBoxFormat = new ComboBox();
-//        comboBoxFormat.setNullSelectionItemId(RDFFormatType.AUTO);
 		comboBoxFormat.setImmediate(true);
 		comboBoxFormat.setWidth("-1px");
 		comboBoxFormat.setHeight("-1px");
@@ -201,6 +219,10 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		return horizontalLayoutFormat;
 	}
 
+	/**
+	 * Set values from from dialog to configuration.
+	 */
+	
 	@Override
 	public FileLoaderConfig getConfiguration() throws ConfigException {
 		if ((!textFieldDir.isValid()) || (!textFieldFileName.isValid())) {

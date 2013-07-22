@@ -19,9 +19,9 @@ import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
 /**
- * Config dialog.
+ * Configuration dialog for DPU SPARQL Loader.
  *
- * @author Maria
+ * @author Maria Kukhar
  *
  */
 public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
@@ -47,12 +47,20 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     int n = 1;
     private List<GraphItem> graphItems = new ArrayList<>();
 
+	/**
+	 *  Basic constructor.
+	 */
     public RDFLoaderDialog() {
         buildMainLayout();
         setCompositionRoot(mainLayout);
         mapData();
     }
 
+    /**
+     * Get graph description
+     * @param type
+     * @return Description of GraphItem or ""
+     */
     private String getGraphDescription(WriteGraphType type) {
         if (graphItems.isEmpty()) {
             mapData();
@@ -66,6 +74,11 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         return "";
     }
 
+    /**
+     * Get graph type
+     * @param desc
+     * @return type of GraphItem or WriteGraphType.OVERRIDE
+     */
     private WriteGraphType getGraphType(String desc) {
         if (graphItems.isEmpty()) {
             mapData();
@@ -80,6 +93,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         return WriteGraphType.OVERRIDE;
     }
 
+	/**
+	 * Set options on the Detail tab 
+	 */
     private void mapData() {
 
         if (graphItems.isEmpty()) {
@@ -99,6 +115,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         }
     }
 
+    /**
+     * IndexedContainer with the data for comboBoxSparql
+     */
     public static IndexedContainer getFridContainer() {
 
 
@@ -110,16 +129,12 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
             result.addContainerProperty(p, String.class, "");
         }
 
-
-        /*	for (int i = 0; i < endpoint.length ; i++) {
-         Object num = result.addItem();
-         result.getContainerProperty(num, "endpoint").setValue(endpoint[i]);
-
-         } */
-
         return result;
     }
 
+	/**
+	 * Builds main layout contains tabSheet with components.
+	 */
     private GridLayout buildMainLayout() {
         // common part: create layout
 
@@ -142,6 +157,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         return mainLayout;
     }
 
+	/**
+	 *  Builds tabSheet
+	 */
     private TabSheet buildTabSheet() {
         // common part: create layout
         tabSheet = new TabSheet();
@@ -149,17 +167,20 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         tabSheet.setWidth("100%");
         tabSheet.setHeight("100%");
 
-        // verticalLayoutCore
+        // Core tab
         verticalLayoutCore = buildVerticalLayoutCore();
         tabSheet.addTab(verticalLayoutCore, "Core", null);
 
-        // verticalLayoutDetails
+        // Details tab
         verticalLayoutDetails = buildVerticalLayoutDetails();
         tabSheet.addTab(verticalLayoutDetails, "Details", null);
 
         return tabSheet;
     }
 
+	/**
+	 * Builds layout contains Core tab components
+	 */
     private VerticalLayout buildVerticalLayoutCore() {
         // common part: create layout
         verticalLayoutCore = new VerticalLayout();
@@ -169,13 +190,16 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         verticalLayoutCore.setMargin(true);
 
 
-        // gridLayoutAdm
+        // Admin layout
         gridLayoutAdm = buildGridLayoutAdm();
         verticalLayoutCore.addComponent(gridLayoutAdm);
 
         return verticalLayoutCore;
     }
 
+	/**
+	 * Builds admin layout
+	 */
     private GridLayout buildGridLayoutAdm() {
         // common part: create layout
         gridLayoutAdm = new GridLayout();
@@ -197,7 +221,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         gridLayoutAdm.addComponent(labelSparql, 0, 0);
         gridLayoutAdm.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
 
-        // comboBoxSparql
+        // SPARQL endpoint ComboBox
         Container cont = getFridContainer();
         comboBoxSparql = new ComboBox();
         comboBoxSparql.setContainerDataSource(cont);
@@ -242,6 +266,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
                 }
             }
         });
+        //comboBoxSparql is mandatory fields
         comboBoxSparql.addValidator(new Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
@@ -262,7 +287,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         labelNameAdm.setValue("Name:");
         gridLayoutAdm.addComponent(labelNameAdm, 0, 1);
 
-        // textFieldNameAdm
+        // Name textField 
         textFieldNameAdm = new TextField();
         textFieldNameAdm.setNullRepresentation("");
         textFieldNameAdm.setImmediate(false);
@@ -279,7 +304,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         labelPass.setValue("Password:");
         gridLayoutAdm.addComponent(labelPass, 0, 2);
 
-        // passwordFieldPass
+        //  Password field
         passwordFieldPass = new PasswordField();
         passwordFieldPass.setNullRepresentation("");
         passwordFieldPass.setImmediate(false);
@@ -296,7 +321,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         labelGraph.setValue("Named Graph:");
         gridLayoutAdm.addComponent(labelGraph, 0, 3);
 
-
+        //Named Graph component
         initializeNamedGraphList();
         gridLayoutAdm.addComponent(gridLayoutGraph, 1, 3);
 
@@ -305,6 +330,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
     private List<String> griddata = initializeGridData();
 
+    /**
+     * Initializes data of the Named Graph component
+     */
     private static List<String> initializeGridData() {
         List<String> result = new LinkedList<>();
         result.add("");
@@ -313,10 +341,18 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 
     }
 
+    /**
+     * Add new data to Named Graph component
+     * @param newData. String that will be added
+     */
     private void addDataToGridData(String newData) {
         griddata.add(newData);
     }
 
+    /**
+     * Remove row from Named Graph component. Only if component contain more then 1 row.
+     * @param  row that will be removed. 
+     */
     private void removeDataFromGridData(Integer row) {
         int index = row;
         if (griddata.size() > 1) {
@@ -325,12 +361,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
     private List<TextField> listedEditText = null;
 
-    private void replaceText(int index, String newText) {
-        griddata.remove(index);
-        griddata.add(index, newText);
-
-    }
-
+    /**
+     * Save edited texts in the Named Graph component
+     */
     private void saveEditedTexts() {
         griddata = new LinkedList<>();
         for (TextField editText : listedEditText) {
@@ -338,6 +371,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         }
     }
 
+    /**
+     * Refresh data of the Named Graph component
+     */
     private void refreshNamedGraphData() {
         gridLayoutGraph.removeAllComponents();
         int row = 0;
@@ -349,11 +385,13 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         for (String item : griddata) {
             textFieldGraph = new TextField();
             listedEditText.add(textFieldGraph);
+            //text field for the graph
             textFieldGraph.setWidth("100%");
             textFieldGraph.setData(row);
             textFieldGraph.setValue(item);
             textFieldGraph.setInputPrompt("http://ld.opendata.cz/kb");
-
+            
+            //remove button
             buttonGraphRem = new Button();
             buttonGraphRem.setWidth("55px");
             buttonGraphRem.setCaption("-");
@@ -374,6 +412,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
             row++;
         }
 
+        //add button
         buttonGraphAdd = new Button();
         buttonGraphAdd.setCaption("+");
         buttonGraphAdd.setImmediate(true);
@@ -390,6 +429,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         gridLayoutGraph.addComponent(buttonGraphAdd, 0, row);
     }
 
+    /**
+     *  Initializes Named Graph component
+     */
     private void initializeNamedGraphList() {
 
         gridLayoutGraph = new GridLayout();
@@ -404,6 +446,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         refreshNamedGraphData();
     }
 
+	/**
+	 * Builds layout contains Details tab components
+	 */
     private VerticalLayout buildVerticalLayoutDetails() {
         // common part: create layout
         verticalLayoutDetails = new VerticalLayout();
@@ -413,7 +458,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         verticalLayoutDetails.setMargin(true);
         verticalLayoutDetails.setSpacing(true);
 
-        // optionGroup_1
+        // OptionGroup Options
         optionGroupDetail = new OptionGroup();
         optionGroupDetail.setCaption("Options:");
         optionGroupDetail.setImmediate(false);
@@ -425,6 +470,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         return verticalLayoutDetails;
     }
 
+	/**
+	 * Set values from from dialog to configuration.
+	 */
 	@Override
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
 		if (!comboBoxSparql.isValid()) {
