@@ -23,7 +23,7 @@ schema=$(<"${sourcedir}/schema.sql")
 schema=`echo "$schema" | grep -Ev "^DROP\\s+TABLE\\s+"`
 
 # remove comments that do not start at the beginning of a line
-schema=`echo "$schema" | grep -Ev "\\s--\\s+[^'\"]*$"`
+schema=`echo "$schema" | sed -r 's/\\s--\\s.*$//'`
 
 # remove triggers (syntax seems to differ a lot)
 schema=`echo "$schema" | sed '/^CREATE\\sTRIGGER/,/\};$/d'`
