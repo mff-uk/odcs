@@ -3,7 +3,11 @@ package cz.cuni.xrg.intlib.rdf.impl;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.io.File;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.util.RDFInserter;
+import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
@@ -159,5 +163,57 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	@Override
 	public void save(File directory) {
 		//no save to file - using Virtuoso for intermediate results.
+	}
+
+	@Override
+	public void mergeRepositoryData(RDFDataRepository second) throws IllegalArgumentException {
+		if (second == null) {
+			throw new IllegalArgumentException(
+					"Instance of RDFDataRepository is null");
+		}
+		Repository secondRepository = second.getDataRepository();
+
+		RepositoryConnection sourceConnection = null;
+		RepositoryConnection targetConnection = null;
+
+		try {
+			sourceConnection = secondRepository.getConnection();
+
+			if (!sourceConnection.isEmpty()) {
+
+				targetConnection = repository.getConnection();
+
+				if (targetConnection != null) {
+
+					RDFInserter inserter = new RDFInserter(targetConnection);
+					inserter.enforceContext(getDataGraph());
+
+					try {
+						sourceConnection.export(inserter, second.getDataGraph());
+
+					} catch (RDFHandlerException ex) {
+						logger.error(ex.getMessage(), ex);
+					}
+				}
+			}
+		} catch (RepositoryException ex) {
+			logger.error(ex.getMessage(), ex);
+
+		} finally {
+			if (sourceConnection != null) {
+				try {
+					sourceConnection.close();
+				} catch (RepositoryException ex) {
+					logger.error(ex.getMessage(), ex);
+				}
+			}
+			if (targetConnection != null) {
+				try {
+					targetConnection.close();
+				} catch (RepositoryException ex) {
+					logger.error(ex.getMessage(), ex);
+				}
+			}
+		}
 	}
 }
