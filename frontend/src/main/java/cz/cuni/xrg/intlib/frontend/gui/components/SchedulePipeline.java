@@ -30,6 +30,7 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.TabIndexState;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
@@ -268,7 +269,7 @@ public class SchedulePipeline extends Window {
 				.setItemCaption(ScheduleType.PERIODICALLY,
 						"Schedule the pipeline to run automatically in fixed interval.");
 		scheduleType.setItemCaption(ScheduleType.AFTER_PIPELINE,
-				"Schedule the pipeline to after selected pipeline finishes.");
+				"Schedule the pipeline to run after selected pipelines finish.");
 		scheduleType.addValueChangeListener(new ValueChangeListener() {
 
 			/**
@@ -296,6 +297,10 @@ public class SchedulePipeline extends Window {
 		mainLayout.addComponent(scheduleType, 0, 1);
 		autoLayout = buildAutoLayout();
 		mainLayout.addComponent(autoLayout, 1, 1);
+		
+		//Layout with buttons Save and Cancel
+		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 		
 		//Save button
 		Button createRule = new Button();
@@ -415,8 +420,25 @@ public class SchedulePipeline extends Window {
 
 			}
 		});
-		mainLayout.addComponent(createRule, 1, 2);
-		mainLayout.setComponentAlignment(createRule, Alignment.BOTTOM_RIGHT);
+		
+		buttonBar.addComponent(createRule);
+		
+		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+
+			/**
+			 * Closes Scheduling pipeline window
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+			close();
+
+			}
+		});
+		buttonBar.addComponent(cancelButton);
+		mainLayout.addComponent(buttonBar, 1, 2);
+		mainLayout.setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
 
 		return mainLayout;
 	}
@@ -640,6 +662,7 @@ public class SchedulePipeline extends Window {
 		comboEvery.setItemCaption(PeriodUnit.MONTH, "Months");
 		comboEvery.setValue(PeriodUnit.DAY);
 		comboEvery.setEnabled(false);
+		comboEvery.setTextInputAllowed(false);
 
 		inervalEveryLayout.addComponent(comboEvery);
 		inervalLayout.addComponent(inervalEveryLayout);
