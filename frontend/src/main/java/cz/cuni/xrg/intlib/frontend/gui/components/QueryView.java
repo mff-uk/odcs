@@ -57,6 +57,7 @@ public class QueryView extends CustomComponent {
 		VerticalLayout mainLayout = new VerticalLayout();
 
 		HorizontalLayout topLine = new HorizontalLayout();
+		topLine.setWidth(100, Unit.PERCENTAGE);
 
 		graphSelect = new NativeSelect("Graph:");
 		graphSelect.setImmediate(true);
@@ -83,7 +84,7 @@ public class QueryView extends CustomComponent {
 		topLine.setSpacing(true);
 
 		//Export options
-		formatSelect = new NativeSelect("Format:");
+		formatSelect = new NativeSelect("Format for construct queries:");
 		for (RDFFormatType type : RDFFormatType.values()) {
 			if (type != RDFFormatType.AUTO) {
 				formatSelect.addItem(type);
@@ -92,6 +93,8 @@ public class QueryView extends CustomComponent {
 		formatSelect.setImmediate(true);
 		formatSelect.setNullSelectionAllowed(false);
 		topLine.addComponent(formatSelect);
+		topLine.setExpandRatio(formatSelect, 1.0f);
+		topLine.setComponentAlignment(formatSelect, Alignment.MIDDLE_RIGHT);
 		//topLine.addComponent(export);
 		mainLayout.addComponent(topLine);
 
