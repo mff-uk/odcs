@@ -2,9 +2,6 @@ package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
@@ -12,6 +9,7 @@ import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.GraphNotEmptyException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 import java.io.*;
@@ -311,26 +309,26 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                            defined suffix or not.
 	 * @param useStatisticHandler boolean value if detailed log and statistic
 	 *                            are awailable or not.
-	 * @throws ExtractException when extraction fail.
+	 * @throws RDFException when extraction fail.
 	 */
 	@Override
 	public void extractRDFfromFileToRepository(FileExtractType extractType,
 			String path, String suffix,
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
-			throws ExtractException {
+			throws RDFException {
 
 		if (path == null) {
 			final String message = "Mandatory target path in extractor is null.";
 
 			logger.debug(message);
-			throw new ExtractException(message);
+			throw new RDFException(message);
 
 		} else if (path.isEmpty()) {
 
 			final String message = "Mandatory target path in extractor have to be not empty.";
 
 			logger.debug(message);
-			throw new ExtractException(message);
+			throw new RDFException(message);
 
 		}
 
@@ -347,7 +345,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 							useStatisticHandler,
 							graph);
 				} else {
-					throw new ExtractException(
+					throw new RDFException(
 							"Path to directory \"" + path + "\" doesnt exist");
 				}
 				break;
@@ -357,7 +355,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					addFileToRepository(dirFile, baseURI, useStatisticHandler,
 							graph);
 				} else {
-					throw new ExtractException(
+					throw new RDFException(
 							"Path to file \"" + path + "\"doesnt exist");
 				}
 				break;
@@ -366,12 +364,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	private void extractDataFileFromHTTPSource(String path, String baseURI,
-			boolean useStatisticHandler) throws ExtractException {
+			boolean useStatisticHandler) throws RDFException {
 		URL urlPath;
 		try {
 			urlPath = new URL(path);
 		} catch (MalformedURLException ex) {
-			throw new ExtractException(ex.getMessage(), ex);
+			throw new RDFException(ex.getMessage(), ex);
 		}
 
 		try (InputStreamReader inputStreamReader = new InputStreamReader(
@@ -400,12 +398,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 
 		} catch (IOException | RepositoryException | RDFParseException ex) {
-			throw new ExtractException(ex.getMessage(), ex);
+			throw new RDFException(ex.getMessage(), ex);
 		}
 	}
 
 	private void addFilesInDirectoryToRepository(File[] files, String baseURI,
-			boolean useStatisticHandler, Resource... graphs) throws ExtractException {
+			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		if (files == null) {
 			return; // nothing to add
@@ -457,7 +455,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	private void addFileToRepository(File dataFile, String baseURI,
-			boolean useStatisticHandler, Resource... graphs) throws ExtractException {
+			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		RDFFormat fileFormat = RDFFormat.forFileName(
 				dataFile.getAbsolutePath(),
@@ -495,7 +493,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			logger.debug(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			logger.debug(ex.getMessage(), ex);
-			throw new ExtractException(
+			throw new RDFException(
 					"Error by adding file to repository " + ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
@@ -511,7 +509,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	private StatisticalHandler parseFileUsingStatisticalHandler(
 			RDFFormat fileFormat,
-			InputStreamReader is, String baseURI) throws ExtractException {
+			InputStreamReader is, String baseURI) throws RDFException {
 
 		StatisticalHandler handler = new StatisticalHandler();
 
@@ -538,7 +536,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		try {
 			parser.parse(is, baseURI);
 		} catch (IOException | RDFParseException | RDFHandlerException ex) {
-			throw new ExtractException(ex.getMessage(), ex);
+			throw new RDFException(ex.getMessage(), ex);
 		} finally {
 			return handler;
 		}
@@ -554,12 +552,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                      RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws LoadException                when loading data fault.
+	 * @throws RDFException                when loading data fault.
 	 */
 	@Override
 	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName,
-			RDFFormatType formatType) throws CannotOverwriteFileException, LoadException {
+			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException {
 
 		loadRDFfromRepositoryToFile(directoryPath, fileName, formatType, false,
 				false);
@@ -579,12 +577,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                         his unique name.
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws LoadException                when loading data fault.
+	 * @throws RDFException                when loading data fault.
 	 */
 	@Override
 	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName, RDFFormatType format,
-			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException {
+			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
 
 		if (directoryPath == null || fileName == null) {
 
@@ -597,7 +595,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 
 			logger.debug(message);
-			throw new LoadException(message);
+			throw new RDFException(message);
 
 
 		} else if (directoryPath.isEmpty() || fileName.isEmpty()) {
@@ -611,7 +609,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 
 			logger.debug(message);
-			throw new LoadException(message);
+			throw new RDFException(message);
 		}
 
 		final String slash = File.separator;
@@ -671,12 +669,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			connection.commit();
 
 		} catch (IOException ex) {
-			throw new LoadException("Problems with file stream:" + ex
+			throw new RDFException("Problems with file stream:" + ex
 					.getMessage(), ex);
 		} catch (RDFHandlerException ex) {
-			throw new LoadException(ex.getMessage(), ex);
+			throw new RDFException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			throw new LoadException(
+			throw new RDFException(
 					"Repository connection failed while trying to load into XML file."
 					+ ex.getMessage(), ex);
 		} finally {
@@ -700,11 +698,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
 	 * @param defaultGraphURI name of graph where RDF data are loading.
-	 * @throws LoadException when loading data fault.
+	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			WriteGraphType graphType) throws LoadException {
+			WriteGraphType graphType) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphURI);
 
@@ -720,11 +718,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param defaultGraphURI name of graph where RDF data are loading.
 	 * @param name            String name needed for authentication.
 	 * @param password        String password needed for authentication.
-	 * @throws LoadException when loading data fault.
+	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			String name, String password, WriteGraphType graphType) throws LoadException {
+			String name, String password, WriteGraphType graphType) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphURI);
 
@@ -744,18 +742,18 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @throws LoadException when loading data fault.
+	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
-			String password, WriteGraphType graphType) throws LoadException {
+			String password, WriteGraphType graphType) throws RDFException {
 
 		if (endpointURL == null) {
 			final String message = "Mandatory URL path in extractor from SPARQL is null.";
 
 			logger.debug(message);
-			throw new LoadException(message);
+			throw new RDFException(message);
 
 		} else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
 
@@ -763,7 +761,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					+ "have to started with http.";
 
 			logger.debug(message);
-			throw new LoadException(message);
+			throw new RDFException(message);
 
 		}
 
@@ -771,13 +769,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
 
 			logger.debug(message);
-			throw new LoadException(message);
+			throw new RDFException(message);
 
 		} else if (endpointGraphsURI.isEmpty()) {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
 
 			logger.debug(message);
-			throw new LoadException(message);
+			throw new RDFException(message);
 		}
 
 		final int graphSize = endpointGraphsURI.size();
@@ -814,7 +812,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			logger.debug(message);
 			logger.debug(message + e.getMessage(), e);
 
-			throw new LoadException(message + e.getMessage(), e);
+			throw new RDFException(message + e.getMessage(), e);
 		}
 
 		RepositoryConnection connection = null;
@@ -863,7 +861,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					logger.debug(ex.getMessage());
 					isOK = false;
 
-					//throw new LoadException(ex.getMessage(),ex);
+					//throw new RDFException(ex.getMessage(),ex);
 				}
 
 				if (isOK == false) {
@@ -882,7 +880,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 						myquery = URLEncoder.encode(query, encode);
 					} catch (UnsupportedEncodingException ex) {
 						String message = "Encoding " + encode + " is not supported.";
-						throw new LoadException(message + ex.getMessage(), ex);
+						throw new RDFException(message + ex.getMessage(), ex);
 					}
 
 					URL call = null;
@@ -891,7 +889,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 						call = new URL(
 								endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery);
 					} catch (MalformedURLException e) {
-						throw new LoadException(
+						throw new RDFException(
 								"Malfolmed URL exception by construct load from URL. "
 								+ e.getMessage(), e);
 					}
@@ -909,7 +907,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 						if (httpConnection != null) {
 							httpConnection.disconnect();
 						}
-						throw new LoadException(
+						throw new RDFException(
 								"Endpoint URL stream cannot be opened. "
 								+ e.getMessage(), e);
 					}
@@ -930,7 +928,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 						final String message = "Cannot open http connection stream at '"
 								+ call.toString()
 								+ "' - data not loaded. ";
-						throw new LoadException(message + ex.getMessage(), ex);
+						throw new RDFException(message + ex.getMessage(), ex);
 
 					} finally {
 						httpConnection.disconnect();
@@ -940,7 +938,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 
 		} catch (RepositoryException ex) {
-			throw new LoadException("Repository connection failed. " + ex
+			throw new RDFException("Repository connection failed. " + ex
 					.getMessage(), ex);
 		} finally {
 			if (connection != null) {
@@ -1057,11 +1055,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                        RDF data.
 	 * @param defaultGraphUri name of graph where RDF data are loading.
 	 * @param query           String SPARQL query.
-	 * @throws ExtractException when extraction data fault.
+	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
 	public void extractfromSPARQLEndpoint(URL endpointURL,
-			String defaultGraphUri, String query) throws ExtractException {
+			String defaultGraphUri, String query) throws RDFException {
 
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphUri);
@@ -1082,12 +1080,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param password        String password needed for authentication.
 	 * @param format          Type of RDF format for saving data (example:
 	 *                        TURTLE, RDF/XML,etc.)
-	 * @throws ExtractException when extraction data fault.
+	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
 	public void extractfromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query, String hostName,
-			String password, RDFFormat format) throws ExtractException {
+			String password, RDFFormat format) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphUri);
 
@@ -1110,7 +1108,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                            TURTLE, RDF/XML,etc.)
 	 * @param useStatisticHandler boolean value if detailed log and statistic
 	 *                            are awailable or not.
-	 * @throws ExtractException when extraction data fault.
+	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
 	public void extractfromSPARQLEndpoint(
@@ -1119,13 +1117,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			String query,
 			String hostName,
 			String password,
-			boolean useStatisticHandler) throws ExtractException {
+			boolean useStatisticHandler) throws RDFException {
 
 		if (endpointURL == null) {
 			final String message = "Mandatory URL path in extractor from SPARQL is null.";
 
 			logger.debug(message);
-			throw new ExtractException(message);
+			throw new RDFException(message);
 
 		} else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
 
@@ -1133,7 +1131,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					+ "have to started with http.";
 
 			logger.debug(message);
-			throw new ExtractException(message);
+			throw new RDFException(message);
 
 		}
 
@@ -1141,19 +1139,19 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
 
 			logger.debug(message);
-			throw new ExtractException(message);
+			throw new RDFException(message);
 
 		} else if (endpointGraphsURI.isEmpty()) {
 			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
 
 			logger.debug(message);
-			throw new ExtractException(message);
+			throw new RDFException(message);
 		}
 
 		if (query == null) {
 			final String message = "Mandatory construct query in extractor from SPARQL is null.";
 			logger.debug(message);
-			throw new ExtractException(message);
+			throw new RDFException(message);
 		}
 
 		final RDFFormat format = RDFFormat.N3;
@@ -1167,7 +1165,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		} catch (UnsupportedEncodingException e) {
 			String message = "Encode " + encode + " is not support. ";
 			logger.debug(message);
-			throw new ExtractException(message + e.getMessage(), e);
+			throw new RDFException(message + e.getMessage(), e);
 		}
 
 		RepositoryConnection connection = null;
@@ -1186,7 +1184,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				} catch (MalformedURLException e) {
 					final String message = "Malfolmed URL exception by construct extract URL. ";
 					logger.debug(message);
-					throw new ExtractException(message + e.getMessage(), e);
+					throw new RDFException(message + e.getMessage(), e);
 				}
 
 				HttpURLConnection httpConnection = null;
@@ -1200,7 +1198,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					if (httpConnection != null) {
 						httpConnection.disconnect();
 					}
-					throw new ExtractException(e.getMessage(), e);
+					throw new RDFException(e.getMessage(), e);
 				}
 
 				boolean usePassword = !(hostName.isEmpty() && password.isEmpty());
@@ -1253,7 +1251,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 							logger.error(ex.getMessage(), ex);
 						} catch (RDFHandlerException | RDFParseException ex) {
 							logger.error(ex.getMessage(), ex);
-							throw new ExtractException(ex.getMessage(), ex);
+							throw new RDFException(ex.getMessage(), ex);
 						}
 					}
 
@@ -1262,12 +1260,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					final String message = "Http connection can can not open stream. ";
 					logger.debug(message);
 
-					throw new ExtractException(message + e.getMessage(), e);
+					throw new RDFException(message + e.getMessage(), e);
 
 				} catch (RDFParseException e) {
 					logger.debug(e.getMessage());
 
-					throw new ExtractException(e.getMessage(), e);
+					throw new RDFException(e.getMessage(), e);
 
 				}
 			}
@@ -1280,7 +1278,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			logger.debug(message);
 
-			throw new ExtractException(message, e);
+			throw new RDFException(message, e);
 
 		} finally {
 			if (connection != null) {
@@ -1356,10 +1354,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * Transform RDF in repository by SPARQL updateQuery.
 	 *
 	 * @param updateQuery String value of update SPARQL query.
-	 * @throws TransformException when transformation fault.
+	 * @throws RDFException when transformation fault.
 	 */
 	@Override
-	public void transformUsingSPARQL(String updateQuery) throws TransformException {
+	public void transformUsingSPARQL(String updateQuery) throws RDFException {
 
 		RepositoryConnection connection = null;
 		try {
@@ -1383,7 +1381,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		} catch (MalformedQueryException e) {
 
 			logger.debug(e.getMessage());
-			throw new TransformException(e.getMessage(), e);
+			throw new RDFException(e.getMessage(), e);
 
 		} catch (UpdateExecutionException ex) {
 
@@ -1391,11 +1389,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			logger.debug(message);
 			logger.debug(ex.getMessage());
 
-			throw new TransformException(message + ex.getMessage(), ex);
+			throw new RDFException(message + ex.getMessage(), ex);
 
 
 		} catch (RepositoryException ex) {
-			throw new TransformException(
+			throw new RDFException(
 					"Connection to repository is not available. "
 					+ ex.getMessage(), ex);
 		} finally {
@@ -1724,7 +1722,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			loadRDFfromRepositoryToFile(directory.getAbsolutePath(), file
 					.getName(),
 					formatType, true, false);
-		} catch (CannotOverwriteFileException | LoadException e) {
+		} catch (CannotOverwriteFileException | RDFException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -1753,7 +1751,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					baseURI,
 					useSuffix, useStatisticHandler);
 
-		} catch (ExtractException e) {
+		} catch (RDFException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
