@@ -10,6 +10,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 import java.net.MalformedURLException;
@@ -42,7 +43,8 @@ public class RDFExtractor implements Extract,
 	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
 
 		RDFDataRepository repository =
-				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF, "output");
+				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF,
+				"output");
 
 		try {
 			final URL endpointURL = new URL(config.SPARQL_endpoint);
@@ -50,12 +52,13 @@ public class RDFExtractor implements Extract,
 			final String password = config.Password;
 			final List<String> defaultGraphsUri = config.GraphsUri;
 			final String query = config.SPARQL_query;
-			
-			
+
+
 			boolean useStatisticHandler;
 			if (config.UseStatisticalHandler == null) {
 				useStatisticHandler = false;
-				context.sendMessage(MessageType.WARNING, "Missing configuration for 'UseStatisticalHandler' using 'false' as default.");
+				context.sendMessage(MessageType.WARNING,
+						"Missing configuration for 'UseStatisticalHandler' using 'false' as default.");
 			} else {
 				useStatisticHandler = config.UseStatisticalHandler;
 			}
@@ -66,6 +69,8 @@ public class RDFExtractor implements Extract,
 			context.sendMessage(MessageType.ERROR,
 					"MalformedURLException: " + ex.getMessage());
 			throw new ExtractException(ex);
+		} catch (RDFException ex) {
+			throw new ExtractException(ex.getMessage(), ex);
 		}
 	}
 

@@ -10,6 +10,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 import org.slf4j.Logger;
@@ -46,8 +47,13 @@ public class FileExtractor implements Extract,
 		final boolean useStatisticHandler = config.UseStatisticalHandler;
 
 
-		repository.extractRDFfromFileToRepository(extractType,
-				path, fileSuffix, baseURI, onlyThisSuffix, useStatisticHandler);
+		try {
+			repository.extractRDFfromFileToRepository(extractType,
+					path, fileSuffix, baseURI, onlyThisSuffix,
+					useStatisticHandler);
+		} catch (RDFException e) {
+			throw new ExtractException(e.getMessage(), e);
+		}
 	}
 
 	@Override

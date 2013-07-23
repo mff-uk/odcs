@@ -5,13 +5,12 @@ import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
-//import cz.cuni.xrg.intlib.commons.module.data.InputHelper;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
-import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +38,13 @@ public class FileLoader implements Load,
 		//RDFDataRepository repository = 
 		//		InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
 
-		RDFDataRepository repository = (RDFDataRepository) context.getInputs().get(0); 
-		
+		RDFDataRepository repository = (RDFDataRepository) context.getInputs()
+				.get(0);
+
 		String directoryPath = config.DirectoryPath;
 		String fileName = config.FileName;
 
-		RDFFormatType formatType=config.RDFFileFormat;
+		RDFFormatType formatType = config.RDFFileFormat;
 
 		boolean isNameUnique = config.DiffName;
 		boolean canFileOverwritte = true;
@@ -52,7 +52,7 @@ public class FileLoader implements Load,
 		try {
 			repository.loadRDFfromRepositoryToFile(directoryPath, fileName,
 					formatType, canFileOverwritte, isNameUnique);
-		} catch (CannotOverwriteFileException ex) {
+		} catch (RDFException | CannotOverwriteFileException ex) {
 			throw new LoadException(ex);
 		}
 	}
