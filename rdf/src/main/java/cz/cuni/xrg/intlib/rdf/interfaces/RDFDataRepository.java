@@ -1,15 +1,13 @@
 package cz.cuni.xrg.intlib.rdf.interfaces;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -55,12 +53,12 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param useStatisticHandler boolean value, if during extraction needed
 	 *                            detail statistic about RDF triples and
 	 *                            detailed log or not.
-	 * @throws ExtractException when extraction fail.
+	 * @throws RDFException when extraction fail.
 	 */
 	public void extractRDFfromFileToRepository(FileExtractType extractType,
 			String path, String suffix,
 			String baseURI,
-			boolean useSuffix, boolean useStatisticHandler) throws ExtractException;
+			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -72,11 +70,11 @@ public interface RDFDataRepository extends DataUnit {
 	 *                      RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws LoadException                when loading data fault.
+	 * @throws RDFException                 when loading data fault.
 	 */
 	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName,
-			RDFFormatType formatType) throws CannotOverwriteFileException, LoadException;
+			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -92,11 +90,11 @@ public interface RDFDataRepository extends DataUnit {
 	 *                         his unique name.
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws LoadException                when loading data fault.
+	 * @throws RDFException                 when loading data fault.
 	 */
 	public void loadRDFfromRepositoryToFile(String directoryPath,
 			String fileName, RDFFormatType formatType,
-			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, LoadException;
+			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
@@ -105,10 +103,10 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
 	 * @param defaultGraphURI name of graph where RDF data are loading.
-	 * @throws LoadException when loading data fault.
+	 * @throws RDFException when loading data fault.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			WriteGraphType graphType) throws LoadException;
+			WriteGraphType graphType) throws RDFException;
 
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
@@ -119,11 +117,11 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param defaultGraphURI name of graph where RDF data are loading.
 	 * @param name            String name needed for authentication.
 	 * @param password        String password needed for authentication.
-	 * @throws LoadException when loading data fault.
+	 * @throws RDFException when loading data fault.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			String name,
-			String password, WriteGraphType graphType) throws LoadException;
+			String password, WriteGraphType graphType) throws RDFException;
 
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the collection of
@@ -137,11 +135,11 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @throws LoadException when loading data fault.
+	 * @throws RDFException when loading data fault.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
-			String password, WriteGraphType graphType) throws LoadException;
+			String password, WriteGraphType graphType) throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
@@ -151,10 +149,10 @@ public interface RDFDataRepository extends DataUnit {
 	 *                        RDF data.
 	 * @param defaultGraphUri name of graph where RDF data are loading.
 	 * @param query           String SPARQL query.
-	 * @throws ExtractException when extraction data fault.
+	 * @throws RDFException when extraction data fault.
 	 */
 	public void extractfromSPARQLEndpoint(URL endpointURL,
-			String defaultGraphUri, String query) throws ExtractException;
+			String defaultGraphUri, String query) throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
@@ -172,7 +170,7 @@ public interface RDFDataRepository extends DataUnit {
 	 */
 	public void extractfromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query,
-			String hostName, String password, RDFFormat format) throws ExtractException;
+			String hostName, String password, RDFFormat format) throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
@@ -187,20 +185,20 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param password         String password needed for authentication.
 	 * @param format           Type of RDF format for saving data (example:
 	 *                         TURTLE, RDF/XML,etc.)
-	 * @throws ExtractException when extraction data fault.
+	 * @throws RDFException when extraction data fault.
 	 */
 	public void extractfromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
 			String query, String hostName, String password,
-			boolean useStatisticHandler) throws ExtractException;
+			boolean useStatisticHandler) throws RDFException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
 	 *
 	 * @param updateQuery String value of update SPARQL query.
-	 * @throws TransformException when transformation fault.
+	 * @throws RDFException when transformation fault.
 	 */
-	public void transformUsingSPARQL(String updateQuery) throws TransformException;
+	public void transformUsingSPARQL(String updateQuery) throws RDFException;
 
 	/**
 	 * Return count of triples stored in repository.
