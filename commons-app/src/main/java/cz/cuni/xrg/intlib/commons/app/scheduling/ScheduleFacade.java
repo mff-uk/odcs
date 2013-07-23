@@ -15,6 +15,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 /**
  * Facade providing actions with plan.
  *
+ * @author Jan Vojt
  */
 public class ScheduleFacade {
 
@@ -38,6 +39,24 @@ public class ScheduleFacade {
 				Schedule.class
 		);
 
+		return resultList;
+	}
+	
+	/**
+	 * Fetches all {@link Schedule}s planned for given pipeline.
+	 *
+	 * @param pipeline
+	 * @return
+	 */
+	public List<Schedule> getSchedulesFor(Pipeline pipeline) {
+		@SuppressWarnings("unchecked")
+		List<Schedule> resultList = Collections.checkedList(
+			em.createQuery(
+				"SELECT e FROM Schedule e WHERE e.pipeline = :pipeline"
+				).setParameter("pipeline", pipeline)
+				.getResultList(),
+				Schedule.class
+		);
 		return resultList;
 	}
 	

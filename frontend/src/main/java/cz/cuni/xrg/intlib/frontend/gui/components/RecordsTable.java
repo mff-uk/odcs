@@ -129,7 +129,7 @@ public class RecordsTable extends CustomComponent {
 		if (detail == null) {
 			final RecordDetail detailWindow = new RecordDetail(record);
 			detailWindow.setHeight(600, Unit.PIXELS);
-			detailWindow.setWidth(400, Unit.PIXELS);
+			detailWindow.setWidth(500, Unit.PIXELS);
 			detailWindow.setImmediate(true);
 			detailWindow.setContentHeight(600, Unit.PIXELS);
 			detailWindow.addResizeListener(new Window.ResizeListener() {
@@ -148,6 +148,7 @@ public class RecordsTable extends CustomComponent {
 			App.getApp().addWindow(detailWindow);
 		} else {
 			detail.loadMessage(record);
+			detail.bringToFront();
 		}
 	}
 	

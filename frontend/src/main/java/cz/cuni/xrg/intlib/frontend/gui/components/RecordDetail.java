@@ -86,7 +86,7 @@ public class RecordDetail extends Window {
 	 * @{link Unit} of height.
 	 */
 	void setContentHeight(float height, Unit unit) {
-		fullMessageContent.setHeight(height - 210, unit);
+		fullMessageContent.setHeight(height - 250, unit);
 	}
 	
 	/**

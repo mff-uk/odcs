@@ -399,11 +399,11 @@ public class DPUCreate extends Window {
 					// check type ..
 					DPUType dpuType = null;
 					if (dpuObject instanceof Extract) {
-						dpuType = DPUType.Extractor;
+						dpuType = DPUType.EXTRACTOR;
 					} else if (dpuObject instanceof Transform) {
-						dpuType = DPUType.Transformer;
+						dpuType = DPUType.TRANSFORMER;
 					} else if (dpuObject instanceof Load) {
-						dpuType = DPUType.Loader;
+						dpuType = DPUType.LOADER;
 					} else {
 						// unknown type .. delete dpu and throw error
 						destFile.delete();

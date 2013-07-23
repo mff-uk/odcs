@@ -155,7 +155,7 @@ public class LogMessagesTable extends CustomComponent {
 		if (detail == null) {
 			final LogMessageDetail detailWindow = new LogMessageDetail(log);
 			detailWindow.setHeight(600, Unit.PIXELS);
-			detailWindow.setWidth(400, Unit.PIXELS);
+			detailWindow.setWidth(500, Unit.PIXELS);
 			detailWindow.setImmediate(true);
 			detailWindow.setContentHeight(600, Unit.PIXELS);
 			detailWindow.addResizeListener(new Window.ResizeListener() {
@@ -175,6 +175,7 @@ public class LogMessagesTable extends CustomComponent {
 			App.getApp().addWindow(detailWindow);
 		} else {
 			detail.loadMessage(log);
+			detail.bringToFront();
 		}
 	}
 }

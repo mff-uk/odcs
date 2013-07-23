@@ -149,13 +149,13 @@ public class DPUTree extends CustomComponent {
 					tree.setParent(dpu, parent);
 				} else {
 					switch (dpu.getType()) {
-						case Extractor:
+						case EXTRACTOR:
 							tree.setParent(dpu, rootExtractor);
 							break;
-						case Transformer:
+						case TRANSFORMER:
 							tree.setParent(dpu, rootTransformer);
 							break;
-						case Loader:
+						case LOADER:
 							tree.setParent(dpu, rootLoader);
 							break;
 						default:

@@ -87,7 +87,7 @@ public class LogMessageDetail extends Window {
 	 * @{link Unit} of height.
 	 */
 	void setContentHeight(float height, Sizeable.Unit unit) {
-		fullMessageContent.setHeight(height - 210, unit);
+		fullMessageContent.setHeight(height - 250, unit);
 	}
 
 	/**

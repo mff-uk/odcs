@@ -15,14 +15,14 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
 public interface ProcessingContext {
 	
 	/**
-	 * Return path to the DPU working directory. The working
+	 * Return path to the existing DPU working directory. The working
 	 * directory is unique for every DPU.
 	 * @return
 	 */
 	public File getWorkingDir();
 	
 	/**
-	 * Return path to the result directory. Result directory is 
+	 * Return path to the existing result directory. Result directory is 
 	 * shared by all DPU's in pipeline.
 	 * @return
 	 */

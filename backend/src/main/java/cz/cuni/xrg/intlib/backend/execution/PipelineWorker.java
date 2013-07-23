@@ -232,23 +232,28 @@ class PipelineWorker implements Runnable {
 			} catch (ContextException e) {
 				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, node.getDpuInstance(), execution, this));				
 				executionFailed = true;
+				LOG.error("PipelineWorker: Context exception", e);
 				break;
 			} catch (ModuleException e) {
 				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, node.getDpuInstance(), execution, this));
 				executionFailed = true;
+				LOG.error("PipelineWorker: Module exception", e);
 				break;
 			} catch (StructureException e) {
 				eventPublisher.publishEvent(new PipelineStructureError(e, node.getDpuInstance(), execution, this));
 				executionFailed = true;
+				LOG.error("PipelineWorker: Structure exception", e);
 				break;		
 			} catch (DataUnitCreateException e) {
 				// can't create DataUnit 
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(), execution, this));
 				executionFailed = true;
+				LOG.error("PipelineWorker: DataUnit exception", e);
 				break;
 			} catch (Exception e) {
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
 				executionFailed = true;
+				LOG.error("PipelineWorker: Exception", e);
 				break;
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);

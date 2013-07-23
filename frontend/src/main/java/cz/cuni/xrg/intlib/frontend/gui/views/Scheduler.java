@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
+import com.sun.swing.internal.plaf.basic.resources.basic;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -25,17 +26,17 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
+import cz.cuni.xrg.intlib.frontend.gui.components.IntlibFilterDecorator;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
 
 /**
- * GUI for Scheduler page which opens from the main menu. 
- * Contains table with scheduler rules and button for scheduler rule creation.
- * 
- * 
+ * GUI for Scheduler page which opens from the main menu. Contains table with
+ * scheduler rules and button for scheduler rule creation.
+ *
+ *
  * @author Maria Kukhar
  */
-
 class Scheduler extends ViewComponent {
 
 	private VerticalLayout mainLayout;
@@ -60,10 +61,10 @@ class Scheduler extends ViewComponent {
 	 */
 	public Scheduler() {
 	}
-	
+
 	/**
 	 * Builds main layout
-	 * 
+	 *
 	 */
 	private VerticalLayout buildMainLayout() {
 		// common part: create layout
@@ -77,7 +78,7 @@ class Scheduler extends ViewComponent {
 		// top-level component properties
 		setWidth("100%");
 		setHeight("100%");
-		
+
 		//Layout for buttons Add new scheduling rule and Clear Filters on the top.
 		HorizontalLayout topLine = new HorizontalLayout();
 		topLine.setSpacing(true);
@@ -116,14 +117,14 @@ class Scheduler extends ViewComponent {
 		});
 		topLine.addComponent(buttonDeleteFilters);
 		topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
-		
+
 		Label topLineFiller = new Label();
 		topLine.addComponentAsFirst(topLineFiller);
 		topLine.setExpandRatio(topLineFiller, 1.0f);
 		mainLayout.addComponent(topLine);
 
 		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());
-		
+
 		//table with schedule rules records
 		schedulerTable = new IntlibPagedTable();
 		schedulerTable.setSelectable(true);
@@ -136,7 +137,21 @@ class Scheduler extends ViewComponent {
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
-
+		//Debug column. Contains debug icons.
+		schedulerTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId,
+					Object columnId) {
+				boolean isEnabled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
+				if (isEnabled) {
+					return "Enabled";
+				} else {
+					return "Disabled";
+				}
+			}
+		});
+		schedulerTable.setFilterDecorator(new filterDecorator());
+		schedulerTable.setFilterFieldVisible("commands", false);
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
 		schedulerTable.setPageLength(20);
@@ -144,7 +159,7 @@ class Scheduler extends ViewComponent {
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				
+
 				if (!schedulerTable.isSelected(event.getItemId())) {
 					schId = (Long) event.getItem().getItemProperty("schid").getValue();
 					showSchedulePipeline(schId);
@@ -164,14 +179,15 @@ class Scheduler extends ViewComponent {
 		schedulerTable.setContainerDataSource(tableData);
 		schedulerTable.setCurrentPage(page);
 		schedulerTable.setVisibleColumns(visibleCols);
+		schedulerTable.setFilterFieldVisible("commands", false);
 
 	}
 
 	/**
 	 * Container with data for scheduler table.
-	 * 
+	 *
 	 * @param data. List of Schedule.
-	 * @return result. IndexedContainer with data for  scheduler table.
+	 * @return result. IndexedContainer with data for scheduler table.
 	 */
 	public static IndexedContainer getTableData(List<Schedule> data) {
 
@@ -179,10 +195,17 @@ class Scheduler extends ViewComponent {
 
 		for (String p : visibleCols) {
 			// setting type of columns
-			if ((p.equals("last")) || (p.equals("next"))) {
-				result.addContainerProperty(p, Date.class, null);
-			} else {
-				result.addContainerProperty(p, String.class, "");
+			switch (p) {
+				case "last":
+				case "next":
+					result.addContainerProperty(p, Date.class, null);
+					break;
+				case "status":
+					result.addContainerProperty(p, Boolean.class, false);
+					break;
+				default:
+					result.addContainerProperty(p, String.class, "");
+					break;
 			}
 
 		}
@@ -207,11 +230,9 @@ class Scheduler extends ViewComponent {
 						item.getLastExecution());
 			}
 
-			if (item.isEnabled()) {
-				result.getContainerProperty(num, "status").setValue("Enabled");
-			} else {
-				result.getContainerProperty(num, "status").setValue("Disabled");
-			}
+			
+			result.getContainerProperty(num, "status").setValue(item.isEnabled());
+			
 
 			if (item.getType().equals(ScheduleType.PERIODICALLY)) {
 				if (item.isJustOnce()) {
@@ -271,7 +292,6 @@ class Scheduler extends ViewComponent {
 
 	}
 
-
 	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
@@ -280,6 +300,7 @@ class Scheduler extends ViewComponent {
 
 	/**
 	 * Generate column "commands" in the scheduler table.
+	 *
 	 * @author Maria Kukhar
 	 *
 	 */
@@ -292,16 +313,16 @@ class Scheduler extends ViewComponent {
 				Object columnId) {
 			Property propStatus = source.getItem(itemId).getItemProperty(
 					"status");
-			String testStatus = "---";
+			boolean testStatus;
 
 			HorizontalLayout layout = new HorizontalLayout();
 
-			if (propStatus.getType().equals(String.class)) {
+			if (propStatus.getType().equals(Boolean.class)) {
 
-				testStatus = (String) propStatus.getValue().toString();
+				testStatus = (Boolean) propStatus.getValue();
 				//If item in the scheduler table has Disabled status, then for that item will be shown
 				//Enable button
-				if (testStatus == "Disabled") {
+				if (!testStatus) {
 					Button enableButton = new Button("Enable");
 					enableButton.addClickListener(new ClickListener() {
 						@Override
@@ -322,8 +343,7 @@ class Scheduler extends ViewComponent {
 					});
 					layout.addComponent(enableButton);
 
-				} 
-				//If item in the scheduler table has Enabled status, then for that item will be shown
+				} //If item in the scheduler table has Enabled status, then for that item will be shown
 				//Disable button
 				else {
 					Button disableButton = new Button();
@@ -362,7 +382,7 @@ class Scheduler extends ViewComponent {
 				}
 			});
 			layout.addComponent(editButton);
-			
+
 			//Edit button. Delete scheduling rule from the table.
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
@@ -405,4 +425,16 @@ class Scheduler extends ViewComponent {
 			}
 		});
 	}
+
+	private class filterDecorator extends IntlibFilterDecorator {
+
+		@Override
+		public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
+			if (value) {
+				return "Enabled";
+			} else {
+				return "Disabled";
+			}
+		}
+	};
 }
