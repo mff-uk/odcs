@@ -5,6 +5,7 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,11 +60,10 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	public static void cleaning() {
 		rdfRepo.release();
 	}
-	
+
 	@Test
-	public void addDataUsingTransformer()
-	{
-		String query="insert data {<http://test>  <http://test>  <http://test> .}";
+	public void addDataUsingTransformer() {
+		String query = "insert data {<http://test>  <http://test>  <http://test> .}";
 		try {
 			rdfRepo.transformUsingSPARQL(query);
 		} catch (TransformException ex) {
@@ -80,6 +80,21 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@Test
 	public void BIGTwoGigaFileExtraction() {
 		//extractTwoGigaFile();
+	}
+
+	@Test
+	public void repositoryCopy() {
+		RDFDataRepository goal = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName,
+				port, user, password, defaultGraph, "");
+		goal.setDataGraph("http://goal");
+
+		try {
+			goal.merge(rdfRepo);
+		} catch (IllegalArgumentException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 
 	private void extractTwoGigaFile() {
