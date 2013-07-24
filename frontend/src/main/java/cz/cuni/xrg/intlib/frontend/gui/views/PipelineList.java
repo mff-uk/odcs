@@ -238,7 +238,7 @@ class PipelineList extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				tablePipelines.resetFilters();
-
+				tablePipelines.setFilterFieldVisible("", false);
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);

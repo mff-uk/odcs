@@ -297,7 +297,13 @@ class PipelineEdit extends ViewComponent {
 	 */
 	private void closeView() {
 		if(incomingView != null) {
-			App.getApp().getNavigator().getDisplay().showView(incomingView);
+			//App.getApp().getNavigator().getDisplay().showView(incomingView);
+			if(incomingView.getClass() == DPU.class) {
+				App.getApp().getNavigator().getDisplay().showView(incomingView);
+			} else {
+				ViewNames name = ViewsFactory.getViewName(incomingView);
+				App.getApp().getNavigator().navigateTo(name.getUrl());
+			}
 		} else {
 			App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
 		}

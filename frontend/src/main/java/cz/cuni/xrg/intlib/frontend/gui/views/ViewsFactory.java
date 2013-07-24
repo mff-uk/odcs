@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
+import com.vaadin.navigator.View;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 
@@ -39,6 +40,16 @@ public class ViewsFactory {
 			return null;
 		}
 		
+	}
+	
+	public static ViewNames getViewName(View view) {
+		if(view.getClass() == PipelineList.class) {
+			return ViewNames.PipelineList;
+		} else if(view.getClass() == DPU.class) {
+			return ViewNames.DPU;
+		} else {
+			return ViewNames.Initial;
+		}
 	}
 	
 }
