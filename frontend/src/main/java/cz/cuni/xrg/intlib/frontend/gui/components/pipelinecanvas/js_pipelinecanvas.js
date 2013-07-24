@@ -329,9 +329,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	}
 	
 	function getDpuColor(type) {
-		if(type === "Extractor") {
+		if(type === "EXTRACTOR") {
 			return '#A6F22A';
-		} else if(type === "Transformer") {
+		} else if(type === "TRANSFORMER") {
 			return '#25A8C0';
 		} else {
 			return '#FF402D';
