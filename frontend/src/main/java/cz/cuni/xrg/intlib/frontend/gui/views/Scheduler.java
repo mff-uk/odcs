@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
-import com.sun.swing.internal.plaf.basic.resources.basic;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;

@@ -134,7 +134,7 @@ public class DebuggingView extends CustomComponent {
 		if (loadSuccessful && isInDebugMode) {
 			refreshDpuSelector();
 		}
-		
+
 		//Table with data
 		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
 			DataUnitBrowser browser = loadBrowser(false);
@@ -152,7 +152,7 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		//Content of text log file
-		logMessagesTable.setDpu(pipelineExec, isInDebugMode ? (DPUInstanceRecord)dpuSelector.getValue() : null);
+		logMessagesTable.setDpu(pipelineExec, isInDebugMode ? (DPUInstanceRecord) dpuSelector.getValue() : null);
 
 		//Query View
 		if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
@@ -177,6 +177,7 @@ public class DebuggingView extends CustomComponent {
 	private void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		fillContent();
+		fireRefreshRequest();
 		if (debugDpu != null) {
 			queryView.setGraphs(debugDpu.getType());
 		}
@@ -224,7 +225,7 @@ public class DebuggingView extends CustomComponent {
 					Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
 					return null;
 				}
-				if(duBrowser != null) {
+				if (duBrowser != null) {
 					duBrowser.enter();
 				}
 				return duBrowser;
@@ -236,7 +237,8 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Gets repository path from context.
 	 *
-	 * @return {@link ExecutionContextInfo} containing current execution information.
+	 * @return {@link ExecutionContextInfo} containing current execution
+	 * information.
 	 */
 	LocalRDFRepo getRepository(boolean onInputGraph) {
 		if (debugDpu == null) {
@@ -286,7 +288,6 @@ public class DebuggingView extends CustomComponent {
 	 * }
 	 * return null;
 	 * }*/
-
 	/**
 	 * Refresh component factory. Is to be displayed while pipeline is still
 	 * running. Contains refresh button, which updates the content of debugging
@@ -361,7 +362,7 @@ public class DebuggingView extends CustomComponent {
 	 * available.
 	 */
 	private void refreshDpuSelector() {
-		
+
 //		 Collection<?> o = dpuSelector.getVisibleItemIds();
 //		if(o != null && !o.isEmpty()) {
 //			return;
@@ -369,9 +370,9 @@ public class DebuggingView extends CustomComponent {
 		//dpuSelector.removeAllItems();
 		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
 		for (DPUInstanceRecord dpu : contextDpuIndexes) {
-			if(!dpuSelector.containsId(dpu)) {
+			if (!dpuSelector.containsId(dpu)) {
 				dpuSelector.addItem(dpu);
-				if(dpu.equals(debugDpu)) {
+				if (dpu.equals(debugDpu)) {
 					dpuSelector.select(debugDpu);
 				}
 			}
@@ -379,5 +380,15 @@ public class DebuggingView extends CustomComponent {
 //		if (debugDpu != null) {
 //			dpuSelector.select(debugDpu);
 //		}
+	}
+
+	/**
+	 * Fires refresh request event.
+	 */
+	protected void fireRefreshRequest() {
+		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
+		for (Listener l : ls) {
+			l.componentEvent(new Event(this));
+		}
 	}
 }

@@ -6,6 +6,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -116,7 +117,11 @@ public class LogMessagesTable extends CustomComponent {
 		}
 
 		List<LogMessage> data = getData(pipelineExecution, dpu, level);
-		loadMessageTable(data);
+		if(data != null) {
+			loadMessageTable(data);
+		} else {
+			Notification.show("Error", "Failed to load log messages from database!", Notification.Type.ERROR_MESSAGE);
+		}
 	}
 
 	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {
