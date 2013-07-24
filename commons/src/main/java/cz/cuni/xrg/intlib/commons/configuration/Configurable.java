@@ -13,7 +13,7 @@ public interface Configurable <C extends Config> {
 	 * Configure object based on passed object. If the object does not
 	 * contains valid configuration ConfigException should be thrown.
 	 * @param c Object with configuration.
-	 * @throws ConfigException
+	 * @throws ConfigException In case of invalid configuration.
 	 */
 	void configure(C c) throws ConfigException;
 

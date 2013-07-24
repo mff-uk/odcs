@@ -17,12 +17,16 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
  */
 public interface Transform {
 
-    /**
-     * Transforms the cached RDF data in the repository.
-     *
-     * @param context The context containing meta information about this transformation process
-     * @throws TransformException If the transformation fails, this exception has to be thrown
-     * @throws DataUnitCreateException If failed to create a DataUnit.
-     */
-    public void transform(TransformContext context) throws TransformException, DataUnitCreateException;
+	/**
+	 * Transforms the cached RDF data in the repository.
+	 * 
+	 * @param context The context containing meta information about this
+	 *            transformation process
+	 * @throws TransformException If the transformation fails, this exception
+	 *             has to be thrown
+	 * @throws DataUnitCreateException If failed to create a DataUnit.
+	 */
+	public void transform(TransformContext context)
+			throws TransformException,
+				DataUnitCreateException;
 }

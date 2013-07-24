@@ -1,12 +1,11 @@
 package cz.cuni.xrg.intlib.commons.message;
 
 /**
- * Types of messages that can be send
- * through the context. 
- * (ExtractContext, TransformContext, LoadContext)  
+ * Types of messages that can be send through the context. (ExtractContext,
+ * TransformContext, LoadContext)
  * 
  * @author Petyr
- *
+ * 
  */
 public enum MessageType {
 	/**
@@ -14,17 +13,16 @@ public enum MessageType {
 	 */
 	DEBUG
 	/**
-	 * Information messages can be used to inform about DPU
-	 * execution progress. 
+	 * Information messages can be used to inform about DPU execution progress.
 	 */
-	,INFO
+	, INFO
 	/**
 	 * Warning messages.
 	 */
-	,WARNING	
+	, WARNING
 	/**
-	 * Error messages can be used to report
-	 * non fatal error during the DPU execution. 
+	 * Error messages can be used to report non fatal error during the DPU
+	 * execution.
 	 */
-	,ERROR
+	, ERROR
 }

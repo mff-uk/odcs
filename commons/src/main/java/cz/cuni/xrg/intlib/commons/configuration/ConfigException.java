@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.configuration;
 
 /**
- * Exception used in relation do DPU invalid setting.
+ * Exception used in relation do DPU invalid configuration.
  *
  * @author Petyr
  *
