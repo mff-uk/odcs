@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.jensjansson.pagedtable.ControlsLayout;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
@@ -16,6 +17,7 @@ import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -112,9 +114,18 @@ public class QueryView extends CustomComponent {
 		resultTableControls.setImmediate(true);
 		mainLayout.addComponent(resultTableControls);
 		export = new Link("Download data", null);
+		export.setIcon(new ThemeResource("icons/download.png"));
 		export.setVisible(false);
 		export.setImmediate(true);
+		export.addListener(new Listener() {
+
+			@Override
+			public void componentEvent(Event event) {
+				export.setEnabled(false);
+			}
+		});
 		mainLayout.addComponent(export);
+		mainLayout.setComponentAlignment(export, Alignment.MIDDLE_CENTER);
 
 		mainLayout.setSizeFull();
 		setCompositionRoot(mainLayout);
@@ -170,6 +181,9 @@ public class QueryView extends CustomComponent {
 		resource.setCacheTime(5000);
 
 		export.setResource(resource);
+		Date now = new Date();
+		export.setCaption("Download data from query on " + now.toString());
+		Notification.show("Query is being executed!", Notification.Type.HUMANIZED_MESSAGE);
 		return true;
 	}
 

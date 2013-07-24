@@ -76,3 +76,8 @@
 /*.vLayoutScroll > div{
 overflow: auto !important;
 }*/
+
+.v-link a:visited {
+	color: gray;
+}
+  
