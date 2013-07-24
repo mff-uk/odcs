@@ -116,7 +116,8 @@ public class RecordsTable extends CustomComponent {
 			// set columns
 			isInitialized = true;
 		}
-		messageTable.setVisibleColumns("time", "type", "dpuInstance", "shortMessage");
+		messageTable.setVisibleColumns("timestamp", "type", "dpuInstance", "shortMessage");
+		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message");
 		messageTable.refreshRowCache();
 	}
 

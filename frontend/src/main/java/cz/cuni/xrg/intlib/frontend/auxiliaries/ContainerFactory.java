@@ -10,6 +10,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
+import java.sql.Timestamp;
 
 /**
  * Class support creating vaadin container from List<?>.
@@ -61,6 +62,7 @@ public class ContainerFactory {
 	public static Container CreateExecutionMessages(List<Record> data) {
 		BeanContainer<Long, Record> container = new BeanContainer<>( Record.class);
 		container.setBeanIdProperty("id");
+		container.addNestedContainerProperty("timestamp");
 		container.addAll(data);
 
 		return container;

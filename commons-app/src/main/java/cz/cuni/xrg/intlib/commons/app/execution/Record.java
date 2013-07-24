@@ -4,6 +4,7 @@ import java.util.Date;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.*;
 
@@ -120,5 +121,9 @@ public class Record implements Serializable {
 
 	public String getFullMessage() {
 		return fullMessage;
+	}
+	
+	public Timestamp getTimestamp() {
+		return new Timestamp(time.getTime());
 	}
 }
