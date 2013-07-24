@@ -1,5 +1,8 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import java.text.DateFormat;
+import java.util.Locale;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
@@ -19,6 +22,7 @@ public class RecordDetail extends Window {
 	private Label timeContent;
 	private Label instanceContent;
 	private Label shortMessageContent;
+	private String formattedDate;
 
 	/**
 	 * Constructor with Record to show.
@@ -39,9 +43,12 @@ public class RecordDetail extends Window {
 		pipelineExecutionContent.setWidth(100, Unit.PIXELS);
 		mainLayout.addComponent(pipelineExecutionContent, 1, 0);
 		
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,  Locale.getDefault());
+		formattedDate = df.format(record.getTime());
+		
 		Label timeLabel = new Label("Time:");
 		mainLayout.addComponent(timeLabel, 0, 1);
-		timeContent = new Label(record.getTime().toString());
+		timeContent = new Label(formattedDate);
 		mainLayout.addComponent(timeContent, 1, 1);
 		
 		Label instanceLabel = new Label("Type:");
@@ -96,7 +103,7 @@ public class RecordDetail extends Window {
 	 */
 	void loadMessage(Record record) {
 		pipelineExecutionContent.setValue(String.format("%d", record.getExecution().getId()));
-		timeContent.setValue(record.getTime().toString());
+		timeContent.setValue(formattedDate);
 		instanceContent.setValue(record.getType().toString());
 		shortMessageContent.setValue(record.getShortMessage());
 		fullMessageContent.setValue(record.getFullMessage());

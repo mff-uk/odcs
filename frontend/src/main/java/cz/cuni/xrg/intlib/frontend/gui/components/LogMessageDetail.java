@@ -1,8 +1,13 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Calendar.TimeFormat;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
@@ -21,6 +26,7 @@ public class LogMessageDetail extends Window {
 	private Label threadContent;
 	private Label levelContent;
 	private Label sourceContent;
+	private String formattedDate;
 
 	/**
 	 * Constructor with Record to show.
@@ -33,10 +39,14 @@ public class LogMessageDetail extends Window {
 		mainLayout.setImmediate(true);
 		mainLayout.setSpacing(true);
 		mainLayout.setSizeFull();
+		
+
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,  Locale.getDefault());
+		formattedDate = df.format(log.getDate());
 
 		Label timeLabel = new Label("Time:");
 		mainLayout.addComponent(timeLabel, 0, 0);
-		timeContent = new Label(log.getDate().toString());
+		timeContent = new Label(formattedDate);
 		mainLayout.addComponent(timeContent, 1, 0);
 
 		Label threadLabel = new Label("Thread:");
@@ -96,7 +106,7 @@ public class LogMessageDetail extends Window {
 	 * @param log Log message to load.
 	 */
 	void loadMessage(LogMessage log) {
-		timeContent.setValue(log.getDate().toString());
+		timeContent.setValue(formattedDate);
 		threadContent.setValue(log.getThread());
 		levelContent.setValue(log.getLevel().toString());
 		sourceContent.setValue(log.getSource());
