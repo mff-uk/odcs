@@ -333,9 +333,9 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
 				result.addContainerProperty(p, Boolean.class, false);
 				break;
 			case "date":
-				// Type used for needs to be java.sql.Timestamp, because there
+				// Type used for date needs to be java.sql.Timestamp, because there
 				// seems to be a bug in com.vaadin.data.util.filter.Compare#compareValue
-				// that causes subclasses of java.util.Date uncomparable with
+				// that causes subclasses of java.util.Date to be uncomparable with
 				// its superclass java.util.Date.
 				// For details see github issue #135.
 				result.addContainerProperty(p, Timestamp.class, null);
