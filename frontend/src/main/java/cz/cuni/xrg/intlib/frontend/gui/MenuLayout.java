@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;

@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
@@ -47,6 +48,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private void initNavigatorAddSingle(ViewNames view) {
 		this.navigator.addView(view.getUrl(), ViewsFactory.create(view));
 	}
+        
+        private MenuLayout main;
 
     /**
      * Add url-view association into navigator.
@@ -79,13 +82,13 @@ public class AppEntry extends com.vaadin.ui.UI {
 	protected void init(com.vaadin.server.VaadinRequest request) {
 		// create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
-		MenuLayout main = new MenuLayout();
+		main = new MenuLayout();
         //Panel mainPanel = new Panel();
 		//mainPanel.setContent(main);
 		setContent(main);
 
         // create a navigator to control the views
-        this.navigator = new com.vaadin.navigator.Navigator(this, main.getViewLayout());
+        this.navigator = new IntlibNavigator(this, main.getViewLayout());
 
 		// create Spring context
 		context = new ClassPathXmlApplicationContext("frontend-context.xml");
@@ -172,4 +175,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	public Object getBean(String name) {
 		return context.getBean(name);
 	}
+        
+        public MenuLayout getMain() {
+            return main;
+        }
 }
