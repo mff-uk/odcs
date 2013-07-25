@@ -55,51 +55,40 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * Logging information about execution of method using openRDF.
 	 */
 	protected static Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
-	
 	/**
 	 * How many triples is possible to add to SPARQL endpoind at once.
 	 */
 	protected static final int STATEMENTS_COUNT = 10;
-	
 	/**
 	 * Default name for graph using for store RDF data.
 	 */
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
-	
-	 /**
+	/**
 	 * Default name for temp directory, where this repository is placed.
 	 */
 	private final static String repoDirName = "intlib-repo";
-	
 	private final static String repoFileName = "localRepository";
-	
 	/**
 	 * Default name for data file.
 	 */
 	private final static String dumpName = "dump_dat.ttl";
-	
 	/**
 	 * Directory root, where is repository stored.
 	 */
 	private File WorkingRepoDirectory;
-	
 	protected final String encode = "UTF-8";
-	
 	/**
 	 * RDF data storage component.
 	 */
 	protected Repository repository = null;
-	
 	/**
 	 * If the repository is used only for reading data or not.
 	 */
 	protected boolean isReadOnly;
-	
 	/**
 	 * Graph resource for saving RDF triples.
 	 */
 	protected URI graph;
-	
 	/**
 	 * DataUnit's name.
 	 */
@@ -557,7 +546,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                      RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws RDFException                when loading data fault.
+	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
 	public void loadRDFfromRepositoryToFile(String directoryPath,
@@ -574,7 +563,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param directoryPath    Path to directory, where file with RDF data will
 	 *                         be saved.
 	 * @param fileName         Name of file for saving RDF data.
-	 * @param format           Type of RDF format for saving data (example:
+	 * @param formatType       Type of RDF format for saving data (example:
 	 *                         TURTLE, RDF/XML,etc.)
 	 * @param canFileOverWrite boolean value, if existing file can be
 	 *                         overwritten.
@@ -582,11 +571,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                         his unique name.
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws RDFException                when loading data fault.
+	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
 	public void loadRDFfromRepositoryToFile(String directoryPath,
-			String fileName, RDFFormatType format,
+			String fileName, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
 
 		if (directoryPath == null || fileName == null) {
@@ -659,7 +648,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				dataFile.getAbsoluteFile()), Charset
 				.forName(encode))) {
 
-			MyRDFHandler myHandler = new MyRDFHandler(os, format);
+			if (formatType == RDFFormatType.AUTO) {
+				RDFFormat newFormat = RDFFormat.forFileName(fileName, RDFFormat.RDFXML);
+				formatType = RDFFormatType.getTypeByRDFFormat(newFormat);
+			}
+			MyRDFHandler myHandler = new MyRDFHandler(os, formatType);
 
 			RDFHandler handler = myHandler.getRDFHandler();
 
