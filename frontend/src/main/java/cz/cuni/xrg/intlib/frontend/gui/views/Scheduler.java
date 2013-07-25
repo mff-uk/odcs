@@ -40,6 +40,9 @@ class Scheduler extends ViewComponent {
 
 	private VerticalLayout mainLayout;
 	private Label label;
+	/**
+	 * Table contains rules of pipeline scheduling.
+	 */
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
 	static String[] visibleCols = new String[]{"pipeline", "rule", "user",
@@ -61,10 +64,11 @@ class Scheduler extends ViewComponent {
 	public Scheduler() {
 	}
 
-	/**
-	 * Builds main layout
-	 *
-	 */
+    /**
+     * Builds main layout contains table with created scheduling pipeline rules.
+     * 
+ 	 * @return mainLayout VerticalLayout with all components of Scheduler page.
+ 	 */
 	private VerticalLayout buildMainLayout() {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
@@ -170,7 +174,7 @@ class Scheduler extends ViewComponent {
 	}
 
 	/**
-	 * Refresh scheduler table data.
+	 * Calls for refresh table {@link #schedulerTable}.
 	 */
 	private void refreshData() {
 		int page = schedulerTable.getCurrentPage();
@@ -183,10 +187,10 @@ class Scheduler extends ViewComponent {
 	}
 
 	/**
-	 * Container with data for scheduler table.
+	 * Container with data for table {@link #schedulerTable}.
 	 *
-	 * @param data. List of Schedule.
-	 * @return result. IndexedContainer with data for scheduler table.
+	 * @param data List of {@link Schedule}.
+	 * @return result IndexedContainer with data for {@link #schedulerTable}.
 	 */
 	public static IndexedContainer getTableData(List<Schedule> data) {
 
@@ -298,7 +302,7 @@ class Scheduler extends ViewComponent {
 	}
 
 	/**
-	 * Generate column "commands" in the scheduler table.
+	 * Generate column "commands" in the table {@link #schedulerTable}.
 	 *
 	 * @author Maria Kukhar
 	 *
