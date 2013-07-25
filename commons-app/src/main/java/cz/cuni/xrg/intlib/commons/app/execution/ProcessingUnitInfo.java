@@ -10,10 +10,13 @@ import java.util.List;
 import virtuoso.hibernate.VirtuosoDialect;
 
 /**
- * Contains and manage information about execution for single {@link DPU}.
- *
+ * Contains and manage information about execution for single {@link DPU}. The
+ * information class (this) is created at the start of the DPU execution. So the
+ * information class in not accessible for all the DPUs from the begining of the
+ * execution.
+ * 
  * @author Petyr
- *
+ * 
  */
 @Entity
 @Table(name = "exec_context_dpu")
@@ -29,12 +32,18 @@ public class ProcessingUnitInfo implements Serializable {
 	/**
 	 * Dummy column to work around virtuoso's missing support for no-column
 	 * insert. To be removed in future if other persisted attributes are added.
-	 *
+	 * 
 	 * @see VirtuosoDialect#getNoColumnsInsertString()
 	 */
 	@SuppressWarnings("unused")
 	@Column
 	private int dummy = 0;
+
+	/**
+	 * Describe state of the DPU execution.
+	 */
+	@Transient
+	private DPUExecutionState state = DPUExecutionState.RUNNING;
 
 	/**
 	 * Storage for dataUnits descriptors.
@@ -44,15 +53,17 @@ public class ProcessingUnitInfo implements Serializable {
 	@OrderBy("index")
 	private List<DataUnitInfo> dataUnits = new LinkedList<>();
 
-	public ProcessingUnitInfo() {
-	}
+	/**
+	 * Empty constructor for JPA.
+	 */	
+	public ProcessingUnitInfo() { }
 
 	/**
 	 * Create information about new DataUnit and return path to it's directory.
 	 * The storage directory should be used to save data by method
 	 * {@link cz.cuni.xrg.intlib.commons.data.DataUnit#save()} and load from by
 	 * {@link cz.cuni.xrg.intlib.commons.data.DataUnit#load()}.
-	 *
+	 * 
 	 * @param name
 	 * @param type
 	 * @param isInput
@@ -73,7 +84,7 @@ public class ProcessingUnitInfo implements Serializable {
 
 	/**
 	 * Return DataUnit info with given index.
-	 *
+	 * 
 	 * @param index Index of DataUnit.
 	 * @return DataUnitInfo or null.
 	 */
@@ -88,5 +99,15 @@ public class ProcessingUnitInfo implements Serializable {
 
 	public List<DataUnitInfo> getDataUnits() {
 		return dataUnits;
+	}
+
+	
+	public DPUExecutionState getState() {
+		return state;
+	}
+	
+
+	public void setState(DPUExecutionState state) {
+		this.state = state;
 	}
 }
