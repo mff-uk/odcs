@@ -116,7 +116,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
             @Override
             public void buttonClick(ClickEvent event) {
                 monitorTable.resetFilters();
-                monitorTable.setFilterFieldVisible("actions", false);
+                //monitorTable.setFilterFieldVisible("actions", false);
             }
         });
         topLine.addComponent(buttonDeleteFilters);
@@ -208,6 +208,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTableLayout.addComponent(monitorTable.createControls());
         monitorTable.setPageLength(20);
         monitorTable.setFilterDecorator(new filterDecorator());
+        monitorTable.setFilterBarVisible(true);
         monitorTable.setFilterFieldVisible("actions", false);
         monitorTable.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {

@@ -69,6 +69,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		
 
 		dataTable.setVisibleColumns("subject", "predicate", "object");
+                dataTable.setFilterLayout();
 	}
 
 }

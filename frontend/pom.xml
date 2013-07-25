@@ -94,12 +94,6 @@
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
-
-		<dependency>
-			<groupId>org.vaadin.addons</groupId>
-			<artifactId>pagedtable</artifactId>
-			<version>0.6.7</version>
-		</dependency>
 		
 		<dependency>
 			<groupId>org.vaadin.addon</groupId>

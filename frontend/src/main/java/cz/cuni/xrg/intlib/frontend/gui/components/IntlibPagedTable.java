@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import com.jensjansson.pagedtable.ControlsLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import org.tepi.filtertable.paged.PagedFilterTable;
@@ -15,7 +14,6 @@ public class IntlibPagedTable extends PagedFilterTable {
 	
 	public IntlibPagedTable() {
 		super();
-		setFilterBarVisible(true);
 		setFilterDecorator(new IntlibFilterDecorator());
 	}
 

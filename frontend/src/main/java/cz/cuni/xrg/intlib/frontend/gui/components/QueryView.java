@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import com.jensjansson.pagedtable.ControlsLayout;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.ThemeResource;
@@ -8,18 +7,12 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
-import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.DownloadStreamResource;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
