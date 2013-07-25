@@ -26,27 +26,49 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
     private static final long serialVersionUID = 1L;
     private GridLayout mainLayout;
+	/**
+	 * TabSheet of Configuration dialog. Contains two tabs: Core and Details
+	 */
     private TabSheet tabSheet;
     private VerticalLayout verticalLayoutDetails;
+    /**
+     * CheckBox to specify whether the extraction fails if there is no triple.
+     */
     private CheckBox checkBoxFail;
     private Label labelOpt;
     private GridLayout gridLayoutConstr;
+    /**
+     * TextArea to set SPARQL construct query.
+     */
     private TextArea textAreaConstr;
     private Label labelConstr;
     private GridLayout gridLayoutCore;
     private GridLayout gridLayoutAdm;
     private Label labelGraph;
+    /**
+     * PasswordField to set password to connect to SPARQL endpoints which require authorization. 
+     */
     private PasswordField passwordFieldPass;
     private Label labelPass;
+    /**
+     *TextField to set username to connect to SPARQL endpoints which require authorization. 
+     */
     private TextField textFieldNameAdm;
     private Label labelNameAdm;
+    /**
+     *ComboBox to set SPARQL endpoint.
+     */
     private ComboBox comboBoxSparql;
     private Label labelSparql;
     private GridLayout gridLayoutGraph;
     private TextField textFieldGraph;
     private Button buttonGraphRem;
     private Button buttonGraphAdd;
-	private CheckBox useHandler;  //Statistical handler
+	
+    /**
+     *CheckBox to setting use statistical handler
+     */
+    private CheckBox useHandler;
     int n = 1;
 
 	/**
@@ -58,7 +80,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     }
     
     /**
-     * IndexedContainer with the data for comboBoxSparql
+     * IndexedContainer with the data for {@link #comboBoxSparql}
      */
     public static IndexedContainer getFridContainer() {
 
@@ -73,7 +95,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     }
 
 	/**
-	 * Builds main layout contains tabSheet with components.
+	 * Builds main layout contains {@link #tabSheet} with all dialog components.
+	 * 
+	 * @return mainLayout GridLayout with all components of configuration dialog.
 	 */
     private GridLayout buildMainLayout() {
         // common part: create layout
@@ -88,18 +112,6 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         setHeight("100%");
 
         // tabSheet
-        tabSheet = buildTabSheet();
-        mainLayout.addComponent(tabSheet, 0, 0);
-        mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
-
-        return mainLayout;
-    }
-
-	/**
-	 *  Builds tabSheet
-	 */
-    private TabSheet buildTabSheet() {
-        // common part: create layout
         tabSheet = new TabSheet();
         tabSheet.setImmediate(true);
         tabSheet.setWidth("100%");
@@ -113,11 +125,19 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         verticalLayoutDetails = buildVerticalLayoutDetails();
         tabSheet.addTab(verticalLayoutDetails, "Details", null);
 
-        return tabSheet;
+        
+        mainLayout.addComponent(tabSheet, 0, 0);
+        mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
+
+        return mainLayout;
     }
 
+
 	/**
-	 * Builds layout contains Core tab components
+	 * Builds layout contains Core tab components of {@link #tabSheet}.
+	 * Calls from {@link #buildMainLayout}
+
+	 * @return gridLayoutCore. GridLayout with components located at the Core tab.
 	 */
     private GridLayout buildGridLayoutCore() {
 
@@ -250,6 +270,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     }
 
 
+    /**
+     * List<String> that contains Named Graphs.
+     */
     private List<String> griddata = initializeGridData();
 
     /**
@@ -264,7 +287,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     }
 
     /**
-     * Add new data to Named Graph component
+     * Add new data to Named Graph component. 
      * @param newData. String that will be added
      */
     private void addDataToGridData(String newData) {
@@ -273,8 +296,8 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
     
     /**
-     * Remove row from Named Graph component. Only if component contain more then 1 row.
-     * @param  row that will be removed. 
+     * Remove data from Named Graph component. Only if component contain more then 1 row.
+     * @param row Data that will be removed. 
      */
     private void removeDataFromGridData(Integer row) {
         int index = row;
@@ -297,7 +320,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
 
     /**
-     * Refresh data of the Named Graph component
+     * Builds Named Graph component which consists of textfields for 
+     * graph name and buttons for add and remove this textfields.
+     * Used in {@link #initializeNamedGraphList} and also in 
+     * adding and removing fields for component refresh
      */
     private void refreshNamedGraphData() {
         gridLayoutGraph.removeAllComponents();
@@ -357,7 +383,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     }
 
     /**
-     *  Initializes Named Graph component
+     *  Initializes Named Graph component. Calls from {@link #buildGridLayoutCore}
      */
     private void initializeNamedGraphList() {
 
@@ -375,7 +401,10 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     }
 
 	/**
-	 * Builds layout contains Details tab components
+	 * Builds layout contains Details tab components of {@link #tabSheet}.
+	 * Calls from {@link #buildMainLayout}
+
+	 * @return verticalLayoutDetails. VerticalLayout with components located at the Details tab.
 	 */
     private VerticalLayout buildVerticalLayoutDetails() {
         // common part: create layout
@@ -387,7 +416,33 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         verticalLayoutDetails.setSpacing(true);
 
         // SPARQL Construct component
-        gridLayoutConstr = buildGridLayoutConstr();
+        gridLayoutConstr = new GridLayout();
+        gridLayoutConstr.setImmediate(false);
+        gridLayoutConstr.setWidth("100%");
+        gridLayoutConstr.setHeight("-1px");
+        gridLayoutConstr.setMargin(false);
+        gridLayoutConstr.setSpacing(true);
+        gridLayoutConstr.setColumns(2);
+        gridLayoutConstr.setColumnExpandRatio(0, 0.20f);
+        gridLayoutConstr.setColumnExpandRatio(1, 0.80f);
+
+        // labelConstr
+        labelConstr = new Label();
+        labelConstr.setImmediate(false);
+        labelConstr.setWidth("100%");
+        labelConstr.setHeight("-1px");
+        labelConstr.setValue("SPARQL  Construct:");
+        gridLayoutConstr.addComponent(labelConstr, 0, 0);
+
+        // textAreaConstr
+        textAreaConstr = new TextArea();
+        textAreaConstr.setNullRepresentation("");
+        textAreaConstr.setImmediate(false);
+        textAreaConstr.setWidth("100%");
+        textAreaConstr.setHeight("100px");
+        textAreaConstr.setInputPrompt("CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
+        gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
+        
         verticalLayoutDetails.addComponent(gridLayoutConstr);
 
         // labelOpt
@@ -417,44 +472,16 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
         return verticalLayoutDetails;
     }
     
+   
 	/**
-	 * Builds layout contains SPARQL Construct component
-	 */
-    private GridLayout buildGridLayoutConstr() {
-        // common part: create layout
-        gridLayoutConstr = new GridLayout();
-        gridLayoutConstr.setImmediate(false);
-        gridLayoutConstr.setWidth("100%");
-        gridLayoutConstr.setHeight("-1px");
-        gridLayoutConstr.setMargin(false);
-        gridLayoutConstr.setSpacing(true);
-        gridLayoutConstr.setColumns(2);
-        gridLayoutConstr.setColumnExpandRatio(0, 0.20f);
-        gridLayoutConstr.setColumnExpandRatio(1, 0.80f);
-
-        // labelConstr
-        labelConstr = new Label();
-        labelConstr.setImmediate(false);
-        labelConstr.setWidth("100%");
-        labelConstr.setHeight("-1px");
-        labelConstr.setValue("SPARQL  Construct:");
-        gridLayoutConstr.addComponent(labelConstr, 0, 0);
-
-        // textAreaConstr
-        textAreaConstr = new TextArea();
-        textAreaConstr.setNullRepresentation("");
-        textAreaConstr.setImmediate(false);
-        textAreaConstr.setWidth("100%");
-        textAreaConstr.setHeight("100px");
-        textAreaConstr.setInputPrompt("CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
-        gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
-
-        return gridLayoutConstr;
-    }
-
-    
-	/**
-	 * Set values from from dialog to configuration.
+	 * Set values from from dialog where the configuration object may be edited
+	 * to configuration object implementing {@link Config} interface and 
+	 * configuring DPU
+	 * 
+	 * @throws ConfigException Exception which might be thrown when field {@link #comboBoxSparql} 
+	 * contains null value.
+	 * @return config Object holding configuration which is used in {@link #setConfiguration} 
+	 * to initialize fields in the configuration dialog.
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
@@ -476,12 +503,17 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	}
 	
 	
-	/**
-	 * Load values from configuration into dialog.
-	 *
-	 * @throws ConfigException
-	 * @param conf
-	 */
+    /**
+    * Load values from configuration object implementing {@link Config} interface and 
+    * configuring DPU into the dialog where the configuration object may be edited.
+    * 
+    * @throws ConfigException Exception which might be thrown when components 
+    * {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+    * {@link #textAreaConstr}, {@link #checkBoxFail}, {@link #useHandler}, {@link #griddata},
+    * in read-only mode or when values loading to this fields could not be converted. 
+    * Also when requested operation is not supported.
+    * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
+    */
 	@Override
     public void setConfiguration(RDFExtractorConfig conf) {
         try {

@@ -24,6 +24,9 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	private GridLayout mainLayout;
 
+	/**
+	 * TabSheet of Configuration dialog. Contains two tabs: Core and Details
+	 */
 	private TabSheet tabSheet;
 
 	private VerticalLayout verticalLayoutDetails;
@@ -32,15 +35,28 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	private HorizontalLayout horizontalLayoutFormat;
 
-	private ComboBox comboBoxFormat; //RDFformat
+	/**
+	 * ComboBox to set output RDF format (RDF/XML, TTL, TriG, N3)
+	 */
+	private ComboBox comboBoxFormat; 
 
 	private Label labelFormat;
 
+	/**
+	 * CheckBox to set that each run of the loader should generate a new file, 
+	 * e.g. {name}-00001.ttl, {name}-00002.ttl.
+	 */
 	private CheckBox checkBoxDiffName;
 
-	private TextField textFieldFileName; // FileName
+	/**
+	 * TextField to set name of the file (without extension).
+	 */
+	private TextField textFieldFileName; 
 
-	private TextField textFieldDir;	//Directory
+	/**
+	 * TextField to set path to the local directory to which the file should be stored.
+	 */
+	private TextField textFieldDir;	
 
 	/**
 	 *  Basic constructor.
@@ -53,7 +69,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	
 	/**
-	 * Set format data to Combobox comboBoxFormat
+	 * Set format data to {@link #comboBoxFormat}
 	 */
 	private void mapData() {
 
@@ -69,7 +85,9 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 	}
 
 	/**
-	 * Builds main layout contains tabSheet with components.
+	 * Builds main layout contains {@link #tabSheet} with all dialog components.
+	 * 
+	 * @return mainLayout GridLayout with all components of configuration dialog.
 	 */
 	private GridLayout buildMainLayout() {
 		// common part: create layout
@@ -83,18 +101,6 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		setHeight("100%");
 
 		// tabSheet
-		tabSheet = buildTabSheet();
-		mainLayout.addComponent(tabSheet, 0, 0);
-		mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
-
-		return mainLayout;
-	}
-
-	/**
-	 *  Builds tabSheet
-	 */
-	private TabSheet buildTabSheet() {
-		// common part: create layout
 		tabSheet = new TabSheet();
 		tabSheet.setImmediate(true);
 		tabSheet.setWidth("100%");
@@ -115,11 +121,18 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		verticalLayoutDetails.setMargin(false);
 		tabSheet.addTab(verticalLayoutDetails, "Details", null);
 
-		return tabSheet;
+		mainLayout.addComponent(tabSheet, 0, 0);
+		mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
+
+		return mainLayout;
 	}
+
 	
 	/**
-	 * Builds layout contains Core tab components
+	 * Builds layout contains Core tab components of {@link #tabSheet}.
+	 * Calls from {@link #buildMainLayout}
+
+	 * @return verticalLayoutCore. VerticalLayout with components located at the Core tab.
 	 */
 	private VerticalLayout buildVerticalLayoutCore() {
 		// common part: create layout
@@ -181,17 +194,6 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		verticalLayoutCore.addComponent(checkBoxDiffName);
 
 		// horizontalLayoutFormat
-		horizontalLayoutFormat = buildHorizontalLayoutFormat();
-		verticalLayoutCore.addComponent(horizontalLayoutFormat);
-
-		return verticalLayoutCore;
-	}
-
-	/**
-	 * Builds layout contains component for setting RDF Format.
-	 */
-	private HorizontalLayout buildHorizontalLayoutFormat() {
-		// common part: create layout
 		horizontalLayoutFormat = new HorizontalLayout();
 		horizontalLayoutFormat.setImmediate(false);
 		horizontalLayoutFormat.setWidth("-1px");
@@ -216,11 +218,21 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		comboBoxFormat.setNullSelectionAllowed(false);
 		horizontalLayoutFormat.addComponent(comboBoxFormat);
 
-		return horizontalLayoutFormat;
+		verticalLayoutCore.addComponent(horizontalLayoutFormat);
+
+		return verticalLayoutCore;
 	}
 
+
 	/**
-	 * Set values from from dialog to configuration.
+	 * Set values from from dialog where the configuration object may be edited
+	 * to configuration object implementing {@link Config} interface and 
+	 * configuring DPU
+	 * 
+	 * @throws ConfigException Exception which might be thrown when fields {@link #textFieldFileName} 
+	 * and {@link #textFieldDir} contain null value.
+	 * @return config Object holding configuration which is used in {@link #setConfiguration} 
+	 * to initialize fields in the configuration dialog.
 	 */
 	
 	@Override
@@ -238,12 +250,15 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	}
 
-	/**
-	 * Load values from configuration into dialog.
-	 *
-	 * @throws ConfigException
-	 * @param conf
-	 */
+    /**
+    * Load values from configuration object implementing {@link Config} interface and 
+    * configuring DPU into the dialog where the configuration object may be edited.
+    * 
+    * @throws ConfigException Exception which might be thrown when components 
+    * {@link #textFieldFileName}, {@link #textFieldDir}, {@link #checkBoxDiffName}, {@link #comboBoxFormat} 
+    * in read-only mode or when values loading to this fields could not be converted.
+    * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
+    */
 	@Override
 	public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
 		try {

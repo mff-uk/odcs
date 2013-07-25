@@ -28,16 +28,32 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 
     private static final long serialVersionUID = 1L;
     private GridLayout mainLayout;
+	/**
+	 * TabSheet of Configuration dialog. Contains two tabs: Core and Details
+	 */
     private TabSheet tabSheet;
     private VerticalLayout verticalLayoutDetails;
+    /**
+     * OptionGroup to specify what should happen if the graph that was set
+     * in Named Graph component already exists. 
+     */
     private OptionGroup optionGroupDetail;
     private VerticalLayout verticalLayoutCore;
     private GridLayout gridLayoutAdm;
     private Label labelGraph;
+    /**
+     * PasswordField to set password to connect to SPARQL endpoints which require authorization.
+     */
     private PasswordField passwordFieldPass;
     private Label labelPass;
+    /**
+     * TextField to set username to connect to SPARQL endpoints which require authorization. 
+     */
     private TextField textFieldNameAdm;
     private Label labelNameAdm;
+    /**
+     * ComboBox to set SPARQL endpoint.
+     */
     private ComboBox comboBoxSparql;
     private Label labelSparql;
     private GridLayout gridLayoutGraph;
@@ -57,9 +73,10 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
     /**
-     * Get graph description
-     * @param type
-     * @return Description of GraphItem or ""
+     * Get description of chosed way, how to load RDF data to named graph to 
+     * SPARQL endpoint. Uses in {@link #setConfiguration} for setiing {@link #optionGroupDetail}
+     * @param type Type of load RDF data to named graph: OVERRIDE, MERGE or FAIL
+     * @return description that corresponds to specific type or ""
      */
     private String getGraphDescription(WriteGraphType type) {
         if (graphItems.isEmpty()) {
@@ -75,9 +92,12 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
     /**
-     * Get graph type
-     * @param desc
-     * @return type of GraphItem or WriteGraphType.OVERRIDE
+     * Get type of load RDF data to named graph: OVERRIDE, MERGE or FAIL
+     * Uses in {@link #getConfiguration} for determine the type by description
+     * that located in {@link #optionGroupDetail} 
+     * @param desc String with description of chosed way, how to load RDF data 
+     * to named graph from {@link #optionGroupDetail} 
+     * @return type that corresponds to desc or WriteGraphType.OVERRIDE in case of absence.
      */
     private WriteGraphType getGraphType(String desc) {
         if (graphItems.isEmpty()) {
@@ -94,7 +114,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
 	/**
-	 * Set options on the Detail tab 
+	 * Set values of {@link #optionGroupDetail}
 	 */
     private void mapData() {
 
@@ -116,7 +136,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
     /**
-     * IndexedContainer with the data for comboBoxSparql
+     * IndexedContainer with the data for {@link #comboBoxSparql}
      */
     public static IndexedContainer getFridContainer() {
 
@@ -133,7 +153,9 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
 	/**
-	 * Builds main layout contains tabSheet with components.
+	 * Builds main layout contains {@link #tabSheet} with all dialog components.
+	 * 
+	 * @return mainLayout GridLayout with all components of configuration dialog.
 	 */
     private GridLayout buildMainLayout() {
         // common part: create layout
@@ -149,19 +171,6 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         setHeight("100%");
 
         // tabSheet
-        tabSheet = buildTabSheet();
-        mainLayout.addComponent(tabSheet, 0, 0);
-        mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
-
-
-        return mainLayout;
-    }
-
-	/**
-	 *  Builds tabSheet
-	 */
-    private TabSheet buildTabSheet() {
-        // common part: create layout
         tabSheet = new TabSheet();
         tabSheet.setImmediate(true);
         tabSheet.setWidth("100%");
@@ -174,12 +183,20 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
         // Details tab
         verticalLayoutDetails = buildVerticalLayoutDetails();
         tabSheet.addTab(verticalLayoutDetails, "Details", null);
+        
+        mainLayout.addComponent(tabSheet, 0, 0);
+        mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
 
-        return tabSheet;
+
+        return mainLayout;
     }
 
+
 	/**
-	 * Builds layout contains Core tab components
+	 * Builds layout contains Core tab components of {@link #tabSheet}.
+	 * Calls from {@link #buildMainLayout}
+
+	 * @return verticalLayoutCore. VerticalLayout with components located at the Core tab.
 	 */
     private VerticalLayout buildVerticalLayoutCore() {
         // common part: create layout
@@ -191,17 +208,6 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 
 
         // Admin layout
-        gridLayoutAdm = buildGridLayoutAdm();
-        verticalLayoutCore.addComponent(gridLayoutAdm);
-
-        return verticalLayoutCore;
-    }
-
-	/**
-	 * Builds admin layout
-	 */
-    private GridLayout buildGridLayoutAdm() {
-        // common part: create layout
         gridLayoutAdm = new GridLayout();
         gridLayoutAdm.setImmediate(false);
         gridLayoutAdm.setWidth("100%");
@@ -323,11 +329,17 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 
         //Named Graph component
         initializeNamedGraphList();
-        gridLayoutAdm.addComponent(gridLayoutGraph, 1, 3);
+        gridLayoutAdm.addComponent(gridLayoutGraph, 1, 3); 
+        
+        verticalLayoutCore.addComponent(gridLayoutAdm);
 
-
-        return gridLayoutAdm;
+        return verticalLayoutCore;
     }
+
+
+    /**
+     * List<String> that contains Named Graphs.
+     */
     private List<String> griddata = initializeGridData();
 
     /**
@@ -350,8 +362,8 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
     /**
-     * Remove row from Named Graph component. Only if component contain more then 1 row.
-     * @param  row that will be removed. 
+     * Remove data from Named Graph component. Only if component contain more then 1 row.
+     * @param row Data that will be removed. 
      */
     private void removeDataFromGridData(Integer row) {
         int index = row;
@@ -372,7 +384,10 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
     /**
-     * Refresh data of the Named Graph component
+     * Builds Named Graph component which consists of textfields for 
+     * graph name and buttons for add and remove this textfields.
+     * Used in {@link #initializeNamedGraphList} and also in 
+     * adding and removing fields for component refresh
      */
     private void refreshNamedGraphData() {
         gridLayoutGraph.removeAllComponents();
@@ -430,7 +445,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
     /**
-     *  Initializes Named Graph component
+     *  Initializes Named Graph component. Calls from {@link #buildVerticalLayoutCore()}
      */
     private void initializeNamedGraphList() {
 
@@ -447,7 +462,10 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
 	/**
-	 * Builds layout contains Details tab components
+	 * Builds layout contains Details tab components of {@link #tabSheet}.
+	 * Calls from {@link #buildMainLayout}
+
+	 * @return verticalLayoutDetails. VerticalLayout with components located at the Details tab.
 	 */
     private VerticalLayout buildVerticalLayoutDetails() {
         // common part: create layout
@@ -471,7 +489,14 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     }
 
 	/**
-	 * Set values from from dialog to configuration.
+	 * Set values from from dialog where the configuration object may be edited
+	 * to configuration object implementing {@link Config} interface and 
+	 * configuring DPU
+	 * 
+	 * @throws ConfigException Exception which might be thrown when field {@link #comboBoxSparql} 
+	 * contains null value.
+	 * @return config Object holding configuration which is used in {@link #setConfiguration} 
+	 * to initialize fields in the configuration dialog.
 	 */
 	@Override
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
@@ -493,11 +518,15 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 	}
     
     /**
-     * Load values from configuration into dialog.
-     *
-     * @throws ConfigException
-     * @param conf
-     */
+    * Load values from configuration object implementing {@link Config} interface and 
+    * configuring DPU into the dialog where the configuration object may be edited.
+    * 
+    * @throws ConfigException Exception which might be thrown when components 
+    * {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+    * {@link #optionGroupDetail}, {@link #griddata}, in read-only mode
+    *  or when requested operation is not supported.
+    * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
+    */
 	@Override
     public void setConfiguration(RDFLoaderConfig conf) {
         try {

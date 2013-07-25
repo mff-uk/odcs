@@ -39,23 +39,36 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	private GridLayout mainLayout;
 
-	private ComboBox comboBoxFormat; //RDFFormat
+	/**
+	 * ComboBox to set RDF format (Auto, RDF/XML, TTL, TriG, N3)
+	 */
+	private ComboBox comboBoxFormat; 
 
 	private CheckBox useHandler;  //Statistical handler
 
 	private Label labelFormat;
 
+	/**
+	 * TextField for set file extension that will be processed in some directory.
+	 * Uses in case of FileExtractType.PATH_TO_DIRECTORY of {@link #pathType}
+	 */
 	private TextField textFieldOnly;
 
 	private Label labelOnly;
 
-	private TextField textFieldPath; //Path
+	/**
+	 * TextField to set destination of the file
+	 */
+	private TextField textFieldPath; 
 
 	private HorizontalLayout horizontalLayoutOnly;
 
 	private HorizontalLayout horizontalLayoutFormat;
 
-	private OptionGroup pathType; //OptionGroup for path type definition
+	/**
+	 * OptionGroup for path type definition
+	 */
+	private OptionGroup pathType; 
 
 	private FileExtractType extractType;
 
@@ -69,6 +82,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	static int fl = 0;
 
+	/**
+	 * TabSheet of Configuration dialog. Contains two tabs: Core and Details
+	 */
 	private TabSheet tabSheet;
 
 	private GridLayout gridLayoutCore;
@@ -86,7 +102,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
 	/**
-	 * Initialization
+	 * Initialization of Configuration dialog for DPU RDF File Extractor
 	 */
 	private void inicialize() {
 		extractType = FileExtractType.UPLOAD_FILE;
@@ -94,7 +110,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
 	/**
-	 * Set format data to Combobox comboBoxFormat and type data to OptionGroup pathType
+	 * Set format data to {@link #comboBoxFormat} and type data 
+	 * to OptionGroup {@link #pathType}
 	 */
 	private void mapData() {
 
@@ -122,7 +139,14 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
 	/**
-	 * Set values from from dialog to configuration.
+	 * Set values from from dialog where the configuration object may be edited
+	 * to configuration object implementing {@link Config} interface and 
+	 * configuring DPU
+	 * 
+	 * @throws ConfigException Exception which might be thrown when field {@link #textFieldPath}
+	 * contains null value.
+	 * @return conf Object holding configuration which is used in {@link #setConfiguration} 
+	 * to initialize fields in the configuration dialog.
 	 */
 	@Override
 	public FileExtractorConfig getConfiguration() throws ConfigException {
@@ -156,12 +180,12 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		}
 	}
 
-	/**
-	 * Load values from configuration into dialog.
-	 *
-	 * @throws ConfigException
-	 * @param conf
-	 */
+    /**
+    * Load values from configuration object implementing {@link Config} interface and configuring DPU into the dialog where the configuration object may be edited.
+    *
+    * @throws ConfigException Exception not used in current implementation of this method.
+    * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
+    */
 	@Override
 	public void setConfiguration(FileExtractorConfig conf) {
 
@@ -189,7 +213,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
 	/**
-	 * Builds main layout contains tabSheet with components.
+	 * Builds main layout contains {@link #tabSheet} with all dialog components.
+	 * 
+	 * @return mainLayout GridLayout with all components of configuration dialog.
 	 */
 	private GridLayout buildMainLayout() {
 
@@ -226,77 +252,10 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
 	/**
-	 * Builds layout contains components for setting file extension that will be 
-	 * processed in some directory. Uses in case of FileExtractType.PATH_TO_DIRECTORY
-	 */
-	private HorizontalLayout buildHorizontalLayoutOnly() {
-		// common part: create layout
-		horizontalLayoutOnly = new HorizontalLayout();
-		horizontalLayoutOnly.setImmediate(false);
-		horizontalLayoutOnly.setWidth("-1px");
-		horizontalLayoutOnly.setHeight("-1px");
-		horizontalLayoutOnly.setMargin(false);
-		horizontalLayoutOnly.setSpacing(true);
-
-		// labelOnly
-		labelOnly = new Label();
-		labelOnly.setImmediate(false);
-		labelOnly.setWidth("240px");
-		labelOnly.setHeight("-1px");
-		labelOnly.setValue("If directory, process only files with extension:");
-		horizontalLayoutOnly.addComponent(labelOnly);
-
-		// textFieldOnly
-		textFieldOnly = new TextField("");
-		textFieldOnly.setImmediate(false);
-		textFieldOnly.setWidth("50px");
-		textFieldOnly.setHeight("-1px");
-		textFieldOnly.setInputPrompt(".ttl");
-		horizontalLayoutOnly.addComponent(textFieldOnly);
-		horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
-				Alignment.TOP_RIGHT);
-
-		return horizontalLayoutOnly;
-	}
-
-	/**
-	 * Builds layout contains component for setting RDF Format.
-	 */
-	private HorizontalLayout buildHorizontalLayoutFormat() {
-		// common part: create layout
-		horizontalLayoutFormat = new HorizontalLayout();
-		horizontalLayoutFormat.setImmediate(false);
-		horizontalLayoutFormat.setWidth("-1px");
-		horizontalLayoutFormat.setHeight("-1px");
-		horizontalLayoutFormat.setMargin(false);
-		horizontalLayoutFormat.setSpacing(true);
-
-		// labelFormat
-		labelFormat = new Label();
-		labelFormat.setImmediate(false);
-		labelFormat.setWidth("74px");
-		labelFormat.setHeight("-1px");
-		labelFormat.setValue("RDF Format:");
-		horizontalLayoutFormat.addComponent(labelFormat);
-
-		// comboBoxFormat
-		comboBoxFormat = new ComboBox();
-		comboBoxFormat.setImmediate(true);
-		comboBoxFormat.setWidth("-1px");
-		comboBoxFormat.setHeight("-1px");
-		comboBoxFormat.setNewItemsAllowed(false);
-		comboBoxFormat.setNullSelectionAllowed(false);
-		horizontalLayoutFormat.addComponent(comboBoxFormat);
-
-
-		return horizontalLayoutFormat;
-	}
-
-	/**
-	 * Get valid message by file extract type.
+	 * Return message to {@link #pathType} in accordance with file extract type of the item. 
 	 * 
-	 * @param type
-	 * @return message
+	 * @param type FileExtractType of {@link #pathType} item
+	 * @return message. String that assign to the {@link #pathType} item
 	 */
 	private String getValidMessageByFileExtractType(FileExtractType type) {
 
@@ -322,7 +281,10 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
 	/**
-	 * Builds layout contains Core tab components
+	 * Builds layout contains Core tab components of {@link #tabSheet}.
+	 * Calls from {@link #buildMainLayout}
+
+	 * @return gridLayoutCore. GridLayout with components located at the Core tab.
 	 */
 	private GridLayout buildGridLayoutCore() {
 		// common part: create layout
@@ -481,7 +443,23 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 					gridLayoutCore.addComponent(textFieldPath, 0, 1);
 
 					// layoutOnly
-					horizontalLayoutOnly = buildHorizontalLayoutOnly();
+
+					horizontalLayoutOnly = new HorizontalLayout();
+					horizontalLayoutOnly.setImmediate(false);
+					horizontalLayoutOnly.setSpacing(true);
+
+					// labelOnly
+					horizontalLayoutOnly.addComponent(new Label("If directory, process only files with extension:"));
+
+					// textFieldOnly
+					textFieldOnly = new TextField("");
+					textFieldOnly.setImmediate(false);
+					textFieldOnly.setWidth("50px");
+					textFieldOnly.setInputPrompt(".ttl");
+					horizontalLayoutOnly.addComponent(textFieldOnly);
+					horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
+							Alignment.TOP_RIGHT);
+						
 					//Adding component for specify file extension
 					gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
 
@@ -503,7 +481,21 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 
 		// horizontalLayoutFormat
-		horizontalLayoutFormat = buildHorizontalLayoutFormat();
+		horizontalLayoutFormat = new HorizontalLayout();
+		horizontalLayoutFormat.setImmediate(false);
+		horizontalLayoutFormat.setSpacing(true);
+
+		// labelFormat
+		horizontalLayoutFormat.addComponent(new Label("RDF Format:"));
+
+		// comboBoxFormat
+		comboBoxFormat = new ComboBox();
+		comboBoxFormat.setImmediate(true);
+		comboBoxFormat.setNewItemsAllowed(false);
+		comboBoxFormat.setNullSelectionAllowed(false);
+		horizontalLayoutFormat.addComponent(comboBoxFormat);
+
+
 		gridLayoutCore.addComponent(horizontalLayoutFormat, 0, 3);
 
 
@@ -511,7 +503,10 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 	
 	/**
-	 * Builds layout contains Details tab components
+	 * Builds layout contains Details tab components of {@link #tabSheet}.
+	 * Calls from {@link #buildMainLayout}
+
+	 * @return verticalLayoutDetails. VerticalLayout with components located at the Details tab.
 	 */
 	private VerticalLayout buildVerticalLayoutDetails() {
 		// common part: create layout
@@ -531,6 +526,9 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		return verticalLayoutDetails;
 	}
 }
+
+//TODO: Petyr move the next two classes: UploadInfoWindow and FileUploadReceiver to 
+//commons-web for enable to use it also from fronted
 
 /**
  * Dialog for uploading status. Appear automatically after file upload start.
