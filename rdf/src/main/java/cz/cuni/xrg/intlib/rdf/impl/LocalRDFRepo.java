@@ -55,46 +55,51 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * Logging information about execution of method using openRDF.
 	 */
 	protected static Logger logger = LoggerFactory.getLogger(LocalRDFRepo.class);
-
+	
 	/**
 	 * How many triples is possible to add to SPARQL endpoind at once.
 	 */
 	protected static final int STATEMENTS_COUNT = 10;
-
+	
 	/**
+	 * Default name for graph using for store RDF data.
+	 */
+	protected static final String DEFAULT_GRAPH_NAME = "http://default";
+	
+	 /**
 	 * Default name for temp directory, where this repository is placed.
 	 */
 	private final static String repoDirName = "intlib-repo";
-
+	
 	private final static String repoFileName = "localRepository";
-
+	
 	/**
 	 * Default name for data file.
 	 */
 	private final static String dumpName = "dump_dat.ttl";
-
+	
 	/**
 	 * Directory root, where is repository stored.
 	 */
 	private File WorkingRepoDirectory;
-
+	
 	protected final String encode = "UTF-8";
-
+	
 	/**
 	 * RDF data storage component.
 	 */
 	protected Repository repository = null;
-
+	
 	/**
 	 * If the repository is used only for reading data or not.
 	 */
 	protected boolean isReadOnly;
-
+	
 	/**
 	 * Graph resource for saving RDF triples.
 	 */
 	protected URI graph;
-
+	
 	/**
 	 * DataUnit's name.
 	 */
@@ -192,7 +197,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		repository = new SailRepository(memStore);
 		repository.setDataDir(dataFile);
 
-		setDataGraph("http://default");
+		setDataGraph(DEFAULT_GRAPH_NAME);
 		WorkingRepoDirectory = dataFile.getParentFile();
 
 		this.dataUnitName = dataUnitName;
@@ -2041,6 +2046,17 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	@Override
 	public void setDataGraph(URI newDataGraph) {
 		graph = newDataGraph;
+		if (!isGraphDefault()) {
+			logger.info("Set new data graph - " + graph.stringValue());
+		}
+	}
+
+	private boolean isGraphDefault() {
+		if (graph != null) {
+			return graph.stringValue().equals(DEFAULT_GRAPH_NAME);
+		} else {
+			return false;
+		}
 	}
 
 	/**
