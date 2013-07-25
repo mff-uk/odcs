@@ -22,7 +22,6 @@ import cz.cuni.xrg.intlib.frontend.gui.components.EdgeDetail;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.Stack;
-import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Component for visualization of the pipeline.
@@ -30,7 +29,7 @@ import org.apache.commons.lang3.SerializationUtils;
  * @author Bogo
  */
 @SuppressWarnings("serial")
-@JavaScript({"js_pipelinecanvas.js", "kinetic-v4.4.3.min.js", "jquery-2.0.0.min.js"})
+@JavaScript({"js_pipelinecanvas.js", "kinetic-v4.5.4.min.js", "jquery-2.0.0.min.js"})
 public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	final int DPU_WIDTH = 120;

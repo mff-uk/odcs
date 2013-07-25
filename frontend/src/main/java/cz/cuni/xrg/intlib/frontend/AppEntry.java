@@ -26,7 +26,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author Petyr
  *
  */
-@Push(PushMode.MANUAL)
+@Push(PushMode.AUTOMATIC)
 @Theme("IntLibTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
