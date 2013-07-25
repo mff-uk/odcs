@@ -3,7 +3,8 @@ package cz.cuni.xrg.intlib.backend.data;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 
 /**
- * Container for associating DataUnits with indexes. 
+ * Container for associating {@link DataUnits} with indexes. This class
+ * is used by {@link DataUnitFactory}. 
  * 
  * @author Petyr
  *
