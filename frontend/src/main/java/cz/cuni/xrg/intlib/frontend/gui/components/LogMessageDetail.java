@@ -21,7 +21,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
  */
 public class LogMessageDetail extends Window {
 
-	Label fullMessageContent;
+	TextArea fullMessageContent;
 	private Label timeContent;
 	private Label threadContent;
 	private Label levelContent;
@@ -69,9 +69,12 @@ public class LogMessageDetail extends Window {
 		Label messageLabel = new Label("Message:");
 		mainLayout.addComponent(messageLabel, 0, 4);
 
-		fullMessageContent = new Label(log.getMessage());
+		fullMessageContent = new TextArea();
+                fullMessageContent.setValue(log.getMessage());
+                fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
 		mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
+                mainLayout.setComponentAlignment(fullMessageContent, Alignment.TOP_LEFT);
 
 		Button closeButton = new Button("Close", new Button.ClickListener() {
 			@Override
@@ -83,7 +86,7 @@ public class LogMessageDetail extends Window {
 		mainLayout.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
 		mainLayout.setColumnExpandRatio(1, 1.0f);
-		mainLayout.setRowExpandRatio(4, 1.0f);
+		mainLayout.setRowExpandRatio(5, 1.0f);
 
 		this.setContent(mainLayout);
 
@@ -97,7 +100,7 @@ public class LogMessageDetail extends Window {
 	 * @{link Unit} of height.
 	 */
 	void setContentHeight(float height, Sizeable.Unit unit) {
-		fullMessageContent.setHeight(height - 250, unit);
+		fullMessageContent.setHeight(height - 210, unit);
 	}
 
 	/**
@@ -110,6 +113,9 @@ public class LogMessageDetail extends Window {
 		threadContent.setValue(log.getThread());
 		levelContent.setValue(log.getLevel().toString());
 		sourceContent.setValue(log.getSource());
+                fullMessageContent.setReadOnly(false);
 		fullMessageContent.setValue(log.getMessage());
+                fullMessageContent.setReadOnly(true);
+                setContentHeight(this.getHeight(), this.getHeightUnits());
 	}
 }

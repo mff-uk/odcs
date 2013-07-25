@@ -19,7 +19,6 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
 import java.util.List;
-import org.tepi.filtertable.FilterDecorator;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -44,7 +43,6 @@ public class RecordsTable extends CustomComponent {
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				//if (event.isDoubleClick()) {
 				if (!messageTable.isSelected(event.getItemId())) {
 					BeanItem beanItem = (BeanItem) event.getItem();
 					long recordId = (long) beanItem.getItemProperty("id")

@@ -7,6 +7,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
@@ -17,7 +18,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.Record;
  */
 public class RecordDetail extends Window {
 	
-	Label fullMessageContent;
+	TextArea fullMessageContent;
 	private Label pipelineExecutionContent;
 	private Label timeContent;
 	private Label instanceContent;
@@ -64,13 +65,14 @@ public class RecordDetail extends Window {
 		Label messageLabel = new Label("Message:");
 		mainLayout.addComponent(messageLabel, 0, 4);
 		
-		fullMessageContent = new Label(record.getFullMessage());
+		fullMessageContent = new TextArea();
+                fullMessageContent.setValue(record.getFullMessage());
 		fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
 		mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
 		
 		mainLayout.setColumnExpandRatio(1, 1.0f);
-		mainLayout.setRowExpandRatio(4, 1.0f);
+		mainLayout.setRowExpandRatio(5, 1.0f);
 		
 		Button closeButton = new Button("Close", new Button.ClickListener() {
 			@Override
@@ -106,6 +108,8 @@ public class RecordDetail extends Window {
 		timeContent.setValue(formattedDate);
 		instanceContent.setValue(record.getType().toString());
 		shortMessageContent.setValue(record.getShortMessage());
+                fullMessageContent.setReadOnly(false);
 		fullMessageContent.setValue(record.getFullMessage());
+                fullMessageContent.setReadOnly(true);
 	}
 }
