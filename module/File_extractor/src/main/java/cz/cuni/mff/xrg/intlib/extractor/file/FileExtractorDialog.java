@@ -155,8 +155,15 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			FileExtractorConfig conf = new FileExtractorConfig();
+			
+			if(extractType == FileExtractType.UPLOAD_FILE){
+				conf.Path = FileUploadReceiver.path + "/" +textFieldPath.getValue().trim();
 
-			conf.Path = textFieldPath.getValue().trim();
+			}
+			else{
+				conf.Path = textFieldPath.getValue().trim();
+			}
+
 
 			if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
 				conf.FileSuffix = textFieldOnly.getValue().trim();
@@ -181,7 +188,8 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
     /**
-    * Load values from configuration object implementing {@link Config} interface and configuring DPU into the dialog where the configuration object may be edited.
+    * Load values from configuration object implementing {@link Config} interface 
+    * and configuring DPU into the dialog where the configuration object may be edited.
     *
     * @throws ConfigException Exception not used in current implementation of this method.
     * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
@@ -193,10 +201,14 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
 
+		
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 
+			 String filepath = conf.Path.trim();
+			 String filename = filepath.substring(filepath.lastIndexOf("/") + 1, filepath.length());
+			
 			textFieldPath.setReadOnly(false); // allow value settings
-			textFieldPath.setValue(conf.Path.trim()); // set value
+			textFieldPath.setValue(filename.trim()); // set value
 			textFieldPath.setReadOnly(true); // forbid
 
 		} else {
@@ -388,7 +400,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 								textFieldPath.setReadOnly(false);
 								//File was upload to the temp folder. 
 								//Path to this file is setting to the textFieldPath field
-								textFieldPath.setValue(FileUploadReceiver.file
+								textFieldPath.setValue(FileUploadReceiver.fileName
 										.toString());
 								textFieldPath.setReadOnly(true);
 							} //If upload was interrupt by user
@@ -676,6 +688,7 @@ class FileUploadReceiver implements Receiver {
 	public static String fileName;
 
 	public static File file;
+	public static Path path;
 
 	/**
 	 * return an OutputStream 
@@ -684,7 +697,7 @@ class FileUploadReceiver implements Receiver {
 	public OutputStream receiveUpload(final String filename,
 			final String MIMEType) {
 		fileName = filename;
-		Path path;
+		
 
 		try {
 			//create template directory
