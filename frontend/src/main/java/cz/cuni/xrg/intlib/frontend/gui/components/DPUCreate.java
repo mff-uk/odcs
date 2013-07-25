@@ -70,7 +70,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 
 /**
- * Dialog for the DPU template creation. Called from the {@link DPU}.  Allows to upload a JAR file
+ * Dialog for the DPU template creation. Called from the {@link #DPU}.  Allows to upload a JAR file
  * and on base of it create a new DPU template that will be stored to the DPU template tree.
  * 
  * @author Maria Kukhar
@@ -459,11 +459,11 @@ public class DPUCreate extends Window {
 	}
 
 	/**
-	 * Copy file from src to dest. 
+	 * Copy file from some source to some destination. 
 	 * 
-	 * @param src. File that we want to copy.
-	 * @param dest. Destination where we want to copy src.
-	 * @throws IOException
+	 * @param src File that we want to copy.
+	 * @param dest Destination where we want to copy src.
+	 * @throws IOException Exception which might be thrown when I/O exception of some sort has occurred.
 	 */
 	public static void copyFile(File src, File dest) throws IOException {
 

@@ -35,7 +35,7 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	/**
 	 * Basic constructor
 	 * 
-	 * @param upload. Upload component
+	 * @param upload Upload component that called this method
 	 */
 	public UploadInfoWindow(final Upload upload) {
 		super("Status");
@@ -92,8 +92,9 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	}
 	
 	/**
-	 *  this method gets called immediately after upload is
+	 *  This method gets called immediately after upload is
 	 *  finished
+	 *  @param event the Upload finished event.
 	 */
 
 	@Override
@@ -105,8 +106,9 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 	}
 	/**
-	 *  this method gets called immediately after upload is
+	 *  This method gets called immediately after upload is
 	 *  started
+	 *  @param event the Upload finished event.
 	 */
 
 	@Override
@@ -124,7 +126,9 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	}
 
 	/**
-	 *  this method shows update progress
+	 *  This method shows update progress
+	 *  @param readBytes bytes transferred
+	 *  @param contentLength total size of file currently being uploaded, -1 if unknown
 	 */
 	@Override
 	public void updateProgress(final long readBytes, final long contentLength) {
