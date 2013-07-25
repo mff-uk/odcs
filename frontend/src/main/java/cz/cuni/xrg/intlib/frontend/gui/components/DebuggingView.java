@@ -13,6 +13,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
@@ -51,7 +52,7 @@ public class DebuggingView extends CustomComponent {
 	private TabSheet tabs;
 	private TextArea logTextArea;
 	private QueryView queryView;
-	private HorizontalLayout refreshComponent;
+	//private HorizontalLayout refreshComponent;
 	private LogMessagesTable logMessagesTable;
 	private ComboBox dpuSelector;
 
@@ -67,6 +68,12 @@ public class DebuggingView extends CustomComponent {
 		this.debugDpu = debugDpu;
 		this.isInDebugMode = debug;
 		buildMainLayout();
+                
+                boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
+                if(!isRunFinished) {
+                    new RefreshThread(1000, this.pipelineExec, this).start();
+                }
+                
 		setCompositionRoot(mainLayout);
 	}
 
@@ -91,12 +98,12 @@ public class DebuggingView extends CustomComponent {
 
 		browseTab = tabs.addTab(new Label("Browser"), "Browse");
 
-		refreshComponent = buildRefreshComponent();
+		//refreshComponent = buildRefreshComponent();
 
 		//logTextArea = new TextArea();
 		//logTextArea.setValue("Log file content");
 		VerticalLayout logLayout = new VerticalLayout();
-		logLayout.addComponent(refreshComponent);
+		//logLayout.addComponent(refreshComponent);
 
 		logMessagesTable = new LogMessagesTable();
 		logLayout.addComponent(logMessagesTable);
@@ -167,14 +174,14 @@ public class DebuggingView extends CustomComponent {
 
 		}
 
-		boolean showRefresh = !isRunFinished; //!loadSuccessful && isInDebugMode || !isRunFinished;
-		refreshComponent.setVisible(showRefresh);
+		boolean showRefresh = !isRunFinished;
+		//refreshComponent.setVisible(showRefresh);
 	}
 
 	/**
 	 * Reloads content. Data are obtained from objects passed in constructor.
 	 */
-	private void refreshContent() {
+	public void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
 		fillContent();
 		fireRefreshRequest();
