@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.jensjansson.pagedtable.ControlsLayout;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import org.tepi.filtertable.paged.PagedFilterTable;
 
@@ -34,5 +35,31 @@ public class IntlibPagedTable extends PagedFilterTable {
 		controls.getComponent(0).setVisible(false);
 		return controls;
 	}
+        
+        public void setFilterLayout() {
+            for (Object id : getVisibleColumns()) {
+                Component filterField = getFilterField(id);
+                if(filterField != null) {
+                    filterField.setWidth(100, Unit.PERCENTAGE);
+                    filterField.setHeight(100, Unit.PERCENTAGE);
+                }
+            }
+        }
+
+    @Override
+    public void setFilterBarVisible(boolean filtersVisible) {
+        super.setFilterBarVisible(filtersVisible);
+        setFilterLayout();
+    }
+
+    @Override
+    public void resetFilters() {
+        super.resetFilters(); 
+        setFilterLayout();
+    }
+    
+    
+        
+        
 	
 }

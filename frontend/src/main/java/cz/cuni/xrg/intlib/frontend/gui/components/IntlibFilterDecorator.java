@@ -5,15 +5,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.datefield.Resolution;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.CANCELLED;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FAILED;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FINISHED_SUCCESS;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FINISHED_WARNING;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.RUNNING;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.SCHEDULED;
 import java.util.Locale;
 import org.tepi.filtertable.FilterDecorator;
 import org.tepi.filtertable.numberfilter.NumberFilterPopupConfig;
