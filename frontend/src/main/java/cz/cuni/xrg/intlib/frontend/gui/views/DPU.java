@@ -21,6 +21,7 @@ import com.vaadin.ui.Window.CloseListener;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -762,6 +763,8 @@ class DPU extends ViewComponent {
 		@Override
 		public Object generateCell(final CustomTable source,
 				final Object itemId, Object columnId) {
+			
+			
 
 			HorizontalLayout layout = new HorizontalLayout();
 			//Detail button
@@ -771,12 +774,13 @@ class DPU extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
+							Property pipelineId = source.getItem(itemId).getItemProperty("id");
 							// navigate to PipelineEdit
 							App.getApp()
 									.getNavigator()
 									.navigateTo(
 											ViewNames.PipelineEdit.getUrl()
-													+ "/" + itemId.toString());
+													+ "/" + pipelineId.toString());
 
 						}
 					});
