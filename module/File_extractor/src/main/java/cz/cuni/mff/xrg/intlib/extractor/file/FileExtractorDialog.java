@@ -156,12 +156,12 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		} else {
 			FileExtractorConfig conf = new FileExtractorConfig();
 
-			conf.Path = textFieldPath.getValue();
+			conf.Path = textFieldPath.getValue().trim();
 
 			if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
-				conf.FileSuffix = textFieldOnly.getValue();
+				conf.FileSuffix = textFieldOnly.getValue().trim();
 
-				if (textFieldOnly.getValue().isEmpty()) {
+				if (textFieldOnly.getValue().trim().isEmpty()) {
 					conf.OnlyThisSuffix = false;
 				} else {
 					conf.OnlyThisSuffix = true;
@@ -196,15 +196,15 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 
 			textFieldPath.setReadOnly(false); // allow value settings
-			textFieldPath.setValue(conf.Path); // set value
+			textFieldPath.setValue(conf.Path.trim()); // set value
 			textFieldPath.setReadOnly(true); // forbid
 
 		} else {
-			textFieldPath.setValue(conf.Path);
+			textFieldPath.setValue(conf.Path.trim());
 		}
 
 		if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
-			textFieldOnly.setValue(conf.FileSuffix);
+			textFieldOnly.setValue(conf.FileSuffix.trim());
 		}
 
 		comboBoxFormat.setValue(conf.RDFFormatValue);

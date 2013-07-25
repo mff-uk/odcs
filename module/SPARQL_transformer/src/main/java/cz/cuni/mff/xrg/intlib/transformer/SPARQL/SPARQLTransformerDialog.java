@@ -73,7 +73,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 		txtQuery.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
-				final String query = txtQuery.getValue();
+				final String query = txtQuery.getValue().trim();
 
 				Validator validator = new SPARQLUpdateValidator(query);
 
@@ -119,7 +119,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
     */
 	@Override
 	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
-		txtQuery.setValue(conf.SPARQL_Update_Query);
+		txtQuery.setValue(conf.SPARQL_Update_Query.trim());
 	}
 
 	
@@ -142,7 +142,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 		} else {
 
 			SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
-			conf.SPARQL_Update_Query = txtQuery.getValue();
+			conf.SPARQL_Update_Query = txtQuery.getValue().trim();
 
 			return conf;
 		}

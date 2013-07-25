@@ -57,7 +57,7 @@ public class DPUDetail extends Window {
 		this.setResizable(false);
 		this.setModal(true);
 		this.dpuInstance = new DPUInstanceWrap(dpu);
-		this.setCaption(String.format("%s detail", dpu.getName()));
+		this.setCaption(String.format("%s detail", dpu.getName().trim()));
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
@@ -76,13 +76,13 @@ public class DPUDetail extends Window {
 		dpuName.setImmediate(false);
 		dpuName.setWidth("200px");
 		dpuName.setHeight("-1px");
-		dpuName.setValue(dpu.getName());
+		dpuName.setValue(dpu.getName().trim());
 		dpuName.setRequired(true);
 		dpuName.setRequiredError("DPU name must be filled!");
 		dpuName.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				setCaption(dpuName.getValue());
+				setCaption(dpuName.getValue().trim());
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
@@ -97,7 +97,7 @@ public class DPUDetail extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("400px");
 		dpuDescription.setHeight("60px");
-		dpuDescription.setValue(dpu.getDescription());
+		dpuDescription.setValue(dpu.getDescription().trim());
 		dpuDescription.addValidator(new MaxLengthValidator(255));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
@@ -194,9 +194,9 @@ public class DPUDetail extends Window {
 			if (!validate()) {
 				return false;
 			}
-			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue());
+			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue().trim());
 			dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription
-					.getValue());
+					.getValue().trim());
 			dpuInstance.saveConfig();
 		} catch (ConfigException ce) {
 			if (ce instanceof SPARQLValidationException) {

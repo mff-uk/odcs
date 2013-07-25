@@ -263,11 +263,11 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
                 }
                 if (newItem) {
                     // Adds new option
-                    if (comboBoxSparql.addItem(newItemCaption) != null) {
-                        final Item item = comboBoxSparql.getItem(newItemCaption);
+                    if (comboBoxSparql.addItem(newItemCaption.trim()) != null) {
+                        final Item item = comboBoxSparql.getItem(newItemCaption.trim());
                         item.getItemProperty("endpoint")
-                                .setValue(newItemCaption);
-                        comboBoxSparql.setValue(newItemCaption);
+                                .setValue(newItemCaption.trim());
+                        comboBoxSparql.setValue(newItemCaption.trim());
                     }
                 }
             }
@@ -358,7 +358,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
      * @param newData. String that will be added
      */
     private void addDataToGridData(String newData) {
-        griddata.add(newData);
+        griddata.add(newData.trim());
     }
 
     /**
@@ -379,7 +379,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
     private void saveEditedTexts() {
         griddata = new LinkedList<>();
         for (TextField editText : listedEditText) {
-            griddata.add(editText.getValue());
+            griddata.add(editText.getValue().trim());
         }
     }
 
@@ -403,7 +403,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
             //text field for the graph
             textFieldGraph.setWidth("100%");
             textFieldGraph.setData(row);
-            textFieldGraph.setValue(item);
+            textFieldGraph.setValue(item.trim());
             textFieldGraph.setInputPrompt("http://ld.opendata.cz/kb");
             
             //remove button
@@ -437,7 +437,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 saveEditedTexts();
-                addDataToGridData(" ");
+                addDataToGridData("");
                 refreshNamedGraphData();
             }
         });
@@ -509,7 +509,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 	        WriteGraphType graphType = getGraphType(graphDescription);		
 			config.Options = graphType;
 			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
-			config.Host_name = textFieldNameAdm.getValue();
+			config.Host_name = textFieldNameAdm.getValue().trim();
 			config.Password = passwordFieldPass.getValue();
 			config.GraphsUri = griddata;
 			
@@ -530,14 +530,14 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 	@Override
     public void setConfiguration(RDFLoaderConfig conf) {
         try {
-            String endp = conf.SPARQL_endpoint;
+            String endp = conf.SPARQL_endpoint.trim();
 
             if ((endp!=null)&& (comboBoxSparql.addItem(endp) != null)) {
                 final Item item = comboBoxSparql.getItem(endp);
                 item.getItemProperty("endpoint").setValue(endp);
                 comboBoxSparql.setValue(endp);
             }
-            textFieldNameAdm.setValue(conf.Host_name);
+            textFieldNameAdm.setValue(conf.Host_name.trim());
             passwordFieldPass.setValue(conf.Password);
 
             WriteGraphType graphType = conf.Options;

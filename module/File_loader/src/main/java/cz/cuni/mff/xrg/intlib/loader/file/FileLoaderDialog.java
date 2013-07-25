@@ -242,8 +242,8 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 		} else {
 			FileLoaderConfig config = new FileLoaderConfig();
 			config.DiffName = checkBoxDiffName.getValue();
-			config.DirectoryPath = textFieldDir.getValue();
-			config.FileName = textFieldFileName.getValue();
+			config.DirectoryPath = textFieldDir.getValue().trim();
+			config.FileName = textFieldFileName.getValue().trim();
 			config.RDFFileFormat = (RDFFormatType) comboBoxFormat.getValue();
 			return config;
 		}
@@ -263,8 +263,8 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 	public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
 		try {
 			checkBoxDiffName.setValue(conf.DiffName);
-			textFieldDir.setValue(conf.DirectoryPath);
-			textFieldFileName.setValue(conf.FileName);
+			textFieldDir.setValue(conf.DirectoryPath.trim());
+			textFieldFileName.setValue(conf.FileName.trim());
 			comboBoxFormat.setValue(conf.RDFFileFormat);
 		} catch (Property.ReadOnlyException | Converter.ConversionException ex) {
 			// throw setting exception

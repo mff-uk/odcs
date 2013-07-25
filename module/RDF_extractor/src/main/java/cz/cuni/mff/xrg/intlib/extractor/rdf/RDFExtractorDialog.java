@@ -197,12 +197,12 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
                 }
                 if (newItem) {
                     // Adds new option
-                    if (comboBoxSparql.addItem(newItemCaption) != null) {
+                    if (comboBoxSparql.addItem(newItemCaption.trim()) != null) {
                         final Item item = comboBoxSparql
-                                .getItem(newItemCaption);
+                                .getItem(newItemCaption.trim());
                         item.getItemProperty("endpoint").setValue(
-                                newItemCaption);
-                        comboBoxSparql.setValue(newItemCaption);
+                                newItemCaption.trim());
+                        comboBoxSparql.setValue(newItemCaption.trim());
                     }
                 }
             }
@@ -291,7 +291,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
      * @param newData. String that will be added
      */
     private void addDataToGridData(String newData) {
-        griddata.add(newData);
+        griddata.add(newData.trim());
     }
 
     
@@ -314,7 +314,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
     private void saveEditedTexts() {
         griddata = new LinkedList<>();
         for (TextField editText : listedEditText) {
-            griddata.add(editText.getValue());
+            griddata.add(editText.getValue().trim());
         }
     }
 
@@ -340,7 +340,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
             //text field for the graph
             textFieldGraph.setWidth("100%");
             textFieldGraph.setData(row);
-            textFieldGraph.setValue(item);
+            textFieldGraph.setValue(item.trim());
             textFieldGraph.setInputPrompt("http://ld.opendata.cz/source1");
 
             //remove button
@@ -491,9 +491,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 			saveEditedTexts();
 			RDFExtractorConfig config = new RDFExtractorConfig();		
 			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
-			config.Host_name = textFieldNameAdm.getValue();
+			config.Host_name = textFieldNameAdm.getValue().trim();
 			config.Password = passwordFieldPass.getValue();
-			config.SPARQL_query = textAreaConstr.getValue();
+			config.SPARQL_query = textAreaConstr.getValue().trim();
 			config.GraphsUri = griddata;
 			config.ExtractFail = checkBoxFail.getValue();
 			config.UseStatisticalHandler = useHandler.getValue();
@@ -517,16 +517,16 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	@Override
     public void setConfiguration(RDFExtractorConfig conf) {
         try {
-            String endp = conf.SPARQL_endpoint;
+            String endp = conf.SPARQL_endpoint.trim();
 
             if ((endp!=null)&& (comboBoxSparql.addItem(endp) != null)) {
                 final Item item = comboBoxSparql.getItem(endp);
                 item.getItemProperty("endpoint").setValue(endp);
                 comboBoxSparql.setValue(endp);
             }
-            textFieldNameAdm.setValue(conf.Host_name);
+            textFieldNameAdm.setValue(conf.Host_name.trim());
             passwordFieldPass.setValue(conf.Password);
-            textAreaConstr.setValue(conf.SPARQL_query);
+            textAreaConstr.setValue(conf.SPARQL_query.trim());
             checkBoxFail.setValue(conf.ExtractFail);
 			useHandler.setValue(conf.UseStatisticalHandler);
 

@@ -263,24 +263,7 @@ class DPU extends ViewComponent {
 						dpuDetailLayout = buildDPUDetailLayout();
 						dpuLayout.addComponent(dpuDetailLayout, 1, 0);
 
-						String selectedDpuName = selectedDpuWrap
-								.getDPUTemplateRecord().getName();
-						String selecteDpuDescription = selectedDpuWrap
-								.getDPUTemplateRecord().getDescription();
-						VisibilityType selecteDpuVisibility = selectedDpuWrap
-								.getDPUTemplateRecord().getVisibility();
-						dpuName.setValue(selectedDpuName);
-						dpuDescription.setValue(selecteDpuDescription);
-
-						groupVisibility.setValue(selecteDpuVisibility);
-						groupVisibility.setEnabled(true);
-						if (selecteDpuVisibility == VisibilityType.PUBLIC) {
-							groupVisibility.setValue(selecteDpuVisibility);
-							groupVisibility.setEnabled(false);
-						} else {
-							groupVisibility.setValue(selecteDpuVisibility);
-							groupVisibility.setEnabled(true);
-						}
+						setGenralTabValues();
 				//Otherwise, the information layout will be shown.
 				} else {
 					dpuLayout.removeComponent(dpuDetailLayout);
@@ -598,9 +581,9 @@ class DPU extends ViewComponent {
 						//saving Name, Description and Visibility
 						if ((selectedDpuWrap != null )
 								&& (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
-							selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue());
+							selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
 							selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
-									.getValue());
+									.getValue().trim());
 							selectedDpuWrap.getDPUTemplateRecord()
 									.setVisibility((VisibilityType) groupVisibility
 											.getValue());
@@ -618,7 +601,28 @@ class DPU extends ViewComponent {
 							Notification.show("DPURecord was saved",
 									Notification.Type.HUMANIZED_MESSAGE);
 							
+							//refresh data in dialog and dpu tree
 							dpuTree.refresh();
+							setGenralTabValues();
+							try {
+								selectedDpuWrap.getDialog();
+							} catch (ModuleException ex) {
+								Notification.show(
+										"Failed to load configuration dialog",
+										ex.getMessage(), Type.ERROR_MESSAGE);
+								LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+							} catch (FileNotFoundException ex) {
+								Notification.show(
+										"File not found",
+										ex.getMessage(), Type.ERROR_MESSAGE);
+								LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+							} catch (ConfigException ex) {
+								Notification.show(
+										"Failed to load configuration. Dialog default configuration is used.",
+										ex.getMessage(), Type.WARNING_MESSAGE);
+								LOG.error("Can't load configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+							}
+
 
 						}
 
@@ -630,6 +634,31 @@ class DPU extends ViewComponent {
 		dpuDetailLayout.addComponent(buttonDpuBar);
 
 		return buttonDpuBar;
+	}
+	
+	/**
+	 * Set values to components {@link #dpuName}, {@link #dpuDescription}, {@link #groupVisibility}
+	 */
+	public void setGenralTabValues(){
+		
+		String selectedDpuName = selectedDpuWrap
+				.getDPUTemplateRecord().getName();
+		String selecteDpuDescription = selectedDpuWrap
+				.getDPUTemplateRecord().getDescription();
+		VisibilityType selecteDpuVisibility = selectedDpuWrap
+				.getDPUTemplateRecord().getVisibility();
+		dpuName.setValue(selectedDpuName.trim());
+		dpuDescription.setValue(selecteDpuDescription.trim());
+
+		groupVisibility.setValue(selecteDpuVisibility);
+		groupVisibility.setEnabled(true);
+		if (selecteDpuVisibility == VisibilityType.PUBLIC) {
+			groupVisibility.setValue(selecteDpuVisibility);
+			groupVisibility.setEnabled(false);
+		} else {
+			groupVisibility.setValue(selecteDpuVisibility);
+			groupVisibility.setEnabled(true);
+		}
 	}
 	
 	/**
