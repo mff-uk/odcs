@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.intlib.transformer.SPARQL;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.Config;
@@ -25,16 +26,18 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 	private TextArea txtQuery;
 
 	private Label labelUpQuer;
-	
+
 	/**
-	 *  Right SPARQL VALIDATOR - default false.
+	 * Right SPARQL VALIDATOR - default false.
 	 */
 	private boolean isQueryValid = false;
+
+	private InvalidValueException ex;
 
 	private String errorMessage = "no errors";
 
 	/**
-	 *  Basic constructor.
+	 * Basic constructor.
 	 */
 	public SPARQLTransformerDialog() {
 		buildMainLayout();
@@ -43,8 +46,9 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 
 	/**
 	 * Builds main layout with all dialog components.
-	 * 
-	 * @return mainLayout GridLayout with all components of configuration dialog.
+	 *
+	 * @return mainLayout GridLayout with all components of configuration
+	 *         dialog.
 	 */
 	private GridLayout buildMainLayout() {
 		// common part: create layout
@@ -82,17 +86,22 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 					isQueryValid = false;
 					errorMessage = validator.getErrorMessage();
 
-					/*
-					 Notification.show("Query Validator",
-					 "Query is not valid: "
-					 + validator.getErrorMessage(),
-					 Notification.Type.ERROR_MESSAGE);
-					 */
 				} else {
 					isQueryValid = true;
 				}
 
 
+			}
+		});
+
+		txtQuery.addValidator(new com.vaadin.data.Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value.toString().isEmpty()) {
+					ex = new EmptyValueException(
+							"Update query must be filled");
+					throw ex;
+				}
 			}
 		});
 
@@ -109,35 +118,40 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 
 		return mainLayout;
 	}
-	
-	
-    /**
-    * Load values from configuration object implementing {@link Config} interface and configuring DPU into the dialog where the configuration object may be edited.
-    *
-    * @throws ConfigException Exception not used in current implementation of this method.
-    * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
-    */
+
+	/**
+	 * Load values from configuration object implementing {@link Config}
+	 * interface and configuring DPU into the dialog where the configuration
+	 * object may be edited.
+	 *
+	 * @throws ConfigException Exception not used in current implementation of
+	 *                         this method.
+	 * @param conf Object holding configuration which is used to initialize
+	 *             fields in the configuration dialog.
+	 */
 	@Override
 	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
 		txtQuery.setValue(conf.SPARQL_Update_Query.trim());
 	}
 
-	
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link Config} interface and 
+	 * to configuration object implementing {@link Config} interface and
 	 * configuring DPU
-	 * 
-	 * @throws ConfigException Exception which might be thrown when {@link #isQueryValid} 
-	 * is false.
-	 * @return conf Object holding configuration which is used in {@link #setConfiguration} 
-	 * to initialize fields in the configuration dialog.
+	 *
+	 * @throws ConfigException Exception which might be thrown when
+	 *                         {@link #isQueryValid} is false.
+	 * @return conf Object holding configuration which is used in
+	 *         {@link #setConfiguration} to initialize fields in the
+	 *         configuration dialog.
 	 */
 	@Override
 	public SPARQLTransformerConfig getConfiguration() throws ConfigException {
 
 		//Right SPARQL VALIDATOR - default false
-		if (!isQueryValid) {
+		if (!txtQuery.isValid()) {
+			throw new ConfigException(ex.getMessage(), ex);
+		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(errorMessage);
 		} else {
 
