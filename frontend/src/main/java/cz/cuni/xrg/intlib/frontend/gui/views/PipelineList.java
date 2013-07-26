@@ -280,6 +280,7 @@ class PipelineList extends ViewComponent {
 			}
 		});
 		tablePipelines.setFilterBarVisible(true);
+                tablePipelines.setFilterLayout();
 		tablePipelines.setSelectable(true);
 		tablePipelines.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
