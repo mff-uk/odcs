@@ -1159,7 +1159,14 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 
 		if (query == null) {
-			final String message = "Mandatory construct query in extractor from SPARQL is null.";
+			final String message = "Mandatory construct query is null.";
+			logger.debug(message);
+			throw new RDFException(message);
+		}
+		else if (query.isEmpty())
+		{
+			final String message = "Construct query is empty";
+
 			logger.debug(message);
 			throw new RDFException(message);
 		}
