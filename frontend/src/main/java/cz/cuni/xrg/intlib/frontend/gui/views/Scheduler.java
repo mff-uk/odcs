@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.vaadin.data.Property;
@@ -238,21 +239,22 @@ class Scheduler extends ViewComponent {
 			
 
 			if (item.getType().equals(ScheduleType.PERIODICALLY)) {
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,  Locale.getDefault());
 				if (item.isJustOnce()) {
 					result.getContainerProperty(num, "rule").setValue(
-							"Run on " + item.getFirstExecution().toLocaleString());
+							"Run on " + df.format(item.getFirstExecution()));
 				} else {
 					if (item.getPeriod().equals((long) 1)) {
 						result.getContainerProperty(num, "rule").setValue(
 								"Run on "
-								+ item.getFirstExecution().toLocaleString()
+								+ df.format(item.getFirstExecution())
 								+ " and then repeat every "
 								+ item.getPeriodUnit().toString()
 								.toLowerCase());
 					} else {
 						result.getContainerProperty(num, "rule").setValue(
 								"Run on "
-								+ item.getFirstExecution().toLocaleString()
+								+ df.format(item.getFirstExecution())
 								+ " and then repeat every "
 								+ item.getPeriod().toString()
 								+ " "
