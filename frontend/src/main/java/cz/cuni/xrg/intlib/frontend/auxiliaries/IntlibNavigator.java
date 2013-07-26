@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import com.vaadin.navigator.Navigator;
@@ -10,8 +6,9 @@ import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 
 /**
+ * Simple extender of {@link Navigator} class, allowing to display PipelineEdit view correctly.
  *
- * @author bogo7_000
+ * @author Bogo
  */
 public class IntlibNavigator extends Navigator {
     

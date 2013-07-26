@@ -21,7 +21,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		this.group = null;
 		this.text = null;
 		this.rect = null;
-		this.tooltip = null;
 
 		this.connectionFrom = [];
 		this.connectionTo = [];
@@ -137,6 +136,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	var detailIcon = null;
 
 	var backgroundRect = null;
+        
+        var tooltip = null;
 
 	/** Init function which builds entire stage for pipeline */
 	function init() {
@@ -235,6 +236,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 		detailIcon = new Image();
 		detailIcon.src = basePath + "Gear.png";
+                
+                tooltip = createTooltip('Tooltip');
+                dpuLayer.add(tooltip);
 	}
 
 	/** 
@@ -340,18 +344,18 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		init();
 	}
 	
-	function activateTooltip(dpu, text) {
-		dpu.tooltip.getText().setText(text);
+	function activateTooltip(text) {
+		tooltip.getText().setText(text);
 		var position = stage.getMousePosition();
 		position.x = (position.x + 16) / scale;
 		position.y = position.y / scale;
-		dpu.tooltip.setPosition(position);
-		dpu.tooltip.setVisible(true);
+		tooltip.setPosition(position);
+		tooltip.setVisible(true);
 		dpuLayer.draw();
 	}
 	
-	function deactivateTooltip(dpu) {
-		dpu.tooltip.setVisible(false);
+	function deactivateTooltip() {
+		tooltip.setVisible(false);
 		dpuLayer.draw();
 	}
 
@@ -460,11 +464,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			}
 		});
 		cmdConnection.on('mouseenter', function(evt) {
-			activateTooltip(dpu, 'Create new edge');
+			activateTooltip('Create new edge');
 			//evt.cancelBubble = true;
 		});
 		cmdConnection.on('mouseleave', function(evt) {
-			deactivateTooltip(dpu);
+			deactivateTooltip();
 			evt.cancelBubble = true;
 		});
 		actionBar.add(cmdConnection);
@@ -485,11 +489,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseenter', function(evt) {
-			activateTooltip(dpu, 'Show detail');
+			activateTooltip('Show detail');
 			//evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseleave', function(evt) {
-			deactivateTooltip(dpu);
+			deactivateTooltip();
 			evt.cancelBubble = true;
 		});
 		actionBar.add(cmdDetail);
@@ -511,11 +515,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			evt.cancelBubble = true;
 		});
 		cmdRemove.on('mouseenter', function(evt) {
-			activateTooltip(dpu, 'Remove DPU');
+			activateTooltip('Remove DPU');
 			//evt.cancelBubble = true;
 		});
 		cmdRemove.on('mouseleave', function(evt) {
-			deactivateTooltip(dpu);
+			deactivateTooltip();
 			evt.cancelBubble = true;
 		});
 		actionBar.add(cmdRemove);
@@ -536,11 +540,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseenter', function(evt) {
-			activateTooltip(dpu, 'Debug to this DPU');
+			activateTooltip('Debug to this DPU');
 			//evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseleave', function(evt) {
-			deactivateTooltip(dpu);
+			deactivateTooltip();
 			evt.cancelBubble = true;
 		});
 		actionBar.add(cmdDebug);
@@ -660,8 +664,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		dpu.rect = rect;
 		dpu.text = complexText;
 		dpu.group = group;
-		dpu.tooltip = createTooltip('Tooltip');
-		dpuLayer.add(dpu.tooltip);
 		dpus[id] = dpu;
 		dpuLayer.add(group);
 		dpuLayer.draw();
@@ -748,7 +750,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			rpcProxy.onDataUnitNameEditRequested(id);
 			evt.cancelBubble = true;
 		});
-
+                cmdName.on('mouseenter', function() {
+			activateTooltip('Set name of DataUnit.');
+		});
+		cmdName.on('mouseleave', function(evt) {
+			deactivateTooltip();
+			evt.cancelBubble = true;
+		});
 		actionBar.add(cmdName);
 
 		// Delete command for connection
@@ -765,10 +773,16 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			removeConnection(id);
 			evt.cancelBubble = true;
 		});
-
+                cmdDelete.on('mouseenter', function() {
+			activateTooltip('Remove the edge');
+		});
+		cmdDelete.on('mouseleave', function(evt) {
+			deactivateTooltip();
+			evt.cancelBubble = true;
+		});
 		actionBar.add(cmdDelete);
 
-		actionBar.on('mouseleave', function(evt) {
+		actionBar.on('mouseleave', function() {
 			actionBar.setVisible(false);
 			lineLayer.draw();
 		});
