@@ -708,6 +708,8 @@ class DPU extends ViewComponent {
 									.setValue(pitem.getDescription());
 							result.getContainerProperty(num, "author")
 									.setValue("");
+							
+							break;
 
 						}
 					}
@@ -750,6 +752,7 @@ class DPU extends ViewComponent {
 								.getTemplate().getId()) {
 							pipeName[j] = pitem.getName().toString();
 							j++;
+							break;
 						}
 					}
 
