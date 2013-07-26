@@ -6,12 +6,6 @@
  * **/
 cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = function() {
 
-	//remainder from JsLabel
-	//used to insert container for kineticJS canvas
-	var e = this.getElement();
-	//e.innerHTML = "<div id='container' style='border:2px solid;width:1500px;height:800px'></div>";
-
-
 	//provisional placement of DPU and connection "classes"
 	/** 
 	 * Class representing DPU for use on Canvas
@@ -101,12 +95,12 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		}
 	});
 
-	//DoubleClick hack
+	//DoubleClick recognition variables
 	var lastClickedDpu = null;
 	var lastClickedTime = null;
 
 
-	//dragVariables
+	//Drag variables
 	var isDragging = false;
 	var dragId = 0;
 	var line = null;
@@ -114,7 +108,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 	/** Pipeline states
 	 * 	NORMAL_MODE - standard mode, DPUs can be dragged
-	 *  NEW_CONNECTION_MODE - new connection is being created, line follows mouse
+	 *      NEW_CONNECTION_MODE - new connection is being created, line follows mouse
 	 *  ...
 	 * **/
 	// Stage state constants
@@ -165,7 +159,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 				var x = mousePos.x / scale;
 				var y = mousePos.y / scale;
 				//writeMessage(messageLayer, 'x: ' + x + ', y: ' + y);
-				moveLine(dragId, x, y);
+				moveLine(dragId);
 			} else if (stageMode === NEW_CONNECTION_MODE) {
 				// Repositioning new connection line
 				var mousePosition = stage.getMousePosition();
@@ -246,10 +240,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	/** 
 	 * Function for moving connection lines after DPU is dragged 
 	 * @param dpuId id of dpu which was moved
-	 * @param x x coordinate of new position
-	 * @param y y coordinate of new position
 	 **/
-	function moveLine(dpuId, x, y) {
+	function moveLine(dpuId) {
 		var dpu = dpus[dpuId];
 		var dpuGroup = dpu.group;
 		for (lineId in dpu.connectionFrom) {
@@ -257,6 +249,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			var dpuTo = dpus[conn.to].group;
 			var newPoints = computeConnectionPoints2(dpuGroup, dpuTo);
 			conn.line.setPoints(newPoints);
+                        conn.hitLine.setPoints(newPoints);
 			conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
 			conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
 			if (conn.dataUnitNameText !== null) {
@@ -268,6 +261,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			var dpuFrom = dpus[conn.from].group;
 			newPoints = computeConnectionPoints2(dpuFrom, dpuGroup);
 			conn.line.setPoints(newPoints);
+                        conn.hitLine.setPoints(newPoints);
 			conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
 			conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
 			if (conn.dataUnitNameText !== null) {
@@ -788,8 +782,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		lineLayer.add(lineArrowLeft);
 		lineLayer.add(lineArrowRight);
 		lineLayer.add(actionBar);
-		lineLayer.add(hitLine);
 		lineLayer.add(line);
+                lineLayer.add(hitLine);
 		if (dataUnitNameText !== null) {
 			con.dataUnitNameText = dataUnitNameText;
 			lineLayer.add(dataUnitNameText);

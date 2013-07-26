@@ -21,12 +21,12 @@ public class IntlibNavigator extends Navigator {
 
     @Override
     public void navigateTo(String navigationState) {
-        super.navigateTo(navigationState);
         if(navigationState.contains("PipelineEdit")) {
             App.getApp().getMain().setSizeUndefined();
         } else {
             App.getApp().getMain().setWidth(100, Unit.PERCENTAGE);
         }
+        super.navigateTo(navigationState);
     }
     
     
