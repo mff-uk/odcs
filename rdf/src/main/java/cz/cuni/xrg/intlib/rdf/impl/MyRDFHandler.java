@@ -41,9 +41,7 @@ public class MyRDFHandler {
 	private void setHandler(OutputStream os) {
 
 		switch (formatType) {
-			case AUTO:
-				handler = new RDFXMLWriter(os);
-				break;
+			
 			case N3:
 				handler = new N3Writer(os);
 				break;
@@ -62,6 +60,9 @@ public class MyRDFHandler {
 			case TRIX:
 				handler = new TriXWriter(os);
 				break;
+			default:
+				handler = new RDFXMLWriter(os);
+				break;
 		}
 
 	}
@@ -69,9 +70,7 @@ public class MyRDFHandler {
 	private void setHandler(Writer writer) {
 
 		switch (formatType) {
-			case AUTO:
-				handler = new RDFXMLWriter(writer);
-				break;
+
 			case N3:
 				handler = new N3Writer(writer);
 				break;
@@ -89,6 +88,9 @@ public class MyRDFHandler {
 				break;
 			case TRIX:
 				handler = new TriXWriter(writer);
+				break;
+			default:
+				handler = new RDFXMLWriter(writer);
 				break;
 
 
