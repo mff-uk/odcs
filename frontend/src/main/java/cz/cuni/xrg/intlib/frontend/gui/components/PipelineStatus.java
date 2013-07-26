@@ -8,9 +8,11 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
  * @author Maria Kukhar
  *
  */
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.vaadin.ui.HorizontalLayout;
@@ -40,33 +42,30 @@ public class PipelineStatus extends Window {
 	 */
 	public void setSelectedPipeline(Pipeline selectedPipeline){
 		
-		List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
 		Date maxDate = null;  
-		
-		//getting date of the last pipeline execution
-		for (Schedule item : schedulers) {
-			if ((item.getPipeline().getId().equals(selectedPipeline.getId()))&&(item.getLastExecution()!=null) ){
-				if (maxDate==null || maxDate.getTime()<item.getLastExecution().getTime()){
-					maxDate=item.getLastExecution();
-				}
-			}
-		}
-		if(maxDate!=null)
-			lastRunTimeStr = maxDate.toLocaleString();
-		else
-			lastRunTimeStr="";
-		lastRunTime.setCaption(lastRunTimeStr);	
 		
 		List<PipelineExecution> executions = App.getApp().getPipelines().getAllExecutions();
 		i=0;
 		
-		//getting number of pipeline run 
+		//getting number of pipeline run and date of the last pipeline execution
 		for (PipelineExecution item : executions) {
 			if (item.getPipeline().getId().equals(selectedPipeline.getId()) ){
+				if (maxDate==null || maxDate.getTime()<item.getStart().getTime()){
+					maxDate=item.getStart();
+				}
 				i++;
 			}
 		}
+		if(maxDate!=null){
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,  Locale.getDefault());
+			lastRunTimeStr = df.format(maxDate);
+			}
+		
+		else
+			lastRunTimeStr="";
+		
 		runsNumber.setCaption(Integer.toString(i));	
+		lastRunTime.setCaption(lastRunTimeStr);	
 	}
 	
 	/**
