@@ -7,6 +7,8 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 /**
+ * Class responsible to find out, if sparql update queries are valid or not. It
+ * using very often as query in transformer.
  *
  * @author Jiri Tomes
  */
