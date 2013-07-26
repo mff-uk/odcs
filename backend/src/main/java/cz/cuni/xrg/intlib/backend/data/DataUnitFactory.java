@@ -14,9 +14,9 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 /**
  * Create new DataUnits.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class DataUnitFactory {
 
@@ -46,7 +46,7 @@ public class DataUnitFactory {
 
 	/**
 	 * Base constructor..
-	 * 
+	 *
 	 * @param id Unique id (Context id.)
 	 */
 	public DataUnitFactory(String id,
@@ -61,7 +61,7 @@ public class DataUnitFactory {
 
 	/**
 	 * Create input DataUnit.
-	 * 
+	 *
 	 * @param type DataUnit's type.
 	 * @param name DataUnit's name.
 	 * @return Created DataUnitContainer.
@@ -75,9 +75,9 @@ public class DataUnitFactory {
 
 	/**
 	 * Create input DataUnit with given configuration.
-	 * 
-	 * @param type DataUnit's type.
-	 * @param name DataUnit's name.
+	 *
+	 * @param type   DataUnit's type.
+	 * @param name   DataUnit's name.
 	 * @param config Initial configuration.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
@@ -91,7 +91,7 @@ public class DataUnitFactory {
 
 	/**
 	 * Create output DataUnit.
-	 * 
+	 *
 	 * @param type DataUnit's type.
 	 * @param name DataUnit's name.
 	 * @return Created DataUnitContainer.
@@ -105,9 +105,9 @@ public class DataUnitFactory {
 
 	/**
 	 * Create output DataUnit.
-	 * 
-	 * @param type DataUnit's type.
-	 * @param name DataUnit's name.
+	 *
+	 * @param type   DataUnit's type.
+	 * @param name   DataUnit's name.
 	 * @param config Initial configuration.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
@@ -121,9 +121,9 @@ public class DataUnitFactory {
 
 	/**
 	 * Create DataUnit.
-	 * 
-	 * @param type DataUnit's type.
-	 * @param name DataUnit's name.
+	 *
+	 * @param type  DataUnit's type.
+	 * @param name  DataUnit's name.
 	 * @param input Should be DataUnit created as input?
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
@@ -166,35 +166,38 @@ public class DataUnitFactory {
 
 		String dataUnitId = context.generateDataUnitId(id, index);
 		switch (type) {
-		case RDF_Local:
-			// create DataUnit
-			RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(
-					tmpDir.getAbsolutePath(), dataUnitId, name);
-			// create container with DataUnit and index
-			return new DataUnitContainer(localRepository, index);
-		case RDF_Virtuoso:
-			// load configuration from appConfig
-			final String hostName = appConfig
-					.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
-			final String port = appConfig
-					.getString(ConfigProperty.VIRTUOSO_PORT);
-			final String user = appConfig
-					.getString(ConfigProperty.VIRTUOSO_USER);
-			final String password = appConfig
-					.getString(ConfigProperty.VIRTUOSO_PASSWORD);
-			final String defautGraph = appConfig
-					.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
-			// create repository
-			VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
-					.createVirtuosoRDFRepo(hostName, port, user, password,
-							defautGraph, name);
-			// set default graph .. for this we need unique identifier
-			// in "id" is unique id for context (execution and DPU) .. we add
-			// number to make it
-			// unique between data units
+			case RDF_Local:
+				// create DataUnit
+				RDFDataRepository localRepository = LocalRDFRepo
+						.createLocalRepo(
+						tmpDir.getAbsolutePath(), dataUnitId, name);
 
-			virtosoRepository.setDataGraph("http://" + dataUnitId);
-			return new DataUnitContainer(virtosoRepository, index);
+				localRepository.setDataGraph("http://" + dataUnitId);
+				// create container with DataUnit and index
+				return new DataUnitContainer(localRepository, index);
+			case RDF_Virtuoso:
+				// load configuration from appConfig
+				final String hostName = appConfig
+						.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+				final String port = appConfig
+						.getString(ConfigProperty.VIRTUOSO_PORT);
+				final String user = appConfig
+						.getString(ConfigProperty.VIRTUOSO_USER);
+				final String password = appConfig
+						.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+				final String defautGraph = appConfig
+						.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
+				// create repository
+				VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
+						.createVirtuosoRDFRepo(hostName, port, user, password,
+						defautGraph, name);
+				// set default graph .. for this we need unique identifier
+				// in "id" is unique id for context (execution and DPU) .. we add
+				// number to make it
+				// unique between data units
+
+				virtosoRepository.setDataGraph("http://" + dataUnitId);
+				return new DataUnitContainer(virtosoRepository, index);
 
 		}
 		throw new DataUnitCreateException("Unknown DataUnit type.");
@@ -202,10 +205,10 @@ public class DataUnitFactory {
 
 	/**
 	 * Create DataUnit.
-	 * 
-	 * @param type DataUnit's type.
-	 * @param name DataUnit's name.
-	 * @param input Should be DataUnit created as input?
+	 *
+	 * @param type   DataUnit's type.
+	 * @param name   DataUnit's name.
+	 * @param input  Should be DataUnit created as input?
 	 * @param config COnfiguration for DataUnit.
 	 * @return Created DataUnitContainer.
 	 * @throws DataUnitCreateException
@@ -216,11 +219,11 @@ public class DataUnitFactory {
 			boolean input,
 			Object config) throws DataUnitCreateException {
 		switch (type) {
-		case RDF:
-		case RDF_Local: // RDF_Local does't support non-default configuration
-		case RDF_Virtuoso:
-			throw new DataUnitCreateException(
-					"Can't create RDF with configuration.");
+			case RDF:
+			case RDF_Local: // RDF_Local does't support non-default configuration
+			case RDF_Virtuoso:
+				throw new DataUnitCreateException(
+						"Can't create RDF with configuration.");
 		}
 		throw new DataUnitCreateException("Unknown DataUnit type.");
 	}
@@ -228,12 +231,12 @@ public class DataUnitFactory {
 	/**
 	 * Create input {@link DataUnit} and store information about it into the
 	 * context.
-	 * 
-	 * @param type Requested type of data unit.
-	 * @param name DataUnit name, can't be changed in future.
+	 *
+	 * @param type        Requested type of data unit.
+	 * @param name        DataUnit name, can't be changed in future.
 	 * @param dpuInstance Instance of DPU for which the DataUnit is being
-	 *            created.
-	 * @param context Execution context.
+	 *                    created.
+	 * @param context     Execution context.
 	 * @return Container with created DataUnit.
 	 * @throws DataUnitCreateException
 	 */
@@ -247,12 +250,12 @@ public class DataUnitFactory {
 	/**
 	 * Create input {@link DataUnit} and store information about it into the
 	 * context.
-	 * 
-	 * @param type Requested type of data unit.
-	 * @param name DataUnit name, can't be changed in future.
-	 * @param dpuInstance Instance of DPU for which the DataUnit is being
-	 *            created.
-	 * @param context Execution context.
+	 *
+	 * @param type         Requested type of data unit.
+	 * @param name         DataUnit name, can't be changed in future.
+	 * @param dpuInstance  Instance of DPU for which the DataUnit is being
+	 *                     created.
+	 * @param context      Execution context.
 	 * @param configObject Configuration object for DataUnit.
 	 * @return Container with created DataUnit.
 	 * @throws DataUnitCreateException
@@ -268,12 +271,12 @@ public class DataUnitFactory {
 	/**
 	 * Create output {@link DataUnit} and store information about it into the
 	 * context.
-	 * 
-	 * @param type Requested type of data unit.
-	 * @param name DataUnit name, can't be changed in future.
+	 *
+	 * @param type        Requested type of data unit.
+	 * @param name        DataUnit name, can't be changed in future.
 	 * @param dpuInstance Instance of DPU for which the DataUnit is being
-	 *            created.
-	 * @param context Execution context.
+	 *                    created.
+	 * @param context     Execution context.
 	 * @return Container with created DataUnit.
 	 * @throws DataUnitCreateException
 	 */
@@ -287,12 +290,12 @@ public class DataUnitFactory {
 	/**
 	 * Create output {@link DataUnit} and store information about it into the
 	 * context.
-	 * 
-	 * @param type Requested type of data unit.
-	 * @param name DataUnit name, can't be changed in future.
-	 * @param dpuInstance Instance of DPU for which the DataUnit is being
-	 *            created.
-	 * @param context Execution context.
+	 *
+	 * @param type         Requested type of data unit.
+	 * @param name         DataUnit name, can't be changed in future.
+	 * @param dpuInstance  Instance of DPU for which the DataUnit is being
+	 *                     created.
+	 * @param context      Execution context.
 	 * @param configObject Configuration object for DataUnit.
 	 * @return Container with created DataUnit.
 	 * @throws DataUnitCreateException
@@ -307,13 +310,13 @@ public class DataUnitFactory {
 
 	/**
 	 * Create {@link DataUnit} and store information about it into the context.
-	 * 
-	 * @param type Requested type of data unit.
-	 * @param name DataUnit name, can't be changed in future.
+	 *
+	 * @param type        Requested type of data unit.
+	 * @param name        DataUnit name, can't be changed in future.
 	 * @param dpuInstance Instance of DPU for which the DataUnit is being
-	 *            created.
-	 * @param context Execution context.
-	 * @param isInput True if created DataUnit will be used as input.
+	 *                    created.
+	 * @param context     Execution context.
+	 * @param isInput     True if created DataUnit will be used as input.
 	 * @return Container with created DataUnit.
 	 * @throws DataUnitCreateException
 	 */
@@ -341,8 +344,8 @@ public class DataUnitFactory {
 				} else {
 					throw new DataUnitCreateException(
 							"The data unit type is unknown."
-									+ "Check the value of the parameter "
-									+ "backend.defaultRDF in config.properties");
+							+ "Check the value of the parameter "
+							+ "backend.defaultRDF in config.properties");
 				}
 			}
 		}
@@ -359,50 +362,53 @@ public class DataUnitFactory {
 		// generate complete path and store it as File
 		final File tmpDir = new File(
 				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
-				tmpDirPath
-				);		
+				tmpDirPath);
 		// and dataUnitId
 		final String dataUnitId = context
 				.generateDataUnitId(dpuInstance, index);
 		switch (type) {
-		case RDF_Local:
-			// create DataUnit
-			RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(
-					tmpDir.getAbsolutePath(), dataUnitId, name);
-			// create container with DataUnit and index
-			return new DataUnitContainer(localRepository, index);
-		case RDF_Virtuoso:
-			// load configuration from appConfig
-			final String hostName = appConfig
-					.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
-			final String port = appConfig
-					.getString(ConfigProperty.VIRTUOSO_PORT);
-			final String user = appConfig
-					.getString(ConfigProperty.VIRTUOSO_USER);
-			final String password = appConfig
-					.getString(ConfigProperty.VIRTUOSO_PASSWORD);
-			final String defautGraph = appConfig
-					.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
-			// create repository
-			VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
-					.createVirtuosoRDFRepo(hostName, port, user, password,
-							defautGraph, name);
-			// use unique DataUnit id as a graph name
-			virtosoRepository.setDataGraph("http://" + dataUnitId);
-			return new DataUnitContainer(virtosoRepository, index);
-		default:
-			throw new DataUnitCreateException("Unknown DataUnit type.");
+			case RDF_Local:
+				// create DataUnit
+				RDFDataRepository localRepository = LocalRDFRepo
+						.createLocalRepo(
+						tmpDir.getAbsolutePath(), dataUnitId, name);
+
+				localRepository.setDataGraph("http://" + dataUnitId);
+				// create container with DataUnit and index
+				return new DataUnitContainer(localRepository, index);
+			case RDF_Virtuoso:
+				// load configuration from appConfig
+				final String hostName = appConfig
+						.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+				final String port = appConfig
+						.getString(ConfigProperty.VIRTUOSO_PORT);
+				final String user = appConfig
+						.getString(ConfigProperty.VIRTUOSO_USER);
+				final String password = appConfig
+						.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+				final String defautGraph = appConfig
+						.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
+				// create repository
+				VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
+						.createVirtuosoRDFRepo(hostName, port, user, password,
+						defautGraph, name);
+				// use unique DataUnit id as a graph name
+				virtosoRepository.setDataGraph("http://" + dataUnitId);
+				return new DataUnitContainer(virtosoRepository, index);
+			default:
+				throw new DataUnitCreateException("Unknown DataUnit type.");
 		}
 	}
 
 	/**
 	 * Create {@link DataUnit} and store information about it into the context.
-	 * 
-	 * @param type Requested type of data unit.
-	 * @param name DataUnit name, can't be changed in future.
-	 * @param instance Instance of DPU for which the DataUnit is being created.
-	 * @param context Execution context.
-	 * @param isInput True if created DataUnit will be used as input.
+	 *
+	 * @param type         Requested type of data unit.
+	 * @param name         DataUnit name, can't be changed in future.
+	 * @param instance     Instance of DPU for which the DataUnit is being
+	 *                     created.
+	 * @param context      Execution context.
+	 * @param isInput      True if created DataUnit will be used as input.
 	 * @param configObject Configuration object for DataUnit.
 	 * @return Container with created DataUnit.
 	 * @throws DataUnitCreateException
