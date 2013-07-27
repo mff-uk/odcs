@@ -1,13 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import com.vaadin.server.ThemeResource;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.CANCELLED;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FAILED;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FINISHED_SUCCESS;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FINISHED_WARNING;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.RUNNING;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.SCHEDULED;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 
 /**
  * Class with helper methods used in frontend.
@@ -22,7 +16,7 @@ public class IntlibHelper {
      * @param status Status to get icon for.
      * @return Icon for given status.
      */
-    public static ThemeResource getIconForExecutionStatus(ExecutionStatus status) {
+    public static ThemeResource getIconForExecutionStatus(PipelineExecutionStatus status) {
         ThemeResource img = null;
         switch (status) {
                     case FINISHED_SUCCESS:
