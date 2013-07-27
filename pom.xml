@@ -33,8 +33,8 @@
 		<!-- frontend is the last build -->
 		<module>frontend</module>
 		<module>backend</module>
-		<!-- libs -->
-		<module>libs</module>
+		<!-- application additional libraries -->
+		<module>lib</module>
 		<!-- build modules -->
 		<module>module</module>
 	</modules>

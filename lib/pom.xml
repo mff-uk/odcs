@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cz.cuni.xrg.intlib</groupId>
+        <artifactId>intlib</artifactId>
+        <version>0.0.1</version>
+    </parent>
+    <artifactId>lib</artifactId>
+    <packaging>pom</packaging>
+	
+    <properties>
+        <output.lib.dir>${basedir}\..\..\${project.output.lib}</output.lib.dir>
+    </properties>
+<!-- 		
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${output.lib.dir}</directory>							
+                            <includes>
+                                <include>*</include>								
+                            </includes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>		
+        </plugins>
+    </build>	
+ -->
+	 	
+    <modules>
+    	<module>lib-vaadin</module>
+    	<module>lib-intlib</module>
+    </modules>
+</project>
