@@ -10,6 +10,14 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
  * with outside world and cooperate with other DPUs in scope of pipeline
  * execution.
  * 
+ * The {@link #sendMessage} method should be used to notify user about more
+ * serious events like: changing configuration, the fatal error, important 
+ * debug information .. 
+ * The number of the massage emitted by single execution should be reasonable
+ * small to preserve readability of the message log. 
+ * 
+ * For more intensive logging please use slf4j.
+ * 
  * @author Petyr
  */
 public interface ProcessingContext {
@@ -33,6 +41,7 @@ public interface ProcessingContext {
 	/**
 	 * Send message about execution. If the message type is DEBUG and the
 	 * pipeline is not running in debug mode the message is ignored.
+	 * 
 	 * 
 	 * @param type Type of message.
 	 * @param shortMessage Short message, should not be more than 50 chars.
