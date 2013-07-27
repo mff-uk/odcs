@@ -125,7 +125,7 @@ class PipelineEdit extends ViewComponent {
 		pc.addListener(new ShowDebugListener() {
 			@Override
 			public void showDebug(PipelineExecution execution, DPUInstanceRecord instance) {
-				DebuggingView dv = new DebuggingView(execution, instance, true);
+				DebuggingView dv = new DebuggingView(execution, instance, true, true);
 				openDebug(dv);
 			}
 
