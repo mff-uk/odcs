@@ -8,8 +8,8 @@ import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
-import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;

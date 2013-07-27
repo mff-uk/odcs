@@ -5,8 +5,8 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import java.io.File;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import static cz.cuni.xrg.intlib.commons.data.DataUnitType.RDF_Local;
 import static cz.cuni.xrg.intlib.commons.data.DataUnitType.RDF_Virtuoso;

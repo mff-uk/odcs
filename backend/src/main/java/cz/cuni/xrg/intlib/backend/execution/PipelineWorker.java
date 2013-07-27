@@ -16,7 +16,6 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
@@ -54,6 +53,7 @@ import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformStartEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 
 import org.apache.commons.io.FileUtils;

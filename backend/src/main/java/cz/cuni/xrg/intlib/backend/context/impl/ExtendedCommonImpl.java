@@ -12,7 +12,7 @@ import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**

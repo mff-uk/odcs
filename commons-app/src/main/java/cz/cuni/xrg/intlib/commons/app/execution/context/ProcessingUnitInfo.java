@@ -1,9 +1,10 @@
-package cz.cuni.xrg.intlib.commons.app.execution;
+package cz.cuni.xrg.intlib.commons.app.execution.context;
 
 import java.util.LinkedList;
 
 import javax.persistence.*;
 
+import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import java.io.Serializable;
 import java.util.List;

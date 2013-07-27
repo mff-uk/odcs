@@ -5,7 +5,7 @@ import cz.cuni.xrg.intlib.backend.data.DataUnitContainer;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Date;
 import javax.persistence.*;
 
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import java.io.Serializable;

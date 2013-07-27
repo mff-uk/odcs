@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
+import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
+
 /**
  * Describe states for DPU execution. 
  * 
