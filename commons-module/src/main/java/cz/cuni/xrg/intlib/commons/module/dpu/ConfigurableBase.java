@@ -4,11 +4,15 @@ import cz.cuni.xrg.intlib.commons.configuration.Config;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 /**
  * Convenience base class for configurable DPUs. Every DPU may either extend this class or 
  * directly implement {@link Configurable} interface.
  * 
  * @author tomasknap
+ * @author Petyr
  */
 public abstract class ConfigurableBase<T extends Config> implements Configurable<T>{
 
@@ -16,6 +20,21 @@ public abstract class ConfigurableBase<T extends Config> implements Configurable
      * To store the configuration object holding configuration for the DPU.
      */
     protected T config ;
+    
+    public ConfigurableBase() throws FailedToCreateConfigException {    	
+    	try {
+			this.config = (T)getConfigClass().newInstance();
+		} catch (InstantiationException|IllegalAccessException e) {
+			throw new FailedToCreateConfigException(e);
+		} 
+    }
+    
+    @SuppressWarnings ("unchecked")
+    private Class<T> getConfigClass() {
+    	Type type = getClass().getGenericSuperclass();
+        ParameterizedType paramType = (ParameterizedType) type;
+        return (Class<T>) paramType.getActualTypeArguments()[0];    	
+    }
     
     @Override
     public void configure(T c) throws ConfigException {
@@ -28,4 +47,3 @@ public abstract class ConfigurableBase<T extends Config> implements Configurable
     }
     
 }
-// TODO Petyr: Move to commons-module and test
