@@ -15,7 +15,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 /**
  * Create new DataUnits based on given id, name and type in given working
- * directory. The type may a changed by application configuration.
+ * directory.
  * 
  * The class is suppose to be use as spring bean and it's methods can be run
  * concurrently.
@@ -243,8 +243,7 @@ public class DataUnitFactory {
 
 	/**
 	 * Create input {@link DataUnit} and store information about it into the
-	 * context. The type of result {@link DataUnit} may differ from the required
-	 * due the application configuration.
+	 * context.
 	 * 
 	 * @param type Requested type of data unit.
 	 * @param id DataUnit's id assigned by application, must be unique!
@@ -262,8 +261,7 @@ public class DataUnitFactory {
 
 	/**
 	 * Create input {@link DataUnit} and store information about it into the
-	 * context.The type of result {@link DataUnit} may differ from the required
-	 * due the application configuration.
+	 * context.
 	 * 
 	 * @param type Requested type of data unit.
 	 * @param id DataUnit's id assigned by application, must be unique!
@@ -282,8 +280,7 @@ public class DataUnitFactory {
 
 	/**
 	 * Create output {@link DataUnit} and store information about it into the
-	 * context. The type of result {@link DataUnit} may differ from the required
-	 * due the application configuration.
+	 * context.
 	 * 
 	 * @param type Requested type of data unit.
 	 * @param id DataUnit's id assigned by application, must be unique!
@@ -301,8 +298,7 @@ public class DataUnitFactory {
 
 	/**
 	 * Create output {@link DataUnit} and store information about it into the
-	 * context. The type of result {@link DataUnit} may differ from the required
-	 * due the application configuration.
+	 * context.
 	 * 
 	 * @param type Requested type of data unit.
 	 * @param id DataUnit's id assigned by application, must be unique!
@@ -321,46 +317,7 @@ public class DataUnitFactory {
 	}
 
 	/**
-	 * Check required type based on application configuration and return
-	 * {@link DataUnitType} that should be created. Can thrown
-	 * {@link DataUnitCreateException} in case of unknown {@link DataUnitType}.
-	 * 
-	 * @param type Required type.
-	 * @return Type to create.
-	 * @throws DataUnitCreateException
-	 */
-	private DataUnitType checkType(DataUnitType type)
-			throws DataUnitCreateException {
-		if (type == DataUnitType.RDF) {
-			// select other DataUnit based on configuration
-			String defRdfRepo = appConfig
-					.getString(ConfigProperty.BACKEND_DEFAULTRDF);
-			if (defRdfRepo == null) {
-				// use local
-				type = DataUnitType.RDF_Local;
-			} else {
-				// choose based on value in appConfig
-				if (defRdfRepo.compareToIgnoreCase("virtuoso") == 0) {
-					// use virtuoso
-					type = DataUnitType.RDF_Virtuoso;
-				} else if (defRdfRepo.compareToIgnoreCase("localRDF") == 0) {
-					// use local
-					type = DataUnitType.RDF_Local;
-				} else {
-					throw new DataUnitCreateException(
-							"The data unit type is unknown."
-									+ "Check the value of the parameter "
-									+ "backend.defaultRDF in config.properties");
-				}
-			}
-		}
-		return type;
-	}
-
-	/**
 	 * Create {@link DataUnit} and store information about it into the context.
-	 * The type of result {@link DataUnit} may differ from the required due the
-	 * application configuration.
 	 * 
 	 * @param type Requested type of data unit.
 	 * @param id DataUnit's id assigned by application, must be unique!
@@ -375,10 +332,10 @@ public class DataUnitFactory {
 			String name,
 			File directory,
 			boolean isInput) throws DataUnitCreateException {
-		// check type
-		type = checkType(type);
-
 		switch (type) {
+		case RDF:
+			throw new DataUnitCreateException("Pure RDF DataUnit can't " 
+					+ "be created.");
 		case RDF_Local:
 			// create DataUnit
 			RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(
@@ -413,8 +370,6 @@ public class DataUnitFactory {
 
 	/**
 	 * Create {@link DataUnit} and store information about it into the context.
-	 * The type of result {@link DataUnit} may differ from the required due the
-	 * application configuration.
 	 * 
 	 * @param type Requested type of data unit.
 	 * @param id DataUnit's id assigned by application, must be unique!
@@ -431,8 +386,6 @@ public class DataUnitFactory {
 			File directory,
 			boolean isInput,
 			Object configObject) throws DataUnitCreateException {
-		// check type
-		type = checkType(type);
 		//
 		throw new DataUnitCreateException(
 				"Required DataUnit does not support configuration.");

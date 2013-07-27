@@ -14,6 +14,8 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
  * Provide implementation of commons methods for 
@@ -30,6 +32,7 @@ class ExtendedCommonImpl {
 	/**
 	 * Unique context id.
 	 */
+	@Deprecated
 	protected String id;
 	
     /**
@@ -40,12 +43,14 @@ class ExtendedCommonImpl {
     /**
      * True id the related DPURecord should be run in debug mode.
      */
+	@Deprecated
 	protected boolean isDebugging;
 	
     /**
      * PipelineExecution. The one who caused
      * run of this DPURecord.
      */
+	@Deprecated
 	protected PipelineExecution execution;
 
 	/**
@@ -104,12 +109,58 @@ class ExtendedCommonImpl {
 		this.appConfig = appConfig;
 	}	
 	
+	/**
+	 * Check required type based on application configuration and return
+	 * {@link DataUnitType} that should be created. Can thrown
+	 * {@link DataUnitCreateException} in case of unknown {@link DataUnitType}.
+	 * 
+	 * @param type Required type.
+	 * @return Type to create.
+	 * @throws DataUnitCreateException
+	 */
+	protected DataUnitType checkType(DataUnitType type)
+			throws DataUnitCreateException {
+		if (type == DataUnitType.RDF) {
+			// select other DataUnit based on configuration
+			String defRdfRepo = appConfig
+					.getString(ConfigProperty.BACKEND_DEFAULTRDF);
+			if (defRdfRepo == null) {
+				// use local
+				type = DataUnitType.RDF_Local;
+			} else {
+				// choose based on value in appConfig
+				if (defRdfRepo.compareToIgnoreCase("virtuoso") == 0) {
+					// use virtuoso
+					type = DataUnitType.RDF_Virtuoso;
+				} else if (defRdfRepo.compareToIgnoreCase("localRDF") == 0) {
+					// use local
+					type = DataUnitType.RDF_Local;
+				} else {
+					throw new DataUnitCreateException(
+							"The data unit type is unknown."
+									+ "Check the value of the parameter "
+									+ "backend.defaultRDF in config.properties");
+				}
+			}
+		}
+		return type;
+	}	
+	
 	public File getWorkingDir() {
 		File directory = context.getTmp(dpuInstance);
 		directory.mkdirs();
 		return directory;
 	}
 
+	/**
+	 * Return pipeline's execution root directory.
+	 * 
+	 * @return
+	 */
+	public File getExecutionDir() {
+		return null;
+	}
+	
 	public File getResultDir() {
 		File directory = context.getResult(dpuInstance);
 		directory.mkdirs();

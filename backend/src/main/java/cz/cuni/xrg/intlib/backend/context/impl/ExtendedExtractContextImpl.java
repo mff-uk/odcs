@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitContainer;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -56,7 +57,7 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 		this.outputs = new LinkedList<>();
 		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
-	}
+	}	
 	
 	@Override
 	public void sendMessage(MessageType type, String shortMessage) {
@@ -92,27 +93,29 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
-		// create data unit
-		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type, name);
-		// store mapping
-		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
-		// add to outputs
-		outputs.add(dataUnitContainer.getDataUnit());
-		// return new DataUnit
-		return dataUnitContainer.getDataUnit();
+		// check for type changes
+		type = checkType(type);
+		// gather information for new DataUnit
+		Integer index = context.createOutput(dpuInstance, name, type);
+		String id = context.generateDataUnitId(dpuInstance, index);
+		File directory = new File(getWorkingDir(),
+				context.getDataUnitTmpPath(dpuInstance, index) );
+		// create instance
+		return dataUnitFactory.createInput(type, id, name, directory);
 	}
 
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type, String name, Object config)
 			throws DataUnitCreateException {		
-		// create data unit
-		DataUnitContainer dataUnitContainer = dataUnitFactory.createOutput(type, name, config);
-		// store mapping
-		indexes.put(dataUnitContainer.getDataUnit(), dataUnitContainer.getIndex());
-		// add to outputs
-		outputs.add(dataUnitContainer.getDataUnit());
-		// return new DataUnit
-		return dataUnitContainer.getDataUnit();
+		// check for type changes
+		type = checkType(type);
+		// gather information for new DataUnit
+		Integer index = context.createOutput(dpuInstance, name, type);
+		String id = context.generateDataUnitId(dpuInstance, index);
+		File directory = new File(getWorkingDir(),
+				context.getDataUnitTmpPath(dpuInstance, index) );
+		// create instance
+		return dataUnitFactory.createInput(type, id, name, directory, config);
 	}
 
 	@Override
