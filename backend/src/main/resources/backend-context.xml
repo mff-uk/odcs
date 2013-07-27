@@ -23,6 +23,7 @@
 	    <constructor-arg ref="moduleFacade" index="0" />
 	    <constructor-arg ref="dbAccess" index="1" />
 	    <constructor-arg ref="configuration" index="2" />
+	    <constructor-arg ref="dataUnitfactory" index="3" />
 	</bean>
 
 	<!-- access to database on one place -->
@@ -40,4 +41,8 @@
 	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" >
 	    <constructor-arg ref="dbAccess"/>
 	</bean>		
+	
+	<bean id="dataUnitfactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory">
+	    <constructor-arg ref="configuration"/>
+	</bean>
 </beans>

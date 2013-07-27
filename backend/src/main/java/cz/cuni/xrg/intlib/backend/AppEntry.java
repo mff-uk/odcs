@@ -57,11 +57,6 @@ public class AppEntry {
 	private AppConfig appConfig = null;
 	
 	/**
-	 * Backend main execution class.
-	 */
-	private Engine engine = null;
-	
-	/**
 	 * Module facade.
 	 */
 	private ModuleFacade modeleFacade = null;
@@ -119,10 +114,7 @@ public class AppEntry {
 		context.registerShutdownHook();
 		// load configuration
 		appConfig = (AppConfig)context.getBean("configuration");
-		// set engine
-		LOG.info("Configuring engine ...");
-		engine = (Engine)context.getBean("engine");
-		engine.setup(appConfig);
+		// engine is setup automatically 
 		// set module facade
 		LOG.info("Configuring dynamic module worker ...");
 		modeleFacade = (ModuleFacade)context.getBean("moduleFacade");

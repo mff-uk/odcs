@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
@@ -26,129 +27,157 @@ import org.springframework.context.ApplicationListener;
 
 /**
  * Responsible for running and supervision queue of PipelineExecution tasks.
- *
+ * 
  * @author Petyr
  * 
  */
-public class Engine implements ApplicationListener<EngineEvent>, ApplicationEventPublisherAware  {
-	
-    /**
-     * Provide access to DPURecord implementation.
-     */	
-	protected ModuleFacade moduleFacade;
-	
+public class Engine
+		implements ApplicationListener<EngineEvent>,
+		ApplicationEventPublisherAware {
+
 	/**
-	 * Thread pool. 
+	 * Provide access to DPURecord implementation.
+	 */
+	protected ModuleFacade moduleFacade;
+
+	/**
+	 * Thread pool.
 	 */
 	protected ExecutorService executorService;
-	
+
 	/**
-     * Publisher instance.
-     */	
+	 * Publisher instance.
+	 */
 	protected ApplicationEventPublisher eventPublisher;
-	
+
 	/**
 	 * Working directory.
 	 */
 	protected File workingDirectory;
-	
+
 	/**
 	 * Access to the database
 	 */
 	protected DatabaseAccess database;
-	
+
 	/**
 	 * True if startUp method has already been called.
 	 */
 	protected Boolean startUpDone;
-	
+
 	/**
 	 * Application's configuration.
 	 */
 	protected AppConfig appConfig;
+
+	/**
+	 * DataUnit factory bean used to create new DataUnits by PipelineWorkers.
+	 */
+	protected DataUnitFactory dataUnitFactory;
 	
 	protected static Logger LOG = LoggerFactory.getLogger(Engine.class);
-	
-	public Engine(ModuleFacade moduleFacade, DatabaseAccess database, AppConfig appConfig) {
-		this.moduleFacade = moduleFacade;		
-    	this.executorService = Executors.newCachedThreadPool();
-    	this.database = database;
-    	this.startUpDone = false;
-    	this.appConfig = appConfig;
-    }
 
-	public Engine(ModuleFacade moduleFacade, DatabaseAccess database, AppConfig appConfig, ExecutorService executorService) {
+	public Engine(ModuleFacade moduleFacade,
+			DatabaseAccess database,
+			AppConfig appConfig,
+			DataUnitFactory dataUnitFactory) {
 		this.moduleFacade = moduleFacade;
-    	this.executorService = executorService;
-    	this.database = database;
-    	this.startUpDone = false;
-    	this.appConfig = appConfig;
-    }
-	
+		this.executorService = Executors.newCachedThreadPool();
+		this.database = database;
+		this.startUpDone = false;
+		this.appConfig = appConfig;
+		this.dataUnitFactory = dataUnitFactory;
+	}
+
+	public Engine(ModuleFacade moduleFacade,
+			DatabaseAccess database,
+			AppConfig appConfig,
+			DataUnitFactory dataUnitFactory,
+			ExecutorService executorService) {
+		this.moduleFacade = moduleFacade;
+		this.executorService = executorService;
+		this.database = database;
+		this.startUpDone = false;
+		this.appConfig = appConfig;
+		this.dataUnitFactory = dataUnitFactory;
+	}
+
 	/**
 	 * Setup engine from given configuration.
-	 * @param config
 	 */
-	public void setup(AppConfig config) {
-		workingDirectory = new File( config.getString(ConfigProperty.GENERAL_WORKINGDIR) );
+	protected void setupConfig() {
+		LOG.info("Configuring engine ...");
+
+		workingDirectory = new File(
+				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+		
+		LOG.info("Working dir: {}", workingDirectory.toString());
+		
 		// make sure that our working directory exist
 		if (workingDirectory.isDirectory()) {
 			workingDirectory.mkdirs();
 		}
 	}
-	
-    /**
-     * Ask executorService to run the pipeline.
-     *
-     * @param pipelineExecution
-     */
+
+	/**
+	 * Ask executorService to run the pipeline. Call {@link #startUp} before
+	 * this function.
+	 * 
+	 * @param pipelineExecution
+	 */
 	protected void run(PipelineExecution pipelineExecution) {
-    	// mark pipeline execution as Started ..
-    	pipelineExecution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
-    	pipelineExecution.setStart(new Date());
-    	// prepare working directory for execution
-    	File directory = new File(workingDirectory, "execution-" + pipelineExecution.getId() );    	
-    	// update record in DB
-    	database.getPipeline().save(pipelineExecution);   	
-    	// run pipeline
-    	this.executorService.execute(
-    			new PipelineWorker(pipelineExecution, moduleFacade, 
-    					eventPublisher, database, directory, appConfig));
-    }
-    
-    /**
-     * Check database for new task (PipelineExecutions to run).
-     * Can run concurrently.
-     */
+		// mark pipeline execution as Started ..
+		pipelineExecution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
+		pipelineExecution.setStart(new Date());
+		// prepare working directory for execution
+		File directory = new File(workingDirectory, "execution-"
+				+ pipelineExecution.getId());
+		// update record in DB
+		database.getPipeline().save(pipelineExecution);
+		// run pipeline
+		this.executorService.execute(new PipelineWorker(pipelineExecution,
+				moduleFacade, eventPublisher, database, directory, appConfig));
+	}
+
+	/**
+	 * Check database for new task (PipelineExecutions to run). Can run
+	 * concurrently.
+	 */
 	protected void checkDatabase() {
-    	List<PipelineExecution> toExecute = database.getPipeline().getAllExecutions();
-    	// run pipeline executions ..   
-    	for (PipelineExecution item : toExecute) {
-    		if (item.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
-    			// run scheduled pipeline
-    			run(item);
-    		}
-    	}
-    }
-    
-    /**
-     * Check database for hanging running pipelines. Should
-     * be run just once before any execution starts.
-     */
+		List<PipelineExecution> toExecute = database.getPipeline()
+				.getAllExecutions();
+		// run pipeline executions ..
+		for (PipelineExecution item : toExecute) {
+			if (item.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
+				// run scheduled pipeline
+				run(item);
+			}
+		}
+	}
+
+	/**
+	 * Check database for hanging running pipelines. Should be run just once
+	 * before any execution starts.
+	 * 
+	 * Also setup engine according to it's configuration.
+	 */
 	protected void startUp() {
+		// setup 
+		setupConfig();
+		
 		startUpDone = true;
 		// list executions
-		List<PipelineExecution> toExecute = database.getPipeline().getAllExecutions();
+		List<PipelineExecution> toExecute = database.getPipeline()
+				.getAllExecutions();
 		for (PipelineExecution execution : toExecute) {
 			if (execution.getExecutionStatus() == PipelineExecutionStatus.RUNNING) {
-				// hanging pipeline .. 
-				
+				// hanging pipeline ..
+
 				// schedule new pipeline start
 				execution.setExecutionStatus(PipelineExecutionStatus.SCHEDULED);
-				
-				
+
 				// TODO Petyr: Run from last position
-				
+
 				// remove all from the previous execution
 				ExecutionContextInfo context = execution.getContextReadOnly();
 				if (context == null) {
@@ -156,24 +185,32 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 				} else {
 					// delete old context files
 					try {
-						FileUtils.deleteDirectory( context.getRootDirectory() );
+						FileUtils.deleteDirectory(context.getRootDirectory());
 					} catch (IOException e) {
-						LOG.error("Failed to delete old context directory. For execution: {}", execution.getId(), e);
+						LOG.error(
+								"Failed to delete old context directory. For execution: {}",
+								execution.getId(), e);
 						// there should be at least one PDU in pipeline
-						if (execution.getPipeline().getGraph().getNodes().isEmpty()) {
-							// 
-							LOG.error("There are no DPUs on pipeline. Execution: {} Pipeline: {}", 
-									execution.getId(), execution.getPipeline().getId());
+						if (execution.getPipeline().getGraph().getNodes()
+								.isEmpty()) {
+							//
+							LOG.error(
+									"There are no DPUs on pipeline. Execution: {} Pipeline: {}",
+									execution.getId(), execution.getPipeline()
+											.getId());
 						} else {
-							// use first node .. 
-							Node node = execution.getPipeline().getGraph().getNodes().iterator().next();
-							eventPublisher.publishEvent(
-									new PipelineFailedEvent(
-											"Failed to recover. The working directory can't be deleted.", 
-											node.getDpuInstance(), execution, this));
+							// use first node ..
+							Node node = execution.getPipeline().getGraph()
+									.getNodes().iterator().next();
+							eventPublisher
+									.publishEvent(new PipelineFailedEvent(
+											"Failed to recover. The working directory can't be deleted.",
+											node.getDpuInstance(), execution,
+											this));
 						}
 						// set pipeline execution to failed
-						execution.setExecutionStatus(PipelineExecutionStatus.FAILED);
+						execution
+								.setExecutionStatus(PipelineExecutionStatus.FAILED);
 						execution.setEnd(new Date());
 					}
 					// reset context
@@ -181,15 +218,16 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 				}
 				database.getPipeline().save(execution);
 			}
-		}		
-    }
-    
-    /**
-     * Take care about engine event.
-     * @param type
-     */
-    protected synchronized void onEvent(EngineEventType type) {
-    	switch(type) {
+		}
+	}
+
+	/**
+	 * Take care about engine event.
+	 * 
+	 * @param type
+	 */
+	protected synchronized void onEvent(EngineEventType type) {
+		switch (type) {
 		case CheckDatabase:
 			checkDatabase();
 			break;
@@ -203,20 +241,17 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 		default:
 			// do nothing
 			break;
-		}    	
-    }
-    
-    
-	@Override
-	public void onApplicationEvent(EngineEvent event) {
-		onEvent(event.getType());		
+		}
 	}
-	
 
 	@Override
-	public void setApplicationEventPublisher(
-			ApplicationEventPublisher applicationEventPublisher) {
-		this.eventPublisher = applicationEventPublisher;		
+	public void onApplicationEvent(EngineEvent event) {
+		onEvent(event.getType());
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		this.eventPublisher = applicationEventPublisher;
 	}
 
 }

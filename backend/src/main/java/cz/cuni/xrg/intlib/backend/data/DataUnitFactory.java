@@ -41,7 +41,6 @@ public class DataUnitFactory {
 	/**
 	 * Application configuration.
 	 */
-	@Deprecated
 	private AppConfig appConfig;
 
 	/**
@@ -59,6 +58,14 @@ public class DataUnitFactory {
 		this.appConfig = appConfig;
 	}
 
+	/**
+	 * Constructor for spring.
+	 * @param appConfig
+	 */
+	public DataUnitFactory(AppConfig appConfig) {
+		this.appConfig = appConfig;
+	}
+	
 	/**
 	 * Create input DataUnit.
 	 *
