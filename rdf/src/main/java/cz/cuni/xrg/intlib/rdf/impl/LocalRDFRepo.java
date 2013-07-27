@@ -778,13 +778,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		} else {
 
-			final String enpointName = endpointURL.toString().toLowerCase();
+			final String endpointName = endpointURL.toString().toLowerCase();
 
 			String message = null;
 
-			if (enpointName.startsWith("http://")) {
+			if (!endpointName.startsWith("http://")) {
 				message = "Endpoint url name have to started with prefix \"http://\".";
-			} else if (enpointName.contains(" ")) {
+			} else if (endpointName.contains(" ")) {
 				message = "Endpoint url constains write spaces";
 			}
 			if (message != null) {
