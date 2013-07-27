@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
@@ -46,11 +47,11 @@ public class ContextFactory {
 			ExecutionContextInfo context, Class<T> type, AppConfig appConfig) throws IOException, ContextException {
 		// ...
 		if (type == ExtendedExtractContext.class) {
-			return (T) new ExtendedExtractContextImpl(id, execution, dpuInstance, eventPublisher, context, appConfig);
+			return (T) new ExtendedExtractContextImpl(execution, dpuInstance, eventPublisher, context, appConfig);
 		} else if (type == ExtendedLoadContext.class) {
-			return (T) new ExtendedLoadContextImpl(id, execution, dpuInstance, eventPublisher, context, appConfig);
+			return (T) new ExtendedLoadContextImpl(execution, dpuInstance, eventPublisher, context, appConfig);
 		} else if (type == ExtendedTransformContext.class) {
-			return (T) new ExtendedTransformContextImpl(id, execution, dpuInstance, eventPublisher, context, appConfig);
+			return (T) new ExtendedTransformContextImpl(execution, dpuInstance, eventPublisher, context, appConfig);
 		} else {
 			// unknown type
 			throw new ContextException("Unknown context type.");

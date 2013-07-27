@@ -5,6 +5,7 @@ import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -16,10 +17,8 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,9 +46,9 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoad
 	 */
 	private static final Logger LOG = Logger.getLogger(ExtendedLoadContextImpl.class);	
 	
-	public ExtendedLoadContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
+	public ExtendedLoadContextImpl(PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
-		super(id, execution, dpuInstance, context, appConfig);
+		super(execution, dpuInstance, context, appConfig);
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -82,7 +81,8 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoad
 		for (DataUnit item : inputs) {		
 			try {
 				// get directory
-				File directory = context.getDataUnitStorage(getDPUInstance(), index++);
+				File directory = new File(getWorkingDir(),
+						context.getDataUnitStoragePath(dpuInstance, ++index));
 				// and save into directory
 				item.save(directory);
 			} catch (Exception e) {

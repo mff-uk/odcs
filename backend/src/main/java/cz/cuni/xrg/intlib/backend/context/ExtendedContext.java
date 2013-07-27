@@ -6,7 +6,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 /**
  * Contains support for:
  * 	identifying pipeline and DPURecord related to the context 
- * 
+ *  saving/loading context
+ *  
  * @author Petyr
  *
  */

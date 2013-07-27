@@ -1,10 +1,9 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
-import cz.cuni.xrg.intlib.backend.data.DataUnitContainer;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -51,9 +50,9 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 	 */
 	private static final Logger LOG = Logger.getLogger(ExtendedExtractContextImpl.class);
 	
-	public ExtendedExtractContextImpl(String id, PipelineExecution execution, DPUInstanceRecord dpuInstance, 
+	public ExtendedExtractContextImpl(PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
-		super(id, execution, dpuInstance, context, appConfig);
+		super(execution, dpuInstance, context, appConfig);
 		this.outputs = new LinkedList<>();
 		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
@@ -81,7 +80,8 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 		for (DataUnit item : outputs) {		
 			try {
 				// get directory
-				File directory = context.getDataUnitStorage(getDPUInstance(), indexes.get(item));
+				File directory = new File(getWorkingDir(),
+						context.getDataUnitStoragePath(dpuInstance, indexes.get(item)));
 				// and save into directory
 				item.save(directory);
 			} catch (Exception e) {
@@ -96,6 +96,7 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 		// check for type changes
 		type = checkType(type);
 		// gather information for new DataUnit
+// TODO Petyr Use single class for DataUnit information		
 		Integer index = context.createOutput(dpuInstance, name, type);
 		String id = context.generateDataUnitId(dpuInstance, index);
 		File directory = new File(getWorkingDir(),
@@ -110,6 +111,7 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 		// check for type changes
 		type = checkType(type);
 		// gather information for new DataUnit
+// TODO Petyr Use single class for DataUnit information		
 		Integer index = context.createOutput(dpuInstance, name, type);
 		String id = context.generateDataUnitId(dpuInstance, index);
 		File directory = new File(getWorkingDir(),

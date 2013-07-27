@@ -42,7 +42,4 @@
 	    <constructor-arg ref="dbAccess"/>
 	</bean>		
 	
-	<bean id="dataUnitfactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory">
-	    <constructor-arg ref="configuration"/>
-	</bean>
 </beans>
