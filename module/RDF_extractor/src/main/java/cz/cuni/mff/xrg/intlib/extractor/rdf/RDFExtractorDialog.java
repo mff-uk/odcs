@@ -259,12 +259,17 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 							"SPARQL endpoint must be filled!");
 					throw ex;
 				} else {
-					String myValue = value.toString().toLowerCase();
+					String myValue = value.toString().toLowerCase().trim();
 					if (!myValue.startsWith("http://")) {
 						ex = new InvalidValueException(
 								"Endpoint URL must start with \"http://\"");
 						throw ex;
+					} else if (myValue.contains(" ")) {
+						ex = new InvalidValueException(
+								"Endpoint name must contain no white spaces");
+						throw ex;
 					}
+
 				}
 
 			}
@@ -373,6 +378,19 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	}
 
 	/**
+	 *
+	 * @return if all URI name graphs are valid or not.
+	 */
+	private boolean areGraphsNameValid() {
+		for (TextField next : listedEditText) {
+			if (!next.isValid()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Builds Named Graph component which consists of textfields for graph name
 	 * and buttons for add and remove this textfields. Used in
 	 * {@link #initializeNamedGraphList} and also in adding and removing fields
@@ -395,6 +413,32 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 			textFieldGraph.setData(row);
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/source1");
+			textFieldGraph.addValidator(new Validator() {
+				@Override
+				public void validate(Object value) throws InvalidValueException {
+					if (value != null) {
+
+						String namedGraph = value.toString().toLowerCase()
+								.trim();
+
+						if (namedGraph.isEmpty()) {
+							return;
+						}
+
+						if (namedGraph.contains(" ")) {
+							ex = new InvalidValueException(
+									"Graph name(s) must contain no white spaces");
+							throw ex;
+						} else if (!namedGraph.startsWith("http://")) {
+							ex = new InvalidValueException(
+									"Graph name must start with prefix \"http://\"");
+							throw ex;
+						}
+
+					}
+
+				}
+			});
 
 			//remove button
 			buttonGraphRem = new Button();
@@ -575,7 +619,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
-		if (!comboBoxSparql.isValid() | !textAreaConstr.isValid()) {
+		if (!comboBoxSparql.isValid() | !textAreaConstr.isValid() | !areGraphsNameValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(errorMessage);
@@ -600,7 +644,8 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	 * object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
-	 *                         null	null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	null	null	null	null	null	null	null
+	 *                         null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #checkBoxFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
@@ -629,9 +674,9 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 				griddata = new LinkedList<>();
 			}
 			refreshNamedGraphData();
-		} catch (UnsupportedOperationException | Property.ReadOnlyException | Converter.ConversionException ex) {
+		} catch (UnsupportedOperationException | Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception
-			throw new ConfigException();
+			throw new ConfigException(e.getMessage(), e);
 		}
 	}
 }
