@@ -776,13 +776,21 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			logger.debug(message);
 			throw new RDFException(message);
 
-		} else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
+		} else {
 
-			final String message = "Mandatory URL path in extractor from SPARQL "
-					+ "have to started with http.";
+			final String enpointName = endpointURL.toString().toLowerCase();
 
-			logger.debug(message);
-			throw new RDFException(message);
+			String message = null;
+
+			if (enpointName.startsWith("http://")) {
+				message = "Endpoint url name have to started with prefix \"http://\".";
+			} else if (enpointName.contains(" ")) {
+				message = "Endpoint url constains write spaces";
+			}
+			if (message != null) {
+				logger.debug(message);
+				throw new RDFException(message);
+			}
 
 		}
 
