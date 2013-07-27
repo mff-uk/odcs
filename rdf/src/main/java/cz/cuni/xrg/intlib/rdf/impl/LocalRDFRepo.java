@@ -40,6 +40,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.http.HTTPRepository;
 import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.repository.sparql.SPARQLRepository;
 import org.openrdf.rio.*;
 import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
@@ -60,6 +61,16 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * How many triples is possible to add to SPARQL endpoind at once.
 	 */
 	protected static final int STATEMENTS_COUNT = 10;
+
+	/**
+	 * Represent successfully connection using HTTP.
+	 */
+	protected static final int HTTP_OK_RESPONSE = 200;
+
+	/**
+	 * Represent http error code needed authorisation for connection using HTTP.
+	 */
+	protected static final int HTTP_UNAUTORIZED_RESPONSE = 401;
 
 	/**
 	 * Default name for graph using for store RDF data.
@@ -792,38 +803,23 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT);
 		final int partsCount = dataParts.size();
 
-		HTTPRepository endpointRepo = new HTTPRepository(endpointURL.toString(),
-				"");
+		authenticate(userName, password);
 
-		boolean usePassword = (!userName.isEmpty() | !password.isEmpty());
+		/*
+		 HTTPRepository endpointRepo = new HTTPRepository(endpointURL.toString(),
+		 "");
 
-		if (usePassword) {
+		 try {
+		 endpointRepo.initialize();
+		 } catch (RepositoryException e) {
+		 final String message = "Endpoint repository is failed. ";
+		 logger.debug(message);
+		 logger.debug(message + e.getMessage(), e);
 
-			final String myName = userName;
-			final String myPassword = password;
+		 throw new RDFException(message + e.getMessage(), e);
+		 }
 
-			Authenticator autentisator = new Authenticator() {
-				@Override
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(myName, myPassword
-							.toCharArray());
-				}
-			};
-
-			Authenticator.setDefault(autentisator);
-			endpointRepo.setUsernameAndPassword(userName, password);
-
-		}
-
-		try {
-			endpointRepo.initialize();
-		} catch (RepositoryException e) {
-			final String message = "Endpoint repository is failed. ";
-			logger.debug(message);
-			logger.debug(message + e.getMessage(), e);
-
-			throw new RDFException(message + e.getMessage(), e);
-		}
+		 */
 
 		RepositoryConnection connection = null;
 
@@ -835,44 +831,49 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				boolean isOK = true;
 
-				try {
-					switch (graphType) {
-						case MERGE:
-							break;
-						case OVERRIDE: {
-							RepositoryConnection endpointGoal = endpointRepo
-									.getConnection();
-							Resource graphToClear = new URIImpl(
-									endpointGraphsURI.get(i));
-							endpointGoal.clear(graphToClear);
-							endpointGoal.close();
-						}
-						break;
-						case FAIL: {
-							RepositoryConnection endpointGoal = endpointRepo
-									.getConnection();
-							Resource goalGraph = new URIImpl(endpointGraphsURI
-									.get(i));
-							boolean sourceNotEmpty = endpointGoal
-									.size(goalGraph) > 0;
+				/*
+				 try {
+				 switch (graphType) {
+				 case MERGE:
+				 break;
+				 case OVERRIDE: {
+							
+				 RepositoryConnection endpointGoal = endpointRepo
+				 .getConnection();
+				 Resource graphToClear = new URIImpl(
+				 endpointGraphsURI.get(i));
+				 endpointGoal.clear(graphToClear);
+				 endpointGoal.close();
+				 }
+				 break;
+				 case FAIL: {
 
-							endpointGoal.close();
+				 RepositoryConnection endpointGoal = endpointRepo
+				 .getConnection();
+				 Resource goalGraph = new URIImpl(endpointGraphsURI
+				 .get(i));
+				 boolean sourceNotEmpty = endpointGoal
+				 .size(goalGraph) > 0;
 
-							if (sourceNotEmpty) {
-								throw new GraphNotEmptyException(
-										"Graph " + goalGraph.toString() + "is not empty");
-							}
+				 endpointGoal.close();
 
-						}
-						break;
+				 if (sourceNotEmpty) {
+				 throw new GraphNotEmptyException(
+				 "Graph " + goalGraph.toString() + "is not empty");
+				 }
 
-					}
-				} catch (GraphNotEmptyException ex) {
-					logger.debug(ex.getMessage());
-					isOK = false;
+				 }
 
-					//throw new RDFException(ex.getMessage(),ex);
-				}
+				 break;
+
+				 }
+				 } catch (GraphNotEmptyException ex) {
+				 logger.debug(ex.getMessage());
+				 isOK = false;
+
+				 //throw new RDFException(ex.getMessage(),ex);
+				 }
+				 */
 
 				if (isOK == false) {
 					continue;
@@ -880,69 +881,26 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				for (int j = 0; j < partsCount; j++) {
 
-					final String endpointGraph = endpointGraphsURI.get(i)
-							.replace(" ", "+");
+					final String endpointGraph = endpointGraphsURI.get(i);
+					//.replace(" ", "+");
 					final String query = dataParts.get(j);
 
-					String myquery = null;
+					String myquery = getEncodedQuery(query);
+					InputStreamReader inputStreamReader = getEndpointStreamReader(
+							endpointURL, endpointGraph, myquery,
+							RDFFormat.N3);
 
 					try {
-						myquery = URLEncoder.encode(query, encode);
-					} catch (UnsupportedEncodingException ex) {
-						String message = "Encoding " + encode + " is not supported.";
-						throw new RDFException(message + ex.getMessage(), ex);
-					}
-
-					URL call = null;
-
-					try {
-						call = new URL(
-								endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery);
-					} catch (MalformedURLException e) {
-						throw new RDFException(
-								"Malfolmed URL exception by construct load from URL. "
-								+ e.getMessage(), e);
-					}
-
-					HttpURLConnection httpConnection = null;
-
-					try {
-
-						httpConnection = (HttpURLConnection) call
-								.openConnection();
-						httpConnection.setRequestProperty("Content-type",
-								"text/xml");
-
+						inputStreamReader.close();
 					} catch (IOException e) {
-						if (httpConnection != null) {
-							httpConnection.disconnect();
-						}
-						throw new RDFException(
-								"Endpoint URL stream cannot be opened. "
-								+ e.getMessage(), e);
+						throw new RDFException(e.getMessage(), e);
 					}
 
-					try {
-						// check whether given stream is readable
-						BufferedReader reader = new BufferedReader(
-								new InputStreamReader(httpConnection
-								.getInputStream()));
-						reader.close();
+					final String processing = String.valueOf(j + 1) + "/" + String
+							.valueOf(partsCount);
 
-						final String processing = String.valueOf(j + 1) + "/" + String
-								.valueOf(partsCount);
-
-						logger.debug(
-								"Data " + processing + " part loaded successful");
-					} catch (IOException ex) {
-						final String message = "Cannot open http connection stream at '"
-								+ call.toString()
-								+ "' - data not loaded. ";
-						throw new RDFException(message + ex.getMessage(), ex);
-
-					} finally {
-						httpConnection.disconnect();
-					}
+					logger.debug(
+							"Data " + processing + " part loaded successful");
 
 				}
 			}
@@ -1162,9 +1120,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			final String message = "Mandatory construct query is null.";
 			logger.debug(message);
 			throw new RDFException(message);
-		}
-		else if (query.isEmpty())
-		{
+		} else if (query.isEmpty()) {
 			final String message = "Construct query is empty";
 
 			logger.debug(message);
@@ -1173,120 +1129,65 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		final RDFFormat format = RDFFormat.N3;
 		final int graphSize = endpointGraphsURI.size();
-		final String myquery = query.replace(" ", "+");
-
-		String encoder = null;
-
-		try {
-			encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
-		} catch (UnsupportedEncodingException e) {
-			String message = "Encode " + encode + " is not support. ";
-			logger.debug(message);
-			throw new RDFException(message + e.getMessage(), e);
-		}
 
 		RepositoryConnection connection = null;
+
 		try {
 			connection = repository.getConnection();
+			authenticate(hostName, password);
 
 			for (int i = 0; i < graphSize; i++) {
 
-				final String endpointGraph = endpointGraphsURI.get(i).replace(
-						" ", "+");
+				final String endpointGraph = endpointGraphsURI.get(i);
 
-				URL call = null;
-				try {
-					call = new URL(
-							endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
-				} catch (MalformedURLException e) {
-					final String message = "Malfolmed URL exception by construct extract URL. ";
-					logger.debug(message);
-					throw new RDFException(message + e.getMessage(), e);
-				}
+				InputStreamReader inputStreamReader = getEndpointStreamReader(
+						endpointURL, endpointGraph, query, format);
 
-				HttpURLConnection httpConnection = null;
-				try {
-					httpConnection = (HttpURLConnection) call.openConnection();
-					httpConnection.addRequestProperty("Accept", format
-							.getDefaultMIMEType());
+				if (!useStatisticHandler) {
+					if (graph != null) {
 
-				} catch (IOException e) {
-					logger.debug("Endpoint URL stream can not open");
-					if (httpConnection != null) {
-						httpConnection.disconnect();
-					}
-					throw new RDFException(e.getMessage(), e);
-				}
-
-				boolean usePassword = !(hostName.isEmpty() && password.isEmpty());
-
-				if (usePassword) {
-
-					final String myName = hostName;
-					final String myPassword = password;
-
-					Authenticator autentisator = new Authenticator() {
-						@Override
-						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(myName, myPassword
-									.toCharArray());
-						}
-					};
-
-					Authenticator.setDefault(autentisator);
-
-				}
-
-				try (InputStreamReader inputStreamReader = new InputStreamReader(
-						httpConnection.getInputStream(), Charset.forName(
-						encode))) {
-
-					if (!useStatisticHandler) {
-						if (graph != null) {
-							connection.add(inputStreamReader, endpointGraph,
-									format,
-									graph);
-						} else {
-							connection.add(inputStreamReader, endpointGraph,
-									format);
-						}
+						connection.add(inputStreamReader, endpointGraph,
+								format,
+								graph);
 					} else {
-						StatisticalHandler handler = new StatisticalHandler();
+						connection.add(inputStreamReader, endpointGraph,
+								format);
+					}
+				} else {
+					StatisticalHandler handler = new StatisticalHandler();
 
-						RDFParser parser = Rio.createParser(format);
-						parser.setRDFHandler(handler);
+					RDFParser parser = Rio.createParser(format);
+					parser.setRDFHandler(handler);
 
-						try {
-							parser.parse(inputStreamReader, endpointGraph);
+					try {
+						parser.parse(inputStreamReader, endpointGraph);
 
-							if (graph != null) {
-								connection.add(handler.getStatements(), graph);
-							} else {
-								connection.add(handler.getStatements());
-							}
-						} catch (IOException | RepositoryException ex) {
-							logger.error(ex.getMessage(), ex);
-						} catch (RDFHandlerException | RDFParseException ex) {
-							logger.error(ex.getMessage(), ex);
-							throw new RDFException(ex.getMessage(), ex);
+						if (graph != null) {
+							connection.add(handler.getStatements(), graph);
+						} else {
+							connection.add(handler.getStatements());
 						}
+					} catch (IOException | RepositoryException ex) {
+						logger.error(ex.getMessage(), ex);
+					} catch (RDFHandlerException | RDFParseException ex) {
+						logger.error(ex.getMessage(), ex);
+						throw new RDFException(ex.getMessage(), ex);
 					}
 
-				} catch (IOException e) {
-
-					final String message = "Http connection can can not open stream. ";
-					logger.debug(message);
-
-					throw new RDFException(message + e.getMessage(), e);
-
-				} catch (RDFParseException e) {
-					logger.debug(e.getMessage());
-
-					throw new RDFException(e.getMessage(), e);
 
 				}
 			}
+		} catch (IOException e) {
 
+			final String message = "Http connection can can not open stream. ";
+			logger.debug(message);
+
+			throw new RDFException(message + e.getMessage(), e);
+
+		} catch (RDFParseException e) {
+			logger.debug(e.getMessage());
+
+			throw new RDFException(e.getMessage(), e);
 
 		} catch (RepositoryException e) {
 
@@ -1309,6 +1210,122 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 		}
 
+	}
+
+	private InputStreamReader getEndpointStreamReader(URL endpointURL,
+			String endpointGraphURI, String query,
+			RDFFormat format) throws RDFException {
+
+		final String endpointGraph = endpointGraphURI.replace(
+				" ", "+");
+		final String myquery = query.replace(" ", "+");
+
+		final String encoder = getEncoder(format);
+
+		URL call = null;
+		try {
+			call = new URL(
+					endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
+		} catch (MalformedURLException e) {
+			final String message = "Malfolmed URL exception by construct extract URL. ";
+			logger.debug(message);
+			throw new RDFException(message + e.getMessage(), e);
+		}
+
+		HttpURLConnection httpConnection = null;
+		try {
+			httpConnection = (HttpURLConnection) call.openConnection();
+
+			int httpResponseCode = httpConnection.getResponseCode();
+
+			if (httpResponseCode != HTTP_OK_RESPONSE) {
+
+				StringBuilder message = new StringBuilder(
+						httpConnection.getHeaderField(0));
+
+
+				if (httpResponseCode == HTTP_UNAUTORIZED_RESPONSE) {
+					message.append(
+							". Your USERNAME and PASSWORD for connection is wrong.");
+
+				} else {
+					message.append(
+							"You probably dont have enought permission for this action.");
+				}
+
+				throw new RDFException(message.toString());
+			}
+
+		} catch (IOException e) {
+			logger.debug("Endpoint URL stream can not open");
+			if (httpConnection != null) {
+				httpConnection.disconnect();
+			}
+			throw new RDFException(e.getMessage(), e);
+		}
+
+		try {
+			InputStreamReader inputStreamReader = new InputStreamReader(
+					httpConnection.getInputStream(), Charset.forName(
+					encode));
+
+			return inputStreamReader;
+
+		} catch (IOException e) {
+
+			final String message = "Http connection can can not open stream. ";
+			logger.debug(message);
+
+			throw new RDFException(message + e.getMessage(), e);
+
+		}
+	}
+
+	private void authenticate(String hostName, String password) {
+
+		boolean usePassword = !(hostName.isEmpty() && password.isEmpty());
+
+		if (usePassword) {
+
+			final String myName = hostName;
+			final String myPassword = password;
+
+			Authenticator autentisator = new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(myName, myPassword
+							.toCharArray());
+				}
+			};
+
+			Authenticator.setDefault(autentisator);
+
+		}
+	}
+
+	private String getEncoder(RDFFormat format) throws RDFException {
+		String encoder = null;
+
+		try {
+			encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
+
+		} catch (UnsupportedEncodingException e) {
+			String message = "Encode " + encode + " is not supported. ";
+			logger.debug(message);
+			throw new RDFException(message + e.getMessage(), e);
+		}
+		return encoder;
+	}
+
+	private String getEncodedQuery(String query) throws RDFException {
+		try {
+			String myquery = URLEncoder.encode(query, encode);
+			return myquery;
+		} catch (UnsupportedEncodingException ex) {
+			String message = "Encoding " + encode + " is not supported.";
+			logger.debug(message);
+			throw new RDFException(message + ex.getMessage(), ex);
+		}
 	}
 
 	private String AddGraphToUpdateQuery(String updateQuery) {
