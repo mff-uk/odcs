@@ -1,39 +1,17 @@
 package cz.cuni.xrg.intlib.commons.extractor;
 
+import cz.cuni.xrg.intlib.commons.context.ContextOutputs;
 import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
-import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
  * Context used by {@link Extract}s for the extraction process.
+ * The extractor has no inputs as it extract it's data from outer sources 
+ * outside the scope of context. Extracted data are stored to 
+ * context as outputs.
  * 
- * @see Extract
  * @author Petyr
+ * @see Extract
  */
-public interface ExtractContext extends ProcessingContext {
+public interface ExtractContext extends ProcessingContext, ContextOutputs {
 
-	/**
-	 * Request creating a new output DataUnit of given type.
-	 * 
-	 * @param type Type of DataUnit.
-	 * @param name DataUnit's name.
-	 * @return Created DataUnit.
-	 * @throw DataUnitCreateException
-	 */
-	public DataUnit addOutputDataUnit(DataUnitType type, String name)
-			throws DataUnitCreateException;
-
-	/**
-	 * Request creating a new output DataUnit of given type.
-	 * 
-	 * @param type Type of DataUnit.
-	 * @param name DataUnit's name.
-	 * @param configu DataUnit initial configuration object.
-	 * @return Created DataUnit.
-	 * @throw DataUnitCreateException
-	 */
-	public DataUnit addOutputDataUnit(DataUnitType type,
-			String name,
-			Object config) throws DataUnitCreateException;
 }

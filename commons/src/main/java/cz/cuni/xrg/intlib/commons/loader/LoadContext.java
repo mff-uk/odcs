@@ -1,22 +1,16 @@
 package cz.cuni.xrg.intlib.commons.loader;
 
+import cz.cuni.xrg.intlib.commons.context.ContextInputs;
 import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
-import cz.cuni.xrg.intlib.commons.data.DataUnit;
-
-import java.util.List;
 
 /**
  * Context used by {@link Load}s for the loading process.
+ * The load context has no outputs as Loader store it's information outside 
+ * the scope of context.
  *
- * @see Load
  * @author Petyr
+ * @see Load
  */
-public interface LoadContext extends ProcessingContext {
-
-	/**
-	 * Return list of input data units.
-	 * @return
-	 */
-	public List<DataUnit> getInputs();
-		
+public interface LoadContext extends ProcessingContext, ContextInputs { 
+	
 }
