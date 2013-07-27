@@ -39,9 +39,7 @@ import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.http.HTTPRepository;
 import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.repository.sparql.SPARQLRepository;
 import org.openrdf.rio.*;
 import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
@@ -524,6 +522,15 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
+	private void clearEndpointGraph(URL endpointURL, String endpointGraph)
+			throws RDFException {
+
+		String deleteQuery = "delete {?x ?y ?z} where {?x ?y ?z}";
+		InputStreamReader intStreamReader = getEndpointStreamReader(endpointURL,
+				endpointGraph, deleteQuery, RDFFormat.RDFXML);
+
+	}
+
 	long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph) throws RDFException {
 		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
 
@@ -843,7 +850,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 
 		final int graphSize = endpointGraphsURI.size();
-		
+
 		authenticate(userName, password);
 
 		RepositoryConnection connection = null;
@@ -861,6 +868,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 						case MERGE:
 							break;
 						case OVERRIDE: {
+							clearEndpointGraph(endpointURL, endpointGraph);
 						}
 						break;
 						case FAIL: {
@@ -889,7 +897,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					throw new RDFException(ex.getMessage(), ex);
 				}
 
-				List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT);
+				List<String> dataParts = getInsertPartsTriplesQuery(
+						STATEMENTS_COUNT);
 				final int partsCount = dataParts.size();
 
 				for (int j = 0; j < partsCount; j++) {
