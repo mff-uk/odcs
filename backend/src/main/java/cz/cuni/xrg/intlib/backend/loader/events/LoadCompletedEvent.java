@@ -1,8 +1,8 @@
 package cz.cuni.xrg.intlib.backend.loader.events;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 
 /**
@@ -18,7 +18,7 @@ public class LoadCompletedEvent extends LoadEvent {
     }
     
 	@Override
-	public Record getRecord() {		
-		return new Record(time, RecordType.DPU_INFO, dpuInstance, execution, "Loader completed.", "");
+	public MessageRecord getRecord() {		
+		return new MessageRecord(time, MessageRecordType.DPU_INFO, dpuInstance, execution, "Loader completed.", "");
 	}     
 }

@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.execution;
+package cz.cuni.xrg.intlib.commons.app.execution.message;
 
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
  * @author Petyr
  * 
  */
-public enum RecordType {
+public enum MessageRecordType {
 	/**
 	 * Debug information from DPURecord.
 	 */
@@ -37,18 +37,18 @@ public enum RecordType {
 	/**
 	 * Convert message.Type to RecordType.
 	 */
-	public static RecordType fromMessageType(MessageType type) {
+	public static MessageRecordType fromMessageType(MessageType type) {
 		switch(type) {
 		case DEBUG:
-			return RecordType.DPU_DEBUG;
+			return MessageRecordType.DPU_DEBUG;
 		case INFO:
-			return RecordType.DPU_INFO;
+			return MessageRecordType.DPU_INFO;
 		case WARNING:
-			return RecordType.DPU_WARNING;
+			return MessageRecordType.DPU_WARNING;
 		case ERROR:
-			return RecordType.DPU_ERROR;
+			return MessageRecordType.DPU_ERROR;
 		default:
-			return RecordType.DPU_INFO;
+			return MessageRecordType.DPU_INFO;
 		}		
 	}
 }

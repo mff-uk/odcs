@@ -9,7 +9,8 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
+
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 
 /**
  * Shows detail of selected event record.
@@ -30,7 +31,7 @@ public class RecordDetail extends Window {
 	 *
 	 * @param record Record which detail should be showed.
 	 */
-	public RecordDetail(Record record) {
+	public RecordDetail(MessageRecord record) {
 		this.setCaption("Record detail");
 		GridLayout mainLayout = new GridLayout(2, 7);
 		mainLayout.setImmediate(true);
@@ -103,7 +104,7 @@ public class RecordDetail extends Window {
 	 *
 	 * @param record Record to load.
 	 */
-	void loadMessage(Record record) {
+	void loadMessage(MessageRecord record) {
 		pipelineExecutionContent.setValue(String.format("%d", record.getExecution().getId()));
 		timeContent.setValue(formattedDate);
 		instanceContent.setValue(record.getType().toString());

@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationListener;
 
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineEvent;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 
 /**
  * Store all DPURecord and Pipeline related events into database.
@@ -29,7 +29,7 @@ public class EventListenerDatabase implements ApplicationListener {
 	 * @param event
 	 */
 	private void onDPUEvent(DPUEvent event) {
-		Record record = event.getRecord();
+		MessageRecord record = event.getRecord();
 		// store in database
 		database.getDpu().save(record);
 	}
@@ -39,7 +39,7 @@ public class EventListenerDatabase implements ApplicationListener {
 	 * @param event
 	 */	
 	private void onPipelineEvent(PipelineEvent event) {
-		Record record = event.getRecord();
+		MessageRecord record = event.getRecord();
 		// store in database
 		database.getDpu().save(record);		
 	}

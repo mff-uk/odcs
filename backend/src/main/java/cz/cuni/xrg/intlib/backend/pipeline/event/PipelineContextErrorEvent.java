@@ -6,8 +6,8 @@ import java.io.Writer;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 public class PipelineContextErrorEvent extends PipelineEvent {
@@ -20,13 +20,13 @@ public class PipelineContextErrorEvent extends PipelineEvent {
     }
 
     @Override
-	public Record getRecord() {
+	public MessageRecord getRecord() {
     	
 	    final Writer result = new StringWriter();
 	    final PrintWriter printWriter = new PrintWriter(result);
 	    exception.printStackTrace(printWriter);
 	
-    	return new Record(time, RecordType.PIPELINE_ERROR, dpuInstance, execution, 
+    	return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR, dpuInstance, execution, 
     			"Pipeline execution failed.", 
     			"Failed to prepare Context for DPURecord because of exception: " + result.toString() );
 	}

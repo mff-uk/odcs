@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 import java.util.Collections;
@@ -178,12 +178,12 @@ public class DPUFacade {
 	 *
 	 * @return Record list
 	 */
-	public List<Record> getAllDPURecords() {
+	public List<MessageRecord> getAllDPURecords() {
 
 		@SuppressWarnings("unchecked")
-		List<Record> resultList = Collections.checkedList(
+		List<MessageRecord> resultList = Collections.checkedList(
 			em.createQuery("SELECT e FROM Record e").getResultList(),
-			Record.class
+			MessageRecord.class
 		);
 
 		return resultList;
@@ -195,14 +195,14 @@ public class DPUFacade {
 	 * @param dpuInstance
 	 * @return
 	 */
-	public List<Record> getAllDPURecords(DPUInstanceRecord dpuInstance) {
+	public List<MessageRecord> getAllDPURecords(DPUInstanceRecord dpuInstance) {
 
 		@SuppressWarnings("unchecked")
-		List<Record> resultList = Collections.checkedList(
+		List<MessageRecord> resultList = Collections.checkedList(
 			em.createQuery("SELECT r FROM Record r WHERE r.dpuInstance = :ins")
 				.setParameter("ins", dpuInstance)
 				.getResultList(),
-			Record.class
+			MessageRecord.class
 		);
 
 		return resultList;
@@ -214,14 +214,14 @@ public class DPUFacade {
 	 * @param pipelineExec
 	 * @return
 	 */
-	public List<Record> getAllDPURecords(PipelineExecution pipelineExec) {
+	public List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec) {
 
 		@SuppressWarnings("unchecked")
-		List<Record> resultList = Collections.checkedList(
+		List<MessageRecord> resultList = Collections.checkedList(
 			em.createQuery("SELECT r FROM Record r WHERE r.execution = :ins")
 				.setParameter("ins", pipelineExec)
 				.getResultList(),
-			Record.class
+			MessageRecord.class
 		);
 
 		return resultList;
@@ -233,8 +233,8 @@ public class DPUFacade {
 	 * @param id
 	 * @return
 	 */
-	public Record getDPURecord(long id) {
-		return em.find(Record.class, id);
+	public MessageRecord getDPURecord(long id) {
+		return em.find(MessageRecord.class, id);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class DPUFacade {
 	 * @param record
 	 */
 	@Transactional
-	public void save(Record record) {
+	public void save(MessageRecord record) {
 		if (record.getId() == null) {
 			em.persist(record);
 		} else {
@@ -257,7 +257,7 @@ public class DPUFacade {
 	 * @param record
 	 */
 	@Transactional
-	public void delete(Record record) {
+	public void delete(MessageRecord record) {
 		em.remove(record);
 	}
 

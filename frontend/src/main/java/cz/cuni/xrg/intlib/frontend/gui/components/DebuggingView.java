@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -153,7 +153,7 @@ public class DebuggingView extends CustomComponent {
         
         boolean loadSuccessful = loadExecutionContextReader();
 
-        List<Record> records = App.getDPUs().getAllDPURecords(pipelineExec);
+        List<MessageRecord> records = App.getDPUs().getAllDPURecords(pipelineExec);
         executionRecordsTable.setDataSource(records);
 
         boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);

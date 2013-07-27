@@ -4,8 +4,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
@@ -34,8 +34,8 @@ public class PipelineFailedEvent extends PipelineEvent {
     }    
     
     @Override
-	public Record getRecord() {
-    	return new Record(time, RecordType.PIPELINE_ERROR, dpuInstance, execution, 
+	public MessageRecord getRecord() {
+    	return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR, dpuInstance, execution, 
     			"Pipeline execution failed.", "Pipeline execution terminated because of: " + longMessage);
 	}
 	

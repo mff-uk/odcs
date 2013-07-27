@@ -11,10 +11,10 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
 
-import static cz.cuni.xrg.intlib.commons.app.execution.RecordType.*;
-import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import static cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType.*;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
@@ -47,7 +47,7 @@ public class RecordsTable extends CustomComponent {
 					BeanItem beanItem = (BeanItem) event.getItem();
 					long recordId = (long) beanItem.getItemProperty("id")
 							.getValue();
-					Record record = App.getDPUs().getDPURecord(recordId);
+					MessageRecord record = App.getDPUs().getDPURecord(recordId);
 					showRecordDetail(record);
 				}
 			}
@@ -62,18 +62,18 @@ public class RecordsTable extends CustomComponent {
 	/**
 	 * Sets data source.
 	 *
-	 * @param data List of {@link Record}s to show in table.
+	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
-	public void setDataSource(List<Record> data) {
+	public void setDataSource(List<MessageRecord> data) {
 		loadMessageTable(data);
 	}
 
 	/**
 	 * Loads data to the table.
 	 *
-	 * @param data List of {@link Record}s to show in table.
+	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
-	private void loadMessageTable(List<Record> data) {
+	private void loadMessageTable(List<MessageRecord> data) {
 		Container container = ContainerFactory.CreateExecutionMessages(data);
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
@@ -82,7 +82,7 @@ public class RecordsTable extends CustomComponent {
 				public Object generateCell(CustomTable source, Object itemId,
 						Object columnId) {
 					
-					RecordType type = (RecordType) source.getItem(itemId).getItemProperty(columnId).getValue();
+					MessageRecordType type = (MessageRecordType) source.getItem(itemId).getItemProperty(columnId).getValue();
 					ThemeResource img = null;
 					switch (type) {
 						case DPU_INFO:
@@ -123,9 +123,9 @@ public class RecordsTable extends CustomComponent {
 	/**
 	 * Shows dialog with detail of selected record.
 	 *
-	 * @param record {@link Record} which detail to show.
+	 * @param record {@link MessageRecord} which detail to show.
 	 */
-	private void showRecordDetail(Record record) {
+	private void showRecordDetail(MessageRecord record) {
 		if (detail == null) {
 			final RecordDetail detailWindow = new RecordDetail(record);
 			detailWindow.setHeight(600, Unit.PIXELS);
@@ -158,7 +158,7 @@ public class RecordsTable extends CustomComponent {
 		public Resource getEnumFilterIcon(Object propertyId, Object value) {
 			//if (propertyId.equals("type")) {
 			ThemeResource img = null;
-			RecordType type = (RecordType) value;
+			MessageRecordType type = (MessageRecordType) value;
 			switch (type) {
 				case DPU_INFO:
 					img = new ThemeResource("icons/ok.png");

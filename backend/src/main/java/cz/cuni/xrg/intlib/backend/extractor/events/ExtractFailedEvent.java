@@ -1,8 +1,8 @@
 package cz.cuni.xrg.intlib.backend.extractor.events;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 
@@ -22,8 +22,8 @@ public class ExtractFailedEvent extends ExtractEvent {
     }
 
 	@Override
-	public Record getRecord() {		
-		return new Record(time, RecordType.DPU_ERROR, dpuInstance, execution, "Extract failed.", "Exception: " + exception.getMessage());
+	public MessageRecord getRecord() {		
+		return new MessageRecord(time, MessageRecordType.DPU_ERROR, dpuInstance, execution, "Extract failed.", "Exception: " + exception.getMessage());
 	}
 	
 }

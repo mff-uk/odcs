@@ -5,7 +5,7 @@ import java.util.Date;
 import org.springframework.context.ApplicationEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
@@ -41,6 +41,6 @@ public abstract class PipelineEvent extends ApplicationEvent {
      * Record that describe event.
      * @return record
      */
-    public abstract Record getRecord();
+    public abstract MessageRecord getRecord();
 
 }

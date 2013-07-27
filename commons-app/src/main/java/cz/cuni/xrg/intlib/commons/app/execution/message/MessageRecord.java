@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.execution;
+package cz.cuni.xrg.intlib.commons.app.execution.message;
 
 import java.util.Date;
 
@@ -19,7 +19,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "exec_record")
-public class Record implements Serializable {
+public class MessageRecord implements Serializable {
 
 	/**
 	 * Unique id.
@@ -40,7 +40,7 @@ public class Record implements Serializable {
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "r_type")
-	private RecordType type;
+	private MessageRecordType type;
 
 	/**
 	 * DPURecord which emitted the message.
@@ -71,7 +71,7 @@ public class Record implements Serializable {
 	/**
 	 * No-arg constructor for JPA. Do not use!
 	 */
-	public Record() {
+	public MessageRecord() {
 	}
 
 	/**
@@ -83,8 +83,8 @@ public class Record implements Serializable {
 	 * @param shortMessage
 	 * @param fullMessage
 	 */
-	public Record(Date time,
-			RecordType type,
+	public MessageRecord(Date time,
+			MessageRecordType type,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution execution,
 			String shortMessage,
@@ -105,7 +105,7 @@ public class Record implements Serializable {
 		return time;
 	}
 
-	public RecordType getType() {
+	public MessageRecordType getType() {
 		return type;
 	}
 

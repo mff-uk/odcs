@@ -4,8 +4,8 @@ import java.util.Date;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
-import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
@@ -30,7 +30,7 @@ public class DPUMessage extends DPUEvent {
 	/**
 	 * Type of message.
 	 */
-	private RecordType type;
+	private MessageRecordType type;
 	
 	/**
 	 * Related pipeline execution.
@@ -41,13 +41,13 @@ public class DPUMessage extends DPUEvent {
 		super(source, context.getDPUInstance(), context.getPipelineExecution(), new Date());
 		this.shortMessage = shortMessage;
 		this.fullMessage = fullMessage;
-		this.type = RecordType.fromMessageType(type);
+		this.type = MessageRecordType.fromMessageType(type);
 		this.execution = context.getPipelineExecution();
 	}
 
 	@Override
-	public Record getRecord() {
-		return new Record(time, type, dpuInstance, execution, shortMessage, fullMessage);		
+	public MessageRecord getRecord() {
+		return new MessageRecord(time, type, dpuInstance, execution, shortMessage, fullMessage);		
 	}
 	
 	public Date getTime() {
@@ -62,7 +62,7 @@ public class DPUMessage extends DPUEvent {
 		return fullMessage;
 	}
 
-	public RecordType getType() {
+	public MessageRecordType getType() {
 		return type;
 	}
 

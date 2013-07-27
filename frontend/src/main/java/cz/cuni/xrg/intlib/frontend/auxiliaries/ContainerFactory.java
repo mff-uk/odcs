@@ -6,8 +6,8 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 import java.sql.Timestamp;
@@ -59,8 +59,8 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static Container CreateExecutionMessages(List<Record> data) {
-		BeanContainer<Long, Record> container = new BeanContainer<>( Record.class);
+	public static Container CreateExecutionMessages(List<MessageRecord> data) {
+		BeanContainer<Long, MessageRecord> container = new BeanContainer<>( MessageRecord.class);
 		container.setBeanIdProperty("id");
 		container.addNestedContainerProperty("timestamp");
 		container.addAll(data);
