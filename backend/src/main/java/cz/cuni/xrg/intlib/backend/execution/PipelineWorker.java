@@ -15,6 +15,7 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -37,7 +38,6 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.context.impl.ContextFactory;
-import cz.cuni.xrg.intlib.backend.context.impl.DataUnitMerger;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractStartEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -174,13 +174,14 @@ class PipelineWorker implements Runnable {
 		if (execution.isDebugging()) {
 			// do not delete anything
 		} else {
-			// try to delete the working directory
+			// try to delete whole directory
 			try {
-				FileUtils.deleteDirectory( contextInfo.getWorkingDirectory() );
+				FileUtils.deleteDirectory( 
+						new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
+								contextInfo.getRootPath()));
 			} catch (IOException e) {
 				LOG.error("Can't delete directory after execution: " + execution.getId(), e);
 			}
-			// TODO Petyr: delete also directory with stored data units ?
 		}			
 	}
 	
@@ -352,10 +353,9 @@ class PipelineWorker implements Runnable {
 	private ExtendedExtractContext getContextForNodeExtractor(Node node, 
 			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
-		String contextId = contextInfo.generateDPUId(execution.getId(), dpuInstance.getId());
 		// ...
 		ExtendedExtractContext extractContext;
-		extractContext = ContextFactory.create(contextId, execution, dpuInstance, 
+		extractContext = ContextFactory.create(execution, dpuInstance, 
 				eventPublisher, contextInfo, ExtendedExtractContext.class, appConfig); 
 		// store context
 		contexts.put(node, extractContext);
@@ -376,10 +376,9 @@ class PipelineWorker implements Runnable {
 	private ExtendedTransformContext getContextForNodeTransform(Node node,
 			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
-		String contextId = contextInfo.generateDPUId(execution.getId(), dpuInstance.getId());
 		// ...
 		ExtendedTransformContext transformContext;
-		transformContext = ContextFactory.create(contextId, execution, dpuInstance, 
+		transformContext = ContextFactory.create(execution, dpuInstance, 
 				eventPublisher, contextInfo, ExtendedTransformContext.class, appConfig);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
@@ -416,10 +415,9 @@ class PipelineWorker implements Runnable {
 	private ExtendedLoadContext getContextForNodeLoader(Node node, 
 			Set<Node> ancestors) throws ContextException, StructureException, IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
-		String contextId = contextInfo.generateDPUId(execution.getId(), dpuInstance.getId());
 		// ...
 		ExtendedLoadContext loadContext;
-		loadContext = ContextFactory.create(contextId, execution, dpuInstance, 
+		loadContext = ContextFactory.create(execution, dpuInstance, 
 				eventPublisher, contextInfo, ExtendedLoadContext.class, appConfig);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error

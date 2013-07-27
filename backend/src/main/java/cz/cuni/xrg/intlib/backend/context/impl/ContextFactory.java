@@ -29,7 +29,6 @@ public class ContextFactory {
 	
 	/**
 	 * Create new Context for given DPU type.
-	 * @param id Context's id.
 	 * @param execution Related execution.
 	 * @param dpuInstance Respective DPU.
 	 * @param eventPublisher Application event publisher.
@@ -42,7 +41,7 @@ public class ContextFactory {
 	 * @throws ContextException For unknown context type.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T create(String id, PipelineExecution execution, 
+	public static <T> T create(PipelineExecution execution, 
 			DPUInstanceRecord dpuInstance, 	ApplicationEventPublisher eventPublisher, 
 			ExecutionContextInfo context, Class<T> type, AppConfig appConfig) throws IOException, ContextException {
 		// ...
