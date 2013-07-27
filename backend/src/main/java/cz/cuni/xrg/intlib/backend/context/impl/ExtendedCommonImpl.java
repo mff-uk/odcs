@@ -20,7 +20,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
  * {@link ExtendedExtractContextImpl}, {@link ExtendedLoadContextImpl} 
  * and {@link ExtendedTransformContextImpl}
  * 
- * For details about methods see {@link cz.cuni.xrg.intlib.commons.ProcessingContext} 
+ * For details about methods see {@link cz.cuni.xrg.intlib.commons.context.ProcessingContext} 
  * 
  * @author Petyr
  *

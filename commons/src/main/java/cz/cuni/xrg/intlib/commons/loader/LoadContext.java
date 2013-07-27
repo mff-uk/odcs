@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.loader;
 
-import cz.cuni.xrg.intlib.commons.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons;
+package cz.cuni.xrg.intlib.commons.context;
 
 import java.io.File;
 import java.util.Map;

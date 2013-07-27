@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend.context;
 
-import cz.cuni.xrg.intlib.commons.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
 
 /**
  * Represent context, that be be merged with other context.
