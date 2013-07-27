@@ -10,8 +10,8 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -72,7 +72,7 @@ public class DebuggingView extends CustomComponent {
         this.isFromCanvas = isFromCanvas;
         buildMainLayout();
 
-        boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
+        boolean isRunFinished = !(pipelineExec.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
         if (!isRunFinished) {
             new RefreshThread(1000, this.pipelineExec, this).start();
         }
@@ -156,7 +156,7 @@ public class DebuggingView extends CustomComponent {
         List<MessageRecord> records = App.getDPUs().getAllDPURecords(pipelineExec);
         executionRecordsTable.setDataSource(records);
 
-        boolean isRunFinished = !(pipelineExec.getExecutionStatus() == ExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == ExecutionStatus.RUNNING);
+        boolean isRunFinished = !(pipelineExec.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
 
         if (loadSuccessful && isInDebugMode) {
             refreshDpuSelector();

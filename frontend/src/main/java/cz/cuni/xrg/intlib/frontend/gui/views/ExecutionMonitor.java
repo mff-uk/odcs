@@ -14,14 +14,14 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.CANCELLED;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FAILED;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FINISHED_SUCCESS;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.FINISHED_WARNING;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.RUNNING;
-import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.SCHEDULED;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.CANCELLED;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.FAILED;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.FINISHED_SUCCESS;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.FINISHED_WARNING;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.SCHEDULED;
 
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -152,7 +152,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
             @Override
             public Object generateCell(CustomTable source, Object itemId,
                     Object columnId) {
-                ExecutionStatus type = (ExecutionStatus) source.getItem(itemId)
+                PipelineExecutionStatus type = (PipelineExecutionStatus) source.getItem(itemId)
                         .getItemProperty(columnId).getValue();
                 ThemeResource img = IntlibHelper.getIconForExecutionStatus(type);
                 Embedded emb = new Embedded(type.name(), img);
@@ -316,7 +316,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
             // setting type of columns
             switch (p) {
                 case "status":
-                    result.addContainerProperty(p, ExecutionStatus.class, null);
+                    result.addContainerProperty(p, PipelineExecutionStatus.class, null);
                     break;
                 case "debug":
                     result.addContainerProperty(p, Boolean.class, false);
@@ -414,7 +414,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
         @Override
         public String getEnumFilterDisplayName(Object propertyId, Object value) {
             if (propertyId == "status") {
-                return ((ExecutionStatus) value).name();
+                return ((PipelineExecutionStatus) value).name();
             }
             return super.getEnumFilterDisplayName(propertyId, value);
         }
@@ -422,7 +422,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
         @Override
         public Resource getEnumFilterIcon(Object propertyId, Object value) {
             if (propertyId == "status") {
-                ExecutionStatus type = (ExecutionStatus) value;
+                PipelineExecutionStatus type = (PipelineExecutionStatus) value;
                 ThemeResource img = null;
                 switch (type) {
                     case FINISHED_SUCCESS:

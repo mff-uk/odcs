@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 
@@ -36,7 +36,7 @@ public class RefreshThread extends Thread {
         while (!isRunFinished) {
 
             execution = App.getPipelines().getExecution(execution.getId());
-            isRunFinished = !(execution.getExecutionStatus() == ExecutionStatus.SCHEDULED || execution.getExecutionStatus() == ExecutionStatus.RUNNING);
+            isRunFinished = !(execution.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || execution.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
 
             debug.getUI().access(new Runnable() {
                 @Override

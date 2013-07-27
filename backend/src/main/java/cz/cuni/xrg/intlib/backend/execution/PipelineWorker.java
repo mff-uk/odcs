@@ -17,9 +17,9 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
@@ -144,7 +144,7 @@ class PipelineWorker implements Runnable {
 	private void executionFailed() {
 		execution.setEnd(new Date());
 		// set new state
-		execution.setExecutionStatus(ExecutionStatus.FAILED);
+		execution.setExecutionStatus(PipelineExecutionStatus.FAILED);
 		// save	into database
 		database.getPipeline().save(execution);
 		// 
@@ -157,7 +157,7 @@ class PipelineWorker implements Runnable {
 	private void executionSuccessful() {
 		execution.setEnd(new Date());
 		// update state
-		execution.setExecutionStatus(ExecutionStatus.FINISHED_SUCCESS);
+		execution.setExecutionStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
 		// save into database
 		database.getPipeline().save(execution);
 	}

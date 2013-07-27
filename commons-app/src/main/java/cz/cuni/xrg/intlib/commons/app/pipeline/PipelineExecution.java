@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import java.io.Serializable;
@@ -33,7 +32,7 @@ public class PipelineExecution implements Serializable {
 	 * Actual status for executed pipeline.
 	 */
 	@Enumerated(EnumType.ORDINAL)
-	private ExecutionStatus status;
+	private PipelineExecutionStatus status;
 
 	/**
 	 * Pipeline being executed.
@@ -104,7 +103,7 @@ public class PipelineExecution implements Serializable {
 	 * @param pipeline
 	 */
 	public PipelineExecution(Pipeline pipeline) {
-		this.status = ExecutionStatus.SCHEDULED;
+		this.status = PipelineExecutionStatus.SCHEDULED;
 		this.pipeline = pipeline;
 		this.isDebugging = false;
 		this.schedule = null;
@@ -130,11 +129,11 @@ public class PipelineExecution implements Serializable {
 		return id;
 	}
 
-	public ExecutionStatus getExecutionStatus() {
+	public PipelineExecutionStatus getExecutionStatus() {
 		return status;
 	}
 
-	public void setExecutionStatus(ExecutionStatus newStatus) {
+	public void setExecutionStatus(PipelineExecutionStatus newStatus) {
 		status = newStatus;
 	}
 

@@ -5,7 +5,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
+
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 
 /**
@@ -38,20 +39,20 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 	public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 		Property propStatus = source.getItem(itemId).getItemProperty("status");
 		Property prop2 = source.getItem(itemId).getItemProperty("debug");
-		ExecutionStatus testStatus = null;
+		PipelineExecutionStatus testStatus = null;
 		boolean testDebug = false;
 		execID = itemId;
 
 		HorizontalLayout box = new HorizontalLayout();
 		box.setSpacing(true);
 
-		if ((propStatus.getType().equals(ExecutionStatus.class))
+		if ((propStatus.getType().equals(PipelineExecutionStatus.class))
 				|| (prop2.getType().equals(Boolean.class))) {
-			testStatus = (ExecutionStatus) propStatus.getValue();
+			testStatus = (PipelineExecutionStatus) propStatus.getValue();
 			testDebug = (boolean) prop2.getValue();
 			
 			//If item execution status is SCHEDULED then for that item will be shown Stop button
-			if ((testStatus== ExecutionStatus.SCHEDULED)
+			if ((testStatus== PipelineExecutionStatus.SCHEDULED)
 					&& !testDebug) {
 				Button stopButton = new Button("Stop");
 				stopButton.setData(new ActionButtonData("stop", itemId));
@@ -62,7 +63,7 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 
 			}
 			//If item execution status is FAILED or FINISHED_SUCCESS then for that item will be shown Show log button
-			if (((testStatus == ExecutionStatus.FAILED) || (testStatus == ExecutionStatus.FINISHED_SUCCESS) || (testStatus == ExecutionStatus.RUNNING))
+			if (((testStatus == PipelineExecutionStatus.FAILED) || (testStatus == PipelineExecutionStatus.FINISHED_SUCCESS) || (testStatus == PipelineExecutionStatus.RUNNING))
 					&& !testDebug) {
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog", itemId));

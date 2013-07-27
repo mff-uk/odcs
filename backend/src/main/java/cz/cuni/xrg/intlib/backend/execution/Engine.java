@@ -3,10 +3,10 @@ package cz.cuni.xrg.intlib.backend.execution;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
@@ -104,7 +104,7 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
      */
 	protected void run(PipelineExecution pipelineExecution) {
     	// mark pipeline execution as Started ..
-    	pipelineExecution.setExecutionStatus(ExecutionStatus.RUNNING);
+    	pipelineExecution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
     	pipelineExecution.setStart(new Date());
     	// prepare working directory for execution
     	File directory = new File(workingDirectory, "execution-" + pipelineExecution.getId() );    	
@@ -124,7 +124,7 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
     	List<PipelineExecution> toExecute = database.getPipeline().getAllExecutions();
     	// run pipeline executions ..   
     	for (PipelineExecution item : toExecute) {
-    		if (item.getExecutionStatus() == ExecutionStatus.SCHEDULED) {
+    		if (item.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
     			// run scheduled pipeline
     			run(item);
     		}
@@ -140,11 +140,11 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 		// list executions
 		List<PipelineExecution> toExecute = database.getPipeline().getAllExecutions();
 		for (PipelineExecution execution : toExecute) {
-			if (execution.getExecutionStatus() == ExecutionStatus.RUNNING) {
+			if (execution.getExecutionStatus() == PipelineExecutionStatus.RUNNING) {
 				// hanging pipeline .. 
 				
 				// schedule new pipeline start
-				execution.setExecutionStatus(ExecutionStatus.SCHEDULED);
+				execution.setExecutionStatus(PipelineExecutionStatus.SCHEDULED);
 				
 				
 				// TODO Petyr: Run from last position
@@ -173,7 +173,7 @@ public class Engine implements ApplicationListener<EngineEvent>, ApplicationEven
 											node.getDpuInstance(), execution, this));
 						}
 						// set pipeline execution to failed
-						execution.setExecutionStatus(ExecutionStatus.FAILED);
+						execution.setExecutionStatus(PipelineExecutionStatus.FAILED);
 						execution.setEnd(new Date());
 					}
 					// reset context
