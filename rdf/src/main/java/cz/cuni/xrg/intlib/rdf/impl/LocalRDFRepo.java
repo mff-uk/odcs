@@ -1258,7 +1258,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				} else {
 					message.append(
-							"You probably dont have enought permission for this action.");
+							". You probably dont have enought PERMISSION for this action.");
 				}
 
 				throw new RDFException(message.toString());
