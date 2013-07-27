@@ -8,7 +8,7 @@ import com.vaadin.ui.Panel;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
-import cz.cuni.xrg.intlib.commons.app.execution.LogFacade;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;

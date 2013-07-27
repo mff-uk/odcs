@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.execution;
+package cz.cuni.xrg.intlib.commons.app.execution.log;
 
 import java.io.Serializable;
 import java.util.Date;

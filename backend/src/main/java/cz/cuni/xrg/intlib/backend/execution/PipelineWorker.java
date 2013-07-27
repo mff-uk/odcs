@@ -54,7 +54,7 @@ import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformStartEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
-import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;

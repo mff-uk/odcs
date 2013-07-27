@@ -12,7 +12,8 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
-import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
+
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 
 /**
  * Shows detail of selected log message.

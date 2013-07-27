@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.execution;
+package cz.cuni.xrg.intlib.commons.app.execution.log;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
