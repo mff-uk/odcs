@@ -24,6 +24,7 @@ import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.SCHEDULED
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.*;
 
@@ -153,30 +154,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
                     Object columnId) {
                 ExecutionStatus type = (ExecutionStatus) source.getItem(itemId)
                         .getItemProperty(columnId).getValue();
-                ThemeResource img = null;
-                switch (type) {
-                    case FINISHED_SUCCESS:
-                        img = new ThemeResource("icons/ok.png");
-                        break;
-                    case FINISHED_WARNING:
-                        img = new ThemeResource("icons/warning.png");
-                        break;
-                    case FAILED:
-                        img = new ThemeResource("icons/error.png");
-                        break;
-                    case RUNNING:
-                        img = new ThemeResource("icons/running.png");
-                        break;
-                    case SCHEDULED:
-                        img = new ThemeResource("icons/scheduled.png");
-                        break;
-                    case CANCELLED:
-                        img = new ThemeResource("icons/cancelled.png");
-                        break;
-                    default:
-                        //no icon
-                        break;
-                }
+                ThemeResource img = IntlibHelper.getIconForExecutionStatus(type);
                 Embedded emb = new Embedded(type.name(), img);
                 emb.setDescription(type.name());
                 return emb;
@@ -271,7 +249,7 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
         PipelineExecution pipelineExec = App.getApp().getPipelines()
                 .getExecution(exeId);
         DebuggingView debugView = new DebuggingView(pipelineExec, null,
-                pipelineExec.isDebugging());
+                pipelineExec.isDebugging(), false);
         debugView.addListener(new Listener() {
             @Override
             public void componentEvent(Event event) {
