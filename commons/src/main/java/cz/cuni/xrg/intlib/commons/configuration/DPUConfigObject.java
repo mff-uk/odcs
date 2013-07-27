@@ -7,5 +7,5 @@ import java.io.Serializable;
  *
  * @author Petyr
  */
-public interface Config extends Serializable {
+public interface DPUConfigObject extends Serializable {
 }

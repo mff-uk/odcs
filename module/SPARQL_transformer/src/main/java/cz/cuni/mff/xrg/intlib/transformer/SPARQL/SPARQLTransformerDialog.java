@@ -4,7 +4,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.rdf.exceptions.SPARQLValidationException;
@@ -120,7 +120,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 	}
 
 	/**
-	 * Load values from configuration object implementing {@link Config}
+	 * Load values from configuration object implementing {@link DPUConfigObject}
 	 * interface and configuring DPU into the dialog where the configuration
 	 * object may be edited.
 	 *
@@ -136,7 +136,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link Config} interface and
+	 * to configuration object implementing {@link DPUConfigObject} interface and
 	 * configuring DPU
 	 *
 	 * @throws ConfigException Exception which might be thrown when

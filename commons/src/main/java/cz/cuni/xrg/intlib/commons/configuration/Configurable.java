@@ -7,7 +7,7 @@ package cz.cuni.xrg.intlib.commons.configuration;
  * @author Petyr
  *
  */
-public interface Configurable <C extends Config> {
+public interface Configurable <C extends DPUConfigObject> {
 
 	/**
 	 * Configure object based on passed object. If the object does not

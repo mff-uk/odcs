@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import java.io.FileNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class DPUInstanceRecordTest {
 	@Test
 	public void testCopy() throws ModuleException {
 		// initialize contained objects
-		Config config = mock(Config.class, withSettings().serializable());
+		DPUConfigObject config = mock(DPUConfigObject.class, withSettings().serializable());
 		DPUTemplateRecord dpu = new DPUTemplateRecord();
 		
 		instance.setName("testname");

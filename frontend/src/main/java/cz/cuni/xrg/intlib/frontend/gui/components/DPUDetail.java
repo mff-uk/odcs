@@ -16,7 +16,7 @@ import com.vaadin.ui.Notification.Type;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -45,7 +45,7 @@ public class DPUDetail extends Window {
 	/**
 	 * DPU's configuration dialog.
 	 */
-	private AbstractConfigDialog<Config> confDialog;
+	private AbstractConfigDialog<DPUConfigObject> confDialog;
 
 	/**
 	 * Basic constructor, takes DPUInstance which detail should be showed.

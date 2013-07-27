@@ -14,7 +14,7 @@ import com.thoughtworks.xstream.XStream;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class DPURecord {
 	private byte[] serializedConfiguration;
 	
 	@Transient
-	private Config configuration;
+	private DPUConfigObject configuration;
 	
 	/**
 	 * ModuleFacade. Set in {{@link #loadInstance(ModuleFacade)}.
@@ -173,7 +173,7 @@ public class DPURecord {
 	/**
 	 * @param configuration 
 	 */
-	public void setConfiguration(Config configuration) {
+	public void setConfiguration(DPUConfigObject configuration) {
 		if (this.configuration == null || this.configuration != configuration) {
 			setConf(configuration);
 			this.configuration = configuration;
@@ -185,7 +185,7 @@ public class DPURecord {
 	 * 
 	 * @return DPU configuration
 	 */
-	public Config getConfiguration() {
+	public DPUConfigObject getConfiguration() {
 		if (configuration == null) {
 			configuration = getConf();
 		}
@@ -198,14 +198,14 @@ public class DPURecord {
 	 * @return DPU configuration
 	 * @throws ConfigException 
 	 */
-	private Config getConf() throws ConfigException {
+	private DPUConfigObject getConf() throws ConfigException {
 		if (serializedConfiguration == null) {
 			return null;
 		}
 		if (serializedConfiguration.length == 0) {
 			return null;
 		}		
-		Config config  = null;
+		DPUConfigObject config  = null;
 		// reconstruct object form byte[]
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(serializedConfiguration)) {
 			// use XStream for serialisation
@@ -220,7 +220,7 @@ public class DPURecord {
 			}
 			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);
 				Object obj = objIn.readObject();
-				config = (Config)obj;
+				config = (DPUConfigObject)obj;
 			objIn.close();
 		} catch (IOException e) {
 			throw new ConfigException("Can't deserialize configuration.", e);
@@ -230,7 +230,7 @@ public class DPURecord {
 		return config;
 	}
 
-	private void setConf(Config config) throws ConfigException {		
+	private void setConf(DPUConfigObject config) throws ConfigException {		
 		// serialize object into byte[]
 		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {	
 			// use XStream for serialisation

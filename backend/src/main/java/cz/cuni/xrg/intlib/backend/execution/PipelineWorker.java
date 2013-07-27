@@ -25,7 +25,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
@@ -476,10 +476,10 @@ class PipelineWorker implements Runnable {
 		
 		// get instance
 		Object dpuInstance = dpuInstanceRecord.getInstance();		
-		Config configuration = dpuInstanceRecord.getConfiguration();
+		DPUConfigObject configuration = dpuInstanceRecord.getConfiguration();
 		// set configuration
 		if (dpuInstance instanceof Configurable<?>) {
-			Configurable<Config> configurable = (Configurable<Config>)dpuInstance;			
+			Configurable<DPUConfigObject> configurable = (Configurable<DPUConfigObject>)dpuInstance;			
 			try {
 				configurable.configure(configuration);
 			} catch (ConfigException e) {

@@ -140,7 +140,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link Config} interface and 
+	 * to configuration object implementing {@link DPUConfigObject} interface and 
 	 * configuring DPU
 	 * 
 	 * @throws ConfigException Exception which might be thrown when field {@link #textFieldPath}
@@ -188,7 +188,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	}
 
     /**
-    * Load values from configuration object implementing {@link Config} interface 
+    * Load values from configuration object implementing {@link DPUConfigObject} interface 
     * and configuring DPU into the dialog where the configuration object may be edited.
     *
     * @throws ConfigException Exception not used in current implementation of this method.

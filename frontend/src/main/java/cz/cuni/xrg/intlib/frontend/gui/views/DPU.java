@@ -33,7 +33,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -79,7 +79,7 @@ class DPU extends ViewComponent {
 	private OptionGroup groupVisibility;
 	private GridLayout dpuLayout;
 	private HorizontalLayout buttonDpuBar;
-	private Config conf;
+	private DPUConfigObject conf;
 	private HorizontalLayout layoutInfo;
 	
 	/**
@@ -314,7 +314,7 @@ class DPU extends ViewComponent {
 		tabSheet.setSelectedTab(dataTab);
 
 		if (selectedDpuWrap != null) {
-			AbstractConfigDialog<Config> configDialog = null;
+			AbstractConfigDialog<DPUConfigObject> configDialog = null;
 			//getting configuration dialog of selected DPU Template
 			try {
 				configDialog = selectedDpuWrap.getDialog();

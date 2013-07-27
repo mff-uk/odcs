@@ -564,7 +564,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link Config} interface and
+	 * to configuration object implementing {@link DPUConfigObject} interface and
 	 * configuring DPU
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
@@ -595,7 +595,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	}
 
 	/**
-	 * Load values from configuration object implementing {@link Config}
+	 * Load values from configuration object implementing {@link DPUConfigObject}
 	 * interface and configuring DPU into the dialog where the configuration
 	 * object may be edited.
 	 *

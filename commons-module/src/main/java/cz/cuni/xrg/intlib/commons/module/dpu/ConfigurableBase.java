@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.module.dpu;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 
@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
  * @author tomasknap
  * @author Petyr
  */
-public abstract class ConfigurableBase<T extends Config> implements Configurable<T>{
+public abstract class ConfigurableBase<T extends DPUConfigObject> implements Configurable<T>{
 
     /**
      * To store the configuration object holding configuration for the DPU.

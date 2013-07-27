@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.commons.web;
 
 import com.vaadin.ui.CustomComponent;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 
 /**
@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
  * @author Petyr
  *
  */
-public abstract class AbstractConfigDialog <C extends Config> extends CustomComponent {
+public abstract class AbstractConfigDialog <C extends DPUConfigObject> extends CustomComponent {
 
 	/**
 	 * Set dialog interface according to passed configuration. If

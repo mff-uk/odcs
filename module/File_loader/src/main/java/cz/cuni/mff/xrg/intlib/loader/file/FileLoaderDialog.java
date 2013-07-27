@@ -226,7 +226,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link Config} interface and 
+	 * to configuration object implementing {@link DPUConfigObject} interface and 
 	 * configuring DPU
 	 * 
 	 * @throws ConfigException Exception which might be thrown when fields {@link #textFieldFileName} 
@@ -251,7 +251,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 	}
 
     /**
-    * Load values from configuration object implementing {@link Config} interface and 
+    * Load values from configuration object implementing {@link DPUConfigObject} interface and 
     * configuring DPU into the dialog where the configuration object may be edited.
     * 
     * @throws ConfigException Exception which might be thrown when components 

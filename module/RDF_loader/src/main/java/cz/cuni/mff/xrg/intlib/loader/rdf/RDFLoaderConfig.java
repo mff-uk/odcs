@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.intlib.loader.rdf;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 
@@ -13,7 +13,7 @@ import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
  * @author Jiri Tomes
  *
  */
-public class RDFLoaderConfig implements Config {
+public class RDFLoaderConfig implements DPUConfigObject {
     public String SPARQL_endpoint;
     public String Host_name;
     public String Password;

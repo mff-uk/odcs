@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 
 import  cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
@@ -28,7 +28,7 @@ class DPURecordWrap {
 	/**
 	 * DPU's configuration dialog.
 	 */
-	private AbstractConfigDialog<Config> configDialog = null;
+	private AbstractConfigDialog<DPUConfigObject> configDialog = null;
 	
 	protected DPURecordWrap(DPURecord dpuRecord) 
 	{
@@ -47,7 +47,7 @@ class DPURecordWrap {
 	 * @throws FileNotFoundException
 	 * @throws ConfigException
 	 */
-	public AbstractConfigDialog<Config> getDialog() 
+	public AbstractConfigDialog<DPUConfigObject> getDialog() 
 			throws ModuleException, FileNotFoundException, ConfigException  {
 		// load configuration dialog
 		loadConfigDialog();
@@ -76,8 +76,8 @@ class DPURecordWrap {
 		instance = dpuRecord.getInstance();
 		// now try to load the dialog
 		if (instance instanceof ConfigDialogProvider<?>) {
-			ConfigDialogProvider<Config> dialogProvider;
-			dialogProvider = (ConfigDialogProvider<Config>)instance;
+			ConfigDialogProvider<DPUConfigObject> dialogProvider;
+			dialogProvider = (ConfigDialogProvider<DPUConfigObject>)instance;
 			// get configuration dialog
 			configDialog = dialogProvider.getConfigurationDialog();					
 		} else {
@@ -99,7 +99,7 @@ class DPURecordWrap {
 			// no dialog .. nothing to do 
 			return;
 		}
-		Config conf = dpuRecord.getConfiguration();
+		DPUConfigObject conf = dpuRecord.getConfiguration();
 		if (conf == null) {
 			// use default configuration
 		} else {

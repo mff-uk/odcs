@@ -1,12 +1,12 @@
 package com.example;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 
 /**
  *
  * Put your DPU's configuration here.
  *
  */
-public class DPUTemplateConfig implements Config {
+public class DPUTemplateConfig implements DPUConfigObject {
 
 }

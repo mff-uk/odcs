@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.intlib.loader.file;
 
-import cz.cuni.xrg.intlib.commons.configuration.Config;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 /**
@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
  * @author Jiri Tomes
  *
  */
-public class FileLoaderConfig implements Config {
+public class FileLoaderConfig implements DPUConfigObject {
 
 	public String DirectoryPath;
 
