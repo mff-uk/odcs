@@ -14,7 +14,11 @@ import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 /**
- * Create new DataUnits.
+ * Create new DataUnits based on given id, name and type in given working
+ * directory. The type may a changed by application configuration.
+ * 
+ * The class is suppose to be use as spring bean and it's methods can be run
+ * concurrently.
  * 
  * @author Petyr
  * 
@@ -318,9 +322,8 @@ public class DataUnitFactory {
 
 	/**
 	 * Check required type based on application configuration and return
-	 * {@link DataUnitType} that should be created.
-	 * Can thrown {@link DataUnitCreateException} in case of unknown
-	 * {@link DataUnitType}. 
+	 * {@link DataUnitType} that should be created. Can thrown
+	 * {@link DataUnitCreateException} in case of unknown {@link DataUnitType}.
 	 * 
 	 * @param type Required type.
 	 * @return Type to create.
@@ -368,13 +371,13 @@ public class DataUnitFactory {
 	 * @throws DataUnitCreateException
 	 */
 	private DataUnit create(DataUnitType type,
-			String id, 
+			String id,
 			String name,
 			File directory,
 			boolean isInput) throws DataUnitCreateException {
 		// check type
 		type = checkType(type);
-	
+
 		switch (type) {
 		case RDF_Local:
 			// create DataUnit
@@ -430,7 +433,7 @@ public class DataUnitFactory {
 			Object configObject) throws DataUnitCreateException {
 		// check type
 		type = checkType(type);
-		// 
+		//
 		throw new DataUnitCreateException(
 				"Required DataUnit does not support configuration.");
 	}
