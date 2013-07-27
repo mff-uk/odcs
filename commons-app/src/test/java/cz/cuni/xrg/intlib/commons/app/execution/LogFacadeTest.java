@@ -9,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 

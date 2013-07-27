@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 
 /**

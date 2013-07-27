@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import java.util.List;

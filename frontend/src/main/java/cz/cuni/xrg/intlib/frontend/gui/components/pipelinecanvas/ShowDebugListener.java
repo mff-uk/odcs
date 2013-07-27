@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.ui.Component;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  * Listener for debug request on {@link PipelineCanvas}.

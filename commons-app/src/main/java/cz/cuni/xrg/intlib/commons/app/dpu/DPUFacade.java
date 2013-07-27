@@ -1,7 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;

@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  * Context factory class.

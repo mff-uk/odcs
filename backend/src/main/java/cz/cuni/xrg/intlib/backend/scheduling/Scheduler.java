@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationListener;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.backend.scheduling.event.SchedulerCheckDatabase;
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 
 /**

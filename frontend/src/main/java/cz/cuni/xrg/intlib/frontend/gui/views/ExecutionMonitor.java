@@ -22,7 +22,7 @@ import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.RUNNING;
 import static cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus.SCHEDULED;
 
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionStatus;
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;

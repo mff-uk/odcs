@@ -3,6 +3,8 @@ package cz.cuni.xrg.intlib.commons.app.execution;
 import java.util.Date;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 

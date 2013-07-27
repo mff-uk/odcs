@@ -1,10 +1,10 @@
 package cz.cuni.xrg.intlib.backend.pipeline.event;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.execution.Record;
 import cz.cuni.xrg.intlib.commons.app.execution.RecordType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 public class PipelineModuleErrorEvent extends PipelineEvent {
 

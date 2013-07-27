@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.persistence.*;
 import org.apache.log4j.Level;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+
 /**
  * Represents log message loaded from database. Shown in DebuggingView/Log tab
  * by LogMessageTable.

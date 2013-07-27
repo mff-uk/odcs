@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.backend.pipeline.event;
 
 import org.springframework.context.ApplicationEvent;
 
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  * Report that pipelineExecution is finished. This does not inherit from 

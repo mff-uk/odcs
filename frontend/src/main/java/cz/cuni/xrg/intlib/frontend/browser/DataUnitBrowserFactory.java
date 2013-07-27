@@ -7,7 +7,7 @@ import java.io.File;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import static cz.cuni.xrg.intlib.commons.data.DataUnitType.RDF_Local;
 import static cz.cuni.xrg.intlib.commons.data.DataUnitType.RDF_Virtuoso;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
