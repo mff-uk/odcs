@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -523,6 +524,40 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
+	long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph) throws RDFException {
+		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
+
+		InputStreamReader inputStreamReader = getEndpointStreamReader(
+				endpointURL, endpointGraph,
+				countQuery, RDFFormat.RDFXML);
+
+		long count = -1;
+
+		try (Scanner scanner = new Scanner(inputStreamReader)) {
+
+			String regexp = ">[0-9]+<";
+			Pattern pattern = Pattern.compile(regexp);
+			boolean find = false;
+
+			while (scanner.hasNext() & !find) {
+				String line = scanner.next();
+				Matcher matcher = pattern.matcher(line);
+
+				if (matcher.find()) {
+					String number = line.substring(matcher.start() + 1, matcher
+							.end() - 1);
+					count = Long.parseLong(number);
+					find = true;
+
+				}
+
+			}
+		}
+
+		return count;
+
+	}
+
 	private StatisticalHandler parseFileUsingStatisticalHandler(
 			RDFFormat fileFormat,
 			InputStreamReader is, String baseURI) throws RDFException {
@@ -808,26 +843,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 
 		final int graphSize = endpointGraphsURI.size();
-		List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT);
-		final int partsCount = dataParts.size();
-
+		
 		authenticate(userName, password);
-
-		/*
-		 HTTPRepository endpointRepo = new HTTPRepository(endpointURL.toString(),
-		 "");
-
-		 try {
-		 endpointRepo.initialize();
-		 } catch (RepositoryException e) {
-		 final String message = "Endpoint repository is failed. ";
-		 logger.debug(message);
-		 logger.debug(message + e.getMessage(), e);
-
-		 throw new RDFException(message + e.getMessage(), e);
-		 }
-
-		 */
 
 		RepositoryConnection connection = null;
 
@@ -837,60 +854,46 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			for (int i = 0; i < graphSize; i++) {
 
-				boolean isOK = true;
+				final String endpointGraph = endpointGraphsURI.get(i);
 
-				/*
-				 try {
-				 switch (graphType) {
-				 case MERGE:
-				 break;
-				 case OVERRIDE: {
-							
-				 RepositoryConnection endpointGoal = endpointRepo
-				 .getConnection();
-				 Resource graphToClear = new URIImpl(
-				 endpointGraphsURI.get(i));
-				 endpointGoal.clear(graphToClear);
-				 endpointGoal.close();
-				 }
-				 break;
-				 case FAIL: {
+				try {
+					switch (graphType) {
+						case MERGE:
+							break;
+						case OVERRIDE: {
+						}
+						break;
+						case FAIL: {
 
-				 RepositoryConnection endpointGoal = endpointRepo
-				 .getConnection();
-				 Resource goalGraph = new URIImpl(endpointGraphsURI
-				 .get(i));
-				 boolean sourceNotEmpty = endpointGoal
-				 .size(goalGraph) > 0;
+							long SPARQLGraphSize = getSPARQLEnpointGraphSize(
+									endpointURL, endpointGraph);
 
-				 endpointGoal.close();
+							boolean sourceNotEmpty = SPARQLGraphSize > 0;
 
-				 if (sourceNotEmpty) {
-				 throw new GraphNotEmptyException(
-				 "Graph " + goalGraph.toString() + "is not empty");
-				 }
+							if (sourceNotEmpty) {
+								throw new GraphNotEmptyException(
+										"Graph " + endpointGraph + "is not empty (has "
+										+ SPARQLGraphSize
+										+ " triples) - Loading to SPARQL endpoint FAIL");
+							}
 
-				 }
+						}
 
-				 break;
+						break;
 
-				 }
-				 } catch (GraphNotEmptyException ex) {
-				 logger.debug(ex.getMessage());
-				 isOK = false;
+					}
+				} catch (GraphNotEmptyException ex) {
+					logger.debug(ex.getMessage());
 
-				 //throw new RDFException(ex.getMessage(),ex);
-				 }
-				 */
 
-				if (isOK == false) {
-					continue;
+					throw new RDFException(ex.getMessage(), ex);
 				}
+
+				List<String> dataParts = getInsertPartsTriplesQuery(STATEMENTS_COUNT);
+				final int partsCount = dataParts.size();
 
 				for (int j = 0; j < partsCount; j++) {
 
-					final String endpointGraph = endpointGraphsURI.get(i);
-					//.replace(" ", "+");
 					final String query = dataParts.get(j);
 
 					String myquery = getEncodedQuery(query);
@@ -1604,9 +1607,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				if (targetConnection != null) {
 
 					logger.info("Merging " + second.getTripleCountInRepository()
-						+ " triples from <" + second.getDataGraph().stringValue() + "> "
-						+ "TO <" + getDataGraph().stringValue() + ">.");
-					
+							+ " triples from <" + second.getDataGraph()
+							.stringValue() + "> "
+							+ "TO <" + getDataGraph().stringValue() + ">.");
+
 					for (Statement nextStatement : sourceStatemens) {
 
 						if (graph != null) {
@@ -1617,7 +1621,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 					}
 					logger.info("Merged SUCESSFULL");
 				}
-				
+
 			}
 		} catch (RepositoryException ex) {
 			logger.error(ex.getMessage(), ex);
