@@ -1603,6 +1603,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				if (targetConnection != null) {
 
+					logger.info("Merging " + second.getTripleCountInRepository()
+						+ " triples from <" + second.getDataGraph().stringValue() + "> "
+						+ "TO <" + getDataGraph().stringValue() + ">.");
+					
 					for (Statement nextStatement : sourceStatemens) {
 
 						if (graph != null) {
@@ -1611,7 +1615,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 							targetConnection.add(nextStatement);
 						}
 					}
+					logger.info("Merged SUCESSFULL");
 				}
+				
 			}
 		} catch (RepositoryException ex) {
 			logger.error(ex.getMessage(), ex);

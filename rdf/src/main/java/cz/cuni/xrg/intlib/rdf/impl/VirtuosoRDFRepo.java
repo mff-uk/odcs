@@ -11,6 +11,8 @@ import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
+import static cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo.logger;
+
 /**
  *
  * @author Jiri Tomes
@@ -189,7 +191,14 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 					inserter.enforceContext(getDataGraph());
 
 					try {
+						logger.info("Merging " + second.getTripleCountInRepository()
+						+ " triples from <" + second.getDataGraph().stringValue() + "> "
+						+ "TO <" + getDataGraph().stringValue() + ">.");
+						
 						sourceConnection.export(inserter, second.getDataGraph());
+						
+						logger.info("Merged SUCESSFULL");
+						
 
 					} catch (RDFHandlerException ex) {
 						logger.error(ex.getMessage(), ex);
