@@ -1,11 +1,9 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
-import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
-import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -15,109 +13,103 @@ import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * Implementation of ExtendedLoadContext.
- *
+ * 
  * @author Petyr
  * 
  */
-class ExtendedLoadContextImpl extends ExtendedCommonImpl implements ExtendedLoadContext {
-	
+class ExtendedLoadContextImpl extends ExtendedCommonImpl
+		implements ExtendedLoadContext {
+
 	/**
-	 * Context input data units.
+	 * Manager for input DataUnits.
 	 */
-    private List<DataUnit> inputs = new LinkedList<>();
-        
+	private DataUnitManager dataUnitManager;
+
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
-	private ApplicationEventPublisher eventPublisher;	
-	
-	/**
-	 * Logger class.
-	 */
-	private static final Logger LOG = Logger.getLogger(ExtendedLoadContextImpl.class);	
-	
-	public ExtendedLoadContextImpl(PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
+	private ApplicationEventPublisher eventPublisher;
+
+	public ExtendedLoadContextImpl(PipelineExecution execution,
+			DPUInstanceRecord dpuInstance,
+			ApplicationEventPublisher eventPublisher,
+			ExecutionContextInfo context,
+			AppConfig appConfig) throws IOException {
 		super(execution, dpuInstance, context, appConfig);
 		this.eventPublisher = eventPublisher;
+		// create DataUnit manager
+		this.dataUnitManager = DataUnitManager.createInputManager(dpuInstance,
+				dataUnitFactory, context, getWorkingDir(), appConfig);
 	}
 
 	@Override
-	public List<DataUnit> getInputs() {		
-		return this.inputs;
+	public List<DataUnit> getInputs() {
+		return dataUnitManager.getDataUnits();
 	}
 
 	@Override
 	public void sendMessage(MessageType type, String shortMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );		
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type,
+				this, this));
 	}
 
 	@Override
-	public void sendMessage(MessageType type, String shortMessage, String fullMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
+	public void sendMessage(MessageType type,
+			String shortMessage,
+			String fullMessage) {
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
+				type, this, this));
 	}
 
 	@Override
 	public void release() {
-		for (DataUnit item : inputs) {
-			item.release();
-		}		
-	}	
-	
+		dataUnitManager.release();
+	}
+
 	@Override
 	public void save() {
-		// we have no mapping from input to indexes .. so we just assign numbers
-		Integer index = 0;
-		for (DataUnit item : inputs) {		
-			try {
-				// get directory
-				File directory = new File(getWorkingDir(),
-						context.getDataUnitStoragePath(dpuInstance, ++index));
-				// and save into directory
-				item.save(directory);
-			} catch (Exception e) {
-				LOG.error("Can't save DataUnit", e);
-			}
-		}
-	}	
-	
+		dataUnitManager.save();
+	}
+
 	@Override
 	public void sealInputs() {
-		for (DataUnit inputDataUnit : inputs) {
+		for (DataUnit inputDataUnit : dataUnitManager.getDataUnits()) {
 			inputDataUnit.madeReadOnly();
 		}
 	}
-	
+
 	@Override
-	public void addSource(ProcessingContext context, DataUnitMerger merger, 
+	public void addSource(ProcessingContext context,
 			String instruction) throws ContextException {
+		// create merger class
+		DataUnitMerger merger = new PrimitiveDataUnitMerger();
 		// merge custom data
 		try {
 			customData.putAll(context.getCustomData());
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new ContextException("Error while merging custom data.", e);
 		}
 		// now based on context type ..
 		if (context instanceof ExtendedExtractContext) {
-			ExtendedExtractContext extractContext = (ExtendedExtractContext)context;
-			// primitive merge .. 
-			merger.merger(inputs, extractContext.getOutputs(), dataUnitFactory, instruction);
+			ExtendedExtractContext extractContext = (ExtendedExtractContext) context;
+			// primitive merge ..
+			merger.merger(dataUnitManager, extractContext.getOutputs(),
+					instruction);
 		} else if (context instanceof ExtendedTransformContext) {
-			ExtendedTransformContext transformContext = (ExtendedTransformContext)context;
-			// primitive merge .. 
-			merger.merger(inputs, transformContext.getOutputs(), dataUnitFactory, instruction);
+			ExtendedTransformContext transformContext = (ExtendedTransformContext) context;
+			// primitive merge ..
+			merger.merger(dataUnitManager, transformContext.getOutputs(),
+					instruction);
 		} else {
-			throw new ContextException("Wrong context type: " + context.getClass().getSimpleName());
+			throw new ContextException("Wrong context type: "
+					+ context.getClass().getSimpleName());
 		}
 	}
 

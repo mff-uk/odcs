@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
-import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -12,14 +11,9 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -29,33 +23,28 @@ import org.springframework.context.ApplicationEventPublisher;
  * 
  */
 class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedExtractContext {
-		
-	/**
-	 * Context output data units.
-	 */
-    private List<DataUnit> outputs;
-    
-    /**
-     * Mapping from {@link outputs} to indexes.
-     */
-    private Map<DataUnit, Integer> indexes;
-    
+   
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
 	private ApplicationEventPublisher eventPublisher;
-	
+
 	/**
-	 * Logger class.
+	 * Manager for output DataUnits.
 	 */
-	private static final Logger LOG = Logger.getLogger(ExtendedExtractContextImpl.class);
+	private DataUnitManager dataUnitManager;
 	
 	public ExtendedExtractContextImpl(PipelineExecution execution, DPUInstanceRecord dpuInstance, 
 			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
 		super(execution, dpuInstance, context, appConfig);
-		this.outputs = new LinkedList<>();
-		this.indexes = new HashMap<>();
 		this.eventPublisher = eventPublisher;
+		// create DataUnit manager
+		this.dataUnitManager = DataUnitManager.createOutputManager(
+				dpuInstance, 
+				dataUnitFactory, 
+				context, 
+				getWorkingDir(), 
+				appConfig);
 	}	
 	
 	@Override
@@ -70,60 +59,28 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 
 	@Override
 	public void release() {
-		for (DataUnit item : outputs) {
-			item.release();
-		}
+		dataUnitManager.release();
 	}
 
 	@Override
 	public void save() {
-		for (DataUnit item : outputs) {		
-			try {
-				// get directory
-				File directory = new File(getWorkingDir(),
-						context.getDataUnitStoragePath(dpuInstance, indexes.get(item)));
-				// and save into directory
-				item.save(directory);
-			} catch (Exception e) {
-				LOG.error("Can't save DataUnit", e);
-			}
-		}
+		dataUnitManager.save();
 	}
 
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
-		// check for type changes
-		type = checkType(type);
-		// gather information for new DataUnit
-// TODO Petyr Use single class for DataUnit information		
-		Integer index = context.createOutput(dpuInstance, name, type);
-		String id = context.generateDataUnitId(dpuInstance, index);
-		File directory = new File(getWorkingDir(),
-				context.getDataUnitTmpPath(dpuInstance, index) );
-		// create instance
-		return dataUnitFactory.createInput(type, id, name, directory);
-	}
+		return dataUnitManager.addDataUnit(type, name);	}
 
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type, String name, Object config)
-			throws DataUnitCreateException {		
-		// check for type changes
-		type = checkType(type);
-		// gather information for new DataUnit
-// TODO Petyr Use single class for DataUnit information		
-		Integer index = context.createOutput(dpuInstance, name, type);
-		String id = context.generateDataUnitId(dpuInstance, index);
-		File directory = new File(getWorkingDir(),
-				context.getDataUnitTmpPath(dpuInstance, index) );
-		// create instance
-		return dataUnitFactory.createInput(type, id, name, directory, config);
+			throws DataUnitCreateException {	
+		return dataUnitManager.addDataUnit(type, name, config);
 	}
 
 	@Override
 	public List<DataUnit> getOutputs() {
-		return outputs;
+		return dataUnitManager.getDataUnits();
 	}
 
-		
 }

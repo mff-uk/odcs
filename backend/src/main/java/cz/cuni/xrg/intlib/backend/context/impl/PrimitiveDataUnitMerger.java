@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
-import cz.cuni.xrg.intlib.backend.context.DataUnitMerger;
-import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
@@ -17,11 +15,11 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
  * @author Petyr
  *
  */
-public class PrimitiveDataUnitMerger extends DataUnitMergerBase implements DataUnitMerger {
+class PrimitiveDataUnitMerger extends DataUnitMergerBase implements DataUnitMerger {
 
 	@Override
-	public void merger(List<DataUnit> left,	List<DataUnit> right, 
-			DataUnitFactory factory, String instruction) throws ContextException {
+	public void merger(DataUnitManager left, List<DataUnit> right, 
+			String instruction) throws ContextException {
 		Iterator<DataUnit> iterRight = right.iterator();
 
 		// add the rest from right
@@ -58,10 +56,7 @@ public class PrimitiveDataUnitMerger extends DataUnitMergerBase implements DataU
 			// create new data unit (in context into which we merge)
 			DataUnit newDataUnit;
 			try {
-				// we do not store reverse mapping for inputs
-				newDataUnit = factory.createInput(rightDataUnit.getType(), leftDataUnitName)
-						.getDataUnit();
-				
+				newDataUnit = left.addDataUnit(rightDataUnit.getType(), leftDataUnitName);
 			} catch (DataUnitCreateException e) {
 				throw new ContextException("Failed to create input object.", e);
 			}
@@ -75,7 +70,6 @@ public class PrimitiveDataUnitMerger extends DataUnitMergerBase implements DataU
 			} catch (Exception e) {
 				throw new ContextException("Can't merge data units.", e);
 			}
-			left.add(newDataUnit);
 		}
 	}
 }

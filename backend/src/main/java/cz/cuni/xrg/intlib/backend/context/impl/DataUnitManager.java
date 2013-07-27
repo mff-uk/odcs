@@ -263,7 +263,7 @@ class DataUnitManager {
 		//
 		return dataUnit;
 	}
-
+	
 	/**
 	 * Return access to all stored DataUnits.
 	 * @return
