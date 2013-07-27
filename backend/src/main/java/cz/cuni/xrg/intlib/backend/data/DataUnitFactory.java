@@ -252,11 +252,12 @@ public class DataUnitFactory {
 	 * @return DataUnit
 	 * @throws DataUnitCreateException
 	 */
+	@Deprecated
 	public DataUnit createInput(DataUnitType type,
 			String id,
 			String name,
 			File directory) throws DataUnitCreateException {
-		return create(type, id, name, directory, true);
+		return create(type, id, name, directory);
 	}
 
 	/**
@@ -270,12 +271,13 @@ public class DataUnitFactory {
 	 * @return DataUnit
 	 * @throws DataUnitCreateException
 	 */
+	@Deprecated
 	public DataUnit createInput(DataUnitType type,
 			String id,
 			String name,
 			File directory,
 			Object configObject) throws DataUnitCreateException {
-		return create(type, id, name, directory, true, configObject);
+		return create(type, id, name, directory, configObject);
 	}
 
 	/**
@@ -289,11 +291,12 @@ public class DataUnitFactory {
 	 * @return DataUnit
 	 * @throws DataUnitCreateException
 	 */
+	@Deprecated
 	public DataUnit createOutput(DataUnitType type,
 			String id,
 			String name,
 			File directory) throws DataUnitCreateException {
-		return create(type, id, name, directory, false);
+		return create(type, id, name, directory);
 	}
 
 	/**
@@ -308,12 +311,13 @@ public class DataUnitFactory {
 	 * @return DataUnit
 	 * @throws DataUnitCreateException
 	 */
+	@Deprecated
 	public DataUnit createOutput(DataUnitType type,
 			String id,
 			String name,
 			File directory,
 			Object configObject) throws DataUnitCreateException {
-		return create(type, id, name, directory, false, configObject);
+		return create(type, id, name, directory, configObject);
 	}
 
 	/**
@@ -327,11 +331,10 @@ public class DataUnitFactory {
 	 * @return DataUnit
 	 * @throws DataUnitCreateException
 	 */
-	private DataUnit create(DataUnitType type,
+	public DataUnit create(DataUnitType type,
 			String id,
 			String name,
-			File directory,
-			boolean isInput) throws DataUnitCreateException {
+			File directory) throws DataUnitCreateException {
 		switch (type) {
 		case RDF:
 			throw new DataUnitCreateException("Pure RDF DataUnit can't " 
@@ -375,16 +378,14 @@ public class DataUnitFactory {
 	 * @param id DataUnit's id assigned by application, must be unique!
 	 * @param name DataUnit's name, can't be changed in future.
 	 * @param directory DataUnit's working directory.
-	 * @param isInput True if created DataUnit will be used as input.
 	 * @param configObject Configuration object for DataUnit.
 	 * @return Container with created DataUnit.
 	 * @throws DataUnitCreateException
 	 */
-	private DataUnit create(DataUnitType type,
+	public DataUnit create(DataUnitType type,
 			String id,
 			String name,
 			File directory,
-			boolean isInput,
 			Object configObject) throws DataUnitCreateException {
 		//
 		throw new DataUnitCreateException(
