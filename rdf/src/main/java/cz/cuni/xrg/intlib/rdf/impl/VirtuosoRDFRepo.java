@@ -3,11 +3,13 @@ package cz.cuni.xrg.intlib.rdf.impl;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.io.File;
+import org.openrdf.query.GraphQuery;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.util.RDFInserter;
-import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
@@ -145,6 +147,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	@Override
 	public void release() {
 		shutDown();
+		logger.info("Virtuoso repository succesfully shut down");
 	}
 
 	@Override
@@ -173,49 +176,105 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 			throw new IllegalArgumentException(
 					"Instance of RDFDataRepository is null");
 		}
-		Repository secondRepository = second.getDataRepository();
 
-		RepositoryConnection sourceConnection = null;
 		RepositoryConnection targetConnection = null;
 
 		try {
-			sourceConnection = secondRepository.getConnection();
 
-			if (!sourceConnection.isEmpty()) {
+			targetConnection = repository.getConnection();
 
-				targetConnection = repository.getConnection();
+			if (targetConnection != null) {
 
-				if (targetConnection != null) {
+				String sourceGraphName = second.getDataGraph().stringValue();
+				String targetGraphName = getDataGraph().stringValue();
 
-					RDFInserter inserter = new RDFInserter(targetConnection);
-					inserter.enforceContext(getDataGraph());
+				String mergeQuery = String
+						.format("ADD <%s> TO <%s>", sourceGraphName,
+						targetGraphName);
 
-					try {
-						logger.info("Merging " + second.getTripleCountInRepository()
-						+ " triples from <" + second.getDataGraph().stringValue() + "> "
-						+ "TO <" + getDataGraph().stringValue() + ">.");
-						
-						sourceConnection.export(inserter, second.getDataGraph());
-						
-						logger.info("Merged SUCESSFULL");
-						
+				try {
+					GraphQuery result = targetConnection.prepareGraphQuery(
+							QueryLanguage.SPARQL, mergeQuery);
 
-					} catch (RDFHandlerException ex) {
-						logger.error(ex.getMessage(), ex);
-					}
+					logger.info("START merging " + second
+							.getTripleCountInRepository()
+							+ " triples from <" + sourceGraphName + "> "
+							+ "TO <" + targetGraphName + ">.");
+
+					result.evaluate();
+
+					logger.info("Merged SUCESSFULL");
+
+				} catch (MalformedQueryException ex) {
+					logger.debug("NOT VALID QUERY: " + ex.getMessage());
+				} catch (QueryEvaluationException ex) {
+					logger.error("MERGING STOPPED" + ex.getMessage());
 				}
+
 			}
+
 		} catch (RepositoryException ex) {
 			logger.error(ex.getMessage(), ex);
 
 		} finally {
-			if (sourceConnection != null) {
+			if (targetConnection != null) {
 				try {
-					sourceConnection.close();
+					targetConnection.close();
 				} catch (RepositoryException ex) {
 					logger.error(ex.getMessage(), ex);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
+
+		if (targetRepo == null) {
+			throw new IllegalArgumentException(
+					"Instance of RDFDataRepository is null");
+		}
+
+		Repository targetRepository = targetRepo.getDataRepository();
+		RepositoryConnection targetConnection = null;
+
+		try {
+
+			targetConnection = targetRepository.getConnection();
+
+			if (targetConnection != null) {
+
+				String sourceGraphName = getDataGraph().stringValue();
+				String targetGraphName = targetRepo.getDataGraph().stringValue();
+
+				String mergeQuery = String
+						.format("ADD <%s> TO <%s>", sourceGraphName,
+						targetGraphName);
+
+				try {
+					GraphQuery result = targetConnection.prepareGraphQuery(
+							QueryLanguage.SPARQL, mergeQuery);
+
+					logger.info("START merging " + getTripleCountInRepository()
+							+ " triples from <" + sourceGraphName + "> "
+							+ "TO <" + targetGraphName + ">.");
+
+					result.evaluate();
+
+					logger.info("Merged SUCESSFULL");
+
+				} catch (MalformedQueryException ex) {
+					logger.debug("NOT VALID QUERY: " + ex.getMessage());
+				} catch (QueryEvaluationException ex) {
+					logger.error("MERGING STOPPED" + ex.getMessage());
+				}
+
+			}
+
+		} catch (RepositoryException ex) {
+			logger.error(ex.getMessage(), ex);
+
+		} finally {
 			if (targetConnection != null) {
 				try {
 					targetConnection.close();
