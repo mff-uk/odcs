@@ -35,7 +35,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param predicateName String name of predicate
 	 * @param objectName    String name of object
 	 */
-	public void addTripleToRepository(String namespace, String subjectName,
+	public void addTriple(String namespace, String subjectName,
 			String predicateName,
 			String objectName);
 
@@ -55,7 +55,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                            detailed log or not.
 	 * @throws RDFException when extraction fail.
 	 */
-	public void extractRDFfromFileToRepository(FileExtractType extractType,
+	public void extractfromFile(FileExtractType extractType,
 			String path, String suffix,
 			String baseURI,
 			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
@@ -72,7 +72,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data fault.
 	 */
-	public void loadRDFfromRepositoryToFile(String directoryPath,
+	public void loadToFile(String directoryPath,
 			String fileName,
 			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
 
@@ -92,7 +92,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data fault.
 	 */
-	public void loadRDFfromRepositoryToFile(String directoryPath,
+	public void loadToFile(String directoryPath,
 			String fileName, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
@@ -205,7 +205,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *
 	 * @return size of triples in repository.
 	 */
-	public long getTripleCountInRepository();
+	public long getTripleCount();
 
 	/**
 	 * Return if RDF triple is in repository.
@@ -223,7 +223,7 @@ public interface RDFDataRepository extends DataUnit {
 	/**
 	 * Removes all RDF data from repository.
 	 */
-	public void cleanAllRepositoryData();
+	public void cleanAllData();
 
 	/**
 	 * Copy all data from repository to targetRepository.

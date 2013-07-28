@@ -197,7 +197,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 							QueryLanguage.SPARQL, mergeQuery);
 
 					logger.info("START merging " + second
-							.getTripleCountInRepository()
+							.getTripleCount()
 							+ " triples from <" + sourceGraphName + "> "
 							+ "TO <" + targetGraphName + ">.");
 
@@ -255,7 +255,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
 
-					logger.info("START merging " + getTripleCountInRepository()
+					logger.info("START merging " + getTripleCount()
 							+ " triples from <" + sourceGraphName + "> "
 							+ "TO <" + targetGraphName + ">.");
 

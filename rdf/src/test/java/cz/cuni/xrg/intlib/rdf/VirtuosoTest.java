@@ -35,7 +35,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 		rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName, port, user,
 				password, defaultGraph, "");
-		rdfRepo.cleanAllRepositoryData();
+		rdfRepo.cleanAllData();
 	}
 
 	@Override
@@ -102,16 +102,16 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = true;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_FILE,
+			rdfRepo.extractfromFile(FileExtractType.PATH_TO_FILE,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		LOG.debug("EXTRACTING from FILE - OK");
 		LOG.debug(

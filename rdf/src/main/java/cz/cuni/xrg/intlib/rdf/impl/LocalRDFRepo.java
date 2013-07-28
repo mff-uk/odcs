@@ -272,7 +272,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param objectName    String name of object
 	 */
 	@Override
-	public void addTripleToRepository(String namespace, String subjectName,
+	public void addTriple(String namespace, String subjectName,
 			String predicateName, String objectName) {
 
 		Statement statement = createNewStatement(namespace, subjectName,
@@ -327,7 +327,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
-	public void extractRDFfromFileToRepository(FileExtractType extractType,
+	public void extractfromFile(FileExtractType extractType,
 			String path, String suffix,
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws RDFException {
@@ -613,11 +613,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
-	public void loadRDFfromRepositoryToFile(String directoryPath,
+	public void loadToFile(String directoryPath,
 			String fileName,
 			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException {
 
-		loadRDFfromRepositoryToFile(directoryPath, fileName, formatType, false,
+		loadToFile(directoryPath, fileName, formatType, false,
 				false);
 	}
 
@@ -638,7 +638,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
-	public void loadRDFfromRepositoryToFile(String directoryPath,
+	public void loadToFile(String directoryPath,
 			String fileName, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
 
@@ -1470,7 +1470,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @return size of triples in repository.
 	 */
 	@Override
-	public long getTripleCountInRepository() {
+	public long getTripleCount() {
 		long size = 0;
 
 		RepositoryConnection connection = null;
@@ -1552,7 +1552,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * Removes all RDF data from repository.
 	 */
 	@Override
-	public void cleanAllRepositoryData() {
+	public void cleanAllData() {
 
 		RepositoryConnection connection = null;
 		try {
@@ -1615,7 +1615,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				if (targetConnection != null) {
 
-					logger.info("Merging " + second.getTripleCountInRepository()
+					logger.info("Merging " + second.getTripleCount()
 							+ " triples from <" + second.getDataGraph()
 							.stringValue() + "> "
 							+ "TO <" + getDataGraph().stringValue() + ">.");
@@ -1780,7 +1780,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		logger.debug("saving to directory:" + directory.getAbsolutePath());
 
 		try {
-			loadRDFfromRepositoryToFile(directory.getAbsolutePath(), file
+			loadToFile(directory.getAbsolutePath(), file
 					.getName(),
 					formatType, true, false);
 		} catch (CannotOverwriteFileException | RDFException e) {
@@ -1811,7 +1811,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		final boolean useStatisticHandler = true;
 
 		try {
-			extractRDFfromFileToRepository(FileExtractType.PATH_TO_FILE,
+			extractfromFile(FileExtractType.PATH_TO_FILE,
 					file.getAbsolutePath(), suffix,
 					baseURI,
 					useSuffix, useStatisticHandler);
