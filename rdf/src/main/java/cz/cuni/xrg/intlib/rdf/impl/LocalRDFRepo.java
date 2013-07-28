@@ -1620,14 +1620,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 							.stringValue() + "> "
 							+ "TO <" + getDataGraph().stringValue() + ">.");
 
-					for (Statement nextStatement : sourceStatemens) {
-
-						if (graph != null) {
-							targetConnection.add(nextStatement, graph);
-						} else {
-							targetConnection.add(nextStatement);
-						}
+					if (graph != null) {
+						targetConnection.add(sourceStatemens, graph);
+					} else {
+						targetConnection.add(sourceStatemens);
 					}
+
 					logger.info("Merged SUCESSFULL");
 				}
 
@@ -1662,7 +1660,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
 
 		if (targetRepo == null) {
-			return;
+			throw new IllegalArgumentException(
+					"Instance of RDFDataRepository is null");
 		}
 		Repository targetRepository = targetRepo.getDataRepository();
 
@@ -1680,12 +1679,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				Resource targetGraph = targetRepo.getDataGraph();
 
-				for (Statement nextStatement : sourceStatemens) {
-					if (targetGraph != null) {
-						targetConnection.add(nextStatement, targetGraph);
-					} else {
-						targetConnection.add(nextStatement);
-					}
+				if (targetGraph != null) {
+					targetConnection.add(sourceStatemens, targetGraph);
+				} else {
+					targetConnection.add(sourceStatemens);
 				}
 
 			}
