@@ -880,9 +880,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 							if (sourceNotEmpty) {
 								throw new GraphNotEmptyException(
-										"Graph " + endpointGraph + "is not empty (has "
+										"Graph <" + endpointGraph + "> is not empty (has "
 										+ SPARQLGraphSize
-										+ " triples) - Loading to SPARQL endpoint FAIL");
+										+ " triples) - Loading to SPARQL endpoint FAIL.");
 							}
 
 						}
