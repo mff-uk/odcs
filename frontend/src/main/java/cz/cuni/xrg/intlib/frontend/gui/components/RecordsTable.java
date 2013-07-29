@@ -117,7 +117,7 @@ public class RecordsTable extends CustomComponent {
 		messageTable.setVisibleColumns("timestamp", "type", "dpuInstance", "shortMessage");
 		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message");
                 messageTable.setFilterBarVisible(true);
-		messageTable.refreshRowCache();
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
 	/**
