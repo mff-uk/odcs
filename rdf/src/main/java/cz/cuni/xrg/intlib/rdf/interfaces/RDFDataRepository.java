@@ -60,6 +60,37 @@ public interface RDFDataRepository extends DataUnit {
 			String baseURI,
 			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
 
+        /**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param format              Specifies {@link RDFFormatRDF} (e.g., RDFXML, Turtle, ..)
+         * @param extractType         One of defined enum type for extraction data
+	 *                            from file.
+	 * @param path                String path to file/directory
+	 * @param suffix              String suffix of fileName (example: ".ttl",
+	 *                            ".xml", etc)
+	 * @param baseURI             String name of defined used URI
+	 * @param useSuffix           boolean value, if extract files only with
+	 *                            defined suffix or not.
+	 * @param useStatisticHandler boolean value, if during extraction needed
+	 *                            detail statistic about RDF triples and
+	 *                            detailed log or not.
+	 * @throws RDFException when extraction fail.
+	 */
+	public void extractfromFile(RDFFormat format, FileExtractType extractType, 
+			String path, String suffix,
+			String baseURI,
+			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
+        
+        /**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param path                String path to file
+	 * 
+	 * @throws RDFException when extraction fail.
+	 */
+	public void extractFromLocalTurtleFile(String path) throws RDFException;
+        
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
