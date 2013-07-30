@@ -311,7 +311,20 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
-	/**
+        /**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param path                String path to file
+	 * 
+	 * @throws RDFException when extraction fail.
+	 */
+        @Override
+	public void extractFromLocalTurtleFile(String path) throws RDFException {
+            extractfromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "", "", false, false);
+      
+        }
+        
+        /**
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param extractType         One of defined enum type for extraction data
@@ -326,8 +339,31 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                            are awailable or not.
 	 * @throws RDFException when extraction fail.
 	 */
-	@Override
+        @Override
 	public void extractfromFile(FileExtractType extractType,
+			String path, String suffix,
+			String baseURI, boolean useSuffix, boolean useStatisticHandler) throws RDFException {
+            extractfromFile(RDFFormat.RDFXML, extractType, path, suffix, baseURI, useSuffix, useStatisticHandler);
+        }
+        
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+         * @param format              Specifies {@link RDFFormatRDF} (e.g., RDFXML, Turtle, ..)
+	 * @param extractType         One of defined enum type for extraction data
+	 *                            from file.
+	 * @param path                String path to file/directory
+	 * @param suffix              String suffix of fileName (example: ".ttl",
+	 *                            ".xml", etc)
+	 * @param baseURI             String name of defined used URI
+	 * @param useSuffix           boolean value, if extract files only with
+	 *                            defined suffix or not.
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
+	 * @throws RDFException when extraction fail.
+	 */
+	@Override
+	public void extractfromFile(RDFFormat format, FileExtractType extractType,
 			String path, String suffix,
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws RDFException {
@@ -356,7 +392,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			case PATH_TO_DIRECTORY:
 				if (dirFile.isDirectory()) {
 					File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
-					addFilesInDirectoryToRepository(files, baseURI,
+					addFilesInDirectoryToRepository(format,files, baseURI,
 							useStatisticHandler,
 							graph);
 				} else {
@@ -367,7 +403,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			case PATH_TO_FILE:
 			case UPLOAD_FILE:
 				if (dirFile.isFile()) {
-					addFileToRepository(dirFile, baseURI, useStatisticHandler,
+					addFileToRepository(format,dirFile, baseURI, useStatisticHandler,
 							graph);
 				} else {
 					throw new RDFException(
@@ -417,7 +453,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
-	private void addFilesInDirectoryToRepository(File[] files, String baseURI,
+	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files, String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		if (files == null) {
@@ -426,7 +462,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		for (int i = 0; i < files.length; i++) {
 			File nextFile = files[i];
-			addFileToRepository(nextFile, baseURI, useStatisticHandler,
+			addFileToRepository(format, nextFile, baseURI, useStatisticHandler,
 					graphs);
 		}
 	}
@@ -469,12 +505,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	}
 
-	private void addFileToRepository(File dataFile, String baseURI,
+	private void addFileToRepository(RDFFormat rdfFormat, File dataFile, String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		RDFFormat fileFormat = RDFFormat.forFileName(
 				dataFile.getAbsolutePath(),
-				RDFFormat.RDFXML);
+				rdfFormat);
 
 		RepositoryConnection connection = null;
 
