@@ -250,8 +250,9 @@ public class DebuggingView extends CustomComponent {
         if (debugDpu == null) {
             return null;
         }
-        List<DataUnitInfo> indexes = ctxReader.getDataUnitsInfo(debugDpu);
-
+        List<DataUnitInfo> indexes = ctxReader.getDPUInfo(debugDpu).getDataUnits();
+        
+        
         if (indexes == null) {
             return null;
         }
@@ -294,7 +295,8 @@ public class DebuggingView extends CustomComponent {
         if (debugDpu == null) {
             return null;
         }
-        List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
+        List<DataUnitInfo> infos = 
+        		ctxReader.getDPUInfo(debugDpu).getDataUnits();
 
         if (infos == null) {
             return null;

@@ -6,6 +6,7 @@ import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.data.InputHelper;
+import cz.cuni.xrg.intlib.commons.module.data.MissingInputException;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
@@ -31,7 +32,7 @@ public class RDFLoader implements Load,
 	}
 
 	@Override
-	public void load(LoadContext context) throws LoadException {
+	public void load(LoadContext context) throws LoadException, MissingInputException {
 
 		// get input repository
 		RDFDataRepository repository =
