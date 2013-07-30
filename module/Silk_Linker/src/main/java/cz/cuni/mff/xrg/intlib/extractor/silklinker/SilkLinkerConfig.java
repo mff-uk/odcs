@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.configuration.Config;
  */
 public class SilkLinkerConfig implements Config {
     
+    //path to the config file driving the execution of Silk
     private final String confFile;
 
 
