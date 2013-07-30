@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.vaadin.ui.CustomComponent;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
  * Interface for DataUnit browsers

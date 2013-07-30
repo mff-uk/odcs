@@ -8,12 +8,9 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import static cz.cuni.xrg.intlib.commons.data.DataUnitType.RDF_Local;
-import static cz.cuni.xrg.intlib.commons.data.DataUnitType.RDF_Virtuoso;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 
 /**
  * Factory for DataUnitBrowsers.
@@ -46,15 +43,17 @@ public class DataUnitBrowserFactory {
 		}
 
 		// 
-		String dataUnitId = context.generateDataUnitId(
-				context.generateDPUId(execution.getId(), dpuInstance.getId()), info.getIndex());
-
+		String dataUnitId = 
+				context.generateDataUnitId(dpuInstance, info.getIndex());
+		// storage directory
+		File dpuStorage =
+				new File(App.getAppConfig().getString(ConfigProperty.GENERAL_WORKINGDIR),
+						context.getDataUnitStoragePath(dpuInstance, info.getIndex()));
+				
 		switch (info.getType()) {
 			case RDF_Local:
 				LocalRdfBrowser localRdfBrowser = new LocalRdfBrowser();
 				try {
-					// get storage directory for DataUnit
-					File dpuStorage = context.getDataUnitStorage(dpuInstance, info.getIndex());
 					// load data
 					localRdfBrowser.loadDataUnit(dpuStorage, dataUnitId);
 				} catch (Exception e) {
@@ -64,8 +63,6 @@ public class DataUnitBrowserFactory {
 			case RDF_Virtuoso:
 				VirtuosoRdfBrowser virtuosoRdfBrowser = new VirtuosoRdfBrowser();
 				try {
-					// get storage directory for DataUnit
-					File dpuStorage = context.getDataUnitStorage(dpuInstance, info.getIndex());
 					// load data
 					virtuosoRdfBrowser.loadDataUnit(dpuStorage, dataUnitId);
 				} catch (Exception e) {
@@ -77,6 +74,8 @@ public class DataUnitBrowserFactory {
 		}
 	}
 
+	// TODO Bohuslav: Why is this method here? It's almost the same as the one above.  
+	
 	/**
 	 * Return repository for specified DataUnit.
 	 * 
@@ -87,23 +86,29 @@ public class DataUnitBrowserFactory {
 	 * @return Repository or null if there is no browser for given type.
 	 * 
 	 */
+	@Deprecated
 	public static LocalRDFRepo getRepository(ExecutionContextInfo context, PipelineExecution execution,
 			DPUInstanceRecord dpuInstance, DataUnitInfo info) {
 
 		// get type and directory
-
 		if (info == null) {
 			// the context doesn't exist
 			return null;
 		}
 
+		// 
+		String dataUnitId = 
+				context.generateDataUnitId(dpuInstance, info.getIndex());
+		// storage directory
+		File dpuStorage =
+				new File(App.getAppConfig().getString(ConfigProperty.GENERAL_WORKINGDIR),
+						context.getDataUnitStoragePath(dpuInstance, info.getIndex()));
+		
 		switch (info.getType()) {
 			case RDF_Local:
 				try {
-					// get storage directory for DataUnit
-					File dpuStorage = context.getDataUnitStorage(dpuInstance, info.getIndex());
 					LocalRDFRepo repository = LocalRDFRepo.createLocalRepo("");
-					// load data from stora
+					// load data from storage
 					repository.load(dpuStorage);
 					return repository;
 
@@ -125,9 +130,6 @@ public class DataUnitBrowserFactory {
 						appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
 				final String defautGraph =
 						appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
-
-				String dataUnitId = context.generateDataUnitId(
-						context.generateDPUId(execution.getId(), dpuInstance.getId()), info.getIndex());
 
 				VirtuosoRDFRepo virtuosoRepository = VirtuosoRDFRepo
 						.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph, "");

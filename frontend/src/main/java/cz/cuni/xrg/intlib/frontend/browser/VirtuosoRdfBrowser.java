@@ -13,9 +13,6 @@ import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Implementation of browser for
  * {@link cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF}.
@@ -34,8 +31,6 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 	 * Table for data presentation.
 	 */
 	private IntlibPagedTable dataTable;
-
-	private static Logger LOG = LoggerFactory.getLogger(VirtuosoRdfBrowser.class);
 	
 	@Override
 	public void loadDataUnit(File directory, String dataUnitId) {
