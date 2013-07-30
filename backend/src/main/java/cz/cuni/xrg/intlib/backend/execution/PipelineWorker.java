@@ -53,7 +53,9 @@ import cz.cuni.xrg.intlib.backend.transformer.events.TransformCompletedEvent;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformStartEvent;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.backend.transformer.events.TransformFailedEvent;
+import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 
 import org.apache.commons.io.FileUtils;
@@ -106,7 +108,7 @@ class PipelineWorker implements Runnable {
 	private ExecutionContextInfo contextInfo;	
 	
 	/**
-	 * Application's configuraiton.
+	 * Application's configuration.
 	 */
 	private AppConfig appConfig;
 	
@@ -127,7 +129,6 @@ class PipelineWorker implements Runnable {
 		// create or get existing .. 
 		this.contextInfo = execution.createExecutionContext(workingDirectory);
 		this.appConfig = appConfig;
-		// TODO Petyr: Persist Iterator from DependecyGraph into ExecutionContext, and save into DB after every DPURecord (also save .. DataUnits .. )
 		// TODO Petyr: Release context sooner then on the end of the execution
 	}
 
@@ -138,8 +139,6 @@ class PipelineWorker implements Runnable {
 		execution.setEnd(new Date());
 		// set new state
 		execution.setExecutionStatus(PipelineExecutionStatus.FAILED);
-		// save	into database
-		database.getPipeline().save(execution);
 		// 
 		LOG.error("execution failed");
 	}
@@ -152,7 +151,6 @@ class PipelineWorker implements Runnable {
 		// update state
 		execution.setExecutionStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
 		// save into database
-		database.getPipeline().save(execution);
 	}
 	
 	/**
@@ -219,6 +217,26 @@ class PipelineWorker implements Runnable {
 		for (Node node : dependencyGraph) {
 			boolean result;
 			
+			// save context with the DPU that will be executed
+			ProcessingUnitInfo unitInfo = null; 
+			unitInfo = contextInfo.getDPUInfo(node.getDpuInstance());
+			if (unitInfo == null) {
+				// no previous execution ..
+				unitInfo = contextInfo.createDPUInfo(node.getDpuInstance());
+			} else {
+				// there was some previous execution ...
+				if (unitInfo.getState() == DPUExecutionState.FINISHED) {
+					// DPU is already finished -> just load context
+				} else {
+					// DPUExecutionState.RUNNING -> unfinished
+					// delete all data and start 
+				}
+			}
+			
+			// set to running state and execute
+			unitInfo.setState(DPUExecutionState.RUNNING);
+			pipelineFacade.save(execution);
+			
 			// put dpuInstance id to MDC, so we can identify logs related to the dpuInstance
 			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, Long.toString(node.getDpuInstance().getId()) );
 			try {
@@ -262,6 +280,11 @@ class PipelineWorker implements Runnable {
 			if (result) {
 				// DPURecord executed successfully
 				
+				// set state of last executed DPU (we know it exist)
+				// to finished
+				contextInfo.getDPUInfo(node.getDpuInstance()).setState(
+						DPUExecutionState.FINISHED);
+				
 				// save context after last execution
 				pipelineFacade.save(execution);
 				// also save new DataUnits
@@ -304,7 +327,9 @@ class PipelineWorker implements Runnable {
 			executionFailed();
 		} else {
 			executionSuccessful();
-		}        
+		}
+        // save execution
+        database.getPipeline().save(execution);
         // publish information for the rest of the application
         eventPublisher.publishEvent(new PipelineFinished(execution, this));
 	}

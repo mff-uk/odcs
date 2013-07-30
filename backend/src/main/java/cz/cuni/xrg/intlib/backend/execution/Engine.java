@@ -69,37 +69,28 @@ public class Engine
 	 * Application's configuration.
 	 */
 	protected AppConfig appConfig;
-
-	/**
-	 * DataUnit factory bean used to create new DataUnits by PipelineWorkers.
-	 */
-	protected DataUnitFactory dataUnitFactory;
 	
 	protected static Logger LOG = LoggerFactory.getLogger(Engine.class);
 
 	public Engine(ModuleFacade moduleFacade,
 			DatabaseAccess database,
-			AppConfig appConfig,
-			DataUnitFactory dataUnitFactory) {
+			AppConfig appConfig) {
 		this.moduleFacade = moduleFacade;
 		this.executorService = Executors.newCachedThreadPool();
 		this.database = database;
 		this.startUpDone = false;
 		this.appConfig = appConfig;
-		this.dataUnitFactory = dataUnitFactory;
 	}
 
 	public Engine(ModuleFacade moduleFacade,
 			DatabaseAccess database,
 			AppConfig appConfig,
-			DataUnitFactory dataUnitFactory,
 			ExecutorService executorService) {
 		this.moduleFacade = moduleFacade;
 		this.executorService = executorService;
 		this.database = database;
 		this.startUpDone = false;
 		this.appConfig = appConfig;
-		this.dataUnitFactory = dataUnitFactory;
 	}
 
 	/**
@@ -184,8 +175,11 @@ public class Engine
 					// no context, just set update pipeline status
 				} else {
 					// delete old context files
+					File root = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+					File executionRoot = new File(root, context.getRootPath());					
 					try {
-						FileUtils.deleteDirectory(context.getRootDirectory());
+						
+						FileUtils.deleteDirectory(executionRoot);
 					} catch (IOException e) {
 						LOG.error(
 								"Failed to delete old context directory. For execution: {}",
