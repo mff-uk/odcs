@@ -22,6 +22,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
@@ -34,33 +35,6 @@ class PipelineList extends ViewComponent {
 	private IntlibPagedTable tablePipelines;
 
 	private Button btnCreatePipeline;
-
-	public void runPipeline(Pipeline pipeline, boolean inDebugMode) {
-		PipelineExecution pipelineExec =  new PipelineExecution(pipeline);
-		pipelineExec.setDebugging(inDebugMode);
-		// do some settings here
-
-		// store into DB
-		App.getPipelines().save(pipelineExec);
-		AppConfig config = App.getApp().getAppConfiguration();
-		Client client = new Client(
-			config.getString(ConfigProperty.BACKEND_HOST),
-			config.getInteger(ConfigProperty.BACKEND_PORT)
-		);
-
-		// send message to backend
-		try {
-			client.checkDatabase();
-		} catch (CommunicationException e) {
-			Notification.show("Error", "Can't connect to backend. Exception: " + e.getCause().getMessage(),
-					Type.ERROR_MESSAGE);
-			return;
-		}
-
-		// show message about action
-		Notification.show("pipeline execution started ..",
-				Type.HUMANIZED_MESSAGE);
-	}
 
 	/**
 	 * Generate column in table with buttons.
@@ -135,7 +109,7 @@ class PipelineList extends ViewComponent {
 						public void buttonClick(ClickEvent event) {
 							// navigate to PipelineEdit/New
 							Pipeline pipeline = item.getBean();
-							runPipeline(pipeline, false);
+							IntlibHelper.runPipeline(pipeline, false);
 						}
 					});
 			layout.addComponent(runButton);
@@ -148,7 +122,7 @@ class PipelineList extends ViewComponent {
 						public void buttonClick(ClickEvent event) {
 							// navigate to PipelineEdit/New
 							Pipeline pipeline = item.getBean();
-							runPipeline(pipeline, true);
+							IntlibHelper.runPipeline(pipeline, true);
 						}
 					});
 			layout.addComponent(runDebugButton);

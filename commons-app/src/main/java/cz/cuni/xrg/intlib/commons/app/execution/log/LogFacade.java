@@ -1,9 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.execution.log;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import java.util.*;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.log4j.Level;
@@ -139,6 +141,30 @@ public class LogFacade {
 				+ " AND e.properties[:propKey] = :propVal"
 				+ "	AND e.properties[:propKeyDpu] = :propValDpu")
 				.setParameter("lvl", lvls)
+				.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
+				.setParameter("propVal", Long.toString(exec.getId()))
+				.setParameter("propKeyDpu", LogMessage.MDC_DPU_INSTANCE_KEY_NAME)
+				.setParameter("propValDpu", Long.toString(dpu.getId()))
+				.getResultList(),
+				LogMessage.class);
+
+		return resultList;
+	}
+        
+        /**
+	 * Returns all log messages for given dpu instance of given pipeline execution.
+	 *
+	 * @param exec   pipeline execution to show logs for
+	 * @param dpu	 dpu instance to show logs for
+	 * @return log messages
+	 */
+	public List<LogMessage> getLogs(PipelineExecution exec, DPUInstanceRecord dpu) {
+
+		@SuppressWarnings("unchecked")
+		List<LogMessage> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM LogMessage e"
+				+ " WHERE e.properties[:propKey] = :propVal"
+				+ "	AND e.properties[:propKeyDpu] = :propValDpu")
 				.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
 				.setParameter("propVal", Long.toString(exec.getId()))
 				.setParameter("propKeyDpu", LogMessage.MDC_DPU_INSTANCE_KEY_NAME)

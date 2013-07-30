@@ -50,13 +50,14 @@ public class DebuggingView extends CustomComponent {
     private Tab queryTab;
     private Tab infoTab;
     private TabSheet tabs;
-    private TextArea logTextArea;
     private QueryView queryView;
     //private HorizontalLayout refreshComponent;
     private LogMessagesTable logMessagesTable;
     private ComboBox dpuSelector;
     private boolean isFromCanvas;
     private Embedded iconStatus;
+    private CheckBox refreshAutomatically = null;
+    private RefreshThread refreshThread = null;
 
     /**
      * Default constructor.
@@ -66,18 +67,25 @@ public class DebuggingView extends CustomComponent {
      * @param debug Is execution in debug mode?
      */
     public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug, boolean isFromCanvas) {
-		this.pipelineExec = pipelineExec;
+        this.pipelineExec = pipelineExec;
         this.debugDpu = debugDpu;
         this.isInDebugMode = debug;
         this.isFromCanvas = isFromCanvas;
         buildMainLayout();
-
-        boolean isRunFinished = !(pipelineExec.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
-        if (!isRunFinished) {
-            new RefreshThread(1000, this.pipelineExec, this).start();
-        }
-
         setCompositionRoot(mainLayout);
+    }
+
+    /**
+     * Returns whether given execution is finished.
+     *
+     * @return Execution is finished.
+     */
+    public boolean isRunFinished() {
+        return !(pipelineExec.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
+    }
+    
+    public boolean isRefreshingAutomatically() {
+        return refreshAutomatically.getValue();
     }
 
     /**
@@ -101,10 +109,22 @@ public class DebuggingView extends CustomComponent {
 
         mainLayout.addComponent(executionRecordsTable);
 
+        HorizontalLayout optionLine = new HorizontalLayout();
+        optionLine.setWidth(100, Unit.PERCENTAGE);
         // DPU selector is shown in debug mode only
         if (isInDebugMode) {
-            buildDpuSelector();
+            optionLine.addComponent(buildDpuSelector());
         }
+        if(!isRunFinished()) {
+            refreshAutomatically = new CheckBox("Refresh automatically", true);
+            refreshAutomatically.setImmediate(true);
+            optionLine.addComponent(refreshAutomatically);
+            optionLine.setComponentAlignment(refreshAutomatically, Alignment.MIDDLE_RIGHT);
+            
+            refreshThread = new RefreshThread(2000, this.pipelineExec, this);
+            refreshThread.start();
+        }
+        mainLayout.addComponent(optionLine);
 
         tabs = new TabSheet();
         tabs.setSizeFull();
@@ -144,26 +164,24 @@ public class DebuggingView extends CustomComponent {
      * constructor.
      */
     public void fillContent() {
-        
-        if(isFromCanvas) {
+
+        if (isFromCanvas) {
             ThemeResource icon = IntlibHelper.getIconForExecutionStatus(pipelineExec.getExecutionStatus());
             iconStatus.setSource(icon);
             iconStatus.setDescription(pipelineExec.getExecutionStatus().name());
         }
-        
+
         boolean loadSuccessful = loadExecutionContextReader();
 
         List<MessageRecord> records = App.getDPUs().getAllDPURecords(pipelineExec);
         executionRecordsTable.setDataSource(records);
-
-        boolean isRunFinished = !(pipelineExec.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
 
         if (loadSuccessful && isInDebugMode) {
             refreshDpuSelector();
         }
 
         //Table with data
-        if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
+        if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished()) {
             DataUnitBrowser browser = loadBrowser(false);
             if (browser != null) {
                 tabs.removeTab(browseTab);
@@ -182,7 +200,7 @@ public class DebuggingView extends CustomComponent {
         logMessagesTable.setDpu(pipelineExec, isInDebugMode ? (DPUInstanceRecord) dpuSelector.getValue() : null);
 
         //Query View
-        if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished) {
+        if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished()) {
             queryTab.setEnabled(true);
         } else {
             queryTab.setEnabled(false);
@@ -193,9 +211,10 @@ public class DebuggingView extends CustomComponent {
             tabs.removeTab(infoTab);
 
         }
-
-        boolean showRefresh = !isRunFinished;
-        //refreshComponent.setVisible(showRefresh);
+        
+        if(isRunFinished() && refreshAutomatically != null) {
+            refreshAutomatically.setVisible(false);
+        }
     }
 
     /**
@@ -248,8 +267,12 @@ public class DebuggingView extends CustomComponent {
                     //File dumpDir = ctxReader.getDataUnitStorage(debugDpu, dataUnitInfo.getIndex());
                     duBrowser =
                             DataUnitBrowserFactory.getBrowser(ctxReader, pipelineExec, debugDpu, dataUnitInfo);
+
+
                 } catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
-                    Logger.getLogger(DebuggingView.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DebuggingView.class
+                            .getName()).log(Level.SEVERE, null, ex);
+
                     return null;
                 }
                 if (duBrowser != null) {
@@ -350,7 +373,7 @@ public class DebuggingView extends CustomComponent {
     /**
      * DPU select box factory.
      */
-    private void buildDpuSelector() {
+    private ComboBox buildDpuSelector() {
         dpuSelector = new ComboBox("Select DPU:");
         dpuSelector.setImmediate(true);
         if (ctxReader != null) {
@@ -360,6 +383,8 @@ public class DebuggingView extends CustomComponent {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 Object value = event.getProperty().getValue();
+
+
                 if (value != null && value.getClass() == DPUInstanceRecord.class) {
                     debugDpu = (DPUInstanceRecord) value;
                 } else {
@@ -368,7 +393,7 @@ public class DebuggingView extends CustomComponent {
                 refreshContent();
             }
         });
-        mainLayout.addComponent(dpuSelector);
+        return dpuSelector;
     }
 
     /**
@@ -401,6 +426,8 @@ public class DebuggingView extends CustomComponent {
                 dpuSelector.addItem(dpu);
                 if (dpu.equals(debugDpu)) {
                     dpuSelector.select(debugDpu);
+
+
                 }
             }
         }

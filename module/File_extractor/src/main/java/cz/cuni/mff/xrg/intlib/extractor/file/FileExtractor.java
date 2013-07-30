@@ -48,7 +48,7 @@ public class FileExtractor implements Extract,
 
 
 		try {
-			repository.extractRDFfromFileToRepository(extractType,
+			repository.extractfromFile(extractType,
 					path, fileSuffix, baseURI, onlyThisSuffix,
 					useStatisticHandler);
 		} catch (RDFException e) {

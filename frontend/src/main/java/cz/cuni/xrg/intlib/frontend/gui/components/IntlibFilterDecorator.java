@@ -95,6 +95,7 @@ public class IntlibFilterDecorator implements FilterDecorator {
 	@Override
 	public NumberFilterPopupConfig getNumberFilterPopupConfig() {
 		NumberFilterPopupConfig config = new NumberFilterPopupConfig();
+                config.setValueMarker("x");
 		return config;
 	}
 

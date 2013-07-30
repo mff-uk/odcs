@@ -26,6 +26,21 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+        
+<!--        <dependency>
+            <groupId>cz.cuni.mff.xrg.intlib.modules.libs</groupId>
+            <artifactId>silk-lib</artifactId>
+            <version>2.5.3</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.intlib.modules.libs</groupId>
+            <artifactId>java.mail</artifactId>
+            <version>1.4.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>-->
     </dependencies>
     
     <properties>    

@@ -114,7 +114,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(
+			rdfRepo.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 
@@ -133,7 +133,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(
+			rdfRepo.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 
@@ -151,7 +151,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(
+			rdfRepo.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 
@@ -169,7 +169,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(
+			rdfRepo.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 
@@ -185,9 +185,9 @@ public class LocalRDFRepoTest {
 		RDFFormatType format = RDFFormatType.RDFXML;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(outDir.toString(), fileName,
+			rdfRepo.loadToFile(outDir.toString(), fileName,
 					format);
-			rdfRepo.loadRDFfromRepositoryToFile(outDir.toString(), fileName,
+			rdfRepo.loadToFile(outDir.toString(), fileName,
 					format);
 			fail();
 
@@ -205,17 +205,17 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = true;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -229,16 +229,16 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = true;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					dirFile.getAbsolutePath(), suffix, baseURI, useSuffix,
 					useStatisticHandler);
 			fail();
 		} catch (RDFException e) {
-			long newSize = rdfRepo.getTripleCountInRepository();
+			long newSize = rdfRepo.getTripleCount();
 			assertEquals(size, newSize);
 		}
 
@@ -252,17 +252,17 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -275,10 +275,10 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -286,7 +286,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -299,10 +299,10 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -310,7 +310,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -323,10 +323,10 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -334,7 +334,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -347,10 +347,10 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -358,7 +358,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -371,10 +371,10 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -382,7 +382,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -396,7 +396,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(
+			rdfRepo.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 
@@ -418,7 +418,7 @@ public class LocalRDFRepoTest {
 			String defaultGraphUri = "http://dbpedia.org";
 			String query = "select * where {?s ?o ?p} LIMIT 50";
 
-			long sizeBefore = rdfRepo.getTripleCountInRepository();
+			long sizeBefore = rdfRepo.getTripleCount();
 
 			try {
 				rdfRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri,
@@ -427,7 +427,7 @@ public class LocalRDFRepoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = rdfRepo.getTripleCountInRepository();
+			long sizeAfter = rdfRepo.getTripleCount();
 
 			assertTrue(sizeBefore < sizeAfter);
 
@@ -452,7 +452,7 @@ public class LocalRDFRepoTest {
 
 			RDFFormat format = RDFFormat.N3;
 
-			long sizeBefore = rdfRepo.getTripleCountInRepository();
+			long sizeBefore = rdfRepo.getTripleCount();
 
 			try {
 				rdfRepo.extractfromSPARQLEndpoint(
@@ -462,7 +462,7 @@ public class LocalRDFRepoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = rdfRepo.getTripleCountInRepository();
+			long sizeAfter = rdfRepo.getTripleCount();
 
 			assertTrue(sizeBefore < sizeAfter);
 
@@ -511,7 +511,7 @@ public class LocalRDFRepoTest {
 				+ "INSERT { ?who ?what 'Boston_Bruins' } "
 				+ "WHERE { ?who ?what 'Dalas_Stars' }";
 
-		rdfRepo.addTripleToRepository(
+		rdfRepo.addTriple(
 				namespace, subjectName, predicateName, objectName);
 
 		boolean beforeUpdate = rdfRepo.isTripleInRepository(
@@ -536,17 +536,17 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -558,17 +558,17 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(
+			rdfRepo.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		boolean triplesAdded = newSize > size;
 
@@ -599,7 +599,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(
+			rdfRepo.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 
@@ -615,7 +615,7 @@ public class LocalRDFRepoTest {
 		TEDTransformSPARQL();
 		TEDloadtoTTLFile();
 
-		long addedData = rdfRepo.getTripleCountInRepository();
+		long addedData = rdfRepo.getTripleCount();
 
 		assertTrue(addedData > 0);
 	}
@@ -639,8 +639,8 @@ public class LocalRDFRepoTest {
 
 	@Test
 	public void isRepositoryEmpty() {
-		rdfRepo.cleanAllRepositoryData();
-		assertEquals(0, rdfRepo.getTripleCountInRepository());
+		rdfRepo.cleanAllData();
+		assertEquals(0, rdfRepo.getTripleCount());
 	}
 
 	@After
@@ -656,13 +656,13 @@ public class LocalRDFRepoTest {
 			String predicateName,
 			String objectName, RDFDataRepository repository) {
 
-		long size = repository.getTripleCountInRepository();
+		long size = repository.getTripleCount();
 		boolean isInRepository = repository.isTripleInRepository(
 				namespace, subjectName, predicateName, objectName);
 
-		repository.addTripleToRepository(
+		repository.addTriple(
 				namespace, subjectName, predicateName, objectName);
-		long expectedSize = repository.getTripleCountInRepository();
+		long expectedSize = repository.getTripleCount();
 
 		if (isInRepository) {
 			assertEquals(expectedSize, size);
@@ -697,16 +697,16 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = true;
 
-		long size = rdfRepo.getTripleCountInRepository();
+		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractRDFfromFileToRepository(FileExtractType.PATH_TO_FILE,
+			rdfRepo.extractfromFile(FileExtractType.PATH_TO_FILE,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCountInRepository();
+		long newSize = rdfRepo.getTripleCount();
 
 		LOG.debug("EXTRACTING from FILE - OK");
 		LOG.debug(
@@ -801,7 +801,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadRDFfromRepositoryToFile(
+			rdfRepo.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 
@@ -876,17 +876,17 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		boolean useStatisticHandler = false;
 
-		long size = repository.getTripleCountInRepository();
+		long size = repository.getTripleCount();
 
 		try {
-			repository.extractRDFfromFileToRepository(
+			repository.extractfromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
 
-		long newSize = repository.getTripleCountInRepository();
+		long newSize = repository.getTripleCount();
 
 		assertTrue(newSize > size);
 	}
@@ -921,7 +921,7 @@ public class LocalRDFRepoTest {
 		boolean isNameUnique = false;
 
 		try {
-			repository.loadRDFfromRepositoryToFile(
+			repository.loadToFile(
 					outDir.toString(), fileName, format, canBeOverWriten,
 					isNameUnique);
 

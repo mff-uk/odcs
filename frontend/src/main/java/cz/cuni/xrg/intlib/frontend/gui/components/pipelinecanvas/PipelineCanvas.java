@@ -3,10 +3,6 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
-import cz.cuni.xrg.intlib.commons.app.communication.Client;
-import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
@@ -17,6 +13,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
 import cz.cuni.xrg.intlib.frontend.gui.components.EdgeDetail;
 import java.util.Collection;
@@ -118,9 +115,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		pip.setGraph(graph);
 		App.getApp().getPipelines().save(pip);
 		Node debugNode = graph.getNodeById(dpuId);
-		PipelineExecution pExec = runPipeline(pip, true, debugNode);
+		PipelineExecution pExec = IntlibHelper.runPipeline(pip, true, debugNode);
 		if (pExec == null) {
-			Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
+                        //Solved by dialog if backend is offline in method runPipeline.
+			//Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
 			return;
 		}
 
@@ -259,46 +257,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		App.getApp().addWindow(edgeDetailDialog);
 	}
 
-	/**
-	 * Sets up parameters of pipeline execution and runs the pipeline.
-	 *
-	 * @param pipeline {@link Pipeline} to run.
-	 * @param inDebugMode Run in debug/normal mode.
-	 * @param debugNode {@link Node} where debug execution should stop. Valid
-	 * only for debug mode.
-	 * @return {@link PipelineExecution} of given {@link Pipeline}.
-	 */
-	public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
-
-		PipelineExecution pipelineExec = new PipelineExecution(pipeline);
-		pipelineExec.setDebugging(inDebugMode);
-		if (inDebugMode && debugNode != null) {
-			pipelineExec.setDebugNode(debugNode);
-		}
-		// do some settings here
-
-		// store into DB
-		App.getPipelines().save(pipelineExec);
-		AppConfig config = App.getApp().getAppConfiguration();
-		Client client = new Client(
-				config.getString(ConfigProperty.BACKEND_HOST),
-				config.getInteger(ConfigProperty.BACKEND_PORT));
-
-		// send message to backend
-		try {
-			client.checkDatabase();
-		} catch (CommunicationException e) {
-			Notification.show("Error", "Can't connect to backend. Exception: " + e.getCause().getMessage(),
-					Notification.Type.ERROR_MESSAGE);
-			return null;
-		}
-
-		// show message about action
-		Notification.show("pipeline execution started ..",
-				Notification.Type.HUMANIZED_MESSAGE);
-
-		return pipelineExec;
-	}
+	
 
 	/**
 	 * Inform listeners, that the detail is closing.

@@ -50,7 +50,7 @@ public class FileLoader implements Load,
 		boolean canFileOverwritte = true;
 
 		try {
-			repository.loadRDFfromRepositoryToFile(directoryPath, fileName,
+			repository.loadToFile(directoryPath, fileName,
 					formatType, canFileOverwritte, isNameUnique);
 		} catch (RDFException | CannotOverwriteFileException ex) {
 			throw new LoadException(ex);

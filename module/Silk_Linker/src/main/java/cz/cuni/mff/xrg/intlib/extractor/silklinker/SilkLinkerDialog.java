@@ -44,7 +44,8 @@ public class SilkLinkerDialog extends AbstractConfigDialog<SilkLinkerConfig> {
         confPath.setImmediate(false);
         confPath.setWidth("100%");
         confPath.setHeight("-1px");
-        confPath.setInputPrompt("/file/test.xml");
+        //confPath.setInputPrompt("/tmp/silkScripts/be-sameAs.xml");
+        confPath.setValue("/tmp/silkScripts/be-sameAs.xml");
         confPath.addValidator(new Validator() {
             @Override
             public void validate(Object value) throws Validator.InvalidValueException {
