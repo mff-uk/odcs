@@ -19,9 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LogFacade {
 
-	private static final Logger LOG = LoggerFactory.getLogger(
-			PipelineFacade.class);
-
 	/**
 	 * Entity manager for accessing database with persisted objects
 	 */

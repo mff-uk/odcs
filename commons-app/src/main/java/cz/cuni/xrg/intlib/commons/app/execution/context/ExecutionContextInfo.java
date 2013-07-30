@@ -167,6 +167,16 @@ public class ExecutionContextInfo implements Serializable {
 	}
 	
 	/**
+	 * Return context information class {@link ProcessingUnitInfo} for
+	 * given DPU. If the context does not exist, then create new.
+	 * @param dpuInstance Instance of DPU for which retrieve context info.
+	 * @return {@link ProcessingUnitInfo}
+	 */
+	public ProcessingUnitInfo createDPUInfo(DPUInstanceRecord dpuInstance) {
+		return getContext(dpuInstance);
+	}
+	
+	/**
 	 * Return set of indexes of stored DPU's execution information.
 	 * 
 	 * @return

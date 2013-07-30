@@ -22,6 +22,7 @@ public enum ConfigProperty {
 	VIRTUOSO_DEFAULT_GRAPH("virtuoso.defautgraph"),
 	
 	MODULE_PATH("module.path"),
+	@Deprecated
 	MODULE_LIBS("module.libs"),
 	MODULE_FRONT_EXPOSE("module.frontend.expose"),
 	MODULE_BACK_EXPOSE("module.backend.expose"),

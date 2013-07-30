@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import java.io.File;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -116,10 +115,10 @@ public class PipelineExecution implements Serializable {
 	 *
 	 * @return
 	 */
-	public ExecutionContextInfo createExecutionContext(File directory) {
+	public ExecutionContextInfo createExecutionContext() {
 
 		if (context == null) {
-			context = new ExecutionContextInfo(directory);
+			context = new ExecutionContextInfo(getId());
 		}
 
 		return context;

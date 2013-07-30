@@ -13,8 +13,6 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
-import static cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo.logger;
-
 /**
  *
  * @author Jiri Tomes
