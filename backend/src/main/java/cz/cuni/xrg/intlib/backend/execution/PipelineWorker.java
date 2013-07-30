@@ -31,6 +31,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
@@ -241,7 +242,13 @@ class PipelineWorker implements Runnable {
 				// can't create DataUnit 
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(), execution, this));
 				executionFailed = true;
-				LOG.error("PipelineWorker: DataUnit exception", e);
+				LOG.error("PipelineWorker: DataUnit create exception", e);
+				break;
+			} catch (DataUnitException e) {
+				// some problem with DataUnits
+				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(), execution, this));
+				LOG.error("PipelineWorker: DataUnit Exception", e);
+				executionFailed = true;
 				break;
 			} catch (Exception e) {
 				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
@@ -441,6 +448,7 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
+	 * @throws DataUnitException 
 	 * @throws DataUnitCreateException 
 	 * Executes a single DPURecord associated with given Node.
 	 * 
@@ -451,7 +459,7 @@ class PipelineWorker implements Runnable {
 	 * @throws StructureException 
 	 * @throws  
 	 */
-	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException, DataUnitCreateException {
+	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException, DataUnitCreateException, DataUnitException {
 		// prepare what we need to start the execution
 		DPUInstanceRecord dpuInstanceRecord = node.getDpuInstance();
 		
@@ -522,8 +530,9 @@ class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 * @throws DataUnitCreateException 
+	 * @throws DataUnitException 
 	 */
-	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx) throws DataUnitCreateException {
+	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx) throws DataUnitCreateException, DataUnitException {
 
 		eventPublisher.publishEvent(new ExtractStartEvent(extractor, ctx, this));
 		
@@ -544,8 +553,9 @@ class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 * @throws DataUnitCreateException 
+	 * @throws DataUnitException 
 	 */
-	private boolean runTransformer(Transform transformer, ExtendedTransformContext ctx) throws DataUnitCreateException {
+	private boolean runTransformer(Transform transformer, ExtendedTransformContext ctx) throws DataUnitCreateException, DataUnitException {
 
 		eventPublisher.publishEvent(new TransformStartEvent(transformer, ctx, this));
 		
@@ -566,8 +576,9 @@ class PipelineWorker implements Runnable {
 	 * @param ctx
 	 * @return false if execution failed
 	 * @throws DataUnitCreateException 
+	 * @throws DataUnitException 
 	 */
-	private boolean runLoader(Load loader, ExtendedLoadContext ctx) throws DataUnitCreateException {
+	private boolean runLoader(Load loader, ExtendedLoadContext ctx) throws DataUnitCreateException, DataUnitException {
 		
 		eventPublisher.publishEvent(new LoadStartEvent(loader, ctx, this));
 		

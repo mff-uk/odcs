@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.transformer;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 
 /**
  * Is responsible for transforming- cleaning or enriching RDF data.
@@ -24,9 +25,11 @@ public interface Transform {
 	 *            transformation process
 	 * @throws TransformException If the transformation fails, this exception
 	 *             has to be thrown
+	 * @throws DataUnitException
 	 * @throws DataUnitCreateException If failed to create a DataUnit.
 	 */
 	public void transform(TransformContext context)
 			throws TransformException,
+				DataUnitException,
 				DataUnitCreateException;
 }

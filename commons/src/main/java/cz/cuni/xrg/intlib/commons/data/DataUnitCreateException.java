@@ -6,7 +6,7 @@ package cz.cuni.xrg.intlib.commons.data;
  * @author Petyr
  *
  */
-public class DataUnitCreateException extends Exception {
+public class DataUnitCreateException extends DataUnitException {
 
     public DataUnitCreateException(Throwable cause) {
         super(cause);
