@@ -14,6 +14,7 @@ public class RefreshThread extends Thread {
     private int interval;
     private PipelineExecution execution;
     private DebuggingView debug;
+    private boolean lastStatus = false;
 
     /**
      * Default constructor with refresh interval in milliseconds and pipeline
@@ -41,9 +42,15 @@ public class RefreshThread extends Thread {
             debug.getUI().access(new Runnable() {
                 @Override
                 public void run() {
-                    debug.refreshContent();
+                    if (debug.isRefreshingAutomatically()) {
+                        lastStatus = true;
+                        debug.refreshContent();
+                    } else {
+                        lastStatus = false;
+                    }
                 }
             });
+            isRunFinished &= lastStatus;
 
             try {
                 Thread.sleep(interval);
