@@ -127,7 +127,7 @@ class PipelineWorker implements Runnable {
 		this.contexts = new HashMap<>();
 		this.database = database;
 		// create or get existing .. 
-		this.contextInfo = execution.createExecutionContext(workingDirectory);
+		this.contextInfo = execution.createExecutionContext();
 		this.appConfig = appConfig;
 		// TODO Petyr: Release context sooner then on the end of the execution
 	}

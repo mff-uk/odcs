@@ -18,6 +18,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- define output dirs -->
 		<project.output.lib>target\lib\</project.output.lib>
+		<project.output.lib.backend>target\lib\backend\</project.output.lib.backend>
 		<project.output.dpu>target\dpu\</project.output.dpu>
 		<skipTests>false</skipTests>
 	</properties>

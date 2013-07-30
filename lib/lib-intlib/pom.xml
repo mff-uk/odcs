@@ -24,7 +24,7 @@
 						</goals>
 						<configuration>
 							<!-- define output directory -->
-							<outputDirectory>${output.lib.dir}</outputDirectory>
+							<outputDirectory>${output.lib.backend.dir}</outputDirectory>
 							<!-- do not use transitivity just what we specify -->
 							<artifactItems>
 
