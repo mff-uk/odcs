@@ -59,6 +59,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_DATAUNIT_INFO"
 CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
+  "execution_id" INTEGER,
   "directory" VARCHAR(255),
   PRIMARY KEY ("id")
 );
@@ -68,7 +69,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_DPU"
   "id" INTEGER IDENTITY,
   "exec_context_pipeline_id" INTEGER,
   "dpu_instance_id" INTEGER,
-  "dummy" SMALLINT, -- TODO remove this column
+  "state "SMALLINT,
   PRIMARY KEY ("id")
 );
 

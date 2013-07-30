@@ -41,7 +41,7 @@
 	<bean id="dpuFacade" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade" />
 	
 	<!-- Facade for viewing log messages -->
-	<bean id="logFacade" class="cz.cuni.xrg.intlib.commons.app.execution.LogFacade" />
+	<bean id="logFacade" class="cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade" />
 
 	<!-- Facade for managing shedules -->
 	<bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" />	

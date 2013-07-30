@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.execution.log;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.execution.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import java.util.*;

@@ -8,7 +8,6 @@ import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import java.io.Serializable;
 import java.util.List;
-import virtuoso.hibernate.VirtuosoDialect;
 
 /**
  * Contains and manage information about execution for single {@link DPU}. The
@@ -31,19 +30,9 @@ public class ProcessingUnitInfo implements Serializable {
 	private Long id;
 
 	/**
-	 * Dummy column to work around virtuoso's missing support for no-column
-	 * insert. To be removed in future if other persisted attributes are added.
-	 * 
-	 * @see VirtuosoDialect#getNoColumnsInsertString()
-	 */
-	@SuppressWarnings("unused")
-	@Column
-	private int dummy = 0;
-
-	/**
 	 * Describe state of the DPU execution.
 	 */
-	@Transient
+	@Enumerated(EnumType.ORDINAL)
 	private DPUExecutionState state = DPUExecutionState.RUNNING;
 
 	/**
