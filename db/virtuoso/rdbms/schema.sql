@@ -69,7 +69,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_DPU"
   "id" INTEGER IDENTITY,
   "exec_context_pipeline_id" INTEGER,
   "dpu_instance_id" INTEGER,
-  "state "SMALLINT,
+  "state" SMALLINT,
   PRIMARY KEY ("id")
 );
 
