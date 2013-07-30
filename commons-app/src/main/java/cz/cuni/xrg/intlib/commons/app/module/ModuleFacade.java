@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -16,173 +17,208 @@ import org.slf4j.LoggerFactory;
  * Facade providing actions with DPURecord module implementations.
  * 
  * @author Petyr
- *
+ * 
  */
 public class ModuleFacade {
-	
+
 	/**
 	 * Used framework.
 	 */
 	private OSGIFramework framework;
-	
+
 	/**
 	 * Facade configuration.
 	 */
 	private ModuleFacadeConfig configuration;
-	
+
 	/**
 	 * Logger instance.
 	 */
-	private static final Logger LOG = LoggerFactory.getLogger(ModuleFacade.class);
-	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ModuleFacade.class);
+
 	/**
-	 * Base ctor. The configuration is not used until some other 
-	 * method is called. So is not necessary to have all configuration
-	 * fully set when passing to the ctor.
+	 * Base ctor. The configuration is not used until some other method is
+	 * called. So is not necessary to have all configuration fully set when
+	 * passing to the ctor.
+	 * 
 	 * @param configuration
 	 */
 	public ModuleFacade(ModuleFacadeConfig configuration) {
 		this.framework = new OSGIFramework();
 		this.configuration = configuration;
-	}	
-	
+	}
+
 	/**
 	 * Start framework. Must be called as a first method after ctor.
+	 * 
 	 * @throws FrameworkStartFailedException
 	 * @throws LibsLoadFailedException
 	 */
-	public void start() throws FrameworkStartFailedException, LibsLoadFailedException {
+	public void start()
+			throws FrameworkStartFailedException,
+				LibsLoadFailedException {
 		LOG.info("Starting module facade");
 		// start
 		framework.start(configuration.getPackagesToExpose());
-		// load libs
+		// load libraries
 		try {
-			installDirectory(configuration.getDpuLibsFolder());
+			installDirectories(configuration.getDpuLibFolder());
 		} catch (Exception e) {
 			LOG.error("installDirectory failed", e);
 			throw new LibsLoadFailedException(e);
 		}
 	}
-	
+
 	/**
-	 * Stop framework. Should be called as last method after 
-	 * releasing all used instances from ModuleFacade.
+	 * Stop framework. Should be called as last method after releasing all used
+	 * instances from ModuleFacade.
 	 */
 	public void stop() {
 		framework.stop();
 	}
-	
+
 	/**
 	 * Load main class from bundle and return it as object.
+	 * 
 	 * @param relativePath Relative path in DPU's directory.
 	 * @return Loaded class.
-	 * @throws FileNotFoundException 
-	 * @throws ClassLoadFailedException 
-	 * @throws BundleInstallFailedException 
+	 * @throws FileNotFoundException
+	 * @throws ClassLoadFailedException
+	 * @throws BundleInstallFailedException
 	 */
-	public Object getObject(String relativePath) 
-			throws BundleInstallFailedException, ClassLoadFailedException, FileNotFoundException {
-		checkExistance(relativePath); // throw FileNotFoundException	
-		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
+	public Object getObject(String relativePath)
+			throws BundleInstallFailedException,
+				ClassLoadFailedException,
+				FileNotFoundException {
+		checkExistance(relativePath); // throw FileNotFoundException
+		String uri = "file:///" + configuration.getDpuFolder() + File.separator
+				+ relativePath;
 		// throw BundleInstallFailedException
 		return framework.loadClass(uri);
 	}
-		
+
 	/**
 	 * Return class loader for bundle.
+	 * 
 	 * @param relativePath RelativePath Relative path in DPU's directory.
 	 * @return Bundle's ClassLoader
 	 * @throws FileNotFoundException
-	 * @throws BundleInstallFailedException 
+	 * @throws BundleInstallFailedException
 	 */
-	public ClassLoader getClassLoader(String relativePath) 
-			throws BundleInstallFailedException, FileNotFoundException {
+	public ClassLoader getClassLoader(String relativePath)
+			throws BundleInstallFailedException,
+				FileNotFoundException {
 		checkExistance(relativePath); // throw FileNotFoundException
-		String uri = "file:///" + configuration.getDpuFolder() + relativePath;
+		String uri = "file:///" + configuration.getDpuFolder() + File.separator
+				+ relativePath;
 		// throw BundleInstallFailedException
 		BundleContainer container = framework.installBundle(uri);
 		// get class loader
 		return container.getClassLoader();
 	}
-	
+
 	/**
 	 * Check if the bundle exist.
+	 * 
 	 * @param relativePath RelativePath Relative path in DPU's directory.
 	 * @throws FileNotFoundException
 	 */
-	private void checkExistance(String relativePath) throws FileNotFoundException {
-		File file = new File(configuration.getDpuFolder() + relativePath);
+	private void checkExistance(String relativePath)
+			throws FileNotFoundException {
+		File file = new File(configuration.getDpuFolder() + File.separator
+				+ relativePath);
 		if (file.exists()) {
-			// file exist .. 
+			// file exist ..
 		} else {
-			throw new FileNotFoundException("File '" + file.getAbsolutePath() + "' does not exist.");
-		}	
+			throw new FileNotFoundException("File '" + file.getAbsolutePath()
+					+ "' does not exist.");
+		}
 	}
-	
-    /**
-     * Return content of manifest for given bundle that 
-     * is stored in DPU's directory.
-     * @param relativePath Relative path in DPU's directory.
-     * @return Description stored in manifest file or null in case of error.
-     */
-    public String getJarDescription(String relativePath) {
-    	
-    	String uri = "file:///" + configuration.getDpuFolder() + relativePath;
-    	
-        URL url;
+
+	/**
+	 * Return content of manifest for given bundle that is stored in DPU's
+	 * directory.
+	 * 
+	 * @param relativePath Relative path in DPU's directory.
+	 * @return Description stored in manifest file or null in case of error.
+	 */
+	public String getJarDescription(String relativePath) {
+
+		String uri = "file:///" + configuration.getDpuFolder() + File.separator
+				+ relativePath;
+
+		URL url;
 		try {
 			url = new URL(uri);
 		} catch (MalformedURLException ex) {
 			LOG.error("Failed to read create utl from {}", relativePath, ex);
 			return null;
 		}
-    	
-        try ( InputStream is = url.openStream()) {        	        	
-        	Manifest manifest = new Manifest(is);
-        	Attributes mainAttribs = manifest.getMainAttributes();
-        	String description = (String)mainAttribs.get("Description");
-        	
-        	is.close();
-        	return description;
-        } catch (IOException ex) {
-        	LOG.error("Failed to read description from {}", uri, ex);
-        	// in case of exception return null
-        	return null;
-        }
-    }	
-	
+
+		try (InputStream is = url.openStream()) {
+			Manifest manifest = new Manifest(is);
+			Attributes mainAttribs = manifest.getMainAttributes();
+			String description = (String) mainAttribs.get("Description");
+
+			is.close();
+			return description;
+		} catch (IOException ex) {
+			LOG.error("Failed to read description from {}", uri, ex);
+			// in case of exception return null
+			return null;
+		}
+	}
+
 	/**
-	 * List files in single directory (non-recursive). If the
-	 * file is *.jar then load id as a bundle.
+	 * Load files in given directories (non-recursive). If the file is *.jar
+	 * then load id as a bundle.
+	 * 
+	 * @param directoryPath system path to directory. Not prefixed by file:///
+	 */
+	private void installDirectories(List<String> directoryPaths) {
+		for (String directory : directoryPaths) {
+			installDirectory(directory);
+		}
+	}
+
+	/**
+	 * List files in single directory (non-recursive). If the file is *.jar then
+	 * load id as a bundle.
+	 * 
 	 * @param directoryPath system path to directory. Not prefixed by file:///
 	 * @throws LibsLoadFailedException
 	 */
-	private void installDirectory(String directoryPath) throws LibsLoadFailedException {
+	private void installDirectory(String directoryPath)
+			throws LibsLoadFailedException {
 		LOG.info("Loading libs from {}", directoryPath);
-		
-		File directory = new File( directoryPath );
+
+		File directory = new File(directoryPath);
 		File[] fList = directory.listFiles();
-		if (fList == null ){
+		if (fList == null) {
 			// invalid directory
-			throw new LibsLoadFailedException("Invalid libs path: " + directoryPath);
+			throw new LibsLoadFailedException("Invalid library path: "
+					+ directoryPath);
 		}
 		// load bundles ..
-		for (File file : fList){
-			if (file.isFile()){
+		for (File file : fList) {
+			if (file.isFile()) {
 				if (file.getName().contains("jar")) {
 					LOG.info("Loading lib '{}'", file.getAbsolutePath());
 					// load and install as bundle
-					String path = "file:///" + file.getAbsolutePath().replace('\\', '/');				
+					String path = "file:///"
+							+ file.getAbsolutePath().replace('\\', '/');
 					try {
-						framework.installBundle( path );
+						framework.installBundle(path);
 					} catch (BundleInstallFailedException e) {
 						LOG.error("Failed to load bundle from {}", path, e);
-						throw new LibsLoadFailedException("Failed to load bundle " + path, e);
+						throw new LibsLoadFailedException(
+								"Failed to load bundle " + path, e);
 					}
 				}
-				
+
 			}
 		}
 	}
-	
+
 }

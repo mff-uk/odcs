@@ -1,67 +1,101 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
 import cz.cuni.xrg.intlib.commons.app.Application;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 
 /**
  * Contains settings for ModuleFacade;
- *
+ * 
  * @author Petyr
- *
+ * 
  */
 public class ModuleFacadeConfig {
 
 	/**
-	 * Folder with dpu to load during execution. 
-	 * Without file:/// prefix.
+	 * Name for directory where DPUs are stored.
 	 */
-	private String dpuFolder;
+	private static final String DPU_DIRECTORY = "dpu";
 
 	/**
-	 * List package that should be expose from application.
+	 * Name for directory with libraries.
 	 */
-	private String packagesToExpose = "";
-	
+	private static final String LIB_DIRECTORY = "lib";
+
 	/**
-	 * Folder with dpu libraries.
-	 * Without file:/// prefix.
+	 * Name for directory in {@link #LIB_DIRECTORY} where special libs for
+	 * backend (Vaadin, .. ) are stored.
 	 */
-	private String dpuLibsFolder = "";
+	private static final String LIB_BACKEND_DIRECTORY = "backend";
+
+	/**
+	 * Contains list of common packages to export. If not empty must end by
+	 * comma.
+	 */
+	private static final String PACKAGE_BASE = "";
+
+	/**
+	 * Path to the root directory, does not end on file separator.
+	 */
+	private String rootDirectory;
+
+	/**
+	 * List additional package that should be expose from application.
+	 */
+	private String aditionalPackages;
+
+	/**
+	 * If true then libraries from {#link {@link #LIB_BACKEND_DIRECTORY} are
+	 * also loaded.
+	 */
+	private boolean useBackendLibs;
 
 	/**
 	 * Module configuration is constructed directly from {@link AppConfig}.
-	 *
+	 * 
 	 * @param conf
 	 */
 	public ModuleFacadeConfig(AppConfig conf, Application app) {
-		dpuFolder = conf.getString(ConfigProperty.MODULE_PATH);
-		dpuLibsFolder = conf.getString(ConfigProperty.MODULE_LIBS);
-		packagesToExpose = conf.getString(Application.FRONTEND.equals(app)
-			? ConfigProperty.MODULE_FRONT_EXPOSE : ConfigProperty.MODULE_BACK_EXPOSE);
+		this.rootDirectory = conf.getString(ConfigProperty.MODULE_PATH);
+		this.aditionalPackages = conf.getString(Application.FRONTEND
+				.equals(app)
+				? ConfigProperty.MODULE_FRONT_EXPOSE
+				: ConfigProperty.MODULE_BACK_EXPOSE);
+		this.useBackendLibs = !Application.FRONTEND.equals(app);
 	}
 
+	/**
+	 * The path does not end on file separator
+	 * 
+	 * @return
+	 */
 	public String getDpuFolder() {
-		return dpuFolder;
-	}
-
-	public void setDpuFolder(String dpuFolder) {
-		this.dpuFolder = dpuFolder;
+		return rootDirectory + File.separator + DPU_DIRECTORY;
 	}
 
 	public String getPackagesToExpose() {
-		return packagesToExpose;
+		return PACKAGE_BASE + aditionalPackages;
 	}
 
-	public void setPackagesToExpose(String packagesToExpose) {
-		this.packagesToExpose = packagesToExpose;
+	/**
+	 * Return list that contains path to directories with libraries. The path
+	 * does not end on file separator.
+	 * 
+	 * @return
+	 */
+	public List<String> getDpuLibFolder() {
+		List<String> result = new LinkedList<>();
+		if (useBackendLibs) {
+			result.add(rootDirectory + File.separator + LIB_DIRECTORY
+					+ File.separator + LIB_BACKEND_DIRECTORY);
+		}
+		result.add(rootDirectory + File.separator + LIB_DIRECTORY);
+
+		return result;
 	}
 
-	public String getDpuLibsFolder() {
-		return dpuLibsFolder;
-	}
-
-	public void setDpuLibsFolder(String dpuLibsFolder) {
-		this.dpuLibsFolder = dpuLibsFolder;
-	}
 }
