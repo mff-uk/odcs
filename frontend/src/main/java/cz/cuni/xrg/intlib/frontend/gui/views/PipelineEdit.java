@@ -21,6 +21,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
@@ -50,6 +51,7 @@ class PipelineEdit extends ViewComponent {
 	DPUTree dpuTree;
 	TabSheet tabSheet;
 	DragAndDropWrapper dadWrapper;
+        Button undo;
 
 	/**
 	 * Empty constructor.
@@ -115,7 +117,9 @@ class PipelineEdit extends ViewComponent {
 					dpuTree.refresh();
 					dpuTree.markAsDirty();
 					App.getApp().push();
-				}
+				} else if(klass == PipelineGraph.class) {
+                                    undo.setEnabled(true);
+                                }
 			}
 
 			@Override
@@ -201,12 +205,16 @@ class PipelineEdit extends ViewComponent {
 				calculateCanvasDimensions(bounds);
 			}
 		});
-		Button undo = new Button("Undo", new Button.ClickListener() {
+		undo = new Button("Undo", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				pc.undo();
+				if(!pc.undo()) {
+                                    event.getButton().setEnabled(false);
+                                }
 			}
 		});
+                undo.setEnabled(false);
+                undo.setImmediate(true);
 		left.addComponent(zoomIn);
 		left.addComponent(zoomOut);
 		left.addComponent(undo);
