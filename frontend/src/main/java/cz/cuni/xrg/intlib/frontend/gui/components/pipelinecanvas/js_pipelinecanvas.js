@@ -21,6 +21,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         this.group = null;
         this.text = null;
         this.rect = null;
+        this.isInMultiselect = false;
 
         this.connectionFrom = [];
         this.connectionTo = [];
@@ -113,6 +114,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     // Stage state constants
     var NEW_CONNECTION_MODE = "new_connection_mode";
     var NORMAL_MODE = "normal_mode";
+    var MULTISELECT_MODE = "multiselect_mode";
 
     var stageMode = NORMAL_MODE;
 
@@ -134,10 +136,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var removeConnectionIcon = null;
     var debugIcon = null;
     var detailIcon = null;
+    var formatIcon = null;
+    var distributeIcon = null;
 
     var backgroundRect = null;
 
     var tooltip = null;
+    var formattingActionBar = null;
 
     /** Init function which builds entire stage for pipeline */
     function init() {
@@ -193,6 +198,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 newConnStart = null;
                 stageMode = NORMAL_MODE;
                 lineLayer.draw();
+            } else if (stageMode === MULTISELECT_MODE) {
+                cancelMultiselect();
             } else {
                 setSelectedDpu(null);
             }
@@ -227,7 +234,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         basePath = basePath + imgPath;
 
         addConnectionIcon = new Image();
-        addConnectionIcon.src = basePath + "arrow_right_32.png";
+        addConnectionIcon.src = basePath + "arrow_right.png";
 
         removeConnectionIcon = new Image();
         removeConnectionIcon.src = basePath + "TrashFull.png";
@@ -238,8 +245,17 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         detailIcon = new Image();
         detailIcon.src = basePath + "Gear.png";
 
+        formatIcon = new Image();
+        formatIcon.src = basePath + "format.png";
+
+        distributeIcon = new Image();
+        distributeIcon.src = basePath + "distribute.png";
+
         tooltip = createTooltip('Tooltip');
         dpuLayer.add(tooltip);
+
+        formattingActionBar = createFormattingActionBar();
+        dpuLayer.add(formattingActionBar);
     }
 
     /** 
@@ -287,8 +303,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 //        context.font = '18pt Calibri';
 //        context.fillStyle = 'black';
 //        context.fillText(message, 10, 25);
-
-        rpcProxy.onLogMessage(message);
+//
+//        rpcProxy.onLogMessage(message);
     }
 
     /** Updates text in DPU visualization
@@ -359,6 +375,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         position.x = (position.x + 16) / scale;
         position.y = position.y / scale;
         tooltip.setPosition(position);
+        tooltip.moveToTop();
         tooltip.setVisible(true);
         dpuLayer.draw();
     }
@@ -441,7 +458,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             x: rect.getWidth() - 16,
             y: 0,
             width: 16,
-            height: 64,
+            height: 80,
             visible: false
         });
 
@@ -510,7 +527,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         // DPU Remove command
         var cmdRemove = new Kinetic.Image({
             x: 0,
-            y: 48,
+            y: 64,
             image: removeConnectionIcon,
             width: 16,
             height: 16,
@@ -558,6 +575,28 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
         actionBar.add(cmdDebug);
 
+        var cmdFormat = new Kinetic.Image({
+            x: 0,
+            y: 48,
+            image: formatIcon,
+            width: 16,
+            height: 16,
+            startScale: 1
+        });
+        cmdFormat.on('click', function(evt) {
+            writeMessage(messageLayer, 'Format clicked');
+            stageMode = MULTISELECT_MODE;
+            multiselect(dpu.id);
+            evt.cancelBubble = true;
+        });
+        cmdFormat.on('mouseenter', function(evt) {
+            activateTooltip('DPU layout formatting');
+        });
+        cmdFormat.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdFormat);
 
 
         group.add(rect);
@@ -572,23 +611,24 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 writeMessage(messageLayer, 'mouseentered');
                 dpuLayer.draw();
                 //	actionLayer.draw();
+            } else if (stageMode === MULTISELECT_MODE) {
+                formattingActionBar.setVisible(true);
+                formattingActionBar.moveToTop();
+                var pos = stage.getMousePosition();
+                pos.x = (pos.x) / scale;
+                pos.y = (pos.y) / scale;
+                formattingActionBar.setPosition(pos);
+                dpuLayer.draw();
             }
         });
 
         group.on('mouseleave', function() {
             actionBar.setVisible(false);
+            if (stageMode === MULTISELECT_MODE) {
+                //formattingActionBar.setVisible(false);
+            }
             dpuLayer.draw();
             return;
-            var pos = stage.getMousePosition();
-            pos.x = pos.x / scale;
-            pos.y = pos.y / scale;
-            var groupPos = group.getPosition();
-
-            if (pos.x < groupPos.x || pos.x > groupPos.x + group.getWidth() || pos.y < groupPos.y || pos.y > groupPos.y + group.getHeight()) {
-                //clickRect.setVisible(false);
-                writeMessage(messageLayer, 'mouseleft');
-
-            }
         });
 
         // Registering for drag
@@ -667,6 +707,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 if (!isDragging) {
                     evt.cancelBubble = true;
                 }
+            } else if (stageMode === MULTISELECT_MODE) {
+                multiselect(dpu.id);
+                evt.cancelBubble = true;
             }
         });
 
@@ -678,6 +721,326 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpuLayer.draw();
 
         rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale));
+    }
+
+    /**
+     * Add or removes dpu with given id to/from multiselect.
+     * 
+     * @param {int} id Id of dpu to add to/remove from multiselect.
+     * 
+     */
+    function multiselect(id) {
+        var dpu = dpus[id];
+        dpu.isInMultiselect = !dpu.isInMultiselect;
+        var rect = dpu.group.get('Rect')[0];
+        if (dpu.isInMultiselect) {
+            rect.setStrokeWidth(4);
+            writeMessage(messageLayer, 'Selecting DPU');
+        } else {
+            rect.setStrokeWidth(2);
+            writeMessage(messageLayer, 'Unselecting DPU');
+        }
+        dpuLayer.draw();
+    }
+
+    /**
+     * Cancels multiselect mode and unselects all selected DPUs.
+     */
+    function cancelMultiselect() {
+        writeMessage(messageLayer, 'canceling multiselect');
+        for (var dpuId in dpus) {
+            var dpu = dpus[dpuId];
+            if (dpu.isInMultiselect) {
+                dpu.isInMultiselect = false;
+                dpu.group.get('Rect')[0].setStrokeWidth(2);
+            }
+        }
+        formattingActionBar.setVisible(false);
+        dpuLayer.draw();
+        stageMode = NORMAL_MODE;
+    }
+
+    /**
+     * Creates action bar for formatting actions.
+     * 
+     * @returns Created action bar.
+     */
+    function createFormattingActionBar() {
+        var actionBar = new Kinetic.Group({
+            x: 0,
+            y: 0,
+            width: 64,
+            height: 48,
+            visible: false
+        });
+
+        // Align left command
+        var cmdLeft = new Kinetic.Image({
+            x: 0,
+            y: 16,
+            image: addConnectionIcon,
+            width: 16,
+            height: 16,
+            startScale: 1,
+            rotationDeg: 180,
+            offset: [8, 8]
+        });
+
+        cmdLeft.on('click', function(evt) {
+            multiselectAlign('left');
+            evt.cancelBubble = true;
+        });
+        cmdLeft.on('mouseenter', function() {
+            activateTooltip('Align left');
+        });
+        cmdLeft.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdLeft);
+
+        // Align right command
+        var cmdRight = new Kinetic.Image({
+            x: 32,
+            y: 16,
+            image: addConnectionIcon,
+            width: 16,
+            height: 16,
+            startScale: 1,
+            rotationDeg: 0,
+            offset: [8, 8]
+        });
+
+        cmdRight.on('click', function(evt) {
+            multiselectAlign('right');
+            evt.cancelBubble = true;
+        });
+        cmdRight.on('mouseenter', function() {
+            activateTooltip('Align right');
+        });
+        cmdRight.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdRight);
+
+        // Align top command
+        var cmdTop = new Kinetic.Image({
+            x: 16,
+            y: 0,
+            image: addConnectionIcon,
+            width: 16,
+            height: 16,
+            startScale: 1,
+            rotationDeg: 270,
+            offset: [8, 8]
+        });
+
+        cmdTop.on('click', function(evt) {
+            multiselectAlign('top');
+            evt.cancelBubble = true;
+        });
+        cmdTop.on('mouseenter', function() {
+            activateTooltip('Align top');
+        });
+        cmdTop.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdTop);
+
+        // Align bottom command
+        var cmdBottom = new Kinetic.Image({
+            x: 16,
+            y: 32,
+            image: addConnectionIcon,
+            width: 16,
+            height: 16,
+            startScale: 1,
+            rotationDeg: 90,
+            offset: [8, 8]
+        });
+
+        cmdBottom.on('click', function(evt) {
+            multiselectAlign('bottom');
+            evt.cancelBubble = true;
+        });
+        cmdBottom.on('mouseenter', function() {
+            activateTooltip('Align bottom');
+        });
+        cmdBottom.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdBottom);
+
+        // Distribute horizontally command
+        var cmdHorizontal = new Kinetic.Image({
+            x: 48,
+            y: 0,
+            image: distributeIcon,
+            width: 16,
+            height: 16,
+            startScale: 1,
+            rotationDeg: 0,
+            offset: [8, 8]
+        });
+
+        cmdHorizontal.on('click', function(evt) {
+            multiselectDistribute('horizontal');
+            evt.cancelBubble = true;
+        });
+        cmdHorizontal.on('mouseenter', function() {
+            activateTooltip('Distribute horizontally');
+        });
+        cmdHorizontal.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdHorizontal);
+
+        // Distribute vertically command
+        var cmdVertical = new Kinetic.Image({
+            x: 48,
+            y: 16,
+            image: distributeIcon,
+            width: 16,
+            height: 16,
+            startScale: 1,
+            rotationDeg: 90,
+            offset: [8, 8]
+        });
+
+        cmdVertical.on('click', function(evt) {
+            multiselectDistribute('vertical');
+            evt.cancelBubble = true;
+        });
+        cmdVertical.on('mouseenter', function() {
+            activateTooltip('Distribute vertically');
+        });
+        cmdVertical.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdVertical);
+
+        return actionBar;
+    }
+
+    /**
+     * Alings selected DPUs by given type of align.
+     * 
+     * @param {type} type Type of align
+     */
+    function multiselectAlign(type) {
+        writeMessage(messageLayer, 'Type: ' + type);
+        var x;
+        switch (type) {
+            case 'left':
+            case 'top':
+                x = 10000;
+                break;
+            case 'right':
+            case 'bottom':
+                x = 0;
+                break;
+            default:
+                return;
+        }
+        //Get the extreme value for needed coordinate
+        for (var dpuId in dpus) {
+            var dpu = dpus[dpuId];
+            if (dpu.isInMultiselect) {
+                var group = dpu.group;
+                var y;
+                //Get the right component of position
+                if (type === 'left' || type === 'right') {
+                    y = group.getPosition().x;
+                } else {
+                    y = group.getPosition().y;
+                }
+                //Use the right compare
+                if (type === 'left' || type === 'top') {
+                    if (y < x) {
+                        x = y;
+                    }
+                } else {
+                    if (y > x) {
+                        x = y;
+                    }
+                }
+            }
+        }
+        //Set new value to the right coordinate
+        for (var dpuId in dpus) {
+            var dpu = dpus[dpuId];
+            if (dpu.isInMultiselect) {
+                var group = dpu.group;
+                if (type === 'left' || type === 'right') {
+                    group.setX(x);
+                } else {
+                    group.setY(x);
+                }
+                moveLine(dpu.id);
+            }
+        }
+        dpuLayer.draw();
+    }
+
+    /**
+     * Distributes selected DPUs by given type of distribution.
+     * 
+     * @param {String} type Type of distribution
+     */
+    function multiselectDistribute(type) {
+        var units = [];
+        var min = 10000;
+        var max = 0;
+        var fill = 0;
+        for (var dpuId in dpus) {
+            var dpu = dpus[dpuId];
+            if (dpu.isInMultiselect) {
+                var group = dpu.group;
+                var x;
+                if (type === "horizontal") {
+                    x = group.getX();
+                    units.push([x, dpuId]);
+                    fill += group.get('Rect')[0].getWidth();
+                } else {
+                    x = group.getY();
+                    units.push([x, dpuId]);
+                    fill += group.get('Rect')[0].getHeight();
+                }
+                if (x > max) {
+                    max = x;
+                } 
+                if (x < min) {
+                    min = x;
+                }
+            }
+        }
+        if(units.length < 2) {
+            return;
+        }
+        units.sort(function(a, b) {
+            return a[0] - b[0];
+        });
+        var lastUnit = dpus[units[units.length - 1][1]].group.get('Rect')[0];
+        var body = type === "horizontal" ? lastUnit.getWidth() : lastUnit.getHeight();
+        var step = (max + body - min - fill) / (units.length - 1);
+        var newValue = min;
+        for (var unitId in units) {
+            var dpu = dpus[units[unitId][1]];
+            if (type === "horizontal") {
+                dpu.group.setX(newValue);
+                newValue += dpu.group.get('Rect')[0].getWidth() + step;
+            } else {
+                dpu.group.setY(newValue);
+                newValue += dpu.group.get('Rect')[0].getHeight() + step;
+            }
+            moveLine(dpu.id);
+        }
+        dpuLayer.draw();
     }
 
     /** 
