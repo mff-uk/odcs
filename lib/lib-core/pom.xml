@@ -28,9 +28,9 @@
 							<!-- do not use transitivity just what we specify -->
 							<artifactItems>
 
-								<dependency> <!-- commons-web project -->
+								<dependency> <!-- commons-module project -->
 									<groupId>cz.cuni.xrg.intlib</groupId>
-									<artifactId>commons-web</artifactId>
+									<artifactId>commons-module</artifactId>
 									<version>${project.version}</version>
 								</dependency>
 
