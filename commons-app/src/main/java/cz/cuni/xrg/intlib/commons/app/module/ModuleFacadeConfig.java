@@ -53,6 +53,8 @@ public class ModuleFacadeConfig {
 			"cz.cuni.xrg.intlib.rdf.exceptions," +
 			"cz.cuni.xrg.intlib.rdf.impl," +
 			"cz.cuni.xrg.intlib.rdf.interfaces," +
+			// lib for serialisation
+			"com.thoughtworks.xstream," + 
 			// java packages
 			"java.lang,javax";
 	

@@ -35,6 +35,13 @@
 			<scope>provided</scope>
 		</dependency>		
 
+		<dependency> <!-- xml object de-serialization -->
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.4</version>
+			<scope>provided</scope> <!-- provided by frontend/backend -->
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -53,8 +60,8 @@
                         <!-- export just packages under cz.cuni.xrg.intlib.commons.web -->
                        	<Export-Package>cz.cuni.xrg.intlib.commons.module.*;version="${project.version}"</Export-Package>
                         <!-- import vaadin, commons, web, RDF -->
-                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}",cz.cuni.xrg.intlib.commons.web.*;version="${project.version}",cz.cuni.xrg.intlib.rdf.*"</Import-Package>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>						
+                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}",cz.cuni.xrg.intlib.commons.web.*;version="${project.version}",cz.cuni.xrg.intlib.rdf.*,*"</Import-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
