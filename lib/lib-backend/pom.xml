@@ -7,7 +7,7 @@
 		<version>0.0.1</version>
 	</parent>
 	<groupId>cz.cuni.xrg.intlib.lib</groupId>
-	<artifactId>lib-vaadin</artifactId>
+	<artifactId>lib-backend</artifactId>
 	<packaging>pom</packaging>
 	
 	<build>

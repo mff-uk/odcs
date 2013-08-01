@@ -7,7 +7,7 @@
 		<version>0.0.1</version>
 	</parent>
 	<groupId>cz.cuni.xrg.intlib.lib</groupId>
-	<artifactId>lib-intlib</artifactId>
+	<artifactId>lib-core</artifactId>
 	<packaging>pom</packaging>
 
 	<build>
@@ -24,19 +24,13 @@
 						</goals>
 						<configuration>
 							<!-- define output directory -->
-							<outputDirectory>${output.lib.backend.dir}</outputDirectory>
+							<outputDirectory>${output.lib.dir}</outputDirectory>
 							<!-- do not use transitivity just what we specify -->
 							<artifactItems>
 
 								<dependency> <!-- commons-web project -->
 									<groupId>cz.cuni.xrg.intlib</groupId>
 									<artifactId>commons-web</artifactId>
-									<version>${project.version}</version>
-								</dependency>
-
-								<dependency> <!-- commons-module project -->
-									<groupId>cz.cuni.xrg.intlib</groupId>
-									<artifactId>commons-module</artifactId>
 									<version>${project.version}</version>
 								</dependency>
 

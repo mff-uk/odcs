@@ -72,14 +72,6 @@
 			<type>jar</type>
 		</dependency>
 
-		<dependency> <!-- commons-module project -->
-			<groupId>${project.groupId}</groupId>
-			<artifactId>commons-module</artifactId>
-			<!-- the version has to be specify -->
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
-
 		<dependency> <!-- commons-web project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons-web</artifactId>

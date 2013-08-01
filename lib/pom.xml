@@ -13,31 +13,9 @@
         <output.lib.dir>${basedir}\..\..\${project.output.lib}</output.lib.dir>
         <output.lib.backend.dir>${basedir}\..\..\${project.output.lib.backend}</output.lib.backend.dir>
     </properties>
-<!-- 		
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${output.lib.dir}</directory>							
-                            <includes>
-                                <include>*</include>								
-                            </includes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>		
-        </plugins>
-    </build>	
- -->
 	 	
     <modules>
-    	<module>lib-vaadin</module>
-    	<module>lib-intlib</module>
+    	<module>lib-backend</module>
+    	<module>lib-core</module>
     </modules>
 </project>
