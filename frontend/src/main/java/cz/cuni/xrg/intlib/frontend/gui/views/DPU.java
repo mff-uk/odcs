@@ -27,6 +27,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
 
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
@@ -45,7 +46,10 @@ import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.PipelineStatus;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -763,11 +767,28 @@ class DPU extends ViewComponent {
 		}
 		//If DPU Template is unused by any pipeline, then delete it.
 		if (fl == 0) {
-
+			
+			//get path to ../target/dpu/
+			String pojPath = App.getApp().getAppConfiguration()
+					.getString(ConfigProperty.MODULE_PATH);
+			//get name of JAR file of DPU Template
+			String fileName = selectedDpuWrap.getDPUTemplateRecord().getJarPath();
+			File delFile = new File(pojPath + fileName);
+			
+			//delete record from the database
 			App.getApp().getDPUs()
 					.delete(selectedDpuWrap.getDPUTemplateRecord());
 			dpuTree.refresh();
 			dpuDetailLayout.removeAllComponents();
+			
+			//delete JAR file from ../target/dpu/
+			try {
+				delFile.delete();
+			} catch (Exception e) {
+				Notification.show(
+						"Failed to delete "+ fileName,
+						e.getMessage(), Type.ERROR_MESSAGE);
+			} 
 			Notification.show("DPURecord was removed",
 					Notification.Type.HUMANIZED_MESSAGE);
 		} 
