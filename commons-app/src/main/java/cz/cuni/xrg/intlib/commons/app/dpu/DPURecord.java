@@ -1,19 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Objects;
 import javax.persistence.*;
 
-import com.thoughtworks.xstream.XStream;
-
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,25 +62,12 @@ public class DPURecord {
 	 */
 	@Column(name="configuration", nullable = true)
 	private byte[] serializedConfiguration;
-	
-	@Transient
-	@Deprecated
-	private DPUConfigObject configuration;
-	
-	/**
-	 * ModuleFacade. Set in {{@link #loadInstance(ModuleFacade)}.
-	 */
-	@Transient
-	@Deprecated
-	private ModuleFacade moduleFacade;
-	
+		
 	/**
 	 * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
 	 */
 	@Transient
 	private Object instance;
-
-	private static final Logger LOG = LoggerFactory.getLogger(DPURecord.class.getName());
 	
     /**
      * Allow empty constructor for JPA.
@@ -125,8 +104,6 @@ public class DPURecord {
      * @throws FileNotFoundException 
      */
     public void loadInstance(ModuleFacade moduleFacade) throws ModuleException, FileNotFoundException {
-    	// store module facade, can be useful
-    	this.moduleFacade = moduleFacade;
     	instance = moduleFacade.getObject(jarPath);
     }
     
@@ -169,85 +146,6 @@ public class DPURecord {
     public Object getInstance() {
     	return instance;
     }
-	
-	/**
-	 * @param configuration 
-	 */
-    @Deprecated
-	public void setConfiguration(DPUConfigObject configuration) {
-		if (this.configuration == null || this.configuration != configuration) {
-			setConf(configuration);
-			this.configuration = configuration;
-		}
-	}
-	
-	/**
-	 * Internal cache for configuration to prevent deserialization on every call.
-	 * 
-	 * @return DPU configuration
-	 */
-	@Deprecated
-	public DPUConfigObject getConfiguration() {
-		if (configuration == null) {
-			configuration = getConf();
-		}
-		return configuration;
-	}
-    
-	/**
-	 * Deserialize DPU configuration from byte array.
-	 * 
-	 * @return DPU configuration
-	 * @throws ConfigException 
-	 */
-	@Deprecated
-	private DPUConfigObject getConf() throws ConfigException {
-		if (serializedConfiguration == null) {
-			return null;
-		}
-		if (serializedConfiguration.length == 0) {
-			return null;
-		}		
-		DPUConfigObject config  = null;
-		// reconstruct object form byte[]
-		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(serializedConfiguration)) {
-			// use XStream for serialisation
-			XStream xstream = new XStream();
-			// add class loader for bundle
-			if (moduleFacade == null) {
-				LOG.warn("Unserializing DPU configuration without classloader (missing moduleFacade).");
-			} else if (jarPath == null) {
-				LOG.warn("Unserializing DPU configuration without classloader (cannot load jar file).");
-			} else {
-				xstream.setClassLoader(moduleFacade.getClassLoader(jarPath));
-			}
-			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);
-				Object obj = objIn.readObject();
-				config = (DPUConfigObject)obj;
-			objIn.close();
-		} catch (IOException e) {
-			throw new ConfigException("Can't deserialize configuration.", e);
-		} catch (ClassNotFoundException e) {
-			throw new ConfigException("Can't re-cast configuration object.", e);
-		}
-		return config;
-	}
-
-	@Deprecated
-	private void setConf(DPUConfigObject config) throws ConfigException {		
-		// Serialise object into byte[]
-		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {	
-			// use XStream for serialisation
-// TODO Petyr: use do not create XStream instance every time .. 			
-			XStream xstream = new XStream();
-			ObjectOutputStream objOut = xstream.createObjectOutputStream(byteOut);
-				objOut.writeObject(config);
-			objOut.close();
-			serializedConfiguration = byteOut.toByteArray();
-		} catch (IOException e) {
-			throw new ConfigException("Can't serialize configuration.", e);
-		}		
-	}    
     
 	/**
 	 * Return raw configuration representation.

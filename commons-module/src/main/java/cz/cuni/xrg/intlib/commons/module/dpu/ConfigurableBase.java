@@ -29,6 +29,7 @@ public abstract class ConfigurableBase<T extends DPUConfigObject> implements Con
 	    
     public ConfigurableBase(T config) {
     	this.config = config;
+    	this.configWrap = new ConfigWrap<T>(config);
     }
         
     @Override
