@@ -34,26 +34,33 @@ class DPURecordWrap {
 	{
 		this.dpuRecord = dpuRecord;
 	}
-		
+	
 	/**
-	 * Return configuration dialog for wrapped DPU. The configuration dialog 
-	 * contains configuration of wrapped DPURecord.
-	 * 
-	 * If function throw ConfigException the dialog has been created 
-	 * but the configuration from DPURecord is invalid. You can use
-	 * the dialog with default configuration.
+	 * Return configuration dialog for wrapped DPU. The configuration is not 
+	 * set. To set dialog configuration call {@link #configuredDialog}
+	 *  
 	 * @return
 	 * @throws ModuleException
 	 * @throws FileNotFoundException
-	 * @throws ConfigException
 	 */
 	public AbstractConfigDialog<DPUConfigObject> getDialog() 
-			throws ModuleException, FileNotFoundException, ConfigException  {
+			throws ModuleException, FileNotFoundException {
 		// load configuration dialog
 		loadConfigDialog();
+		return configDialog;
+	}
+	
+	
+	/**
+	 * If respective configuration dialog for wrapped DPU exist, then set 
+	 * it's configuration. Otherwise do nothing.
+	 * 
+	 * @throws ConfigException
+	 */
+	public void configuredDialog() 
+			throws ConfigException  {
 		// set dialog configuration
 		loadConfigIntoDialog();
-		return configDialog;
 	}
 		
 	/**

@@ -117,16 +117,21 @@ public class DPUDetail extends Window {
 		} catch (FileNotFoundException e) {
 			Notification.show("Failed to load DPU.", e.getMessage(),
 					Type.ERROR_MESSAGE);
-		} catch (ConfigException e) {
-			Notification.show(
-					"Failed to load configuration. The dialog defaul configuration is used.",
-					e.getMessage(), Type.WARNING_MESSAGE);
-			LOG.error("Failed to load configuration for {}", dpuInstance
-					.getDPUInstanceRecord().getId(), e);
 		}
 
+		
 		if (confDialog == null) {
 		} else {
+			// configure
+			try{
+				dpuInstance.configuredDialog();
+			} catch (ConfigException e) {
+				Notification.show(
+						"Failed to load configuration. The dialog defaul configuration is used.",
+						e.getMessage(), Type.WARNING_MESSAGE);
+				LOG.error("Failed to load configuration for {}", dpuInstance
+						.getDPUInstanceRecord().getId(), e);
+			}
 			// add to layout
 			confDialog.setWidth("100%");
 			mainLayout.addComponent(confDialog);

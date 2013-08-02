@@ -328,17 +328,21 @@ class DPU extends ViewComponent {
 						"File not found",
 						ex.getMessage(), Type.ERROR_MESSAGE);
 				LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
-			} catch (ConfigException ex) {
-				Notification.show(
-						"Failed to load configuration. Dialog default configuration is used.",
-						ex.getMessage(), Type.WARNING_MESSAGE);
-				LOG.error("Can't load configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
 			}
 			
 			verticalLayoutConfigure.removeAllComponents();
 			if (configDialog == null) {
 				// use some .. dummy component
 			}  else {
+				// configure
+				try{
+					selectedDpuWrap.configuredDialog();
+				} catch (ConfigException e) {
+					Notification.show(
+							"Failed to load configuration. The dialog defaul configuration is used.",
+							e.getMessage(), Type.WARNING_MESSAGE);
+					LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+				}
 				// add dialog
 				verticalLayoutConfigure.addComponent(configDialog);
 			}
@@ -604,28 +608,17 @@ class DPU extends ViewComponent {
 							//refresh data in dialog and dpu tree
 							dpuTree.refresh();
 							setGenralTabValues();
-							try {
-								selectedDpuWrap.getDialog();
-							} catch (ModuleException ex) {
+							
+							// refresh configuration
+							try{
+								selectedDpuWrap.configuredDialog();
+							} catch (ConfigException e) {
 								Notification.show(
-										"Failed to load configuration dialog",
-										ex.getMessage(), Type.ERROR_MESSAGE);
-								LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
-							} catch (FileNotFoundException ex) {
-								Notification.show(
-										"File not found",
-										ex.getMessage(), Type.ERROR_MESSAGE);
-								LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
-							} catch (ConfigException ex) {
-								Notification.show(
-										"Failed to load configuration. Dialog default configuration is used.",
-										ex.getMessage(), Type.WARNING_MESSAGE);
-								LOG.error("Can't load configuration '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+										"Failed to load configuration. The dialog defaul configuration is used.",
+										e.getMessage(), Type.WARNING_MESSAGE);
+								LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 							}
-
-
 						}
-
 					}
 				});
 		buttonDpuBar.addComponent(buttonSaveDPU);
