@@ -24,19 +24,4 @@ public interface Configurable <C extends DPUConfigObject> {
 	 */
 	byte[] getConf();
 	
-	/**
-	 * Configure object based on passed object. If the object does not
-	 * contains valid configuration ConfigException should be thrown.
-	 * @param c Object with configuration.
-	 * @throws ConfigException In case of invalid configuration.
-	 */
-	@Deprecated
-	void configure(C c) throws ConfigException;
-
-	/**
-	 * Return object configuration. 
-	 * @return Object configuration.
-	 */
-	@Deprecated
-	C getConfiguration();
 }
