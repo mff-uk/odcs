@@ -68,7 +68,7 @@ public class DataUnitList<T extends DataUnit> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public DataUnitList<T> FilterByName(String name) {
+	public DataUnitList<T> filterByName(String name) {
 		List<T> result = new LinkedList<>();
 		for (DataUnit item : dataUnits) {
 			if (item.getName().compareToIgnoreCase(name) == 0) {
@@ -86,7 +86,7 @@ public class DataUnitList<T extends DataUnit> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <NewT extends DataUnit> DataUnitList<NewT> FilterByClass(Class<NewT> type) {
+	public <NewT extends DataUnit> DataUnitList<NewT> filterByClass(Class<NewT> type) {
 		List<NewT> result = new LinkedList<>();
 		for (DataUnit item : dataUnits) {
 			if (type.isInstance(item)) {

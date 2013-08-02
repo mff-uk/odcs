@@ -13,7 +13,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
  * @author Petyr
  *
  */
-public class RDFDataRepositoryList {
+public class RDFDataUnitList {
 
 	/**
 	 * Create instance of {@link DataUnitList} for working with DataUnits
@@ -23,7 +23,7 @@ public class RDFDataRepositoryList {
 	 * @return
 	 */	
 	public static DataUnitList<RDFDataRepository> create(LoadContext context) {
-		return new DataUnitList<DataUnit>(context.getInputs()).FilterByClass(RDFDataRepository.class);
+		return new DataUnitList<DataUnit>(context.getInputs()).filterByClass(RDFDataRepository.class);
 	}	
 	
 	/**
@@ -34,7 +34,7 @@ public class RDFDataRepositoryList {
 	 * @return
 	 */		
 	public static DataUnitList<RDFDataRepository> create(TransformContext context) {
-		return new DataUnitList<DataUnit>(context.getInputs()).FilterByClass(RDFDataRepository.class);
+		return new DataUnitList<DataUnit>(context.getInputs()).filterByClass(RDFDataRepository.class);
 	}		
 	
 }
