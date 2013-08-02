@@ -9,6 +9,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
+
 /**
  * Builds layout with GUI components for settings nitifications
  * about scheduled events and their runs. Used in User Settings dialog
@@ -38,15 +40,19 @@ public class EmailNotifications {
 		notifycationLayout.addComponent(new Label("Successful execution:"),0,0);
 		OptionGroup successfulExec = new OptionGroup();
 		successfulExec.setImmediate(true);
-		successfulExec.addItem("Instant");
-		successfulExec.addItem("Daily bulk report (default)");
-		successfulExec.addItem("no report");
-		successfulExec.select("Daily bulk report (default)");
+		successfulExec.addItem(NotificationRecordType.INSTANT);
+		successfulExec.addItem(NotificationRecordType.DAILY);
+		successfulExec.addItem(NotificationRecordType.NO_REPORT);
+		successfulExec.select(NotificationRecordType.DAILY);
+		successfulExec.setItemCaption(NotificationRecordType.INSTANT, "Instant");
+		successfulExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report (default)");
+		successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
+
 		successfulExec.addValueChangeListener(new ValueChangeListener() {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (event.getProperty().getValue().toString().equals("no report")){
+				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)){
 					noSuccessful=1;
 					if((noError==1) && ( noSuccessful==1)){
 						
@@ -66,15 +72,19 @@ public class EmailNotifications {
 		notifycationLayout.addComponent(new Label("Error in execution:"),0,1);
 		OptionGroup errorExec = new OptionGroup();
 		errorExec.setImmediate(true);
-		errorExec.addItem("Instant (default)");
-		errorExec.addItem("Daily bulk report");
-		errorExec.addItem("no report");
-		errorExec.select("Instant (default)");
+		errorExec.setImmediate(true);
+		errorExec.addItem(NotificationRecordType.INSTANT);
+		errorExec.addItem(NotificationRecordType.DAILY);
+		errorExec.addItem(NotificationRecordType.NO_REPORT);
+		errorExec.select(NotificationRecordType.INSTANT);
+		errorExec.setItemCaption(NotificationRecordType.INSTANT,"Instant (default)");
+		errorExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report");
+		errorExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
 		errorExec.addValueChangeListener(new ValueChangeListener() {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (event.getProperty().getValue().toString().equals("no report")){
+				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)){
 					noError=1;
 					if((noError==1) && ( noSuccessful==1)){
 						
