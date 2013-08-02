@@ -99,11 +99,11 @@ class DPURecordWrap {
 			// no dialog .. nothing to do 
 			return;
 		}
-		DPUConfigObject conf = dpuRecord.getConfiguration();
+		byte[] conf = dpuRecord.getRawConf();
 		if (conf == null) {
 			// use default configuration
 		} else {
-			configDialog.setConfiguration(conf);
+			configDialog.setConfig(conf);
 		}
 	}
 	
@@ -117,7 +117,7 @@ class DPURecordWrap {
 		if (configDialog == null) {
 			return;
 		}
-		dpuRecord.setConfiguration(configDialog.getConfiguration());
+		dpuRecord.setRawConf(configDialog.getConfig());
 	}
 
 }

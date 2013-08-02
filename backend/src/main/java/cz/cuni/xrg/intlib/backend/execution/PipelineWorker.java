@@ -499,12 +499,11 @@ class PipelineWorker implements Runnable {
 		
 		// get instance
 		Object dpuInstance = dpuInstanceRecord.getInstance();		
-		DPUConfigObject configuration = dpuInstanceRecord.getConfiguration();
 		// set configuration
 		if (dpuInstance instanceof Configurable<?>) {
 			Configurable<DPUConfigObject> configurable = (Configurable<DPUConfigObject>)dpuInstance;			
 			try {
-				configurable.configure(configuration);
+				configurable.configure(dpuInstanceRecord.getRawConf());
 			} catch (ConfigException e) {
 				throw new StructureException("Failed to configure DPU.", e);
 			}

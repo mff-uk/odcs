@@ -63,8 +63,7 @@ public class DPURecord {
      * @see AppConfig
      */
 	@Column(name="jar_path")
-    private String jarPath;
-	
+    private String jarPath;	
 	
 	/**
 	 * DPU's configuration in serialized version.
@@ -73,13 +72,14 @@ public class DPURecord {
 	private byte[] serializedConfiguration;
 	
 	@Transient
+	@Deprecated
 	private DPUConfigObject configuration;
 	
 	/**
 	 * ModuleFacade. Set in {{@link #loadInstance(ModuleFacade)}.
-	 * TODO redesign/refactor
 	 */
 	@Transient
+	@Deprecated
 	private ModuleFacade moduleFacade;
 	
 	/**
@@ -119,7 +119,7 @@ public class DPURecord {
     }
     
     /**
-     * Load instance from associated jar file.
+     * Load DPU's instance from associated jar file.
      * @param moduleFacade ModuleFacade used to load DPU.
      * @throws ModuleException
      * @throws FileNotFoundException 
@@ -173,6 +173,7 @@ public class DPURecord {
 	/**
 	 * @param configuration 
 	 */
+    @Deprecated
 	public void setConfiguration(DPUConfigObject configuration) {
 		if (this.configuration == null || this.configuration != configuration) {
 			setConf(configuration);
@@ -181,10 +182,11 @@ public class DPURecord {
 	}
 	
 	/**
-	 * Internal cache for configuration to prevent unserializing on every call.
+	 * Internal cache for configuration to prevent deserialization on every call.
 	 * 
 	 * @return DPU configuration
 	 */
+	@Deprecated
 	public DPUConfigObject getConfiguration() {
 		if (configuration == null) {
 			configuration = getConf();
@@ -193,11 +195,12 @@ public class DPURecord {
 	}
     
 	/**
-	 * Unserializes DPU configuration from byte array.
+	 * Deserialize DPU configuration from byte array.
 	 * 
 	 * @return DPU configuration
 	 * @throws ConfigException 
 	 */
+	@Deprecated
 	private DPUConfigObject getConf() throws ConfigException {
 		if (serializedConfiguration == null) {
 			return null;
@@ -230,8 +233,9 @@ public class DPURecord {
 		return config;
 	}
 
+	@Deprecated
 	private void setConf(DPUConfigObject config) throws ConfigException {		
-		// serialize object into byte[]
+		// Serialise object into byte[]
 		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {	
 			// use XStream for serialisation
 // TODO Petyr: use do not create XStream instance every time .. 			
@@ -245,6 +249,23 @@ public class DPURecord {
 		}		
 	}    
     
+	/**
+	 * Return raw configuration representation.
+	 * @return
+	 */
+	public byte[] getRawConf() {
+		return serializedConfiguration;
+	}
+
+	/**
+	 * Set raw configuration representation. Use with caution!
+	 * @param conf
+	 */
+	public void setRawConf(byte[] conf) {
+		serializedConfiguration = conf;
+	}
+	
+	
 	/**
 	 * Generates hash code from primary key if it is available, otherwise
 	 * from the rest of the attributes.
