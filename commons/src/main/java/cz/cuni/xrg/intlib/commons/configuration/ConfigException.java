@@ -6,7 +6,7 @@ package cz.cuni.xrg.intlib.commons.configuration;
  * @author Petyr
  *
  */
-public class ConfigException extends RuntimeException {
+public class ConfigException extends Exception {
 	
     public ConfigException() {
     	super("Invalid configuration.");
