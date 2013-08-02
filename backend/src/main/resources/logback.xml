@@ -21,10 +21,11 @@
 	</appender>
 
 
-	<logger name="org.hibernate.type" level="ALL" />
-	<logger name="org.hibernate" level="DEBUG" />
+	<logger name="org.hibernate.type" level="WARN" />
+	<logger name="org.hibernate" level="WARN" />
+	<logger name="org.springframework" level="WARN" />
 	
-	<root level="debug">
+	<root level="ALL">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="DB" />
 	</root>
