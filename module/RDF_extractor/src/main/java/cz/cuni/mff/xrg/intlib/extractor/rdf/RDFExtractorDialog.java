@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.intlib.extractor.rdf;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -25,7 +25,7 @@ import cz.cuni.xrg.intlib.rdf.impl.SPARQLQueryValidator;
  * @author Jiri Tomes
  *
  */
-public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig> {
+public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -111,6 +111,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	 * Basic constructor.
 	 */
 	public RDFExtractorDialog() {
+		super(new RDFExtractorConfig());
 		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
@@ -654,7 +655,7 @@ public class RDFExtractorDialog extends AbstractConfigDialog<RDFExtractorConfig>
 	 *             fields in the configuration dialog.
 	 */
 	@Override
-	public void setConfiguration(RDFExtractorConfig conf) {
+	public void setConfiguration(RDFExtractorConfig conf) throws ConfigException{
 		try {
 			String endp = conf.SPARQL_endpoint.trim();
 

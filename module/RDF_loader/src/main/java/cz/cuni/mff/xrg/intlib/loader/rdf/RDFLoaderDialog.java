@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.intlib.loader.rdf;
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
+import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
-import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
 /**
  * Configuration dialog for DPU SPARQL Loader.
@@ -24,7 +24,7 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
  * @author Jiri Tomes
  *
  */
-public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
+public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -97,6 +97,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 	 * Basic constructor.
 	 */
 	public RDFLoaderDialog() {
+		super(new RDFLoaderConfig());
 		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
@@ -640,7 +641,7 @@ public class RDFLoaderDialog extends AbstractConfigDialog<RDFLoaderConfig> {
 	 *            fields in the configuration dialog.
 	 */
 	@Override
-	public void setConfiguration(RDFLoaderConfig conf) {
+	public void setConfiguration(RDFLoaderConfig conf) throws ConfigException {
 		try {
 			String endp = conf.SPARQL_endpoint.trim();
 

@@ -14,9 +14,23 @@ import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
  *
  */
 public class RDFLoaderConfig implements DPUConfigObject {
+	
     public String SPARQL_endpoint;
+    
     public String Host_name;
+    
     public String Password;
+    
     public List<String> GraphsUri = new LinkedList<>();
-    public WriteGraphType Options; 
+    
+    public WriteGraphType Options;
+    
+	@Override
+	public boolean isValid() {
+		return SPARQL_endpoint != null && 
+				Host_name != null && 
+				Password != null && 
+				GraphsUri != null && 
+				Options != null;
+	} 
 }

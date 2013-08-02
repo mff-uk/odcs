@@ -23,7 +23,16 @@ public class RDFExtractorConfig implements DPUConfigObject {
 
 	public String SPARQL_query;
 
-	public Boolean ExtractFail;
+	public boolean ExtractFail;
 	
-	public Boolean UseStatisticalHandler; 
+	public boolean UseStatisticalHandler;
+
+	@Override
+	public boolean isValid() {
+		return SPARQL_endpoint != null &&
+				Host_name != null && 
+				Password != null &&
+				GraphsUri != null && 
+				SPARQL_query != null;
+		} 
 }

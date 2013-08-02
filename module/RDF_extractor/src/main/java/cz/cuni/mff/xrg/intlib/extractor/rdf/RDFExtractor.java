@@ -1,13 +1,12 @@
 package cz.cuni.mff.xrg.intlib.extractor.rdf;
 
-import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
-import cz.cuni.xrg.intlib.commons.configuration.Configurable;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
+import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
@@ -17,34 +16,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
+ * 
  * @author Jiri Tomes
  * @author Petyr
  */
-public class RDFExtractor implements Extract,
-		Configurable<RDFExtractorConfig>, ConfigDialogProvider<RDFExtractorConfig> {
+public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
+		implements Extract, ConfigDialogProvider<RDFExtractorConfig> {
 
-	/**
-	 * DPU configuration.
-	 */
-	private RDFExtractorConfig config = null;
-
-	/**
-	 * Logger class.
-	 */
-	private static final Logger LOG = LoggerFactory
-			.getLogger(RDFExtractor.class);
+	public RDFExtractor() {
+		super(new RDFExtractorConfig());
+	}
 
 	@Override
-	public void extract(ExtractContext context) throws ExtractException, DataUnitCreateException {
+	public void extract(ExtractContext context)
+			throws ExtractException,
+				DataUnitCreateException {
 
-		RDFDataRepository repository =
-				(RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF,
-				"output");
+		RDFDataRepository repository = (RDFDataRepository) context
+				.addOutputDataUnit(DataUnitType.RDF, "output");
 
 		try {
 			final URL endpointURL = new URL(config.SPARQL_endpoint);
@@ -52,22 +42,13 @@ public class RDFExtractor implements Extract,
 			final String password = config.Password;
 			final List<String> defaultGraphsUri = config.GraphsUri;
 			final String query = config.SPARQL_query;
-
-
-			boolean useStatisticHandler;
-			if (config.UseStatisticalHandler == null) {
-				useStatisticHandler = false;
-				context.sendMessage(MessageType.WARNING,
-						"Missing configuration for 'UseStatisticalHandler' using 'false' as default.");
-			} else {
-				useStatisticHandler = config.UseStatisticalHandler;
-			}
+			final boolean useStatisticHandler = config.UseStatisticalHandler;
 
 			repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri,
 					query, hostName, password, useStatisticHandler);
 		} catch (MalformedURLException ex) {
-			context.sendMessage(MessageType.ERROR,
-					"MalformedURLException: " + ex.getMessage());
+			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
+					+ ex.getMessage());
 			throw new ExtractException(ex);
 		} catch (RDFException ex) {
 			throw new ExtractException(ex.getMessage(), ex);
@@ -79,13 +60,4 @@ public class RDFExtractor implements Extract,
 		return new RDFExtractorDialog();
 	}
 
-	@Override
-	public void configure(RDFExtractorConfig c) throws ConfigException {
-		config = c;
-	}
-
-	@Override
-	public RDFExtractorConfig getConfiguration() {
-		return config;
-	}
 }

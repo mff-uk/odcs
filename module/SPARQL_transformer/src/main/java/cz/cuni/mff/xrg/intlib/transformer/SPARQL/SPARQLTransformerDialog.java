@@ -6,7 +6,7 @@ import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
-import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.xrg.intlib.rdf.exceptions.SPARQLValidationException;
 import cz.cuni.xrg.intlib.rdf.impl.SPARQLUpdateValidator;
 import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
@@ -17,7 +17,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
  * @author Jiri Tomes
  * @author Maria Kukhar
  */
-public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransformerConfig> {
+public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerConfig> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,6 +40,7 @@ public class SPARQLTransformerDialog extends AbstractConfigDialog<SPARQLTransfor
 	 * Basic constructor.
 	 */
 	public SPARQLTransformerDialog() {
+		super(new SPARQLTransformerConfig());
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
