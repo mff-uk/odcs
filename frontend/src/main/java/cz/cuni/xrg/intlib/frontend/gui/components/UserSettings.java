@@ -57,10 +57,11 @@ public class UserSettings extends Window {
 		this.setCaption("User Settings");
 		
 		mainLayout = new HorizontalLayout();
-		mainLayout.setMargin(true);
+//		mainLayout.setMargin(true);
 
         
         tabsLayout = new VerticalLayout();
+        tabsLayout.setMargin(true);
         tabsLayout.setWidth("105px");
         tabsLayout.setImmediate(true);
 
@@ -77,7 +78,7 @@ public class UserSettings extends Window {
         schedulerLayout.setSpacing(true);
         schedulerLayout.setWidth("370px");
         schedulerLayout.setImmediate(true);
-        schedulerLayout.setStyleName("settings");
+
 
 
         myAccountButton = new NativeButton("My account");
@@ -140,14 +141,17 @@ public class UserSettings extends Window {
 		
 		EmailNotifications emailNotifications = new EmailNotifications();
 		
+
+		
 		schedulerLayout = emailNotifications.buildEmailNotificationsLayout();
 
-        
+		schedulerLayout.addComponent(new Label("Default form of report about scheduled pipeline execution (may be overriden in the particular schedulled event): "),0);
+
         HorizontalLayout buttonBarSch= new HorizontalLayout();
         buttonBarSch =buildButtonBar();
         schedulerLayout.addComponent(buttonBarSch);
         schedulerLayout.setComponentAlignment(buttonBarSch, Alignment.BOTTOM_RIGHT);
-
+        schedulerLayout.setStyleName("settings");
 		
 		
 		mainLayout.addComponent(tabsLayout);

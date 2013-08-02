@@ -30,9 +30,7 @@ public class EmailNotifications {
 		emailNotificationsLayout.setSpacing(true);
 		emailNotificationsLayout.setWidth("370px");
 		emailNotificationsLayout.setImmediate(true);
-		emailNotificationsLayout.setStyleName("settings");
-		
-		emailNotificationsLayout.addComponent(new Label("Default form of report about scheduled pipeline execution (may be overriden in the particular schedulled event): "));
+
 		
 		GridLayout notifycationLayout = new GridLayout(2,2);
 		notifycationLayout.setSpacing(true);
