@@ -2,13 +2,12 @@ package cz.cuni.mff.xrg.intlib.loader.file;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.converter.Converter;
 
 import com.vaadin.ui.*;
 
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import java.util.List;
  * @author Maria
  *
  */
-public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
+public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -62,6 +61,7 @@ public class FileLoaderDialog extends AbstractConfigDialog<FileLoaderConfig> {
 	 *  Basic constructor.
 	 */
 	public FileLoaderDialog() {
+		super(new FileLoaderConfig());
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();

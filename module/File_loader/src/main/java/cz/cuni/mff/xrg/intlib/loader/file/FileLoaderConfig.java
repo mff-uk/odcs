@@ -18,5 +18,12 @@ public class FileLoaderConfig implements DPUConfigObject {
 
 	public RDFFormatType RDFFileFormat;
 
-	public Boolean DiffName;
+	public boolean DiffName;
+
+	@Override
+	public boolean isValid() {
+		return DirectoryPath != null &&
+				FileName != null &&
+				RDFFileFormat != null;
+	}
 }
