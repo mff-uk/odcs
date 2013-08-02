@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.extractor;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 
 /**
  * Is responsible for extracting data from data source and convert it to RDF
@@ -19,10 +19,10 @@ public interface Extract {
 	 * @throws ExtractException If any error occurs throughout the extraction
 	 *             cycle.
 	 * @throws DataUnitException
-	 * @throws DataUnitCreateException If failed to create a DataUnit.
+	 * @throws DPUException
 	 */
 	public void extract(ExtractContext context)
 			throws ExtractException,
 				DataUnitException,
-				DataUnitCreateException;
+				DPUException;
 }
