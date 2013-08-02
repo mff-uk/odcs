@@ -22,4 +22,12 @@ public class FileExtractorConfig implements DPUConfigObject {
 	public boolean OnlyThisSuffix;
 
 	public boolean UseStatisticalHandler;
+
+	@Override
+	public boolean isValid() {
+		return Path != null && 
+				FileSuffix != null &&
+				RDFFormatValue != null && 
+				fileExtractType != null;
+	}
 }

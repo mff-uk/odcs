@@ -16,16 +16,13 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
-import com.vaadin.ui.Upload.SucceededEvent;
 
-import static cz.cuni.xrg.intlib.rdf.enums.FileExtractType.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
-import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 
 /**
  * Configuration dialog for DPU RDF File Extractor.
@@ -35,7 +32,7 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
  *
  *
  */
-public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfig> {
+public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	private GridLayout mainLayout;
 
@@ -95,6 +92,7 @@ public class FileExtractorDialog extends AbstractConfigDialog<FileExtractorConfi
 	 *  Basic constructor.
 	 */
 	public FileExtractorDialog() {
+		super(new FileExtractorConfig());
 		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
