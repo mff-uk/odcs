@@ -279,7 +279,7 @@ public class ExecutionContextInfo implements Serializable {
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
 	public String getResultPath() {
-		return getRootPath() + File.separatorChar + RESULT_DIR;
+		return File.separatorChar + RESULT_DIR;
 	}	
 	
 	/**

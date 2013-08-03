@@ -43,7 +43,7 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 				dpuInstance, 
 				dataUnitFactory, 
 				context, 
-				getWorkingDir(), 
+				getGeneralWorkingDir(), 
 				appConfig);
 	}	
 	
@@ -57,6 +57,11 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );
 	}
 
+	@Override
+	public void delete() {
+		dataUnitManager.delete();
+	}	
+	
 	@Override
 	public void release() {
 		dataUnitManager.release();

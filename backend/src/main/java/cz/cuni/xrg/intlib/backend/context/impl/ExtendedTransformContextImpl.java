@@ -48,10 +48,10 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 		this.eventPublisher = eventPublisher;
 		// create DataUnit manager
 		this.inputsManager = DataUnitManager.createInputManager(dpuInstance,
-				dataUnitFactory, context, getWorkingDir(), appConfig);
+				dataUnitFactory, context, getGeneralWorkingDir(), appConfig);
 		// create DataUnit manager
 		this.outputsManager = DataUnitManager.createOutputManager(dpuInstance,
-				dataUnitFactory, context, getWorkingDir(), appConfig);
+				dataUnitFactory, context, getGeneralWorkingDir(), appConfig);
 	}
 
 	@Override
@@ -69,6 +69,12 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
 	}
 
+	@Override
+	public void delete() {
+		inputsManager.delete();
+		outputsManager.delete();
+	}		
+	
 	@Override
 	public void release() {
 		inputsManager.release();

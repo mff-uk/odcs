@@ -46,7 +46,7 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl
 		this.eventPublisher = eventPublisher;
 		// create DataUnit manager
 		this.dataUnitManager = DataUnitManager.createInputManager(dpuInstance,
-				dataUnitFactory, context, getWorkingDir(), appConfig);
+				dataUnitFactory, context, getGeneralWorkingDir(), appConfig);
 	}
 
 	@Override
@@ -68,6 +68,11 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl
 				type, this, this));
 	}
 
+	@Override
+	public void delete() {
+		dataUnitManager.delete();
+	}	
+	
 	@Override
 	public void release() {
 		dataUnitManager.release();

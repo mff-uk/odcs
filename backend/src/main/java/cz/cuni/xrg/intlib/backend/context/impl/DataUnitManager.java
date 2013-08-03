@@ -74,7 +74,7 @@ class DataUnitManager {
 	 * @param dpuInstance
 	 * @param dataUnitFactory
 	 * @param context
-	 * @param workingDir
+	 * @param workingDir General working directory.
 	 * @param appConfig
 	 * @return
 	 */
@@ -93,7 +93,7 @@ class DataUnitManager {
 	 * @param dpuInstance
 	 * @param dataUnitFactory
 	 * @param context
-	 * @param workingDir
+	 * @param workingDir General working directory.
 	 * @param appConfig
 	 * @return
 	 */
