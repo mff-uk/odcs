@@ -32,7 +32,11 @@ public enum MessageRecordType {
 	/**
 	 * Represent error message from pipeline.
 	 */
-	,PIPELINE_ERROR;
+	,PIPELINE_ERROR
+	/**
+	 * Represent information about pipeline execution.
+	 */
+	,PIPELINE_INFO;
 		
 	/**
 	 * Convert message.Type to RecordType.

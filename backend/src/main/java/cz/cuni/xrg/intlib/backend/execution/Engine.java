@@ -6,6 +6,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineRestart;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -209,6 +210,8 @@ public class Engine
 					}
 					// reset context
 					context.reset();
+					// send message .. about restart
+					eventPublisher.publishEvent(new PipelineRestart(execution, this));
 				}
 				database.getPipeline().save(execution);
 			}
