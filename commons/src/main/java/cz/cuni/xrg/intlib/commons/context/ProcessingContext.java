@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.context;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Map;
 
 import cz.cuni.xrg.intlib.commons.message.MessageType;
@@ -89,4 +90,10 @@ public interface ProcessingContext {
 	 * @return Path to the this DPU's jar.
 	 */
 	public File getJarPath();
+	
+	/**
+	 * Return end time of last successful pipeline execution.
+	 * @return Time or Null if there in no last execution.
+	 */
+	public Date getLastExecutionTime();
 }

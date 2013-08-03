@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -35,8 +36,8 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 	private DataUnitManager dataUnitManager;
 	
 	public ExtendedExtractContextImpl(PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
-		super(execution, dpuInstance, context, appConfig);
+			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig, Date lastSuccExec) throws IOException {
+		super(execution, dpuInstance, context, appConfig, lastSuccExec);
 		this.eventPublisher = eventPublisher;
 		// create DataUnit manager
 		this.dataUnitManager = DataUnitManager.createOutputManager(

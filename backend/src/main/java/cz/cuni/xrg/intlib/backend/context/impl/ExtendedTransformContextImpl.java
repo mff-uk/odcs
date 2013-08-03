@@ -15,36 +15,42 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
- * Implementation of ExtendedTransformContext. 
- *
+ * Implementation of ExtendedTransformContext.
+ * 
  * @author Petyr
  * 
  */
-class ExtendedTransformContextImpl extends ExtendedCommonImpl implements ExtendedTransformContext {
-	
+class ExtendedTransformContextImpl extends ExtendedCommonImpl
+		implements ExtendedTransformContext {
+
 	/**
 	 * Manager for output DataUnits.
 	 */
 	private DataUnitManager inputsManager;
-	
+
 	/**
 	 * Manager for output DataUnits.
 	 */
-	private DataUnitManager outputsManager;	
-	
+	private DataUnitManager outputsManager;
+
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
-	private ApplicationEventPublisher eventPublisher;	
+	private ApplicationEventPublisher eventPublisher;
 
-	public ExtendedTransformContextImpl(PipelineExecution execution, DPUInstanceRecord dpuInstance, 
-			ApplicationEventPublisher eventPublisher, ExecutionContextInfo context, AppConfig appConfig) throws IOException {
-		super(execution, dpuInstance, context, appConfig);
+	public ExtendedTransformContextImpl(PipelineExecution execution,
+			DPUInstanceRecord dpuInstance,
+			ApplicationEventPublisher eventPublisher,
+			ExecutionContextInfo context,
+			AppConfig appConfig,
+			Date lastSuccExec) throws IOException {
+		super(execution, dpuInstance, context, appConfig, lastSuccExec);
 		this.eventPublisher = eventPublisher;
 		// create DataUnit manager
 		this.inputsManager = DataUnitManager.createInputManager(dpuInstance,
@@ -61,44 +67,48 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 
 	@Override
 	public void sendMessage(MessageType type, String shortMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type, this, this) );
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type,
+				this, this));
 	}
 
 	@Override
-	public void sendMessage(MessageType type, String shortMessage, String fullMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage, type, this, this) );		
+	public void sendMessage(MessageType type,
+			String shortMessage,
+			String fullMessage) {
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
+				type, this, this));
 	}
 
 	@Override
 	public void delete() {
 		inputsManager.delete();
 		outputsManager.delete();
-	}		
-	
+	}
+
 	@Override
 	public void release() {
 		inputsManager.release();
 		outputsManager.release();
-	}	
-	
+	}
+
 	@Override
 	public void save() {
 		inputsManager.save();
 		outputsManager.save();
-	}	
-	
+	}
+
 	@Override
 	public void sealInputs() {
 		for (DataUnit inputDataUnit : inputsManager.getDataUnits()) {
 			inputDataUnit.madeReadOnly();
 		}
 	}
-	
+
 	@Override
-	public void addSource(ProcessingContext context, 
-			String instruction) throws ContextException {
+	public void addSource(ProcessingContext context, String instruction)
+			throws ContextException {
 		// create merger class
-		DataUnitMerger merger = new PrimitiveDataUnitMerger();		
+		DataUnitMerger merger = new PrimitiveDataUnitMerger();
 		// merge custom data
 		try {
 			customData.putAll(context.getCustomData());
@@ -125,11 +135,13 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
-		return outputsManager.addDataUnit(type, name);	}
+		return outputsManager.addDataUnit(type, name);
+	}
 
 	@Override
-	public DataUnit addOutputDataUnit(DataUnitType type, String name, Object config)
-			throws DataUnitCreateException {	
+	public DataUnit addOutputDataUnit(DataUnitType type,
+			String name,
+			Object config) throws DataUnitCreateException {
 		return outputsManager.addDataUnit(type, name, config);
 	}
 
@@ -137,5 +149,5 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl implements Extende
 	public List<DataUnit> getOutputs() {
 		return outputsManager.getDataUnits();
 	}
-      
+
 }

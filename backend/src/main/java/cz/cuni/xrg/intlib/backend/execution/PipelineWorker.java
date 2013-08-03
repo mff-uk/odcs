@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,12 +67,12 @@ import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * Worker responsible for running single PipelineExecution.
- *
+ * 
  * @author Petyr
  * 
  */
 class PipelineWorker implements Runnable {
-	
+
 	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
@@ -86,50 +87,85 @@ class PipelineWorker implements Runnable {
 	 * Provide access to DPURecord implementation.
 	 */
 	private ModuleFacade moduleFacade;
-	
+
 	/**
 	 * Store context related to Nodes (DPUs).
 	 */
 	private Map<Node, ProcessingContext> contexts;
-		
+
 	/**
 	 * Logger class.
 	 */
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineWorker.class);
-	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(PipelineWorker.class);
+
 	/**
 	 * Access to the database
 	 */
-	protected DatabaseAccess database;	
-	
+	protected DatabaseAccess database;
+
 	/**
-	 * Manage mapping execution context into {@link #workDirectory}. 
+	 * Manage mapping execution context into {@link #workDirectory}.
 	 */
-	private ExecutionContextInfo contextInfo;	
-	
+	private ExecutionContextInfo contextInfo;
+
 	/**
 	 * Application's configuration.
 	 */
 	private AppConfig appConfig;
-	
+
+	/**
+	 * End time of last successful pipeline execution.
+	 */
+	private Date lastSuccessfulExTime;
+
 	/**
 	 * @param execution The pipeline execution record to run.
 	 * @param moduleFacade Module facade for obtaining DPUs instances.
 	 * @param eventPublisher Application event publisher.
 	 * @param database Access to database.
 	 */
-	public PipelineWorker(PipelineExecution execution, ModuleFacade moduleFacade, 
-			ApplicationEventPublisher eventPublisher, DatabaseAccess database,
-			File workingDirectory, AppConfig appConfig) {
+	public PipelineWorker(PipelineExecution execution,
+			ModuleFacade moduleFacade,
+			ApplicationEventPublisher eventPublisher,
+			DatabaseAccess database,
+			File workingDirectory,
+			AppConfig appConfig) {
 		this.execution = execution;
 		this.moduleFacade = moduleFacade;
 		this.eventPublisher = eventPublisher;
 		this.contexts = new HashMap<>();
 		this.database = database;
-		// create or get existing .. 
+		// create or get existing ..
 		this.contextInfo = execution.createExecutionContext();
 		this.appConfig = appConfig;
+		this.lastSuccessfulExTime = null;
 		// TODO Petyr: Release context sooner then on the end of the execution
+	}
+
+	/**
+	 * Load execution times {@link #lastExTime} and
+	 * {@link #lastSuccessfulExTime}
+	 */
+	private void loadExTimes() {
+		Date lastSucess = database.getPipeline().getLastExecTime(
+				execution.getPipeline(),
+				PipelineExecutionStatus.FINISHED_SUCCESS);
+
+		Date lastSucessWarn = database.getPipeline().getLastExecTime(
+				execution.getPipeline(),
+				PipelineExecutionStatus.FINISHED_WARNING);
+		// null check .. 
+		if (lastSucess == null) {
+			lastSuccessfulExTime = lastSucessWarn;
+		} else if (lastSucessWarn == null) {
+			lastSuccessfulExTime = lastSucess; 
+		} else {
+			// get last successful execution time
+			lastSuccessfulExTime = lastSucess.after(lastSucessWarn)
+				? lastSucess
+				: lastSucessWarn;
+		}
 	}
 
 	/**
@@ -139,10 +175,10 @@ class PipelineWorker implements Runnable {
 		execution.setEnd(new Date());
 		// set new state
 		execution.setExecutionStatus(PipelineExecutionStatus.FAILED);
-		// 
+		//
 		LOG.error("execution failed");
 	}
-	
+
 	/**
 	 * Called in case of successful execution.
 	 */
@@ -152,29 +188,28 @@ class PipelineWorker implements Runnable {
 		execution.setExecutionStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
 		// save into database
 	}
-	
+
 	/**
-	 * Do cleanup work after pipeline execution.
-	 * Also delete the worker directory it the pipeline
-	 * if not in debugMode.
+	 * Do cleanup work after pipeline execution. Also delete the worker
+	 * directory it the pipeline if not in debugMode.
 	 */
 	private void cleanUp() {
 		LOG.debug("Clean up");
-		// release all contexts 
+		// release all contexts
 		for (ProcessingContext item : contexts.values()) {
 			if (item instanceof ExtendedContext) {
-				ExtendedContext exCtx = (ExtendedContext)item;
+				ExtendedContext exCtx = (ExtendedContext) item;
 				if (execution.isDebugging()) {
 					// just release leave
 					exCtx.release();
 				} else {
-					// delete data .. 
+					// delete data ..
 					exCtx.delete();
 				}
-				
+
 			} else {
 				LOG.error("Unexpected ProcessingContext instance. Can't call release().");
-			}	
+			}
 		}
 		// delete working folder ?
 		if (execution.isDebugging()) {
@@ -182,35 +217,41 @@ class PipelineWorker implements Runnable {
 		} else {
 			// try to delete whole directory
 			try {
-				FileUtils.deleteDirectory( 
-						new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
-								contextInfo.getRootPath()));
+				FileUtils.deleteDirectory(new File(appConfig
+						.getString(ConfigProperty.GENERAL_WORKINGDIR),
+						contextInfo.getRootPath()));
 			} catch (IOException e) {
-				LOG.error("Can't delete directory after execution: " + execution.getId(), e);
+				LOG.error("Can't delete directory after execution: "
+						+ execution.getId(), e);
 			}
-		}			
+		}
 	}
-	
+
 	/**
 	 * Implementation of workers activity. Worker constantly keeps asking engine
 	 * for jobs to run, until it is killed.
 	 */
 	@Override
-	public void run() {		
+	public void run() {
+		// load execution times from DB
+		loadExTimes();
+
 		PipelineFacade pipelineFacade = database.getPipeline();
-		
+
 		// add marker to logs from this thread -> both must be specified !!
-		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, Long.toString( execution.getId() ) );
-		
+		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME,
+				Long.toString(execution.getId()));
+
 		// get pipeline to run
 		Pipeline pipeline = execution.getPipeline();
 
 		// get dependency graph -> determine run order
 		DependencyGraph dependencyGraph = null;
-		
+
 		// if in debug mode then pass the final DPU
-		if(execution.isDebugging() && execution.getDebugNode() != null) {
-			dependencyGraph = new DependencyGraph(pipeline.getGraph(), execution.getDebugNode());
+		if (execution.isDebugging() && execution.getDebugNode() != null) {
+			dependencyGraph = new DependencyGraph(pipeline.getGraph(),
+					execution.getDebugNode());
 		} else {
 			dependencyGraph = new DependencyGraph(pipeline.getGraph());
 		}
@@ -218,14 +259,14 @@ class PipelineWorker implements Runnable {
 
 		// contextInfo is in pipeline so by saving pipeline we also save context
 		pipelineFacade.save(execution);
-		
+
 		boolean executionFailed = false;
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
 			boolean result;
-			
+
 			// save context with the DPU that will be executed
-			ProcessingUnitInfo unitInfo = null; 
+			ProcessingUnitInfo unitInfo = null;
 			unitInfo = contextInfo.getDPUInfo(node.getDpuInstance());
 			if (unitInfo == null) {
 				// no previous execution ..
@@ -236,83 +277,93 @@ class PipelineWorker implements Runnable {
 					// DPU is already finished -> just load context
 				} else {
 					// DPUExecutionState.RUNNING -> unfinished
-					// delete all data and start 
+					// delete all data and start
 				}
 			}
-			
+
 			// set to running state and execute
 			unitInfo.setState(DPUExecutionState.RUNNING);
 			pipelineFacade.save(execution);
-			
-			// put dpuInstance id to MDC, so we can identify logs related to the dpuInstance
-			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, Long.toString(node.getDpuInstance().getId()) );
+
+			// put dpuInstance id to MDC, so we can identify logs related to the
+			// dpuInstance
+			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME,
+					Long.toString(node.getDpuInstance().getId()));
 			try {
 				result = runNode(node, dependencyGraph.getAncestors(node));
 			} catch (ContextException e) {
-				eventPublisher.publishEvent(new PipelineContextErrorEvent(e, node.getDpuInstance(), execution, this));				
+				eventPublisher.publishEvent(new PipelineContextErrorEvent(e,
+						node.getDpuInstance(), execution, this));
 				executionFailed = true;
 				LOG.error("PipelineWorker: Context exception", e);
 				break;
 			} catch (ModuleException e) {
-				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, node.getDpuInstance(), execution, this));
+				eventPublisher.publishEvent(new PipelineModuleErrorEvent(e,
+						node.getDpuInstance(), execution, this));
 				executionFailed = true;
 				LOG.error("PipelineWorker: Module exception", e);
 				break;
 			} catch (StructureException e) {
-				eventPublisher.publishEvent(new PipelineStructureError(e, node.getDpuInstance(), execution, this));
+				eventPublisher.publishEvent(new PipelineStructureError(e, node
+						.getDpuInstance(), execution, this));
 				executionFailed = true;
 				LOG.error("PipelineWorker: Structure exception", e);
-				break;		
+				break;
 			} catch (DataUnitCreateException e) {
-				// can't create DataUnit 
-				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(), execution, this));
+				// can't create DataUnit
+				eventPublisher.publishEvent(new PipelineFailedEvent(e, node
+						.getDpuInstance(), execution, this));
 				executionFailed = true;
 				LOG.error("PipelineWorker: DataUnit create exception", e);
 				break;
 			} catch (DataUnitException e) {
 				// some problem with DataUnits
-				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(), execution, this));
+				eventPublisher.publishEvent(new PipelineFailedEvent(e, node
+						.getDpuInstance(), execution, this));
 				LOG.error("PipelineWorker: DataUnit Exception", e);
 				executionFailed = true;
 				break;
 			} catch (Exception e) {
-				eventPublisher.publishEvent(new PipelineFailedEvent(e, node.getDpuInstance(),  execution, this));				
+				eventPublisher.publishEvent(new PipelineFailedEvent(e, node
+						.getDpuInstance(), execution, this));
 				executionFailed = true;
 				LOG.error("PipelineWorker: Exception", e);
 				break;
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
-				
+
 			// TODO Petyr: save custom data .. !
 			if (result) {
 				// DPURecord executed successfully
-				
+
 				// set state of last executed DPU (we know it exist)
 				// to finished
 				contextInfo.getDPUInfo(node.getDpuInstance()).setState(
 						DPUExecutionState.FINISHED);
-				
+
 				// save context after last execution
 				pipelineFacade.save(execution);
 				// also save new DataUnits
 				ProcessingContext lastContext = contexts.get(node);
 				if (lastContext instanceof ExtendedContext) {
-					ExtendedContext exCtx = (ExtendedContext)lastContext;
+					ExtendedContext exCtx = (ExtendedContext) lastContext;
 					exCtx.save();
 				} else {
 					LOG.error("Unexpected ProcessingContext instance. Can't save context.");
 				}
-				
+
 			} else {
 				// error -> end pipeline
 				executionFailed = true;
-				eventPublisher.publishEvent(new PipelineFailedEvent("DPU execution failed.", node.getDpuInstance(), execution, this));
+				eventPublisher.publishEvent(new PipelineFailedEvent(
+						"DPU execution failed.", node.getDpuInstance(),
+						execution, this));
 				// save data ?
 				if (execution.isDebugging()) {
 					// save new DataUnits
 					ProcessingContext lastContext = contexts.get(node);
 					if (lastContext instanceof ExtendedContext) {
-						ExtendedContext exCtx = (ExtendedContext)lastContext;
+						ExtendedContext exCtx = (ExtendedContext) lastContext;
 						exCtx.save();
 					} else {
 						LOG.error("Unexpected ProcessingContext instance. Can't save context.");
@@ -320,29 +371,30 @@ class PipelineWorker implements Runnable {
 					// the context will be save at the end of the execution
 				}
 				// break execution
-				break;	
+				break;
 			}
 		}
 		// ending ..
-		LOG.debug("Finished");		
+		LOG.debug("Finished");
 		// do clean up
-		cleanUp();        
-		// clear all threads markers		
+		cleanUp();
+		// clear all threads markers
 		MDC.clear();
 		// save context into DB
-        if (executionFailed) {
+		if (executionFailed) {
 			executionFailed();
 		} else {
 			executionSuccessful();
 		}
-        // save execution
-        database.getPipeline().save(execution);
-        // publish information for the rest of the application
-        eventPublisher.publishEvent(new PipelineFinished(execution, this));
+		// save execution
+		database.getPipeline().save(execution);
+		// publish information for the rest of the application
+		eventPublisher.publishEvent(new PipelineFinished(execution, this));
 	}
 
 	/**
 	 * Return edge that connects the given nodes.
+	 * 
 	 * @param source
 	 * @param target
 	 * @return Edge or null if there is no connection between the given nodes.
@@ -355,70 +407,79 @@ class PipelineWorker implements Runnable {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Return command associated with edge that connect given nodes.
+	 * 
 	 * @param source
 	 * @param target
 	 * @return
 	 */
 	private String getCommandForEdge(Node source, Node target) {
 		// try to get Edge that leads from item to node
-		Edge edge = getEdge(source, target);			
+		Edge edge = getEdge(source, target);
 		String command;
 		if (edge == null) {
 			// there is no edge for this connection ?
 			command = "";
-			LOG.error("Can't find edge between {} and {}",
-					source.getDpuInstance().getName(),
-					target.getDpuInstance().getName());
+			LOG.error("Can't find edge between {} and {}", source
+					.getDpuInstance().getName(), target.getDpuInstance()
+					.getName());
 		} else {
 			command = edge.getDataUnitName();
 		}
 		return command;
 	}
-	
+
 	/**
-	 * Return context that should be used when executing given Extractor.
-	 * The context is also stored in {@link #contexts }
+	 * Return context that should be used when executing given Extractor. The
+	 * context is also stored in {@link #contexts }
 	 * 
 	 * @param node Node for which DPURecord the context is.
 	 * @param ancestors Ancestors of the given node.
 	 * @return Context for the DPURecord execution.
-	 * @throws ContextException 
-	 * @throws StructureException 
-	 * @throws IOException 
-	 */		
-	private ExtendedExtractContext getContextForNodeExtractor(Node node, 
-			Set<Node> ancestors) throws ContextException, StructureException, IOException {
+	 * @throws ContextException
+	 * @throws StructureException
+	 * @throws IOException
+	 */
+	private ExtendedExtractContext getContextForNodeExtractor(Node node,
+			Set<Node> ancestors)
+			throws ContextException,
+				StructureException,
+				IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		// ...
 		ExtendedExtractContext extractContext;
-		extractContext = ContextFactory.create(execution, dpuInstance, 
-				eventPublisher, contextInfo, ExtendedExtractContext.class, appConfig); 
+		extractContext = ContextFactory.create(execution, dpuInstance,
+				eventPublisher, contextInfo, ExtendedExtractContext.class,
+				appConfig, lastSuccessfulExTime);
 		// store context
 		contexts.put(node, extractContext);
-		return extractContext;		
+		return extractContext;
 	}
-	
+
 	/**
-	 * Return context that should be used when executing given Transform.
-	 * The context is also stored in {@link #contexts }
+	 * Return context that should be used when executing given Transform. The
+	 * context is also stored in {@link #contexts }
 	 * 
 	 * @param node Node for which DPURecord the context is.
 	 * @param ancestors Ancestors of the given node.
 	 * @return Context for the DPURecord execution.
-	 * @throws ContextException 
-	 * @throws StructureException 
-	 * @throws IOException 
-	 */		
+	 * @throws ContextException
+	 * @throws StructureException
+	 * @throws IOException
+	 */
 	private ExtendedTransformContext getContextForNodeTransform(Node node,
-			Set<Node> ancestors) throws ContextException, StructureException, IOException {
+			Set<Node> ancestors)
+			throws ContextException,
+				StructureException,
+				IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		// ...
 		ExtendedTransformContext transformContext;
-		transformContext = ContextFactory.create(execution, dpuInstance, 
-				eventPublisher, contextInfo, ExtendedTransformContext.class, appConfig);
+		transformContext = ContextFactory.create(execution, dpuInstance,
+				eventPublisher, contextInfo, ExtendedTransformContext.class,
+				appConfig, lastSuccessfulExTime);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
@@ -427,7 +488,7 @@ class PipelineWorker implements Runnable {
 			// try to get Edge that leads from item to node
 			String command = getCommandForEdge(item, node);
 			// if there is context for given data ..
-			if (contexts.containsKey(item)) {				
+			if (contexts.containsKey(item)) {
 				transformContext.addSource(contexts.get(item), command);
 			} else {
 				// can't find context ..
@@ -437,78 +498,87 @@ class PipelineWorker implements Runnable {
 		transformContext.sealInputs();
 		// store context
 		contexts.put(node, transformContext);
-		return transformContext;		
+		return transformContext;
 	}
-	
+
 	/**
-	 * Return context that should be used when executing given Loader.
-	 * The context is also stored in {@link #contexts }
+	 * Return context that should be used when executing given Loader. The
+	 * context is also stored in {@link #contexts }
 	 * 
 	 * @param node Node for which DPURecord the context is.
 	 * @param ancestors Ancestors of the given node.
 	 * @return Context for the DPURecord execution.
-	 * @throws ContextException 
-	 * @throws StructureException 
-	 * @throws IOException 
-	 */	
-	private ExtendedLoadContext getContextForNodeLoader(Node node, 
-			Set<Node> ancestors) throws ContextException, StructureException, IOException {
+	 * @throws ContextException
+	 * @throws StructureException
+	 * @throws IOException
+	 */
+	private ExtendedLoadContext getContextForNodeLoader(Node node,
+			Set<Node> ancestors)
+			throws ContextException,
+				StructureException,
+				IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		// ...
 		ExtendedLoadContext loadContext;
-		loadContext = ContextFactory.create(execution, dpuInstance, 
-				eventPublisher, contextInfo, ExtendedLoadContext.class, appConfig);
+		loadContext = ContextFactory.create(execution, dpuInstance,
+				eventPublisher, contextInfo, ExtendedLoadContext.class,
+				appConfig, lastSuccessfulExTime);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
-		}				
+		}
 		for (Node item : ancestors) {
 			// try to get Edge that leads from item to node
 			String command = getCommandForEdge(item, node);
 			// if there is context for given data ..
 			if (contexts.containsKey(item)) {
-				loadContext.addSource(contexts.get(item), command); 
+				loadContext.addSource(contexts.get(item), command);
 			} else {
 				// can't find context ..
 				throw new StructureException("Can't find context.");
 			}
-		}	
+		}
 		loadContext.sealInputs();
 		// store context
-		contexts.put(node, loadContext);		
+		contexts.put(node, loadContext);
 		return loadContext;
 	}
 
 	/**
-	 * @throws DataUnitException 
-	 * @throws DataUnitCreateException 
-	 * Executes a single DPURecord associated with given Node.
+	 * @throws DataUnitException
+	 * @throws DataUnitCreateException Executes a single DPURecord associated
+	 *             with given Node.
 	 * 
 	 * @param node
 	 * @param ancestors Ancestors of the given node.
 	 * @return false if execution failed
-	 * @throws ContextException 
-	 * @throws StructureException 
-	 * @throws  
+	 * @throws ContextException
+	 * @throws StructureException
+	 * @throws
 	 */
-	private boolean runNode(Node node, Set<Node> ancestors) throws ContextException, StructureException, DataUnitCreateException, DataUnitException {
+	private boolean runNode(Node node, Set<Node> ancestors)
+			throws ContextException,
+				StructureException,
+				DataUnitCreateException,
+				DataUnitException {
 		// prepare what we need to start the execution
 		DPUInstanceRecord dpuInstanceRecord = node.getDpuInstance();
-		
+
 		// load instance
 		try {
 			dpuInstanceRecord.loadInstance(moduleFacade);
-		} catch(FileNotFoundException e) {
-			throw new StructureException("Failed to load instance of DPU from file.", e);
-		} catch(ModuleException e) {
+		} catch (FileNotFoundException e) {
+			throw new StructureException(
+					"Failed to load instance of DPU from file.", e);
+		} catch (ModuleException e) {
 			throw new StructureException("Failed to create instance of DPU.", e);
 		}
-		
+
 		// get instance
-		Object dpuInstance = dpuInstanceRecord.getInstance();		
+		Object dpuInstance = dpuInstanceRecord.getInstance();
 		// set configuration
 		if (dpuInstance instanceof Configurable<?>) {
-			Configurable<DPUConfigObject> configurable = (Configurable<DPUConfigObject>)dpuInstance;			
+			Configurable<DPUConfigObject> configurable = (Configurable<DPUConfigObject>) dpuInstance;
 			try {
 				configurable.configure(dpuInstanceRecord.getRawConf());
 			} catch (ConfigException e) {
@@ -517,37 +587,37 @@ class PipelineWorker implements Runnable {
 		}
 		// run dpu instance
 		if (dpuInstance instanceof Extract) {
-			Extract extractor = (Extract)dpuInstance;
-			
+			Extract extractor = (Extract) dpuInstance;
+
 			ExtendedExtractContext context;
 			try {
 				context = getContextForNodeExtractor(node, ancestors);
 			} catch (IOException e) {
 				throw new StructureException("Failed to create context.", e);
 			}
-			
-			return runExtractor(extractor, context);			
+
+			return runExtractor(extractor, context);
 		} else if (dpuInstance instanceof Transform) {
-			Transform transformer = (Transform)dpuInstance;
-			
+			Transform transformer = (Transform) dpuInstance;
+
 			ExtendedTransformContext context;
 			try {
 				context = getContextForNodeTransform(node, ancestors);
 			} catch (IOException e) {
 				throw new StructureException("Failed to create context.", e);
 			}
-			
+
 			return runTransformer(transformer, context);
 		} else if (dpuInstance instanceof Load) {
-			Load loader = (Load)dpuInstance;
-			
+			Load loader = (Load) dpuInstance;
+
 			ExtendedLoadContext context;
 			try {
 				context = getContextForNodeLoader(node, ancestors);
 			} catch (IOException e) {
 				throw new StructureException("Failed to create context.", e);
 			}
-			
+
 			return runLoader(loader, context);
 		} else {
 			throw new RuntimeException("Unknown DPURecord type.");
@@ -560,18 +630,23 @@ class PipelineWorker implements Runnable {
 	 * @param extractor
 	 * @param ctx
 	 * @return false if execution failed
-	 * @throws DataUnitCreateException 
-	 * @throws DataUnitException 
+	 * @throws DataUnitCreateException
+	 * @throws DataUnitException
 	 */
-	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx) throws DataUnitCreateException, DataUnitException {
+	private boolean runExtractor(Extract extractor, ExtendedExtractContext ctx)
+			throws DataUnitCreateException,
+				DataUnitException {
 
-		eventPublisher.publishEvent(new ExtractStartEvent(extractor, ctx, this));
-		
+		eventPublisher
+				.publishEvent(new ExtractStartEvent(extractor, ctx, this));
+
 		try {
 			extractor.extract(ctx);
-			eventPublisher.publishEvent(new ExtractCompletedEvent(extractor, ctx, this));
+			eventPublisher.publishEvent(new ExtractCompletedEvent(extractor,
+					ctx, this));
 		} catch (ExtractException ex) {
-			eventPublisher.publishEvent(new ExtractFailedEvent(ex, extractor, ctx, this));
+			eventPublisher.publishEvent(new ExtractFailedEvent(ex, extractor,
+					ctx, this));
 			return false;
 		}
 		return true;
@@ -583,18 +658,24 @@ class PipelineWorker implements Runnable {
 	 * @param transformer
 	 * @param ctx
 	 * @return false if execution failed
-	 * @throws DataUnitCreateException 
-	 * @throws DataUnitException 
+	 * @throws DataUnitCreateException
+	 * @throws DataUnitException
 	 */
-	private boolean runTransformer(Transform transformer, ExtendedTransformContext ctx) throws DataUnitCreateException, DataUnitException {
+	private boolean runTransformer(Transform transformer,
+			ExtendedTransformContext ctx)
+			throws DataUnitCreateException,
+				DataUnitException {
 
-		eventPublisher.publishEvent(new TransformStartEvent(transformer, ctx, this));
-		
+		eventPublisher.publishEvent(new TransformStartEvent(transformer, ctx,
+				this));
+
 		try {
 			transformer.transform(ctx);
-			eventPublisher.publishEvent(new TransformCompletedEvent(transformer, ctx, this));
+			eventPublisher.publishEvent(new TransformCompletedEvent(
+					transformer, ctx, this));
 		} catch (TransformException ex) {
-			eventPublisher.publishEvent(new TransformFailedEvent(ex, transformer, ctx, this));
+			eventPublisher.publishEvent(new TransformFailedEvent(ex,
+					transformer, ctx, this));
 			return false;
 		}
 		return true;
@@ -606,18 +687,22 @@ class PipelineWorker implements Runnable {
 	 * @param loader
 	 * @param ctx
 	 * @return false if execution failed
-	 * @throws DataUnitCreateException 
-	 * @throws DataUnitException 
+	 * @throws DataUnitCreateException
+	 * @throws DataUnitException
 	 */
-	private boolean runLoader(Load loader, ExtendedLoadContext ctx) throws DataUnitCreateException, DataUnitException {
-		
+	private boolean runLoader(Load loader, ExtendedLoadContext ctx)
+			throws DataUnitCreateException,
+				DataUnitException {
+
 		eventPublisher.publishEvent(new LoadStartEvent(loader, ctx, this));
-		
+
 		try {
 			loader.load(ctx);
-			eventPublisher.publishEvent(new LoadCompletedEvent(loader, ctx, this));
+			eventPublisher.publishEvent(new LoadCompletedEvent(loader, ctx,
+					this));
 		} catch (LoadException ex) {
-			eventPublisher.publishEvent(new LoadFailedEvent(ex, loader, ctx, this));
+			eventPublisher.publishEvent(new LoadFailedEvent(ex, loader, ctx,
+					this));
 			return false;
 		}
 		return true;

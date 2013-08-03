@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.backend.context.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ class ExtendedCommonImpl {
 	/**
 	 * PipelineExecution. The one who caused run of this DPURecord.
 	 */
-	protected PipelineExecution execution;
+	private PipelineExecution execution;
 
 	/**
 	 * DPUInstanceRecord as owner of this context.
@@ -58,6 +59,11 @@ class ExtendedCommonImpl {
 	protected AppConfig appConfig;
 
 	/**
+	 * Time of last successful execution. Null if there is no such execution.
+	 */
+	private Date lastSuccExec;
+	
+	/**
 	 * If the working directory for Context already exist then the ctor try to
 	 * delete it.
 	 * 
@@ -71,13 +77,15 @@ class ExtendedCommonImpl {
 			PipelineExecution execution,
 			DPUInstanceRecord dpuInstance,
 			ExecutionContextInfo context,
-			AppConfig appConfig) throws IOException {
+			AppConfig appConfig, 
+			Date lastSuccExec) throws IOException {
 		this.customData = new HashMap<String, Object>();
 		this.execution = execution;
 		this.dpuInstance = dpuInstance;
 		this.context = context;
 		this.appConfig = appConfig;
 		this.dataUnitFactory = new DataUnitFactory(appConfig);
+		this.lastSuccExec = lastSuccExec;
 	}
 
 	/**
@@ -175,5 +183,9 @@ class ExtendedCommonImpl {
 		File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH)
 				+ dpuInstance.getJarPath());
 		return path;
+	}
+	
+	public Date getLastExecutionTime() {
+		return lastSuccExec;
 	}
 }

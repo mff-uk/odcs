@@ -14,6 +14,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,8 +42,9 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl
 			DPUInstanceRecord dpuInstance,
 			ApplicationEventPublisher eventPublisher,
 			ExecutionContextInfo context,
-			AppConfig appConfig) throws IOException {
-		super(execution, dpuInstance, context, appConfig);
+			AppConfig appConfig,
+			Date lastSuccExec) throws IOException {
+		super(execution, dpuInstance, context, appConfig, lastSuccExec);
 		this.eventPublisher = eventPublisher;
 		// create DataUnit manager
 		this.dataUnitManager = DataUnitManager.createInputManager(dpuInstance,

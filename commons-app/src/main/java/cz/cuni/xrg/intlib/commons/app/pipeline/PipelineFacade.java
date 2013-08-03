@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -158,6 +159,34 @@ public class PipelineFacade {
 		return resultList;
 	}
 
+	/**
+	 * Return end time of latest execution of given status for given pipeline.
+	 * Ignore null values.
+	 * @param pipeline
+	 * @param status Execution status, used to filter pipelines.
+	 * @return
+	 */
+	public Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status) {
+		@SuppressWarnings("unchecked")
+		List<Date> resultList = Collections.checkedList(
+				em.createQuery(
+				"SELECT e.end FROM PipelineExecution e" +
+				" WHERE e.pipeline = :pipe" +
+				" AND e.status = :status" +
+				" AND e.end IS NOT NULL" +
+				" ORDER BY e.end DESC")
+				.setParameter("pipe", pipeline)
+				.setParameter("status", status)
+				.getResultList(),
+				Date.class
+		);
+		if (resultList.isEmpty()) {
+			return null;
+		} else {
+			return resultList.get(0);
+		}
+	}
+	
 	/**
 	 * Persists new {@link PipelineExecution} or updates it if it was already
 	 * persisted before.
