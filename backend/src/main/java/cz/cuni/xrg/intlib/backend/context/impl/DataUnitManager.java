@@ -178,7 +178,17 @@ class DataUnitManager {
 	}
 
 	/**
-	 * Call release on all stored DataUnit and them delete them.
+	 * Call delete on all stored DataUnits and them delete them this instance.
+	 */
+	public void delete() {
+		for (DataUnit item : dataUnits) {
+			item.delete();
+		}
+		dataUnits.clear();
+	}
+	
+	/**
+	 * Call release on all stored DataUnit and them delete them this instance.
 	 */
 	public void release() {
 		for (DataUnit item : dataUnits) {

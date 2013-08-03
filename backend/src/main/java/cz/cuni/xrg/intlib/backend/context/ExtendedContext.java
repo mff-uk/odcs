@@ -28,9 +28,14 @@ public interface ExtendedContext {
 	
     /**
      * Release all locks from context and DataUnits. 
-     * Prepare for being deleted.
      */
     public void release();	
+
+    /**
+     * Release all lock from context and DataUnits. Also delete all stored
+     * {@link DataUnit}s.
+     */
+    public void delete();
     
     /**
      * Save all data units into their respective directories.

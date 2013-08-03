@@ -164,7 +164,14 @@ class PipelineWorker implements Runnable {
 		for (ProcessingContext item : contexts.values()) {
 			if (item instanceof ExtendedContext) {
 				ExtendedContext exCtx = (ExtendedContext)item;
-				exCtx.release();
+				if (execution.isDebugging()) {
+					// just release leave
+					exCtx.release();
+				} else {
+					// delete data .. 
+					exCtx.delete();
+				}
+				
 			} else {
 				LOG.error("Unexpected ProcessingContext instance. Can't call release().");
 			}	
