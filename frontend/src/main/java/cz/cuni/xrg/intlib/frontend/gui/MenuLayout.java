@@ -8,6 +8,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.gui.components.UserSettings;
 
 /**
  * Class represent main application component.
@@ -78,6 +79,14 @@ public class MenuLayout extends CustomComponent {
 		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.ExecutionMonitor.getUrl()) );
 		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DataBrowser.getUrl()) );
 		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.Scheduler.getUrl()) );
+		menuBar.addItem("Settings", new Command() {
+			
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				UserSettings userSettings = new UserSettings();
+				App.getApp().addWindow(userSettings);
+			}
+		});
 		menuBar.addItem("Administrator", new NavigateToCommand(ViewNames.Administrator.getUrl()) );
 	}
 

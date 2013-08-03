@@ -80,4 +80,59 @@ overflow: auto !important;
 .v-link a:visited {
 	color: gray;
 }
+
+
+
+.v-nativebutton-selectedtab {
+	margin-right: 0px;
+	margin-bottom: -1px;
+	margin-top: 0px;
+	border-top: 1px solid gray;
+	border-left: 1px solid gray;
+	border-bottom: 1px solid gray;
+	border-right: 0;
+	-moz-border-radius: 6px 0 0 6px;
+	-webkit-border-radius: 6px 0 0 6px;
+	border-radius: 6px 0 0 6px;
+	box-shadow: 0.5px -0.5px 6px gray inset; 
+	background-color: #aaa;
+}
+
+.v-nativebutton .v-nativebutton-caption {
+      white-space: pre;
+}
+
+.v-nativebutton-multiline{
+	
+	margin-right: 0px;
+	margin-bottom: -1px;
+	margin-top: 0px;
+	border-top: 1px solid gray;
+	border-left: 1px solid gray;
+	border-bottom: 1px solid gray;
+	border-right: 0;
+	-moz-border-radius: 6px 0 0 6px;
+	-webkit-border-radius: 6px 0 0 6px;
+	border-radius: 6px 0 0 6px;
+	box-shadow: 0.5px -0.5px 6px gray inset; 
+	background-color: #eee;
+
+}
+
+.v-verticallayout-settings{
+	background-color: #fff;
+	border-left:2px solid gray;
+	box-shadow: -0.5px -0.5px 3px gray inset
+	 
+}
+
+.scheduling{
+		padding-left: 15px;
+		padding-right: 25px;
+		padding-top: 15px;
+	    background-color: #eeeeee;
+}
+
+
+
   
