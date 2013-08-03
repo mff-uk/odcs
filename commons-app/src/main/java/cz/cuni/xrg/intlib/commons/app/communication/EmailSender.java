@@ -14,6 +14,9 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+
 public final class EmailSender {
 
 	private static Logger LOG = LoggerFactory.getLogger(EmailSender.class);
@@ -76,6 +79,21 @@ public final class EmailSender {
 		this.password = password;
 	}
 
+	/**
+	 * Create email sender based on application configuration.
+	 * @param appConfig
+	 */
+	public EmailSender(AppConfig appConfig) {
+		this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
+		this.fromName = appConfig.getString(ConfigProperty.EMAIL_FROM_NAME);
+		this.authentication = appConfig.getInteger(ConfigProperty.EMAIL_AUTH) == 1;
+		if (this.authentication) {
+			// get data for authentication
+			this.user = appConfig.getString(ConfigProperty.EMAIL_USER);
+			this.password = appConfig.getString(ConfigProperty.EMAIL_PASSWORD);
+		}
+	}
+	
 	/**
 	 * Send email with html content
 	 * 
