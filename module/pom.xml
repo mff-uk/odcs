@@ -3,115 +3,26 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>cz.cuni.xrg.intlib</groupId>
-		<artifactId>intlib</artifactId>
+		<artifactId>module-base</artifactId>
 		<version>0.0.1</version>
+		<relativePath>../module-base/pom.xml</relativePath>
 	</parent>
-	<artifactId>module_master</artifactId>
+	<artifactId>module-core</artifactId>
 	<packaging>pom</packaging>
-	<name>Module' parent project.</name>
-	<description>Maven parent project for modules-DPU implementations.</description>
+	<name>Core module' parent project.</name>
+	<description>Maven parent project for core modules-DPU implementations.</description>
 
-	<properties>
-		<dpu.version>0.0.0</dpu.version>
-		<dpu.description>No description is available for this module.</dpu.description>
-		<!-- contains full name of the DPU main class -->
-		<dpu.mainClass></dpu.mainClass>
-		<!-- contains full name of package where the bundle.mainclass is located -->
-		<dpu.package></dpu.package>
-	</properties>
-
+	<!-- list of core modules -->
 	<modules>
 		<module>File_extractor</module>
 		<module>File_loader</module>
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>
-		<module>SPARQL_transformer</module>
-		
+		<module>SPARQL_transformer</module>		
 	</modules>
-
-    <repositories>
-		<repository>
-		  <id>thirdparty-releases</id>
-		  <name>JBoss Thirdparty Releases</name>
-		  <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
-		</repository> 
-				    
-		<repository>
-          <id>maven2-repository.dev.java.net</id>
-          <name>Java.net Repository for Maven</name>
-          <url>http://download.java.net/maven/2/</url>
-          <layout>default</layout>
-        </repository>      
-    </repositories>
-
-	<dependencies>
-
-		<dependency> <!-- commons-web project -->
-			<groupId>cz.cuni.xrg.intlib</groupId>
-			<artifactId>commons-web</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
-
-		<dependency> <!-- commons-module project -->
-			<groupId>cz.cuni.xrg.intlib</groupId>
-			<artifactId>commons-module</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
-
-		<dependency> <!-- JUnit dependency -->
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope> <!-- will not be included in output bundles -->
-		</dependency>
- 	
-		<dependency> <!-- RDF data unit -->
-			<groupId>cz.cuni.xrg.intlib</groupId>
-			<artifactId>RDF</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
-
-	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin> <!-- main build plugin for modules -->
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.3.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<!-- exclude dependencies provided by application -->
-					<excludeDependencies>
-						*;groupId=cz.cuni.xrg.intlib
-						,*;groupId=com.vaadin
-						,*;groupId=org.openrdf.sesame
-						,org.slf4j
-						<!-- add any new application provided library here ... -->
-					</excludeDependencies>
-					<instructions>
-						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Bundle-Version>${project.version}</Bundle-Version>
-						<Bundle-Description>${dpu.description}</Bundle-Description>
-						<Export-Package>${dpu.package};version="${dpu.version}"</Export-Package>
-						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}",com.vaadin.*;version="${vaadin.version}",*</Import-Package>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<!-- dependencies embedding -->
-						<Embed-Dependency>*;scope=compile</Embed-Dependency> <!-- use provided for dependencies that are provided by application -->
-						<Embed-Transitive>false</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->
-						<!-- dependencies location in output file -->
-						<Embed-Directory>dependency</Embed-Directory>
-						<Embed-StripGroup>false</Embed-StripGroup>
-						<!-- information for intlib -->
-						<DPU-Package>${dpu.package}</DPU-Package>
-						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
-					</instructions>					
-				</configuration>
-			</plugin>
 			<plugin> <!-- copy result bundle to outputDirectory -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cz.cuni.xrg.intlib</groupId>
-        <artifactId>module_master</artifactId>
+        <artifactId>module-core</artifactId>
         <version>0.0.1</version>
     </parent>
     <artifactId>RDF_extractor</artifactId>

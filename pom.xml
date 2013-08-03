@@ -26,17 +26,18 @@
 	<modules>
 		<!-- commons -->
 		<module>commons</module>
-		<!-- application -->
+		<!-- intlib libraries -->
 		<module>commons-app</module>
 		<module>rdf</module>
 		<module>commons-module</module>
 		<module>commons-web</module>
-		<!-- frontend is the last build -->
+		<!-- application -->
 		<module>frontend</module>
 		<module>backend</module>
 		<!-- application additional libraries -->
 		<module>lib</module>
-		<!-- build modules -->
+		<!-- build modules -->		
+		<module>module-base</module>
 		<module>module</module>
 	</modules>
 
