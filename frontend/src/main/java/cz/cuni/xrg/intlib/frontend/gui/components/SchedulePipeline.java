@@ -235,20 +235,20 @@ public class SchedulePipeline extends Window {
 				
 				if(event.getTabSheet().getSelectedTab().equals(coreLayout)){
 					
-					tabSheet.setWidth(870, Unit.PIXELS);
+					tabSheet.setWidth(490, Unit.PIXELS);
 				}
 				else{
-					tabSheet.setWidth(450, Unit.PIXELS);
+					tabSheet.setWidth(400, Unit.PIXELS);
 				}
 				
 			}
 		});
 		
-		coreLayout = new GridLayout(2, 3);
+		coreLayout = new GridLayout(1, 3);
 		coreLayout.setImmediate(false);
 		coreLayout.setSpacing(true);
 		coreLayout.setMargin(true);
-//		coreLayout.setWidth(850, Unit.PIXELS);
+
 		
 		
 
@@ -290,9 +290,9 @@ public class SchedulePipeline extends Window {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (scheduleType.getValue().equals(ScheduleType.AFTER_PIPELINE)) {
-					coreLayout.removeComponent(1, 1);
+					coreLayout.removeComponent(0, 2);
 					afterLayout = buildAfterLayout();
-					coreLayout.addComponent(afterLayout, 1, 1);
+					coreLayout.addComponent(afterLayout, 0, 2);
 				}
 			}
 		});
@@ -326,13 +326,13 @@ public class SchedulePipeline extends Window {
 				
 				if (event.getProperty().getValue() == ScheduleType.AFTER_PIPELINE) {
 
-					coreLayout.removeComponent(1, 1);
+					coreLayout.removeComponent(0, 2);
 					afterLayout = buildAfterLayout();
-					coreLayout.addComponent(afterLayout, 1, 1);
+					coreLayout.addComponent(afterLayout, 0, 2);
 
 				} else {
-					coreLayout.removeComponent(1, 1);
-					coreLayout.addComponent(autoLayout, 1, 1);
+					coreLayout.removeComponent(0, 2);
+					coreLayout.addComponent(autoLayout, 0, 2);
 				}
 
 			}
@@ -340,7 +340,7 @@ public class SchedulePipeline extends Window {
 
 		coreLayout.addComponent(scheduleType, 0, 1);
 		autoLayout = buildAutoLayout();
-		coreLayout.addComponent(autoLayout, 1, 1);
+		coreLayout.addComponent(autoLayout, 0, 2);
 		
 		//Layout with buttons Save and Cancel
 		HorizontalLayout buttonBar = new HorizontalLayout();
@@ -527,9 +527,9 @@ public class SchedulePipeline extends Window {
 		afterLayout.setImmediate(false);
 		afterLayout.setHeight("400px");
 		afterLayout.setSpacing(true);
-
 		afterLayout.setColumnExpandRatio(0, 0.2f);
 		afterLayout.setColumnExpandRatio(1, 0.8f);
+		afterLayout.setStyleName("scheduling");
 
 		afterLayout.addComponent(new Label("Select pipeline:"), 0, 0);
 
@@ -539,7 +539,7 @@ public class SchedulePipeline extends Window {
 		pipeFilter = new TextField();
 		pipeFilter.setImmediate(false);
 		pipeFilter.setInputPrompt("type to filter pipelines");
-		pipeFilter.setWidth("144px");
+		pipeFilter.setWidth("140px");
 		pipeFilter.setTextChangeEventMode(TextChangeEventMode.LAZY);
 		pipeFilter.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			/**
@@ -580,7 +580,7 @@ public class SchedulePipeline extends Window {
 		selectPipe.setNullSelectionAllowed(true);
 		selectPipe.setMultiSelect(true);
 		selectPipe.setImmediate(true);
-		selectPipe.setWidth("333px");
+		selectPipe.setWidth("320px");
 		selectPipe.setHeight("300px");
 		selectPipe.setLeftColumnCaption("Available pipelines");
 		selectPipe.setRightColumnCaption("Selected pipelines");
@@ -623,6 +623,7 @@ public class SchedulePipeline extends Window {
 		autoLayout.setHeight("400px");
 		autoLayout.setColumnExpandRatio(0, 0.6f);
 		autoLayout.setColumnExpandRatio(1, 0.4f);
+		autoLayout.setStyleName("scheduling");
 		
 		//Date component
 		autoLayout.addComponent(new Label("Date and time of first execution:"),
