@@ -35,19 +35,18 @@ public interface DataUnit {
 	public void merge(DataUnit unit) throws IllegalArgumentException;
 
 	/**
-	 * Release all locks, prepare for being deleted. Can be called even when the
-	 * DataUnit is in read only mode.
+	 * Delete all data/file/resources related to the DataUnit. 
+	 * Can be called even when the DataUnit is in read only mode.
+	 * Can't be called before of after {@link #release()}
+	 */
+	public void delete();
+	
+	/**
+	 * Release all locks, prepare for destroy in memory representation of 
+	 * DataUnit. Can be called even when the DataUnit is in read only mode.
+	 * Can't be called before of after {@link #delete()}
 	 */
 	public void release();
-
-	/**
-	 * Save DataUnit context into DataUnit working directory. In case of any
-	 * problem throws exception.
-	 * 
-	 * @throws Exception
-	 */
-	@Deprecated
-	public void save() throws Exception;
 
 	/**
 	 * Save DataUnit context into given directory. In case of any problem throws
