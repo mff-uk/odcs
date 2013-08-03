@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
-import static cz.cuni.xrg.intlib.rdf.enums.RDFFormatType.*;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import java.io.OutputStream;
 import java.io.Writer;

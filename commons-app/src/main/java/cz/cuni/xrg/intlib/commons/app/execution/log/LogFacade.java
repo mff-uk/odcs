@@ -2,14 +2,11 @@ package cz.cuni.xrg.intlib.commons.app.execution.log;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.log4j.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Facade for fetching persisted entities. Manipulating logs is not implemented,

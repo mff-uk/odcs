@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.io.Serializable;
 import java.util.Objects;
 

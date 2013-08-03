@@ -72,8 +72,6 @@ public class Scheduler implements ApplicationListener {
 				}
 			}			
 		} else if (event instanceof SchedulerCheckDatabase) {
-			List<Schedule> all = database.getSchedule().getAllSchedules();
-			
 			// check DB for pipelines based on time scheduling
 			Date now = new Date();
 			// get all pipelines that are time based
