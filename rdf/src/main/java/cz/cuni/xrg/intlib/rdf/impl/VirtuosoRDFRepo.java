@@ -143,6 +143,13 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	@Override
+	public void delete() {
+		shutDown();
+		logger.info("Virtuoso repository succesfully shut down");
+		// TODO Jirka: Delete used graph here 
+	}	
+	
+	@Override
 	public void release() {
 		shutDown();
 		logger.info("Virtuoso repository succesfully shut down");

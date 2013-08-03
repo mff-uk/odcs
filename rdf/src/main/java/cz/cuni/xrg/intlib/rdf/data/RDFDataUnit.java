@@ -42,12 +42,31 @@ public class RDFDataUnit implements DataUnit {
 	}
 	
 	/**
+	 * Extract triples from string.
+	 * 
+	 * @param data
+	 */
+	public void extract(String data) {
+		
+	}
+	
+	/**
+	 * Extract triples from file and store them in DataUnit. The file type
+	 * is determined by file's extension. 
+	 * 
+	 * @param file
+	 */
+	public void extract(File file) {
+		
+	}	
+	
+	/**
 	 * Extract triples from file and store them in DataUnit.
 	 * 
 	 * @param file Path to the file including file name and extension.
 	 * @param formatType File's format type.
 	 */
-	public void extract(File file, FileExtractType formatType) {
+	public void extract(File file, RDFFormatType formatType) {
 		
 	}
 	
@@ -58,7 +77,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param formatType File's format type.
 	 * @param uri  String name of defined used URI.
 	 */
-	public void extract(File file, FileExtractType formatType, String uri) {
+	public void extract(File file, RDFFormatType formatType, String uri) {
 		
 	}	
 	
@@ -209,58 +228,42 @@ public class RDFDataUnit implements DataUnit {
 	
 	@Override
 	public void madeReadOnly() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		
 	}
 
+	@Override
+	public void delete() {
+	}	
+	
 	@Override
 	public void release() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	@Deprecated
-	public void save() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void save(File directory) throws RuntimeException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void load(File directory)
 			throws FileNotFoundException,
 				RuntimeException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public DataUnitType getType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isReadOnly() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

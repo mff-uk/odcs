@@ -2077,10 +2077,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		shutDown();
 	}
 
-	/*public static DataUnit createNewInstance(String id,File workingDir,boolean mergePrepare)
-	 {
-		
-	 }*/
 	@Override
 	public void madeReadOnly() {
 		setReadOnly(true);
@@ -2112,16 +2108,19 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	@Override
+	public void delete() {
+		release();
+		// delete working directory
+		
+		// TODO Jirka: delete directory? It's not necessary. 
+	}
+	
+	@Override
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
 				.toString());
 		shutDown();
 		logger.info("Relelased LocalRdf: {}", WorkingRepoDirectory.toString());
-	}
-
-	@Override
-	public void save() throws Exception {
-		save(WorkingRepoDirectory);
 	}
 
 	/**
@@ -2137,7 +2136,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	/**
 	 * Set data graph storage for given data in RDF format.
 	 *
-	 * @param newDataGraph new graph representated as URI.
+	 * @param newDataGraph new graph represented as URI.
 	 */
 	@Override
 	public void setDataGraph(URI newDataGraph) {
