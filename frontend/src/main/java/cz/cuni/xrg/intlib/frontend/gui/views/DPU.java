@@ -594,10 +594,9 @@ class DPU extends ViewComponent {
 							
 							// saving configuration
 							try {
-								selectedDpuWrap.saveConfig();
-								
+								selectedDpuWrap.saveConfig();								
 							} catch (ConfigException e) {
-								selectedDpuWrap.getDPUTemplateRecord().setConfiguration(null);
+								selectedDpuWrap.getDPUTemplateRecord().setRawConf(null);
 							}	
 
 							// store into DB

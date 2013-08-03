@@ -94,7 +94,13 @@ public class DPURecord {
     	this.description = dpuRecord.description;
     	this.type = dpuRecord.type;
     	this.jarPath = dpuRecord.jarPath;
-    	this.serializedConfiguration = dpuRecord.serializedConfiguration;
+    	if (dpuRecord.serializedConfiguration == null) {
+    		this.serializedConfiguration = null;
+    	} else {
+    		// deep copy
+    		this.serializedConfiguration = 
+    				dpuRecord.serializedConfiguration.clone();
+    	}
     }
     
     /**

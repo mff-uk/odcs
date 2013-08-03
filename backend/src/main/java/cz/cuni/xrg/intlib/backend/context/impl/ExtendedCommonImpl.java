@@ -35,7 +35,7 @@ class ExtendedCommonImpl {
 	/**
 	 * PipelineExecution. The one who caused run of this DPURecord.
 	 */
-	private PipelineExecution execution;
+	protected PipelineExecution execution;
 
 	/**
 	 * DPUInstanceRecord as owner of this context.

@@ -66,8 +66,6 @@ public class Pipeline implements Resource, Serializable {
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.EAGER)
 	private PipelineGraph graph;
 
-	//@ManyToOne(cascade=CascadeType.ALL, mappedBy="pipeline", fetch= FetchType.EAGER)
-	//private Plan plan;
 	/**
 	 * Default constructor for JPA
 	 */
@@ -109,7 +107,6 @@ public class Pipeline implements Resource, Serializable {
 	}
 
 	public String getDescription() {
-
 		return description;
 	}
 

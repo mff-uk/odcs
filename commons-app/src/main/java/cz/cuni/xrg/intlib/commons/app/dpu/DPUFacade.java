@@ -182,7 +182,7 @@ public class DPUFacade {
 
 		@SuppressWarnings("unchecked")
 		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT e FROM Record e").getResultList(),
+			em.createQuery("SELECT e FROM MessageRecord e").getResultList(),
 			MessageRecord.class
 		);
 
@@ -199,7 +199,7 @@ public class DPUFacade {
 
 		@SuppressWarnings("unchecked")
 		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM Record r WHERE r.dpuInstance = :ins")
+			em.createQuery("SELECT r FROM MessageRecord r WHERE r.dpuInstance = :ins")
 				.setParameter("ins", dpuInstance)
 				.getResultList(),
 			MessageRecord.class
@@ -218,7 +218,7 @@ public class DPUFacade {
 
 		@SuppressWarnings("unchecked")
 		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM Record r WHERE r.execution = :ins")
+			em.createQuery("SELECT r FROM MessageRecord r WHERE r.execution = :ins")
 				.setParameter("ins", pipelineExec)
 				.getResultList(),
 			MessageRecord.class

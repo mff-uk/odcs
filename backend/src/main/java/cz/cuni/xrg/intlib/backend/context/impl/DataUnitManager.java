@@ -103,7 +103,7 @@ class DataUnitManager {
 			File workingDir,
 			AppConfig appConfig) {
 		return new DataUnitManager(dpuInstance, dataUnitFactory, context,
-				workingDir, appConfig, true);
+				workingDir, appConfig, false);
 	}
 
 	private DataUnitManager(DPUInstanceRecord dpuInstance,
