@@ -21,12 +21,12 @@ import com.vaadin.ui.TextField;
  */
 public class EmailComponent {
 
-
+	public EmailNotifications parentComponent; 
 	private Button buttonEmailhRem;
 	private Button buttonEmailAdd;
 	private InvalidValueException ex;
 	private GridLayout gridLayoutEmail;
-	private TextField textFieldEmail;
+	public TextField textFieldEmail;
 	  
 	
 		/**
@@ -86,7 +86,7 @@ public class EmailComponent {
 //		 * {@link #initializeEmailList} and also in adding and removing fields
 		 * for component refresh
 		 */
-		private void refreshEmailData() {
+		public void refreshEmailData(final boolean validation) {
 			gridLayoutEmail.removeAllComponents();
 			int row = 0;
 			listedEditText = new ArrayList<>();
@@ -103,28 +103,21 @@ public class EmailComponent {
 				textFieldEmail.setData(row);
 				textFieldEmail.setValue(item.trim());
 				textFieldEmail.setInputPrompt("franta@test.cz");
-				textFieldEmail.addValidator(new Validator() {
-					@Override
-					public void validate(Object value) throws InvalidValueException {
-						if (value != null) {
-
-							String email = value.toString().toLowerCase()
-									.trim();
-
-							if (email.isEmpty()) {
-								return;
+				if((validation)){
+					textFieldEmail.addValidator(new Validator() {
+						@Override
+						public void validate(Object value) throws InvalidValueException {
+							if((parentComponent!=null) && (parentComponent.shEmailLayout.isEnabled())){
+								if (value.getClass() == String.class
+										&& !((String) value).isEmpty()) {
+									return;
+								}
+								throw new InvalidValueException("Email must be filled!");
+		
 							}
-
-							if (email.contains(" ")) {
-								ex = new InvalidValueException(
-										"E-mail(s) must contain no white spaces");
-								throw ex;
-							} 
-
 						}
-
-					}
-				});
+					});
+				}
 
 				//remove button
 				buttonEmailhRem = new Button();
@@ -138,7 +131,7 @@ public class EmailComponent {
 						Button senderButton = event.getButton();
 						Integer row = (Integer) senderButton.getData();
 						removeDataEmailData(row);
-						refreshEmailData();
+						refreshEmailData(validation);
 					}
 				});
 				gridLayoutEmail.addComponent(textFieldEmail, 0, row);
@@ -158,7 +151,7 @@ public class EmailComponent {
 				public void buttonClick(Button.ClickEvent event) {
 					saveEditedTexts();
 					addDataToEmailData(" ");
-					refreshEmailData();
+					refreshEmailData(validation);
 				}
 			});
 			gridLayoutEmail.addComponent(buttonEmailAdd, 0, row);
@@ -169,7 +162,7 @@ public class EmailComponent {
 		 * Initializes E-mail notification component.
 		 * @return 
 		 */
-		GridLayout initializeEmailList() {
+		GridLayout initializeEmailList(boolean validation) {
 
 			gridLayoutEmail = new GridLayout();
 			gridLayoutEmail.setImmediate(false);
@@ -180,7 +173,7 @@ public class EmailComponent {
 			gridLayoutEmail.setColumnExpandRatio(0, 0.95f);
 			gridLayoutEmail.setColumnExpandRatio(1, 0.05f);
 
-			refreshEmailData();
+			refreshEmailData(validation);
 			return gridLayoutEmail;
 
 		}

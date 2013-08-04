@@ -21,9 +21,11 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
  */
 public class EmailNotifications {
 
-	private GridLayout shEmailLayout; 
-	int noSuccessful =0;
-	int noError=0;
+	public GridLayout shEmailLayout; 
+	private int noSuccessful =0;
+	private int noError=0;
+	private boolean validation=true;
+	public EmailComponent shEmail;
 	
 	public VerticalLayout buildEmailNotificationsLayout(){
 		
@@ -55,13 +57,16 @@ public class EmailNotifications {
 				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)){
 					noSuccessful=1;
 					if((noError==1) && ( noSuccessful==1)){
-						
 						shEmailLayout.setEnabled(false);
+
+						
 					}
 				}
 				else{
 					noSuccessful=0;
 					shEmailLayout.setEnabled(true);
+
+					
 				}
 				
 			}
@@ -87,13 +92,14 @@ public class EmailNotifications {
 				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)){
 					noError=1;
 					if((noError==1) && ( noSuccessful==1)){
-						
 						shEmailLayout.setEnabled(false);
+
 					}
 				}
 				else{
 					 noError=0;
-					 shEmailLayout.setEnabled(true);	
+					 shEmailLayout.setEnabled(true);
+
 						}
 				
 			}
@@ -103,11 +109,13 @@ public class EmailNotifications {
 		
 		emailNotificationsLayout.addComponent(new Label("E-mail notifications to: "));
         
-        EmailComponent shEmail = new EmailComponent();
+        shEmail = new EmailComponent();
+        shEmail.parentComponent=this;
         shEmailLayout = new GridLayout();
+        shEmailLayout.setImmediate(true);
         
      
-        shEmailLayout = shEmail.initializeEmailList();
+        shEmailLayout = shEmail.initializeEmailList(validation);
         emailNotificationsLayout.addComponent(shEmailLayout);
   
 
