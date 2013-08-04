@@ -27,6 +27,7 @@ public class EmailComponent {
 	private InvalidValueException ex;
 	private GridLayout gridLayoutEmail;
 	public TextField textFieldEmail;
+	private InvalidValueException mailEx;
 	  
 	
 		/**
@@ -110,12 +111,40 @@ public class EmailComponent {
 							if((parentComponent!=null) && (parentComponent.shEmailLayout.isEnabled())){
 								if (value.getClass() == String.class
 										&& !((String) value).isEmpty()) {
+									String inputEmail = (String) value;
+									if(!inputEmail.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")){
+										mailEx = new InvalidValueException("Wrong mail format on Sheduler notifications tab");
+										throw mailEx;
+									}
 									return;
 								}
-								throw new InvalidValueException("Email must be filled!");
+								mailEx = new InvalidValueException("Email on Sheduler notification tab must be filled!");
+								throw mailEx;
+								
 		
 							}
 						}
+					});
+				}
+				else{
+					textFieldEmail.addValidator(new Validator() {
+						@Override
+						public void validate(Object value) throws InvalidValueException {
+
+								if (value.getClass() == String.class
+										&& !((String) value).isEmpty()) {
+									String inputEmail = (String) value;
+									if(!inputEmail.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")){
+										mailEx = new InvalidValueException("Wrong mail format on My account tab!");
+										throw mailEx;
+									}
+									return;
+								}
+								
+								
+		
+							}
+						
 					});
 				}
 
