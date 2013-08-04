@@ -20,6 +20,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
@@ -49,6 +50,8 @@ public class UserSettings extends Window {
 	private Button schedulerButton;
 	private Button myAccountButton;
 	private HorizontalLayout buttonBar;
+	private boolean validation=false;
+	private EmailNotifications emailNotifications;
 	
 	public UserSettings(){
 		
@@ -130,7 +133,7 @@ public class UserSettings extends Window {
         EmailComponent email = new EmailComponent();
         GridLayout emailLayout = new GridLayout();
         
-        emailLayout = email.initializeEmailList();
+        emailLayout = email.initializeEmailList(validation);
         
         HorizontalLayout buttonBarMyAcc= new HorizontalLayout();
         buttonBarMyAcc =buildButtonBar();
@@ -139,7 +142,7 @@ public class UserSettings extends Window {
 		settingsLayout.addComponent(buttonBarMyAcc);
 		settingsLayout.setComponentAlignment(buttonBarMyAcc, Alignment.BOTTOM_RIGHT);
 		
-		EmailNotifications emailNotifications = new EmailNotifications();
+		emailNotifications = new EmailNotifications();
 		
 
 		
@@ -170,6 +173,19 @@ public class UserSettings extends Window {
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
 		Button saveButton = new Button("Save");
+		saveButton.addClickListener(new ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				
+					
+				if (!emailNotifications.shEmail.textFieldEmail.isValid()) {
+					Notification.show("Failed to save settings", "E-mail field on Scheduler notification tab should be filled", Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+				
+			}
+		});
 		buttonBar.addComponent(saveButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
