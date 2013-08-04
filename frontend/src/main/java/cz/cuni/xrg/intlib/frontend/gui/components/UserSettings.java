@@ -53,6 +53,9 @@ public class UserSettings extends Window {
 	private boolean validation=false;
 	private EmailNotifications emailNotifications;
 	
+	private GridLayout emailLayout;
+	private EmailComponent email;
+	
 	public UserSettings(){
 		
 		this.setResizable(false);
@@ -130,8 +133,8 @@ public class UserSettings extends Window {
 		
         settingsLayout.addComponent(new Label("E-mail notifications to: "));
         
-        EmailComponent email = new EmailComponent();
-        GridLayout emailLayout = new GridLayout();
+        email = new EmailComponent();
+        emailLayout = new GridLayout();
         
         emailLayout = email.initializeEmailList(validation);
         
@@ -178,11 +181,15 @@ public class UserSettings extends Window {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
-					
-				if (!emailNotifications.shEmail.textFieldEmail.isValid()) {
-					Notification.show("Failed to save settings", "E-mail field on Scheduler notification tab should be filled", Notification.Type.ERROR_MESSAGE);
+			
+				try {
+					email.textFieldEmail.validate();
+					emailNotifications.shEmail.textFieldEmail.validate();
+				} catch (Validator.InvalidValueException e) {
+					Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 					return;
 				}
+				
 				
 			}
 		});
