@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body>
+		<h1>Intlib documentation</h1>
+		
+		<h2>Create bundle from existing jar file</h2>
+		Here we describe how the OSGI bundle can be created from existing jar files. 
+		Once bundle is created it can be copied into Intlib lib' directory. From there
+		every bundle is automatically loaded into application on it's start. 
+		
+		<h3>Eclipse</h3>
+		<ul>
+		<li>Select <i>File, New, Other</i>.</li>		
+		<li> <img border="5px" src="./img/eclipse_bundle/00.png" width="320" height="240" />
+			Then in <i>New project</i> dialog select <i>Plugin from Existing JAR files</i>
+			and click on <i>Next</i> </li>
+		<li> <img border="5px" src="./img/eclipse_bundle/01.png" width="320" height="240" />
+			Now you can select existing jar files. These jar files will be used to create 
+			and OSGI bundle. </li>
+		<li> <img border="5px" src="./img/eclipse_bundle/02.png" width="320" height="240" />
+			You can also select jar files that are used as a libraries in existing projects. 
+			When you select all jar files click on <i>Next</i> to continue. </li>
+		<li> <img border="5px" src="./img/eclipse_bundle/03.png" width="320" height="240" />
+			Now you have to specify <i>Plug-in</i> <i>Name</i>, <i>Id</i> and set 
+			check boxes according to image. Then click <i>Finish</i> to create project. </li>
+		<li> <img border="5px" src="./img/eclipse_bundle/04.png" width="320" height="240" />
+			<img border="5px" src="./img/eclipse_bundle/05.png" width="320" height="240" />
+			Now you can inspect project settings. On the right side of <i>dependency</i> tab
+			you can see list of Import packages. This list specify packages which bundle 
+			require to import. These packages must be provided by other bundles or 
+			host application otherwise your new bundle can not be resolved or used. </li>
+		<li> <img border="5px" src="./img/eclipse_bundle/06.png" width="320" height="240" />
+			The last step is to export the bundle project. To do this select <i>File, Export</i>.
+			In <i>Export dialog</i> select <i>Deployable plug-ins and fragments</i> and click on <i>Next</i>. </li>
+		<li> <img border="5px" src="./img/eclipse_bundle/07.png" width="320" height="240" />
+			Then select project end finish the export. </li>		
+		</ul>
+		
+	</body>
+</html>
