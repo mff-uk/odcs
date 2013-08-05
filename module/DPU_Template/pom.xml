@@ -23,16 +23,18 @@
     </properties>
  	
  	<dependencies>
- 		<!-- add dependencies here -->
- 		
- 		<!-- use following code to import local dependency -->
+ 		<!-- TODO 6: add dependencies here -->
+ 		 		
+ 		<!-- use following code to import local dependency 
+ 			from project file\lib\MyLib.java. The jar file will be automaticaly
+ 			added to the result jar file -->
  		<!-- 
 		<dependency>
-			<groupId>package_max_common_package_name</groupId>
-			<artifactId>jar_file_name</artifactId>
+			<groupId>com.surname.intlib</groupId>
+			<artifactId>MyLib</artifactId>
 			<version>1.0.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/relative_path_to_jar_from project</systemPath>
+			<systemPath>${project.basedir}/lib/MyLib.java</systemPath>
 		</dependency> 		
  		 -->
  		 

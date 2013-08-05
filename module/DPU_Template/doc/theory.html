@@ -1,0 +1,126 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<h1>Intlib documentation</h1>
+	This section we describe little bit of theory behind building DPU's project. 
+	First of all we give few words about used technologies like Maven and OSGI. 
+	After that the build process for DPU's project will be described. And nearly
+	at the end we mention how to get information about dependencies from the
+	jar-file and what can be done to resolve them.
+
+	<h2>Maven</h2>
+
+	<h3>Maven project</h3>
+
+	<h3>pom.xml</h3>
+	Contains Maven related project' settings. If you want to add dependency
+	to the project this is the right place. Example of pom.xml file is
+	attached to the sample DPU.
+
+	<h2>OSGI technology</h2>
+	OSGI support dynamic loadings of jar files with their dependency resolving.
+	In OSGI terminology jar files are called bundles. Each bundle contains
+	<b>maninifest.mf</b> file. This files contains bundle description. <br/>
+	 
+	Dependencies are resolved base on import/export package specification in 
+	manifest.mf. The sample of such specification can be seen bellow:  
+<div class="maven-pom"> <pre> <code>
+Export-Package: cz.cuni.mff.xrg.intlib.loader.rdf
+Import-Package: com.vaadin.data,com.vaadin.data.util,com.vaadin.server,c
+ om.vaadin.shared.ui.combobox,com.vaadin.ui,cz.cuni.xrg.intlib.commons.c
+ onfiguration;version="0.0.1",cz.cuni.xrg.intlib.commons.data;version="0
+ .0.1",cz.cuni.xrg.intlib.commons.loader;version="0.0.1",cz.cuni.xrg.int
+ lib.commons.module.data;version="0.0.1",cz.cuni.xrg.intlib.commons.modu
+ le.dialog;version="0.0.1",cz.cuni.xrg.intlib.commons.module.dpu;version
+ ="0.0.1",cz.cuni.xrg.intlib.commons.web;version="0.0.1",cz.cuni.xrg.int
+ lib.rdf.enums,cz.cuni.xrg.intlib.rdf.exceptions,cz.cuni.xrg.intlib.rdf.
+ interfaces
+</code> </pre> </div>
+	The Export-Package specify packages that bundle provide. On the other hand 
+	Import-Package list the packages that are required. <br/>	
+	Before bundle or it's content (class) can be used in application, bundle 
+	must be resolved. Bundle can be resolved only if all packages in 
+	Import-Package are provided (exported) by other bundles or by 
+	the host application (environment).
+
+	<h2>Building  DPU project</h2>
+	DPU's projects are using maven so to build project use maven command with 
+	install target.
+	<div class="maven-cmd">mvn install</div>	
+	This will create the OSGI bundle that will contain compiled code from
+	respective project as well as direct dependencies with <b>compile</b> scope.
+	
+	<span class="warn">Do not use environment to create jar file without
+	Maven. This may result into jar file that may not work properly
+	or may even not be an OSGI bundle.</span>
+				
+	<h3>MANIFEST.MF</h3>
+	Manifest file can be found:
+	<ul>
+		<li>After mnv install in project\target\classes\META-INF</li>
+		<li>In jar file \META-INF. To acces file in jar file, change the
+		extension from jar to zip and then use your favourite program to unizip 
+		it.</li> 
+	</ul>
+	The MANIFEST.MF file contains bundle description. Here you can check 
+	bundle dependencies ie. Import-package. <br/>
+	Manifest file should also contains line with <b>DPU-MainClass</b> and
+	<b>DPU-Package</b> that are essential for bundle usage in Intlib project.
+	
+	<h3>Dependencies</h3>
+	Each bundle specify it's dependencies in terms of packages rather then jar
+	files or libraries. When building tha DPU project the dependencies specified 
+	in pom.xml with compile scope are automatically added to the output bundle 
+	file.However the transitive dependencies are not embeded. Instead of this the 
+	used packages from those transitive dependencies are listed in 
+	Package-Import. <br/> There are tree ways how to solve this problem:
+	<ol>
+		<li>Set embed.transitive property to true. Ie add 
+		&lt;embed.transitive&gt;false&lt;/embed.transitive&gt; to pom.xml into
+		&lt;properties&gt; element.
+		And hope that plugin can handle this for you.</li>
+		<li>Add transitive dependency into pom.xml</li>
+		<li>Create bundle that would be loaded as library and would 
+		export required packages. See next section for information about
+		creating bundle from jar-file library.</li>
+	</ol>
+	For the second approach it may be important to mention, that you can use 
+	more bundles which together give all the required packages. But keep in 
+	mind that the library bundles can also have dependencies ie. 
+	Import-Packages. These must be also satisfied othervise the library 
+	bundle can not be used.
+
+	<h2>Create bundle from existing jar file</h2>
+	Here we describe how the OSGI bundle can be created from existing jar
+	files. Once bundle is created it can be copied into Intlib lib'
+	directory. From there every bundle is automatically loaded into
+	application on it's start. This approach is IDE dependent!
+	<h3>Eclipse</h3>
+	<ul>
+		<li>Select <i>File, New, Other</i>.	</li>
+		<li><Then in <i>New project</i> dialog select
+			<i>Plugin from Existing JAR files</i> and click on <i>Next</i></li>
+		<li> Now you can select existing jar files.
+			These jar files will be used to create and OSGI bundle.</li>
+		<li> You can also select jar files that are
+			used as a libraries in existing projects. When you select all jar
+			files click on <i>Next</i> to continue.</li>
+		<li> Now you have to specify <i>Plug-in</i> <i>Name</i>,
+			<i>Id</i> and set check boxes according to image. Then click <i>Finish</i>
+			to create project.</li>
+		<li> Now you can inspect project settings. On the right side of 
+			<i>dependency</i> tab you can see list of Import packages. 
+			This list specify packages which bundle require to import. 
+			These packages must be provided by other bundles or host application
+			otherwise your new bundle can not be resolved or used.</li>
+		<li> The last step is to export the bundle
+			project. To do this select <i>File, Export</i>. In <i>Export
+				dialog</i> select <i>Deployable plug-ins and fragments</i> and click on
+			<i>Next</i>.</li>
+		<li> Then select project end finish the	export.</li>
+	</ul>
+
+</body>
+</html>
