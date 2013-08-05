@@ -3,6 +3,8 @@
 
 
 
+
+
 CREATE TABLE `DPU_INSTANCE`
 (
 -- DPURecord
@@ -46,19 +48,19 @@ CREATE TABLE `EXEC_DATAUNIT_INFO`
 
 CREATE TABLE `EXEC_CONTEXT_PIPELINE`
 (
-  "id" INTEGER IDENTITY,
-  "execution_id" INTEGER,
-  "directory" VARCHAR(255),
-  PRIMARY KEY ("id")
+  `id` INTEGER AUTO_INCREMENT,
+  `execution_id` INTEGER,
+  `directory` VARCHAR(255),
+  PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `EXEC_CONTEXT_DPU`
 (
-  "id" INTEGER IDENTITY,
-  "exec_context_pipeline_id" INTEGER,
-  "dpu_instance_id" INTEGER,
-  "state" SMALLINT,
-  PRIMARY KEY ("id")
+  `id` INTEGER AUTO_INCREMENT,
+  `exec_context_pipeline_id` INTEGER,
+  `dpu_instance_id` INTEGER,
+  `state` SMALLINT,
+  PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `EXEC_RECORD`
