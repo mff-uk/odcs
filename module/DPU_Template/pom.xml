@@ -22,4 +22,20 @@
         <dpu.mainClass>DPUTemplate</dpu.mainClass>    
     </properties>
  	
+ 	<dependencies>
+ 		<!-- add dependencies here -->
+ 		
+ 		<!-- use following code to import local dependency -->
+ 		<!-- 
+		<dependency>
+			<groupId>package_max_common_package_name</groupId>
+			<artifactId>jar_file_name</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/relative_path_to_jar_from project</systemPath>
+		</dependency> 		
+ 		 -->
+ 		 
+ 	</dependencies>
+ 	
 </project>

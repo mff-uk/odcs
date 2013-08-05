@@ -4,7 +4,7 @@
 	<head>
 		<style>
 			.code		{background-color: #f6f9f6;}
-                        .inCode		{font-family:"Courier New", Courier, monospace}
+            .inCode		{font-family:"Courier New", Courier, monospace}
 			.comment	{color:green}
 			.module_name{color:blue}
 			h1			{color:darkblue}
@@ -14,8 +14,7 @@
 	</head>
 	<body>
 		<h1>Data Processing Units (DPUs)</h1>		
-		
-	
+			
 		<h2>Types of DPUs</h2>
         <div>The application distinguished three types of DPUs: 
         <ul>
@@ -43,18 +42,12 @@ public class DPUTemplate  {
 	
 		<h2 id="secConfigurationConcept">Configuration concept</h2>
 		<div>Each DPU has possibility to store configuration that can configure DPU execution. User can edit the configuration
-			through the configuration dialog which is also provided by DPU implementation. The configuration can be set/get for DPU's as well 
-			as for configuration dialog. </br> DPU's methods for working with configuration are:
+			through the configuration dialog which is also provided by DPU implementation. <br/> 
+			
+			The configuration is accessible as member variabl.The configuration class must implement interface
 			<div class="code"> <pre> <code>
-public void configure(Config c) throws ConfigException 
-public Config getConfiguration() </code> </pre></div>
-			and for DPU's configuration dialog:
-			<div class="code"> <pre> <code>
-public void setConfiguration(Config conf) throws ConfigException 
-public Config getConfiguration() throws ConfigException </code> </pre> </div>
-			Where <b>Config</b> is replaced by your configuration class. The configuration class must implement interface
-			<div class="code"> <pre> <code>
-interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> </div> which is located in commons.
+interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject {} .. </code> </pre> </div> 
+			which is located in commons.
 			</div>
 	
 		<h2>DataUnit containers</h2>
@@ -62,10 +55,7 @@ interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> <
 			that does not offer any usable functionality. For practical use, more specific interface is provided. Currently only one interface 
 			is available: <i>RDFDataRepository</i>. The DataUnit (ie. RDFDataRepository) can't be created directly. 
 			To create DataUnit use <span class="inCode">DataUnitFactory</span>, which is accessible via <span class="inCode">Context</span>.</div>
-		
-		
-
-			
+					
 		<h3>DataUnit - RDFDataRepository</h3>
 		The RDFDataRepository is RDF focused implementation of DataUnit. Let's name few importat function for work with RDFDataRepository (to store RDF data being prepared by the DPU).
 		<ul>
@@ -84,8 +74,8 @@ interface cz.cuni.xrg.intlib.commons.configuration.Config {} .. </code> </pre> <
 			<div class="code"> <pre> <code>
 			
 <span class="comment">// get first input as RDFDataRepository</span>
-RDFDataRepository intputRepository = 
-		InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
+DataUnitList&lt;RDFDataRepository&gt; dataUnitList = RDFDataUnitList.create(context);
+RDFDataRepository intputRepository = dataUnitList.getFirst();
 
 <span class="comment">// create output RDFDataRepository</span>
 RDFDataRepository outputRepository = 
@@ -128,6 +118,8 @@ RDFDataRepository outputRepository =
 				<li><b>TODO 5. DPU's <span class="module_name">main_class_name</span>: </b> Fill the DPU main class name. 
 					The main class must be placed in package specified in the previous step.</li>
 			</ul>
+			Here you can also add dependencies to other jar files. Do not add them elsewhere
+			as they may not be visible to the Maven.
 		</div>
 
 		<h3>DPUTemplate.java</h3>
@@ -159,9 +151,9 @@ RDFDataRepository outputRepository =
 public void transform(TransformContext context) throws TransformException, DataUnitCreateException {
 			
     <span class="comment">// get first input as RDFDataRepository</span>
-    RDFDataRepository intputRepository = 
-                    InputHelper.getInput(context.getInputs(), 0, RDFDataRepository.class);
-
+    DataUnitList&lt;RDFDataRepository&gt; dataUnitList = RDFDataUnitList.create(context);
+    RDFDataRepository intputRepository = dataUnitList.getFirst();
+	    
     <span class="comment">// create output </span>
     RDFDataRepository outputRepository = 
                     (RDFDataRepository) context.addOutputDataUnit(DataUnitType.RDF);
@@ -175,10 +167,6 @@ public void transform(TransformContext context) throws TransformException, DataU
 }
 
 			</code> </pre> </div>
-                               
-                              
-        
-				
 				
 				</li>
 			</ul>
@@ -188,16 +176,24 @@ public void transform(TransformContext context) throws TransformException, DataU
 		<div>This file contains implementation of DPU's configuration dialog. 
 			The DPU's configuration dialog is implemented as a <a href="www.vaadin.com">Vaadin</a> component. The dialog
 			class must extends abstract class
-			<div class="code"> <pre> <code> AbstractConfigDialog&lt;Config&gt; </code> </pre> </div>
+			<div class="code"> <pre> <code> BaseConfigDialog&lt;Config&gt; </code> </pre> </div>
 			</div>
 			
 		<h3>DPUTemplateConfig.java</h3>
-		<div>This file contains template for DPU's configuration. It representes an object holding configuration needed by the DPU. The class must implement interface
-			<div class="code"> <pre> <code> cz.cuni.xrg.intlib.commons.configuration.Config </code> </pre> Put your configuration 
+		<div>This file contains template for DPU's configuration. It represents an object holding configuration needed by the DPU. The class must implement interface
+			<div class="code"> <pre> <code> cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject</code> </pre> Put your configuration 
 			variables inside this class. You can then access it from DPUTemplate class through the atribut <span class="inCode">config</span>. </div>
 		
 		
+		<h3>Compile DPU project</h3>
+		To compile DPU project into output jar (bundle) file use <b>mvn install</b> command.
 		
+		<h3>DPU-jar deploy</h3>
+		The DPU jar file can be added to the Intlib through the web-application on page DPU.
+		The same file cannot be added twice, even under different names. These may
+		result into complication with using one of the DPU in Intlib. To load new version of
+		the jar-file please change it's version in pom.xml or simplz revrite the old one 
+		in {project_path}\dpu.
 		
 	</body>
 </html>
