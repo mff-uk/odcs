@@ -18,6 +18,7 @@
 		<dpu.mainClass></dpu.mainClass>
 		<!-- contains full name of package where the bundle.mainclass is located -->
 		<dpu.package></dpu.package>
+		<embed.transitive>false</embed.transitive>
 	</properties>
 
     <repositories>
@@ -95,7 +96,7 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<!-- dependencies embedding -->
 						<Embed-Dependency>*;scope=compile|system</Embed-Dependency> <!-- use provided for dependencies that are provided by application -->
-						<Embed-Transitive>false</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->
+						<Embed-Transitive>${embed.transitive}</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->
 						<!-- dependencies location in output file -->
 						<Embed-Directory>dependency</Embed-Directory>
 						<Embed-StripGroup>false</Embed-StripGroup>
