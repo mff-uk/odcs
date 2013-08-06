@@ -21,8 +21,9 @@ import java.util.concurrent.Executors;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 
 /**
@@ -32,23 +33,43 @@ import org.springframework.context.ApplicationListener;
  * 
  */
 public class Engine
-		implements ApplicationListener<EngineEvent>,
-		ApplicationEventPublisherAware {
+		implements ApplicationListener<EngineEvent> {
 
 	/**
 	 * Provide access to DPURecord implementation.
 	 */
+	@Autowired
 	protected ModuleFacade moduleFacade;
-
-	/**
-	 * Thread pool.
-	 */
-	protected ExecutorService executorService;
 
 	/**
 	 * Publisher instance.
 	 */
-	protected ApplicationEventPublisher eventPublisher;
+	@Autowired
+	protected ApplicationEventPublisher eventPublisher;	
+	
+	/**
+	 * Access to the database
+	 */
+	@Autowired
+	protected DatabaseAccess database;	
+	
+	/**
+	 * Application's configuration.
+	 */
+	@Autowired
+	protected AppConfig appConfig;	
+	
+	/**
+	 * Bean factory used to create beans for single 
+	 * pipeline execution.
+	 */
+	@Autowired
+	private BeanFactory beanFactory;
+	
+	/**
+	 * Thread pool.
+	 */
+	protected ExecutorService executorService;
 
 	/**
 	 * Working directory.
@@ -56,43 +77,17 @@ public class Engine
 	protected File workingDirectory;
 
 	/**
-	 * Access to the database
-	 */
-	protected DatabaseAccess database;
-
-	/**
 	 * True if startUp method has already been called.
 	 */
 	protected Boolean startUpDone;
-
-	/**
-	 * Application's configuration.
-	 */
-	protected AppConfig appConfig;
 	
 	protected static Logger LOG = LoggerFactory.getLogger(Engine.class);
 
-	public Engine(ModuleFacade moduleFacade,
-			DatabaseAccess database,
-			AppConfig appConfig) {
-		this.moduleFacade = moduleFacade;
+	public Engine() {
 		this.executorService = Executors.newCachedThreadPool();
-		this.database = database;
 		this.startUpDone = false;
-		this.appConfig = appConfig;
 	}
-
-	public Engine(ModuleFacade moduleFacade,
-			DatabaseAccess database,
-			AppConfig appConfig,
-			ExecutorService executorService) {
-		this.moduleFacade = moduleFacade;
-		this.executorService = executorService;
-		this.database = database;
-		this.startUpDone = false;
-		this.appConfig = appConfig;
-	}
-
+	
 	/**
 	 * Setup engine from given configuration.
 	 */
@@ -117,6 +112,12 @@ public class Engine
 	 * @param pipelineExecution
 	 */
 	protected void run(PipelineExecution pipelineExecution) {
+		
+		LOG.info("Running pipeline: " + pipelineExecution.getPipeline().getName());
+		
+		return;
+		
+		/*
 		// mark pipeline execution as Started ..
 		pipelineExecution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
 		pipelineExecution.setStart(new Date());
@@ -128,6 +129,7 @@ public class Engine
 		// run pipeline
 		this.executorService.execute(new PipelineWorker(pipelineExecution,
 				moduleFacade, eventPublisher, database, directory, appConfig));
+		*/
 	}
 
 	/**
@@ -243,11 +245,6 @@ public class Engine
 	@Override
 	public void onApplicationEvent(EngineEvent event) {
 		onEvent(event.getType());
-	}
-
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-		this.eventPublisher = applicationEventPublisher;
 	}
 
 }

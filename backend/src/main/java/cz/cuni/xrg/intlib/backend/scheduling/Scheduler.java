@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.scheduling;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
@@ -23,11 +24,9 @@ public class Scheduler implements ApplicationListener {
 	/**
 	 * Access to the database
 	 */
+	@Autowired
 	protected DatabaseAccess database;	
 	
-	public Scheduler(DatabaseAccess database) {
-    	this.database = database;
-    }
 	
 	/**
 	 * Create execution for given schedule. Also

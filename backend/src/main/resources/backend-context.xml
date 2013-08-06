@@ -14,17 +14,15 @@
 	</bean>
 
 	<!-- TCP/IP server, used to recieve request from frontend -->
-	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server">
-	    <constructor-arg ref="configuration" />
-	</bean>
+	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server"/>
 	
 	<!-- engine itself, take care about executing of PipelineExecution -->
-	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine">
-	    <constructor-arg ref="moduleFacade" index="0" />
-	    <constructor-arg ref="dbAccess" index="1" />
-	    <constructor-arg ref="configuration" index="2" />
-	</bean>
+	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine"/>
 
+	<!--  prototype for pipeline worker bean -->
+	<bean id="pipelineWorker" class="cz.cuni.xrg.intlib.backend.execution.PipelineWorker"
+	     scope="prototype" lazy-init="true"/>
+	
 	<!-- access to database on one place -->
 	<bean id="dbAccess" class="cz.cuni.xrg.intlib.backend.DatabaseAccess" />	
 	
@@ -37,8 +35,6 @@
 	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" />
 
 	<!-- scheduler -->
-	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" >
-	    <constructor-arg ref="dbAccess"/>
-	</bean>		
+	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" />
 	
 </beans>

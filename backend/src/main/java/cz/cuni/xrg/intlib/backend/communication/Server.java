@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 
 import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
@@ -28,7 +28,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
  * @author Petyr
  *
  */
-public class Server implements Runnable, ApplicationEventPublisherAware {
+public class Server implements Runnable {
 
     /**
      * Class for handling communication with single client.
@@ -44,7 +44,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
         private Socket socket;
         /**
          * Event publisher used to publicise events.
-         */
+         */        
         private ApplicationEventPublisher eventPublisher;
         /**
          * The creator. Used in events as a source.
@@ -92,7 +92,15 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
     /**
      * Application configuration.
      */
+    @Autowired
     protected AppConfig appConfiguration;
+    
+    /**
+     * Event publisher used to publicise events.
+     */
+    @Autowired
+    protected ApplicationEventPublisher eventPublisher;
+    
     
     /**
      * Server socket.
@@ -103,12 +111,7 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
      * Provide executors for handling incoming communications.
      */
     protected ExecutorService executorService;
-    
-    /**
-     * Event publisher used to publicise events.
-     */
-    protected ApplicationEventPublisher eventPublisher;
-    
+        
     /**
      * True if continue in execution. Set to false to stop the loop in run
      * method.
@@ -122,24 +125,8 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
      *
      * @param appConfiguration
      */
-    public Server(AppConfig appConfiguration) {
-        this.appConfiguration = appConfiguration;
+    public Server() {
         this.executorService = Executors.newCachedThreadPool();
-        this.eventPublisher = null;
-        this.running = true;
-    }
-
-    /**
-     * Create instance of Server. The given executorService should provide
-     * enough resources to enable handling of incoming communication.
-     *
-     * @param appConfiguration
-     * @param executorService executorService to use for handling incoming
-     * connection
-     */
-    public Server(AppConfig appConfiguration, ExecutorService executorService) {
-        this.appConfiguration = appConfiguration;
-        this.executorService = executorService;
         this.eventPublisher = null;
         this.running = true;
     }
@@ -203,9 +190,4 @@ public class Server implements Runnable, ApplicationEventPublisherAware {
         running = false;
     }
 
-    @Override
-    public void setApplicationEventPublisher(
-            ApplicationEventPublisher applicationEventPublisher) {
-        eventPublisher = applicationEventPublisher;
-    }
 }
