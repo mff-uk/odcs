@@ -12,7 +12,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
  * @author Petyr
  *
  */
-public class PipelineFinished extends ApplicationEvent {
+public final class PipelineFinished extends ApplicationEvent {
 
 	/**
 	 * Associated pipeline execution.

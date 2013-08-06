@@ -10,10 +10,10 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
  * @author Petyr
  *
  */
-public class PipelineRestart extends PipelineEvent {
+public final class PipelineRestart extends PipelineEvent {
 
     public PipelineRestart(PipelineExecution pipelineExec, Object source) {
-        super(null, pipelineExec, source);
+        super(pipelineExec, source);
     }
 
 	@Override

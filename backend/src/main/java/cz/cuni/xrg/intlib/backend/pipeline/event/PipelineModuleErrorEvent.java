@@ -6,19 +6,28 @@ import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
-public class PipelineModuleErrorEvent extends PipelineEvent {
+/**
+ * Report execution termination because of exception in DPU.
+ * 
+ * @author Petyr
+ *
+ */
+public final class PipelineModuleErrorEvent extends PipelineExceptionEvent {
 
-	private ModuleException exception;
-	
-    public PipelineModuleErrorEvent(ModuleException exception, DPUInstanceRecord dpuInstance, PipelineExecution pipelineExec, Object source) {
-        super(dpuInstance, pipelineExec, source);
-        this.exception = exception;
-    }
-	
+	public PipelineModuleErrorEvent(ModuleException exception,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		super(exception, dpuInstance, pipelineExec, source);
+	}
+
 	@Override
 	public MessageRecord getRecord() {
-		return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR, dpuInstance, execution, 
-				"Failed to load DPURecord implementation.", "Loading of DPURecord implementation thrown fallowing exception: " + exception.getMessage());
+		return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR,
+				dpuInstance, execution,
+				"Failed to load DPURecord implementation.",
+				"Loading of DPURecord implementation thrown fallowing exception: "
+						+ longMessage);
 	}
-	
+
 }

@@ -1,34 +1,32 @@
 package cz.cuni.xrg.intlib.backend.pipeline.event;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
-public class PipelineContextErrorEvent extends PipelineEvent {
+/**
+ * Event published in case of error in context processing.
+ * 
+ * @author Petyr
+ * 
+ */
+public final class PipelineContextErrorEvent extends PipelineExceptionEvent {
 
-	private ContextException exception;
-	
-    public PipelineContextErrorEvent(ContextException exception, DPUInstanceRecord dpuInstance, PipelineExecution pipelineExec, Object source) {
-        super(dpuInstance, pipelineExec, source);
-        this.exception = exception;
-    }
-
-    @Override
-	public MessageRecord getRecord() {
-    	
-	    final Writer result = new StringWriter();
-	    final PrintWriter printWriter = new PrintWriter(result);
-	    exception.printStackTrace(printWriter);
-	
-    	return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR, dpuInstance, execution, 
-    			"Pipeline execution failed.", 
-    			"Failed to prepare Context for DPURecord because of exception: " + result.toString() );
+	public PipelineContextErrorEvent(ContextException exception,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		super(exception, dpuInstance, pipelineExec, source);
 	}
-    
+
+	@Override
+	public MessageRecord getRecord() {
+		return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR,
+				dpuInstance, execution, "Pipeline execution failed.",
+				"Failed to prepare Context for DPURecord because of exception: "
+						+ longMessage);
+	}
+
 }

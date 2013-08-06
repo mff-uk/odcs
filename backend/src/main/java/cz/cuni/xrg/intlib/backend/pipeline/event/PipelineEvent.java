@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
  * Base class for Pipeline events.
- *
+ * 
  * @author Petyr
  */
 public abstract class PipelineEvent extends ApplicationEvent {
@@ -19,28 +19,38 @@ public abstract class PipelineEvent extends ApplicationEvent {
 	 * Time of creation.
 	 */
 	protected Date time;
-	
+
 	/**
-	 * The most related DPURecord to the event. 
+	 * The most related DPURecord to the event.
 	 */
 	protected DPUInstanceRecord dpuInstance;
-	
+
 	/**
 	 * Associated pipeline execution.
 	 */
-    protected PipelineExecution execution;
+	protected PipelineExecution execution;
 
-    public PipelineEvent(DPUInstanceRecord dpuInstance, PipelineExecution execution, Object source) {
-        super(source);
-        time = new Date();
-        this.dpuInstance = dpuInstance;
-        this.execution = execution;
-    }
+	public PipelineEvent(PipelineExecution execution, Object source) {
+		super(source);
+		time = new Date();
+		this.dpuInstance = null;
+		this.execution = execution;
+	}
 
-    /**
-     * Record that describe event.
-     * @return record
-     */
-    public abstract MessageRecord getRecord();
+	public PipelineEvent(DPUInstanceRecord dpuInstance,
+			PipelineExecution execution,
+			Object source) {
+		super(source);
+		time = new Date();
+		this.dpuInstance = dpuInstance;
+		this.execution = execution;
+	}
+
+	/**
+	 * Record that describe event.
+	 * 
+	 * @return MessageRecord
+	 */
+	public abstract MessageRecord getRecord();
 
 }
