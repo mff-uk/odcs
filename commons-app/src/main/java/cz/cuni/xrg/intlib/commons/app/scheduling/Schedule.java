@@ -108,6 +108,12 @@ public class Schedule implements Serializable {
 			inverseJoinColumns =
 			@JoinColumn(name = "pipeline_id", referencedColumnName = "id"))
 	private Set<Pipeline> afterPipelines = new HashSet<>();
+	
+	/**
+	 * Notification settings for this schedule.
+	 */
+	@OneToOne(mappedBy = "schedule")
+	private NotificationRecord notification;
 
 	/**
 	 * Empty constructor. Used by JPA. Do not use otherwise.
@@ -218,6 +224,14 @@ public class Schedule implements Serializable {
 		return id;
 	}
 
+	public NotificationRecord getNotification() {
+		return notification;
+	}
+
+	public void setNotification(NotificationRecord notification) {
+		this.notification = notification;
+	}
+	
 	/**
 	 * Return estimate of time when the schedule fire. If the schedule is not
 	 * time dependent return null.

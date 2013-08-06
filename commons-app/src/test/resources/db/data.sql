@@ -39,11 +39,21 @@ INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,just_once,enabled,type
  VALUES(1,NULL,NULL,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3);
 
 -- schedule defined by "run after pipeline"
--- Test 2 should run after Test 1
 INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
  VALUES(2,NULL,NULL,2,1,1,0,NULL,NULL,NULL,NULL);
-INSERT INTO EXEC_SCHEDULE_AFTER(schedule_id,pipeline_id) VALUES(1,1);
+-- Test 2 should run after Test 1
+INSERT INTO EXEC_SCHEDULE_AFTER(schedule_id,pipeline_id) VALUES(2,1);
 
+
+-- notifications for schedules
+INSERT INTO SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
+ VALUES(1,1,1,1);
+INSERT INTO SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
+ VALUES(2,2,1,1);
+INSERT INTO SCH_EMAIL(id,e_user,e_domain)
+ VALUES(1,'user','example.com');
+INSERT INTO SCH_NOTIFICATION_EMAIL(notification_id,email_id)
+ VALUES(1,1);
 
 -- Log messages
 INSERT INTO LOGGING_EVENT (timestmp,formatted_message,logger_name,level_string,thread_name,reference_flag,arg0,arg1,arg2,arg3,caller_filename,caller_class,caller_method,caller_line,event_id)

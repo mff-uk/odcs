@@ -1,16 +1,10 @@
 package cz.cuni.xrg.intlib.commons.app.scheduling;
 
-import java.util.Date;
-
 import javax.persistence.*;
 
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.io.Serializable;
 
-import java.util.Calendar;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,7 +13,7 @@ import java.util.Set;
  * @author Maria Kukhar
  *
  */
-
+@Entity
 @Table(name = "sch_notification")
 public class NotificationRecord implements Serializable {
 
@@ -28,7 +22,6 @@ public class NotificationRecord implements Serializable {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Transient
 	private Long id;
 
 
@@ -37,27 +30,26 @@ public class NotificationRecord implements Serializable {
 	 * pipeline execution). Applicable if notification rule set in 
 	 * Scheduler dialog 
 	 */
-	
 	@OneToOne
-	@JoinColumn(name = "scheduler_id", nullable = false)
-	@Transient
-	private Schedule scheduler;
+	@JoinColumn(name = "schedule_id", nullable = false)
+	private Schedule schedule;
 	
 
 	/**
-	 * E-mails to wich will be sent notification.
+	 * E-mails the notification will be sent to.
 	 */
-	@Column(name = "emails")
-	@Transient
-	private List<String> emails = new LinkedList<>();
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "sch_notification_email",
+			joinColumns = @JoinColumn(name = "notification_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "email_id", referencedColumnName = "id"))
+	private Set<EmailAddress> emails = new HashSet<>();
 
-
+	
 	/**
 	 * Type of notification in case of successful execution:
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "type_success")
-	@Transient
 	private NotificationRecordType typeSuccess;
 	
 	/**
@@ -65,24 +57,9 @@ public class NotificationRecord implements Serializable {
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "type_error")
-	@Transient
 	private NotificationRecordType typeError;
 
 	
-
-	/**
-	 * All schedulers to notify. Applicable only if notification rule set in 
-	 * User settings dialog.
-	 */
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "all_sch_notification",
-			joinColumns =
-			@JoinColumn(name = "notification_id", referencedColumnName = "id"),
-			inverseJoinColumns =
-			@JoinColumn(name = "schedule_id", referencedColumnName = "id"))
-	@Transient
-	private Set<Schedule> allShedulers = new HashSet<>();
-
 	/**
 	 * Empty constructor. Used by JPA. Do not use otherwise.
 	 */
@@ -91,22 +68,31 @@ public class NotificationRecord implements Serializable {
 
 
 	public Schedule getSchedule() {
-		return scheduler;
+		return schedule;
 	}
 
-	public void setSchedule(Schedule scheduler) {
-		this.scheduler = scheduler;
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
 	}
 	
-	
-	public List<String> getEmails() {
-		return new LinkedList<>(emails);
+	/**
+	 * @return defensive copy of a set of emails to send notification to
+	 */
+	public Set<EmailAddress> getEmails() {
+		return new HashSet<>(emails);
 	}
 
-	public void setEmails(List<String> emails) {
-		this.emails = emails;
+	public void setEmails(Set<EmailAddress> emails) {
+		this.emails = new HashSet<>(emails);
 	}
 	
+	public void addEmail(EmailAddress email) {
+		this.emails.add(email);
+	}
+	
+	public void removeEmail(EmailAddress email) {
+		this.emails.remove(email);
+	}
 
 	public NotificationRecordType getTypeSuccess() {
 		return typeSuccess;
@@ -122,15 +108,6 @@ public class NotificationRecord implements Serializable {
 
 	public void setTypeError(NotificationRecordType typeError) {
 		this.typeError= typeError;
-	}
-
-
-	public Set<Schedule> getAllShedulers() {
-		return new HashSet<>(allShedulers);
-	}
-
-	public void setAllShedulers(Set<Schedule> allShedulers) {
-		this.allShedulers = allShedulers;
 	}
 
 	public Long getId() {
