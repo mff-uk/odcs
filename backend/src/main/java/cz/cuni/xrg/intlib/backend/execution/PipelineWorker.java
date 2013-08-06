@@ -40,6 +40,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.context.impl.ContextFactory;
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractStartEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -63,6 +64,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -74,19 +76,44 @@ import org.springframework.context.ApplicationEventPublisher;
 class PipelineWorker implements Runnable {
 
 	/**
-	 * PipelineExecution record, determine pipeline to run.
-	 */
-	private PipelineExecution execution;
-
-	/**
 	 * Publisher instance for publishing pipeline execution events.
 	 */
+	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * Provide access to DPURecord implementation.
 	 */
+	@Autowired
 	private ModuleFacade moduleFacade;
+
+	/**
+	 * Access to the database
+	 */
+	@Autowired
+	protected DatabaseAccess database;
+
+	/**
+	 * Application's configuration.
+	 */
+	@Autowired
+	private AppConfig appConfig;
+
+	/**
+	 * DataUnit factory.
+	 */
+	@Autowired
+	private DataUnitFactory dataUnitFactory;
+	
+	/**
+	 * Manage mapping execution context into {@link #workDirectory}.
+	 */
+	private ExecutionContextInfo contextInfo;	
+	
+	/**
+	 * End time of last successful pipeline execution.
+	 */
+	private Date lastSuccessfulExTime;
 
 	/**
 	 * Store context related to Nodes (DPUs).
@@ -94,55 +121,28 @@ class PipelineWorker implements Runnable {
 	private Map<Node, ProcessingContext> contexts;
 
 	/**
+	 * PipelineExecution record, determine pipeline to run.
+	 */
+	private PipelineExecution execution;	
+	
+	/**
 	 * Logger class.
 	 */
 	private static final Logger LOG = LoggerFactory
-			.getLogger(PipelineWorker.class);
-
-	/**
-	 * Access to the database
-	 */
-	protected DatabaseAccess database;
-
-	/**
-	 * Manage mapping execution context into {@link #workDirectory}.
-	 */
-	private ExecutionContextInfo contextInfo;
-
-	/**
-	 * Application's configuration.
-	 */
-	private AppConfig appConfig;
-
-	/**
-	 * End time of last successful pipeline execution.
-	 */
-	private Date lastSuccessfulExTime;
-
-	/**
-	 * @param execution The pipeline execution record to run.
-	 * @param moduleFacade Module facade for obtaining DPUs instances.
-	 * @param eventPublisher Application event publisher.
-	 * @param database Access to database.
-	 */
-	public PipelineWorker(PipelineExecution execution,
-			ModuleFacade moduleFacade,
-			ApplicationEventPublisher eventPublisher,
-			DatabaseAccess database,
-			File workingDirectory,
-			AppConfig appConfig) {
-		this.execution = execution;
-		this.moduleFacade = moduleFacade;
-		this.eventPublisher = eventPublisher;
+			.getLogger(PipelineWorker.class);	
+	
+	public PipelineWorker() {
 		this.contexts = new HashMap<>();
-		this.database = database;
-		// create or get existing ..
-		this.contextInfo = execution.createExecutionContext();
-		this.appConfig = appConfig;
-		this.lastSuccessfulExTime = null;
-		// TODO Petyr: Release context sooner then on the end of the execution
 	}
-
+	
+	/**
+	 * Set pipeline execution for execution. 
+	 */
+	public void init(PipelineExecution execution) {
+		this.execution = execution;
+		this.contextInfo = execution.createExecutionContext();
+	}
+	
 	/**
 	 * Load execution times {@link #lastExTime} and
 	 * {@link #lastSuccessfulExTime}
@@ -227,12 +227,22 @@ class PipelineWorker implements Runnable {
 		}
 	}
 
+	@Override
+	public void run() {
+		LOG.debug("Start");
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		LOG.debug("End");
+	}
 	/**
 	 * Implementation of workers activity. Worker constantly keeps asking engine
 	 * for jobs to run, until it is killed.
 	 */
-	@Override
-	public void run() {
+	public void runA() {
 		// load execution times from DB
 		loadExTimes();
 
@@ -264,7 +274,7 @@ class PipelineWorker implements Runnable {
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
 			boolean result;
-
+			
 			// save context with the DPU that will be executed
 			ProcessingUnitInfo unitInfo = null;
 			unitInfo = contextInfo.getDPUInfo(node.getDpuInstance());

@@ -112,24 +112,12 @@ public class Engine
 	 * @param pipelineExecution
 	 */
 	protected void run(PipelineExecution pipelineExecution) {
-		
-		LOG.info("Running pipeline: " + pipelineExecution.getPipeline().getName());
-		
-		return;
-		
-		/*
-		// mark pipeline execution as Started ..
-		pipelineExecution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
-		pipelineExecution.setStart(new Date());
-		// prepare working directory for execution
-		File directory = new File(workingDirectory, "execution-"
-				+ pipelineExecution.getId());
-		// update record in DB
-		database.getPipeline().save(pipelineExecution);
-		// run pipeline
-		this.executorService.execute(new PipelineWorker(pipelineExecution,
-				moduleFacade, eventPublisher, database, directory, appConfig));
-		*/
+		PipelineWorker pipelineWorker = 
+				beanFactory.getBean("pipelineWorker", PipelineWorker.class);
+		// set execution
+		pipelineWorker.init(pipelineExecution);
+		// execute
+		this.executorService.execute(pipelineWorker);
 	}
 
 	/**

@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.backend.data;
 
 import java.io.File;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
@@ -26,8 +28,13 @@ public class DataUnitFactory {
 	/**
 	 * Application configuration.
 	 */
+	@Autowired
 	private AppConfig appConfig;
 
+	public DataUnitFactory() {
+		
+	}
+	
 	/**
 	 * Constructor for spring.
 	 * 

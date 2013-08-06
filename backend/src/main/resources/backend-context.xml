@@ -26,6 +26,9 @@
 	<!-- access to database on one place -->
 	<bean id="dbAccess" class="cz.cuni.xrg.intlib.backend.DatabaseAccess" />	
 	
+	<!-- data unit factory class -->
+	<bean id="dataUnitFactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory" />
+	
 	<!-- store events into database -->
 	<bean class="cz.cuni.xrg.intlib.backend.EventListenerDatabase">
 	    <constructor-arg ref="dbAccess"/>
