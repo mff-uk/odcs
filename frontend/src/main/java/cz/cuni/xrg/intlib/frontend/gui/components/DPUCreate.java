@@ -320,7 +320,7 @@ public class DPUCreate extends Window {
 					String pojPath = App.getApp().getAppConfiguration()
 							.getString(ConfigProperty.MODULE_PATH);
 					File srcFile = new File(FileUploadReceiver.file.toString());
-					File destFile = new File(pojPath + FileUploadReceiver.fName);
+					File destFile = new File(pojPath + File.separator + "dpu" + File.separator + FileUploadReceiver.fName);
 
 					//checking if uploaded file already exist in the /target/dpu/ 
 					boolean exists = destFile.exists();

@@ -765,7 +765,7 @@ class DPU extends ViewComponent {
 					.getString(ConfigProperty.MODULE_PATH);
 			//get name of JAR file of DPU Template
 			String fileName = selectedDpuWrap.getDPUTemplateRecord().getJarPath();
-			File delFile = new File(pojPath + fileName);
+			File delFile = new File(pojPath + File.separator + "dpu" + File.separator + fileName);
 			
 			//delete record from the database
 			App.getApp().getDPUs()
