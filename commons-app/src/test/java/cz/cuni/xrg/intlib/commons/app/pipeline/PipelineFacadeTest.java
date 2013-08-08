@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import java.util.List;
@@ -148,4 +149,25 @@ public class PipelineFacadeTest {
 		}
 	}
 
+	//@Test
+	//@Transactional
+	public void testExecutionsContext() {
+		Pipeline pipe = facade.createPipeline();
+		PipelineExecution exec = new PipelineExecution(pipe);		
+		facade.save(pipe);
+		facade.save(exec);
+		
+		// create context
+		ExecutionContextInfo context = exec.createExecutionContext();
+		Long oldId = context.getId();		
+		// context has id != null
+		assertNotNull(oldId);
+		
+		// save several times
+		facade.save(exec);
+		
+		// context ie it's id does not changed by multiple saving
+		Long newId = context.getId();
+		assertEquals(oldId, newId);
+	}	
 }
