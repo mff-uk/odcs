@@ -360,7 +360,7 @@ class PipelineEdit extends ViewComponent {
 		nameLabel.setHeight("-1px");
 		pipelineSettingsLayout.addComponent(nameLabel, 0, 0);
 		pipelineName = new TextField();
-		pipelineName.setImmediate(false);
+		pipelineName.setImmediate(true);
 		pipelineName.setWidth("200px");
 		pipelineName.setHeight("-1px");
 		pipelineName.addValidator(new Validator() {
@@ -514,6 +514,7 @@ class PipelineEdit extends ViewComponent {
 			//Notification.show("Error saving pipeline", "Pipeline name is required!", Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
+                undo.setEnabled(false);
 		this.pipeline.setName(pipelineName.getValue());
 		this.pipeline.setDescription(pipelineDescription.getValue());
 		pc.saveGraph(pipeline);

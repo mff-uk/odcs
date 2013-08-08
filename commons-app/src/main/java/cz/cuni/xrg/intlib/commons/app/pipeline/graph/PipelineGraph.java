@@ -378,4 +378,10 @@ public class PipelineGraph implements Serializable {
 		}
 		return bounds;
 	}
+        
+        public PipelineGraph cloneGraph() {
+            PipelineGraph clone = new PipelineGraph(this);
+            clone.id = this.id;
+            return clone;
+        }
 }

@@ -96,6 +96,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
                 Edge edge = graph.getEdgeById(edgeId);
                 showEdgeDetail(edge);
             }
+
+            @Override
+            public void onStoreHistory() {
+                storeHistoryGraph();
+            }
         });
 
     }
@@ -209,6 +214,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * @param pipeline {@link Pipeline} where graph should be saved.
      */
     public void saveGraph(Pipeline pipeline) {
+        historyStack.clear();
         for (DPUInstanceRecord instance : dpusToDelete) {
             App.getDPUs().delete(instance);
         }
@@ -349,7 +355,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Store graph in stack for undo.
      */
     private void storeHistoryGraph() {
-        PipelineGraph clonedGraph = new PipelineGraph(graph);
+        PipelineGraph clonedGraph = graph.cloneGraph();
+        
         if(historyStack.isEmpty()) {
             //Make undo button enabled.
             fireDetailClosed(PipelineGraph.class);

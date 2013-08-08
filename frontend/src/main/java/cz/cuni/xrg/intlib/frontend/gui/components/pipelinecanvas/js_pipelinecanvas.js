@@ -934,6 +934,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
      */
     function multiselectAlign(type) {
         writeMessage(messageLayer, 'Type: ' + type);
+        rpcProxy.onStoreHistory();
         var x;
         switch (type) {
             case 'left':
@@ -982,6 +983,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                     group.setY(x);
                 }
                 moveLine(dpu.id);
+                rpcProxy.onDpuMoved(dpu.id, parseInt(group.getX()), parseInt(group.getY()));
             }
         }
         dpuLayer.draw();
@@ -993,6 +995,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
      * @param {String} type Type of distribution
      */
     function multiselectDistribute(type) {
+        rpcProxy.onStoreHistory();
         var units = [];
         var min = 10000;
         var max = 0;
@@ -1039,6 +1042,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 newValue += dpu.group.get('Rect')[0].getHeight() + step;
             }
             moveLine(dpu.id);
+            rpcProxy.onDpuMoved(dpu.id, parseInt(dpu.group.getX()), parseInt(dpu.group.getY()))
         }
         dpuLayer.draw();
     }

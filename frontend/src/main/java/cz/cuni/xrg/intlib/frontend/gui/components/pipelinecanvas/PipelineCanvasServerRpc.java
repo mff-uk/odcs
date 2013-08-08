@@ -58,4 +58,9 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 	 * @param edgeId Id of edge, which DataUnit name should be edited.
 	 */
 	public void onDataUnitNameEditRequested(int edgeId);
+        
+        /**
+         * Occurs when operation which should be available to undo happens.
+         */
+        public void onStoreHistory();
 }
