@@ -12,8 +12,8 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 
 /**
- * Class provide functionality to working with {@link DPUConfigObject} and it's 
- * serialised version.
+ * Class provide functionality to serialise, deserialize
+ * and create instance of {@link DPUConfigObject}. 
  * 
  * @author Petyr
  *
@@ -21,52 +21,55 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 public class ConfigWrap<T extends DPUConfigObject> {
 	
 	/**
-	 * Configuration object.
+	 * Configuration's class.
 	 */
-	private T config;
-
+	private Class<T> configClass;
+	
     /**
      * Stream for de/serialization.
      */
     private XStream xstream;
     
-    public ConfigWrap(T config) {
-    	this.config = config;
+    public ConfigWrap(Class<T> configClass) {
+    	this.configClass = configClass;
     	this.xstream = new XStream();
     	// set class loader
-    	this.xstream.setClassLoader(config.getClass().getClassLoader());
+    	this.xstream.setClassLoader(configClass.getClassLoader());    	
+    }
+    
+    @SuppressWarnings("unchecked")
+	public ConfigWrap(T config) {
+    	this.configClass = (Class<T>)config.getClass();
+    	this.xstream = new XStream();
+    	// set class loader
+    	this.xstream.setClassLoader(configClass.getClassLoader());
     }    
     
     /**
-     * @param c Serialized configuration.
-     * @throws ConfigException
+     * Create instance generic ConfigSerializer object. In case of error
+     * return null.
+     * @return Object instance or null.
      */
-    public ConfigWrap(byte[] c) throws ConfigException {
-    	this.config = null;
-    	this.xstream = new XStream();
-    	// try to deserialize .. 
-    	configure(c);
-    }
-        
-    /**
-     * Set current configuration.
-     * @param c
-     */
-    public void configure(T c) {
-    	config = c;
+    public T createInstance() {
+    	try {
+			return configClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			return null;
+		}
     }
     
     /**
-     * Set current configuration. If the parameter is null or empty 
-	 * ConfigException is thrown. If throw then the previous configuration 
-	 * remain untouched.
+     * Deserialize configuration. If the parameter is null or empty then
+     * null is returned.
      * @param c Serialized configuration.
      * @throws ConfigException
      */
-    public void configure(byte[] c) throws ConfigException {
+    @SuppressWarnings("unchecked")
+	public T deserialize(byte[] c) throws ConfigException {
     	if (c == null || c.length == 0) {
-			throw new ConfigException("Configuration is null or empty.");
+			return null;
 		}
+    	T config = null;
 		// reconstruct object form byte[]
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(c)) {
 			// use XStream for serialisation
@@ -81,14 +84,7 @@ public class ConfigWrap<T extends DPUConfigObject> {
 		} catch (Exception e) {
 			throw new ConfigException("Unexpected exception configuration object.", e);
 		}
-    }
-    
-    /**
-     * Provide access to stored configuration object.
-     * @return Configuration, can be null.
-     */
-    public T getConf() {
-    	return config;
+		return config;
     }
     
     /**
@@ -97,11 +93,10 @@ public class ConfigWrap<T extends DPUConfigObject> {
      * @return Serialized configuration, can be null.
      * @throws ConfigException 
      */
-    public byte[] getConfAsByte() throws ConfigException {
+    public byte[] serialize(T config) throws ConfigException {
     	if (config == null) {
     		return null;
-    	}
-    	
+    	}    	
     	byte[] result = null;
 		// serialise object into byte[]
 		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {	
@@ -116,6 +111,5 @@ public class ConfigWrap<T extends DPUConfigObject> {
 		}
 		return result;
     }
-    
-    
+        
 }

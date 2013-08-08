@@ -14,14 +14,18 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
     private ConfigWrap<C> configWrap; 
 	
     public BaseConfigDialog(C config) {
-    	this.configWrap = new ConfigWrap<C>(config); 
+    	this.configWrap = new ConfigWrap<C>(config);
     }
+    
+    public BaseConfigDialog(Class<C> configClass) {
+    	this.configWrap = new ConfigWrap<C>(configClass);
+    }    
     
 	@Override
 	public void setConfig(byte[] conf) throws ConfigException {
-		configWrap.configure(conf);
-		if (configWrap.getConf().isValid()) {
-			setConfiguration(configWrap.getConf());
+		C config = configWrap.deserialize(conf);		
+		if (config.isValid()) {
+			setConfiguration(config);
 		} else {
 			// invalid configuration
 			throw new ConfigException("Invalid configuration.");
@@ -30,8 +34,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	
 	@Override
 	public byte[] getConfig() throws ConfigException {
-		configWrap.configure(getConfiguration());
-		return configWrap.getConfAsByte();
+		return configWrap.serialize(getConfiguration());
 	}
 	
 }

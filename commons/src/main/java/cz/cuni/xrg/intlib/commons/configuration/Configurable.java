@@ -12,7 +12,8 @@ public interface Configurable <C extends DPUConfigObject> {
 	/**
 	 * Deserialize given configuration and then use it to 
 	 * configure object. If the invalid configuration is given then 
-	 * {@link ConfigException} is thrown.
+	 * {@link ConfigException} is thrown. For null the configuration
+	 * is left unchanged.
 	 * @param c Serialized configuration.
 	 * @throws ConfigException
 	 */
