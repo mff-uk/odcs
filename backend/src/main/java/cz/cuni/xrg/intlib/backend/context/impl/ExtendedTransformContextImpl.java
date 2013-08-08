@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
@@ -83,6 +84,7 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl
 	public void delete() {
 		inputsManager.delete();
 		outputsManager.delete();
+		deleteDirectories();
 	}
 
 	@Override
@@ -97,6 +99,12 @@ class ExtendedTransformContextImpl extends ExtendedCommonImpl
 		outputsManager.save();
 	}
 
+	@Override
+	public void reload() throws DataUnitException {
+		inputsManager.reload();
+		outputsManager.reload();
+	}	
+	
 	@Override
 	public void sealInputs() {
 		for (DataUnit inputDataUnit : inputsManager.getDataUnits()) {

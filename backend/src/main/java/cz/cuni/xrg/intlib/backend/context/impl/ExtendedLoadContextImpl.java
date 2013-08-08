@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
 import java.io.IOException;
@@ -73,6 +74,7 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl
 	@Override
 	public void delete() {
 		dataUnitManager.delete();
+		deleteDirectories();
 	}	
 	
 	@Override
@@ -85,6 +87,11 @@ class ExtendedLoadContextImpl extends ExtendedCommonImpl
 		dataUnitManager.save();
 	}
 
+	@Override
+	public void reload() throws DataUnitException {
+		dataUnitManager.reload();
+	}	
+	
 	@Override
 	public void sealInputs() {
 		for (DataUnit inputDataUnit : dataUnitManager.getDataUnits()) {

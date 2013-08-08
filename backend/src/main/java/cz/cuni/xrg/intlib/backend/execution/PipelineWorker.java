@@ -190,6 +190,23 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
+	 * Try to delete directory in execution directory. 
+	 * If error occur then is logged. 
+	 * @param directory Relative path from execution directory.
+	 */
+	private void deleteDirectory(String directoryPath) {
+		File directory = new File(appConfig
+				.getString(ConfigProperty.GENERAL_WORKINGDIR),
+				directoryPath);
+		try {
+			FileUtils.deleteDirectory(directory);
+		} catch (IOException e) {
+			LOG.error("Can't delete directory after execution: "
+					+ execution.getId(), e);
+		}		
+	}
+	
+	/**
 	 * Do cleanup work after pipeline execution. Also delete the worker
 	 * directory it the pipeline if not in debugMode.
 	 */
@@ -206,43 +223,47 @@ class PipelineWorker implements Runnable {
 					// delete data ..
 					exCtx.delete();
 				}
-
 			} else {
-				LOG.error("Unexpected ProcessingContext instance. Can't call release().");
+				LOG.error("contexts.values() return class the " +
+						"is not instance of ProcessingContext");
 			}
 		}
-		// delete working folder ?
+		
 		if (execution.isDebugging()) {
 			// do not delete anything
 		} else {
-			// try to delete whole directory
-			try {
-				FileUtils.deleteDirectory(new File(appConfig
-						.getString(ConfigProperty.GENERAL_WORKINGDIR),
-						contextInfo.getRootPath()));
-			} catch (IOException e) {
-				LOG.error("Can't delete directory after execution: "
-						+ execution.getId(), e);
+			// delete working directory
+			// the sub directories should be already deleted by DPU's
+			deleteDirectory(contextInfo.getWorkingPath());
+			// delete storage directory
+			deleteDirectory(contextInfo.getStoragePath());
+			// if the execution directory is empty -> no result dir exist
+			// delete it
+			final File resultDir = new File(appConfig
+					.getString(ConfigProperty.GENERAL_WORKINGDIR),
+					contextInfo.getResultPath());
+			if (resultDir.exists()) {
+				// check for content 
+				final File [] files = resultDir.listFiles();
+				if (files == null ||	files.length == 0) {
+					// is empty -> delete execution directory
+					deleteDirectory(contextInfo.getRootPath());
+				} else {
+					// execution and result directory are preserved
+				}
+			} else {
+				// no result directory exist -> delete execution directory
+				deleteDirectory(contextInfo.getRootPath());
 			}
-		}
+		}		
 	}
 
-	@Override
-	public void run() {
-		LOG.debug("Start");
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		LOG.debug("End");
-	}
 	/**
 	 * Implementation of workers activity. Worker constantly keeps asking engine
 	 * for jobs to run, until it is killed.
 	 */
-	public void runA() {
+	@Override
+	public void run() {
 		// load execution times from DB
 		loadExTimes();
 
@@ -267,6 +288,8 @@ class PipelineWorker implements Runnable {
 		}
 		LOG.debug("Started");
 
+		// set start time
+		execution.setStart(new Date());
 		// contextInfo is in pipeline so by saving pipeline we also save context
 		pipelineFacade.save(execution);
 
@@ -353,6 +376,7 @@ class PipelineWorker implements Runnable {
 
 				// save context after last execution
 				pipelineFacade.save(execution);
+				
 				// also save new DataUnits
 				ProcessingContext lastContext = contexts.get(node);
 				if (lastContext instanceof ExtendedContext) {
@@ -397,7 +421,8 @@ class PipelineWorker implements Runnable {
 			executionSuccessful();
 		}
 		// save execution
-		database.getPipeline().save(execution);
+		pipelineFacade.save(execution);
+		
 		// publish information for the rest of the application
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
 	}

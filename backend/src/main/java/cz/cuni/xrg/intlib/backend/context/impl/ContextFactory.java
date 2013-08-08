@@ -25,8 +25,7 @@ public class ContextFactory {
 	/**
 	 * Can't be instantiated.
 	 */
-	private ContextFactory() {
-	}
+	private ContextFactory() { }
 
 	/**
 	 * Create new Context for given DPU type.

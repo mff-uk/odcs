@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.context.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,9 +14,12 @@ import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 
 /**
@@ -24,12 +28,12 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
  * @author Petyr
  * 
  */
-class DataUnitManager {
+final class DataUnitManager {
 
 	/**
 	 * Store outputs.
 	 */
-	protected List<DataUnit> dataUnits;
+	private List<DataUnit> dataUnits;
 
 	/**
 	 * Mapping from {@link outputs} to indexes.
@@ -178,7 +182,8 @@ class DataUnitManager {
 	}
 
 	/**
-	 * Call delete on all stored DataUnits and them delete them this instance.
+	 * Call delete on all stored DataUnits and them delete them from 
+	 * this instance.
 	 */
 	public void delete() {
 		for (DataUnit item : dataUnits) {
@@ -188,13 +193,57 @@ class DataUnitManager {
 	}
 	
 	/**
-	 * Call release on all stored DataUnit and them delete them this instance.
+	 * Call release on all stored DataUnit and them delete them from
+	 * this instance.
 	 */
 	public void release() {
 		for (DataUnit item : dataUnits) {
 			item.release();
 		}
 		dataUnits.clear();
+	}
+	
+	/**
+	 * Check context and create DataUnits that are in context but
+	 * are not instantiated in DataUnitManager. Does not delete or release
+	 * existing DataUnits.
+	 * 
+	 * DataUnit load's failures are silently ignored.
+	 * 
+	 * @throws DataUnitException 
+	 */
+	public void reload() throws DataUnitException {
+		ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpuInstance);		
+		List<DataUnitInfo> dataUnitsInfo = dpuInfo.getDataUnits();
+		// check every DataUnit in contextInfo
+		for (DataUnitInfo info : dataUnitsInfo) {
+			if (indexes.containsKey(info.getIndex())) {
+				// DataUnit is already presented
+			} else {
+				// create new DataUnit
+				Integer index = info.getIndex();
+				String id = 
+						context.generateDataUnitId(dpuInstance, index);
+				File directory = new File(workingDir,
+						context.getDataUnitTmpPath(dpuInstance, index));				
+				DataUnit dataUnit = dataUnitFactory.create(info.getType(), 
+						id, info.getName(), directory);
+				// add into DataUnitManager
+				dataUnits.add(dataUnit);
+				indexes.put(dataUnit, index);
+				// check for existence of result directory, if exist load
+				File storageDirectory = new File(workingDir,
+						context.getDataUnitStoragePath(dpuInstance, index));
+				if (storageDirectory.exists()) {
+					// load data from directory
+					try {
+						dataUnit.load(storageDirectory);
+					} catch (FileNotFoundException | RuntimeException e) {
+						LOG.error("Failed to load data for DataUnit", e);
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -215,7 +264,6 @@ class DataUnitManager {
 			type = checkType(type);
 		}
 		// gather information for new DataUnit
-		// TODO Petyr Use single class for DataUnit information
 		Integer index;
 		if (isInput) {
 			index = context.createInput(dpuInstance, name, type);
@@ -254,7 +302,6 @@ class DataUnitManager {
 			type = checkType(type);
 		}
 		// gather information for new DataUnit
-		// TODO Petyr Use single class for DataUnit information
 		Integer index;
 		if (isInput) {
 			index = context.createInput(dpuInstance, name, type);

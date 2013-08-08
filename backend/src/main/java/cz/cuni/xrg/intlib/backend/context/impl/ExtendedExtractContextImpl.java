@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 
@@ -61,6 +62,7 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 	@Override
 	public void delete() {
 		dataUnitManager.delete();
+		deleteDirectories();
 	}	
 	
 	@Override
@@ -73,6 +75,11 @@ class ExtendedExtractContextImpl extends ExtendedCommonImpl implements ExtendedE
 		dataUnitManager.save();
 	}
 
+	@Override
+	public void reload() throws DataUnitException {
+		dataUnitManager.reload();
+	}
+		
 	@Override
 	public DataUnit addOutputDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {

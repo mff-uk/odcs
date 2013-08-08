@@ -14,9 +14,9 @@ import java.io.Serializable;
 /**
  * Hold and manage context for pipeline execution.
  * 
- * Complete read write interface for execution context. Enable writing data 
- * into context and asking for directories. Provide methods for creating 
- * file names for DataUnits.
+ * Complete read write interface for execution context. Enable writing data into
+ * context and asking for directories. Provide methods for creating file names
+ * for DataUnits.
  * 
  * The directory structure used by context is following;
  * ./working/DPU_ID/DATAUNIT_INDEX/ - DataUnit working directory
@@ -64,12 +64,12 @@ public class ExecutionContextInfo implements Serializable {
 	private Long id;
 
 	/**
-	 * Id of respective execution. Used to create relative path to the
-	 * context directory.
+	 * Id of respective execution. Used to create relative path to the context
+	 * directory.
 	 */
 	@Column(name = "execution_id")
 	private Long executionId;
-	
+
 	/**
 	 * Contexts for DPU's. Indexed by {@link DPUInstanceRecord}.
 	 */
@@ -88,12 +88,12 @@ public class ExecutionContextInfo implements Serializable {
 	/**
 	 * 
 	 * @param directory Path to the root directory for execution.
-	 */	
+	 */
 	public ExecutionContextInfo(Long executionId) {
 		this.contexts = new HashMap<>();
 		this.executionId = executionId;
 	}
-	
+
 	/**
 	 * Return context for given DPUInstanceRecord. Create new context if need.
 	 * 
@@ -150,32 +150,32 @@ public class ExecutionContextInfo implements Serializable {
 	public void reset() {
 		contexts.clear();
 	}
-	
+
 	/**
-	 * Generate unique id for given DataUnit. If call multiple times
-	 * for the same dpuInstance and DataUnit's index it return the 
-	 * same id.
+	 * Generate unique id for given DataUnit. If call multiple times for the
+	 * same dpuInstance and DataUnit's index it return the same id.
+	 * 
 	 * @param dpuInstance Owner of the DataUnit.
 	 * @param index DataUnit's index assigned to the DataUnit by context.
 	 * @return Unique id.
 	 */
-	public String generateDataUnitId(DPUInstanceRecord dpuInstance, 
+	public String generateDataUnitId(DPUInstanceRecord dpuInstance,
 			Integer index) {
-		return "ex" + executionId.toString() 
-				+ "_dpu" + dpuInstance.getId().toString() 
-				+ "_du" + index.toString();
+		return "ex" + executionId.toString() + "_dpu"
+				+ dpuInstance.getId().toString() + "_du" + index.toString();
 	}
-	
+
 	/**
-	 * Return context information class {@link ProcessingUnitInfo} for
-	 * given DPU. If the context does not exist, then create new.
+	 * Return context information class {@link ProcessingUnitInfo} for given
+	 * DPU. If the context does not exist, then create new.
+	 * 
 	 * @param dpuInstance Instance of DPU for which retrieve context info.
 	 * @return {@link ProcessingUnitInfo}
 	 */
 	public ProcessingUnitInfo createDPUInfo(DPUInstanceRecord dpuInstance) {
 		return getContext(dpuInstance);
 	}
-	
+
 	/**
 	 * Return set of indexes of stored DPU's execution information.
 	 * 
@@ -185,29 +185,50 @@ public class ExecutionContextInfo implements Serializable {
 		return contexts.keySet();
 	}
 
-	/**
-	 * Return relative path from execution directory to the DPU's tmp directory.
-	 * This directory will be deleted after the execution ends if not in 
-	 * debug mode. Does not create a directory!
-	 * 
-	 * @param dpuInstance The 
-	 * @return Relative path, start but not end with separator (/, \\)
-	 */
-	public String getDPUTmpPath(DPUInstanceRecord dpuInstance) {
-		// secure DPU record existence
-		getContext(dpuInstance);		
-		// ..
-		String path = getRootPath() + File.separatorChar +
-				WORKING_DIR + File.separatorChar +
-				DPU_ID_PREFIX + dpuInstance.getId().toString() + 
-				File.separatorChar + WORKING_TMP_DIR;
-		return path;
+	public Long getId() {
+		return id;
 	}
 
 	/**
 	 * Return relative path from execution directory to the DPU's tmp directory.
-	 * This directory will be deleted after execution ends if not in debug mode. 
-	 * Does not create a directory!
+	 * This directory will be deleted after the execution ends if not in debug
+	 * mode. Does not create a directory!
+	 * 
+	 * @param dpuInstance The
+	 * @return Relative path, start but not end with separator (/, \\)
+	 */
+	public String getDPUTmpPath(DPUInstanceRecord dpuInstance) {
+		// secure DPU record existence
+		getContext(dpuInstance);
+		// ..
+		String path = getWorkingPath() + File.separatorChar + DPU_ID_PREFIX
+				+ dpuInstance.getId().toString() + File.separatorChar
+				+ WORKING_TMP_DIR;
+		return path;
+	}
+
+	/**
+	 * Return relative path from execution directory to the DPU DataUnit's root
+	 * tmp directory. This directory will be deleted after execution ends if not
+	 * in debug mode. Does not create a directory!
+	 * 
+	 * @param dpuInstance
+	 * @param index DataUnitInfo index.
+	 * @return Relative path, start but not end with separator (/, \\)
+	 */
+	public String getDataUnitRootStoragePath(DPUInstanceRecord dpuInstance) {
+		// secure DPU record existence
+		getContext(dpuInstance);
+		// ..
+		String path = getWorkingPath() + +File.separatorChar + DPU_ID_PREFIX
+				+ dpuInstance.getId().toString();
+		return path;
+	}
+
+	/**
+	 * Return relative path from execution directory to the DPU DataUnit's tmp
+	 * directory. This directory will be deleted after execution ends if not in
+	 * debug mode. Does not create a directory!
 	 * 
 	 * @param dpuInstance
 	 * @param index DataUnitInfo index.
@@ -215,21 +236,34 @@ public class ExecutionContextInfo implements Serializable {
 	 */
 	public String getDataUnitTmpPath(DPUInstanceRecord dpuInstance,
 			Integer index) {
+		return getDataUnitRootStoragePath(dpuInstance) + File.separatorChar
+				+ index.toString();
+	}
+
+	/**
+	 * Return relative path from execution directory to the DPU DataUnit's root
+	 * storage directory. The storage directory can be used to store DataUnits
+	 * results. This directory will be deleted after execution ends if not in
+	 * debug mode. Does not create a directory!
+	 * 
+	 * @param dpuInstance
+	 * @param index DataUnitInfo index.
+	 * @return Relative path, start but not end with separator (/, \\)
+	 */
+	public String getDataUnitRootTmpPath(DPUInstanceRecord dpuInstance) {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		// ..
-		String path = getRootPath() + File.separatorChar + WORKING_DIR
-				+ File.separatorChar + DPU_ID_PREFIX
-				+ dpuInstance.getId().toString() + File.separatorChar
-				+ index.toString();
+		String path = getStoragePath() + File.separatorChar + DPU_ID_PREFIX
+				+ dpuInstance.getId().toString();
 		return path;
 	}
-	
+
 	/**
-	 * Return relative path from execution directory to the DPU's storage 
-	 * directory. The storage directory can be used to store DataUnits results.
-	 * This directory will be deleted after execution ends if not in debug mode. 
-	 * Does not create a directory!
+	 * Return relative path from execution directory to the DPU DataUnit's
+	 * storage directory. The storage directory can be used to store DataUnits
+	 * results. This directory will be deleted after execution ends if not in
+	 * debug mode. Does not create a directory!
 	 * 
 	 * @param dpuInstance
 	 * @param index DataUnitInfo index.
@@ -237,51 +271,56 @@ public class ExecutionContextInfo implements Serializable {
 	 */
 	public String getDataUnitStoragePath(DPUInstanceRecord dpuInstance,
 			Integer index) {
-		// secure DPU record existence
-		getContext(dpuInstance);
-		// ..
-		String path = getRootPath() + File.separatorChar + STORAGE_DIR
-				+ File.separatorChar + DPU_ID_PREFIX
-				+ dpuInstance.getId().toString() + File.separatorChar
+		return getDataUnitRootTmpPath(dpuInstance) + File.separatorChar
 				+ index.toString();
-		return path;
-	}	
+	}
 
 	/**
-	 * Return context information class {@link ProcessingUnitInfo} for
-	 * given DPU.
+	 * Return context information class {@link ProcessingUnitInfo} for given
+	 * DPU.
+	 * 
 	 * @param dpuInstance Instance of DPU for which retrieve context info.
 	 * @return {@link ProcessingUnitInfo} or null if no records for given
-	 * 	           dpuInstance exist.
+	 *         dpuInstance exist.
 	 */
 	public ProcessingUnitInfo getDPUInfo(DPUInstanceRecord dpuInstance) {
 		if (contexts.containsKey(dpuInstance)) {
 			return contexts.get(dpuInstance);
 		} else {
 			return null;
-		}		
+		}
 	}
-	
+
 	/**
-	 * Return relative path from execution directory to the
-	 * execution working directory.
+	 * Return relative path from execution directory to the execution working
+	 * directory.
 	 * 
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
 	public String getWorkingPath() {
 		return getRootPath() + File.separatorChar + WORKING_DIR;
 	}
-	
+
 	/**
-	 * Return relative path from execution directory to the
-	 * result working directory.
+	 * Return relative path from execution directory to the execution result
+	 * directory.
 	 * 
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
 	public String getResultPath() {
 		return File.separatorChar + RESULT_DIR;
-	}	
-	
+	}
+
+	/**
+	 * Return relative path from execution directory to the execution data unit
+	 * storage directory.
+	 * 
+	 * @return Relative path, start but not end with separator (/, \\)
+	 */
+	public String getStoragePath() {
+		return File.separatorChar + STORAGE_DIR;
+	}
+
 	/**
 	 * Return relative path from execution directory to the execution root
 	 * directory.

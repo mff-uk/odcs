@@ -15,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
  * @author Petyr
  *
  */
-class PrimitiveDataUnitMerger extends DataUnitMergerBase implements DataUnitMerger {
+final class PrimitiveDataUnitMerger extends DataUnitMergerBase {
 
 	@Override
 	public void merger(DataUnitManager left, List<DataUnit> right, 

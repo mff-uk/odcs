@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
@@ -58,6 +62,11 @@ class ExtendedCommonImpl {
 	 */
 	protected AppConfig appConfig;
 
+	/**
+	 * Logger class for ExtendedCommonImpl class. 
+	 */
+	private static Logger LOG = LoggerFactory.getLogger(ExtendedCommonImpl.class);
+	
 	/**
 	 * Time of last successful execution. Null if there is no such execution.
 	 */
@@ -159,6 +168,44 @@ class ExtendedCommonImpl {
 
 	}
 
+	/**
+	 * Delete directory if exist. If error occur is logged and silently
+	 * ignored.
+	 * @param directory
+	 */
+	private void deleteDirectory(File directory) {
+		if (directory.exists()) {
+			try {
+				FileUtils.deleteDirectory(directory);
+			} catch (IOException e) {
+				LOG.error("Can't delete directory {}", directory.toString(), e);
+			}
+		}
+	}
+	
+	/**
+	 * Delete all DPU context's directories.
+	 */
+	protected void deleteDirectories() {
+		
+		// DPU' tmp directory
+		final File workingDir = getWorkingDir();
+		deleteDirectory(workingDir);
+				
+		// DataUnit storage directory
+		final File dpuStoragePath = new File(getGeneralWorkingDir(), 
+				context.getDataUnitRootStoragePath(dpuInstance));		
+		deleteDirectory(dpuStoragePath);
+		
+		// DataUnit tmp directory
+		final File dpuTmpPath = new File(getGeneralWorkingDir(), 
+				context.getDataUnitRootTmpPath(dpuInstance));
+		deleteDirectory(dpuTmpPath);
+		
+		// Result directory is shared by whole pipeline
+		// and so it's not deleted from here
+	}
+	
 	// 	implementation of methods from backend.context.ExtendedContext		//
 	
 	public PipelineExecution getPipelineExecution() {
