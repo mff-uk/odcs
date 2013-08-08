@@ -70,7 +70,7 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Execution context, can be null.
 	 */
-	@OneToOne(cascade = CascadeType.ALL, optional = true)
+	@OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "context_id", nullable = true)
 	private ExecutionContextInfo context;
 
@@ -107,21 +107,10 @@ public class PipelineExecution implements Serializable {
 		this.isDebugging = false;
 		this.schedule = null;
 		this.silentMode = true;
-	}
-
-	/**
-	 * Create execution context or this execution in given directory. If context
-	 * already exist return the existing one.
-	 *
-	 * @return
-	 */
-	public ExecutionContextInfo createExecutionContext() {
-
-		if (context == null) {
-			context = new ExecutionContextInfo(getId());
-		}
-
-		return context;
+		
+		// Execution context is obligatory, so that we do not need to check for
+		// nulls everywhere. A new execution has an empty context.
+		this.context = new ExecutionContextInfo(this);
 	}
 
 	public Long getId() {
@@ -177,6 +166,10 @@ public class PipelineExecution implements Serializable {
 		return context;
 	}
 
+	public ExecutionContextInfo getContext() {
+		return context;
+	}
+	
 	public Schedule getSchedule() {
 		return schedule;
 	}

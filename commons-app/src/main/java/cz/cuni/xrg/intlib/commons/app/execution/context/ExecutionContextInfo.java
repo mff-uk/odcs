@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import java.io.Serializable;
 
@@ -67,8 +68,15 @@ public class ExecutionContextInfo implements Serializable {
 	 * Id of respective execution. Used to create relative path to the context
 	 * directory.
 	 */
-	@Column(name = "execution_id")
-	private Long executionId;
+	@OneToOne(mappedBy = "context")
+	private PipelineExecution execution;
+	
+	/**
+	 * Dummy column, because Virtuoso cannot insert a row without specifying any
+	 * column values. Remove when entity has an attribute without default value.
+	 */
+	@SuppressWarnings("unused")
+	private Boolean dummy = false;
 
 	/**
 	 * Contexts for DPU's. Indexed by {@link DPUInstanceRecord}.
@@ -89,9 +97,9 @@ public class ExecutionContextInfo implements Serializable {
 	 * 
 	 * @param directory Path to the root directory for execution.
 	 */
-	public ExecutionContextInfo(Long executionId) {
+	public ExecutionContextInfo(PipelineExecution execution) {
 		this.contexts = new HashMap<>();
-		this.executionId = executionId;
+		this.execution = execution;
 	}
 
 	/**
@@ -161,7 +169,7 @@ public class ExecutionContextInfo implements Serializable {
 	 */
 	public String generateDataUnitId(DPUInstanceRecord dpuInstance,
 			Integer index) {
-		return "ex" + executionId.toString() + "_dpu"
+		return "ex" + execution.getId().toString() + "_dpu"
 				+ dpuInstance.getId().toString() + "_du" + index.toString();
 	}
 
@@ -328,7 +336,7 @@ public class ExecutionContextInfo implements Serializable {
 	 * @return Relative path start but not end with separator separator (/, \\).
 	 */
 	public String getRootPath() {
-		return File.separatorChar + executionId.toString();
+		return File.separatorChar + execution.getId().toString();
 	}
 
 }

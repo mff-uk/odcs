@@ -149,8 +149,8 @@ public class PipelineFacadeTest {
 		}
 	}
 
-	//@Test
-	//@Transactional
+	@Test
+	@Transactional
 	public void testExecutionsContext() {
 		Pipeline pipe = facade.createPipeline();
 		PipelineExecution exec = new PipelineExecution(pipe);		
@@ -158,16 +158,9 @@ public class PipelineFacadeTest {
 		facade.save(exec);
 		
 		// create context
-		ExecutionContextInfo context = exec.createExecutionContext();
-		Long oldId = context.getId();		
-		// context has id != null
-		assertNotNull(oldId);
+		ExecutionContextInfo context = exec.getContext();
 		
-		// save several times
-		facade.save(exec);
-		
-		// context ie it's id does not changed by multiple saving
-		Long newId = context.getId();
-		assertEquals(oldId, newId);
-	}	
+		assertNotNull(exec.getContext());
+		assertNotNull(context.getId());
+	}
 }

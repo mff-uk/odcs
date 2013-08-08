@@ -62,8 +62,8 @@ CREATE TABLE "DB"."INTLIB"."EXEC_DATAUNIT_INFO"
 CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
-  "execution_id" INTEGER,
   "directory" VARCHAR(255),
+  "dummy" SMALLINT, -- remove if table contains a column without default value
   PRIMARY KEY ("id")
 );
 
@@ -96,7 +96,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
   "debug_mode" SMALLINT,
   "t_start" DATETIME,
   "t_end" DATETIME,
-  "context_id" INTEGER,
+  "context_id" INTEGER NOT NULL,
   "schedule_id" INTEGER,
   "silent_mode" SMALLINT,
   "debugnode_id" INTEGER,

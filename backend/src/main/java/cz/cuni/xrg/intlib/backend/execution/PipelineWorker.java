@@ -140,7 +140,7 @@ class PipelineWorker implements Runnable {
 	 */
 	public void init(PipelineExecution execution) {
 		this.execution = execution;
-		this.contextInfo = execution.createExecutionContext();
+		this.contextInfo = execution.getContext();
 	}
 	
 	/**

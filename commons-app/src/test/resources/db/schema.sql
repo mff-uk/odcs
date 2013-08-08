@@ -49,8 +49,8 @@ CREATE TABLE `EXEC_DATAUNIT_INFO`
 CREATE TABLE `EXEC_CONTEXT_PIPELINE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `execution_id` INTEGER,
   `directory` VARCHAR(255),
+  `dummy` SMALLINT,
   PRIMARY KEY (`id`)
 );
 
@@ -83,7 +83,7 @@ CREATE TABLE `EXEC_PIPELINE`
   `debug_mode` SMALLINT,
   `t_start` DATETIME,
   `t_end` DATETIME,
-  `context_id` INTEGER,
+  `context_id` INTEGER NOT NULL,
   `schedule_id` INTEGER,
   `silent_mode` SMALLINT,
   `debugnode_id` INTEGER,
