@@ -59,21 +59,23 @@ public class UsersList {
 
 		Button addUserButton = new Button();
 		addUserButton.setCaption("Create new user");
-/*		addUserButton
+		addUserButton
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// open scheduler dialog
-				SchedulePipeline sch = new SchedulePipeline();
-				App.getApp().addWindow(sch);
-				sch.addCloseListener(new CloseListener() {
+				
+				boolean newUser = true;
+				// open usercreation dialog
+				UserCreate user = new UserCreate(newUser);
+				App.getApp().addWindow(user);
+				user.addCloseListener(new CloseListener() {
 					@Override
 					public void windowClose(CloseEvent e) {
 						refreshData();
 					}
 				});
 			}
-		});*/
+		});
 		topLine.addComponent(addUserButton);
 		topLine.setComponentAlignment(addUserButton, Alignment.MIDDLE_RIGHT);
 
@@ -229,6 +231,26 @@ public class UsersList {
 			//Delete button. Delete user's record from Database.
 			Button changeButton = new Button();
 			changeButton.setCaption("Change settings");
+			changeButton.addClickListener(new ClickListener() {
+				
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					
+					boolean newUser = false;
+					// open usercreation dialog
+					UserCreate user = new UserCreate(newUser);
+					App.getApp().addWindow(user);
+					user.addCloseListener(new CloseListener() {
+						@Override
+						public void windowClose(CloseEvent e) {
+							refreshData();
+						}
+					});
+				
+					
+				}
+			});
 			
 			layout.addComponent(changeButton);
 
