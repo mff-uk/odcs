@@ -1,11 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
 /**
- * Interface for controling user rights.
+ * Abstract for deciding whether given {@link User} has a given {@link Privilege}.
  * 
  * @author Jiri Tomes
  */
-public interface Autorizator {
+public interface Authorizator {
     
     public boolean isAllowed(Role role, User account, Privilege privilege);
 }
