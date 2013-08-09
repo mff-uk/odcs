@@ -45,6 +45,7 @@ public class UserSettings extends Window {
 	private VerticalLayout tabsLayout;
 	private VerticalLayout settingsLayout;
 	private VerticalLayout schedulerLayout;
+	private VerticalLayout usersLayout;
 
 	private Button shownTab = null;
 	private Button schedulerButton;
@@ -55,6 +56,8 @@ public class UserSettings extends Window {
 	
 	private GridLayout emailLayout;
 	private EmailComponent email;
+	private UsersList usersList;
+	private Button usersButton;
 	
 	public UserSettings(){
 		
@@ -84,8 +87,15 @@ public class UserSettings extends Window {
         schedulerLayout.setSpacing(true);
         schedulerLayout.setWidth("370px");
         schedulerLayout.setImmediate(true);
-
-
+        
+        usersLayout = new VerticalLayout();
+        usersLayout.setImmediate(true);
+        usersLayout.setWidth("100%");
+      
+        usersList = new UsersList();
+        usersLayout = usersList.buildUsersListLayout();
+        usersLayout.setStyleName("settings");
+        usersLayout.setWidth("600px");
 
         myAccountButton = new NativeButton("My account");
         myAccountButton.setHeight("40px");
@@ -98,6 +108,9 @@ public class UserSettings extends Window {
 				shownTab=myAccountButton;
 				shownTab.setStyleName("selectedtab");
 				schedulerButton.setStyleName("multiline");
+				usersButton.setStyleName("multiline");
+				
+				mainLayout.removeComponent(usersLayout);
 				mainLayout.removeComponent(settingsLayout);
 				mainLayout.removeComponent(schedulerLayout);
 				mainLayout.addComponent(settingsLayout);
@@ -120,16 +133,47 @@ public class UserSettings extends Window {
 				shownTab=schedulerButton;
 				shownTab.setStyleName("selectedtab");
 				myAccountButton.setStyleName("multiline");
+				usersButton.setStyleName("multiline");
 				
+				mainLayout.removeComponent(usersLayout);
 				mainLayout.removeComponent(settingsLayout);
 				mainLayout.removeComponent(schedulerLayout);
 				mainLayout.addComponent(schedulerLayout);
+
 
 				
 			}
 		});
         tabsLayout.addComponent(schedulerButton);
         tabsLayout.setComponentAlignment(schedulerButton, Alignment.TOP_RIGHT);
+        
+        
+        usersButton = new NativeButton("Users");
+        usersButton.setHeight("40px");
+        usersButton.setWidth("90px");
+        usersButton.setStyleName("multiline");
+        usersButton.addClickListener(new ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				shownTab=usersButton;
+				shownTab.setStyleName("selectedtab");
+				schedulerButton.setStyleName("multiline");
+				myAccountButton.setStyleName("multiline");
+				
+				mainLayout.removeComponent(usersLayout);
+				mainLayout.removeComponent(settingsLayout);
+				mainLayout.removeComponent(schedulerLayout);
+				mainLayout.addComponent(usersLayout);
+				mainLayout.setExpandRatio(usersLayout, 0.85f);
+
+				
+			}
+		});
+        tabsLayout.addComponent(usersButton);
+        tabsLayout.setComponentAlignment(usersButton, Alignment.TOP_RIGHT);
+
+        
 		
         settingsLayout.addComponent(new Label("E-mail notifications to: "));
         

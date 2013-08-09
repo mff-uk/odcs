@@ -29,6 +29,7 @@ import cz.cuni.xrg.intlib.frontend.gui.views.GenerateActionColumnMonitor;
 
 
 
+
 public class UsersList {
 	
 	 private IntlibPagedTable usersTable;
@@ -48,7 +49,7 @@ public class UsersList {
 		usersListLayout.setMargin(true);
 		usersListLayout.setSpacing(true);
 		usersListLayout.setWidth("100%");
-		usersListLayout.setHeight("100%");
+
 		usersListLayout.setImmediate(true);
 		
 		
@@ -120,6 +121,7 @@ public class UsersList {
         usersListLayout.addComponent(usersTable);
         usersListLayout.addComponent(usersTable.createControls());
         usersTable.setPageLength(10);
+        usersTable.setFilterDecorator(new filterDecorator());
         usersTable.setFilterBarVisible(true);
         usersTable.setFilterFieldVisible("actions", false);
 
@@ -257,4 +259,15 @@ public class UsersList {
 			return layout;
 		}
 	}
+	
+	private class filterDecorator extends IntlibFilterDecorator {
+
+        @Override
+        public String getEnumFilterDisplayName(Object propertyId, Object value) {
+            if (propertyId == "role") {
+                return ((PipelineExecutionStatus) value).name();
+            }
+            return super.getEnumFilterDisplayName(propertyId, value);
+        }
+	};
 }
