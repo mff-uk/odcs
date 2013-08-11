@@ -84,7 +84,7 @@ public class DataUnitFactory {
 			final String defautGraph = appConfig
 					.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
 			// create repository
-			VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
+			RDFDataRepository virtosoRepository = VirtuosoRDFRepo
 					.createVirtuosoRDFRepo(hostName, port, user, password,
 							defautGraph, name);
 			// use unique DataUnit id as a graph name
