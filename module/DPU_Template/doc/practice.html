@@ -63,9 +63,9 @@ interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject {} .. </code>
 		The DataUnit (ie. RDFDataRepository) can't be created directly. 
 		To create DataUnit use DPU's <span class="inCode">Context</span>. </div>
 					
-		<h3>DataUnit - RDFDataRepository</h3>
+		<h3>DataUnit - RDFDataRepository</h3> <div>
 		The RDFDataRepository is RDF focused implementation of DataUnit. 
-		Let's name few importat function for work with RDFDataRepository 
+		Let's name few important function for work with RDFDataRepository 
 		(to store RDF data being prepared by the DPU).
 		<ul>
 			<li><b>transformUsingSPARQL</b> - 
@@ -75,7 +75,7 @@ interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject {} .. </code>
 			<li><b>extractRDFfromXMLFileToRepository</b> - 
 				Read data from the given file and add them to the repository.</li>
 		</ul> For more information about the methods please refer to the 
-		<span class="inCode">RDFDataRepository</span> documentation. 
+		<span class="inCode">RDFDataRepository</span> documentation. </div>
 		                
         <h2 id="context">Context</h2> <div>
         Each DPU has execution context. It's main interface is 
@@ -123,7 +123,50 @@ DataUnitList&lt;RDFDataRepository&gt; dataUnitList = RDFDataUnitList.create(cont
 RDFDataRepository intputRepository = dataUnitList.filterByName("Astar").getFirst();
 </code> </pre> </div>			
 		If the required DataUnit is not present, then the exception about
-		MissingInput is automaticaly thrown and the execution is terminated.
+		MissingInput is automatically thrown and the execution is terminated.
+		</div>
+	
+		<h2>File management</h2> <div>
+		This part is optional but can be useful if you plan to store DPU's working
+		data in file. There are three places where DPU can store it's files.
+		<ul>
+			<li><b>working</b> - this directory is unique for single DPU,
+			execution and user. Ie. only currently working DPU can see this
+			directory = it's not shared with anybody.</li>
+			<li><b>user</b> - this directory is unique for single DPU and
+			execution. You can store DPU's user related data here. This execution
+			can be accessed concurrently. This mean that two and more instances
+			of your DPU's can work here, so keep this in mind when working 
+			with this directory.</li>
+			<li><b>global</b> - this directory is unique for single DPU. It's
+			shared by different executions and users. You can store file that
+			should be visible to your DPU any time.</li>
+		</ul> 
+		This directories can be obtained by specific context's methods. <br/>
+		If you don't want to work with the directories directly or you don't like
+		to care about current operating system to decide which file separators 
+		to use or ... the <b>FileManager</b> comes to save the day. The 
+		FileManager is class in common.module and it has been written to make
+		your live easier. Let's demonstrate it's functionality on few examples.
+		<br/>
+		The following example demonstrates how to get path to the file in 
+		working	directory: 
+<div class="code"> <pre> <code>
+<span class="comment">// create file manager</span>
+FileManager fileManager = new FileManager(context);
+<span class="comment">// file in working directory</span>
+File filePath = fileManager.getWorking().file("myFile.txt");
+</code> </pre> </div>
+		The following example demonstrates hot to get path to the file in 
+		some global sub-directory. The directory is automatically created for 
+		you.
+<div class="code"> <pre> <code>		 
+<span class="comment">// create file manager</span>
+FileManager fileManager = new FileManager(context);
+<span class="comment">// file in sub-directory in global directory</span>
+File filePath = fileManager.getGlobal().directory("myDir").file("myFile.txt");
+</code> </pre> </div>		 
+		 
 		</div>
 	
 		<h2>Tutorial - Creation of Custom DPUs</h2> <div>
@@ -224,7 +267,7 @@ RDFDataRepository intputRepository = dataUnitList.filterByName("Astar").getFirst
 				</li>
 			</ul>
 			To make development easier we will not provide you with sample
-			implementaion of each module type: <br/>
+			implementation of each module type: <br/>
 			
             Sample transform() method for simple SPARQL transformer executing 
             the given SPARQL query:
@@ -306,16 +349,16 @@ cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog&lt;Config&gt;
 </code> </pre> </div>
 		</div>
 			
-		<h3>DPUTemplateConfig.java</h3>
-		<div>This file contains template for DPU's configuration. 
+		<h3>DPUTemplateConfig.java</h3>	<div>
+		This file contains template for DPU's configuration. 
 		It represents an object holding configuration needed by the DPU. 
 		The class must implement interface 
 <div class="code"> <pre> <code> 
 cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject
-</code> </pre> Put your configuration variables inside this class. 
-		You can then access it from DPUTemplate class through the atribut
+</code> </pre> </div> Put your configuration variables inside this class. 
+		You can then access it from DPUTemplate class through the attribute
 		<span class="inCode">config</span>. This class also require
-		impelemtation of validation method, if you don't know how to
+		implementation of validation method, if you don't know how to
 		implement it just return true always.</div>
 				
 		<h3>Compile DPU project</h3>
@@ -330,6 +373,7 @@ cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject
 		names. These may result into complication with using one of the DPU 
 		in Intlib. To load new version of the jar-file please change it's 
 		version in pom.xml or simply rewrite the old one in {project_path}\dpu. 
+		
 		
 	</body>
 </html>
