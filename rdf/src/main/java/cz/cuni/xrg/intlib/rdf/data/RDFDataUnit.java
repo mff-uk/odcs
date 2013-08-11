@@ -41,13 +41,19 @@ public class RDFDataUnit implements DataUnit {
 	 * @param dataUnitName DataUnit's name.
 	 * @param repoPath
 	 * @param fileName
+	 * @param defaultGraph
 	 * @return
 	 */
 	public static RDFDataUnit createLocal(String dataUnitName,
-			String repoPath, String fileName) {
+			String repoPath, String defaultGraph) {
 		
 		RDFDataRepository repository = LocalRDFRepo.createLocalRepo(repoPath, 
-				fileName, dataUnitName);
+				"dummy", dataUnitName);
+		
+		// TODO Jirka(from Petr): remove parameter dummy? I can pass the 
+		// whole path in single argument
+		
+		repository.setDataGraph(defaultGraph);
 		
 		return new RDFDataUnit(repository);
 	}
@@ -69,6 +75,12 @@ public class RDFDataUnit implements DataUnit {
 		RDFDataRepository repository = VirtuosoRDFRepo
 				.createVirtuosoRDFRepo(hostName, port, user, password,
 				defaultGraph, dataUnitName);
+		
+		// TODO Jirka(from Petr): Do I have to set graph event when I pass name 
+		// for default graph
+		// Do we need default graph at all?
+		
+		repository.setDataGraph(defaultGraph);
 		
 		return new RDFDataUnit(repository);
 	}
