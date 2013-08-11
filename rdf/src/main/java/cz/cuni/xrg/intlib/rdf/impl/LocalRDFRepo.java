@@ -311,20 +311,21 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
-        /**
+	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param path                String path to file
-	 * 
+	 * @param path String path to file
+	 *
 	 * @throws RDFException when extraction fail.
 	 */
-        @Override
+	@Override
 	public void extractFromLocalTurtleFile(String path) throws RDFException {
-            extractfromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "", "", false, false);
-      
-        }
-        
-        /**
+		extractfromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "",
+				"", false, false);
+
+	}
+
+	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param extractType         One of defined enum type for extraction data
@@ -339,17 +340,20 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *                            are awailable or not.
 	 * @throws RDFException when extraction fail.
 	 */
-        @Override
+	@Override
 	public void extractfromFile(FileExtractType extractType,
 			String path, String suffix,
-			String baseURI, boolean useSuffix, boolean useStatisticHandler) throws RDFException {
-            extractfromFile(RDFFormat.RDFXML, extractType, path, suffix, baseURI, useSuffix, useStatisticHandler);
-        }
-        
+			String baseURI, boolean useSuffix, boolean useStatisticHandler)
+			throws RDFException {
+		extractfromFile(RDFFormat.RDFXML, extractType, path, suffix, baseURI,
+				useSuffix, useStatisticHandler);
+	}
+
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-         * @param format              Specifies {@link RDFFormatRDF} (e.g., RDFXML, Turtle, ..)
+	 * @param format              Specifies {@link RDFFormatRDF} (e.g., RDFXML,
+	 *                            Turtle, ..)
 	 * @param extractType         One of defined enum type for extraction data
 	 *                            from file.
 	 * @param path                String path to file/directory
@@ -392,7 +396,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			case PATH_TO_DIRECTORY:
 				if (dirFile.isDirectory()) {
 					File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
-					addFilesInDirectoryToRepository(format,files, baseURI,
+					addFilesInDirectoryToRepository(format, files, baseURI,
 							useStatisticHandler,
 							graph);
 				} else {
@@ -403,7 +407,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			case PATH_TO_FILE:
 			case UPLOAD_FILE:
 				if (dirFile.isFile()) {
-					addFileToRepository(format,dirFile, baseURI, useStatisticHandler,
+					addFileToRepository(format, dirFile, baseURI,
+							useStatisticHandler,
 							graph);
 				} else {
 					throw new RDFException(
@@ -453,7 +458,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
-	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files, String baseURI,
+	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files,
+			String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		if (files == null) {
@@ -505,7 +511,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	}
 
-	private void addFileToRepository(RDFFormat rdfFormat, File dataFile, String baseURI,
+	private void addFileToRepository(RDFFormat rdfFormat, File dataFile,
+			String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		RDFFormat fileFormat = RDFFormat.forFileName(
@@ -1867,11 +1874,9 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		Thread destroyThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				File dataDir = repository.getDataDir();
 				try {
+					delete();
 					repository.shutDown();
-					deleteDataDirectory(dataDir);
-
 					logger.debug("Repository destroyed SUCCESSFULL");
 				} catch (RepositoryException ex) {
 					logger.debug(
@@ -2109,12 +2114,12 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	@Override
 	public void delete() {
-		release();
-		// delete working directory
-		
-		// TODO Jirka: delete directory? It's not necessary. 
+		if (repository.isInitialized()) {
+			File dataDir = repository.getDataDir();
+			deleteDataDirectory(dataDir);
+		}
 	}
-	
+
 	@Override
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
