@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * For managing system rights.
@@ -11,7 +11,7 @@ public interface RoleHolder {
 
     public void addRole(Role role);
 
-    public List<Role> getRoles();
+    public Set<Role> getRoles();
 
-    public void setRoles(List<Role> newRoles);
+    public void setRoles(Set<Role> newRoles);
 }

@@ -1,4 +1,11 @@
 
+-- Sample user with admin role
+INSERT INTO USR_USER(id,email,password,full_name)
+ VALUES(1,'test@example.com','ac648d84e684f632b2bb567a9ee7d1','John Doe');
+
+INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,0);
+INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,1);
+
 -- Testing piepline (DBpedia with empty configurations)
 INSERT INTO DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description)
  VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar','',NULL,1,'No description in manifest.');
