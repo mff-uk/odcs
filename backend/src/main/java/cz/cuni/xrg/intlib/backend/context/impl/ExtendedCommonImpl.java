@@ -33,6 +33,17 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 class ExtendedCommonImpl {
 
 	/**
+	 * Name of directory for shared DPU's data.
+	 */
+	private static final String DPU_DIR = "dpu";
+	
+	/**
+	 * Name of sub-directory in {@link #DPU_DIR} for user
+	 * related data storage.
+	 */
+	private static final String USER_DIR = "user";
+	
+	/**
 	 * Custom data holder.
 	 */
 	protected Map<String, Object> customData;
@@ -206,6 +217,15 @@ class ExtendedCommonImpl {
 		// and so it's not deleted from here
 	}
 	
+	/**
+	 * Return identification of single DPU template shared by all
+	 * templates with same name.
+	 * @return
+	 */
+	private String getTemplateIdentification() {
+		return dpuInstance.getJarPath();
+	}
+	
 	// 	implementation of methods from backend.context.ExtendedContext		//
 	
 	public PipelineExecution getPipelineExecution() {
@@ -234,5 +254,20 @@ class ExtendedCommonImpl {
 	
 	public Date getLastExecutionTime() {
 		return lastSuccExec;
+	}
+	
+	public File getGlobalDirectory() {
+		File result = new File(getGeneralWorkingDir(), 
+				DPU_DIR + File.separator +	getTemplateIdentification());
+		result.mkdirs();
+		return result;
+	}
+	
+	public File getUserDirectory() {
+		File result =  new File(getGeneralWorkingDir(), 
+				DPU_DIR + File.separator + USER_DIR + File.separator +
+				getTemplateIdentification());
+		result.mkdirs();
+		return result;
 	}
 }
