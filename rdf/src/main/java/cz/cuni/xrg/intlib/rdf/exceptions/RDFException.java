@@ -7,7 +7,7 @@ package cz.cuni.xrg.intlib.rdf.exceptions;
  *
  * @author Jiri Tomes
  */
-public class RDFException extends Exception {
+public class RDFException extends RDFDataUnitException {
 
 	public RDFException() {
 		super();
