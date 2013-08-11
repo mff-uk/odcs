@@ -18,15 +18,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseListener;
-
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
-
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
@@ -45,14 +41,10 @@ import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.PipelineStatus;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -68,35 +60,36 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 class DPU extends ViewComponent {
 
-	private VerticalLayout mainLayout;
-	private VerticalLayout verticalLayoutData;
-	private VerticalLayout verticalLayoutConfigure;
-	private VerticalLayout verticalLayoutInstances;
-	private VerticalLayout dpuDetailLayout;
-	private DPUTree dpuTree;
-	private TextField dpuName;
-	private TextArea dpuDescription;
+	private static final long serialVersionUID = 1L;
+	private VerticalLayout mainLayout; 
+	
+	private VerticalLayout verticalLayoutData; //Layout contains General tab components of {@link #tabSheet}.
+	private VerticalLayout verticalLayoutConfigure;// Layout contains Template Configuration tab components of {@link #tabSheet}. 
+	private VerticalLayout verticalLayoutInstances;//Layout contains DPU instances tab components of {@link #tabSheet}.  
+	private VerticalLayout dpuDetailLayout; //Layout contains DPU Template details.
+	private DPUTree dpuTree;// Tree contains available DPUs.
+	private TextField dpuName; // name of selected DPU Template
+	private TextArea dpuDescription; // description of selected DPU Template
 	/**
 	 * DPU Template details TabSheet contains General, Template Configuration, DPU instances tabs
 	 */
 	private TabSheet tabSheet;	
-	private OptionGroup groupVisibility;
-	private GridLayout dpuLayout;
-	private HorizontalLayout buttonDpuBar;
-	private DPUConfigObject conf;
-	private HorizontalLayout layoutInfo;
+	private OptionGroup groupVisibility; // Visibility of DPU Template: public or private
+	private GridLayout dpuLayout; // Layout contains DPU Templates tree and DPU Template details.
+	private HorizontalLayout buttonDpuBar; // Layout contains action buttons of DPU Template details.
+	private HorizontalLayout layoutInfo; // Layout with the information that no DPU template was selected.
 	
 	/**
-	 * Table with instances of DPU.
+	 * Table with instances of DPU. Located on {@link #tabSheet} DPU instances tab.
 	 */
 	private IntlibPagedTable instancesTable;
-	private IndexedContainer tableData;
+	private IndexedContainer tableData; //container with instancesTable data
 	private Long pipeId;
-	
-	static String[] visibleCols = new String[]{"id", "name", "description",
+	// visible columns of instancesTable
+	private static String[] visibleCols = new String[]{"id", "name", "description",
 		"author", "actions"};
-
-	static String[] headers = new String[]{"Id", "Name", "Description",
+	// headers of columns in instancesTable
+	private static String[] headers = new String[]{"Id", "Name", "Description",
 		"Author", "Actions"};
 	
 
@@ -146,31 +139,36 @@ class DPU extends ViewComponent {
 
 		// Buttons on the top: "Create DPU", "Import DPU", "Export All"
 		HorizontalLayout buttonBar = new HorizontalLayout();
-
+		
 		Button buttonCreateDPU = new Button();
 		buttonCreateDPU.setCaption("Create DPU template");
 		buttonCreateDPU.setHeight("25px");
 		buttonCreateDPU.setWidth("150px");
 		buttonCreateDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
+						//Open the dialog for DPU Template creation
 						DPUCreate createDPU = new DPUCreate();
 						App.getApp().addWindow(createDPU);
-						createDPU.addListener(new CloseListener() {
+						createDPU.addCloseListener(new CloseListener() {
 							
+							private static final long serialVersionUID = 1L;
+
 							@Override
 							public void windowClose(CloseEvent e) {
-								// TODO Auto-generated method stub
-								DPUCreate.uploadInfoWindow.close();
+								//refresh DPU tree after closing DPU Template creation dialog 
 								dpuTree.refresh();
-
+								
 							}
 						});
+
 					}
 				});
 		buttonBar.addComponent(buttonCreateDPU);
+
 
 		Button buttonImportDPU = new Button();
 		buttonImportDPU.setCaption("Import DPU template");
@@ -179,6 +177,7 @@ class DPU extends ViewComponent {
 		buttonImportDPU.setEnabled(false);
 		buttonImportDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
@@ -194,6 +193,8 @@ class DPU extends ViewComponent {
 		buttonExportAll.setEnabled(false);
 		buttonExportAll
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
@@ -217,7 +218,7 @@ class DPU extends ViewComponent {
 	 * 
 	 * @return dpuLayout GridLayout contains {@link DPUTree} and {@link #buildDPUDetailLayout}.
 	 */
-	@SuppressWarnings({ "serial", "deprecation" })
+
 	private GridLayout buildDpuLayout() {
 
 		dpuLayout = new GridLayout(3, 1);
@@ -242,6 +243,7 @@ class DPU extends ViewComponent {
 		dpuTree = new DPUTree();
 		dpuTree.addItemClickListener(new ItemClickListener() {
 
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void itemClick(ItemClickEvent event) {
@@ -289,8 +291,7 @@ class DPU extends ViewComponent {
 	 * Builds layout with DPU Template details of DPU selected in the tree.
 	 * DPU Template details represents by {@link #tabSheet}. 
 	 * Calls from {@link #buildDpuLayout}
-	 * @return dpuDetailLayout VerticalLayout with {@link #tabSheet} 
-	 * contains all DPU Template details components.
+	 * @return dpuDetailLayout VerticalLayout with {@link #tabSheet} that contain all DPU Template details components.
 	 */
 	private VerticalLayout buildDPUDetailLayout() {
 
@@ -378,6 +379,7 @@ class DPU extends ViewComponent {
 		verticalLayoutData.setHeight("100%");
 		verticalLayoutData.setMargin(true);
 
+		//Layout contains name description and visibility of DPU Template
 		GridLayout dpuSettingsLayout = new GridLayout(2, 5);
 		dpuSettingsLayout.setStyleName("dpuSettingsLayout");
 		dpuSettingsLayout.setMargin(true);
@@ -399,6 +401,8 @@ class DPU extends ViewComponent {
 		dpuName.setHeight("-1px");
 		//settings of mandatory
 		dpuName.addValidator(new Validator() {
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void validate(Object value) throws InvalidValueException {
@@ -478,7 +482,7 @@ class DPU extends ViewComponent {
 		
 		instancesTable.setWidth("100%");
 		instancesTable.setImmediate(true);
-		instancesTable.setVisibleColumns(visibleCols); 
+		instancesTable.setVisibleColumns((Object[])visibleCols); 
 		instancesTable.setColumnHeaders(headers);
 		
 		instancesTable.addGeneratedColumn("actions",
@@ -514,6 +518,8 @@ class DPU extends ViewComponent {
 		buttonCopyDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(ClickEvent event) {
 					}
@@ -531,11 +537,17 @@ class DPU extends ViewComponent {
 		buttonDeleteDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(ClickEvent event) {
+						//open confirmation dialog
 						ConfirmDialog.show(UI.getCurrent(),
 								"Delete this DPU template?",
 								new ConfirmDialog.Listener() {
+
+									private static final long serialVersionUID = 1L;
+
 							@Override
 							public void onClose(ConfirmDialog cd) {
 								if (cd.isConfirmed()) {
@@ -561,6 +573,8 @@ class DPU extends ViewComponent {
 		buttonExportDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(ClickEvent event) {
 
@@ -578,6 +592,8 @@ class DPU extends ViewComponent {
 		buttonSaveDPU.setWidth("100px");
 		buttonSaveDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
@@ -662,6 +678,8 @@ class DPU extends ViewComponent {
 	 * 
 	 * @return result IndexedContainer for {@link #instancesTable}
 	 */
+
+
 	public IndexedContainer getTableData() {
 
 		IndexedContainer result = new IndexedContainer();
@@ -695,7 +713,7 @@ class DPU extends ViewComponent {
 								.getTemplate().getId()) {
 
 							Object num = result.addItem();
-
+							
 							result.getContainerProperty(num, "id").setValue(
 									pitem.getId());
 							result.getContainerProperty(num, "name").setValue(
@@ -822,7 +840,8 @@ class DPU extends ViewComponent {
 	 */
 	class actionColumnGenerator implements
 			com.vaadin.ui.CustomTable.ColumnGenerator {
-		private ClickListener clickListener = null;
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Object generateCell(final CustomTable source,
@@ -836,15 +855,21 @@ class DPU extends ViewComponent {
 			detailButton.setCaption("Detail");
 			detailButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void buttonClick(ClickEvent event) {
-							Property pipelineId = source.getItem(itemId).getItemProperty("id");
+							
+							pipeId = (Long) tableData
+									.getContainerProperty(itemId, "id").getValue();
+
 							// navigate to PipelineEdit
 							App.getApp()
 									.getNavigator()
 									.navigateTo(
 											ViewNames.PipelineEdit.getUrl()
-													+ "/" + pipelineId.toString());
+													+ "/" + pipeId.toString());
 
 						}
 					});
@@ -856,6 +881,8 @@ class DPU extends ViewComponent {
 			deleteButton.setCaption("Delete");
 			deleteButton.addClickListener(new ClickListener() {
 				
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(ClickEvent event) {
 					pipeId = (Long) tableData
@@ -881,6 +908,8 @@ class DPU extends ViewComponent {
 			Button statusButton = new Button();
 			statusButton.setCaption("Status");
 			statusButton.addClickListener(new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void buttonClick(ClickEvent event) {
