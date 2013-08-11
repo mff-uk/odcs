@@ -33,61 +33,54 @@ public class RDFDataUnit implements DataUnit {
 
 	private RDFDataRepository repository;
 
-	/*
-	 * TODO to PETER (created by Jirka) - I can not use DataUnitFactory for creating repository
-	 * as new dataUnit (it is class defined in backend) neither I can use AppConfig class for getting 
-	 * Virtuoso configuration if is needed (I have no dependency to commons-app). 
-	 * See this constructor and try to solve problem.
-	 * 
+	// TODO Jirka(from Petr): Could you please update the comments for createLocalRepo
+	// I do not fully understand the meaning of repoPath and fileName
+	// and add comments to this method as well
+	/**
+	 * Create RDFDataUnit as local repository.
+	 * @param dataUnitName DataUnit's name.
+	 * @param repoPath
+	 * @param fileName
+	 * @return
 	 */
-	public RDFDataUnit(String dataUnitName, DataUnitType dataUnitType) {
-
-		switch (dataUnitType) {
-			case RDF:
-			case RDF_Local:
-				repository = LocalRDFRepo.createLocalRepo(dataUnitName);
-
-				/* OR may be second contruction
-				  
-				 String repoPath = "path";
-				 String fileName = "name";
-
-				 repository = LocalRDFRepo.createLocalRepo(repoPath, fileName,
-				 dataUnitName);
-				 */
-				break;
-			case RDF_Virtuoso:
-
-				String hostName = "localhost";
-				String port = "1111";
-				String user = "dba";
-				String password = "dba";
-				String defaultGraph = "http://VirtuosoDefault";
-
-				/* APPConfig I can not used !!!
-				 
-				 AppConfig appConfig = new AppConfig();
-
-				 final String hostName = appConfig.getString(
-				 ConfigProperty.VIRTUOSO_HOSTNAME);
-				 final String port = appConfig
-				 .getString(ConfigProperty.VIRTUOSO_PORT);
-				 final String user = appConfig
-				 .getString(ConfigProperty.VIRTUOSO_USER);
-				 final String password = appConfig
-				 .getString(ConfigProperty.VIRTUOSO_PASSWORD);
-				 final String defaultGraph = appConfig
-				 .getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
-				 */
-
-				repository = VirtuosoRDFRepo
-						.createVirtuosoRDFRepo(hostName, port, user, password,
-						defaultGraph, dataUnitName);
-
-				break;
-		}
+	public static RDFDataUnit createLocal(String dataUnitName,
+			String repoPath, String fileName) {
+		
+		RDFDataRepository repository = LocalRDFRepo.createLocalRepo(repoPath, 
+				fileName, dataUnitName);
+		
+		return new RDFDataUnit(repository);
 	}
-
+	
+	/**
+	 * Create RDFDataUnit that use given Virtuoso as storage.
+	 * @param dataUnitName DataUnit's name.
+	 * @param hostName Host name for Virtuoso.
+	 * @param port Virutuoso's port.
+	 * @param user User name.
+	 * @param password Password.
+	 * @param defaultGraph Default graph.
+	 * @return
+	 */
+	public static RDFDataUnit createVirtuoso(String dataUnitName,
+			String hostName, String port, String user, 
+			String password, String defaultGraph) {
+		
+		RDFDataRepository repository = VirtuosoRDFRepo
+				.createVirtuosoRDFRepo(hostName, port, user, password,
+				defaultGraph, dataUnitName);
+		
+		return new RDFDataUnit(repository);
+	}
+	
+	/**
+	 * Create wrap-RDFDataUnit over given repository.
+	 * @param repository
+	 */
+	protected RDFDataUnit(RDFDataRepository repository) {
+		this.repository = repository;
+	}
+	
 	/**
 	 * Add one tripple RDF (statement) to the repository.
 	 *
