@@ -280,6 +280,53 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		addStatement(statement, graph);
 	}
 
+	/**
+	 * Add all RDF data from string to repository.
+	 *
+	 * @param rdfString string constains RDF data.
+	 * @param format    RDF format of given string - used to select parser.
+	 *
+	 * @throws RDFException when adding RDF data failt.
+	 */
+	@Override
+	public void addRDFString(String rdfString, RDFFormat format) throws RDFException {
+		addRDFStringToRepository(rdfString, format, graph);
+	}
+
+	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
+			Resource... graphs) throws RDFException {
+		RepositoryConnection connection = null;
+
+		try {
+
+			connection = repository.getConnection();
+			StringReader reader = new StringReader(rdfString);
+
+			if (graphs != null) {
+
+				connection.add(reader, "", format, graphs);
+			} else {
+				connection.add(reader, "", format);
+			}
+
+			connection.commit();
+
+		} catch (RepositoryException e) {
+			logger.debug(e.getMessage());
+
+		} catch (IOException | RDFParseException ex) {
+			throw new RDFException(ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+	}
+
 	protected void addStatement(Statement statement, Resource... graphs) {
 
 		RepositoryConnection connection = null;
