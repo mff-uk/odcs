@@ -1,14 +1,17 @@
 package cz.cuni.xrg.intlib.rdf.exceptions;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+
 /**
  *
  * @author Jiri Tomes
  */
-public class InvalidQueryException extends Exception {
+public class InvalidQueryException extends DataUnitException {
 
     private final String message = "This SPARQL query is not valid !!!";
 
     public InvalidQueryException() {
+    	super("");
     }
 
     
