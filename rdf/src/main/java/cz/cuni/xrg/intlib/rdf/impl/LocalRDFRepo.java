@@ -1875,7 +1875,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			@Override
 			public void run() {
 				try {
-					delete();
 					repository.shutDown();
 					logger.debug("Repository destroyed SUCCESSFULL");
 				} catch (RepositoryException ex) {
@@ -2118,6 +2117,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			File dataDir = repository.getDataDir();
 			deleteDataDirectory(dataDir);
 		}
+		release();
 	}
 
 	@Override
