@@ -25,7 +25,7 @@ public interface ProcessingContext {
 
 	/**
 	 * Return path to the existing DPU working directory. The working directory
-	 * is unique for every DPU.
+	 * is unique for every DPU and execution.
 	 * @return DPU's working directory.
 	 */
 	public File getWorkingDir();
