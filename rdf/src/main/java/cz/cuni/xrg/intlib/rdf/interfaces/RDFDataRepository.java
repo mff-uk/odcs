@@ -40,6 +40,16 @@ public interface RDFDataRepository extends DataUnit {
 			String objectName);
 
 	/**
+	 * Add all RDF data from string to repository.
+	 *
+	 * @param rdfString string constains RDF data.
+	 * @param format    RDF format of given string - used to select parser.
+	 *
+	 * @throws RDFException when adding RDF data failt.
+	 */
+	public void addRDFString(String rdfString, RDFFormat format) throws RDFException;
+
+	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param extractType         One of defined enum type for extraction data
@@ -118,8 +128,8 @@ public interface RDFDataRepository extends DataUnit {
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param file                  File contains RDF data to extract.
-	 * @param format                Specifies {@link RDFFormat} (e.g.,
-	 *                              RDFXML, Turtle, ..)
+	 * @param format                Specifies {@link RDFFormat} (e.g., RDFXML,
+	 *                              Turtle, ..)
 	 * @param baseURI               String name of defined used URI
 	 * @param useStatisticalHandler boolean value, if during extraction needed
 	 *                              detail statistic about RDF triples and
