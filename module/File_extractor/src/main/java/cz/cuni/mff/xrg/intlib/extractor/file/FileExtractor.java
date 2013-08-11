@@ -40,7 +40,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final boolean useStatisticHandler = config.UseStatisticalHandler;
 
 		try {
-			repository.extractfromFile(extractType, path, fileSuffix, baseURI,
+			repository.extractFromFile(extractType, path, fileSuffix, baseURI,
 					onlyThisSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			throw new ExtractException(e.getMessage(), e);

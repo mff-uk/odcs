@@ -15,9 +15,10 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import org.openrdf.rio.RDFFormat;
 
 /**
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -31,7 +32,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	@Override
 	public void extract(ExtractContext context)
 			throws ExtractException,
-				DataUnitCreateException {
+			DataUnitCreateException {
 
 		RDFDataRepository repository = (RDFDataRepository) context
 				.addOutputDataUnit(DataUnitType.RDF, "output");
@@ -44,8 +45,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			final String query = config.SPARQL_query;
 			final boolean useStatisticHandler = config.UseStatisticalHandler;
 
-			repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri,
-					query, hostName, password, useStatisticHandler);
+			repository.extractFromSPARQLEndpoint(endpointURL, defaultGraphsUri,
+					query, hostName, password, RDFFormat.N3, useStatisticHandler);
 		} catch (MalformedURLException ex) {
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
@@ -59,5 +60,4 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	public AbstractConfigDialog<RDFExtractorConfig> getConfigurationDialog() {
 		return new RDFExtractorDialog();
 	}
-
 }

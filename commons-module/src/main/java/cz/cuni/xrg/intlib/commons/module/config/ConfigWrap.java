@@ -12,104 +12,106 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 
 /**
- * Class provide functionality to serialise, deserialize
- * and create instance of {@link DPUConfigObject}. 
- * 
+ * Class provide functionality to serialise, deserialize and create instance of
+ * {@link DPUConfigObject}.
+ *
  * @author Petyr
  *
  */
 public class ConfigWrap<T extends DPUConfigObject> {
-	
+
 	/**
 	 * Configuration's class.
 	 */
 	private Class<T> configClass;
-	
-    /**
-     * Stream for de/serialization.
-     */
-    private XStream xstream;
-    
-    public ConfigWrap(Class<T> configClass) {
-    	this.configClass = configClass;
-    	this.xstream = new XStream();
-    	// set class loader
-    	this.xstream.setClassLoader(configClass.getClassLoader());    	
-    }
-    
-    @SuppressWarnings("unchecked")
+
+	/**
+	 * Stream for de/serialization.
+	 */
+	private XStream xstream;
+
+	public ConfigWrap(Class<T> configClass) {
+		this.configClass = configClass;
+		this.xstream = new XStream();
+		// set class loader
+		this.xstream.setClassLoader(configClass.getClassLoader());
+	}
+
+	@SuppressWarnings("unchecked")
 	public ConfigWrap(T config) {
-    	this.configClass = (Class<T>)config.getClass();
-    	this.xstream = new XStream();
-    	// set class loader
-    	this.xstream.setClassLoader(configClass.getClassLoader());
-    }    
-    
-    /**
-     * Create instance generic ConfigSerializer object. In case of error
-     * return null.
-     * @return Object instance or null.
-     */
-    public T createInstance() {
-    	try {
+		this.configClass = (Class<T>) config.getClass();
+		this.xstream = new XStream();
+		// set class loader
+		this.xstream.setClassLoader(configClass.getClassLoader());
+	}
+
+	/**
+	 * Create instance generic ConfigSerializer object. In case of error return
+	 * null.
+	 *
+	 * @return Object instance or null.
+	 */
+	public T createInstance() {
+		try {
 			return configClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			return null;
 		}
-    }
-    
-    /**
-     * Deserialize configuration. If the parameter is null or empty then
-     * null is returned.
-     * @param c Serialized configuration.
-     * @throws ConfigException
-     */
-    @SuppressWarnings("unchecked")
+	}
+
+	/**
+	 * Deserialize configuration. If the parameter is null or empty then null is
+	 * returned.
+	 *
+	 * @param c Serialized configuration.
+	 * @throws ConfigException
+	 */
+	@SuppressWarnings("unchecked")
 	public T deserialize(byte[] c) throws ConfigException {
-    	if (c == null || c.length == 0) {
+		if (c == null || c.length == 0) {
 			return null;
 		}
-    	T config = null;
+		T config = null;
 		// reconstruct object form byte[]
-		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(c)) {
-			// use XStream for serialisation
-			ObjectInputStream objIn = xstream.createObjectInputStream(byteIn);						
+		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(c); ObjectInputStream objIn = xstream
+				.createObjectInputStream(byteIn)) {
 			Object obj = objIn.readObject();
-			config = (T)obj;
-			objIn.close();
+			config = (T) obj;
 		} catch (IOException e) {
 			throw new ConfigException("Can't deserialize configuration.", e);
 		} catch (ClassNotFoundException e) {
 			throw new ConfigException("Can't re-cast configuration object.", e);
 		} catch (Exception e) {
-			throw new ConfigException("Unexpected exception configuration object.", e);
+			throw new ConfigException(
+					"Unexpected exception configuration object.", e);
 		}
 		return config;
-    }
-    
-    /**
-     * Serialized actual stored configuration. Can return null 
-     * if configuration is null.
-     * @return Serialized configuration, can be null.
-     * @throws ConfigException 
-     */
-    public byte[] serialize(T config) throws ConfigException {
-    	if (config == null) {
-    		return null;
-    	}    	
-    	byte[] result = null;
+	}
+
+	/**
+	 * Serialized actual stored configuration. Can return null if configuration
+	 * is null.
+	 *
+	 * @return Serialized configuration, can be null.
+	 * @throws ConfigException
+	 */
+	public byte[] serialize(T config) throws ConfigException {
+		if (config == null) {
+			return null;
+		}
+		byte[] result = null;
 		// serialise object into byte[]
-		try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {	
+		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {
 			// use XStream for serialisation	
-			XStream xstream = new XStream();
-			ObjectOutputStream objOut = xstream.createObjectOutputStream(byteOut);
+			XStream xStream = new XStream();
+			try (ObjectOutputStream objOut = xStream.createObjectOutputStream(
+					byteOut)) {
 				objOut.writeObject(config);
-			objOut.close();
+			}
 			result = byteOut.toByteArray();
 		} catch (IOException e) {
 			throw new ConfigException("Can't serialize configuration.", e);
 		}
 		return result;
-    }
-        
+	}
 }

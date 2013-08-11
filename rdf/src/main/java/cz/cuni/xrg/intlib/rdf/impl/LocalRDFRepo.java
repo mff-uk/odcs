@@ -280,6 +280,53 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		addStatement(statement, graph);
 	}
 
+	/**
+	 * Add all RDF data from string to repository.
+	 *
+	 * @param rdfString string constains RDF data.
+	 * @param format    RDF format of given string - used to select parser.
+	 *
+	 * @throws RDFException when adding RDF data failt.
+	 */
+	@Override
+	public void addRDFString(String rdfString, RDFFormat format) throws RDFException {
+		addRDFStringToRepository(rdfString, format, graph);
+	}
+
+	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
+			Resource... graphs) throws RDFException {
+		RepositoryConnection connection = null;
+
+		try {
+
+			connection = repository.getConnection();
+			StringReader reader = new StringReader(rdfString);
+
+			if (graphs != null) {
+
+				connection.add(reader, "", format, graphs);
+			} else {
+				connection.add(reader, "", format);
+			}
+
+			connection.commit();
+
+		} catch (RepositoryException e) {
+			logger.debug(e.getMessage());
+
+		} catch (IOException | RDFParseException ex) {
+			throw new RDFException(ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+	}
+
 	protected void addStatement(Statement statement, Resource... graphs) {
 
 		RepositoryConnection connection = null;
@@ -311,45 +358,52 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
-        /**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param path                String path to file
-	 * 
-	 * @throws RDFException when extraction fail.
-	 */
-        @Override
-	public void extractFromLocalTurtleFile(String path) throws RDFException {
-            extractfromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "", "", false, false);
-      
-        }
-        
-        /**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param extractType         One of defined enum type for extraction data
-	 *                            from file.
-	 * @param path                String path to file/directory
-	 * @param suffix              String suffix of fileName (example: ".ttl",
-	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI
-	 * @param useSuffix           boolean value, if extract files only with
-	 *                            defined suffix or not.
-	 * @param useStatisticHandler boolean value if detailed log and statistic
-	 *                            are awailable or not.
-	 * @throws RDFException when extraction fail.
-	 */
-        @Override
-	public void extractfromFile(FileExtractType extractType,
-			String path, String suffix,
-			String baseURI, boolean useSuffix, boolean useStatisticHandler) throws RDFException {
-            extractfromFile(RDFFormat.RDFXML, extractType, path, suffix, baseURI, useSuffix, useStatisticHandler);
-        }
-        
+	@Override
+	public void extractFromFile(File file) throws RDFException {
+		extractFromFile(file, RDFFormat.RDFXML, "", false);
+	}
+
+	@Override
+	public void extractFromFile(File file, RDFFormat format) throws RDFException {
+		extractFromFile(file, format, "", false);
+	}
+
+	@Override
+	public void extractFromFile(File file, RDFFormat format, String baseURI)
+			throws RDFException {
+
+		extractFromFile(file, format, baseURI, false);
+	}
+
+	@Override
+	public void extractFromFile(File file, RDFFormat format, String baseURI,
+			boolean useStatisticalHandler) throws RDFException {
+
+		if (file == null) {
+			throw new RDFException("Given file for extraction is null");
+		}
+		extractFromFile(format, FileExtractType.PATH_TO_FILE, file
+				.getAbsolutePath(), "",
+				baseURI, false, useStatisticalHandler);
+	}
+
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-         * @param format              Specifies {@link RDFFormatRDF} (e.g., RDFXML, Turtle, ..)
+	 * @param path String path to file
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
+	@Override
+	public void extractFromLocalTurtleFile(String path) throws RDFException {
+		extractFromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "",
+				"", false, false);
+
+	}
+
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
 	 * @param extractType         One of defined enum type for extraction data
 	 *                            from file.
 	 * @param path                String path to file/directory
@@ -363,7 +417,33 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
-	public void extractfromFile(RDFFormat format, FileExtractType extractType,
+	public void extractFromFile(FileExtractType extractType,
+			String path, String suffix,
+			String baseURI, boolean useSuffix, boolean useStatisticHandler)
+			throws RDFException {
+		extractFromFile(RDFFormat.RDFXML, extractType, path, suffix, baseURI,
+				useSuffix, useStatisticHandler);
+	}
+
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param format              Specifies {@link RDFFormatRDF} (e.g., RDFXML,
+	 *                            Turtle, ..)
+	 * @param extractType         One of defined enum type for extraction data
+	 *                            from file.
+	 * @param path                String path to file/directory
+	 * @param suffix              String suffix of fileName (example: ".ttl",
+	 *                            ".xml", etc)
+	 * @param baseURI             String name of defined used URI
+	 * @param useSuffix           boolean value, if extract files only with
+	 *                            defined suffix or not.
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
+	 * @throws RDFException when extraction fail.
+	 */
+	@Override
+	public void extractFromFile(RDFFormat format, FileExtractType extractType,
 			String path, String suffix,
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws RDFException {
@@ -392,7 +472,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			case PATH_TO_DIRECTORY:
 				if (dirFile.isDirectory()) {
 					File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
-					addFilesInDirectoryToRepository(format,files, baseURI,
+					addFilesInDirectoryToRepository(format, files, baseURI,
 							useStatisticHandler,
 							graph);
 				} else {
@@ -403,7 +483,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			case PATH_TO_FILE:
 			case UPLOAD_FILE:
 				if (dirFile.isFile()) {
-					addFileToRepository(format,dirFile, baseURI, useStatisticHandler,
+					addFileToRepository(format, dirFile, baseURI,
+							useStatisticHandler,
 							graph);
 				} else {
 					throw new RDFException(
@@ -453,7 +534,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
-	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files, String baseURI,
+	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files,
+			String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		if (files == null) {
@@ -505,7 +587,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	}
 
-	private void addFileToRepository(RDFFormat rdfFormat, File dataFile, String baseURI,
+	private void addFileToRepository(RDFFormat rdfFormat, File dataFile,
+			String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
 		RDFFormat fileFormat = RDFFormat.forFileName(
@@ -636,6 +719,35 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		}
 	}
 
+	@Override
+	public void loadToFile(File file, RDFFormatType formatType) throws RDFException {
+
+		if (file == null) {
+
+			final String message = "Given file for loading is null.";
+
+			logger.debug(message);
+			throw new RDFException(message);
+
+
+		} else if (file.getName().isEmpty()) {
+
+			final String message = "File name is empty.";
+
+
+			logger.debug(message);
+			throw new RDFException(message);
+		}
+
+		if (!file.exists()) {
+			createNewFile(file);
+
+		}
+
+		writeDataIntoFile(file, formatType);
+
+	}
+
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
@@ -741,6 +853,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 		}
 
+		writeDataIntoFile(dataFile, formatType);
+
+	}
+
+	private void writeDataIntoFile(File dataFile, RDFFormatType formatType)
+			throws RDFException {
+
 		RepositoryConnection connection = null;
 
 		try (OutputStreamWriter os = new OutputStreamWriter(
@@ -749,6 +868,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				.forName(encode))) {
 
 			if (formatType == RDFFormatType.AUTO) {
+				String fileName = dataFile.getName();
 				RDFFormat newFormat = RDFFormat.forFileName(fileName,
 						RDFFormat.RDFXML);
 				formatType = RDFFormatType.getTypeByRDFFormat(newFormat);
@@ -787,7 +907,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -826,6 +945,14 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
+				graphType);
+	}
+
+	@Override
+	public void loadtoSPARQLEndpoint(URL endpointURL,
+			List<String> endpointGraphsURI, WriteGraphType graphType) throws RDFException {
+
+		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
 				graphType);
 	}
 
@@ -1088,8 +1215,30 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphUri);
 
-		extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "",
-				false);
+		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "",
+				RDFFormat.N3, false);
+	}
+
+	/**
+	 * Extract RDF data from SPARQL endpoint to repository using only data from
+	 * URI graph using authentication (name,password).
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphUri name of graph where RDF data are loading.
+	 * @param query           String SPARQL query.
+	 * @param hostName        String name needed for authentication.
+	 * @param password        String password needed for authentication.
+	 *
+	 * @throws RDFException when extraction data fault.
+	 */
+	@Override
+	public void extractFromSPARQLEndpoint(URL endpointURL,
+			String defaultGraphURI, String query, String hostName,
+			String password) throws RDFException {
+
+		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI, query, hostName,
+				password, RDFFormat.N3);
 	}
 
 	/**
@@ -1107,14 +1256,14 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
-	public void extractfromSPARQLEndpoint(URL endpointURL,
+	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query, String hostName,
 			String password, RDFFormat format) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphUri);
 
-		extractfromSPARQLEndpoint(endpointURL, endpointGraphsURI, query,
-				hostName, password, false);
+		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query,
+				hostName, password, format, false);
 	}
 
 	/**
@@ -1135,12 +1284,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
-	public void extractfromSPARQLEndpoint(
+	public void extractFromSPARQLEndpoint(
 			URL endpointURL,
 			List<String> endpointGraphsURI,
 			String query,
 			String hostName,
 			String password,
+			RDFFormat format,
 			boolean useStatisticHandler) throws RDFException {
 
 		if (endpointURL == null) {
@@ -1183,7 +1333,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			throw new RDFException(message);
 		}
 
-		final RDFFormat format = RDFFormat.N3;
 		final int graphSize = endpointGraphsURI.size();
 
 		RepositoryConnection connection = null;
@@ -1847,7 +1996,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		final boolean useStatisticHandler = true;
 
 		try {
-			extractfromFile(FileExtractType.PATH_TO_FILE,
+			extractFromFile(FileExtractType.PATH_TO_FILE,
 					file.getAbsolutePath(), suffix,
 					baseURI,
 					useSuffix, useStatisticHandler);
@@ -1867,11 +2016,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		Thread destroyThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				File dataDir = repository.getDataDir();
 				try {
 					repository.shutDown();
-					deleteDataDirectory(dataDir);
-
 					logger.debug("Repository destroyed SUCCESSFULL");
 				} catch (RepositoryException ex) {
 					logger.debug(
@@ -2109,12 +2255,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	@Override
 	public void delete() {
+		if (repository.isInitialized()) {
+			File dataDir = repository.getDataDir();
+			deleteDataDirectory(dataDir);
+		}
 		release();
-		// delete working directory
-		
-		// TODO Jirka: delete directory? It's not necessary. 
 	}
-	
+
 	@Override
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
