@@ -208,7 +208,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -232,7 +232,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					dirFile.getAbsolutePath(), suffix, baseURI, useSuffix,
 					useStatisticHandler);
@@ -255,7 +255,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -278,7 +278,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -302,7 +302,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -326,7 +326,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -350,7 +350,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -374,7 +374,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -455,7 +455,7 @@ public class LocalRDFRepoTest {
 			long sizeBefore = rdfRepo.getTripleCount();
 
 			try {
-				rdfRepo.extractfromSPARQLEndpoint(
+				rdfRepo.extractFromSPARQLEndpoint(
 						endpointURL, defaultGraphUri, query, name, password,
 						format);
 			} catch (RDFException e) {
@@ -539,7 +539,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -561,7 +561,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(
+			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
@@ -700,7 +700,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractfromFile(FileExtractType.PATH_TO_FILE,
+			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -879,7 +879,7 @@ public class LocalRDFRepoTest {
 		long size = repository.getTripleCount();
 
 		try {
-			repository.extractfromFile(
+			repository.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
