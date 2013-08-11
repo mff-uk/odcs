@@ -14,11 +14,11 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
     private ConfigWrap<C> configWrap; 
 	
     public BaseConfigDialog(C config) {
-    	this.configWrap = new ConfigWrap<C>(config);
+    	this.configWrap = new ConfigWrap<>(config);
     }
     
     public BaseConfigDialog(Class<C> configClass) {
-    	this.configWrap = new ConfigWrap<C>(configClass);
+    	this.configWrap = new ConfigWrap<>(configClass);
     }    
     
 	@Override
