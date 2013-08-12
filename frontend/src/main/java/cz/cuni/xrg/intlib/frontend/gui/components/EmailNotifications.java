@@ -1,5 +1,10 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.google.gwt.core.client.Scheduler;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Alignment;
@@ -9,7 +14,15 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
+import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
+import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
+import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
 /**
  * Builds layout with GUI components for settings nitifications
@@ -26,6 +39,67 @@ public class EmailNotifications {
 	private int noError=0;
 	private boolean validation=true;
 	public EmailComponent shEmail;
+	private OptionGroup errorExec;
+	private OptionGroup successfulExec;
+	private UserNotificationRecord userNotifcationRecord;
+	private ScheduleNotificationRecord schNotifcationRecord;
+	
+	/**
+	 *  
+	 *  
+	 * @return userNotifcationRecord 
+	 */
+	public UserNotificationRecord setUserNotificatonRecord(){
+		
+		userNotifcationRecord = new UserNotificationRecord();
+		userNotifcationRecord.setUser(App.getApp().getUsers().getUser(1L));
+		userNotifcationRecord.setTypeError((NotificationRecordType)errorExec.getValue());
+		userNotifcationRecord.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
+
+		Set<EmailAddress> emails = new HashSet<>();
+		List<String> emailStr = shEmail.griddata;
+		
+		for (String mail:emailStr){
+			if(mail!=""){
+			EmailAddress e = new EmailAddress(mail);
+			emails.add(e);
+			}
+		}
+		userNotifcationRecord.setEmails(emails);
+		
+		return userNotifcationRecord;
+
+	}
+	
+	public void setUserNotificatonRecord(UserNotificationRecord notofication){
+		
+		notofication.setTypeError((NotificationRecordType)errorExec.getValue());
+		notofication.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
+
+		Set<EmailAddress> emails = new HashSet<>();
+		List<String> emailStr = shEmail.griddata;
+		
+		for (String mail:emailStr){
+			if(mail!=""){
+			EmailAddress e = new EmailAddress(mail);
+			emails.add(e);
+			}
+		}
+		notofication.setEmails(emails);
+		
+
+	}
+	
+	public void setScheduleNotificationRecord(Schedule schedule){
+		
+		schNotifcationRecord = new ScheduleNotificationRecord();
+		schNotifcationRecord.setSchedule(schedule);
+		schNotifcationRecord.setTypeError((NotificationRecordType)errorExec.getValue());
+		schNotifcationRecord.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
+//		schNotifcationRecord.addEmail(shEmail.griddata);
+//		App.getApp().getSchedules().save(schedule);
+
+	}
 	
 	public VerticalLayout buildEmailNotificationsLayout(){
 		
@@ -40,7 +114,7 @@ public class EmailNotifications {
 		notifycationLayout.setSpacing(true);
 		
 		notifycationLayout.addComponent(new Label("Successful execution:"),0,0);
-		OptionGroup successfulExec = new OptionGroup();
+		successfulExec = new OptionGroup();
 		successfulExec.setImmediate(true);
 		successfulExec.addItem(NotificationRecordType.INSTANT);
 		successfulExec.addItem(NotificationRecordType.DAILY);
@@ -75,7 +149,7 @@ public class EmailNotifications {
 		emailNotificationsLayout.addComponent(notifycationLayout);
 		
 		notifycationLayout.addComponent(new Label("Error in execution:"),0,1);
-		OptionGroup errorExec = new OptionGroup();
+		errorExec = new OptionGroup();
 		errorExec.setImmediate(true);
 		errorExec.setImmediate(true);
 		errorExec.addItem(NotificationRecordType.INSTANT);

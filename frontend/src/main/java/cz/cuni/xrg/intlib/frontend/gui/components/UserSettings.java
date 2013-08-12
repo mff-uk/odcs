@@ -28,6 +28,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 
+import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
+import cz.cuni.xrg.intlib.commons.app.user.User;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+
 /**
  * Dialog for the User settings creation which opens from the main menu. 
  * Allows to set e-mail for get notifications and set scheduler notifications.
@@ -225,7 +229,7 @@ public class UserSettings extends Window {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
-			
+				emailNotifications.shEmail.saveEditedTexts();    
 				try {
 					email.textFieldEmail.validate();
 					emailNotifications.shEmail.textFieldEmail.validate();
@@ -234,6 +238,21 @@ public class UserSettings extends Window {
 					return;
 				}
 				
+								
+				User user = App.getApp().getUsers().getUser(1L);
+				UserNotificationRecord notification = user.getNotification();
+				if(notification!=null){
+					
+					emailNotifications.setUserNotificatonRecord(notification);
+					user.setNotification(notification);
+				}
+				else{
+					
+					UserNotificationRecord userNotifcationRecord = emailNotifications.setUserNotificatonRecord();
+					user.setNotification(userNotifcationRecord);
+				}
+
+				App.getApp().getUsers().save(user);
 				
 			}
 		});

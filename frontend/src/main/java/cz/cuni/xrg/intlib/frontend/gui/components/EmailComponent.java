@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
@@ -33,7 +35,7 @@ public class EmailComponent {
 		/**
 		 * List<String> that contains e-mails.
 		 */
-		private List<String> griddata = initializeEmailData();
+		public List<String> griddata = initializeEmailData();
 
 		/**
 		 * Initializes data of the E-mail notification component
@@ -73,7 +75,7 @@ public class EmailComponent {
 		/**
 		 * Save edited texts in the E-mail notification component
 		 */
-		private void saveEditedTexts() {
+		public void saveEditedTexts() {
 			griddata = new LinkedList<>();
 			for (TextField editText : listedEditText) {
 				griddata.add(editText.getValue().trim());
@@ -103,6 +105,14 @@ public class EmailComponent {
 				textFieldEmail.setWidth("100%");
 				textFieldEmail.setData(row);
 				textFieldEmail.setValue(item.trim());
+				textFieldEmail.addTextChangeListener(new TextChangeListener() {
+					
+					@Override
+					public void textChange(TextChangeEvent event) {
+						// TODO Auto-generated method stub
+						saveEditedTexts();
+					}
+				});
 				textFieldEmail.setInputPrompt("franta@test.cz");
 				if((validation)){
 					textFieldEmail.addValidator(new Validator() {

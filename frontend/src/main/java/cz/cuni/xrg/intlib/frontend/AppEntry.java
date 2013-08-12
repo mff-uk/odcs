@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
+import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -150,6 +151,14 @@ public class AppEntry extends com.vaadin.ui.UI {
      */
     public ScheduleFacade getSchedules() {
 		return (ScheduleFacade) context.getBean("scheduleFacade");
+    }
+    
+    /**
+     * Return facade, which provide services for manipulating with Schedules.
+     * @return schedules facade
+     */
+    public UserFacade getUsers() {
+		return (UserFacade) context.getBean("userFacade");
     }
 
     /**
