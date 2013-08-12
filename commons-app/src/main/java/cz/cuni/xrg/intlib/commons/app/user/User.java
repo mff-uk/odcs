@@ -1,9 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
+import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -15,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -35,8 +38,9 @@ public class User implements RoleHolder, Resource {
 	/**
 	 * User email.
 	 */
-	@Column
-    private String email;
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "email_id")
+    private EmailAddress email;
 	
 	/**
 	 * Full name.
@@ -72,17 +76,17 @@ public class User implements RoleHolder, Resource {
 	 * @param password already hashed password
 	 * @param email contact email
 	 */	
-    public User(String name, String password, String email) {
+    public User(String name, String password, EmailAddress email) {
         this.name = name;
         this.password = password;
         this.email = email;
     }
 
-    public String getEmail() {
+    public EmailAddress getEmail() {
         return email;
     }
 
-    public void setEmail(String newEmail) {
+    public void setEmail(EmailAddress newEmail) {
         email = newEmail;
     }
 

@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
+import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,12 +56,12 @@ public class UserFacadeTest {
 	 */
 	@Test @Transactional
 	public void testSave() {
-		User user = new User("Jay Doe", "abcd", "jay@example.com");
+		User user = new User("Jay Doe", "abcd", new EmailAddress("jay@example.com"));
 		facade.save(user);
 		User u = facade.getUser(2L);
 		assertEquals(user.getName(), u.getName());
 		assertEquals(user.getPassword(), u.getPassword());
-		assertEquals(user.getEmail(), u.getEmail());
+		assertSame(user.getEmail(), u.getEmail());
 	}
 
 	/**
