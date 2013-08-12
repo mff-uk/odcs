@@ -13,9 +13,8 @@ import java.util.Set;
  * @author Maria Kukhar
  *
  */
-@Entity
-@Table(name = "sch_notification")
-public class NotificationRecord implements Serializable {
+@MappedSuperclass
+public abstract class NotificationRecord implements Serializable {
 
 	/**
 	 * Unique ID for each scheduler notification.
@@ -23,27 +22,6 @@ public class NotificationRecord implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-
-
-	/**
-	 * Scheduler to notify (notification about paticular scheduled 
-	 * pipeline execution). Applicable if notification rule set in 
-	 * Scheduler dialog 
-	 */
-	@OneToOne
-	@JoinColumn(name = "schedule_id", nullable = false)
-	private Schedule schedule;
-	
-
-	/**
-	 * E-mails the notification will be sent to.
-	 */
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "sch_notification_email",
-			joinColumns = @JoinColumn(name = "notification_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "email_id", referencedColumnName = "id"))
-	private Set<EmailAddress> emails = new HashSet<>();
-
 	
 	/**
 	 * Type of notification in case of successful execution:
@@ -65,34 +43,17 @@ public class NotificationRecord implements Serializable {
 	 */
 	public NotificationRecord() {
 	}
-
-
-	public Schedule getSchedule() {
-		return schedule;
-	}
-
-	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
-	}
 	
 	/**
 	 * @return defensive copy of a set of emails to send notification to
 	 */
-	public Set<EmailAddress> getEmails() {
-		return new HashSet<>(emails);
-	}
+	public abstract Set<EmailAddress> getEmails();
 
-	public void setEmails(Set<EmailAddress> emails) {
-		this.emails = new HashSet<>(emails);
-	}
+	public abstract void setEmails(Set<EmailAddress> emails);
 	
-	public void addEmail(EmailAddress email) {
-		this.emails.add(email);
-	}
+	public abstract void addEmail(EmailAddress email);
 	
-	public void removeEmail(EmailAddress email) {
-		this.emails.remove(email);
-	}
+	public abstract void removeEmail(EmailAddress email);
 
 	public NotificationRecordType getTypeSuccess() {
 		return typeSuccess;

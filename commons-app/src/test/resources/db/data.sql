@@ -56,13 +56,13 @@ INSERT INTO EXEC_SCHEDULE_AFTER(schedule_id,pipeline_id) VALUES(2,1);
 
 
 -- notifications for schedules
-INSERT INTO SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
+INSERT INTO SCH_SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
  VALUES(1,1,1,1);
-INSERT INTO SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
+INSERT INTO SCH_SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
  VALUES(2,2,1,1);
 INSERT INTO SCH_EMAIL(id,e_user,e_domain)
  VALUES(1,'user','example.com');
-INSERT INTO SCH_NOTIFICATION_EMAIL(notification_id,email_id)
+INSERT INTO SCH_SCH_NOTIFICATION_EMAIL(notification_id,email_id)
  VALUES(1,1);
 
 -- Log messages

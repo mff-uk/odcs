@@ -114,7 +114,7 @@ public class Schedule implements Serializable {
 	 * Notification settings for this schedule.
 	 */
 	@OneToOne(mappedBy = "schedule")
-	private NotificationRecord notification;
+	private ScheduleNotificationRecord notification;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id")
@@ -229,11 +229,11 @@ public class Schedule implements Serializable {
 		return id;
 	}
 
-	public NotificationRecord getNotification() {
+	public ScheduleNotificationRecord getNotification() {
 		return notification;
 	}
 
-	public void setNotification(NotificationRecord notification) {
+	public void setNotification(ScheduleNotificationRecord notification) {
 		this.notification = notification;
 	}
 
