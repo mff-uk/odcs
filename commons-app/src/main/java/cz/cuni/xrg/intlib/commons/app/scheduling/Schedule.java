@@ -113,7 +113,7 @@ public class Schedule implements Serializable {
 	/**
 	 * Notification settings for this schedule.
 	 */
-	@OneToOne(mappedBy = "schedule")
+	@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private ScheduleNotificationRecord notification;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
