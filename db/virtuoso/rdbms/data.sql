@@ -3,9 +3,7 @@ fk_check_input_values(0);
 -- tablequalifier=NULL  tableowner=NULL  tablename=is given, one or more  tabletype=NULL
 -- Connected to datasource "OpenLink Virtuoso", Driver v. 06.01.3127 OpenLink Virtuoso ODBC Driver.
 -- get_all_tables: tablepattern="db.intlib.%",11
--- Definitions of 19 tables were read in.
--- SELECT * FROM DB.INTLIB.DATAUNIT_INFO
--- Table DB.INTLIB.DATAUNIT_INFO 0 rows output.
+-- Definitions of 25 tables were read in.
 -- SELECT * FROM DB.INTLIB.DPU_INSTANCE
 FOREACH HEXADECIMAL BLOB INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id) VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar',?,1);
 3C6F626A6563742D73747265616D3E0A20203C637A2E63756E692E6D66662E78
@@ -90,6 +88,22 @@ INSERT INTO DB.INTLIB.PPL_NODE(id,graph_id,instance_id,position_id) VALUES(2,1,2
 INSERT INTO DB.INTLIB.PPL_POSITION(id,pos_x,pos_y) VALUES(1,138,52);
 INSERT INTO DB.INTLIB.PPL_POSITION(id,pos_x,pos_y) VALUES(2,487,132);
 -- Table DB.INTLIB.PPL_POSITION 2 rows output.
+-- SELECT * FROM DB.INTLIB.SCH_EMAIL
+INSERT INTO DB.INTLIB.SCH_EMAIL(id,e_user,e_domain) VALUES(1,'user','example.com');
+-- Table DB.INTLIB.SCH_EMAIL 1 rows output.
+-- SELECT * FROM DB.INTLIB.SCH_SCH_NOTIFICATION
+-- Table DB.INTLIB.SCH_SCH_NOTIFICATION 0 rows output.
+-- SELECT * FROM DB.INTLIB.SCH_SCH_NOTIFICATION_EMAIL
+-- Table DB.INTLIB.SCH_SCH_NOTIFICATION_EMAIL 0 rows output.
+-- SELECT * FROM DB.INTLIB.SCH_USR_NOTIFICATION
+-- Table DB.INTLIB.SCH_USR_NOTIFICATION 0 rows output.
+-- SELECT * FROM DB.INTLIB.SCH_USR_NOTIFICATION_EMAIL
+-- Table DB.INTLIB.SCH_USR_NOTIFICATION_EMAIL 0 rows output.
+-- SELECT * FROM DB.INTLIB.USR_USER
+INSERT INTO DB.INTLIB.USR_USER(id,email_id,u_password,full_name) VALUES(1,1,'ac648d84e684f632b2bb567a9ee7d1','John Doe');
+-- Table DB.INTLIB.USR_USER 1 rows output.
+-- SELECT * FROM DB.INTLIB.USR_USER_ROLE
+-- Table DB.INTLIB.USR_USER_ROLE 0 rows output.
 
 
 fk_check_input_values(1);
