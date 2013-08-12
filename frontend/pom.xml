@@ -110,173 +110,179 @@
 			<artifactId>vaadin-client-compiled</artifactId>
 			<version>${vaadin.version}</version>
 		</dependency>
+                
+                <dependency>
+                    <groupId>org.vaadin.addons</groupId>
+                    <artifactId>pagingcomponent</artifactId>
+                    <version>0.9.4</version>
+                </dependency>
 		<!--
 		  Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 		  
-		  For widgetset compilation, vaadin-client-compiler is automatically added on the
-		  compilation classpath by vaadin-maven-plugin so normally there is no need for an
-		  explicit dependency.
-		-->
-		<!--
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiler</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-push</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-themes</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
-		</dependency>
+          For widgetset compilation, vaadin-client-compiler is automatically added on the
+          compilation classpath by vaadin-maven-plugin so normally there is no need for an
+          explicit dependency.
+        -->
+        <!--
+        <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-client-compiler</artifactId>
+                <version>${vaadin.version}</version>
+                <scope>provided</scope>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-push</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
-	<build>
-		<finalName>intlib</finalName>
-		<plugins>
+    <build>
+        <finalName>intlib</finalName>
+        <plugins>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml
-				which will be ignored -->
-				<version>2.3</version>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <!-- fix: [WARNING] Warning: selected war files include a WEB-INF/web.xml
+                which will be ignored -->
+                <version>2.3</version>
+            </plugin>
 
-			<!-- deploy to Apache tomcat see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html
-			http://localhost:8080/docs/manager-howto.html use maven cmd: mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy -->
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.0</version>
-				<configuration>
-					<url>${tomcat.deploy.url}</url>
-					<username>${tomcat.deploy.username}</username>
-					<password>${tomcat.deploy.password}</password>
-					<!-- if already deployed update -->
-					<update>true</update>
-				</configuration>
-			</plugin>
+            <!-- deploy to Apache tomcat see http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/plugin-info.html
+            http://localhost:8080/docs/manager-howto.html use maven cmd: mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <url>${tomcat.deploy.url}</url>
+                    <username>${tomcat.deploy.username}</username>
+                    <password>${tomcat.deploy.password}</password>
+                    <!-- if already deployed update -->
+                    <update>true</update>
+                </configuration>
+            </plugin>
 			
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
 			
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-			</plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
 			
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			<!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
-			<!-- directory is cleaned properly -->
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.4.1</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>src/main/webapp/VAADIN/widgetsets</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>${vaadin.plugin.version}</version>
-				<configuration>
-					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-					<!-- <runTarget>mobilemail</runTarget> -->
-					<!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
-						way compatible with Vaadin eclipse plugin. -->
-					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
-					</webappDirectory>
-					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
-					</hostedWebapp>
-					<noServer>true</noServer>
-					<!-- Remove draftCompile when project is ready -->
-					<draftCompile>false</draftCompile>
-					<compileReport>true</compileReport>
-					<style>OBF</style>
-					<strict>true</strict>
-					<runTarget>http://localhost:8080/</runTarget>
-				</configuration>
-				<executions>
-					<execution>
-						<configuration>
-							<!-- if you don't specify any modules, the plugin will find them -->
-							<!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> 
-								</modules> -->
-						</configuration>
-						<goals>
-							<goal>clean</goal>
-							<goal>resources</goal>
-							<goal>update-theme</goal>
-							<goal>update-widgetset</goal>
-							<goal>compile-theme</goal>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.0.4.v20130621</version>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
+            <!-- directory is cleaned properly -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/webapp/VAADIN/widgetsets</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.plugin.version}</version>
+                <configuration>
+                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    <!-- <runTarget>mobilemail</runTarget> -->
+                    <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
+                    way compatible with Vaadin eclipse plugin. -->
+                    <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
+                    </webappDirectory>
+                    <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
+                    </hostedWebapp>
+                    <noServer>true</noServer>
+                    <!-- Remove draftCompile when project is ready -->
+                    <draftCompile>false</draftCompile>
+                    <compileReport>true</compileReport>
+                    <style>OBF</style>
+                    <strict>true</strict>
+                    <runTarget>http://localhost:8080/</runTarget>
+                </configuration>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <!-- if you don't specify any modules, the plugin will find them -->
+                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> 
+                            </modules> -->
+                        </configuration>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>resources</goal>
+                            <goal>update-theme</goal>
+                            <goal>update-widgetset</goal>
+                            <goal>compile-theme</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.0.4.v20130621</version>
+            </plugin>
 			
-		</plugins>
+        </plugins>
 
-		<resources>
-			<resource>
-				<directory>src\main\java</directory>
-			</resource>
-			<resource>
-				<directory>src\main\java\cz\cuni\xrg\intlib\frontend\gui\components\pipelinecanvas</directory>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>src\main\java</directory>
+            </resource>
+            <resource>
+                <directory>src\main\java\cz\cuni\xrg\intlib\frontend\gui\components\pipelinecanvas</directory>
+            </resource>
+        </resources>
 
-	</build>
+    </build>
 	
-	<pluginRepositories>
-		<pluginRepository>
-			<id>vaadin-snapshots</id>
-			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

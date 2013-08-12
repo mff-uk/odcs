@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.io.Serializable;
 
 import java.util.Calendar;
@@ -114,6 +115,10 @@ public class Schedule implements Serializable {
 	 */
 	@OneToOne(mappedBy = "schedule")
 	private NotificationRecord notification;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id")
+	private User owner;
 
 	/**
 	 * Empty constructor. Used by JPA. Do not use otherwise.
@@ -230,6 +235,14 @@ public class Schedule implements Serializable {
 
 	public void setNotification(NotificationRecord notification) {
 		this.notification = notification;
+	}
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
 	}
 	
 	/**

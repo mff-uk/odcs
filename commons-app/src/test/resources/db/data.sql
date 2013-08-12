@@ -45,12 +45,12 @@ INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context
  VALUES(1,5,1,0,NULL,NULL,1,NULL,1,NULL);
 
 -- schedule define by times when to run pipeline
-INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
- VALUES(1,NULL,NULL,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3);
+INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
+ VALUES(1,NULL,NULL,1,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3);
 
 -- schedule defined by "run after pipeline"
-INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
- VALUES(2,NULL,NULL,2,1,1,0,NULL,NULL,NULL,NULL);
+INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
+ VALUES(2,NULL,NULL,2,1,1,1,0,NULL,NULL,NULL,NULL);
 -- Test 2 should run after Test 1
 INSERT INTO EXEC_SCHEDULE_AFTER(schedule_id,pipeline_id) VALUES(2,1);
 
