@@ -64,6 +64,7 @@ public class AppEntry extends com.vaadin.ui.UI {
         initNavigatorAddSingle(ViewNames.PipelineList);
         initNavigatorAddSingle(ViewNames.PipelineEdit);
         initNavigatorAddSingle(ViewNames.Scheduler);
+        initNavigatorAddSingle(ViewNames.Login);
 
         /* You can create new views dynamically using a view provider
          * that implements the  ViewProvider interface.

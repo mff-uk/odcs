@@ -36,6 +36,8 @@ public class ViewsFactory {
 			return new PipelineList();
 		case Scheduler:
 			return new Scheduler();
+                case Login:
+                        return new Login();
 		default:
 			return null;
 		}
