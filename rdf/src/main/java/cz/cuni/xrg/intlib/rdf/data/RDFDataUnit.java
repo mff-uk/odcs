@@ -19,13 +19,11 @@ import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import org.openrdf.rio.RDFFormat;
 
-/*
- * For Load, Transform, Query exception I suggest to use base exception RDFDataUnitException .. 
- * and then inherit more specific exception.  
- */
 /**
- * RDF DataUnit.
+ * RDF DataUnit. For Load, Transform, Query. In case of problem throws
+ * RDFDataUnitException.
  *
+ * @author Jiri Tomes
  * @author Petyr
  *
  */
@@ -33,66 +31,72 @@ public class RDFDataUnit implements DataUnit {
 
 	private RDFDataRepository repository;
 
-	// TODO Jirka(from Petr): Could you please update the comments for createLocalRepo
-	// I do not fully understand the meaning of repoPath and fileName
-	// and add comments to this method as well
 	/**
-	 * Create RDFDataUnit as local repository.
-	 * @param dataUnitName DataUnit's name.
-	 * @param repoPath
-	 * @param fileName
-	 * @param defaultGraph
+	 * Create RDFDataUnit as local RDF repository.
+	 *
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
+	 *                     String.
+	 * @param repoPath     String path to directory where can be repository
+	 *                     stored.
+	 * @param id           String file name - unique ID, where is repository in
+	 *                     directory stored.
+	 * @param defaultGraph String name of graph, where RDF data are saved.
 	 * @return
 	 */
 	public static RDFDataUnit createLocal(String dataUnitName,
-			String repoPath, String defaultGraph) {
-		
-		RDFDataRepository repository = LocalRDFRepo.createLocalRepo(repoPath, 
-				"dummy", dataUnitName);
-		
-		// TODO Jirka(from Petr): remove parameter dummy? I can pass the 
-		// whole path in single argument
-		
+			String repoPath, String id, String defaultGraph) {
+
+		RDFDataRepository repository = LocalRDFRepo.createLocalRepo(repoPath,
+				id, dataUnitName);
+
 		repository.setDataGraph(defaultGraph);
-		
+
 		return new RDFDataUnit(repository);
 	}
-	
+
 	/**
-	 * Create RDFDataUnit that use given Virtuoso as storage.
-	 * @param dataUnitName DataUnit's name.
-	 * @param hostName Host name for Virtuoso.
-	 * @param port Virutuoso's port.
-	 * @param user User name.
-	 * @param password Password.
-	 * @param defaultGraph Default graph.
+	 * Create RDFDataUnit ad new instance of VirtuosoRepository as storage.
+	 *
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
+	 *                     String.
+	 * @param hostName     String name of host need to Virtuoso connection.
+	 * @param port         String value of number of port need for connection to
+	 *                     Virtuoso.
+	 * @param user         A default graph name, used for Sesame calls, when
+	 *                     contexts list is empty, exclude exportStatements,
+	 *                     hasStatement, getStatements methods.
+	 * @param password     The user's password.
+	 * @param defaultGraph A default graph name, used for Sesame calls, when
+	 *                     contexts list is empty, exclude exportStatements,
+	 *                     hasStatement, getStatements methods.
 	 * @return
 	 */
 	public static RDFDataUnit createVirtuoso(String dataUnitName,
-			String hostName, String port, String user, 
+			String hostName, String port, String user,
 			String password, String defaultGraph) {
-		
+
 		RDFDataRepository repository = VirtuosoRDFRepo
 				.createVirtuosoRDFRepo(hostName, port, user, password,
 				defaultGraph, dataUnitName);
-		
-		// TODO Jirka(from Petr): Do I have to set graph event when I pass name 
-		// for default graph
-		// Do we need default graph at all?
-		
-		repository.setDataGraph(defaultGraph);
-		
+
+		/*
+		 * ANSWER TO PETR:
+		 * Default graph we need for all. Here you dont need set data graph 
+		 * (is it in constructor) - only in Vituoso case.
+		 * 
+		 */
 		return new RDFDataUnit(repository);
 	}
-	
+
 	/**
 	 * Create wrap-RDFDataUnit over given repository.
+	 *
 	 * @param repository
 	 */
 	protected RDFDataUnit(RDFDataRepository repository) {
 		this.repository = repository;
 	}
-	
+
 	/**
 	 * Add one tripple RDF (statement) to the repository.
 	 *
