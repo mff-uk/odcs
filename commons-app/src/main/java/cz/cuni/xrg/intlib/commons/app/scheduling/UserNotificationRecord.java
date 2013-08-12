@@ -31,7 +31,7 @@ public class UserNotificationRecord extends NotificationRecord {
 			joinColumns = @JoinColumn(name = "notification_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "email_id", referencedColumnName = "id"))
 	private Set<EmailAddress> emails = new HashSet<>();
-
+	
 	public User getUser() {
 		return user;
 	}

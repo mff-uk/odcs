@@ -66,6 +66,11 @@ INSERT INTO SCH_SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
 INSERT INTO SCH_EMAIL(id,e_user,e_domain)
  VALUES(2,'scheduler','example.com');
 INSERT INTO SCH_SCH_NOTIFICATION_EMAIL(notification_id,email_id)
+ VALUES(1,2);
+
+INSERT INTO SCH_USR_NOTIFICATION(id,user_id,type_success,type_error)
+ VALUES(1,1,1,1);
+INSERT INTO SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id)
  VALUES(1,1);
 
 -- Log messages

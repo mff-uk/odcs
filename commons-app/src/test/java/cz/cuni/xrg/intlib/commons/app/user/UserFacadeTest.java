@@ -28,7 +28,7 @@ public class UserFacadeTest {
 	/**
 	 * Test of getAllUsers method, of class UserFacade.
 	 */
-	@Test @Transactional
+	@Test
 	public void testGetAllUsers() {
 		List<User> users = facade.getAllUsers();
 		assertNotNull(users);
@@ -43,7 +43,7 @@ public class UserFacadeTest {
 	/**
 	 * Test of getUser method, of class UserFacade.
 	 */
-	@Test @Transactional
+	@Test
 	public void testGetUser() {
 		User user = facade.getUser(1L);
 		assertNotNull(user);
@@ -56,7 +56,7 @@ public class UserFacadeTest {
 	 */
 	@Test @Transactional
 	public void testSave() {
-		User user = new User("Jay Doe", "abcd", new EmailAddress("jay@example.com"));
+		User user = facade.createUser("Jay Doe", "abcd", new EmailAddress("jay@example.com"));
 		facade.save(user);
 		User u = facade.getUser(2L);
 		assertEquals(user.getName(), u.getName());
@@ -76,5 +76,12 @@ public class UserFacadeTest {
 		List<User> users = facade.getAllUsers();
 		assertNotNull(users);
 		assertTrue(users.isEmpty());
+	}
+	
+	@Test
+	public void testGetNotification() {
+		User user = facade.getUser(1L);
+		assertNotNull(user);
+		assertNotNull(user.getNotification());
 	}
 }

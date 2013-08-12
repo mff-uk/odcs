@@ -1,9 +1,9 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
 import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
-import java.util.ArrayList;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
+import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -62,6 +62,13 @@ public class User implements RoleHolder, Resource {
 	@Enumerated(EnumType.ORDINAL)
 	@CollectionTable(name = "usr_user_role", joinColumns = @JoinColumn(name = "user_id"))
     private Set<Role> roles = new HashSet<>();
+	
+	/**
+	 * User notification settings used as a default for execution schedules.
+	 * Overridden by specific settings in {@link ScheduleNotificationRecord}.
+	 */
+	@OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private UserNotificationRecord notification;
 
 	/**
 	 * Empty constructor required by JPA.
@@ -125,6 +132,15 @@ public class User implements RoleHolder, Resource {
         return id;
     }
 
+	public UserNotificationRecord getNotification() {
+		return notification;
+	}
+
+	public void setNotification(UserNotificationRecord notification) {
+		this.notification = notification;
+		notification.setUser(this);
+	}
+	
     @Override
     public String getResourceId() {
         return User.class.toString();

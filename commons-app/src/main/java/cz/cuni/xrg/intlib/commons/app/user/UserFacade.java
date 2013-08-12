@@ -1,5 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
+import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
+import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
+import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -22,6 +25,23 @@ public class UserFacade {
 	 */
 	@PersistenceContext
 	private EntityManager em;
+	
+	/**
+	 * @return new user instance
+	 */
+	public User createUser(String fullname, String password, EmailAddress email) {
+		User user = new User(fullname, password, email);
+		
+		// set default notification setting
+		UserNotificationRecord notify = new UserNotificationRecord();
+		user.setNotification(notify);
+		
+		notify.addEmail(email);
+		notify.setTypeError(NotificationRecordType.INSTANT);
+		notify.setTypeSuccess(NotificationRecordType.DAILY);
+		
+		return user;
+	}
 	
 	/**
 	 * @return list of all users persisted in database

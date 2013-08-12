@@ -86,7 +86,7 @@ public class ScheduleFacadeTest {
 		assertEquals(1, sch.getNotification().getEmails().size());
 		
 		EmailAddress email = sch.getNotification().getEmails().iterator().next();
-		assertEquals("user", email.getName());
+		assertEquals("scheduler", email.getName());
 		assertEquals("example.com", email.getDomain());
 	}
 }
