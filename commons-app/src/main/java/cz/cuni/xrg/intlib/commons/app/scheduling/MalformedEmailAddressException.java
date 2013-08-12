@@ -4,7 +4,7 @@ package cz.cuni.xrg.intlib.commons.app.scheduling;
  * 
  * @author Jan Vojt
  */
-public class MalformedEmailAddressException extends Exception {
+public class MalformedEmailAddressException extends RuntimeException {
 
 	/**
 	 * Creates a new instance of
