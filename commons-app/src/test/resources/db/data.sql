@@ -3,7 +3,7 @@
 INSERT INTO SCH_EMAIL(id,e_user,e_domain)
  VALUES(1,'user','example.com');
 
-INSERT INTO USR_USER(id,email_id,password,full_name)
+INSERT INTO USR_USER(id,email_id,u_password,full_name)
  VALUES(1,1,'ac648d84e684f632b2bb567a9ee7d1','John Doe');
 
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,0);

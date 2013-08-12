@@ -51,7 +51,7 @@ public class User implements RoleHolder, Resource {
 	/**
 	 * Hashed password.
 	 */
-	@Column
+	@Column(name = "u_password")
     private String password;
 	
 	/**

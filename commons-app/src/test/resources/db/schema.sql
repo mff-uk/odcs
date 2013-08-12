@@ -203,7 +203,7 @@ CREATE TABLE `USR_USER`
 (
   `id` INTEGER AUTO_INCREMENT,
   `email_id` INTEGER NOT NULL,
-  `password` CHAR(32) NOT NULL,
+  `u_password` CHAR(32) NOT NULL,
   `full_name` VARCHAR(55),
   PRIMARY KEY (`id`)
 );
