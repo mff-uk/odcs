@@ -86,20 +86,47 @@ public class EmailNotifications {
 			}
 		}
 		notofication.setEmails(emails);
-		
-
 	}
 	
-	public void setScheduleNotificationRecord(Schedule schedule){
+	public ScheduleNotificationRecord setScheduleNotificationRecord(Schedule schedule){
 		
 		schNotifcationRecord = new ScheduleNotificationRecord();
 		schNotifcationRecord.setSchedule(schedule);
 		schNotifcationRecord.setTypeError((NotificationRecordType)errorExec.getValue());
 		schNotifcationRecord.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
-//		schNotifcationRecord.addEmail(shEmail.griddata);
-//		App.getApp().getSchedules().save(schedule);
+
+		Set<EmailAddress> emails = new HashSet<>();
+		List<String> emailStr = shEmail.griddata;
+		
+		for (String mail:emailStr){
+			if(mail!=""){
+			EmailAddress e = new EmailAddress(mail);
+			emails.add(e);
+			}
+		}
+		schNotifcationRecord.setEmails(emails);
+		
+		return schNotifcationRecord;
 
 	}
+	
+	public void setScheduleNotificationRecord(ScheduleNotificationRecord notofication, Schedule schedule){
+		
+		notofication.setTypeError((NotificationRecordType)errorExec.getValue());
+		notofication.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
+
+		Set<EmailAddress> emails = new HashSet<>();
+		List<String> emailStr = shEmail.griddata;
+		
+		for (String mail:emailStr){
+			if(mail!=""){
+			EmailAddress e = new EmailAddress(mail);
+			emails.add(e);
+			}
+		}
+		notofication.setEmails(emails);
+	}
+	
 	
 	public VerticalLayout buildEmailNotificationsLayout(){
 		
