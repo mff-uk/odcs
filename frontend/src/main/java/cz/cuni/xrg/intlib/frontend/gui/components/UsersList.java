@@ -1,17 +1,13 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import java.sql.Timestamp;
-import java.util.List;
 
-import com.vaadin.data.Property;
+import java.util.List;
+import java.util.Set;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomTable;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -19,27 +15,28 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
+import cz.cuni.xrg.intlib.commons.app.user.Role;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
-import cz.cuni.xrg.intlib.frontend.gui.views.GenerateActionColumnMonitor;
 
-
-
+/**
+ * GUI for User List  which opens from the Administrator menu. Contains table with
+ * users and button for user creation.
+ *
+ *
+ * @author Maria Kukhar
+ */
 
 public class UsersList {
 	
 	 private IntlibPagedTable usersTable;
 	 private VerticalLayout usersListLayout;
-	 static String[] visibleCols = new String[]{"id", "user", "role",
+	 private static String[] visibleCols = new String[]{"id", "user", "role",
 	        "total_pipelines", "actions"};
-	 static String[] headers = new String[]{"Id", "User Name", "Role(s)",
+	 private static String[] headers = new String[]{"Id", "User Name", "Role(s)",
 	        "Total Pipelines", "Actions"};
 	 private IndexedContainer tableData;
-	 private Long userId;
 
 
 	public VerticalLayout buildUsersListLayout(){
@@ -62,6 +59,9 @@ public class UsersList {
 		addUserButton.setCaption("Create new user");
 		addUserButton
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+
+					private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
@@ -70,6 +70,9 @@ public class UsersList {
 				UserCreate user = new UserCreate(newUser);
 				App.getApp().addWindow(user);
 				user.addCloseListener(new CloseListener() {
+
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void windowClose(CloseEvent e) {
 						refreshData();
@@ -86,6 +89,9 @@ public class UsersList {
 		buttonDeleteFilters.setWidth("110px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+
+					private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				usersTable.resetFilters();
@@ -102,7 +108,7 @@ public class UsersList {
 
 		
 		
-        tableData = getTableData();
+        tableData = getTableData(App.getApp().getUsers().getAllUsers());
 
         //table with pipeline execution records
         usersTable = new IntlibPagedTable();
@@ -111,7 +117,7 @@ public class UsersList {
         usersTable.setWidth("100%");
         usersTable.setHeight("100%");
         usersTable.setImmediate(true);
-        usersTable.setVisibleColumns(visibleCols); // Set visible columns
+        usersTable.setVisibleColumns((Object[])visibleCols); // Set visible columns
         usersTable.setColumnHeaders(headers);
 
         //Actions column. Contains actions buttons: Debug data, Show log, Stop.
@@ -136,10 +142,10 @@ public class UsersList {
 	 */
 	private void refreshData() {
 		int page = usersTable.getCurrentPage();
-		tableData = getTableData();
+		tableData = getTableData(App.getApp().getUsers().getAllUsers());
 		usersTable.setContainerDataSource(tableData);
 		usersTable.setCurrentPage(page);
-		usersTable.setVisibleColumns(visibleCols);
+		usersTable.setVisibleColumns((Object[])visibleCols);
 		usersTable.setFilterFieldVisible("actions", false);
 
 	}
@@ -150,30 +156,46 @@ public class UsersList {
      * @param data. List of users
      * @return result. IndexedContainer with data for users table
      */
-	public static IndexedContainer getTableData() {
-
-/*		 static String[] visibleCols = new String[]{"id", "user", "role",
-		        "total_pipelines", "actions"};*/
-		
-		String[] id = { "1", "2", "3" };
-		String[] user = { "tomask", "mariak", "jirit" };
-		String[] role = { "administrator", "user", "user" };
-		String[] total_pipelines = { "7", "2", "4" };
+	@SuppressWarnings("unchecked")
+	public static IndexedContainer getTableData(List<User> data) {
 
 		IndexedContainer result = new IndexedContainer();
-
+		
 		for (String p : visibleCols) {
-			result.addContainerProperty(p, String.class, "");
+			// setting type of columns
+			switch (p) {
+				case "id":
+					result.addContainerProperty(p, Long.class, null);
+					break;
+				case "total_pipelines":
+					result.addContainerProperty(p, Integer.class, 0);
+					break;
+				default:
+					result.addContainerProperty(p, String.class, "");
+					break;
+			}
+
 		}
 
-		int max = getMinLength(id, user, role, total_pipelines);
 
-		for (int i = 0; i < max; i++) {
+		for (User item : data)  {
 			Object num = result.addItem();
-			result.getContainerProperty(num, "id").setValue(id[i]);
-			result.getContainerProperty(num, "user").setValue(user[i]);
-			result.getContainerProperty(num, "role").setValue(role[i]);
-			result.getContainerProperty(num, "total_pipelines").setValue(total_pipelines[i]);
+			
+			Set<Role> roles = item.getRoles();
+			String roleStr = new String();
+			int i = 0;
+			for(Role role:roles){
+				i++;
+				if (i < roles.size())
+					roleStr = roleStr + role.toString() + ", ";
+				else
+					roleStr = roleStr + role.toString() + ". ";
+			}
+			
+			result.getContainerProperty(num, "id").setValue(item.getId());
+			result.getContainerProperty(num, "user").setValue(item.getUsername());
+			result.getContainerProperty(num, "role").setValue(roleStr);
+			result.getContainerProperty(num, "total_pipelines").setValue(0);
 
 
 		}
@@ -182,20 +204,7 @@ public class UsersList {
 
 	}
 	
-	  private final static int UNDEFINED_LENGTH = -1;
-	
-	  public static int getMinLength(String[]... arraysLength) {
-	    int min = UNDEFINED_LENGTH;
-	    for (int i = 0; i < arraysLength.length; i++) {
-	      if (min == UNDEFINED_LENGTH) {
-	        min = arraysLength[i].length;
-	      } else {
-	        min = Math.min(min, arraysLength[i].length);
-	      }
-	    }
-	    return min;
-	
-	  } 
+
     
 	/**
 	 * Generate column "actions" in the table {@link #usersTable}.
@@ -205,7 +214,8 @@ public class UsersList {
 	 */
 	class actionColumnGenerator implements CustomTable.ColumnGenerator {
 
-		private ClickListener clickListener = null;
+		private static final long serialVersionUID = 1L;
+
 
 		@Override
 		public Object generateCell(final CustomTable source, final Object itemId,
@@ -235,6 +245,8 @@ public class UsersList {
 			changeButton.setCaption("Change settings");
 			changeButton.addClickListener(new ClickListener() {
 				
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(ClickEvent event) {
 
@@ -244,6 +256,9 @@ public class UsersList {
 					UserCreate user = new UserCreate(newUser);
 					App.getApp().addWindow(user);
 					user.addCloseListener(new CloseListener() {
+
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void windowClose(CloseEvent e) {
 							refreshData();
@@ -262,7 +277,9 @@ public class UsersList {
 	
 	private class filterDecorator extends IntlibFilterDecorator {
 
-        @Override
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public String getEnumFilterDisplayName(Object propertyId, Object value) {
             if (propertyId == "role") {
                 return ((PipelineExecutionStatus) value).name();

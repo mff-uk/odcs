@@ -468,8 +468,8 @@ public class SchedulePipeline extends Window {
 				}
 				else{
 					if(schedule.getNotification()!=null){
-						
-						schedule.setNotification(null);
+
+						App.getApp().getSchedules().deleteNotification(schedule.getNotification());
 						
 					}
 				}
