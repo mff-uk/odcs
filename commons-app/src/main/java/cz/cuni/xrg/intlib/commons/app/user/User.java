@@ -46,7 +46,7 @@ public class User implements RoleHolder, Resource {
 	 * Full name.
 	 */
 	@Column(name = "full_name")
-    private String name;
+    private String fullName;
 	
 	/**
 	 * Hashed password.
@@ -79,12 +79,12 @@ public class User implements RoleHolder, Resource {
 	/**
 	 * Constructs entity from required attributes.
 	 * 
-	 * @param name full name
+	 * @param fullName full name
 	 * @param password already hashed password
 	 * @param email contact email
 	 */	
-    public User(String name, String password, EmailAddress email) {
-        this.name = name;
+    public User(String fullName, String password, EmailAddress email) {
+        this.fullName = fullName;
         this.password = password;
         this.email = email;
     }
@@ -97,20 +97,20 @@ public class User implements RoleHolder, Resource {
         email = newEmail;
     }
 
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setName(String newName) {
-        name = newName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String newPassword) {
-        password = newPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

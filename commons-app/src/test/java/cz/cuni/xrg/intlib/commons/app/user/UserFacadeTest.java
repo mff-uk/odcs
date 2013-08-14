@@ -59,7 +59,7 @@ public class UserFacadeTest {
 		User user = facade.createUser("Jay Doe", "abcd", new EmailAddress("jay@example.com"));
 		facade.save(user);
 		User u = facade.getUser(2L);
-		assertEquals(user.getName(), u.getName());
+		assertEquals(user.getFullName(), u.getFullName());
 		assertEquals(user.getPassword(), u.getPassword());
 		assertSame(user.getEmail(), u.getEmail());
 	}
