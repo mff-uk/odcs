@@ -36,6 +36,12 @@ public class User implements RoleHolder, Resource {
     private Long id;
 	
 	/**
+	 * User name used for login and as a unique identification of User.
+	 */
+	@Column
+	private String username;
+	
+	/**
 	 * User email.
 	 */
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -79,16 +85,24 @@ public class User implements RoleHolder, Resource {
 	/**
 	 * Constructs entity from required attributes.
 	 * 
-	 * @param fullName full name
+	 * @param username user login
 	 * @param password already hashed password
 	 * @param email contact email
 	 */	
-    public User(String fullName, String password, EmailAddress email) {
-        this.fullName = fullName;
+    public User(String username, String password, EmailAddress email) {
+        this.username = username;
         this.password = password;
         this.email = email;
     }
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
     public EmailAddress getEmail() {
         return email;
     }

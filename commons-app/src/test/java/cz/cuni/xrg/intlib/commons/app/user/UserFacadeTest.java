@@ -50,13 +50,23 @@ public class UserFacadeTest {
 		assertNotNull(user.getRoles());
 		assertEquals(2, user.getRoles().size());
 	}
+	
+	/**
+	 * Test fetching user by his username.
+	 */
+	@Test
+	public void testGetUserByUsername() {
+		User user = facade.getUserByUsername("jdoe");
+		assertNotNull(user);
+		assertEquals(1L, (long) user.getId());
+	}
 
 	/**
 	 * Test of save method, of class UserFacade.
 	 */
 	@Test @Transactional
 	public void testSave() {
-		User user = facade.createUser("Jay Doe", "abcd", new EmailAddress("jay@example.com"));
+		User user = facade.createUser("abcd", "abcd", new EmailAddress("jay@example.com"));
 		facade.save(user);
 		User u = facade.getUser(2L);
 		assertEquals(user.getFullName(), u.getFullName());

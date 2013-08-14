@@ -64,6 +64,18 @@ public class UserFacade {
 	public User getUser(long id) {
 		return em.find(User.class, id);
 	}
+	
+	/**
+	 * Find User by his unique username.
+	 * 
+	 * @param username
+	 * @return user
+	 */
+	public User getUserByUsername(String username) {
+		return (User) em.createQuery("SELECT e FROM User e WHERE e.username = :uname")
+				.setParameter("uname", username)
+				.getSingleResult();
+	}
 
 	/**
 	 * Saves any modifications made to the User into the database.
