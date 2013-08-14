@@ -203,7 +203,7 @@ CREATE TABLE `USR_USER`
 (
   `id` INTEGER AUTO_INCREMENT,
   `username` VARCHAR(25) NOT NULL,
-  `email_id` INTEGER NOT NULL,
+  `email_id` INTEGER,
   `u_password` CHAR(32) NOT NULL,
   `full_name` VARCHAR(55),
   PRIMARY KEY (`id`),
@@ -393,8 +393,6 @@ ALTER TABLE `SCH_USR_NOTIFICATION_EMAIL`
 ALTER TABLE `USR_USER`
   ADD CONSTRAINT `USR_USER_SCH_EMAIL_id_id` FOREIGN KEY (`email_id`)
     REFERENCES `SCH_EMAIL` (`id`)
--- Hack: SET DEFAULT is eventually same as RESTRICT, which is not supported by Virtuoso
--- There is no default for email_id, so ON DELETE will invoke error
 	ON UPDATE CASCADE ON DELETE SET NULL;
 
 

@@ -10,7 +10,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Test suite for facade persisting {@link User}s.
@@ -79,9 +78,7 @@ public class UserFacadeTest {
 	 */
 	@Test @Transactional
 	public void testDelete() {
-		User user = mock(User.class);
-		when(user.getId()).thenReturn(1L);
-		
+		User user = facade.getUser(1L);
 		facade.delete(user);
 		List<User> users = facade.getAllUsers();
 		assertNotNull(users);
