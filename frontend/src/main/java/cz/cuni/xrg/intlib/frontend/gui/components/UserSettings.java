@@ -198,6 +198,8 @@ public class UserSettings extends Window {
 
 		
 		schedulerLayout = emailNotifications.buildEmailNotificationsLayout();
+		if(App.getApp().getUsers().getUser(1L).getNotification()!=null)
+			emailNotifications.getUserNotificationRecord(App.getApp().getUsers().getUser(1L));
 
 		schedulerLayout.addComponent(new Label("Default form of report about scheduled pipeline execution (may be overriden in the particular schedulled event): "),0);
 
@@ -230,13 +232,17 @@ public class UserSettings extends Window {
 			public void buttonClick(ClickEvent event) {
 				
 				emailNotifications.shEmail.saveEditedTexts();    
-				try {
-					email.textFieldEmail.validate();
-					emailNotifications.shEmail.textFieldEmail.validate();
-				} catch (Validator.InvalidValueException e) {
-					Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-					return;
-				}
+				
+				
+					try {
+						email.textFieldEmail.validate();
+						if(emailNotifications.shEmailLayout.isEnabled()){
+							emailNotifications.shEmail.textFieldEmail.validate();
+						}
+					} catch (Validator.InvalidValueException e) {
+						Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+						return;
+					}
 				
 								
 				User user = App.getApp().getUsers().getUser(1L);

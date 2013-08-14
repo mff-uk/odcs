@@ -21,6 +21,7 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
@@ -45,9 +46,11 @@ public class EmailNotifications {
 	private ScheduleNotificationRecord schNotifcationRecord;
 	
 	/**
+	 *  Setting values from Email notification dialog to configuration 
+	 *  object implementing by {@link UserNotificationRecord}
 	 *  
-	 *  
-	 * @return userNotifcationRecord 
+	 * @return userNotifcationRecord  Object holding configuration which is used in {@link #setConfiguration} 
+	 * to initialize fields in the Email notification dialog.
 	 */
 	public UserNotificationRecord setUserNotificatonRecord(){
 		
@@ -112,6 +115,7 @@ public class EmailNotifications {
 	
 	public void setScheduleNotificationRecord(ScheduleNotificationRecord notofication, Schedule schedule){
 		
+		notofication.setSchedule(schedule);
 		notofication.setTypeError((NotificationRecordType)errorExec.getValue());
 		notofication.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
 
@@ -128,7 +132,23 @@ public class EmailNotifications {
 	}
 	
 	
-	public VerticalLayout buildEmailNotificationsLayout(){
+	public void getScheduleNotificationRecord(Schedule schedule){
+		
+		ScheduleNotificationRecord notification = schedule.getNotification();
+		errorExec.setValue(notification.getTypeError());
+		successfulExec.setValue(notification.getTypeSuccess());
+	}
+	
+	
+	public void getUserNotificationRecord(User user){
+		
+		UserNotificationRecord notification = user.getNotification();
+		errorExec.setValue(notification.getTypeError());
+		successfulExec.setValue(notification.getTypeSuccess());
+	}
+	
+	
+		public VerticalLayout buildEmailNotificationsLayout(){
 		
 		VerticalLayout emailNotificationsLayout = new VerticalLayout();
 		emailNotificationsLayout.setMargin(true);
@@ -222,4 +242,21 @@ public class EmailNotifications {
 
 		return emailNotificationsLayout;
 	}
+		
+		public void setDisableComponents(){
+			
+			successfulExec.setEnabled(false);
+			errorExec.setEnabled(false);
+			shEmailLayout.setEnabled(false);
+			
+		}
+		
+		public void setEnableComponents(){
+			
+			successfulExec.setEnabled(true);
+			errorExec.setEnabled(true);
+			shEmailLayout.setEnabled(true);
+			
+		}
+		
 }

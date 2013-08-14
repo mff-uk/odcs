@@ -99,6 +99,7 @@ public class EmailComponent {
 			gridLayoutEmail.setRows(griddata.size() + 1);
 			for (String item : griddata) {
 				textFieldEmail = new TextField();
+				textFieldEmail.setImmediate(true);
 				listedEditText.add(textFieldEmail);
 
 				//text field for the graph
@@ -114,25 +115,26 @@ public class EmailComponent {
 					}
 				});
 				textFieldEmail.setInputPrompt("franta@test.cz");
-				if((validation)){
+				if(validation){
 					textFieldEmail.addValidator(new Validator() {
 						@Override
 						public void validate(Object value) throws InvalidValueException {
-							if((parentComponent!=null) && (parentComponent.shEmailLayout.isEnabled())){
+				//			if((parentComponent!=null) && (parentComponent.shEmailLayout.isEnabled())){
 								if (value.getClass() == String.class
 										&& !((String) value).isEmpty()) {
 									String inputEmail = (String) value;
 									if(!inputEmail.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")){
-										mailEx = new InvalidValueException("Wrong mail format on Sheduler notifications tab");
+										mailEx = new InvalidValueException("Wrong mail format");
 										throw mailEx;
 									}
 									return;
 								}
-								mailEx = new InvalidValueException("Email on Sheduler notification tab must be filled!");
+								
+								mailEx = new InvalidValueException("Email must be filled!");
 								throw mailEx;
 								
-		
-							}
+				//			}
+							
 						}
 					});
 				}
