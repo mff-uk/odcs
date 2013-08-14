@@ -154,6 +154,25 @@ public class ScheduleFacade {
 		} else {
 			logger.warn("Schedule with ID " + schedule.getId() + " was not found and so cannot be deleted!");
 		}
-	}	
+	}
+	
+	/**
+	 * Deletes notification setting for schedule.
+	 * 
+	 * @param notify notification settings to delete
+	 */
+	@Transactional
+	public void deleteNotification(ScheduleNotificationRecord notify) {
+		// we might be trying to remove detached entity
+		// lets fetch it again and then try to remove
+		// TODO Honza: this is just a workaround -> resolve in future release!
+		ScheduleNotificationRecord nNotify = notify.getId() == null
+				? notify : getSchedule(notify.getSchedule().getId()).getNotification();
+		if (nNotify != null) {
+			em.remove(nNotify);
+		} else {
+			logger.warn("Schedule notification with ID " + notify.getId() + " was not found and so cannot be deleted!");
+		}
+	}
 	
 }
