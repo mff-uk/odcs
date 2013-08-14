@@ -86,6 +86,8 @@ public class SchedulePipeline extends Window {
 	private VerticalLayout mainLayout;
 	private TabSheet tabSheet;
 	private EmailNotifications emailNotifications;
+	private CheckBox notifyThis;
+	private EmailComponent email;
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -174,6 +176,11 @@ public class SchedulePipeline extends Window {
 			
 		}
 		
+		if(selectedSchedule.getNotification()!=null){	
+			notifyThis.setValue(true);
+			emailNotifications.getScheduleNotificationRecord(selectedSchedule);
+		}
+			
 		selectSch = selectedSchedule;
 
 	}
@@ -345,6 +352,8 @@ public class SchedulePipeline extends Window {
 							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
+				
+				
 				//Interval of PERIODICALLY type should be positive number
 				if ((scheduleType.getValue().equals(ScheduleType.PERIODICALLY))
 						&& (!tfEvery.isValid())) {
@@ -435,18 +444,35 @@ public class SchedulePipeline extends Window {
 				}
 				schedule.setEnabled(true);
 				
-				ScheduleNotificationRecord notification = schedule.getNotification();
-				if(notification!=null){
+				if(notifyThis.getValue().equals(true)){
 					
-					emailNotifications.setScheduleNotificationRecord(notification,schedule);
-					schedule.setNotification(notification);
+					if(emailNotifications.shEmailLayout.isEnabled()){
+						try {
+							emailNotifications.shEmail.textFieldEmail.validate();
+						} catch (Validator.InvalidValueException e) {
+							Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+							return;
+						}
+					}
+					ScheduleNotificationRecord notification = schedule.getNotification();
+					if(notification!=null){
+						
+						emailNotifications.setScheduleNotificationRecord(notification,schedule);
+						schedule.setNotification(notification);
+					}
+					else{
+						
+						ScheduleNotificationRecord sheduleNotifcationRecord = emailNotifications.setScheduleNotificationRecord(schedule);
+						schedule.setNotification(sheduleNotifcationRecord);
+					}
 				}
 				else{
-					
-					ScheduleNotificationRecord sheduleNotifcationRecord = emailNotifications.setScheduleNotificationRecord(schedule);
-					schedule.setNotification(sheduleNotifcationRecord);
+					if(schedule.getNotification()!=null){
+						
+						schedule.setNotification(null);
+						
+					}
 				}
-				
 				// store scheduling rule record to DB
 				App.getApp().getSchedules().save(schedule);
 			
@@ -496,8 +522,27 @@ public class SchedulePipeline extends Window {
 		
         notificationsLayout = emailNotifications.buildEmailNotificationsLayout();
 
-        notificationsLayout.addComponent(new Label("Form of report about THIS scheduled pipeline execution"),0);
-        
+        notifyThis = new CheckBox();
+        notifyThis.setImmediate(true);
+        notifyThis.setCaption("Report about THIS scheduled pipeline execution");
+        notificationsLayout.addComponent(notifyThis,0);
+        emailNotifications.setDisableComponents();
+        notifyThis.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				
+		        if(event.getProperty().getValue().equals(false)){
+		        	emailNotifications.setDisableComponents();
+		        }
+		        else
+		        	emailNotifications.setEnableComponents();
+				
+			}
+		});
+
     
         return notificationsLayout;
 
