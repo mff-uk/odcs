@@ -28,6 +28,21 @@ public class ScheduleFacade {
 	private EntityManager em;
 	
 	/**
+	 * Schedule factory. Explicitly call {@link #save(cz.cuni.xrg.intlib.commons.app.scheduling.Schedule)}
+	 * to persist created entity.
+	 * 
+	 * @return initialized Schedule
+	 */
+	public Schedule createSchedule() {
+		Schedule sch = new Schedule();
+		ScheduleNotificationRecord notify = new ScheduleNotificationRecord();
+		notify.setTypeError(NotificationRecordType.NO_REPORT);
+		notify.setTypeSuccess(NotificationRecordType.INSTANT);
+		sch.setNotification(notify);
+		return sch;
+	}
+	
+	/**
 	 * Returns list of all Plans currently persisted in database.
 	 * @return Plans list
 	 */
