@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -46,10 +47,11 @@ public class EmailNotifications {
 	private ScheduleNotificationRecord schNotifcationRecord;
 	
 	/**
-	 *  Setting values from Email notification dialog to configuration 
-	 *  object implementing by {@link UserNotificationRecord}
+	 *  Setting values from Email notification dialog in {@link UserSettings} to configuration 
+	 *  object implementing by {@link UserNotificationRecord}. Create new notification record.
+	 *  Used in case if notification record for the given user does not exist yet.
 	 *  
-	 * @return userNotifcationRecord  Object holding configuration which is used in {@link #setConfiguration} 
+	 * @return userNotifcationRecord  Object holding configuration which is used in {@link #getUserNotificationRecord} 
 	 * to initialize fields in the Email notification dialog.
 	 */
 	public UserNotificationRecord setUserNotificatonRecord(){
@@ -135,16 +137,60 @@ public class EmailNotifications {
 	public void getScheduleNotificationRecord(Schedule schedule){
 		
 		ScheduleNotificationRecord notification = schedule.getNotification();
+		
+		if(notification!=null){
 		errorExec.setValue(notification.getTypeError());
 		successfulExec.setValue(notification.getTypeSuccess());
+		Set<EmailAddress> emails = notification.getEmails();
+		List<String> emailStr = new LinkedList<>();
+		
+		for (EmailAddress mail:emails)
+				emailStr.add(mail.getName()+"@"+ mail.getDomain());
+
+		shEmail.griddata.clear();
+		shEmail.griddata = emailStr;
+		shEmail.refreshEmailData(true);
+		
+
+		}
+		else{
+			EmailAddress email = App.getApp().getUsers().getUser(1L).getEmail();
+			String emailStr = email.getName()+"@"+ email.getDomain();
+			shEmail.griddata.clear();
+			shEmail.griddata.add(0,emailStr);
+			shEmail.refreshEmailData(true);
+		}
+		
 	}
 	
 	
 	public void getUserNotificationRecord(User user){
 		
 		UserNotificationRecord notification = user.getNotification();
+		
+		if(notification!=null){
 		errorExec.setValue(notification.getTypeError());
 		successfulExec.setValue(notification.getTypeSuccess());
+		
+		Set<EmailAddress> emails = notification.getEmails();
+		List<String> emailStr = new LinkedList<>();
+		
+		for (EmailAddress mail:emails)
+				emailStr.add(mail.getName()+"@"+ mail.getDomain());
+
+		shEmail.griddata.clear();
+		shEmail.griddata = emailStr;
+		shEmail.refreshEmailData(true);
+		
+		}
+		else{
+			EmailAddress email = user.getEmail();
+			String emailStr = email.getName()+"@"+ email.getDomain();
+
+			shEmail.griddata.clear();
+			shEmail.griddata.add(0,emailStr);
+			shEmail.refreshEmailData(true);
+		}
 	}
 	
 	
@@ -237,6 +283,13 @@ public class EmailNotifications {
         
      
         shEmailLayout = shEmail.initializeEmailList(validation);
+        
+		EmailAddress email = App.getApp().getUsers().getUser(1L).getEmail();
+		String emailStr = email.getName()+"@"+ email.getDomain();
+		shEmail.griddata.clear();
+		shEmail.griddata.add(0,emailStr);
+		shEmail.refreshEmailData(true);
+		
         emailNotificationsLayout.addComponent(shEmailLayout);
   
 

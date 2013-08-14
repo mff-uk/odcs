@@ -176,10 +176,10 @@ public class SchedulePipeline extends Window {
 			
 		}
 		
-		if(selectedSchedule.getNotification()!=null){	
+		if(selectedSchedule.getNotification()!=null)	
 			notifyThis.setValue(true);
-			emailNotifications.getScheduleNotificationRecord(selectedSchedule);
-		}
+
+		emailNotifications.getScheduleNotificationRecord(selectedSchedule);
 			
 		selectSch = selectedSchedule;
 

@@ -2,8 +2,10 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -28,6 +30,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 
+import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -186,6 +189,14 @@ public class UserSettings extends Window {
         
         emailLayout = email.initializeEmailList(validation);
         
+        EmailAddress userEemail = App.getApp().getUsers().getUser(1L).getEmail();
+        if(userEemail!=null){
+			String emailStr = userEemail.getName()+"@"+ userEemail.getDomain();
+			email.griddata.clear();
+			email.griddata.add(0,emailStr);
+			email.refreshEmailData(true);
+        }
+        
         HorizontalLayout buttonBarMyAcc= new HorizontalLayout();
         buttonBarMyAcc =buildButtonBar();
         
@@ -198,8 +209,7 @@ public class UserSettings extends Window {
 
 		
 		schedulerLayout = emailNotifications.buildEmailNotificationsLayout();
-		if(App.getApp().getUsers().getUser(1L).getNotification()!=null)
-			emailNotifications.getUserNotificationRecord(App.getApp().getUsers().getUser(1L));
+		emailNotifications.getUserNotificationRecord(App.getApp().getUsers().getUser(1L));
 
 		schedulerLayout.addComponent(new Label("Default form of report about scheduled pipeline execution (may be overriden in the particular schedulled event): "),0);
 
@@ -232,7 +242,7 @@ public class UserSettings extends Window {
 			public void buttonClick(ClickEvent event) {
 				
 				emailNotifications.shEmail.saveEditedTexts();    
-				
+				email.saveEditedTexts();
 				
 					try {
 						email.textFieldEmail.validate();
@@ -243,9 +253,23 @@ public class UserSettings extends Window {
 						Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 						return;
 					}
-				
-								
+						
 				User user = App.getApp().getUsers().getUser(1L);
+				
+
+				List<String> emailStr = email.griddata;
+				int fl=0;
+				for (String mail:emailStr){
+					if(mail!="" && fl==0){
+					EmailAddress e = new EmailAddress(mail);
+					user.setEmail(e);
+					fl++;
+					}
+				}
+				
+				
+				
+				
 				UserNotificationRecord notification = user.getNotification();
 				if(notification!=null){
 					
