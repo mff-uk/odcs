@@ -53,6 +53,18 @@ public class DPUTemplateRecord extends DPURecord {
 	public DPUTemplateRecord(String name, DPUType type) {
 		super(name, type);
 	}
+
+	/**
+	 * Copy constructor. New instance always has private visibility, no matter
+	 * what setting was in original DPU.
+	 * 
+	 * @param dpu 
+	 */
+	public DPUTemplateRecord(DPUTemplateRecord dpu) {
+		super(dpu);
+		visibility = VisibilityType.PRIVATE;
+		jarDescription = dpu.jarDescription;
+	}
 	
 	/**
 	 * Create template from given instance.
