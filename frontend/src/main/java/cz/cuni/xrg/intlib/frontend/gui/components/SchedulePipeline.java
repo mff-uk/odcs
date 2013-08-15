@@ -446,14 +446,14 @@ public class SchedulePipeline extends Window {
 				
 				if(notifyThis.getValue().equals(true)){
 					
-					if(emailNotifications.shEmailLayout.isEnabled()){
+/*					if(emailNotifications.shEmailLayout.isEnabled()){
 						try {
 							emailNotifications.shEmail.textFieldEmail.validate();
 						} catch (Validator.InvalidValueException e) {
 							Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 							return;
 						}
-					}
+					}*/
 					ScheduleNotificationRecord notification = schedule.getNotification();
 					if(notification!=null){
 						

@@ -1,8 +1,10 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
@@ -12,6 +14,14 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TextField;
+
+import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
+import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
+import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
+import cz.cuni.xrg.intlib.commons.app.user.User;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
 /**
  * Builds E-mail notification component which consists of textfields for e-mail
@@ -89,7 +99,7 @@ public class EmailComponent {
 //		 * {@link #initializeEmailList} and also in adding and removing fields
 		 * for component refresh
 		 */
-		public void refreshEmailData(final boolean validation) {
+		public void refreshEmailData() {
 			gridLayoutEmail.removeAllComponents();
 			int row = 0;
 			listedEditText = new ArrayList<>();
@@ -115,7 +125,7 @@ public class EmailComponent {
 					}
 				});
 				textFieldEmail.setInputPrompt("franta@test.cz");
-				if(validation){
+
 					textFieldEmail.addValidator(new Validator() {
 						@Override
 						public void validate(Object value) throws InvalidValueException {
@@ -137,28 +147,8 @@ public class EmailComponent {
 							
 						}
 					});
-				}
-				else{
-					textFieldEmail.addValidator(new Validator() {
-						@Override
-						public void validate(Object value) throws InvalidValueException {
+				
 
-								if (value.getClass() == String.class
-										&& !((String) value).isEmpty()) {
-									String inputEmail = (String) value;
-									if(!inputEmail.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")){
-										mailEx = new InvalidValueException("Wrong mail format on My account tab!");
-										throw mailEx;
-									}
-									return;
-								}
-								
-								
-		
-							}
-						
-					});
-				}
 
 				//remove button
 				buttonEmailhRem = new Button();
@@ -172,7 +162,7 @@ public class EmailComponent {
 						Button senderButton = event.getButton();
 						Integer row = (Integer) senderButton.getData();
 						removeDataEmailData(row);
-						refreshEmailData(validation);
+						refreshEmailData();
 					}
 				});
 				gridLayoutEmail.addComponent(textFieldEmail, 0, row);
@@ -192,7 +182,7 @@ public class EmailComponent {
 				public void buttonClick(Button.ClickEvent event) {
 					saveEditedTexts();
 					addDataToEmailData(" ");
-					refreshEmailData(validation);
+					refreshEmailData();
 				}
 			});
 			gridLayoutEmail.addComponent(buttonEmailAdd, 0, row);
@@ -203,20 +193,100 @@ public class EmailComponent {
 		 * Initializes E-mail notification component.
 		 * @return 
 		 */
-		GridLayout initializeEmailList(boolean validation) {
+		public GridLayout initializeEmailList() {
 
 			gridLayoutEmail = new GridLayout();
 			gridLayoutEmail.setImmediate(false);
-			gridLayoutEmail.setWidth("100%");
+			gridLayoutEmail.setWidth("300px");
 			gridLayoutEmail.setHeight("100%");
 			gridLayoutEmail.setMargin(false);
 			gridLayoutEmail.setColumns(2);
 			gridLayoutEmail.setColumnExpandRatio(0, 0.95f);
 			gridLayoutEmail.setColumnExpandRatio(1, 0.05f);
 
-			refreshEmailData(validation);
+			refreshEmailData();
 			return gridLayoutEmail;
 
+		}
+		
+		public void setUserEmailNotification(UserNotificationRecord notofication){
+			
+			Set<EmailAddress> emails = new HashSet<>();
+			List<String> emailStr = griddata;
+			
+			for (String mail:emailStr){
+				if(mail!=""){
+				EmailAddress e = new EmailAddress(mail);
+				emails.add(e);
+				}
+			}
+			notofication.setEmails(emails);
+		}
+		
+		public void setScheduleNotificationRecord(ScheduleNotificationRecord notofication, Schedule schedule){
+			
+			Set<EmailAddress> emails = new HashSet<>();
+			List<String> emailStr = griddata;
+			
+			for (String mail:emailStr){
+				if(mail!=""){
+				EmailAddress e = new EmailAddress(mail);
+				emails.add(e);
+				}
+			}
+			notofication.setEmails(emails);
+		}
+		
+		public void getUserEmailNotification(User user){
+			
+			UserNotificationRecord notification = user.getNotification();
+			
+			if(notification!=null){
+		
+			Set<EmailAddress> emails = notification.getEmails();
+			List<String> emailStr = new LinkedList<>();
+			
+			for (EmailAddress mail:emails)
+					emailStr.add(mail.getName()+"@"+ mail.getDomain());
+
+			griddata.clear();
+			griddata = emailStr;
+			refreshEmailData();
+			
+			}
+			else{
+				EmailAddress email = user.getEmail();
+				String emailStr = email.getName()+"@"+ email.getDomain();
+
+				griddata.clear();
+				griddata.add(0,emailStr);
+				refreshEmailData();
+			}
+		}
+		
+		
+		public void getScheduleEmailNotification(Schedule schedule){
+			
+			ScheduleNotificationRecord notification = schedule.getNotification();
+			
+			if(notification!=null){
+				Set<EmailAddress> emails = notification.getEmails();
+				List<String> emailStr = new LinkedList<>();
+				
+				for (EmailAddress mail:emails)
+						emailStr.add(mail.getName()+"@"+ mail.getDomain());
+	
+				griddata.clear();
+				griddata = emailStr;
+				refreshEmailData();
+				
+
+			}
+			else{
+				User user = App.getApp().getUsers().getUser(1L);
+				getUserEmailNotification(user);
+			}
+			
 		}
 	
 

@@ -4,26 +4,18 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import com.google.gwt.core.client.Scheduler;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
-
-import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
-import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.user.User;
-import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
 /**
@@ -36,7 +28,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
  */
 public class EmailNotifications {
 
-	public GridLayout shEmailLayout; 
+
 	private int noSuccessful =0;
 	private int noError=0;
 	private boolean validation=true;
@@ -46,51 +38,15 @@ public class EmailNotifications {
 	private UserNotificationRecord userNotifcationRecord;
 	private ScheduleNotificationRecord schNotifcationRecord;
 	
-	/**
-	 *  Setting values from Email notification dialog in {@link UserSettings} to configuration 
-	 *  object implementing by {@link UserNotificationRecord}. Create new notification record.
-	 *  Used in case if notification record for the given user does not exist yet.
-	 *  
-	 * @return userNotifcationRecord  Object holding configuration which is used in {@link #getUserNotificationRecord} 
-	 * to initialize fields in the Email notification dialog.
-	 */
-	public UserNotificationRecord setUserNotificatonRecord(){
-		
-		userNotifcationRecord = new UserNotificationRecord();
-		userNotifcationRecord.setUser(App.getApp().getUsers().getUser(1L));
-		userNotifcationRecord.setTypeError((NotificationRecordType)errorExec.getValue());
-		userNotifcationRecord.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
 
-		Set<EmailAddress> emails = new HashSet<>();
-		List<String> emailStr = shEmail.griddata;
-		
-		for (String mail:emailStr){
-			if(mail!=""){
-			EmailAddress e = new EmailAddress(mail);
-			emails.add(e);
-			}
-		}
-		userNotifcationRecord.setEmails(emails);
-		
-		return userNotifcationRecord;
 
-	}
 	
 	public void setUserNotificatonRecord(UserNotificationRecord notofication){
 		
 		notofication.setTypeError((NotificationRecordType)errorExec.getValue());
 		notofication.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
 
-		Set<EmailAddress> emails = new HashSet<>();
-		List<String> emailStr = shEmail.griddata;
-		
-		for (String mail:emailStr){
-			if(mail!=""){
-			EmailAddress e = new EmailAddress(mail);
-			emails.add(e);
-			}
-		}
-		notofication.setEmails(emails);
+
 	}
 	
 	public ScheduleNotificationRecord setScheduleNotificationRecord(Schedule schedule){
@@ -100,17 +56,7 @@ public class EmailNotifications {
 		schNotifcationRecord.setTypeError((NotificationRecordType)errorExec.getValue());
 		schNotifcationRecord.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
 
-		Set<EmailAddress> emails = new HashSet<>();
-		List<String> emailStr = shEmail.griddata;
-		
-		for (String mail:emailStr){
-			if(mail!=""){
-			EmailAddress e = new EmailAddress(mail);
-			emails.add(e);
-			}
-		}
-		schNotifcationRecord.setEmails(emails);
-		
+
 		return schNotifcationRecord;
 
 	}
@@ -121,16 +67,6 @@ public class EmailNotifications {
 		notofication.setTypeError((NotificationRecordType)errorExec.getValue());
 		notofication.setTypeSuccess((NotificationRecordType)successfulExec.getValue());
 
-		Set<EmailAddress> emails = new HashSet<>();
-		List<String> emailStr = shEmail.griddata;
-		
-		for (String mail:emailStr){
-			if(mail!=""){
-			EmailAddress e = new EmailAddress(mail);
-			emails.add(e);
-			}
-		}
-		notofication.setEmails(emails);
 	}
 	
 	
@@ -139,26 +75,8 @@ public class EmailNotifications {
 		ScheduleNotificationRecord notification = schedule.getNotification();
 		
 		if(notification!=null){
-		errorExec.setValue(notification.getTypeError());
-		successfulExec.setValue(notification.getTypeSuccess());
-		Set<EmailAddress> emails = notification.getEmails();
-		List<String> emailStr = new LinkedList<>();
-		
-		for (EmailAddress mail:emails)
-				emailStr.add(mail.getName()+"@"+ mail.getDomain());
-
-		shEmail.griddata.clear();
-		shEmail.griddata = emailStr;
-		shEmail.refreshEmailData(true);
-		
-
-		}
-		else{
-			EmailAddress email = App.getApp().getUsers().getUser(1L).getEmail();
-			String emailStr = email.getName()+"@"+ email.getDomain();
-			shEmail.griddata.clear();
-			shEmail.griddata.add(0,emailStr);
-			shEmail.refreshEmailData(true);
+			errorExec.setValue(notification.getTypeError());
+			successfulExec.setValue(notification.getTypeSuccess());
 		}
 		
 	}
@@ -169,28 +87,11 @@ public class EmailNotifications {
 		UserNotificationRecord notification = user.getNotification();
 		
 		if(notification!=null){
-		errorExec.setValue(notification.getTypeError());
-		successfulExec.setValue(notification.getTypeSuccess());
-		
-		Set<EmailAddress> emails = notification.getEmails();
-		List<String> emailStr = new LinkedList<>();
-		
-		for (EmailAddress mail:emails)
-				emailStr.add(mail.getName()+"@"+ mail.getDomain());
-
-		shEmail.griddata.clear();
-		shEmail.griddata = emailStr;
-		shEmail.refreshEmailData(true);
+			errorExec.setValue(notification.getTypeError());
+			successfulExec.setValue(notification.getTypeSuccess());
 		
 		}
-		else{
-			EmailAddress email = user.getEmail();
-			String emailStr = email.getName()+"@"+ email.getDomain();
 
-			shEmail.griddata.clear();
-			shEmail.griddata.add(0,emailStr);
-			shEmail.refreshEmailData(true);
-		}
 	}
 	
 	
@@ -199,7 +100,6 @@ public class EmailNotifications {
 		VerticalLayout emailNotificationsLayout = new VerticalLayout();
 		emailNotificationsLayout.setMargin(true);
 		emailNotificationsLayout.setSpacing(true);
-		emailNotificationsLayout.setWidth("370px");
 		emailNotificationsLayout.setImmediate(true);
 
 		
@@ -218,20 +118,22 @@ public class EmailNotifications {
 		successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
 
 		successfulExec.addValueChangeListener(new ValueChangeListener() {
-			
+
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)){
 					noSuccessful=1;
 					if((noError==1) && ( noSuccessful==1)){
-						shEmailLayout.setEnabled(false);
+//						shEmailLayout.setEnabled(false);
 
 						
 					}
 				}
 				else{
 					noSuccessful=0;
-					shEmailLayout.setEnabled(true);
+//					shEmailLayout.setEnabled(true);
 
 					
 				}
@@ -253,19 +155,21 @@ public class EmailNotifications {
 		errorExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report");
 		errorExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
 		errorExec.addValueChangeListener(new ValueChangeListener() {
-			
+
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)){
 					noError=1;
 					if((noError==1) && ( noSuccessful==1)){
-						shEmailLayout.setEnabled(false);
+//						shEmailLayout.setEnabled(false);
 
 					}
 				}
 				else{
 					 noError=0;
-					 shEmailLayout.setEnabled(true);
+//					 shEmailLayout.setEnabled(true);
 
 						}
 				
@@ -274,24 +178,6 @@ public class EmailNotifications {
 		notifycationLayout.addComponent(errorExec,1,1);
 		emailNotificationsLayout.addComponent(notifycationLayout);
 		
-		emailNotificationsLayout.addComponent(new Label("E-mail notifications to: "));
-        
-        shEmail = new EmailComponent();
-        shEmail.parentComponent=this;
-        shEmailLayout = new GridLayout();
-        shEmailLayout.setImmediate(true);
-        
-     
-        shEmailLayout = shEmail.initializeEmailList(validation);
-        
-		EmailAddress email = App.getApp().getUsers().getUser(1L).getEmail();
-		String emailStr = email.getName()+"@"+ email.getDomain();
-		shEmail.griddata.clear();
-		shEmail.griddata.add(0,emailStr);
-		shEmail.refreshEmailData(true);
-		
-        emailNotificationsLayout.addComponent(shEmailLayout);
-  
 
 		return emailNotificationsLayout;
 	}
@@ -300,7 +186,7 @@ public class EmailNotifications {
 			
 			successfulExec.setEnabled(false);
 			errorExec.setEnabled(false);
-			shEmailLayout.setEnabled(false);
+//			shEmailLayout.setEnabled(false);
 			
 		}
 		
@@ -308,7 +194,7 @@ public class EmailNotifications {
 			
 			successfulExec.setEnabled(true);
 			errorExec.setEnabled(true);
-			shEmailLayout.setEnabled(true);
+//			shEmailLayout.setEnabled(true);
 			
 		}
 		

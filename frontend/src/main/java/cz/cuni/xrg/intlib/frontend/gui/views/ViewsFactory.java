@@ -22,7 +22,7 @@ public class ViewsFactory {
 		case Initial:
 			return new Initial();
 		case Administrator:
-			return new Administrator();
+			return new Settings();
 		case DataBrowser:
 			return new DataBrowser();
 		case DPU:

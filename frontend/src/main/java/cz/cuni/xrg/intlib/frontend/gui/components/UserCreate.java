@@ -277,10 +277,10 @@ public class UserCreate extends Window {
 				
 				EmailAddress email = new EmailAddress(userEmail.getValue());
 				user.setEmail(email);
-				
+	
 
-				
-				Set<Object> selectedRoles = (Set) roleSelector.getValue();
+				@SuppressWarnings("unchecked")
+				Set<Object> selectedRoles = (Set<Object>) roleSelector.getValue();
 				Iterator<Object> it = selectedRoles.iterator();
 				roles = new HashSet<Role>();
 				while (it.hasNext()) {
