@@ -3,13 +3,18 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.util.List;
 import java.util.Set;
+
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -37,6 +42,7 @@ public class UsersList {
 	 private static String[] headers = new String[]{"Id", "User Name", "Role(s)",
 	        "Total Pipelines", "Actions"};
 	 private IndexedContainer tableData;
+	 private Long userId;
 
 
 	public VerticalLayout buildUsersListLayout(){
@@ -130,6 +136,20 @@ public class UsersList {
         usersTable.setFilterDecorator(new filterDecorator());
         usersTable.setFilterBarVisible(true);
         usersTable.setFilterFieldVisible("actions", false);
+        usersTable.addItemClickListener(
+				new ItemClickEvent.ItemClickListener() {
+
+					private static final long serialVersionUID = 1L;
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+
+				if (!usersTable.isSelected(event.getItemId())) {
+					userId = (Long) event.getItem().getItemProperty("id").getValue();
+					showUserSettings(userId);
+				}
+			}
+		});
 
 		
 
@@ -189,7 +209,7 @@ public class UsersList {
 				if (i < roles.size())
 					roleStr = roleStr + role.toString() + ", ";
 				else
-					roleStr = roleStr + role.toString() + ". ";
+					roleStr = roleStr + role.toString();
 			}
 			
 			result.getContainerProperty(num, "id").setValue(item.getId());
@@ -227,17 +247,35 @@ public class UsersList {
 			//Delete button. Delete user's record from Database.
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
-/*			deleteButton.addClickListener(new ClickListener() {
+			deleteButton.addClickListener(new ClickListener() {
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(ClickEvent event) {
+					//open confirmation dialog
+					ConfirmDialog.show(UI.getCurrent(),
+							"Delete this user?",
+							new ConfirmDialog.Listener() {
 
-					userId = (Long) tableData.getContainerProperty(itemId, "id")
-							.getValue();
-					Schedule schedule = App.getApp().getSchedules().getSchedule(userId);
-					App.getApp().getSchedules().delete(schedule);
-					refreshData();
+								private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(ConfirmDialog cd) {
+							if (cd.isConfirmed()) {
+								userId = (Long) tableData.getContainerProperty(itemId, "id")
+										.getValue();
+								User user = App.getApp().getUsers().getUser(userId);
+								App.getApp().getUsers().delete(user);
+								refreshData();
+								
+							}
+						}
+					});
+					
+					
+
 				}
-			});*/
+			});
 			layout.addComponent(deleteButton);
 			
 			//Delete button. Delete user's record from Database.
@@ -249,21 +287,12 @@ public class UsersList {
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-
 					
-					boolean newUser = false;
-					// open usercreation dialog
-					UserCreate user = new UserCreate(newUser);
-					App.getApp().addWindow(user);
-					user.addCloseListener(new CloseListener() {
+					userId = (Long) tableData.getContainerProperty(itemId, "id")
+							.getValue();
+					showUserSettings(userId);
+					
 
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void windowClose(CloseEvent e) {
-							refreshData();
-						}
-					});
 				
 					
 				}
@@ -273,6 +302,37 @@ public class UsersList {
 
 			return layout;
 		}
+	}
+	
+	/**
+	 * Shows dialog with user settings for given user.
+	 *
+	 * @param id Id of user to show.
+	 */
+	private void showUserSettings(Long id) {
+		
+		boolean newUser = false;
+		// open usercreation dialog
+		UserCreate userEdit = new UserCreate(newUser);
+		User user =  App.getApp().getUsers().getUser(id);
+		userEdit.setSelectedUser(user);
+		
+		App.getApp().addWindow(userEdit);
+	
+		
+		userEdit.addCloseListener(new CloseListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				refreshData();
+			}
+		});
+		
+		
+
+
 	}
 	
 	private class filterDecorator extends IntlibFilterDecorator {
