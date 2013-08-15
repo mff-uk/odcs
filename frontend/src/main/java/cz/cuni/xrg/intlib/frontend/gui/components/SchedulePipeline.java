@@ -88,6 +88,7 @@ public class SchedulePipeline extends Window {
 	private EmailNotifications emailNotifications;
 	private CheckBox notifyThis;
 	private EmailComponent email;
+	public GridLayout emailLayout;
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -180,7 +181,8 @@ public class SchedulePipeline extends Window {
 			notifyThis.setValue(true);
 
 		emailNotifications.getScheduleNotificationRecord(selectedSchedule);
-			
+		email.getScheduleEmailNotification(selectedSchedule);
+		
 		selectSch = selectedSchedule;
 
 	}
@@ -216,7 +218,7 @@ public class SchedulePipeline extends Window {
 					tabSheet.setWidth(490, Unit.PIXELS);
 				}
 				else{
-					tabSheet.setWidth(400, Unit.PIXELS);
+					tabSheet.setWidth(440, Unit.PIXELS);
 				}
 				
 			}
@@ -342,7 +344,7 @@ public class SchedulePipeline extends Window {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
-				emailNotifications.shEmail.saveEditedTexts();   
+				email.saveEditedTexts();   
 				
 				//validation
 				//pipeline should be filled
@@ -446,24 +448,30 @@ public class SchedulePipeline extends Window {
 				
 				if(notifyThis.getValue().equals(true)){
 					
-/*					if(emailNotifications.shEmailLayout.isEnabled()){
+					if(emailLayout.isEnabled()){
 						try {
-							emailNotifications.shEmail.textFieldEmail.validate();
+							email.textFieldEmail.validate();
 						} catch (Validator.InvalidValueException e) {
 							Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 							return;
 						}
-					}*/
+					}
 					ScheduleNotificationRecord notification = schedule.getNotification();
 					if(notification!=null){
 						
 						emailNotifications.setScheduleNotificationRecord(notification,schedule);
+						email.setScheduleEmailNotification(notification,schedule);
 						schedule.setNotification(notification);
 					}
 					else{
 						
-						ScheduleNotificationRecord sheduleNotifcationRecord = emailNotifications.setScheduleNotificationRecord(schedule);
-						schedule.setNotification(sheduleNotifcationRecord);
+						ScheduleNotificationRecord scheduleNotificationRecord = new ScheduleNotificationRecord();
+						emailNotifications.setScheduleNotificationRecord(scheduleNotificationRecord,schedule);
+						email.setScheduleEmailNotification(scheduleNotificationRecord,schedule);
+						schedule.setNotification(scheduleNotificationRecord);
+						
+/*						ScheduleNotificationRecord sheduleNotifcationRecord = emailNotifications.setScheduleNotificationRecord(schedule);
+						schedule.setNotification(sheduleNotifcationRecord);*/
 					}
 				}
 				else{
@@ -519,14 +527,22 @@ public class SchedulePipeline extends Window {
         notificationsLayout.setImmediate(true);
         
         emailNotifications = new EmailNotifications();
+        emailNotifications.parentComponentSh=this; 
+		notificationsLayout = emailNotifications.buildEmailNotificationsLayout();
 		
-        notificationsLayout = emailNotifications.buildEmailNotificationsLayout();
+        email = new EmailComponent();
+        emailLayout = new GridLayout();
+        emailLayout = email.initializeEmailList();
+        notificationsLayout.addComponent(emailLayout);
+        User user=  App.getApp().getUsers().getUser(1L);
+        email.getUserEmailNotification(user);
 
         notifyThis = new CheckBox();
         notifyThis.setImmediate(true);
-        notifyThis.setCaption("Report about THIS scheduled pipeline execution");
+        notifyThis.setCaption("Overwrite default settings for all scheduled events with the following:");
         notificationsLayout.addComponent(notifyThis,0);
         emailNotifications.setDisableComponents();
+        emailLayout.setEnabled(false);
         notifyThis.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -536,12 +552,17 @@ public class SchedulePipeline extends Window {
 				
 		        if(event.getProperty().getValue().equals(false)){
 		        	emailNotifications.setDisableComponents();
+
 		        }
 		        else
 		        	emailNotifications.setEnableComponents();
-				
+
 			}
 		});
+        
+
+        
+
 
     
         return notificationsLayout;

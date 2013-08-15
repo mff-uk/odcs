@@ -30,7 +30,7 @@ import cz.cuni.xrg.intlib.frontend.gui.components.UsersList;
  * @author Maria Kukhar
  *
  */
-class Settings extends ViewComponent {
+public class Settings extends ViewComponent {
 
 	private static final long serialVersionUID = 1L;
 	private GridLayout mainLayout;
@@ -51,6 +51,7 @@ class Settings extends ViewComponent {
 	private HorizontalLayout buttonBar;
 	private EmailComponent email;
 	private EmailNotifications emailNotifications;
+	public GridLayout emailLayout;
 
 
 	public Settings() { }
@@ -81,6 +82,7 @@ class Settings extends ViewComponent {
         notificationsLayout.setWidth("100%");
         notificationsLayout.setHeight("100%");
         emailNotifications = new EmailNotifications();
+        emailNotifications.parentComponentUs=this; 
         notificationsLayout= emailNotifications.buildEmailNotificationsLayout();
         emailNotifications.getUserNotificationRecord(App.getApp().getUsers().getUser(1L));
         
@@ -278,7 +280,7 @@ class Settings extends ViewComponent {
         accountLayout.setStyleName("settings");
 
         email = new EmailComponent();
-        GridLayout emailLayout = new GridLayout();
+        emailLayout = new GridLayout();
         
         emailLayout = email.initializeEmailList();
     
@@ -300,7 +302,7 @@ class Settings extends ViewComponent {
 		
 		//Layout with buttons Save and Cancel
 		buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("300px");
+		buttonBar.setWidth("380px");
 		buttonBar.setStyleName("dpuDetailButtonBar");
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 

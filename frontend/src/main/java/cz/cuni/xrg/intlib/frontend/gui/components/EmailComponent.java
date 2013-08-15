@@ -33,7 +33,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
  */
 public class EmailComponent {
 
-	public EmailNotifications parentComponent; 
+//	public EmailNotifications parentComponent; 
 	private Button buttonEmailhRem;
 	private Button buttonEmailAdd;
 	private InvalidValueException ex;
@@ -197,7 +197,7 @@ public class EmailComponent {
 
 			gridLayoutEmail = new GridLayout();
 			gridLayoutEmail.setImmediate(false);
-			gridLayoutEmail.setWidth("300px");
+			gridLayoutEmail.setWidth("380px");
 			gridLayoutEmail.setHeight("100%");
 			gridLayoutEmail.setMargin(false);
 			gridLayoutEmail.setColumns(2);
@@ -223,7 +223,7 @@ public class EmailComponent {
 			notofication.setEmails(emails);
 		}
 		
-		public void setScheduleNotificationRecord(ScheduleNotificationRecord notofication, Schedule schedule){
+		public void setScheduleEmailNotification(ScheduleNotificationRecord notofication, Schedule schedule){
 			
 			Set<EmailAddress> emails = new HashSet<>();
 			List<String> emailStr = griddata;
