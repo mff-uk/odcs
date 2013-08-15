@@ -1,8 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
+import cz.cuni.xrg.intlib.commons.app.auth.PasswordHash;
 import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
 import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -30,7 +33,15 @@ public class UserFacade {
 	 * @return new user instance
 	 */
 	public User createUser(String fullname, String password, EmailAddress email) {
-		User user = new User(fullname, password, email);
+		
+		String passHash = null;
+		try {
+			passHash = PasswordHash.createHash(password);
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+			throw new RuntimeException("Could not hash user password.", ex);
+		}
+		
+		User user = new User(fullname, passHash, email);
 		
 		// set default notification setting
 		UserNotificationRecord notify = new UserNotificationRecord();
