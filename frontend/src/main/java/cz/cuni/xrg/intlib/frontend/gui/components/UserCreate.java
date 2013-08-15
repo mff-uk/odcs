@@ -51,6 +51,7 @@ public class UserCreate extends Window {
 	private User selectUser = null;
 	private InvalidValueException ex;
 	private Set<Role> roles = null;
+	private boolean checkUserName = true;
 
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
@@ -88,6 +89,7 @@ public class UserCreate extends Window {
 		roleSelector.setValue(selectedUser.getRoles());
 		
 		selectUser = selectedUser;
+		checkUserName = false;
 	}
 
 	/**
@@ -119,18 +121,16 @@ public class UserCreate extends Window {
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class
 						&& !((String) value).isEmpty()) {
-					String inputName = (String) value;
-					
-					List<User> users = App.getApp().getUsers().getAllUsers();
-					for (User user: users){
-						if(user.getUsername().equals(inputName)){
-							ex = new InvalidValueException("User with this user name is already exist");
-							throw ex;
-							
+					if(checkUserName){
+						String inputName = (String) value;
+						List<User> users = App.getApp().getUsers().getAllUsers();
+						for (User user: users){
+							if(user.getUsername().equals(inputName)){
+								ex = new InvalidValueException("User with this user name is already exist");
+								throw ex;
+							}
 						}
-						
 					}
-				
 					return;
 				}
 				ex = new InvalidValueException("User name field must be filled!");
@@ -264,6 +264,7 @@ public class UserCreate extends Window {
 				//if no, create new user record
 				if (selectUser== null){
 					user = new User();
+					
 				}
 				else{
 					user = selectUser;
