@@ -39,8 +39,8 @@ public class ModuleFacadeConfig {
 	private static final String PACKAGE_BASE = 
 			"cz.cuni.xrg.intlib.commons;version=\"0.0.1\"," +
 		    "cz.cuni.xrg.intlib.commons.configuration;version=\"0.0.1\"," +
-			"cz.cuni.xrg.intlib.commons.data;version=\"0.0.1\"," +
-		    "cz.cuni.xrg.intlib.commons.data.rdf;version=\"0.0.1\"," + 
+			"cz.cuni.xrg.intlib.commons.context;version=\"0.0.1\"," +
+		    "cz.cuni.xrg.intlib.commons.data;version=\"0.0.1\"," + 
 			"cz.cuni.xrg.intlib.commons.event;version=\"0.0.1\"," + 
 		    "cz.cuni.xrg.intlib.commons.extractor;version=\"0.0.1\"," + 
 			"cz.cuni.xrg.intlib.commons.loader;version=\"0.0.1\"," + 
