@@ -53,15 +53,7 @@ public class RDFExtractor implements Extract,
 			final List<String> defaultGraphsUri = config.GraphsUri;
 			final String query = config.SPARQL_query;
 
-
-			boolean useStatisticHandler;
-			if (config.UseStatisticalHandler == null) {
-				useStatisticHandler = false;
-				context.sendMessage(MessageType.WARNING,
-						"Missing configuration for 'UseStatisticalHandler' using 'false' as default.");
-			} else {
-				useStatisticHandler = config.UseStatisticalHandler;
-			}
+			final boolean useStatisticHandler = config.UseStatisticalHandler;
 
 			repository.extractfromSPARQLEndpoint(endpointURL, defaultGraphsUri,
 					query, hostName, password, useStatisticHandler);
