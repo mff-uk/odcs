@@ -215,7 +215,7 @@ public class EmailComponent {
 			List<String> emailStr = griddata;
 			
 			for (String mail:emailStr){
-				if(mail!=""){
+				if(!mail.equals("")){
 				EmailAddress e = new EmailAddress(mail);
 				emails.add(e);
 				}
@@ -229,7 +229,7 @@ public class EmailComponent {
 			List<String> emailStr = griddata;
 			
 			for (String mail:emailStr){
-				if(mail!=""){
+				if(!mail.equals("")){
 				EmailAddress e = new EmailAddress(mail);
 				emails.add(e);
 				}

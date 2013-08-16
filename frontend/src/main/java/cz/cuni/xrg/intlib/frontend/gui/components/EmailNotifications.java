@@ -121,7 +121,7 @@ public class EmailNotifications {
 		successfulExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report (default)");
 		successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
 
-		if(parentComponentSh!=null){
+
 		successfulExec.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -133,24 +133,23 @@ public class EmailNotifications {
 					if((noError==1) && ( noSuccessful==1)){
 						if(parentComponentSh!=null)	
 							parentComponentSh.emailLayout.setEnabled(false);
-						else if(parentComponentUs!=null)
+						if(parentComponentUs!=null)	
 							parentComponentUs.emailLayout.setEnabled(false);
-						
 					}
+
 				}
 				else{
 					noSuccessful=0;
 					if(parentComponentSh!=null)	
-						parentComponentSh.emailLayout.setEnabled(false);
-					else if(parentComponentUs!=null)
-						parentComponentUs.emailLayout.setEnabled(false);
+						parentComponentSh.emailLayout.setEnabled(true);
+					if(parentComponentUs!=null)	
+						parentComponentUs.emailLayout.setEnabled(true);
 					
 				}
 				
 			}
 		});
 		
-		}
 		notifycationLayout.addComponent(successfulExec,1,0);
 		emailNotificationsLayout.addComponent(notifycationLayout);
 		
@@ -165,7 +164,7 @@ public class EmailNotifications {
 		errorExec.setItemCaption(NotificationRecordType.INSTANT,"Instant (default)");
 		errorExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report");
 		errorExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
-	
+
 		errorExec.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -174,24 +173,26 @@ public class EmailNotifications {
 			public void valueChange(ValueChangeEvent event) {
 				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)){
 					noError=1;
+					
 					if((noError==1) && ( noSuccessful==1)){
-						if(parentComponentSh!=null)	
+						if(parentComponentSh!=null)
 							parentComponentSh.emailLayout.setEnabled(false);
-						else if(parentComponentUs!=null)
+						if(parentComponentUs!=null)	
 							parentComponentUs.emailLayout.setEnabled(false);
 					}
 				}
 				else{
-					 noError=0;
-						if(parentComponentSh!=null)	
-							parentComponentSh.emailLayout.setEnabled(false);
-						else if(parentComponentUs!=null)
-							parentComponentUs.emailLayout.setEnabled(false);
+					noError=0;
+					if(parentComponentSh!=null)
+						parentComponentSh.emailLayout.setEnabled(true);
+					if(parentComponentUs!=null)	
+						parentComponentUs.emailLayout.setEnabled(true);
+
 						}
 				
 			}
 		});
-		
+
 		notifycationLayout.addComponent(errorExec,1,1);
 		emailNotificationsLayout.addComponent(notifycationLayout);
 		

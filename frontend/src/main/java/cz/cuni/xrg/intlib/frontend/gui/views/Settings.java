@@ -281,6 +281,7 @@ public class Settings extends ViewComponent {
 
         email = new EmailComponent();
         emailLayout = new GridLayout();
+        emailLayout.setImmediate(true);
         
         emailLayout = email.initializeEmailList();
     
@@ -317,15 +318,15 @@ public class Settings extends ViewComponent {
 //				emailNotifications.shEmail.saveEditedTexts();    
 				email.saveEditedTexts();
 				
+				if(emailLayout.isEnabled()){	
 					try {
-						
-						email.textFieldEmail.validate();
-
-					} catch (Validator.InvalidValueException e) {
-						Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-						return;
-					}
-						
+						  email.textFieldEmail.validate();
+	
+						} catch (Validator.InvalidValueException e) {
+							Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+							return;
+						}
+				}		
 				User user = App.getApp().getUsers().getUser(1L);
 				UserNotificationRecord notification = user.getNotification();
 				if(notification!=null){

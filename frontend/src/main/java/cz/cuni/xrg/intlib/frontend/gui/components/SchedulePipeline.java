@@ -469,9 +469,7 @@ public class SchedulePipeline extends Window {
 						emailNotifications.setScheduleNotificationRecord(scheduleNotificationRecord,schedule);
 						email.setScheduleEmailNotification(scheduleNotificationRecord,schedule);
 						schedule.setNotification(scheduleNotificationRecord);
-						
-/*						ScheduleNotificationRecord sheduleNotifcationRecord = emailNotifications.setScheduleNotificationRecord(schedule);
-						schedule.setNotification(sheduleNotifcationRecord);*/
+
 					}
 				}
 				else{
