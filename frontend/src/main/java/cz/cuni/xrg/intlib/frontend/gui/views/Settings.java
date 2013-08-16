@@ -1,6 +1,13 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
+import java.util.Set;
+
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.vaadin.data.Validator;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ClientConnector.DetachEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -9,9 +16,13 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+
+import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
+import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -42,16 +53,17 @@ public class Settings extends ViewComponent {
 	
 	private VerticalLayout tabsLayout;
 	private Button notificationsButton;
-	private Button accountButton;
+	public Button accountButton;
 	private Button usersButton;
 	private Button recordsButton;
 	private Button pipelinesButton;
-	private Button shownTab = null;
+	public Button shownTab = null;
 	private UsersList usersList;
 	private HorizontalLayout buttonBar;
 	private EmailComponent email;
 	private EmailNotifications emailNotifications;
 	public GridLayout emailLayout;
+	private boolean accTabChanged=false;
 
 
 	public Settings() { }
@@ -77,6 +89,7 @@ public class Settings extends ViewComponent {
 
 
         accountLayout = buildMyAccountLayout();
+
         
         notificationsLayout = new VerticalLayout();
         notificationsLayout.setWidth("100%");
@@ -89,7 +102,9 @@ public class Settings extends ViewComponent {
         notificationsLayout.setStyleName("settings");
         HorizontalLayout buttonBarNotify= new HorizontalLayout();
         buttonBarNotify = buildButtonBar();
-                notificationsLayout.addComponent(buttonBarNotify);
+        notificationsLayout.addComponent(buttonBarNotify);
+        notificationsLayout.addComponent(new Label("Default form of report about scheduled pipeline execution"), 0);
+        notificationsLayout.addComponent(new Label("(may be overriden in the particular schedulled event) :"), 1);
 
 
         
@@ -131,16 +146,13 @@ public class Settings extends ViewComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				shownTab=accountButton;
-				shownTab.setStyleName("selectedtab");
-				notificationsButton.setStyleName("multiline");
-				usersButton.setStyleName("multiline");
-				recordsButton.setStyleName("multiline");
-				pipelinesButton.setStyleName("multiline");
+				
+				if(shownTab.equals(notificationsButton))
+					notificationSaveConfirmation(accountButton, accountLayout);
 
-				mainLayout.removeComponent(1,0);
-				mainLayout.addComponent(accountLayout,1,0);
-				mainLayout.setColumnExpandRatio(1, 0.85f);
+				else
+					buttonPush(accountButton, accountLayout);
+				
 				
 			}
 		});
@@ -158,25 +170,21 @@ public class Settings extends ViewComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				shownTab=notificationsButton;
-				shownTab.setStyleName("selectedtab");
-				accountButton.setStyleName("multiline");
-				usersButton.setStyleName("multiline");
-				recordsButton.setStyleName("multiline");
-				pipelinesButton.setStyleName("multiline");
 				
-				mainLayout.removeComponent(1,0);
-				mainLayout.addComponent(notificationsLayout,1,0);
-				mainLayout.setColumnExpandRatio(1, 0.85f);
+				if(shownTab.equals(accountButton))
+					myAccountSaveConfirmation(notificationsButton, notificationsLayout);
+				
+				else
+					buttonPush(notificationsButton, notificationsLayout);
+				
 
-				
 			}
 		});
         tabsLayout.addComponent(notificationsButton);
         tabsLayout.setComponentAlignment(notificationsButton, Alignment.TOP_RIGHT);
    
         
-        usersButton = new NativeButton("Users");
+        usersButton = new NativeButton("Manage users");
         usersButton.setHeight("40px");
         usersButton.setWidth("170px");
         usersButton.setStyleName("multiline");
@@ -186,18 +194,16 @@ public class Settings extends ViewComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				shownTab=usersButton;
-				shownTab.setStyleName("selectedtab");
-				accountButton.setStyleName("multiline");
-				recordsButton.setStyleName("multiline");
-				pipelinesButton.setStyleName("multiline");
-				notificationsButton.setStyleName("multiline");
-
-				mainLayout.removeComponent(1,0);
-				mainLayout.addComponent(usersLayout,1,0);
-				mainLayout.setColumnExpandRatio(1, 0.85f);
-
 				
+				if(shownTab.equals(accountButton))
+					myAccountSaveConfirmation(usersButton, usersLayout);
+				
+				else{
+					if(shownTab.equals(notificationsButton))
+						notificationSaveConfirmation(usersButton, usersLayout);
+					else
+						buttonPush(usersButton, usersLayout);
+				}
 			}
 		});
         tabsLayout.addComponent(usersButton);
@@ -213,19 +219,16 @@ public class Settings extends ViewComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				shownTab=recordsButton;
-				shownTab.setStyleName("selectedtab");
-				usersButton.setStyleName("multiline");
-				pipelinesButton.setStyleName("multiline");
-				accountButton.setStyleName("multiline");
-				notificationsButton.setStyleName("multiline");
-				
 
-				mainLayout.removeComponent(1,0);
-				mainLayout.addComponent(recordsLayout,1,0);
-				mainLayout.setColumnExpandRatio(1, 0.85f);
-
+				if(shownTab.equals(accountButton))
+					myAccountSaveConfirmation(recordsButton, recordsLayout);
 				
+				else{	
+					if(shownTab.equals(notificationsButton))
+						notificationSaveConfirmation(recordsButton, recordsLayout);
+					else
+						buttonPush(recordsButton, recordsLayout);
+				}
 			}
 		});
         tabsLayout.addComponent(recordsButton);
@@ -241,18 +244,17 @@ public class Settings extends ViewComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				shownTab=pipelinesButton;
-				shownTab.setStyleName("selectedtab");
-				usersButton.setStyleName("multiline");
-				recordsButton.setStyleName("multiline");
-				accountButton.setStyleName("multiline");
-				notificationsButton.setStyleName("multiline");
-				
-				mainLayout.removeComponent(1,0);
-				mainLayout.addComponent(pipelinesLayout,1,0);
-				mainLayout.setColumnExpandRatio(1, 0.85f);
 
+				if(shownTab.equals(accountButton))
+					myAccountSaveConfirmation(pipelinesButton, pipelinesLayout);
 				
+				else{	
+					if(shownTab.equals(notificationsButton))
+						notificationSaveConfirmation(pipelinesButton, pipelinesLayout);
+					else
+						buttonPush(pipelinesButton, pipelinesLayout);
+
+				}
 			}
 		});
         tabsLayout.addComponent(pipelinesButton);
@@ -260,7 +262,7 @@ public class Settings extends ViewComponent {
 
 
 		
-		
+        shownTab=accountButton;
 		mainLayout.addComponent(tabsLayout,0,0);
 		mainLayout.addComponent(accountLayout,1,0);
 		mainLayout.setColumnExpandRatio(0, 0.15f);
@@ -269,12 +271,16 @@ public class Settings extends ViewComponent {
 		return mainLayout;
 	}
 	
+	/**
+	 * Building My account layout. Appear after pushing  My account tab
+	 * 
+	 * @return accountLayout Layout with components of My account.
+	 */
 	private VerticalLayout buildMyAccountLayout() {
 		
         accountLayout = new VerticalLayout();
         accountLayout.setMargin(true);
         accountLayout.setSpacing(true);
-//        accountLayout.setWidth("100%");
         accountLayout.setHeight("100%");
         accountLayout.setImmediate(true);
         accountLayout.setStyleName("settings");
@@ -284,21 +290,27 @@ public class Settings extends ViewComponent {
         emailLayout.setImmediate(true);
         
         emailLayout = email.initializeEmailList();
-    
         
         User user = App.getApp().getUsers().getUser(1L);
         email.getUserEmailNotification(user);
+        
         
         HorizontalLayout buttonBarMyAcc= new HorizontalLayout();
         buttonBarMyAcc = buildButtonBar();
         
         accountLayout.addComponent(emailLayout);
         accountLayout.addComponent(buttonBarMyAcc);
-//       accountLayout.setComponentAlignment(buttonBarMyAcc, Alignment.BOTTOM_RIGHT);
+        accountLayout.addComponent(new Label("Email Notifications to:"), 0);
+
 		
 		return accountLayout;
 	}
 
+	/**
+	 * Building layout with button Save for saving notifications
+	 * 
+	 * @return buttonBar Layout with button
+	 */
 	private HorizontalLayout buildButtonBar(){
 		
 		//Layout with buttons Save and Cancel
@@ -315,37 +327,9 @@ public class Settings extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
-//				emailNotifications.shEmail.saveEditedTexts();    
 				email.saveEditedTexts();
 				
-				if(emailLayout.isEnabled()){	
-					try {
-						  email.textFieldEmail.validate();
-	
-						} catch (Validator.InvalidValueException e) {
-							Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-							return;
-						}
-				}		
-				User user = App.getApp().getUsers().getUser(1L);
-				UserNotificationRecord notification = user.getNotification();
-				if(notification!=null){
-					
-					email.setUserEmailNotification(notification);
-					emailNotifications.setUserNotificatonRecord(notification);
-					user.setNotification(notification);
-				}
-				else{
-		
-					UserNotificationRecord userNotificationRecord = new UserNotificationRecord();
-					userNotificationRecord.setUser(App.getApp().getUsers().getUser(1L));
-					emailNotifications.setUserNotificatonRecord(userNotificationRecord);
-					email.setUserEmailNotification(userNotificationRecord);
-					user.setNotification(userNotificationRecord);
-				}
-
-
-				App.getApp().getUsers().save(user);
+				saveEmailNotifications();
 				
 			}
 		});
@@ -357,6 +341,170 @@ public class Settings extends ViewComponent {
 		return buttonBar;
 		
 	}
+	
+	/**
+	 * Showing active tab.
+	 * 
+	 * @param pressedButton Tab that was pressed.
+	 * @param layoutShow Layaut will be shown.
+	 */
+	private void buttonPush(Button pressedButton, VerticalLayout layoutShow){
+
+		accountButton.setStyleName("multiline");
+		usersButton.setStyleName("multiline");
+		recordsButton.setStyleName("multiline");
+		pipelinesButton.setStyleName("multiline");
+		notificationsButton.setStyleName("multiline");
+		shownTab=pressedButton;
+		shownTab.setStyleName("selectedtab");
+		
+		mainLayout.removeComponent(1,0);
+		mainLayout.addComponent(layoutShow,1,0);
+		mainLayout.setColumnExpandRatio(1, 0.85f);
+	}
+	
+	/**
+	 * Savig changes that relating to Schedule Notification.
+	 */
+	private void saveEmailNotifications(){
+		
+		if(emailLayout.isEnabled()){	
+			try {
+				  email.textFieldEmail.validate();
+
+				} catch (Validator.InvalidValueException e) {
+					Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+		}		
+		User user = App.getApp().getUsers().getUser(1L);
+		UserNotificationRecord notification = user.getNotification();
+		if(notification!=null){
+			
+			email.setUserEmailNotification(notification);
+			emailNotifications.setUserNotificatonRecord(notification);
+			user.setNotification(notification);
+		}
+		else{
+
+			UserNotificationRecord userNotificationRecord = new UserNotificationRecord();
+			userNotificationRecord.setUser(App.getApp().getUsers().getUser(1L));
+			emailNotifications.setUserNotificatonRecord(userNotificationRecord);
+			email.setUserEmailNotification(userNotificationRecord);
+			user.setNotification(userNotificationRecord);
+		}
+		App.getApp().getUsers().save(user);
+	}
+	
+	/**
+	 * Show confirmation window in case if user make some changes in My account tab 
+	 * and push anoter tab. 
+	 * User can save changes or discard. After that will be shown another selected tab.
+	 * If there was no changes, a confirmation window will not be shown.
+	 * 
+	 * @param pressedButton New tab that was push.
+	 * @param layoutShow Layout will be shown after save/discard changes.
+	 */
+	private void myAccountSaveConfirmation(final Button pressedButton, final VerticalLayout layoutShow){	
+		
+		email.saveEditedTexts();
+		
+		
+		if(emailLayout.isEnabled()){	
+			try {
+				  email.textFieldEmail.validate();
+
+				} catch (Validator.InvalidValueException e) {
+					Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+		}	
+		
+		User user = App.getApp().getUsers().getUser(1L);
+		Set<EmailAddress> aldEmails = user.getNotification().getEmails();
+		UserNotificationRecord newNotification = new UserNotificationRecord();
+		email.setUserEmailNotification(newNotification);
+		Set<EmailAddress> newEmails = newNotification.getEmails();
+		if(!aldEmails.equals(newEmails)){
+		
+				//open confirmation dialog
+				ConfirmDialog.show(UI.getCurrent(),"Please Confirm:",
+						"Would you like to save changes on My Account tab?",
+				        "Yes", "No",
+						new ConfirmDialog.Listener() {
+							private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClose(ConfirmDialog cd) {
+						if (cd.isConfirmed()) {
+							saveEmailNotifications();
+							buttonPush(pressedButton, layoutShow);
+						}
+						else{
+							accountLayout = buildMyAccountLayout();
+							buttonPush(pressedButton, layoutShow);
+						}
+					}
+				});
+			}
+		else{
+			buttonPush(pressedButton, layoutShow);
+		}
+		
+	}
+	
+	/**
+	 * Show confirmation window in case if user make some changes in Schedule notifications tab 
+	 * and push anoter tab. 
+	 * User can save changes or discard. After that will be shown another selected tab.
+	 * If there was no changes, a confirmation window will not be shown.
+	 * 
+	 * @param pressedButton New tab that was push.
+	 * @param layoutShow Layout will be shown after save/discard changes.
+	 */
+	private void notificationSaveConfirmation(final Button pressedButton, final VerticalLayout layoutShow){	
+	
+		User user = App.getApp().getUsers().getUser(1L);
+		NotificationRecordType aldSuccessEx = user.getNotification().getTypeSuccess();
+		NotificationRecordType aldErrorEx = user.getNotification().getTypeError();
+		UserNotificationRecord newNotification = new UserNotificationRecord();
+		emailNotifications.setUserNotificatonRecord(newNotification);
+		NotificationRecordType newSuccessEx = newNotification.getTypeSuccess();
+		NotificationRecordType newErrorEx = newNotification.getTypeError();
+		if(!aldSuccessEx.equals(newSuccessEx) || !aldErrorEx.equals(newErrorEx)){
+		
+				//open confirmation dialog
+				ConfirmDialog.show(UI.getCurrent(),"Please Confirm:",
+						"Would you like to save changes on Scheduler notifications tab?",
+				        "Yes", "No",
+						new ConfirmDialog.Listener() {
+							private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClose(ConfirmDialog cd) {
+						if (cd.isConfirmed()) {
+							saveEmailNotifications();
+							buttonPush(pressedButton, layoutShow);
+						}
+						else{
+							notificationsLayout = emailNotifications.buildEmailNotificationsLayout();
+					        notificationsLayout.setStyleName("settings");
+					        HorizontalLayout buttonBarNotify= new HorizontalLayout();
+					        buttonBarNotify = buildButtonBar();
+					        notificationsLayout.addComponent(buttonBarNotify);
+					        notificationsLayout.addComponent(new Label("Default form of report about scheduled pipeline execution"), 0);
+					        notificationsLayout.addComponent(new Label("(may be overriden in the particular schedulled event) :"), 1);
+					        buttonPush(pressedButton, layoutShow);
+						}
+					}
+				});
+			}
+		else{
+			buttonPush(pressedButton, layoutShow);
+		}
+		
+	}
+
 	
 
 	@Override
