@@ -133,8 +133,8 @@ public class EmailNotifications {
 					if((noError==1) && ( noSuccessful==1)){
 						if(parentComponentSh!=null)	
 							parentComponentSh.emailLayout.setEnabled(false);
-						if(parentComponentUs!=null)	
-							parentComponentUs.emailLayout.setEnabled(false);
+//						if(parentComponentUs!=null)	
+//							parentComponentUs.emailLayout.setEnabled(false);
 					}
 
 				}
@@ -142,8 +142,8 @@ public class EmailNotifications {
 					noSuccessful=0;
 					if(parentComponentSh!=null)	
 						parentComponentSh.emailLayout.setEnabled(true);
-					if(parentComponentUs!=null)	
-						parentComponentUs.emailLayout.setEnabled(true);
+//					if(parentComponentUs!=null)	
+//						parentComponentUs.emailLayout.setEnabled(true);
 					
 				}
 				
@@ -177,16 +177,16 @@ public class EmailNotifications {
 					if((noError==1) && ( noSuccessful==1)){
 						if(parentComponentSh!=null)
 							parentComponentSh.emailLayout.setEnabled(false);
-						if(parentComponentUs!=null)	
-							parentComponentUs.emailLayout.setEnabled(false);
+//						if(parentComponentUs!=null)	
+//							parentComponentUs.emailLayout.setEnabled(false);
 					}
 				}
 				else{
 					noError=0;
 					if(parentComponentSh!=null)
 						parentComponentSh.emailLayout.setEnabled(true);
-					if(parentComponentUs!=null)	
-						parentComponentUs.emailLayout.setEnabled(true);
+//					if(parentComponentUs!=null)	
+//						parentComponentUs.emailLayout.setEnabled(true);
 
 						}
 				
