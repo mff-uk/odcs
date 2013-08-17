@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.backend.context.impl;
+package cz.cuni.xrg.intlib.backend.context;
 
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions;
 

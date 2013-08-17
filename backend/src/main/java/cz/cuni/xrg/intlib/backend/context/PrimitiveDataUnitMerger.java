@@ -1,9 +1,8 @@
-package cz.cuni.xrg.intlib.backend.context.impl;
+package cz.cuni.xrg.intlib.backend.context;
 
 import java.util.Iterator;
 import java.util.List;
 
-import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
