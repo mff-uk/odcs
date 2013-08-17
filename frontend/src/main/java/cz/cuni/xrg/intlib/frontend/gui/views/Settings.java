@@ -16,6 +16,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -367,15 +368,26 @@ public class Settings extends ViewComponent {
 	 * Savig changes that relating to Schedule Notification.
 	 */
 	private void saveEmailNotifications(){
-		
+		String errorText="";
+		int fieldNumber=0;
 		if(emailLayout.isEnabled()){	
+			for (TextField emailField : email.listedEditText){
+				fieldNumber++;
 			try {
-				  email.textFieldEmail.validate();
+					emailField.validate();
 
 				} catch (Validator.InvalidValueException e) {
-					Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-					return;
+					if(fieldNumber<email.listedEditText.size())
+						errorText =errorText + fieldNumber +". field: " + e.getMessage() + "; ";
+					else
+						errorText =errorText + fieldNumber +". field: " + e.getMessage() + ".";
+					
 				}
+			}
+			if(!errorText.equals("")){
+				Notification.show("Failed to save settings, reason:",errorText, Notification.Type.ERROR_MESSAGE);
+				return;
+			}
 		}		
 		User user = App.getApp().getUsers().getUser(1L);
 		UserNotificationRecord notification = user.getNotification();

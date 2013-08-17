@@ -80,7 +80,7 @@ public class EmailComponent {
 			}
 		}
 
-		private List<TextField> listedEditText = null;
+		public List<TextField> listedEditText = null;
 
 		/**
 		 * Save edited texts in the E-mail notification component
@@ -134,13 +134,13 @@ public class EmailComponent {
 										&& !((String) value).isEmpty()) {
 									String inputEmail = (String) value;
 									if(!inputEmail.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")){
-										mailEx = new InvalidValueException("Wrong е-mail format");
+										mailEx = new InvalidValueException("wrong е-mail format");
 										throw mailEx;
 									}
 									return;
 								}
 								
-								mailEx = new InvalidValueException("E-mail must be filled!");
+								mailEx = new InvalidValueException("e-mail must be filled");
 								throw mailEx;
 								
 				//			}
