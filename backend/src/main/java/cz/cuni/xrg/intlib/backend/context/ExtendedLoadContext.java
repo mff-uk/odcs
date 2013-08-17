@@ -41,7 +41,7 @@ public class ExtendedLoadContext
 	public void addSource(ProcessingContext context,
 			String instruction) throws ContextException {
 		// create merger class
-		DataUnitMerger merger = new PrimitiveDataUnitMerger();
+		DataUnitMerger merger = new DataUnitMerger();
 		// merge custom data
 		try {
 			customData.putAll(context.getCustomData());
