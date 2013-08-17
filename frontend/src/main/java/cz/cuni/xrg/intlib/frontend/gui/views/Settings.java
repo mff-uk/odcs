@@ -429,7 +429,7 @@ public class Settings extends ViewComponent {
 		
 				//open confirmation dialog
 				ConfirmDialog.show(UI.getCurrent(),"Please Confirm:",
-						"Would you like to save changes on My Account tab?",
+						"Do you want to save the changes on My account tab?",
 				        "Yes", "No",
 						new ConfirmDialog.Listener() {
 							private static final long serialVersionUID = 1L;
@@ -475,7 +475,7 @@ public class Settings extends ViewComponent {
 		
 				//open confirmation dialog
 				ConfirmDialog.show(UI.getCurrent(),"Please Confirm:",
-						"Would you like to save changes on Scheduler notifications tab?",
+						"Do you want to save the changes on Scheduler notifications tab?",
 				        "Yes", "No",
 						new ConfirmDialog.Listener() {
 							private static final long serialVersionUID = 1L;
