@@ -109,6 +109,7 @@ public class UserCreate extends Window {
 		userDetailsLayout.setWidth("100%");
 
 		userName = new TextField();
+		userName.setImmediate(true);
 		userName.setWidth("100%");
 		userName.addValidator(new Validator() {
 
@@ -126,7 +127,7 @@ public class UserCreate extends Window {
 						if (user.getUsername().equals(inputName)) {
 							if (selectUser==null || (selectUser.getId() != user.getId())) {
 								ex = new InvalidValueException(
-										"User with this user name is already exist");
+										"user with this user name is already exist");
 								throw ex;
 							}
 						}
@@ -135,7 +136,7 @@ public class UserCreate extends Window {
 					return;
 				}
 				ex = new InvalidValueException(
-						"User name field must be filled!");
+						"user name field must be filled");
 				throw ex;
 			}
 		});
@@ -144,6 +145,7 @@ public class UserCreate extends Window {
 		userDetailsLayout.addComponent(userName, 1, 0);
 
 		password = new TextField();
+		password.setImmediate(true);
 		password.setWidth("100%");
 		password.addValidator(new Validator() {
 
@@ -155,7 +157,7 @@ public class UserCreate extends Window {
 						&& !((String) value).isEmpty()) {
 					return;
 				}
-				ex = new InvalidValueException("Password field must be filled!");
+				ex = new InvalidValueException("password field must be filled");
 				throw ex;
 			}
 		});
@@ -170,6 +172,7 @@ public class UserCreate extends Window {
 		userDetailsLayout.addComponent(password, 1, 1);
 
 		userEmail = new TextField();
+		userEmail.setImmediate(true);
 		userEmail.setWidth("100%");
 		userEmail.addValidator(new Validator() {
 			private static final long serialVersionUID = 1L;
@@ -182,12 +185,12 @@ public class UserCreate extends Window {
 					String inputEmail = (String) value;
 					if (!inputEmail
 							.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")) {
-						ex = new InvalidValueException("Wrong mail format");
+						ex = new InvalidValueException("wrong mail format");
 						throw ex;
 					}
 					return;
 				}
-				ex = new InvalidValueException("E-mail field must be filled!");
+				ex = new InvalidValueException("e-mail field must be filled");
 				throw ex;
 
 			}
@@ -221,7 +224,7 @@ public class UserCreate extends Window {
 				if (value.toString() != "[]") {
 					return;
 				}
-				ex = new InvalidValueException("Set Roles must be filled!");
+				ex = new InvalidValueException("at least one role must be set");
 				throw ex;
 
 			}
@@ -241,22 +244,54 @@ public class UserCreate extends Window {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-
+				String errorText="";
 				// validation
 				// User name, password,e-mail and roles should be filled
 				// email should be in correct format
 				try {
 					userName.validate();
+
+				} catch (Validator.InvalidValueException e) {
+					errorText=errorText + e.getMessage();
+				}
+				
+				try {
 					if (password.isVisible())
-						password.validate();
+							password.validate();
+
+				} catch (Validator.InvalidValueException e) {
+					if(!errorText.equals(""))
+						errorText=errorText + ", " + e.getMessage();
+					else
+						errorText=errorText + e.getMessage();
+				}
+				try {
 					userEmail.validate();
+
+				} catch (Validator.InvalidValueException e) {
+					if(!errorText.equals(""))
+						errorText=errorText + ", " + e.getMessage();
+					else
+						errorText=errorText + e.getMessage();
+				}
+				
+				try {
 					roleSelector.validate();
 
 				} catch (Validator.InvalidValueException e) {
+					if(!errorText.equals(""))
+						errorText=errorText + ", " + e.getMessage();
+					else
+						errorText=errorText + e.getMessage();
+				}
+				
+				if(!errorText.equals("")){
+					errorText=errorText + ".";
 					Notification.show("Failed to save settings. Reason:",
-							e.getMessage(), Notification.Type.ERROR_MESSAGE);
+							errorText, Notification.Type.ERROR_MESSAGE);
 					return;
 				}
+				
 
 				// checking if the dialog was open from the User table
 				// if no, create new user record
