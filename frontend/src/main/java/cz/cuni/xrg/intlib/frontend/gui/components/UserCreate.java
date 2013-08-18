@@ -100,17 +100,19 @@ public class UserCreate extends Window {
 		mainLayout.setImmediate(false);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
+//		mainLayout.setWidth("380px");
 
 		users = App.getApp().getUsers().getAllUsers();
 
 		userDetailsLayout = new GridLayout(2, 3);
 		userDetailsLayout.setImmediate(false);
 		userDetailsLayout.setSpacing(true);
-		userDetailsLayout.setWidth("100%");
+		userDetailsLayout.setWidth("338px");
+
 
 		userName = new TextField();
 		userName.setImmediate(true);
-		userName.setWidth("100%");
+		userName.setWidth("95%");
 		userName.addValidator(new Validator() {
 
 			private static final long serialVersionUID = 1L;
@@ -119,8 +121,6 @@ public class UserCreate extends Window {
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class
 						&& !((String) value).isEmpty()) {
-					// if(!newUser)
-					// users.remove(selectUser);
 
 					String inputName = (String) value;
 					for (User user : users) {
@@ -146,7 +146,7 @@ public class UserCreate extends Window {
 
 		password = new TextField();
 		password.setImmediate(true);
-		password.setWidth("100%");
+		password.setWidth("95%");
 		password.addValidator(new Validator() {
 
 			private static final long serialVersionUID = 1L;
@@ -173,7 +173,7 @@ public class UserCreate extends Window {
 
 		userEmail = new TextField();
 		userEmail.setImmediate(true);
-		userEmail.setWidth("100%");
+		userEmail.setWidth("95%");
 		userEmail.addValidator(new Validator() {
 			private static final long serialVersionUID = 1L;
 
@@ -209,7 +209,7 @@ public class UserCreate extends Window {
 		roleSelector.setNullSelectionAllowed(true);
 		roleSelector.setMultiSelect(true);
 		roleSelector.setImmediate(true);
-		roleSelector.setWidth("350px");
+		roleSelector.setWidth("325px");
 		roleSelector.setHeight("200px");
 		roleSelector.setLeftColumnCaption("Defined Roles:");
 		roleSelector.setRightColumnCaption("Set Roles:");
@@ -233,6 +233,7 @@ public class UserCreate extends Window {
 		// Layout with buttons Save and Cancel
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setMargin(true);
+		
 
 		// Save button
 		Button createRule = new Button();
