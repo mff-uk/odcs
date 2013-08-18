@@ -806,9 +806,20 @@ class DPU extends ViewComponent {
 			}
 
 		}
-		//If DPU Template is unused by any pipeline, then delete it.
+		//If DPU Template is unused by any pipeline
 		if (fl == 0) {
 			
+			//find if DPU Template has child elements
+			List<DPUTemplateRecord> allDpus = App.getApp().getDPUs().getAllTemplates();
+			for (DPUTemplateRecord dpu:allDpus){
+				if((dpu.getParent()!=null) && dpu.getParent().equals(selectedDpu)){
+					Notification
+					.show("DPURecord can not be removed because it has child elements", Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+			}
+			
+			//if DPU Template hasn't child elements then delete it.
 			//get path to ../target/dpu/
 			String pojPath = App.getApp().getAppConfiguration()
 					.getString(ConfigProperty.MODULE_PATH);
@@ -822,14 +833,18 @@ class DPU extends ViewComponent {
 			dpuTree.refresh();
 			dpuDetailLayout.removeAllComponents();
 			
-			//delete JAR file from ../target/dpu/
-			try {
-				delFile.delete();
-			} catch (Exception e) {
-				Notification.show(
-						"Failed to delete "+ fileName,
-						e.getMessage(), Type.ERROR_MESSAGE);
-			} 
+			//if selected dpu template not 3rd level dpu
+			if(selectedDpu.getParent()==null){
+				//delete JAR file from ../target/dpu/
+				try {
+					delFile.delete();
+				} catch (Exception e) {
+					Notification.show(
+							"Failed to delete "+ fileName,
+							e.getMessage(), Type.ERROR_MESSAGE);
+				} 
+			}
+			
 			Notification.show("DPURecord was removed",
 					Notification.Type.HUMANIZED_MESSAGE);
 		} 
