@@ -297,24 +297,18 @@ public class UserCreate extends Window {
 
 				// checking if the dialog was open from the User table
 				// if no, create new user record
-				if (selectUser == null) {
-					user = new User();
 
-				} else {
-					user = selectUser;
-					selectUser = null;
-				}
-				//generate password for new user
 				if(newUser){
-					password.setValue(createPassword());
+					EmailAddress email = new EmailAddress(userEmail.getValue());	
+					user = App.getApp().getUsers().createUser(userName.getValue(), createPassword(), email);
 				}
-
-				// setting user parameters
-				user.setUsername(userName.getValue());
-				user.setPassword(password.getValue());
-
-				EmailAddress email = new EmailAddress(userEmail.getValue());
-				user.setEmail(email);
+				else{
+					user = selectUser;
+					user.setUsername(userName.getValue());
+					user.setPassword(password.getValue());
+					EmailAddress email = new EmailAddress(userEmail.getValue());
+					user.setEmail(email);
+				}
 
 				@SuppressWarnings("unchecked")
 				Set<Object> selectedRoles = (Set<Object>) roleSelector
@@ -376,7 +370,6 @@ public class UserCreate extends Window {
 		
 		StringBuilder result = new StringBuilder();
 		int randomIndex;
-		int len = allowedcharacters.length();
 		while (passwordSize>0)
 		{
 			randomIndex = rnd.nextInt(allowedcharacters.length());
