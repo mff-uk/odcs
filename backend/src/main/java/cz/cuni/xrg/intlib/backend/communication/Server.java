@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +32,12 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
  */
 public class Server implements Runnable {
 
+	/**
+	 * Timeout in ms for TCP/IP operation. Also determine the 
+	 * time in which server check's for end of it's execution. 
+	 */
+	public static final int TCPIP_TIMEOUT = 1000;
+	
     /**
      * Class for handling communication with single client.
      *
@@ -37,15 +45,17 @@ public class Server implements Runnable {
      *
      */
     private class ClientCommunicator implements Runnable {
-
+    	
         /**
          * Communication socket.
          */
         private Socket socket;
+        
         /**
          * Event publisher used to publicise events.
          */        
         private ApplicationEventPublisher eventPublisher;
+        
         /**
          * The creator. Used in events as a source.
          */
@@ -100,8 +110,7 @@ public class Server implements Runnable {
      */
     @Autowired
     protected ApplicationEventPublisher eventPublisher;
-    
-    
+        
     /**
      * Server socket.
      */
@@ -149,6 +158,12 @@ public class Server implements Runnable {
     @Override
     public void run() {
         this.running = true;
+        // set timeout
+        try {
+			socket.setSoTimeout(TCPIP_TIMEOUT);
+		} catch (SocketException e) {
+			LOG.error("Failed to set timeout for TCPIP socket.", e);
+		}
         // wait for connection
         while (running) {
 
@@ -161,9 +176,11 @@ public class Server implements Runnable {
                 synchronized (executorService) {
                     executorService.execute(communicator);
                 }
+            } catch(SocketTimeoutException e) {
+            	// just timeout .. 
             } catch (IOException e) {
             	LOG.error("Failed to accept incoming connection.", e);
-            }
+            }            
         }
 
         try {
@@ -176,10 +193,11 @@ public class Server implements Runnable {
         executorService.shutdownNow();
         // wait for the end .. 
         try {
-            while (!executorService.awaitTermination(10, TimeUnit.SECONDS));
+            while (!executorService.awaitTermination(TCPIP_TIMEOUT / 2, TimeUnit.MILLISECONDS));
         } catch (InterruptedException e) {
             // force stop of this thread 
         }
+        LOG.info("TCP/IP server has been terminated.");
     }
 
     /**
