@@ -2122,9 +2122,6 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 				return file;
 
-
-
-
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
 						"This query is probably not valid. " + ex.getMessage(),
