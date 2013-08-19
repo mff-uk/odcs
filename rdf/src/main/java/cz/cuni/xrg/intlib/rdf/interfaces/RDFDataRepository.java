@@ -40,7 +40,8 @@ public interface RDFDataRepository extends DataUnit {
 			String objectName);
 
 	/**
-	 * Add one tripple RDF (statement) to the repository (default empty namespace).
+	 * Add one tripple RDF (statement) to the repository (default empty
+	 * namespace).
 	 *
 	 * @param subjectName   String name of subject
 	 * @param predicateName String name of predicate
@@ -434,6 +435,20 @@ public interface RDFDataRepository extends DataUnit {
 	 *         repository/
 	 */
 	public List<Statement> getRepositoryStatements();
+
+	/**
+	 * Make select query over repository data and return file as SPARQL XML
+	 * result.
+	 *
+	 * @param selectQuery String representation of SPARQL query
+	 * @param filePath    String path to file for saving result of query in
+	 *                    SPARQL XML syntax.
+	 * @return File contains result of given SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public File makeSelectQueryOverRepository(String selectQuery,
+			String filePath)
+			throws InvalidQueryException;
 
 	/**
 	 * Make select query over repository data and return tables as result.
