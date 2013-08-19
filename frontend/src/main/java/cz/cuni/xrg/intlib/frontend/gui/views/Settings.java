@@ -59,6 +59,7 @@ public class Settings extends ViewComponent {
 	private EmailComponent email;
 	private EmailNotifications emailNotifications;
 	private GridLayout emailLayout;
+	private boolean errors=false;
 
 	/**
 	 * 
@@ -345,7 +346,7 @@ public class Settings extends ViewComponent {
 				
 				email.saveEditedTexts();
 				saveEmailNotifications();
-				
+
 			}
 		});
 		buttonBar.addComponent(saveButton);
@@ -354,6 +355,50 @@ public class Settings extends ViewComponent {
 		return buttonBar;
 		
 	}
+	private  String emailValidationText(){
+		String errorText="";
+		String wrongFormat="";
+		boolean notEmpty=false;
+		int errorNumber=0;
+		int fieldNumber =0;
+		errors=false;
+		for (TextField emailField : email.listedEditText){
+			if(!emailField.getValue().trim().isEmpty()){
+				notEmpty=true;
+				break;
+				}
+			}
+			
+			if(notEmpty){
+				for (TextField emailField : email.listedEditText){
+					fieldNumber++;
+					try {
+						emailField.validate();
+	
+					} catch (Validator.InvalidValueException e) {
+							
+						if (e.getMessage().equals("wrong е-mail format")){
+							if(fieldNumber==1)
+								wrongFormat="\""+emailField.getValue()+ "\"";
+							else
+								wrongFormat=wrongFormat+ ", " + "\"" + emailField.getValue() + "\"";
+							errorNumber++;
+						}
+					}
+				}
+				if(errorNumber==1)
+					errorText ="Email "+ wrongFormat + " has wrong format.";
+				if(errorNumber>1)
+					errorText ="Emails "+  wrongFormat + ", have wrong format.";
+			}
+			else
+				errorText ="At least one mail has to be filled, so that the notification can be send.";
+				
+						
+			return errorText;
+		
+	}
+
 	
 	/**
 	 * Showing active tab.
@@ -376,31 +421,19 @@ public class Settings extends ViewComponent {
 		mainLayout.setColumnExpandRatio(1, 0.85f);
 	}
 	
+
 	/**
 	 * Savig changes that relating to Schedule Notification.
 	 */
 	private void saveEmailNotifications(){
-		String errorText="";
-		int fieldNumber=0;
-		if(emailLayout.isEnabled()){	
-			for (TextField emailField : email.listedEditText){
-				fieldNumber++;
-			try {
-					emailField.validate();
-
-				} catch (Validator.InvalidValueException e) {
-					if(fieldNumber<email.listedEditText.size())
-						errorText =errorText + fieldNumber +". field: " + e.getMessage() + "; ";
-					else
-						errorText =errorText + fieldNumber +". field: " + e.getMessage() + ".";
-					
-				}
-			}
-			if(!errorText.equals("")){
-				Notification.show("Failed to save settings, reason:",errorText, Notification.Type.ERROR_MESSAGE);
+				
+						
+			if(!emailValidationText().equals("")){
+				errors=true;
+				Notification.show("Failed to save settings, reason:",emailValidationText(), Notification.Type.ERROR_MESSAGE);
 				return;
 			}
-		}		
+				
 		User user = App.getApp().getUsers().getUser(1L);
 		UserNotificationRecord notification = user.getNotification();
 		if(notification!=null){
@@ -418,6 +451,13 @@ public class Settings extends ViewComponent {
 			user.setNotification(userNotificationRecord);
 		}
 		App.getApp().getUsers().save(user);
+		
+		if(shownTab.equals(accountButton)){
+			accountLayout = buildMyAccountLayout();
+			mainLayout.removeComponent(1,0);
+			mainLayout.addComponent(accountLayout,1,0);
+		}
+
 	}
 	
 	/**
@@ -432,16 +472,14 @@ public class Settings extends ViewComponent {
 	private void myAccountSaveConfirmation(final Button pressedButton, final VerticalLayout layoutShow){	
 		
 		email.saveEditedTexts();
-		
-		if(emailLayout.isEnabled()){	
-			try {
-				  email.textFieldEmail.validate();
 
-				} catch (Validator.InvalidValueException e) {
-					Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-		}	
+		if(!emailValidationText().equals("")){
+				errors=true;
+				Notification.show("",emailValidationText(), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+		
+
 		
 		User user = App.getApp().getUsers().getUser(1L);
 		Set<EmailAddress> aldEmails = user.getNotification().getEmails();
@@ -461,6 +499,7 @@ public class Settings extends ViewComponent {
 					public void onClose(ConfirmDialog cd) {
 						if (cd.isConfirmed()) {
 							saveEmailNotifications();
+							accountLayout = buildMyAccountLayout();
 							buttonPush(pressedButton, layoutShow);
 						}
 						else{
@@ -471,6 +510,7 @@ public class Settings extends ViewComponent {
 				});
 			}
 		else{
+			accountLayout = buildMyAccountLayout();
 			buttonPush(pressedButton, layoutShow);
 		}
 		
