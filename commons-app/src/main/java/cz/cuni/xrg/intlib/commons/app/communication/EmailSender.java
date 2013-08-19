@@ -1,11 +1,11 @@
 package cz.cuni.xrg.intlib.commons.app.communication;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -22,14 +22,29 @@ public final class EmailSender {
 	private static Logger LOG = LoggerFactory.getLogger(EmailSender.class);
 
 	/**
+	 * If false outcoming email are silently dropped.
+	 */
+	private boolean enabled;
+
+	/**
+	 * Address of SMTP server.
+	 */
+	private String smtpHost;
+
+	/**
+	 * Port used by SMTP server.
+	 */
+	private String smtpPort;
+
+	/**
+	 * True if use TTL.
+	 */
+	private boolean useTTL;
+
+	/**
 	 * From email address.
 	 */
 	private String fromEmail;
-
-	/**
-	 * From name.
-	 */
-	private String fromName;
 
 	/**
 	 * Use authentication?
@@ -39,7 +54,7 @@ public final class EmailSender {
 	/**
 	 * User name for authentication.
 	 */
-	private String user;
+	private String username;
 
 	/**
 	 * User password for authentication.
@@ -47,53 +62,49 @@ public final class EmailSender {
 	private String password;
 
 	/**
-	 * Create email sender without authentication.
-	 * 
-	 * @param from
-	 */
-	public EmailSender(String from) {
-		this.fromEmail = from;
-		this.fromName = "";
-		this.authentication = false;
-		this.user = null;
-		this.password = null;
-	}
-
-	/**
-	 * Create email sender.
-	 * @param fromEmail
-	 * @param fromName
-	 * @param authentication
-	 * @param user
-	 * @param password
-	 */
-	public EmailSender(String fromEmail,
-			String fromName,
-			boolean authentication,
-			String user,
-			String password) {
-		this.fromEmail = fromEmail;
-		this.fromName = fromName;
-		this.authentication = authentication;
-		this.user = user;
-		this.password = password;
-	}
-
-	/**
 	 * Create email sender based on application configuration.
+	 * 
 	 * @param appConfig
 	 */
 	public EmailSender(AppConfig appConfig) {
+		// get options
+
+		this.enabled = convertToBoolean(appConfig
+				.getString(ConfigProperty.EMAIL_ENABLED));
+
+		this.smtpHost = appConfig.getString(ConfigProperty.EMAIL_SMTP_HOST);
+		this.smtpPort = appConfig.getString(ConfigProperty.EMAIL_SMTP_PORT);
+
+		this.useTTL = convertToBoolean(appConfig
+				.getString(ConfigProperty.EMAIL_SMTP_TTL));
+
 		this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
-		this.fromName = appConfig.getString(ConfigProperty.EMAIL_FROM_NAME);
-		this.authentication = appConfig.getInteger(ConfigProperty.EMAIL_AUTH) == 1;
+
+		this.authentication = convertToBoolean(appConfig
+				.getString(ConfigProperty.EMAIL_AUTHORIZATION));
+
 		if (this.authentication) {
 			// get data for authentication
-			this.user = appConfig.getString(ConfigProperty.EMAIL_USER);
+			this.username = appConfig.getString(ConfigProperty.EMAIL_USERNAME);
 			this.password = appConfig.getString(ConfigProperty.EMAIL_PASSWORD);
 		}
 	}
-	
+
+	/**
+	 * Convert value from string to boolean. As true are used values "1" and
+	 * "true" (with ignore case)
+	 * 
+	 * @param value
+	 * @return
+	 */
+	private boolean convertToBoolean(String value) {
+		if (value.compareTo("1") == 0 || value.compareToIgnoreCase("true") == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Send email with html content
 	 * 
@@ -105,26 +116,45 @@ public final class EmailSender {
 	 * @return
 	 */
 	public boolean send(String subject, String body, List<String> emails) {
+		// prepare properties
 		Properties props = new Properties();
-		// authentication ?
+		if (useTTL) {
+			props.put("mail.smtp.starttls.enable", "true");
+		}
+		props.put("mail.smtp.host", smtpHost);
+		props.put("mail.smtp.port", smtpPort);
+		// create session based on authentication
+		
+		props.put("mail.pop3s.ssl.trust","*");
+		
+		Session session = null;
 		if (authentication) {
-			props.setProperty("mail.user", user);
-			props.setProperty("mail.password", password);
+			props.put("mail.smtp.auth", "true");
+			session = Session.getInstance(props,
+					new javax.mail.Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(username,
+									password);
+						}
+					});
+		} else {
+			props.put("mail.smtp.auth", "false");
+			session = Session.getDefaultInstance(props, null);
 		}
 
-		Session session = Session.getDefaultInstance(props, null);
 		// create message
 		Message msg = new MimeMessage(session);
 		try {
-			msg.setFrom(new InternetAddress(fromEmail, fromName));
+			msg.setFrom(new InternetAddress(fromEmail));
 			for (String email : emails) {
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
 						email));
 			}
 			msg.setSubject(subject);
 			msg.setContent(body, "text/html");
+			// send message
 			Transport.send(msg);
-		} catch (UnsupportedEncodingException | MessagingException e) {
+		} catch (MessagingException e) {
 			LOG.error("Failed to send email.", e);
 			return false;
 		}
