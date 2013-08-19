@@ -57,7 +57,8 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param path                String path to file/directory
 	 * @param suffix              String suffix of fileName (example: ".ttl",
 	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI
+	 * @param baseURI             String name of defined used URI prefix
+	 *                            namespace used by all triples.
 	 * @param useSuffix           boolean value, if extract files only with
 	 *                            defined suffix or not.
 	 * @param useStatisticHandler boolean value, if during extraction needed
@@ -73,14 +74,16 @@ public interface RDFDataRepository extends DataUnit {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param format              Specifies {@link RDFFormat} (e.g., RDFXML,
-	 *                            Turtle, ..)
+	 * @param format              Specifies concrete {@link RDFFormat} (e.g.,
+	 *                            RDFXML, Turtle, ..) if RDF format can not be
+	 *                            detected from file suffix.
 	 * @param extractType         One of defined enum type for extraction data
 	 *                            from file.
 	 * @param path                String path to file/directory
 	 * @param suffix              String suffix of fileName (example: ".ttl",
 	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI
+	 * @param baseURI             String name of defined used URI prefix
+	 *                            namespace used by all triples.
 	 * @param useSuffix           boolean value, if extract files only with
 	 *                            defined suffix or not.
 	 * @param useStatisticHandler boolean value, if during extraction needed
@@ -106,7 +109,8 @@ public interface RDFDataRepository extends DataUnit {
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param file   File contains RDF data to extract.
-	 * @param format Specifies {@link RDFFormat} (e.g., RDFXML, Turtle, ..)
+	 * @param format Specifies concrete {@link RDFFormat} (e.g., RDFXML, Turtle,
+	 *               ..) if RDF format can not be detected from file suffix.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
@@ -116,8 +120,11 @@ public interface RDFDataRepository extends DataUnit {
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param file    File contains RDF data to extract.
-	 * @param format  Specifies {@link RDFFormat} (e.g., RDFXML, Turtle, ..)
-	 * @param baseURI String name of defined used URI
+	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
+	 *                Turtle, ..) if RDF format can not be detected from file
+	 *                suffix.
+	 * @param baseURI String name of defined used URI prefix namespace used by
+	 *                all triples.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
@@ -128,9 +135,11 @@ public interface RDFDataRepository extends DataUnit {
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param file                  File contains RDF data to extract.
-	 * @param format                Specifies {@link RDFFormat} (e.g., RDFXML,
-	 *                              Turtle, ..)
-	 * @param baseURI               String name of defined used URI
+	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
+	 *                              RDFXML, Turtle, ..) if RDF format can not be
+	 *                              detected from file suffix.
+	 * @param baseURI               String name of defined used URI prefix
+	 *                              namespace used by all triples.
 	 * @param useStatisticalHandler boolean value, if during extraction needed
 	 *                              detail statistic about RDF triples and
 	 *                              detailed log or not.
@@ -148,6 +157,14 @@ public interface RDFDataRepository extends DataUnit {
 	 */
 	public void extractFromLocalTurtleFile(String path) throws RDFException;
 
+	/**
+	 * Load all triples in repository to defined file in defined RDF format.
+	 *
+	 * @param file       File where data be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 *                   RDF/XML,etc.)
+	 * @throws RDFException when loading data to file fault.
+	 */
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
 
 	/**
@@ -160,7 +177,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                      RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws RDFException                 when loading data fault.
+	 * @throws RDFException                 when loading data to file fault.
 	 */
 	public void loadToFile(String directoryPath,
 			String fileName,
@@ -180,7 +197,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                         his unique name.
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws RDFException                 when loading data fault.
+	 * @throws RDFException                 when loading data to file fault.
 	 */
 	public void loadToFile(String directoryPath,
 			String fileName, RDFFormatType formatType,
@@ -193,6 +210,8 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
 	 * @param defaultGraphURI name of graph where RDF data are loading.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
 	 * @throws RDFException when loading data fault.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
@@ -207,7 +226,9 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param defaultGraphURI name of graph where RDF data are loading.
 	 * @param name            String name needed for authentication.
 	 * @param password        String password needed for authentication.
-	 * @throws RDFException when loading data fault.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @throws RDFException when loading data to SPARQL endpoint fault.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			String name,
@@ -223,7 +244,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                        loading.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @throws RDFException when loading data fault.
+	 * @throws RDFException when loading data to SPARQL endpoint fault.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, WriteGraphType graphType) throws RDFException;
@@ -252,9 +273,9 @@ public interface RDFDataRepository extends DataUnit {
 	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are loading.
+	 * @param defaultGraphUri name of graph where RDF data are stored.
 	 * @param query           String SPARQL query.
-	 * @throws RDFException when extraction data fault.
+	 * @throws RDFException when extraction data from SPARQL endpoint fault.
 	 */
 	public void extractfromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query) throws RDFException;
@@ -265,12 +286,12 @@ public interface RDFDataRepository extends DataUnit {
 	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are loading.
+	 * @param defaultGraphUri name of graph where RDF data are stored.
 	 * @param query           String SPARQL query.
 	 * @param hostName        String name needed for authentication.
 	 * @param password        String password needed for authentication.
 	 *
-	 * @throws RDFException when extraction data fault.
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphURI, String query, String hostName,
@@ -282,13 +303,13 @@ public interface RDFDataRepository extends DataUnit {
 	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are loading.
+	 * @param defaultGraphUri name of graph where RDF data are stored.
 	 * @param query           String SPARQL query.
 	 * @param hostName        String name needed for authentication.
 	 * @param password        String password needed for authentication.
 	 * @param format          Type of RDF format for saving data (example:
 	 *                        TURTLE, RDF/XML,etc.)
-	 * @throws RDFException when extraction data fault.
+	 * @throws RDFException when extraction data from SPARQL endpoint fault.
 	 */
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query,
@@ -301,7 +322,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param endpointURL         Remote URL connection to SPARQL endpoint
 	 *                            contains RDF data.
 	 * @param defaultGraphsUri    List with names of graph where RDF data are
-	 *                            loading.
+	 *                            stored.
 	 * @param query               String SPARQL query.
 	 * @param hostName            String name needed for authentication.
 	 * @param password            String password needed for authentication.
@@ -309,7 +330,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                            TURTLE, RDF/XML,etc.)
 	 * @param useStatisticHandler boolean value if detailed log and statistic
 	 *                            are awailable or not.
-	 * @throws RDFException when extraction data fault.
+	 * @throws RDFException when extraction data from SPARQL endpoint fault.
 	 */
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
