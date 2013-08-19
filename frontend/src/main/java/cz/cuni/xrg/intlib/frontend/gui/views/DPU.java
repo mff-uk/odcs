@@ -91,6 +91,7 @@ class DPU extends ViewComponent {
 	// headers of columns in instancesTable
 	private static String[] headers = new String[]{"Id", "Name", "Description",
 		"Author", "Actions"};
+	private DPUTemplateRecord selectedDpu; 
 	
 
 	/**
@@ -256,7 +257,7 @@ class DPU extends ViewComponent {
 					return;
 				}
 
-					DPUTemplateRecord selectedDpu = (DPUTemplateRecord) event
+					selectedDpu = (DPUTemplateRecord) event
 							.getItemId();
 					
 					//If DPURecord that != null was selected then it's details will be shown.
@@ -509,12 +510,14 @@ class DPU extends ViewComponent {
 		buttonDpuBar.setHeight(30, Unit.PIXELS);
 		buttonDpuBar.setSpacing(false);
 		
-		// Copy DPU Template Button
+		// Copy DPU Template Button, may copy only DPU of 3 level.
 		Button buttonCopyDPU = new Button();
 		buttonCopyDPU.setCaption("Copy");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
 		buttonCopyDPU.setEnabled(false);
+		if(selectedDpu.getParent()!=null)
+			buttonCopyDPU.setEnabled(true);
 		buttonCopyDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -522,6 +525,34 @@ class DPU extends ViewComponent {
 
 					@Override
 					public void buttonClick(ClickEvent event) {
+						int i=1;
+						boolean found = true;
+						String nameOfDpuCopy="";
+						List<DPUTemplateRecord> allDpus = App.getApp().getDPUs().getAllTemplates();
+						while(found)
+						{
+							found = false;
+							nameOfDpuCopy = "Copy of " + selectedDpu.getName();
+							if (i>1)
+								nameOfDpuCopy=nameOfDpuCopy + " " +i;
+							
+							for (DPUTemplateRecord dpu:allDpus){
+								if(dpu.getName().equals(nameOfDpuCopy)){
+									found= true;
+									break;
+								}
+							}
+							i++;
+						}
+						
+						DPUTemplateRecord copyDpuTemplate = new DPUTemplateRecord(selectedDpu);
+						copyDpuTemplate.setName(nameOfDpuCopy);
+						copyDpuTemplate.setParent(selectedDpu.getParent());
+						App.getApp().getDPUs().save(copyDpuTemplate);
+						
+						//refresh data in dpu tree
+						dpuTree.refresh();
+
 					}
 				});
 		buttonDpuBar.addComponent(buttonCopyDPU);
@@ -775,9 +806,20 @@ class DPU extends ViewComponent {
 			}
 
 		}
-		//If DPU Template is unused by any pipeline, then delete it.
+		//If DPU Template is unused by any pipeline
 		if (fl == 0) {
 			
+			//find if DPU Template has child elements
+			List<DPUTemplateRecord> allDpus = App.getApp().getDPUs().getAllTemplates();
+			for (DPUTemplateRecord dpu:allDpus){
+				if((dpu.getParent()!=null) && dpu.getParent().equals(selectedDpu)){
+					Notification
+					.show("DPURecord can not be removed because it has child elements", Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+			}
+			
+			//if DPU Template hasn't child elements then delete it.
 			//get path to ../target/dpu/
 			String pojPath = App.getApp().getAppConfiguration()
 					.getString(ConfigProperty.MODULE_PATH);
@@ -791,14 +833,18 @@ class DPU extends ViewComponent {
 			dpuTree.refresh();
 			dpuDetailLayout.removeAllComponents();
 			
-			//delete JAR file from ../target/dpu/
-			try {
-				delFile.delete();
-			} catch (Exception e) {
-				Notification.show(
-						"Failed to delete "+ fileName,
-						e.getMessage(), Type.ERROR_MESSAGE);
-			} 
+			//if selected dpu template not 3rd level dpu
+			if(selectedDpu.getParent()==null){
+				//delete JAR file from ../target/dpu/
+				try {
+					delFile.delete();
+				} catch (Exception e) {
+					Notification.show(
+							"Failed to delete "+ fileName,
+							e.getMessage(), Type.ERROR_MESSAGE);
+				} 
+			}
+			
 			Notification.show("DPURecord was removed",
 					Notification.Type.HUMANIZED_MESSAGE);
 		} 
