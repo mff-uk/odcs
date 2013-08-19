@@ -449,10 +449,45 @@ public class SchedulePipeline extends Window {
 				if(notifyThis.getValue().equals(true)){
 					
 					if(emailLayout.isEnabled()){
-						try {
-							email.textFieldEmail.validate();
-						} catch (Validator.InvalidValueException e) {
-							Notification.show("Failed to save settings. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+					String errorText="";
+					String wrongFormat="";
+					boolean notEmpty=false;
+					int errorNumber=0;
+					int fieldNumber =0;
+					for (TextField emailField : email.listedEditText){
+						if(!emailField.getValue().trim().isEmpty()){
+							notEmpty=true;
+							break;
+							}
+						}
+						
+						if(notEmpty){
+							for (TextField emailField : email.listedEditText){
+								fieldNumber++;
+								try {
+									emailField.validate();
+				
+								} catch (Validator.InvalidValueException e) {
+										
+									if (e.getMessage().equals("wrong е-mail format")){
+										if(fieldNumber==1)
+											wrongFormat="\""+emailField.getValue()+ "\"";
+										else
+											wrongFormat=wrongFormat+ ", " + "\"" + emailField.getValue() + "\"";
+										errorNumber++;
+									}
+								}
+							}
+							if(errorNumber==1)
+								errorText ="Email "+ wrongFormat + " has wrong format.";
+							if(errorNumber>1)
+								errorText ="Emails "+  wrongFormat + ", have wrong format.";
+						}
+						else
+							errorText ="At least one mail has to be filled, so that the notification can be send.";
+						
+						if(!errorText.equals("")){
+							Notification.show("Failed to save settings, reason:",errorText, Notification.Type.ERROR_MESSAGE);
 							return;
 						}
 					}
