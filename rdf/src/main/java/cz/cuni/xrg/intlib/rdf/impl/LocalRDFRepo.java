@@ -36,6 +36,8 @@ import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.query.resultio.TupleQueryResultWriter;
+import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -2143,12 +2145,78 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	/**
+	 * Make select query over repository data and return file as SPARQL XML
+	 * result.
+	 *
+	 * @param selectQuery String representation of SPARQL query
+	 * @param filePath    String path to file for saving result of query in
+	 *                    SPARQL XML syntax.
+	 * @return File contains result of given SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	@Override
+	public File makeSelectQueryOverRepository(String selectQuery,
+			String filePath)
+			throws InvalidQueryException {
+
+		RepositoryConnection connection = null;
+
+		try {
+			connection = repository.getConnection();
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(
+					QueryLanguage.SPARQL, selectQuery);
+
+			tupleQuery.setDataset(getDataSetForGraph());
+
+			logger.debug("Query " + selectQuery + " is valid.");
+
+			File file = new File(filePath);
+			createNewFile(file);
+
+			FileOutputStream os = new FileOutputStream(file);
+			TupleQueryResultWriter tupleHandler = new SPARQLResultsXMLWriter(os);
+
+			tupleQuery.evaluate(tupleHandler);
+			return file;
+
+		} catch (QueryEvaluationException | MalformedQueryException ex) {
+			throw new InvalidQueryException(
+					"This query is probably not valid. " + ex.getMessage(),
+					ex);
+		} catch (TupleQueryResultHandlerException ex) {
+			logger.error("Writing result to file fail. " + ex.getMessage(),
+					ex);
+
+		} catch (RepositoryException ex) {
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
+		} catch (IOException ex) {
+			logger.error("Stream were not closed. " + ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn(
+							"Failed to close connection to RDF repository while querying."
+							+ ex.getMessage(), ex);
+				}
+			}
+		}
+
+		throw new InvalidQueryException(
+				"Creating File with RDF data fault.");
+
+	}
+
+	/**
 	 * Make select query over repository data and return tables as result.
 	 *
 	 * @param selectQuery String representation of SPARQL select query.
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
 	 *         map key is column name and <code>List&lt;String&gt;</code> are
-	 *         string values in this column. When query is invalid, return *
+	 *         string values in this column. When query is invalid, return * *
 	 *         empty <code>Map</code>.
 	 */
 	@Override
@@ -2172,7 +2240,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			List<BindingSet> listBindings = new ArrayList<>();
 			try {
 				result = tupleQuery.evaluate();
-				logger.debug("Query " + selectQuery + " has not null result.");
+				logger.debug(
+						"Query " + selectQuery + " has not null result.");
 				List<String> names = result.getBindingNames();
 
 				for (String name : names) {
@@ -2182,7 +2251,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				listBindings = result.asList();
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
-						"This query is probably not valid. " + ex.getMessage(),
+						"This query is probably not valid. " + ex
+						.getMessage(),
 						ex);
 			} finally {
 				if (result != null) {
@@ -2209,7 +2279,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 
 		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException("This query is probably not valid. "
+			throw new InvalidQueryException(
+					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			logger.error("Connection to RDF repository failed. "
@@ -2281,7 +2352,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
 				.toString());
 		shutDown();
-		logger.info("Relelased LocalRdf: {}", WorkingRepoDirectory.toString());
+		logger.info("Relelased LocalRdf: {}", WorkingRepoDirectory
+				.toString());
 	}
 
 	/**
