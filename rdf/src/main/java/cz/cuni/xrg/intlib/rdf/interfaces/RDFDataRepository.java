@@ -470,12 +470,12 @@ public interface RDFDataRepository extends DataUnit {
 	 *
 	 * @param constructQuery String representation of SPARQL query.
 	 * @param formatType     Choosed type of format RDF data in result.
-	 * @param fileName       Name of file where result with RDF data is stored.
+	 * @param filePath       String path to file where result with RDF data is stored.
 	 * @return File with RDF data in defined format as result of construct
 	 *         query.
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
 	public File makeConstructQueryOverRepository(String constructQuery,
-			RDFFormatType formatType, String fileName) throws InvalidQueryException;
+			RDFFormatType formatType, String filePath) throws InvalidQueryException;
 }
