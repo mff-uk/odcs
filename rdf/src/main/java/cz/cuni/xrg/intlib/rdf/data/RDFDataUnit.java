@@ -183,10 +183,10 @@ public class RDFDataUnit implements DataUnit {
 	 * Extract RDF data from SPARQL endpoint to DataUnit using only data from
 	 * URI graph without authentication.
 	 *
-	 * @param endpointURL Remote URL connection to SPARQL endpoint contains RDF
-	 *                    data.
-	 * @param namedGraph  name of graph where RDF data are stored.
-	 * @param makeSelectQuery       String SPARQL makeSelectQuery.
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param namedGraph      name of graph where RDF data are stored.
+	 * @param makeSelectQuery String SPARQL makeSelectQuery.
 	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
 	 *                              fail.
 	 */
@@ -202,12 +202,12 @@ public class RDFDataUnit implements DataUnit {
 	 * Extract RDF data from SPARQL endpoint to DataUnit using only data from
 	 * URI graph using authentication (name,password).
 	 *
-	 * @param endpointURL Remote URL connection to SPARQL endpoint contains RDF
-	 *                    data.
-	 * @param namedGraph  name of graph where RDF data are stored.
-	 * @param makeSelectQuery       String SPARQL makeSelectQuery.
-	 * @param hostName    String name needed for authentication.
-	 * @param password    String password needed for authentication.
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param namedGraph      name of graph where RDF data are stored.
+	 * @param makeSelectQuery String SPARQL makeSelectQuery.
+	 * @param hostName        String name needed for authentication.
+	 * @param password        String password needed for authentication.
 	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
 	 *                              fail.
 	 */
@@ -330,13 +330,14 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make select makeSelectQuery over RDF data in DataUnit and return tables as result.
+	 * Make select makeSelectQuery over RDF data in DataUnit and return tables
+	 * as result.
 	 *
 	 * @param selectQuery String representation of SPARQL makeSelectQuery.
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
 	 *         map key is column name and <code>List&lt;String&gt;</code> are
-	 *         string values in this column. When makeSelectQuery is invalid, return *
-	 *         empty <code>Map</code>.
+	 *         string values in this column. When makeSelectQuery is invalid,
+	 *         return * empty <code>Map</code>.
 	 * @throws InvalidQueryException when makeSelectQuery is not valid.
 	 */
 	public Map<String, List<String>> makeSelectQuery(String selectQuery) throws InvalidQueryException {
@@ -344,18 +345,38 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make select makeSelectQuery over repository data and return file as SPARQL XML
-	 * result.
+	 * Make select makeSelectQuery over RDF data in DataUnit and return file as
+	 * SPARQL XML result.
 	 *
 	 * @param selectQuery String representation of SPARQL makeSelectQuery
-	 * @param filePath    String path to file for saving result of makeSelectQuery in
-	 *                    SPARQL XML syntax.
+	 * @param filePath    String path to file for saving result of
+	 *                    makeSelectQuery in SPARQL XML syntax.
 	 * @return File contains result of given SPARQL select makeSelectQuery.
 	 * @throws InvalidQueryException when makeSelectQuery is not valid.
 	 */
 	public File makeSelectQuery(String selectQuery, String filePath) throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepository(selectQuery, filePath);
 
+	}
+
+	/**
+	 * Make construct query over repository RDF data in DataUnit and return file
+	 * where RDF data as result are saved.
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @param formatType     Choosed type of format RDF data in result.
+	 * @param filePath       String path to file where result with RDF data is
+	 *                       stored.
+	 * @return File with RDF data in defined format as result of construct
+	 *         query.
+	 * @throws InvalidQueryException when query is not valid or creating file
+	 *                               fail.
+	 */
+	public File makeConstructQuery(String constructQuery, String filePath,
+			RDFFormatType formatType) throws InvalidQueryException {
+
+		return repository.makeConstructQueryOverRepository(constructQuery,
+				formatType, filePath);
 	}
 
 	/**
