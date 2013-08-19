@@ -40,6 +40,16 @@ public interface RDFDataRepository extends DataUnit {
 			String objectName);
 
 	/**
+	 * Add one tripple RDF (statement) to the repository (default empty namespace).
+	 *
+	 * @param subjectName   String name of subject
+	 * @param predicateName String name of predicate
+	 * @param objectName    String name of object
+	 */
+	public void addTriple(String subjectName,
+			String predicateName, String objectName);
+
+	/**
 	 * Add all RDF data from string to repository.
 	 *
 	 * @param rdfString string constains RDF data.
