@@ -163,7 +163,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param file       File where data be saved.
 	 * @param formatType Type of RDF format for saving data (example: TURTLE,
 	 *                   RDF/XML,etc.)
-	 * @throws RDFException when loading data to file fault.
+	 * @throws RDFException when loading data to file fail.
 	 */
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
 
@@ -177,7 +177,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                      RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws RDFException                 when loading data to file fault.
+	 * @throws RDFException                 when loading data to file fail.
 	 */
 	public void loadToFile(String directoryPath,
 			String fileName,
@@ -197,7 +197,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                         his unique name.
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
-	 * @throws RDFException                 when loading data to file fault.
+	 * @throws RDFException                 when loading data to file fail.
 	 */
 	public void loadToFile(String directoryPath,
 			String fileName, RDFFormatType formatType,
@@ -212,7 +212,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param defaultGraphURI name of graph where RDF data are loading.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @throws RDFException when loading data fault.
+	 * @throws RDFException when loading data fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			WriteGraphType graphType) throws RDFException;
@@ -228,7 +228,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @throws RDFException when loading data to SPARQL endpoint fault.
+	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			String name,
@@ -244,7 +244,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                        loading.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @throws RDFException when loading data to SPARQL endpoint fault.
+	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, WriteGraphType graphType) throws RDFException;
@@ -261,7 +261,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @throws RDFException when loading data fault.
+	 * @throws RDFException when loading data fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
@@ -275,7 +275,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                        RDF data.
 	 * @param defaultGraphUri name of graph where RDF data are stored.
 	 * @param query           String SPARQL query.
-	 * @throws RDFException when extraction data from SPARQL endpoint fault.
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	public void extractfromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query) throws RDFException;
@@ -309,7 +309,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @param password        String password needed for authentication.
 	 * @param format          Type of RDF format for saving data (example:
 	 *                        TURTLE, RDF/XML,etc.)
-	 * @throws RDFException when extraction data from SPARQL endpoint fault.
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query,
@@ -330,7 +330,7 @@ public interface RDFDataRepository extends DataUnit {
 	 *                            TURTLE, RDF/XML,etc.)
 	 * @param useStatisticHandler boolean value if detailed log and statistic
 	 *                            are awailable or not.
-	 * @throws RDFException when extraction data from SPARQL endpoint fault.
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
@@ -341,7 +341,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * Transform RDF in repository by SPARQL updateQuery.
 	 *
 	 * @param updateQuery String value of update SPARQL query.
-	 * @throws RDFException when transformation fault.
+	 * @throws RDFException when transformation fail.
 	 */
 	public void transformUsingSPARQL(String updateQuery) throws RDFException;
 
@@ -449,7 +449,7 @@ public interface RDFDataRepository extends DataUnit {
 	 * @return File with RDF data in defined format as result of construct
 	 *         query.
 	 * @throws InvalidQueryException when query is not valid or creating file
-	 *                               fault.
+	 *                               fail.
 	 */
 	public File makeConstructQueryOverRepository(String constructQuery,
 			RDFFormatType formatType, String fileName) throws InvalidQueryException;
