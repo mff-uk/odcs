@@ -3,9 +3,9 @@ package cz.cuni.xrg.intlib.commons.app.conf;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -30,18 +30,18 @@ public class AppConfig {
 	/**
 	 * Logging gateway.
 	 */
-	private static final Logger LOG = LoggerFactory.getLogger(AppConfig.class);
+	private static final Logger LOG = Logger.getLogger(AppConfig.class.getName());
 	
 	/**
 	 * Constructor reads configuration file.
 	 */
 	public AppConfig() {
-		LOG.info("Loading configuration from: {}", confPath);
+		LOG.log(Level.INFO, "Loading configuration from: " + confPath);
 		try {
 			FileInputStream stream = new FileInputStream(confPath);
 			prop.load(stream);
 		} catch (IOException ex) {
-			LOG.error("Could not read configuration file at " + confPath + ".", ex);
+			LOG.log(Level.SEVERE, "Could not read configuration file at " + confPath + ".", ex);
 			throw new RuntimeException(ex);
 		}
 	}
