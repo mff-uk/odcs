@@ -264,6 +264,20 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	/**
+	 * Add one tripple RDF (statement) to the repository (default empty
+	 * namespace).
+	 *
+	 * @param subjectName   String name of subject
+	 * @param predicateName String name of predicate
+	 * @param objectName    String name of object
+	 */
+	@Override
+	public void addTriple(String subjectName,
+			String predicateName, String objectName) {
+		addTriple("", subjectName, predicateName, objectName);
+	}
+
+	/**
 	 * Add one tripple RDF (statement) to the repository.
 	 *
 	 * @param namespace     String name of defined namespace
