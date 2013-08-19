@@ -186,7 +186,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param endpointURL Remote URL connection to SPARQL endpoint contains RDF
 	 *                    data.
 	 * @param namedGraph  name of graph where RDF data are stored.
-	 * @param query       String SPARQL query.
+	 * @param makeSelectQuery       String SPARQL makeSelectQuery.
 	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
 	 *                              fail.
 	 */
@@ -205,7 +205,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param endpointURL Remote URL connection to SPARQL endpoint contains RDF
 	 *                    data.
 	 * @param namedGraph  name of graph where RDF data are stored.
-	 * @param query       String SPARQL query.
+	 * @param makeSelectQuery       String SPARQL makeSelectQuery.
 	 * @param hostName    String name needed for authentication.
 	 * @param password    String password needed for authentication.
 	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
@@ -312,9 +312,9 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Transform RDF data in DataUnit using SPARQL given query.
+	 * Transform RDF data in DataUnit using SPARQL given makeSelectQuery.
 	 *
-	 * @param updateQuery String value of update SPARQL query.
+	 * @param updateQuery String value of update SPARQL makeSelectQuery.
 	 * @throws RDFDataUnitException when transformation fail.
 	 *
 	 */
@@ -330,30 +330,30 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make select query over RDF data in DataUnit and return tables as result.
+	 * Make select makeSelectQuery over RDF data in DataUnit and return tables as result.
 	 *
-	 * @param selectQuery String representation of SPARQL query.
+	 * @param selectQuery String representation of SPARQL makeSelectQuery.
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
 	 *         map key is column name and <code>List&lt;String&gt;</code> are
-	 *         string values in this column. When query is invalid, return *
+	 *         string values in this column. When makeSelectQuery is invalid, return *
 	 *         empty <code>Map</code>.
-	 * @throws InvalidQueryException when query is not valid.
+	 * @throws InvalidQueryException when makeSelectQuery is not valid.
 	 */
-	public Map<String, List<String>> query(String selectQuery) throws InvalidQueryException {
+	public Map<String, List<String>> makeSelectQuery(String selectQuery) throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepository(selectQuery);
 	}
 
 	/**
-	 * Make select query over repository data and return file as SPARQL XML
+	 * Make select makeSelectQuery over repository data and return file as SPARQL XML
 	 * result.
 	 *
-	 * @param selectQuery String representation of SPARQL query
-	 * @param filePath    String path to file for saving result of query in
+	 * @param selectQuery String representation of SPARQL makeSelectQuery
+	 * @param filePath    String path to file for saving result of makeSelectQuery in
 	 *                    SPARQL XML syntax.
-	 * @return File contains result of given SPARQL select query.
-	 * @throws InvalidQueryException when query is not valid.
+	 * @return File contains result of given SPARQL select makeSelectQuery.
+	 * @throws InvalidQueryException when makeSelectQuery is not valid.
 	 */
-	public File query(String selectQuery, String filePath) throws InvalidQueryException {
+	public File makeSelectQuery(String selectQuery, String filePath) throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepository(selectQuery, filePath);
 
 	}
@@ -361,7 +361,7 @@ public class RDFDataUnit implements DataUnit {
 	/**
 	 * Get list all RDF triples (Statements) in DataUnit.
 	 *
-	 * @see {@link RDFDataUnit#query(String)}.
+	 * @see {@link RDFDataUnit#makeSelectQuery(String)}.
 	 * @return list of RDF triples
 	 */
 	public List<Statement> getTriples() {
