@@ -4,8 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Class with backend application configuration.
@@ -29,17 +30,18 @@ public class AppConfig {
 	/**
 	 * Logging gateway.
 	 */
-	private static final Logger LOG = Logger.getLogger(AppConfig.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(AppConfig.class);
 	
 	/**
 	 * Constructor reads configuration file.
 	 */
 	public AppConfig() {
+		LOG.info("Loading configuration from: {}", confPath);
 		try {
 			FileInputStream stream = new FileInputStream(confPath);
 			prop.load(stream);
 		} catch (IOException ex) {
-			LOG.log(Level.SEVERE, "Could not read configuration file at " + confPath + ".", ex);
+			LOG.error("Could not read configuration file at " + confPath + ".", ex);
 			throw new RuntimeException(ex);
 		}
 	}
