@@ -344,21 +344,18 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make select query over RDF data in DataUnit and save it into a file and
-	 * return it as result.
+	 * Make select query over repository data and return file as SPARQL XML
+	 * result.
 	 *
-	 * @param selectQuery Make select query over RDF data in DataUnit and return
-	 *                    tables as result.
-	 * @param file        File where data be saved.
-	 * @param formatType  Type of RDF format for saving data (example: TURTLE,
-	 *                    RDF/XML,etc.)
-	 * @return file constains data as select query result.
+	 * @param selectQuery String representation of SPARQL query
+	 * @param filePath    String path to file for saving result of query in
+	 *                    SPARQL XML syntax.
+	 * @return File contains result of given SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public File query(String selectQuery, File file, RDFFormatType formatType) {
-		return null;
-		/**
-		 * TODO JIRKA - IMPLEMENTATION.
-		 */
+	public File query(String selectQuery, String filePath) throws InvalidQueryException {
+		return repository.makeSelectQueryOverRepository(selectQuery, filePath);
+
 	}
 
 	/**
