@@ -39,6 +39,7 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.backend.dpu.event.NoOutputEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractStartEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -561,11 +562,11 @@ class PipelineWorker implements Runnable {
 				IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		// ...
-		ExtendedLoadContext loadContext = beanFactory.getBean(
-				"loadContext", ExtendedLoadContext.class);
+		ExtendedLoadContext loadContext = beanFactory.getBean("loadContext",
+				ExtendedLoadContext.class);
 		loadContext.init(execution, dpuInstance, contextInfo,
 				lastSuccessfulExTime);
-		
+
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
@@ -638,6 +639,13 @@ class PipelineWorker implements Runnable {
 			} catch (IOException e) {
 				throw new StructureException("Failed to create context.", e);
 			}
+			
+			// check for outputs
+			if (context.getOutputs().isEmpty()) {
+				// no outputs
+				eventPublisher.publishEvent(new NoOutputEvent(node
+						.getDpuInstance(), execution, this));
+			}
 
 			return runExtractor(extractor, context);
 		} else if (dpuInstance instanceof Transform) {
@@ -650,6 +658,13 @@ class PipelineWorker implements Runnable {
 				throw new StructureException("Failed to create context.", e);
 			}
 
+			// check for outputs
+			if (context.getOutputs().isEmpty()) {
+				// no outputs
+				eventPublisher.publishEvent(new NoOutputEvent(node
+						.getDpuInstance(), execution, this));
+			}			
+			
 			return runTransformer(transformer, context);
 		} else if (dpuInstance instanceof Load) {
 			Load loader = (Load) dpuInstance;
