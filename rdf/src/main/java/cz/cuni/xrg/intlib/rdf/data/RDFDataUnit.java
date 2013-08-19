@@ -108,6 +108,20 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
+	 * Add one tripple RDF (statement) to the repository (default empty
+	 * namespace).
+	 *
+	 * @param subjectName   String name of subject
+	 * @param predicateName String name of predicate
+	 * @param objectName    String name of object
+	 */
+	public void addRDFTriple(String subjectName,
+			String predicateName, String objectName) {
+
+		repository.addTriple(subjectName, predicateName, objectName);
+	}
+
+	/**
 	 * Extract triples from file and store them in DataUnit. The file type is
 	 * determined by file's extension.
 	 *
@@ -211,11 +225,9 @@ public class RDFDataUnit implements DataUnit {
 	 *
 	 * @param file       File where data be saved.
 	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 *                   RDF/XML,etc.) <<<<<<< HEAD
-	 * @
-	 * throws RDFDataUnitException when saving data to file fail. =======
-	 * @throws RDFDataUnitException when saving data to file fault. >>>>>>>
-	 *                              origin/master
+	 *                   RDF/XML,etc.)
+	 * @throws RDFDataUnitException when saving data to file fail.
+	 *
 	 */
 	public void loadRDFToFile(File file, RDFFormatType formatType) throws RDFDataUnitException {
 		repository.loadToFile(file, formatType);
@@ -230,12 +242,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param namedGraph  name of graph where RDF data are loading.
 	 * @param graphType   One of way, how to solve loading RDF data to graph
 	 *                    when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 *                    <<<<<<< HEAD
-	 * @
-	 * throws RDFDataUnitException when loading data to SPARQL endpoint fail.
-	 *                             =======
-	 * @throws RDFDataUnitException when loading data to SPARQL endpoint fault.
-	 *                              >>>>>>> origin/master
+	 * @throws RDFDataUnitException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadToSPARQLEndpoint(URL endpointURL, String namedGraph,
 			WriteGraphType graphType) throws RDFDataUnitException {
@@ -253,12 +260,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param password    String password needed for authentication.
 	 * @param graphType   One of way, how to solve loading RDF data to graph
 	 *                    when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 *                    <<<<<<< HEAD
-	 * @
-	 * throws RDFDataUnitException when loading data to SPARQL endpoint fail.
-	 *                             =======
-	 * @throws RDFDataUnitException when loading data to SPARQL endpoint fault.
-	 *                              >>>>>>> origin/master
+	 * @throws RDFDataUnitException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadToSPARQLEndpoint(URL endpointURL, String namedGraph,
 			String login, String password, WriteGraphType graphType) throws RDFDataUnitException {
@@ -299,12 +301,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 *                        <<<<<<< HEAD
-	 * @
-	 * throws RDFDataUnitException when loading data to SPARQL endpoint fail.
-	 *                             =======
-	 * @throws RDFDataUnitException when loading data to SPARQL endpoint fault.
-	 *                              >>>>>>> origin/master
+	 * @throws RDFDataUnitException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
@@ -317,11 +314,9 @@ public class RDFDataUnit implements DataUnit {
 	/**
 	 * Transform RDF data in DataUnit using SPARQL given query.
 	 *
-	 * @param updateQuery String value of update SPARQL query. <<<<<<< HEAD
-	 * @
-	 * throws RDFDataUnitException when transformation fail. =======
-	 * @throws RDFDataUnitException when transformation fault. >>>>>>>
-	 *                              origin/master
+	 * @param updateQuery String value of update SPARQL query.
+	 * @throws RDFDataUnitException when transformation fail.
+	 *
 	 */
 	public void transform(String updateQuery) throws RDFDataUnitException {
 		repository.transformUsingSPARQL(updateQuery);
