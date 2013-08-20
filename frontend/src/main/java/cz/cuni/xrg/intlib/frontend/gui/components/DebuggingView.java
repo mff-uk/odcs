@@ -447,4 +447,21 @@ public class DebuggingView extends CustomComponent {
             l.componentEvent(new Event(this));
         }
     }
+
+    /**
+     * Sets execution and debug node about which debug ingo should be shown.
+     * 
+     * @param execution New execution.
+     * @param instance New debug node.
+     * 
+     */
+    public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
+        this.pipelineExec = execution;
+        this.debugDpu = instance;
+        refreshContent();
+        if(refreshAutomatically.getValue()) {
+            refreshThread = new RefreshThread(2000, this.pipelineExec, this);
+            refreshThread.start();
+        }
+    }
 }

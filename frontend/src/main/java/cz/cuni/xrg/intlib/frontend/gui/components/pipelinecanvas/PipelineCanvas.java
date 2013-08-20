@@ -117,15 +117,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         pip.setGraph(graph);
         App.getApp().getPipelines().save(pip);
         Node debugNode = graph.getNodeById(dpuId);
-        PipelineExecution pExec = IntlibHelper.runPipeline(pip, true, debugNode);
-        if (pExec == null) {
-            //Solved by dialog if backend is offline in method runPipeline.
-            //Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
-            return;
-        }
-
-        DPUInstanceRecord debugDpu = debugNode.getDpuInstance();
-        fireShowDebug(pExec, debugDpu);
+        fireShowDebug(pip, debugNode);
     }
 
     /**
@@ -279,16 +271,15 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     /**
      * Inform listeners, that debug request was made.
      *
-     * @param execution {@link PipelineExecution} representing current debug
-     * session.
-     * @param instance {@link DPUInstanceRecord} where execution should end.
+     * @param pipeline {@link Pipeline} on which debug should be run.
+     * @param node {@link Node} where execution should end.
      */
-    protected void fireShowDebug(PipelineExecution execution, DPUInstanceRecord instance) {
+    protected void fireShowDebug(Pipeline pipeline, Node node) {
         Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
         for (Listener l : ls) {
             try {
                 ShowDebugListener sdl = (ShowDebugListener) l;
-                sdl.showDebug(execution, instance);
+                sdl.showDebug(pipeline, node);
             } catch (Exception ex) {
                 //TODO: Solve better!
             }
