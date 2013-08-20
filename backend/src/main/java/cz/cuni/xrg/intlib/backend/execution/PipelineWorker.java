@@ -147,6 +147,11 @@ class PipelineWorker implements Runnable {
 	public void init(PipelineExecution execution) {
 		this.execution = execution;
 		this.contextInfo = execution.getContext();
+		// if in SCHEDULED changed to RUNNING
+		if (this.execution.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
+			this.execution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
+			database.getPipeline().save(this.execution);
+		}
 	}
 
 	/**
