@@ -25,10 +25,10 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	public void setConfig(byte[] conf) throws ConfigException {
 		C config = configWrap.deserialize(conf);
 		if (config == null) {
-			// null -> use default configuration
-			return;
+			// null -> try to use default configuration
+			config = configWrap.createInstance();
 		}
-		if (config.isValid()) {
+		if (config != null && config.isValid()) {
 			setConfiguration(config);
 		} else {
 			// invalid configuration
