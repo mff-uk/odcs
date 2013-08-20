@@ -9,9 +9,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
@@ -32,7 +30,6 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
  * @author Petyr
  * 
  */
-@Component
 public abstract class ExtendedContext implements ProcessingContext {
 
 	/**
@@ -78,31 +75,27 @@ public abstract class ExtendedContext implements ProcessingContext {
 	/**
 	 * Used factory.
 	 */
-	@Autowired
 	protected DataUnitFactory dataUnitFactory;
 
 	/**
 	 * Application configuration.
 	 */
-	@Autowired
 	protected AppConfig appConfig;
 
-	/**
-	 * Application event publisher used to publish messages from DPURecord.
-	 */
-	@Autowired
-	private ApplicationEventPublisher eventPublisher;
 
-	public ExtendedContext() {
+	public ExtendedContext(DataUnitFactory dataUnitFactory, AppConfig appConfig) {
 		this.customData = new HashMap<>();
 		this.execution = null;
 		this.dpuInstance = null;
 		this.context = null;
 		this.lastSuccExec = null;
+		// ...
+		this.dataUnitFactory = dataUnitFactory;
+		this.appConfig = appConfig;
 	}
 
 	// --------------- new abstract methods in ExtendedContext -------------- //
-
+	
 	/**
 	 * Save all data units.
 	 */
@@ -126,6 +119,12 @@ public abstract class ExtendedContext implements ProcessingContext {
 	 */
 	public abstract void reload() throws DataUnitException;
 
+	/**
+	 * Return used event publisher.
+	 * @return
+	 */
+	protected abstract ApplicationEventPublisher getEventPublisher();
+	
 	// ------------------ new methods in ExtendedContext -------------------- //
 
 	/**
@@ -144,8 +143,16 @@ public abstract class ExtendedContext implements ProcessingContext {
 		this.dpuInstance = dpuInstance;
 		this.context = context;
 		this.lastSuccExec = lastSuccExec;
+		// ...
+		innerInit();
 	}
 
+	/**
+	 * Is called when all the variables has been set. The 
+	 * context can set additional variables here.
+	 */
+	protected abstract void innerInit();
+	
 	/**
 	 * Check required type based on application configuration and return
 	 * {@link DataUnitType} that should be created. Can thrown
@@ -286,14 +293,14 @@ public abstract class ExtendedContext implements ProcessingContext {
 	// -- implementation of methods from commons.context.ProcessingContext -- //
 
 	public void sendMessage(MessageType type, String shortMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type,
+		getEventPublisher().publishEvent(new DPUMessage(shortMessage, "", type,
 				this, this));
 	}
 
 	public void sendMessage(MessageType type,
 			String shortMessage,
 			String fullMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
+		getEventPublisher().publishEvent(new DPUMessage(shortMessage, fullMessage,
 				type, this, this));
 	}
 

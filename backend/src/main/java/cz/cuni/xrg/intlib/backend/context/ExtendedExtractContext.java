@@ -2,6 +2,11 @@ package cz.cuni.xrg.intlib.backend.context;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
@@ -14,18 +19,29 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
  * @author Petyr
  * 
  */
-public class ExtendedExtractContext
-	extends ExtendedContext implements ExtractContext {
+public class ExtendedExtractContext extends ExtendedContext
+		implements ExtractContext {
 
 	/**
 	 * Manager for output DataUnits.
 	 */
-	private DataUnitManager dataUnitManager;	
+	private DataUnitManager dataUnitManager;
+
+	/**
+	 * Application event publisher used to publish messages from DPURecord.
+	 */
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
 	
-	public ExtendedExtractContext() {
-		super();
+	public ExtendedExtractContext(DataUnitFactory dataUnitFactory,
+			AppConfig appConfig) {
+		super(dataUnitFactory, appConfig);
+	}
+
+	@Override
+	protected void innerInit() {
 		this.dataUnitManager = DataUnitManager.createOutputManager(dpuInstance,
-				dataUnitFactory, context, getGeneralWorkingDir(), appConfig);		
+				dataUnitFactory, context, getGeneralWorkingDir(), appConfig);
 	}
 	
 	/**
@@ -52,23 +68,28 @@ public class ExtendedExtractContext
 
 	@Override
 	public void save() {
-		dataUnitManager.save();		
+		dataUnitManager.save();
 	}
 
 	@Override
 	public void release() {
-		dataUnitManager.release();		
+		dataUnitManager.release();
 	}
 
 	@Override
 	public void delete() {
 		dataUnitManager.delete();
-		deleteDirectories();		
+		deleteDirectories();
 	}
 
 	@Override
 	public void reload() throws DataUnitException {
-		dataUnitManager.reload();		
+		dataUnitManager.reload();
+	}
+
+	@Override
+	protected ApplicationEventPublisher getEventPublisher() {
+		return this.eventPublisher;
 	}
 
 }

@@ -644,15 +644,15 @@ class PipelineWorker implements Runnable {
 			} catch (IOException e) {
 				throw new StructureException("Failed to create context.", e);
 			}
-			
+
+			boolean result = runExtractor(extractor, context);			
 			// check for outputs
 			if (context.getOutputs().isEmpty()) {
 				// no outputs
 				eventPublisher.publishEvent(new NoOutputEvent(node
 						.getDpuInstance(), execution, this));
-			}
-
-			return runExtractor(extractor, context);
+			}			
+			return result;
 		} else if (dpuInstance instanceof Transform) {
 			Transform transformer = (Transform) dpuInstance;
 
@@ -670,7 +670,14 @@ class PipelineWorker implements Runnable {
 						.getDpuInstance(), execution, this));
 			}			
 			
-			return runTransformer(transformer, context);
+			boolean result = runTransformer(transformer, context);
+			// check for outputs
+			if (context.getOutputs().isEmpty()) {
+				// no outputs
+				eventPublisher.publishEvent(new NoOutputEvent(node
+						.getDpuInstance(), execution, this));
+			}			
+			return result;
 		} else if (dpuInstance instanceof Load) {
 			Load loader = (Load) dpuInstance;
 

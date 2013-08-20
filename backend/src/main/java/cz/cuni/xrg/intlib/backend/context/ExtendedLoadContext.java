@@ -2,6 +2,11 @@ package cz.cuni.xrg.intlib.backend.context;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+
+import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
@@ -13,19 +18,31 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
  * @author Petyr
  * 
  */
-public class ExtendedLoadContext
-	extends ExtendedContext implements LoadContext, MergableContext {
+public class ExtendedLoadContext extends ExtendedContext
+		implements LoadContext, MergableContext {
 
 	/**
 	 * Manager for input DataUnits.
 	 */
-	private DataUnitManager dataUnitManager;	
+	private DataUnitManager dataUnitManager;
+
+	/**
+	 * Application event publisher used to publish messages from DPURecord.
+	 */
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;	
 	
-	public ExtendedLoadContext() {
-		super();
-		this.dataUnitManager = DataUnitManager.createInputManager(dpuInstance,
-				dataUnitFactory, context, getGeneralWorkingDir(), appConfig);		
+	public ExtendedLoadContext(DataUnitFactory dataUnitFactory,
+			AppConfig appConfig) {
+		
+		super(dataUnitFactory, appConfig);
 	}
+
+	@Override
+	protected void innerInit() {
+		this.dataUnitManager = DataUnitManager.createInputManager(dpuInstance,
+				dataUnitFactory, context, getGeneralWorkingDir(), appConfig);
+	}	
 	
 	/**
 	 * Made inputs read only. It's called just before it's passed to the
@@ -38,8 +55,8 @@ public class ExtendedLoadContext
 	}
 
 	@Override
-	public void addSource(ProcessingContext context,
-			String instruction) throws ContextException {
+	public void addSource(ProcessingContext context, String instruction)
+			throws ContextException {
 		// create merger class
 		DataUnitMerger merger = new DataUnitMerger();
 		// merge custom data
@@ -72,23 +89,28 @@ public class ExtendedLoadContext
 
 	@Override
 	public void save() {
-		dataUnitManager.save();		
+		dataUnitManager.save();
 	}
 
 	@Override
 	public void release() {
-		dataUnitManager.release();		
+		dataUnitManager.release();
 	}
 
 	@Override
 	public void delete() {
 		dataUnitManager.delete();
-		deleteDirectories();		
+		deleteDirectories();
 	}
 
 	@Override
 	public void reload() throws DataUnitException {
 		dataUnitManager.reload();
 	}
+
+	@Override
+	protected ApplicationEventPublisher getEventPublisher() {
+		return this.eventPublisher;
+	}	
 	
 }
