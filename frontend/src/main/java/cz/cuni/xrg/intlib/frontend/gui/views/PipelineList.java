@@ -1,25 +1,17 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
 
-import cz.cuni.xrg.intlib.commons.app.communication.Client;
-import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -27,6 +19,7 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
+import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
 class PipelineList extends ViewComponent {
 
@@ -67,16 +60,15 @@ class PipelineList extends ViewComponent {
 
 			
 			// get item
-			final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
-			
+			CompositeItem  item = (CompositeItem) source.getItem(itemId);
+			Long pipelineId = (Long)item.getItemProperty("id").getValue();
+                        final Pipeline pipeline = App.getPipelines().getPipeline(pipelineId);
 			Button copyButton = new Button();
 			copyButton.setCaption("copy");
 			copyButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							
-							Pipeline pipeline = item.getBean();
 							Pipeline newPipeline = new Pipeline(pipeline);
 							newPipeline.setName("Copy of " + pipeline.getName());
 							App.getApp().getPipelines().save(newPipeline);
@@ -93,8 +85,7 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							// navigate to PipelineEdit/New
-							App.getApp().getPipelines().delete(item.getBean());
+							App.getApp().getPipelines().delete(pipeline);
 							// now we have to remove pipeline from table
 							source.removeItem(itemId);
 						}
@@ -108,7 +99,6 @@ class PipelineList extends ViewComponent {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							// navigate to PipelineEdit/New
-							Pipeline pipeline = item.getBean();
 							IntlibHelper.runPipeline(pipeline, false);
 						}
 					});
@@ -121,7 +111,6 @@ class PipelineList extends ViewComponent {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							// navigate to PipelineEdit/New
-							Pipeline pipeline = item.getBean();
 							IntlibHelper.runPipeline(pipeline, true);
 						}
 					});
@@ -135,8 +124,6 @@ class PipelineList extends ViewComponent {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							// open scheduler dialog
-							
-							Pipeline pipeline = item.getBean();
 							SchedulePipeline  sch = new SchedulePipeline();
 							sch.setSelectePipeline(pipeline);
 							//sch.selectedPipeline=pipeline;
@@ -158,8 +145,7 @@ class PipelineList extends ViewComponent {
 	 */
 	private void refreshData() {
 		int page = tablePipelines.getCurrentPage();
-		Container container = ContainerFactory.CreatePipelines(App.getApp()
-				.getPipelines().getAllPipelines());
+		Container container = ContainerFactory.CreatePipelines();
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.setFilterFieldVisible("", false);
 		tablePipelines.setCurrentPage(page);
@@ -227,8 +213,7 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setWidth("99%");
 		tablePipelines.setPageLength(10);
 		// assign data source
-		Container container = ContainerFactory.CreatePipelines(App.getApp()
-				.getPipelines().getAllPipelines());
+		Container container = ContainerFactory.CreatePipelines();
 		tablePipelines.setContainerDataSource(container);
 
 		// set columns
@@ -262,8 +247,8 @@ class PipelineList extends ViewComponent {
 			public void itemClick(ItemClickEvent event) {
 				//if (event.isDoubleClick()) {
 				if (!tablePipelines.isSelected(event.getItemId())) {
-					BeanItem beanItem = (BeanItem) event.getItem();
-					long pipelineId = (long) beanItem.getItemProperty("id")
+					CompositeItem item = (CompositeItem) event.getItem();
+					long pipelineId = (long) item.getItemProperty("id")
 							.getValue();
 					App.getApp().getNavigator().navigateTo(ViewNames.PipelineEdit.getUrl()+ "/" + pipelineId);
 				}

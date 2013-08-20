@@ -7,7 +7,6 @@ import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 
 /**
  * Generate the column "actions" in the table with pipeline execution records 
@@ -38,7 +37,7 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 	@Override
 	public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 		Property propStatus = source.getItem(itemId).getItemProperty("status");
-		Property prop2 = source.getItem(itemId).getItemProperty("debug");
+		Property prop2 = source.getItem(itemId).getItemProperty("isDebugging");
 		PipelineExecutionStatus testStatus = null;
 		boolean testDebug = false;
 		execID = itemId;

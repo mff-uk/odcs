@@ -1,12 +1,12 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -15,9 +15,16 @@ import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
+import cz.cuni.xrg.intlib.frontend.container.InFilter;
+import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
+import cz.cuni.xrg.intlib.frontend.container.PropertiesFilter;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Level;
+import org.tepi.filtertable.FilterGenerator;
+import org.vaadin.addons.lazyquerycontainer.CompositeItem;
+import org.vaadin.addons.lazyquerycontainer.LazyEntityContainer;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
 
 /**
  * Component for viewing and filtering of log messages.
@@ -52,8 +59,8 @@ public class LogMessagesTable extends CustomComponent {
 			public void itemClick(ItemClickEvent event) {
 				//if (event.isDoubleClick()) {
 				if (!messageTable.isSelected(event.getItemId())) {
-					BeanItem beanItem = (BeanItem) event.getItem();
-					long logId = (long) beanItem.getItemProperty("id")
+					CompositeItem item = (CompositeItem) event.getItem();
+					long logId = (long) item.getItemProperty("id")
 							.getValue();
 					LogMessage log = App.getLogs().getLog(logId);
 					showLogMessageDetail(log);
@@ -70,13 +77,13 @@ public class LogMessagesTable extends CustomComponent {
 			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
 		levelSelector.setValue(Level.INFO);
-		levelSelector.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				filterLogMessages((Level) event.getProperty().getValue());
-			}
-		});
-		mainLayout.addComponentAsFirst(levelSelector);
+//		levelSelector.addValueChangeListener(new Property.ValueChangeListener() {
+//			@Override
+//			public void valueChange(Property.ValueChangeEvent event) {
+//				filterLogMessages((Level) event.getProperty().getValue());
+//			}
+//		});
+		//mainLayout.addComponentAsFirst(levelSelector);
 
 		setCompositionRoot(mainLayout);
 	}
@@ -88,7 +95,7 @@ public class LogMessagesTable extends CustomComponent {
 	 */
 	private void filterLogMessages(Level level) {
 
-		List<LogMessage> data = getData(pipelineExecution, dpu, level);
+		List<LogMessage> data = null; //getData(pipelineExecution, dpu, level);
 
 		// ... filter
 //		List<LogMessage> filteredData = new ArrayList<>();
@@ -116,12 +123,12 @@ public class LogMessagesTable extends CustomComponent {
 			level = (Level) levelSelector.getValue();
 		}
 
-		List<LogMessage> data = getData(pipelineExecution, dpu, level);
-		if(data != null) {
+		List<LogMessage> data = null; //getData(pipelineExecution, dpu, level);
+		//if(data != null) {
 			loadMessageTable(data);
-		} else {
-			Notification.show("Error", "Failed to load log messages from database!", Notification.Type.ERROR_MESSAGE);
-		}
+		//} else {
+		//	Notification.show("Error", "Failed to load log messages from database!", Notification.Type.ERROR_MESSAGE);
+		//}
 	}
 
 	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {
@@ -143,12 +150,54 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param data List of {@link LogMessages} to show in table.
 	 */
 	private void loadMessageTable(List<LogMessage> data) {
-		Container container = ContainerFactory.CreateLogMessages(data);
+                
+                
+		IntlibLazyQueryContainer container = ContainerFactory.CreateLogMessages();
+                //container.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
+                messageTable.setFilterGenerator(new FilterGenerator() {
 
+                    @Override
+                    public Container.Filter generateFilter(Object propertyId, Object value) {
+                        if(propertyId.equals("level")) {
+                            Level level = (Level)value;
+                            return new InFilter(App.getLogs().getLevels((Level)value), "levelString");
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+
+                    @Override
+                    public AbstractField<?> getCustomFilterComponent(Object propertyId) {
+                        if(propertyId.equals("level")) {
+                            return levelSelector;
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public void filterRemoved(Object propertyId) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+
+                    @Override
+                    public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+
+                    @Override
+                    public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+                });
 		messageTable.setContainerDataSource(container);
 		messageTable.setVisibleColumns("date", "thread", "level",
-				"source", "message");
+				"source", "message", LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME);
                 messageTable.setFilterBarVisible(true);
+                
 		//messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 

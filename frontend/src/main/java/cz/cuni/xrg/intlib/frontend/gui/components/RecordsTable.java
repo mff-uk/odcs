@@ -1,14 +1,12 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -19,6 +17,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
 import java.util.List;
+import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -44,8 +43,8 @@ public class RecordsTable extends CustomComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!messageTable.isSelected(event.getItemId())) {
-					BeanItem beanItem = (BeanItem) event.getItem();
-					long recordId = (long) beanItem.getItemProperty("id")
+					CompositeItem item = (CompositeItem) event.getItem();
+					long recordId = (long) item.getItemProperty("id")
 							.getValue();
 					MessageRecord record = App.getDPUs().getDPURecord(recordId);
 					showRecordDetail(record);

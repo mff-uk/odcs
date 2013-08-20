@@ -232,8 +232,7 @@ public class SchedulePipeline extends Window {
 		
 		
 
-		container = ContainerFactory.CreatePipelines(App.getApp()
-				.getPipelines().getAllPipelines());
+		container = ContainerFactory.CreatePipelines();
 
 		pipelines = App.getApp().getPipelines().getAllPipelines();
 

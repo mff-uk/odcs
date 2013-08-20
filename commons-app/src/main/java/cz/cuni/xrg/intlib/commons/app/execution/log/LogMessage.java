@@ -122,24 +122,6 @@ public class LogMessage implements Serializable {
 	public Level getLevel() {
 		if (level == null && levelString != null) {
 			level = Level.toLevel(levelString);
-//			switch (levelString) {
-//				case "SEVERE":
-//					level = Level.SEVERE;
-//					break;
-//				case "WARNING":
-//					level = Level.WARNING;
-//					break;
-//				case "INFO":
-//					level = Level.INFO;
-//					break;
-//				case "CONFIG":
-//					level = Level.CONFIG;
-//					break;
-//				case "FINE":
-//					level = Level.FINE;
-//					break;
-//				default:
-//					level = Level.ALL;
 //			}
 		}
 
