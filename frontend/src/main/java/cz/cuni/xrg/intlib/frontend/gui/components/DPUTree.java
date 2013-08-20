@@ -3,7 +3,9 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.Container;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 
@@ -22,56 +24,70 @@ import java.util.List;
 public class DPUTree extends CustomComponent {
 
     VerticalLayout layoutTree;
+    VerticalLayout mainLayout;
     Tree dpuTree;
-    
     Button btnMinimize;
     Button btnExpand;
     GridLayout filterBar;
-    
+    boolean isExpandable = false;
 
     /**
      * Creates new DPUTree.
      */
-    public DPUTree() {
-
+    public DPUTree(boolean isExpandable) {
+        this.isExpandable = isExpandable;
         buildMainLayout();
-        setCompositionRoot(layoutTree);
+        setCompositionRoot(mainLayout);
     }
 
     /**
      * Builds layout.
      */
     private void buildMainLayout() {
+        
+        mainLayout = new VerticalLayout();
 
         layoutTree = new VerticalLayout();
         layoutTree.setSpacing(true);
         layoutTree.setImmediate(true);
         layoutTree.setHeight("100%");
         layoutTree.setMargin(true);
-        layoutTree.setStyleName("dpuTreeLayout");
+        mainLayout.setStyleName("dpuTreeLayout");
 
-        HorizontalLayout topLine = new HorizontalLayout();
-        Label lblTree = new Label("DPU Tree");
-        topLine.addComponent(lblTree);
-        btnMinimize = new Button("<<", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                setTreeState(false);
-            }
-        });
-        btnMinimize.setDescription("Minimize DPU tree");
-        topLine.addComponent(btnMinimize);
-        btnExpand = new Button(">>", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                setTreeState(true);
-            }
-        });
-        btnExpand.setDescription("Expand DPU tree");
-        btnExpand.setVisible(false);
-        topLine.addComponent(btnExpand);
-        layoutTree.addComponent(topLine);
-
+        if (isExpandable) {
+            HorizontalLayout topLine = new HorizontalLayout();
+            topLine.setWidth(100, Unit.PERCENTAGE);
+            Label lblTree = new Label("DPU Tree");
+            lblTree.setWidth(160, Unit.PIXELS);
+            topLine.addComponent(lblTree);
+            btnMinimize = new Button();
+            btnMinimize.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent event) {
+                    setTreeState(false);
+                }
+            });
+            btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
+            btnMinimize.setIcon(new ThemeResource("icons/collapse.png"));
+            btnMinimize.setDescription("Minimize DPU tree");
+            topLine.addComponent(btnMinimize);
+            topLine.setExpandRatio(btnMinimize, 1.0f);
+            btnExpand = new Button();
+            btnExpand.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent event) {
+                    setTreeState(true);
+                }
+            });
+            btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
+            btnExpand.setIcon(new ThemeResource("icons/expand.png"));
+            btnExpand.setDescription("Expand DPU tree");
+            btnExpand.setVisible(false);
+            topLine.addComponent(btnExpand);
+            topLine.setExpandRatio(btnExpand, 1.0f);
+            topLine.setComponentAlignment(btnExpand, Alignment.TOP_RIGHT);
+            mainLayout.addComponent(topLine);
+        }
 
         // DPURecord tree filters
         filterBar = new GridLayout(2, 2);
@@ -123,14 +139,14 @@ public class DPUTree extends CustomComponent {
         layoutTree.addComponent(dpuTree);
         layoutTree.setComponentAlignment(dpuTree, Alignment.TOP_LEFT);
         layoutTree.setExpandRatio(dpuTree, 0.95f);
+        mainLayout.addComponent(layoutTree);
     }
 
     private void setTreeState(boolean isStateExpanded) {
-        btnMinimize.setVisible(isStateExpanded);
-        btnExpand.setVisible(!isStateExpanded);
-        filterBar.setVisible(isStateExpanded);
-        dpuTree.setVisible(isStateExpanded);
-        layoutTree.setSizeUndefined();
+        btnMinimize.setVisible(isExpandable && isStateExpanded);
+        btnExpand.setVisible(isExpandable && !isStateExpanded);
+        layoutTree.setVisible(isStateExpanded);
+        mainLayout.setSizeUndefined();
     }
 
     /**

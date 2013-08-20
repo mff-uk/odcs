@@ -241,7 +241,7 @@ class DPU extends ViewComponent {
 		layoutInfo.addComponent(infoLabel);
 		
 		//DPU Template Tree
-		dpuTree = new DPUTree();
+		dpuTree = new DPUTree(false);
 		dpuTree.addItemClickListener(new ItemClickListener() {
 
 			private static final long serialVersionUID = 1L;

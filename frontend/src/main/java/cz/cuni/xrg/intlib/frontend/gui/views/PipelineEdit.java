@@ -185,7 +185,7 @@ class PipelineEdit extends ViewComponent {
 
 		VerticalLayout left = new VerticalLayout();
 		left.setWidth(250, Unit.PIXELS);
-		dpuTree = new DPUTree();
+		dpuTree = new DPUTree(true);
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setSizeUndefined();
 		dpuTree.setDragable(true);
