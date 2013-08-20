@@ -12,13 +12,13 @@ import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
  */
 public class FileLoaderConfig implements DPUConfigObject {
 
-	public String DirectoryPath;
+	public String DirectoryPath = "";
 
-	public String FileName;
+	public String FileName = "";
 
-	public RDFFormatType RDFFileFormat;
+	public RDFFormatType RDFFileFormat = RDFFormatType.AUTO;
 
-	public boolean DiffName;
+	public boolean DiffName = false;
 
 	@Override
 	public boolean isValid() {

@@ -11,17 +11,17 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  */
 public class FileExtractorConfig implements DPUConfigObject {
 
-	public String Path;
+	public String Path = "";
 
-	public String FileSuffix;
+	public String FileSuffix = "";
 
-	public String RDFFormatValue;
+	public String RDFFormatValue = "";
 	
-	public FileExtractType fileExtractType;
+	public FileExtractType fileExtractType = FileExtractType.PATH_TO_FILE;
 
-	public boolean OnlyThisSuffix;
+	public boolean OnlyThisSuffix = false;
 
-	public boolean UseStatisticalHandler;
+	public boolean UseStatisticalHandler = false;
 
 	@Override
 	public boolean isValid() {

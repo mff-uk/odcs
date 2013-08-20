@@ -13,19 +13,19 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  */
 public class RDFExtractorConfig implements DPUConfigObject {
 
-	public String SPARQL_endpoint;
+	public String SPARQL_endpoint = "";
 
-	public String Host_name;
+	public String Host_name = "";
 
-	public String Password;
+	public String Password = "";
 
 	public List<String> GraphsUri = new LinkedList<>();
 
-	public String SPARQL_query;
+	public String SPARQL_query = "";
 
-	public boolean ExtractFail;
+	public boolean ExtractFail = true;
 	
-	public boolean UseStatisticalHandler;
+	public boolean UseStatisticalHandler = true; 
 
 	@Override
 	public boolean isValid() {
