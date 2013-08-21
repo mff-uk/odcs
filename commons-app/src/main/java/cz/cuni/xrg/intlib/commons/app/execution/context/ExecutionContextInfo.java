@@ -162,6 +162,7 @@ public class ExecutionContextInfo implements Serializable {
 	/**
 	 * Generate unique id for given DataUnit. If call multiple times for the
 	 * same dpuInstance and DataUnit's index it return the same id.
+	 * The id has following format: exec_{exec_id}_dpu_{dpu_id}_du_{du_id}.
 	 * 
 	 * @param dpuInstance Owner of the DataUnit.
 	 * @param index DataUnit's index assigned to the DataUnit by context.
@@ -169,8 +170,8 @@ public class ExecutionContextInfo implements Serializable {
 	 */
 	public String generateDataUnitId(DPUInstanceRecord dpuInstance,
 			Integer index) {
-		return "ex" + execution.getId().toString() + "_dpu"
-				+ dpuInstance.getId().toString() + "_du" + index.toString();
+		return "exec_" + execution.getId().toString() + "_dpu_"
+				+ dpuInstance.getId().toString() + "_du_" + index.toString();
 	}
 
 	/**
