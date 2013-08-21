@@ -22,8 +22,8 @@ import java.io.Serializable;
  * The directory structure used by context is following;
  * ./working/DPU_ID/DATAUNIT_INDEX/ - DataUnit working directory
  * ./working/DPU_ID/tmp/ - DPU working directory
- * ./storage/DPU_ID/DATAUNIT_INDEX/ - storage for DataUnit results 
- * ./result/ - place for DPU's files that should be accessible to the user
+ * ./storage/DPU_ID/DATAUNIT_INDEX/ - storage for DataUnit results ./result/ -
+ * place for DPU's files that should be accessible to the user
  * 
  * @author Petyr
  * 
@@ -70,7 +70,7 @@ public class ExecutionContextInfo implements Serializable {
 	 */
 	@OneToOne(mappedBy = "context")
 	private PipelineExecution execution;
-	
+
 	/**
 	 * Dummy column, because Virtuoso cannot insert a row without specifying any
 	 * column values. Remove when entity has an attribute without default value.
@@ -161,8 +161,8 @@ public class ExecutionContextInfo implements Serializable {
 
 	/**
 	 * Generate unique id for given DataUnit. If call multiple times for the
-	 * same dpuInstance and DataUnit's index it return the same id.
-	 * The id has following format: exec_{exec_id}_dpu_{dpu_id}_du_{du_id}.
+	 * same dpuInstance and DataUnit's index it return the same id. The id has
+	 * following format: exec_{exec_id}_dpu_{dpu_id}_du_{du_id}.
 	 * 
 	 * @param dpuInstance Owner of the DataUnit.
 	 * @param index DataUnit's index assigned to the DataUnit by context.

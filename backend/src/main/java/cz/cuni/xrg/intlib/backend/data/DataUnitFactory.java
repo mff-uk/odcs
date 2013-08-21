@@ -69,7 +69,7 @@ public class DataUnitFactory {
 			RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(
 					directory.getAbsolutePath(), id, name);
 
-			localRepository.setDataGraph(GraphUrl.translateDataUnitId(Id));
+			localRepository.setDataGraph(GraphUrl.translateDataUnitId(id));
 			// create container with DataUnit and index
 			return localRepository;
 		case RDF_Virtuoso:
@@ -89,7 +89,7 @@ public class DataUnitFactory {
 					.createVirtuosoRDFRepo(hostName, port, user, password,
 							defautGraph, name);
 			// use unique DataUnit id as a graph name
-			virtosoRepository.setDataGraph(GraphUrl.translateDataUnitId(Id));
+			virtosoRepository.setDataGraph(GraphUrl.translateDataUnitId(id));
 			return virtosoRepository;
 		default:
 			throw new DataUnitCreateException("Unknown DataUnit type.");
