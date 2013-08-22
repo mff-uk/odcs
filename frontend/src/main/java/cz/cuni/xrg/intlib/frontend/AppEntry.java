@@ -152,6 +152,7 @@ public class AppEntry extends com.vaadin.ui.UI {
             public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
                 if (!event.getViewName().equals(ViewNames.Login.name()) && !checkAuthentication()) {
                     getNavigator().navigateTo(ViewNames.Login.getUrl());
+                    getMain().refreshUserBar();
                     return false;
                 }
                 setActive();
@@ -175,6 +176,7 @@ public class AppEntry extends com.vaadin.ui.UI {
         if(getLoggedInUser() == null) {
             return false;
         } else if(((new Date()).getTime() - getLastAction().getTime()) > timeoutSeconds * 1000) {
+            setLoggedInUser(null);
             return false;
         }
         return true;
