@@ -21,7 +21,6 @@ import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
-import cz.cuni.xrg.intlib.frontend.gui.views.Settings;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import java.util.*;
 import java.util.logging.Level;

@@ -1,11 +1,17 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
@@ -34,6 +40,10 @@ public class MenuLayout extends CustomComponent {
 	 */
 	private Panel viewLayout;
 
+        Label userName;
+                
+        Button logOutButton;
+        
 	/**
 	 * Class use as command to change sub-pages.
 	 * @author Petyr
@@ -99,7 +109,30 @@ public class MenuLayout extends CustomComponent {
 		this.menuBar.setImmediate(false);
 		this.menuBar.setWidth("100.0%");
 		this.menuBar.setHeight("20px");
-		this.mainLayout.addComponent(menuBar);
+		//this.mainLayout.addComponent(menuBar);
+                
+                User loggedUser = App.getApp().getLoggedInUser();
+                userName = new Label(loggedUser != null ? loggedUser.getUsername() : "");
+                userName.setWidth(100, Unit.PIXELS);
+                logOutButton = new Button();
+                logOutButton.setWidth(16, Unit.PIXELS);
+                logOutButton.setVisible(loggedUser != null);
+                logOutButton.setStyleName(BaseTheme.BUTTON_LINK);
+                logOutButton.setIcon(new ThemeResource("icons/logout.png"), "Log out");
+                logOutButton.addClickListener(new Button.ClickListener() {
+
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        App.getApp().setLoggedInUser(null);
+                        refreshUserBar();
+                        App.getApp().getNavigator().navigateTo(ViewNames.Login.getUrl());
+                    }
+                });
+                HorizontalLayout menuLine = new HorizontalLayout(menuBar, userName, logOutButton);
+                menuLine.setWidth(100, Unit.PERCENTAGE);
+                menuLine.setExpandRatio(menuBar, 1.0f);
+                this.mainLayout.addComponent(menuLine);
+                
 		// viewLayout
 		this.viewLayout = new Panel();
 		//this.viewLayout.setWidth("100.0%");
@@ -110,5 +143,11 @@ public class MenuLayout extends CustomComponent {
 
 		return this.mainLayout;
 	}
+        
+        public void refreshUserBar() {
+            User loggedUser = App.getApp().getLoggedInUser();
+            userName.setValue(loggedUser != null ? loggedUser.getUsername() : "");
+            logOutButton.setVisible(loggedUser != null);
+        }
 
 }

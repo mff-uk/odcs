@@ -89,6 +89,7 @@ public class Login extends ViewComponent {
             User user = App.getApp().getUsers().getUserByUsername(userName);
             if(user != null && PasswordHash.validatePassword(password.getValue(), user.getPassword())) {
                 App.getApp().setLoggedInUser(user);
+                App.getApp().getMain().refreshUserBar();
                 App.getApp().getNavigator().navigateTo(ViewNames.Initial.getUrl());
             }
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
