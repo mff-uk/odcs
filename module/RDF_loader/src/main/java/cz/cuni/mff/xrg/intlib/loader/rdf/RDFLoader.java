@@ -33,7 +33,15 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 				DataUnitException {
 		DataUnitList<RDFDataRepository> dataUnitList = RDFDataUnitList
 				.create(context);
-		RDFDataRepository repository = dataUnitList.getFirst();
+		
+		RDFDataRepository repository = null;
+		if (dataUnitList.filterByName("input").isEmpty()) {
+			// no named  use first
+			repository = dataUnitList.getFirst();
+		} else {
+			// there is DU with name input use it!
+			repository = dataUnitList.filterByName("input").getFirst();
+		}
 
 		final String endpoint = config.SPARQL_endpoint;
 		URL endpointURL = null;
