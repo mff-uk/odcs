@@ -1,23 +1,61 @@
-package cz.cuni.xrg.intlib.backend.context.impl;
+package cz.cuni.xrg.intlib.backend.context;
 
 import java.util.Iterator;
 import java.util.List;
 
-import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 
 /**
- * Very primitive DataUnits merger. Just copy
- * DataUnits from the right to the left.
+ * Basic interface for data merger.
  * 
  * @author Petyr
- *
+ * 
  */
-final class PrimitiveDataUnitMerger extends DataUnitMergerBase {
+class DataUnitMerger {
 
-	@Override
+	/**
+	 * Search for first command that can be applied to the DataUnit with given
+	 * name.
+	 * 
+	 * @param dataUnitName DataUnit's name.
+	 * @param instruction
+	 * @return Command or empty string.
+	 */
+	protected String findRule(String dataUnitName, String instruction) {
+		// check for null
+		if (instruction == null) {
+			return "";
+		}
+
+		String[] rules = instruction.split(DataUnitMergerInstructions.Separator
+				.getValue());
+		for (String item : rules) {
+			String[] elements = item.split(" ", 2);
+			// test name ..
+			if (elements.length < 2) {
+				// not enough data .. skip
+			} else { // elements.length == 2
+				if (elements[0].compareToIgnoreCase(dataUnitName) == 0) {
+					// math !!
+					return elements[1];
+				}
+			}
+		}
+		return "";
+	}	
+	
+	/**
+	 * Merge the data, the result is store in 'left'. If the two Lists of
+	 * DataUnits can't be merge throw ContextException.
+	 * 
+	 * @param left Target {@link DataUnitManager}.
+	 * @param right Source of DataUnits, do not change!
+	 * @param instruction Instruction for merger. See
+	 *            {@link cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions}
+	 * @throw ContextException
+	 */
 	public void merger(DataUnitManager left, List<DataUnit> right, 
 			String instruction) throws ContextException {
 		Iterator<DataUnit> iterRight = right.iterator();
@@ -72,4 +110,5 @@ final class PrimitiveDataUnitMerger extends DataUnitMergerBase {
 			}
 		}
 	}
+
 }

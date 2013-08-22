@@ -16,7 +16,6 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TextField;
 
 import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
-import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecordType;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
@@ -36,7 +35,6 @@ public class EmailComponent {
 //	public EmailNotifications parentComponent; 
 	private Button buttonEmailhRem;
 	private Button buttonEmailAdd;
-	private InvalidValueException ex;
 	private GridLayout gridLayoutEmail;
 	public TextField textFieldEmail;
 	private InvalidValueException mailEx;
@@ -80,7 +78,7 @@ public class EmailComponent {
 			}
 		}
 
-		private List<TextField> listedEditText = null;
+		public List<TextField> listedEditText = null;
 
 		/**
 		 * Save edited texts in the E-mail notification component
@@ -117,16 +115,21 @@ public class EmailComponent {
 				textFieldEmail.setData(row);
 				textFieldEmail.setValue(item.trim());
 				textFieldEmail.addTextChangeListener(new TextChangeListener() {
-					
+
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void textChange(TextChangeEvent event) {
 						// TODO Auto-generated method stub
 						saveEditedTexts();
 					}
 				});
-				textFieldEmail.setInputPrompt("franta@test.cz");
+				textFieldEmail.setInputPrompt("user@email.com");
 
-					textFieldEmail.addValidator(new Validator() {
+				textFieldEmail.addValidator(new Validator() {
+
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void validate(Object value) throws InvalidValueException {
 				//			if((parentComponent!=null) && (parentComponent.shEmailLayout.isEnabled())){
@@ -134,13 +137,13 @@ public class EmailComponent {
 										&& !((String) value).isEmpty()) {
 									String inputEmail = (String) value;
 									if(!inputEmail.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")){
-										mailEx = new InvalidValueException("Wrong mail format");
+										mailEx = new InvalidValueException("wrong е-mail format");
 										throw mailEx;
 									}
 									return;
 								}
 								
-								mailEx = new InvalidValueException("Email must be filled!");
+								mailEx = new InvalidValueException("e-mail must be filled");
 								throw mailEx;
 								
 				//			}
@@ -156,6 +159,9 @@ public class EmailComponent {
 				buttonEmailhRem.setCaption("-");
 				buttonEmailhRem.setData(row);
 				buttonEmailhRem.addClickListener(new Button.ClickListener() {
+
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
 						saveEditedTexts();
@@ -178,6 +184,9 @@ public class EmailComponent {
 			buttonEmailAdd.setWidth("55px");
 			buttonEmailAdd.setHeight("-1px");
 			buttonEmailAdd.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(Button.ClickEvent event) {
 					saveEditedTexts();
@@ -215,7 +224,7 @@ public class EmailComponent {
 			List<String> emailStr = griddata;
 			
 			for (String mail:emailStr){
-				if(mail!=""){
+				if(!mail.equals("")){
 				EmailAddress e = new EmailAddress(mail);
 				emails.add(e);
 				}
@@ -229,7 +238,7 @@ public class EmailComponent {
 			List<String> emailStr = griddata;
 			
 			for (String mail:emailStr){
-				if(mail!=""){
+				if(!mail.equals("")){
 				EmailAddress e = new EmailAddress(mail);
 				emails.add(e);
 				}

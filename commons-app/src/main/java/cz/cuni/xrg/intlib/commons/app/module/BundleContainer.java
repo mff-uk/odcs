@@ -63,8 +63,17 @@ class BundleContainer {
             this.loadedClassCtors.put(className, loaderClass);
 		}
 		
-		// we have loader, create instance ..
-		return loaderClass.newInstance(); // throw: InstantiationException, IllegalAccessException
+		// we have loader, create instance ..		
+		Object result = null;
+		try {
+			result = loaderClass.newInstance(); // throw: InstantiationException, IllegalAccessException
+		} catch (NoClassDefFoundError ex) {
+			// we just change the type to ClassNotFoundException
+			// so it can properly catch
+			throw new ClassNotFoundException(ex.getMessage());
+		}
+		// return instance
+		return result;
 	}
 
 	/**

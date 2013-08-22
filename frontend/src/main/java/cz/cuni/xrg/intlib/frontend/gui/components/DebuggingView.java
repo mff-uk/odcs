@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Property;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -58,6 +59,7 @@ public class DebuggingView extends CustomComponent {
     private Embedded iconStatus;
     private CheckBox refreshAutomatically = null;
     private RefreshThread refreshThread = null;
+    private ViewChangeListener leavePageListener;
 
     /**
      * Default constructor.
@@ -92,6 +94,21 @@ public class DebuggingView extends CustomComponent {
      * Builds main layout.
      */
     public final void buildMainLayout() {
+        leavePageListener = new ViewChangeListener() {
+            @Override
+            public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
+                 App.getApp().getNavigator().removeViewChangeListener(leavePageListener);
+//                 if(refreshThread != null && refreshThread.isAlive()) {
+//                     refreshThread.interrupt();
+//                 }
+                return true;
+            }
+
+            @Override
+            public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
+            }
+        };
+        App.getApp().getNavigator().addViewChangeListener(leavePageListener);
         mainLayout = new VerticalLayout();
 
         if (isFromCanvas) {
@@ -445,6 +462,23 @@ public class DebuggingView extends CustomComponent {
         Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
         for (Listener l : ls) {
             l.componentEvent(new Event(this));
+        }
+    }
+
+    /**
+     * Sets execution and debug node about which debug ingo should be shown.
+     * 
+     * @param execution New execution.
+     * @param instance New debug node.
+     * 
+     */
+    public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
+        this.pipelineExec = execution;
+        this.debugDpu = instance;
+        refreshContent();
+        if(refreshAutomatically.getValue()) {
+            refreshThread = new RefreshThread(2000, this.pipelineExec, this);
+            refreshThread.start();
         }
     }
 }

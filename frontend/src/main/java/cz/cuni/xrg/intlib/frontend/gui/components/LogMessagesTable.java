@@ -194,8 +194,8 @@ public class LogMessagesTable extends CustomComponent {
                     }
                 });
 		messageTable.setContainerDataSource(container);
-		messageTable.setVisibleColumns("date", "thread", "level",
-				"source", "message", LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME);
+		messageTable.setVisibleColumns("date", "level", "message", "source", LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME);
+
                 messageTable.setFilterBarVisible(true);
                 
 		//messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());

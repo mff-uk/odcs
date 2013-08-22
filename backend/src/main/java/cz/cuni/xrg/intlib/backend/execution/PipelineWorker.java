@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,8 +38,8 @@ import cz.cuni.xrg.intlib.backend.context.ExtendedContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext;
 import cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext;
-import cz.cuni.xrg.intlib.backend.context.impl.ContextFactory;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.backend.dpu.event.NoOutputEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractCompletedEvent;
 import cz.cuni.xrg.intlib.backend.extractor.events.ExtractStartEvent;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -64,6 +63,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -104,12 +104,18 @@ class PipelineWorker implements Runnable {
 	 */
 	@Autowired
 	private DataUnitFactory dataUnitFactory;
-	
+
+	/**
+	 * Bean factory used to create beans for single pipeline execution.
+	 */
+	@Autowired
+	private BeanFactory beanFactory;
+
 	/**
 	 * Manage mapping execution context into {@link #workDirectory}.
 	 */
-	private ExecutionContextInfo contextInfo;	
-	
+	private ExecutionContextInfo contextInfo;
+
 	/**
 	 * End time of last successful pipeline execution.
 	 */
@@ -123,26 +129,31 @@ class PipelineWorker implements Runnable {
 	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
-	private PipelineExecution execution;	
-	
+	private PipelineExecution execution;
+
 	/**
 	 * Logger class.
 	 */
 	private static final Logger LOG = LoggerFactory
-			.getLogger(PipelineWorker.class);	
-	
+			.getLogger(PipelineWorker.class);
+
 	public PipelineWorker() {
 		this.contexts = new HashMap<>();
 	}
-	
+
 	/**
-	 * Set pipeline execution for execution. 
+	 * Set pipeline execution for execution.
 	 */
 	public void init(PipelineExecution execution) {
 		this.execution = execution;
 		this.contextInfo = execution.getContext();
+		// if in SCHEDULED changed to RUNNING
+		if (this.execution.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
+			this.execution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
+			database.getPipeline().save(this.execution);
+		}
 	}
-	
+
 	/**
 	 * Load execution times {@link #lastExTime} and
 	 * {@link #lastSuccessfulExTime}
@@ -155,16 +166,16 @@ class PipelineWorker implements Runnable {
 		Date lastSucessWarn = database.getPipeline().getLastExecTime(
 				execution.getPipeline(),
 				PipelineExecutionStatus.FINISHED_WARNING);
-		// null check .. 
+		// null check ..
 		if (lastSucess == null) {
 			lastSuccessfulExTime = lastSucessWarn;
 		} else if (lastSucessWarn == null) {
-			lastSuccessfulExTime = lastSucess; 
+			lastSuccessfulExTime = lastSucess;
 		} else {
 			// get last successful execution time
 			lastSuccessfulExTime = lastSucess.after(lastSucessWarn)
-				? lastSucess
-				: lastSucessWarn;
+					? lastSucess
+					: lastSucessWarn;
 		}
 	}
 
@@ -190,22 +201,24 @@ class PipelineWorker implements Runnable {
 	}
 
 	/**
-	 * Try to delete directory in execution directory. 
-	 * If error occur then is logged. 
+	 * Try to delete directory in execution directory. If error occur then is
+	 * logged.
+	 * 
 	 * @param directory Relative path from execution directory.
 	 */
 	private void deleteDirectory(String directoryPath) {
-		File directory = new File(appConfig
-				.getString(ConfigProperty.GENERAL_WORKINGDIR),
+		File directory = new File(
+				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
 				directoryPath);
 		try {
 			FileUtils.deleteDirectory(directory);
 		} catch (IOException e) {
-			LOG.error("Can't delete directory after execution: "
-					+ execution.getId(), e);
-		}		
+			LOG.error(
+					"Can't delete directory after execution: "
+							+ execution.getId(), e);
+		}
 	}
-	
+
 	/**
 	 * Do cleanup work after pipeline execution. Also delete the worker
 	 * directory it the pipeline if not in debugMode.
@@ -224,11 +237,11 @@ class PipelineWorker implements Runnable {
 					exCtx.delete();
 				}
 			} else {
-				LOG.error("contexts.values() return class the " +
-						"is not instance of ProcessingContext");
+				LOG.error("contexts.values() return class the "
+						+ "is not instance of ProcessingContext");
 			}
 		}
-		
+
 		if (execution.isDebugging()) {
 			// do not delete anything
 		} else {
@@ -239,13 +252,13 @@ class PipelineWorker implements Runnable {
 			deleteDirectory(contextInfo.getStoragePath());
 			// if the execution directory is empty -> no result dir exist
 			// delete it
-			final File resultDir = new File(appConfig
-					.getString(ConfigProperty.GENERAL_WORKINGDIR),
+			final File resultDir = new File(
+					appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
 					contextInfo.getResultPath());
 			if (resultDir.exists()) {
-				// check for content 
-				final File [] files = resultDir.listFiles();
-				if (files == null ||	files.length == 0) {
+				// check for content
+				final File[] files = resultDir.listFiles();
+				if (files == null || files.length == 0) {
 					// is empty -> delete execution directory
 					deleteDirectory(contextInfo.getRootPath());
 				} else {
@@ -255,7 +268,7 @@ class PipelineWorker implements Runnable {
 				// no result directory exist -> delete execution directory
 				deleteDirectory(contextInfo.getRootPath());
 			}
-		}		
+		}
 	}
 
 	/**
@@ -297,7 +310,7 @@ class PipelineWorker implements Runnable {
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
 			boolean result;
-			
+
 			// save context with the DPU that will be executed
 			ProcessingUnitInfo unitInfo = null;
 			unitInfo = contextInfo.getDPUInfo(node.getDpuInstance());
@@ -376,7 +389,7 @@ class PipelineWorker implements Runnable {
 
 				// save context after last execution
 				pipelineFacade.save(execution);
-				
+
 				// also save new DataUnits
 				ProcessingContext lastContext = contexts.get(node);
 				if (lastContext instanceof ExtendedContext) {
@@ -422,7 +435,7 @@ class PipelineWorker implements Runnable {
 		}
 		// save execution
 		pipelineFacade.save(execution);
-		
+
 		// publish information for the rest of the application
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
 	}
@@ -484,10 +497,10 @@ class PipelineWorker implements Runnable {
 				IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		// ...
-		ExtendedExtractContext extractContext;
-		extractContext = ContextFactory.create(execution, dpuInstance,
-				eventPublisher, contextInfo, ExtendedExtractContext.class,
-				appConfig, lastSuccessfulExTime);
+		ExtendedExtractContext extractContext = beanFactory.getBean(
+				"extractContext", ExtendedExtractContext.class);
+		extractContext.init(execution, dpuInstance, contextInfo,
+				lastSuccessfulExTime);
 		// store context
 		contexts.put(node, extractContext);
 		return extractContext;
@@ -511,10 +524,10 @@ class PipelineWorker implements Runnable {
 				IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		// ...
-		ExtendedTransformContext transformContext;
-		transformContext = ContextFactory.create(execution, dpuInstance,
-				eventPublisher, contextInfo, ExtendedTransformContext.class,
-				appConfig, lastSuccessfulExTime);
+		ExtendedTransformContext transformContext = beanFactory.getBean(
+				"transformContext", ExtendedTransformContext.class);
+		transformContext.init(execution, dpuInstance, contextInfo,
+				lastSuccessfulExTime);
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
@@ -554,10 +567,11 @@ class PipelineWorker implements Runnable {
 				IOException {
 		DPUInstanceRecord dpuInstance = node.getDpuInstance();
 		// ...
-		ExtendedLoadContext loadContext;
-		loadContext = ContextFactory.create(execution, dpuInstance,
-				eventPublisher, contextInfo, ExtendedLoadContext.class,
-				appConfig, lastSuccessfulExTime);
+		ExtendedLoadContext loadContext = beanFactory.getBean("loadContext",
+				ExtendedLoadContext.class);
+		loadContext.init(execution, dpuInstance, contextInfo,
+				lastSuccessfulExTime);
+
 		if (ancestors.isEmpty()) {
 			// no ancestors ? -> error
 			throw new StructureException("No inputs.");
@@ -631,7 +645,14 @@ class PipelineWorker implements Runnable {
 				throw new StructureException("Failed to create context.", e);
 			}
 
-			return runExtractor(extractor, context);
+			boolean result = runExtractor(extractor, context);			
+			// check for outputs
+			if (context.getOutputs().isEmpty()) {
+				// no outputs
+				eventPublisher.publishEvent(new NoOutputEvent(node
+						.getDpuInstance(), execution, this));
+			}			
+			return result;
 		} else if (dpuInstance instanceof Transform) {
 			Transform transformer = (Transform) dpuInstance;
 
@@ -642,7 +663,21 @@ class PipelineWorker implements Runnable {
 				throw new StructureException("Failed to create context.", e);
 			}
 
-			return runTransformer(transformer, context);
+			// check for outputs
+			if (context.getOutputs().isEmpty()) {
+				// no outputs
+				eventPublisher.publishEvent(new NoOutputEvent(node
+						.getDpuInstance(), execution, this));
+			}			
+			
+			boolean result = runTransformer(transformer, context);
+			// check for outputs
+			if (context.getOutputs().isEmpty()) {
+				// no outputs
+				eventPublisher.publishEvent(new NoOutputEvent(node
+						.getDpuInstance(), execution, this));
+			}			
+			return result;
 		} else if (dpuInstance instanceof Load) {
 			Load loader = (Load) dpuInstance;
 

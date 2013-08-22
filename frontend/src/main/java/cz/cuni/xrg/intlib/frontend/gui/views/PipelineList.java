@@ -230,7 +230,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				String description = (String) source.getItem(itemId).getItemProperty(columnId).getValue();
 				if(description.length() > App.MAX_TABLE_COLUMN_LENGTH) {
-					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH));
+					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH - 3) + "...");
 					descriptionLabel.setDescription(description);
 					return descriptionLabel;
 				} else {

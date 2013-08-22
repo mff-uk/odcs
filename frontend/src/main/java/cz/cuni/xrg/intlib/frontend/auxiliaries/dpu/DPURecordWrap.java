@@ -96,9 +96,6 @@ class DPURecordWrap {
 
 	/**
 	 * Try to load configuration from {@link #dpuRecord} into {@link #configDialog}.
-	 * If the {@link #configDialog} does not exist nothing happen. If the 
-	 * {@link #dpuRecord} does not contains any configuration the configuration for dialog
-	 * is left untouched.
 	 * @throws ConfigException
 	 */
 	private void loadConfigIntoDialog() throws ConfigException {
@@ -107,11 +104,7 @@ class DPURecordWrap {
 			return;
 		}
 		byte[] conf = dpuRecord.getRawConf();
-		if (conf == null) {
-			// use default configuration
-		} else {
-			configDialog.setConfig(conf);
-		}
+		configDialog.setConfig(conf);
 	}
 	
 	/**

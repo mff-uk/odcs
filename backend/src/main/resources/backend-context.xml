@@ -7,37 +7,51 @@
 
 	<import resource="classpath:commons-app-context.xml" />
 
-	<!-- Module configuration needs to be defined here,
-		 because it differs from frontend -->
+	<!-- Module configuration needs to be defined here, because it differs from 
+		frontend -->
 	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
 		<constructor-arg value="BACKEND" />
 	</bean>
 
 	<!-- TCP/IP server, used to recieve request from frontend -->
-	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server"/>
-	
-	<!-- engine itself, take care about executing of PipelineExecution -->
-	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine"/>
+	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server" />
 
-	<!--  prototype for pipeline worker bean -->
+	<!-- engine itself, take care about executing of PipelineExecution -->
+	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine" />
+
+	<!-- prototype for pipeline worker bean -->
 	<bean id="pipelineWorker" class="cz.cuni.xrg.intlib.backend.execution.PipelineWorker"
-	     scope="prototype" lazy-init="true"/>
+		scope="prototype" lazy-init="true" />
 	
-	<!-- access to database on one place -->
-	<bean id="dbAccess" class="cz.cuni.xrg.intlib.backend.DatabaseAccess" />	
-	
-	<!-- data unit factory class -->
-	<bean id="dataUnitFactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory" />
-	
-	<!-- store events into database -->
-	<bean class="cz.cuni.xrg.intlib.backend.EventListenerDatabase">
-	    <constructor-arg ref="dbAccess"/>
+	<!-- prototypes for contexts -->
+	<bean id="ExContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedContext"
+	    abstract="true">
+	    <constructor-arg index="0" ref="dataUnitFactory" />
+	    <constructor-arg index="1" ref="configuration" />
 	</bean>
 	
+	<bean id="extractContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext"
+		scope="prototype" lazy-init="true" parent="ExContext" />
+	<bean id="loadContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext"
+		scope="prototype" lazy-init="true" parent="ExContext" />
+	<bean id="transformContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext"
+		scope="prototype" lazy-init="true" parent="ExContext" />
+
+	<!-- access to database on one place -->
+	<bean id="dbAccess" class="cz.cuni.xrg.intlib.backend.DatabaseAccess" />
+
+	<!-- data unit factory class -->
+	<bean id="dataUnitFactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory" />
+
+	<!-- store events into database -->
+	<bean class="cz.cuni.xrg.intlib.backend.EventListenerDatabase">
+		<constructor-arg ref="dbAccess" />
+	</bean>
+
 	<!-- periodically send message to event to check DB for new tasks -->
 	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" />
 
 	<!-- scheduler -->
 	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" />
-	
+
 </beans>

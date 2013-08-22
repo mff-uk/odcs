@@ -89,7 +89,7 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-Version>${dpu.version}</Bundle-Version>
 						<Bundle-Description>${dpu.description}</Bundle-Description>
 						<Export-Package>${dpu.package};version="${dpu.version}"</Export-Package>
 						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}",com.vaadin.*;version="${vaadin.version}",*</Import-Package>
@@ -103,6 +103,7 @@
 						<!-- information for intlib -->
 						<DPU-Package>${dpu.package}</DPU-Package>
 						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
+						<Intlib-Version>${project.version}</Intlib-Version>
 					</instructions>					
 				</configuration>
 			</plugin>			

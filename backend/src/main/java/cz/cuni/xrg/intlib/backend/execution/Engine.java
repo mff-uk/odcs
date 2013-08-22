@@ -124,7 +124,7 @@ public class Engine
 	 * Check database for new task (PipelineExecutions to run). Can run
 	 * concurrently.
 	 */
-	protected void checkDatabase() {
+	protected synchronized void checkDatabase() {
 		List<PipelineExecution> toExecute = database.getPipeline()
 				.getAllExecutions();
 		// run pipeline executions ..

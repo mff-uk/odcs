@@ -174,16 +174,35 @@ public class AppEntry {
 		LOG.info("Running ...");
 		
 		// infinite loop
+		
 		InputStreamReader converter = new InputStreamReader(System.in);
 		BufferedReader in = new BufferedReader(converter);		
 		while (true) {
+			String line = "";
 			try {
-				in.readLine();
+				line = in.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
 				continue;
-			}			
-		}		
+			}
+			if (line.compareToIgnoreCase("exit") == 0) {
+				break;
+			}
+		}
+		
+		LOG.info("Closing TCP/IP server ...");
+		server.stop();
+		// give TCP/IP server time to close
+		try {
+			Thread.sleep(2 * Server.TCPIP_TIMEOUT);
+		} catch (InterruptedException e) {
+		}
+		LOG.info("Stopping OSGI framework ...");
+		modeleFacade.stop();
+		LOG.info("Closing spring context ...");
+		heartbeatThread.interrupt();
+		context.close();
+		LOG.info("Closing application ...");
 	}
 	
 	public static void main(String[] args) {

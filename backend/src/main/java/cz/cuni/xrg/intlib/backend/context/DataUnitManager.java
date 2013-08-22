@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.backend.context.impl;
+package cz.cuni.xrg.intlib.backend.context;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -8,7 +8,7 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  */
 public class SPARQLTransformerConfig implements DPUConfigObject {
 
-	public String SPARQL_Update_Query;
+	public String SPARQL_Update_Query = "";
 
 	@Override
 	public boolean isValid() {

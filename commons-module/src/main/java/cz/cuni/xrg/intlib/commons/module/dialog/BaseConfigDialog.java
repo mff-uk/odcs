@@ -23,8 +23,12 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
     
 	@Override
 	public void setConfig(byte[] conf) throws ConfigException {
-		C config = configWrap.deserialize(conf);		
-		if (config.isValid()) {
+		C config = configWrap.deserialize(conf);
+		if (config == null) {
+			// null -> try to use default configuration
+			config = configWrap.createInstance();
+		}
+		if (config != null && config.isValid()) {
 			setConfiguration(config);
 		} else {
 			// invalid configuration
@@ -37,4 +41,18 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 		return configWrap.serialize(getConfiguration());
 	}
 	
+	/**
+	 * Set dialog interface according to passed configuration. If
+	 * the passed configuration is invalid ConfigException can be thrown.
+	 * @param conf Configuration object.
+	 * @throws ConfigException
+	 */
+	protected abstract void setConfiguration(C conf) throws ConfigException;
+	
+	/**
+	 * Get configuration from dialog. In case of presence invalid configuration in 
+	 * dialog throw ConfigException.
+	 * @return getConfiguration object.
+	 */
+	protected abstract C getConfiguration() throws ConfigException;	
 }

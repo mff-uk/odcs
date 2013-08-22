@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.rdf.GraphUrl;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
@@ -68,7 +69,7 @@ public class DataUnitFactory {
 			RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(
 					directory.getAbsolutePath(), id, name);
 
-			localRepository.setDataGraph("http://" + id);
+			localRepository.setDataGraph(GraphUrl.translateDataUnitId(id));
 			// create container with DataUnit and index
 			return localRepository;
 		case RDF_Virtuoso:
@@ -88,7 +89,7 @@ public class DataUnitFactory {
 					.createVirtuosoRDFRepo(hostName, port, user, password,
 							defautGraph, name);
 			// use unique DataUnit id as a graph name
-			virtosoRepository.setDataGraph("http://" + id);
+			virtosoRepository.setDataGraph(GraphUrl.translateDataUnitId(id));
 			return virtosoRepository;
 		default:
 			throw new DataUnitCreateException("Unknown DataUnit type.");

@@ -11,7 +11,7 @@
     <packaging>bundle</packaging>
     
     <properties>       
-        <module.version>0.0.1</module.version>
+        <dpu.version>0.0.1</dpu.version>
         <dpu.package>cz.cuni.mff.xrg.intlib.loader.rdf</dpu.package>
         <dpu.mainClass>RDFLoader</dpu.mainClass>
     </properties>

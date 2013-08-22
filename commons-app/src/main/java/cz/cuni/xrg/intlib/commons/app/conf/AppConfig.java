@@ -3,9 +3,10 @@ package cz.cuni.xrg.intlib.commons.app.conf;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 
 /**
  * Class with backend application configuration.
@@ -35,6 +36,7 @@ public class AppConfig {
 	 * Constructor reads configuration file.
 	 */
 	public AppConfig() {
+		LOG.log(Level.INFO, "Loading configuration from: " + confPath);
 		try {
 			FileInputStream stream = new FileInputStream(confPath);
 			prop.load(stream);
