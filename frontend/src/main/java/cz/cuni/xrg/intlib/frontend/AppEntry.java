@@ -3,11 +3,10 @@ package cz.cuni.xrg.intlib.frontend;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
@@ -15,11 +14,13 @@ import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
+import java.util.Date;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -53,6 +54,12 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.navigator.addView(view.getUrl(), ViewsFactory.create(view));
     }
     private MenuLayout main;
+    private User loggedUser = null;
+    private Date lastAction = null;
+    /**
+     * Time in seconds before session expirates.
+     */
+    private int timeoutSeconds = 300;
 
     /**
      * Add url-view association into navigator.
@@ -127,7 +134,7 @@ public class AppEntry extends com.vaadin.ui.UI {
                         cause = t;
                     }
                 }
-                if(cause != null) {
+                if (cause != null) {
                     // Display the error message in a custom fashion
                     String text = String.format("Exception: %s, Message: %s", cause.getClass().getName(), cause.getMessage());
                     Notification.show("Uncaught exception appeared in system!", text, Notification.Type.ERROR_MESSAGE);
@@ -137,6 +144,40 @@ public class AppEntry extends com.vaadin.ui.UI {
                 }
             }
         });
+        /**
+         * Checking user every time request is made.
+         */
+        this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+            @Override
+            public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
+                if (!event.getViewName().equals(ViewNames.Login.name()) && !checkAuthentication()) {
+                    getNavigator().navigateTo(ViewNames.Login.getUrl());
+                    return false;
+                }
+                setActive();
+                return true;
+            }
+
+            @Override
+            public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
+            }
+        });
+
+    }
+
+    /**
+     * Checks if there is logged in user and if its session is still valid.
+     * @return True if user and its session are valid, False otherwise.
+     * 
+     */
+    private boolean checkAuthentication() {
+//        return true;
+        if(getLoggedInUser() == null) {
+            return false;
+        } else if(((new Date()).getTime() - getLastAction().getTime()) > timeoutSeconds * 1000) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -224,5 +265,38 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     public MenuLayout getMain() {
         return main;
+    }
+
+    /**
+     * Sets logged in user.
+     *
+     * @param user New logged in user.
+     */
+    public void setLoggedInUser(User user) {
+        loggedUser = user;
+    }
+
+    /**
+     * Gets logged in user.
+     *
+     * @return Logged in user or null.
+     */
+    public User getLoggedInUser() {
+        return loggedUser;
+    }
+
+    /**
+     * Sets last action date to current time.
+     */
+    public void setActive() {
+        lastAction = new Date();
+    }
+
+    /**
+     * Gets time of last action.
+     * @return Time of last action.
+     */
+    public Date getLastAction() {
+        return lastAction;
     }
 }

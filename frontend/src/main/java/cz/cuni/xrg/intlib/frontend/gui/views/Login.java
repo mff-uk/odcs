@@ -11,9 +11,15 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import cz.cuni.xrg.intlib.commons.app.auth.PasswordHash;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Login screen of application.
@@ -38,12 +44,12 @@ public class Login extends ViewComponent {
             @Override
             protected String getCss(Component c) {
                 if (c instanceof VerticalLayout) {
-                    return "position: absolute;" +
-"    top:0;" +
-"    bottom: 0;" +
-"    left: 0;" +
-"    right: 0;" +
-"    margin: auto;";
+                    return "position: absolute;"
+                            + "    top:0;"
+                            + "    bottom: 0;"
+                            + "    left: 0;"
+                            + "    right: 0;"
+                            + "    margin: auto;";
                 }
                 return null;
             }
@@ -68,12 +74,25 @@ public class Login extends ViewComponent {
         Button loginButton = new Button("Login", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                App.getApp().getNavigator().navigateTo(ViewNames.Initial.getUrl());
+                login();
             }
         });
         layout.addComponent(loginButton);
         layout.setSizeUndefined();
         mainLayout.addComponent(layout);
 
+    }
+
+    private void login() {
+        try {
+            String userName = login.getValue();
+            User user = App.getApp().getUsers().getUserByUsername(userName);
+            if(user != null && PasswordHash.validatePassword(password.getValue(), user.getPassword())) {
+                App.getApp().setLoggedInUser(user);
+                App.getApp().getNavigator().navigateTo(ViewNames.Initial.getUrl());
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
