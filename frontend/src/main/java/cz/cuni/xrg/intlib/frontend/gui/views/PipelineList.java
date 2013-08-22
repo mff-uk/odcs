@@ -7,19 +7,12 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
 
-import cz.cuni.xrg.intlib.commons.app.communication.Client;
-import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -245,7 +238,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				String description = (String) source.getItem(itemId).getItemProperty(columnId).getValue();
 				if(description.length() > App.MAX_TABLE_COLUMN_LENGTH) {
-					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH));
+					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH - 3) + "...");
 					descriptionLabel.setDescription(description);
 					return descriptionLabel;
 				} else {
