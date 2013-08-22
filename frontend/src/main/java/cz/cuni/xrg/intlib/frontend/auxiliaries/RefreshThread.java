@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
@@ -45,6 +47,7 @@ public class RefreshThread extends Thread {
                     if (debug.isRefreshingAutomatically()) {
                         lastStatus = true;
                         debug.refreshContent();
+                        Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
                     } else {
                         lastStatus = false;
                     }

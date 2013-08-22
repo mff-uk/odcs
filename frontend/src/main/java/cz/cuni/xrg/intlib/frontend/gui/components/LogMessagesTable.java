@@ -146,8 +146,7 @@ public class LogMessagesTable extends CustomComponent {
 		Container container = ContainerFactory.CreateLogMessages(data);
 
 		messageTable.setContainerDataSource(container);
-		messageTable.setVisibleColumns("date", "thread", "level",
-				"source", "message");
+		messageTable.setVisibleColumns("date", "level", "message", "source");
                 messageTable.setFilterBarVisible(true);
 		//messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}

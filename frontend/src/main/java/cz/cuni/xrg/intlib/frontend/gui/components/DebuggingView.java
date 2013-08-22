@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Property;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -20,6 +21,7 @@ import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
+import cz.cuni.xrg.intlib.frontend.gui.views.Settings;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import java.util.*;
 import java.util.logging.Level;
@@ -58,6 +60,7 @@ public class DebuggingView extends CustomComponent {
     private Embedded iconStatus;
     private CheckBox refreshAutomatically = null;
     private RefreshThread refreshThread = null;
+    private ViewChangeListener leavePageListener;
 
     /**
      * Default constructor.
@@ -92,6 +95,21 @@ public class DebuggingView extends CustomComponent {
      * Builds main layout.
      */
     public final void buildMainLayout() {
+        leavePageListener = new ViewChangeListener() {
+            @Override
+            public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
+                 App.getApp().getNavigator().removeViewChangeListener(leavePageListener);
+//                 if(refreshThread != null && refreshThread.isAlive()) {
+//                     refreshThread.interrupt();
+//                 }
+                return true;
+            }
+
+            @Override
+            public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
+            }
+        };
+        App.getApp().getNavigator().addViewChangeListener(leavePageListener);
         mainLayout = new VerticalLayout();
 
         if (isFromCanvas) {
