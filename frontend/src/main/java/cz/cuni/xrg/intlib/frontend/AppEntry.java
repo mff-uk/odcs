@@ -273,7 +273,7 @@ public class AppEntry extends com.vaadin.ui.UI {
      * @param type
      * @return bean
      */
-    public<T extends Object> T getBean(Class<T> type) {
+    public <T extends Object> T getBean(Class<T> type) {
         return context.getBean(type);
     }
 
