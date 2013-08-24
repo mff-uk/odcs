@@ -93,7 +93,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 
         // create Spring context, always the first after application init,
 		// so that all needed beans are ready.
-        context = new ClassPathXmlApplicationContext("frontend-context.xml");
+        context = new ClassPathXmlApplicationContext(
+				"frontend-context.xml",
+				"commons-app-context-security.xml"
+		);
 		
         // create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
