@@ -15,5 +15,7 @@
 	<b:bean id="authenticationProvider" class="cz.cuni.xrg.intlib.commons.app.auth.IntlibAuthenticationProvider">
 		<b:constructor-arg ref="userFacade" />
 	</b:bean>
+	
+	<b:bean id="authenticationContext" class="cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService" />
 
 </b:beans>
