@@ -62,7 +62,10 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 
 			}
 			//If item execution status is FAILED or FINISHED_SUCCESS then for that item will be shown Show log button
-			if (((testStatus == PipelineExecutionStatus.FAILED) || (testStatus == PipelineExecutionStatus.FINISHED_SUCCESS) || (testStatus == PipelineExecutionStatus.RUNNING))
+			if (((testStatus == PipelineExecutionStatus.FAILED) || 
+					(testStatus == PipelineExecutionStatus.FINISHED_SUCCESS) || 
+					(testStatus == PipelineExecutionStatus.FINISHED_WARNING) ||
+					(testStatus == PipelineExecutionStatus.RUNNING))
 					&& !testDebug) {
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog", itemId));

@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 
@@ -29,7 +30,13 @@ public class DatabaseAccess {
 	 * Facade for working with plans.
 	 */
 	@Autowired
-	private ScheduleFacade plan;
+	private ScheduleFacade schedule;
+	
+	/**
+	 * Facade for working with logs.
+	 */	
+	@Autowired
+	private LogFacade log;
 	
 	public DPUFacade getDpu() {
 		return dpu;
@@ -40,6 +47,10 @@ public class DatabaseAccess {
 	}
 	
 	public ScheduleFacade getSchedule() {
-		return plan;
+		return schedule;
 	}
+	
+	public LogFacade getLog() {
+		return log;
+	}	
 }

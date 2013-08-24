@@ -143,7 +143,33 @@ public class LogFacade {
 
 		return resultList;
 	}
-        
+    
+	/**
+	 * Return true if there exist logs with given level for given dpu instance
+	 * of given pipeline execution.
+	 * 
+	 * @param exec
+	 * @param levels
+	 * @return
+	 */
+	public boolean existLogs(PipelineExecution exec,  Set<Level> levels) {
+		// convert levels to strings
+		Set<String> lvls = new HashSet<>();
+		for (Level level : levels) {
+			lvls.add(level.toString());
+		}	
+		
+		Long count = (Long) em .createQuery(
+						"SELECT Count(*) FROM LogMessage e"
+								+ " WHERE e.levelString IN (:lvl)"
+								+ " AND e.properties[:propKey] = :propVal")
+				.setParameter("lvl", lvls)
+				.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
+				.setParameter("propVal", Long.toString(exec.getId()))
+				.getSingleResult();
+		return count > 0;
+	}
+	
         /**
 	 * Returns all log messages for given dpu instance of given pipeline execution.
 	 *
