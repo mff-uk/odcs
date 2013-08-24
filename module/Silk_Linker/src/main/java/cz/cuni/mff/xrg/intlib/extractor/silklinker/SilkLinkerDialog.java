@@ -1,26 +1,23 @@
 package cz.cuni.mff.xrg.intlib.extractor.silklinker;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
-import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
+import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  *
  */
-public class SilkLinkerDialog extends AbstractConfigDialog<SilkLinkerConfig> {
+public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
 
     private GridLayout mainLayout;
     private TextField confPath; //Path
 
     public SilkLinkerDialog() {
+    	super(SilkLinkerConfig.class);
         buildMainLayout();
         setCompositionRoot(mainLayout);
     }

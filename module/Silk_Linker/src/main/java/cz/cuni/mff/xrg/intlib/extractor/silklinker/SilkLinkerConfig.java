@@ -9,18 +9,27 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  */
 public class SilkLinkerConfig implements DPUConfigObject {
     
-    //path to the config file driving the execution of Silk
-    private final String confFile;
+    /**
+     * Path to the config file driving the execution of Silk.
+     */
+    private String confFile;
 
-
+    public SilkLinkerConfig() {
+    	confFile = null;
+    }
+    
     public SilkLinkerConfig(String confFile) {
         this.confFile = confFile;
-
     }
 
     String getSilkConf() {
         return confFile;
     }
+
+	@Override
+	public boolean isValid() {
+		return confFile != null;
+	}
     
 
 }

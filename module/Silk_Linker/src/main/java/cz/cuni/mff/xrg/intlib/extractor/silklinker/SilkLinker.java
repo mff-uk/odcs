@@ -1,83 +1,54 @@
 package cz.cuni.mff.xrg.intlib.extractor.silklinker;
 
-import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
-import cz.cuni.xrg.intlib.commons.configuration.Configurable;
-import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
-import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
-import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
-import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import de.fuberlin.wiwiss.silk.Silk;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.transform.stream.StreamSource;
 
-
-//import de.fuberlin.wiwiss.silk.Silk;
-//import de.fuberlin.wiwiss.silk.config.RuntimeConfig;
-//import de.fuberlin.wiwiss.silk.LoadTask;
-//import de.fuberlin.wiwiss.silk.cache.EntityCache;
-
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple XSLT Extractor
  *
  * @author tomasknap
  */
-//import de.fuberlin.wiwiss.silk.config.LinkSpecification;
-//import de.fuberlin.wiwiss.silk.config.LinkingConfig;
-//import de.fuberlin.wiwiss.silk.config.Prefixes;
-//import de.fuberlin.wiwiss.silk.datasource.Source;
-//import de.fuberlin.wiwiss.silk.util.DPair;
-//import de.fuberlin.wiwiss.silk.util.FileUtils;
-//import de.fuberlin.wiwiss.silk.output.Output;
-import org.slf4j.LoggerFactory;
-
-
-public class SilkLinker implements Extract, Configurable<SilkLinkerConfig>, ConfigDialogProvider<SilkLinkerConfig> {
+public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
+	implements Extract,  ConfigDialogProvider<SilkLinkerConfig>, BundleActivator {
 
     
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(
+    private static final Logger LOG = LoggerFactory.getLogger(
 			SilkLinker.class);
-    /**
-     * DPU's configuration.
-     */
-    private SilkLinkerConfig config;
 
+    public SilkLinker() {
+    	super(new SilkLinkerConfig());
+    }
+    
     @Override
     public AbstractConfigDialog<SilkLinkerConfig> getConfigurationDialog() {
         return new SilkLinkerDialog();
-    }
-
-    @Override
-    public void configure(SilkLinkerConfig c) throws ConfigException {
-        config = c;
-    }
-
-    @Override
-    public SilkLinkerConfig getConfiguration() {
-        return config;
     }
 
     // TODO 2: Provide implementation of unimplemented methods 
     @Override
     public void extract(ExtractContext context) throws ExtractException {
 
+    	silk();
+    	
         //inputs (sample config file is in the file module/Silk_Linker/be-sameAs.xml)
-        File conf = new File(config.getSilkConf());
+        //File conf = new File(config.getSilkConf());
         
         //Execution of the Silk linker (xml conf is an important input!)
         //TODO Petr: solve the problem when loading XML conf
-        logger.info("Silk is being launched");
-        Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
-        
+        //LOG.info("Silk is being launched");
+        //Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
+        //LOG.info("Silk finished");
         
         //TODO Tomas: dialog - uploader + context.getWorkingDir(), show the uploaded file in textarea
         
@@ -85,7 +56,8 @@ public class SilkLinker implements Extract, Configurable<SilkLinkerConfig>, Conf
         //hardcoded names in the .xml configuration file.
                     
       
-        logger.info("Output 'confirmed links' is being prepared");
+        LOG.info("Output 'confirmed links' is being prepared");
+        /*
         //outputs confirmed
         //the outgoing edge must be labelled as: output rename outputs_confirmed
         RDFDataRepository outputRepositoryConfirmed;
@@ -114,9 +86,28 @@ public class SilkLinker implements Extract, Configurable<SilkLinkerConfig>, Conf
         } catch (RDFException ex) {
             Logger.getLogger(SilkLinker.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-
+        */
     }
+    
+    protected void silk() {
+    	LOG.info("DPU classLoader: {}", this.getClass().getClassLoader().toString());
+    	LOG.info("Silk classLoader: {}", Silk.class.getClassLoader().toString());
+    	
+		File conf = new File("e:/Tmp/be-sameAs.xml");
+		Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
+    }
+
+    @Override
+	public void start(BundleContext arg0) throws Exception {
+		LOG.info("silk-exec: start");
+		silk();
+	}
+
+	@Override
+	public void stop(BundleContext arg0) throws Exception {
+		LOG.info("silk-exec: stop");
+	}
+	
 }
 
 

@@ -1,53 +1,63 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>cz.cuni.xrg.intlib</groupId>
-        <artifactId>module_master</artifactId>
-        <version>0.0.1</version>
-    </parent>    
-    <artifactId>Silk_Linker_Extractor</artifactId>
-    <name>Silk_Linker_Extractor</name>
-    <packaging>bundle</packaging>
-    
-    <dependencies>        
-        <dependency>
-            <groupId>de.fuberlin.wiwiss.silk</groupId>
-            <artifactId>silk-singlemachine</artifactId>
-            <version>2.5.3</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.fuberlin.wiwiss.silk</groupId>
-            <artifactId>silk-core</artifactId>
-            <version>2.5.3</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        
-<!--        <dependency>
-            <groupId>cz.cuni.mff.xrg.intlib.modules.libs</groupId>
-            <artifactId>silk-lib</artifactId>
-            <version>2.5.3</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>cz.cuni.mff.xrg.intlib.modules.libs</groupId>
-            <artifactId>java.mail</artifactId>
-            <version>1.4.0</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>-->
-    </dependencies>
-    
-    <properties>    
-        <dpu.version>0.0.1</dpu.version>
-        <dpu.description>Module which is able to create links between two data sources. Input is the configuration file for silk. The output of the XSLT must be RDF data. </dpu.description>
-        <dpu.package>cz.cuni.mff.xrg.intlib.extractor.silklinker</dpu.package>
-        <dpu.mainClass>SilkLinker</dpu.mainClass>    
-    </properties>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cz.cuni.xrg.intlib</groupId>
+		<artifactId>module-core</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<artifactId>Silk_Linker_Extractor</artifactId>
+	<name>Silk_Linker_Extractor</name>
+	<packaging>bundle</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.fuberlin.wiwiss.silk</groupId>
+			<artifactId>silk-singlemachine</artifactId>
+			<version>2.5.3</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.fuberlin.wiwiss.silk</groupId>
+			<artifactId>silk-core</artifactId>
+			<version>2.5.3</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.tycho</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.9.0.v20130305-2200</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<properties>
+		<dpu.version>0.0.1</dpu.version>
+		<dpu.description>Module which is able to create links between two data
+			sources. Input is the configuration file for silk. The output of the
+			XSLT must be RDF data. </dpu.description>
+		<dpu.package>cz.cuni.mff.xrg.intlib.extractor.silklinker</dpu.package>
+		<dpu.mainClass>SilkLinker</dpu.mainClass>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin> <!-- main build plugin for modules -->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-Activator>${dpu.package}.${dpu.mainClass}</Bundle-Activator>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
