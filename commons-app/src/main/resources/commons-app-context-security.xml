@@ -7,23 +7,13 @@
 
 	<!-- Configure Authentication mechanism -->
 	<authentication-manager alias="authenticationManager">
-		<authentication-provider>
-			<user-service>
-				<user name="mike" password="mike" authorities="RIGHT_LIST,RIGHT_CANCEL,RIGHT_CREATE,RIGHT_UPDATE" />
-				<user name="luke" password="luke" authorities="RIGHT_LIST,RIGHT_CANCEL,RIGHT_CREATE,RIGHT_UPDATE" />
-				<user name="rod" password="rod" authorities="RIGHT_LIST,RIGHT_CREATE"/>
-			</user-service>
-		</authentication-provider>
+		<authentication-provider ref="authenticationProvider" />
 	</authentication-manager>
 	
-	<global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
-		<!--<expression-handler ref="expHandler"/>-->
-	</global-method-security>
+	<global-method-security secured-annotations="enabled" pre-post-annotations="enabled" />
 	
-<!--	<b:bean id="expHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
-		<b:property name="permissionEvaluator">
-			<b:bean  class="holiday.security.HolidayPermissionEvaluator"/>
-		</b:property>
-	</b:bean>-->
+	<b:bean id="authenticationProvider" class="cz.cuni.xrg.intlib.commons.app.auth.IntlibAuthenticationProvider">
+		<b:constructor-arg ref="userFacade" />
+	</b:bean>
 
 </b:beans>

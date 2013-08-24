@@ -3,6 +3,8 @@ package cz.cuni.xrg.intlib.commons.app.user;
 import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -19,6 +21,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Holds user data (his account).
@@ -27,7 +31,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "usr_user")
-public class User implements RoleHolder, Resource {
+public class User implements UserDetails, RoleHolder, Resource {
 
 	/**
 	 * Primary key for entity.
@@ -95,6 +99,7 @@ public class User implements RoleHolder, Resource {
         this.email = email;
     }
 
+	@Override
 	public String getUsername() {
 		return username;
 	}
@@ -119,6 +124,7 @@ public class User implements RoleHolder, Resource {
         this.fullName = fullName;
     }
 
+	@Override
     public String getPassword() {
         return password;
     }
@@ -159,4 +165,29 @@ public class User implements RoleHolder, Resource {
     public String getResourceId() {
         return User.class.toString();
     }
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return new ArrayList<>(getRoles());
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 }
