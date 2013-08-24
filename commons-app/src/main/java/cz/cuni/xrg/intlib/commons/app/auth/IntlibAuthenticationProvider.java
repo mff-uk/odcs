@@ -71,7 +71,7 @@ public class IntlibAuthenticationProvider extends AbstractUserDetailsAuthenticat
 		
 		User user = userFacade.getUserByUsername(authentication.getName());
 		if (user == null) {
-			throw new InvalidCredentialsException(username);
+			throw new BadCredentialsException(username);
 		}
 		
 		return user;
