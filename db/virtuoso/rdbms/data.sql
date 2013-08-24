@@ -102,10 +102,12 @@ INSERT INTO DB.INTLIB.SCH_USR_NOTIFICATION(id,user_id,type_success,type_error) V
 INSERT INTO DB.INTLIB.SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id) VALUES(1,1);
 -- Table DB.INTLIB.SCH_USR_NOTIFICATION_EMAIL 1 rows output.
 -- SELECT * FROM DB.INTLIB.USR_USER
-INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES(1,'jdoe',1,'ac648d84e684f632b2bb567a9ee7d1','John Doe');
+INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES(1,'user',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Doe');
 -- Table DB.INTLIB.USR_USER 1 rows output.
 -- SELECT * FROM DB.INTLIB.USR_USER_ROLE
--- Table DB.INTLIB.USR_USER_ROLE 0 rows output.
+-- Table DB.INTLIB.USR_USER_ROLE 2 rows output.
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(1,1);
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,1);
 
 
 fk_check_input_values(1);

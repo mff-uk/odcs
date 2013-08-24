@@ -260,9 +260,21 @@ public class AppEntry extends com.vaadin.ui.UI {
      *
      * @param name
      * @return bean
+	 * @deprecated use {@link #getBean(java.lang.Class) instead
      */
+	@Deprecated
     public Object getBean(String name) {
         return context.getBean(name);
+    }
+
+    /**
+     * Fetches spring bean.
+     *
+     * @param type
+     * @return bean
+     */
+    public <T extends Object> T getBean(Class<T> type) {
+        return context.getBean(type);
     }
 
     public MenuLayout getMain() {

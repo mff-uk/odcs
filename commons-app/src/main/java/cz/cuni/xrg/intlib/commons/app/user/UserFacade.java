@@ -9,7 +9,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,9 +85,17 @@ public class UserFacade {
 	 * @return user
 	 */
 	public User getUserByUsername(String username) {
-		return (User) em.createQuery("SELECT e FROM User e WHERE e.username = :uname")
-				.setParameter("uname", username)
-				.getSingleResult();
+		Query q = em.createQuery("SELECT e FROM User e WHERE e.username = :uname")
+				.setParameter("uname", username);
+		
+		User user = null;
+		try {
+			user = (User) q.getSingleResult();
+		} catch (NoResultException ex) {
+			LOG.info(String.format("User with username ? was not found.", username));
+		}
+		
+		return user;
 	}
 
 	/**
