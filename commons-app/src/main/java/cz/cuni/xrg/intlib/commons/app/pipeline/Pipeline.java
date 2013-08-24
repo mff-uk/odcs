@@ -3,7 +3,9 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import javax.persistence.*;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.commons.app.user.OwnedEntity;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -42,7 +44,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements Resource, Serializable {
+public class Pipeline implements OwnedEntity, Resource, Serializable {
 
 	/**
 	 * Unique ID for each pipeline
@@ -65,6 +67,13 @@ public class Pipeline implements Resource, Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.EAGER)
 	private PipelineGraph graph;
+	
+	/**
+	 * User who created and owns this pipeline.
+	 */
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User owner;
 
 	/**
 	 * Default constructor for JPA
@@ -125,6 +134,15 @@ public class Pipeline implements Resource, Serializable {
 
 	public Long getId() {
 		return id;
+	}
+	
+	public void setUser(User owner) {
+		this.owner = owner;
+	}
+
+	@Override
+	public User getOwner() {
+		return owner;
 	}
 
 	@Override

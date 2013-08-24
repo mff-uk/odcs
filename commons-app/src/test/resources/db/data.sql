@@ -26,8 +26,8 @@ INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
 INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
  VALUES(2,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar',NULL,5);
 
-INSERT INTO PPL_MODEL(id,name,description) VALUES(1,'Test 1','Testing pipeline 1.');
-INSERT INTO PPL_MODEL(id,name,description) VALUES(2,'Test 2','Testing pipeline 2.');
+INSERT INTO PPL_MODEL(id,name,description,user_id) VALUES(1,'Test 1','Testing pipeline 1.',1);
+INSERT INTO PPL_MODEL(id,name,description,user_id) VALUES(2,'Test 2','Testing pipeline 2.',1);
 
 INSERT INTO PPL_GRAPH(id,pipeline_id) VALUES(1,1);
 INSERT INTO PPL_GRAPH(id,pipeline_id) VALUES(2,2);

@@ -12,7 +12,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
-import cz.cuni.xrg.intlib.commons.app.user.User;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
@@ -130,7 +129,7 @@ public class MenuLayout extends CustomComponent {
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        App.getApp().getAuthCtx().clear();
+                        authCtx.clear();
                         refreshUserBar();
                         App.getApp().getNavigator().navigateTo(ViewNames.Login.getUrl());
                     }

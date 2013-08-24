@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -85,6 +86,7 @@ public class PipelineFacade {
 	 * @param pipeline
 	 */
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#pipeline, 'delete')")
 	public void delete(Pipeline pipeline) {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
