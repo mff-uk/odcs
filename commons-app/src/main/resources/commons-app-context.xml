@@ -53,6 +53,8 @@
 	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig">
 		<constructor-arg ref="configuration" />
 	</bean>
+	
+	<bean id="authenticationContext" class="cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService" />
 
 	<context:annotation-config />
 
