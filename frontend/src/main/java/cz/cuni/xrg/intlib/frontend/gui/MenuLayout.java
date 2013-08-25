@@ -93,12 +93,12 @@ public class MenuLayout extends CustomComponent {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// init menuBar
-		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PipelineList.getUrl()) );
+		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PIPELINE_LIST.getUrl()) );
 		menuBar.addItem("DPU Templates", new NavigateToCommand(ViewNames.DPU.getUrl()) );
-		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.ExecutionMonitor.getUrl()) );
-		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DataBrowser.getUrl()) );
-		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.Scheduler.getUrl()) );
-		menuBar.addItem("Settings", new NavigateToCommand(ViewNames.Administrator.getUrl()) );
+		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.EXECUTION_MONITOR.getUrl()) );
+		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()) );
+		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.SCHEDULER.getUrl()) );
+		menuBar.addItem("Settings", new NavigateToCommand(ViewNames.ADMINISTRATOR.getUrl()) );
 	}
 
 	private VerticalLayout buildMainLayout() {
@@ -131,7 +131,7 @@ public class MenuLayout extends CustomComponent {
                     public void buttonClick(Button.ClickEvent event) {
                         authCtx.clear();
                         refreshUserBar();
-                        App.getApp().getNavigator().navigateTo(ViewNames.Login.getUrl());
+                        App.getApp().getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
                     }
                 });
                 HorizontalLayout menuLine = new HorizontalLayout(menuBar, userName, logOutButton);

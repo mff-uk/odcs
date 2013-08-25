@@ -910,11 +910,11 @@ class DPU extends ViewComponent {
 							pipeId = (Long) tableData
 									.getContainerProperty(itemId, "id").getValue();
 
-							// navigate to PipelineEdit
+							// navigate to PIPELINE_EDIT
 							App.getApp()
 									.getNavigator()
 									.navigateTo(
-											ViewNames.PipelineEdit.getUrl()
+											ViewNames.PIPELINE_EDIT.getUrl()
 													+ "/" + pipeId.toString());
 
 						}
@@ -937,7 +937,7 @@ class DPU extends ViewComponent {
 							.getAllPipelines();
 					for (Pipeline item : pipelines) {
 						if (item.getId().equals(pipeId)) {
-							// navigate to PipelineEdit/New
+							// navigate to PIPELINE_EDIT/New
 							App.getApp().getPipelines().delete(item);
 							break;
 						}

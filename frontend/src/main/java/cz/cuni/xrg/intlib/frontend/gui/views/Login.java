@@ -21,7 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Login screen of application.
+ * LOGIN screen of application.
  *
  * @author Bogo
  */
@@ -98,7 +98,7 @@ public class Login extends ViewComponent {
 
 			// login is successful
 			App.getApp().getMain().refreshUserBar();
-			App.getApp().getNavigator().navigateTo(ViewNames.Initial.getUrl());
+			App.getApp().getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
 
 		} catch (AuthenticationException ex) {
 			LOG.info(String.format("Invalid credentials for username ?.", login.getValue()));

@@ -50,11 +50,11 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							// navigate to PipelineEdit/New
+							// navigate to PIPELINE_EDIT/New
 							App.getApp()
 									.getNavigator()
 									.navigateTo(
-											ViewNames.PipelineEdit.getUrl()
+											ViewNames.PIPELINE_EDIT.getUrl()
 													+ "/" + itemId.toString());
 						}
 					});
@@ -87,7 +87,7 @@ class PipelineList extends ViewComponent {
 			deleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					// navigate to PipelineEdit/New
+					// navigate to PIPELINE_EDIT/New
 					pipelineFacade.delete(item.getBean());
 					// now we have to remove pipeline from table
 					source.removeItem(itemId);
@@ -101,7 +101,7 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							// navigate to PipelineEdit/New
+							// navigate to PIPELINE_EDIT/New
 							Pipeline pipeline = item.getBean();
 							IntlibHelper.runPipeline(pipeline, false);
 						}
@@ -114,7 +114,7 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							// navigate to PipelineEdit/New
+							// navigate to PIPELINE_EDIT/New
 							Pipeline pipeline = item.getBean();
 							IntlibHelper.runPipeline(pipeline, true);
 						}
@@ -187,10 +187,10 @@ class PipelineList extends ViewComponent {
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
-						// navigate to PipelineEdit/New
+						// navigate to PIPELINE_EDIT/New
 						App.getApp()
 								.getNavigator()
-								.navigateTo(ViewNames.PipelineEdit_New.getUrl());
+								.navigateTo(ViewNames.PIPELINE_EDIT_NEW.getUrl());
 					}
 				});
 		topLine.addComponent(btnCreatePipeline);
@@ -257,7 +257,7 @@ class PipelineList extends ViewComponent {
 					BeanItem beanItem = (BeanItem) event.getItem();
 					long pipelineId = (long) beanItem.getItemProperty("id")
 							.getValue();
-					App.getApp().getNavigator().navigateTo(ViewNames.PipelineEdit.getUrl()+ "/" + pipelineId);
+					App.getApp().getNavigator().navigateTo(ViewNames.PIPELINE_EDIT.getUrl()+ "/" + pipelineId);
 				}
 			}
 		});
