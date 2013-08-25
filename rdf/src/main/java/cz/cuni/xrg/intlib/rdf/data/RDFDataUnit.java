@@ -17,6 +17,7 @@ import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -357,6 +358,10 @@ public class RDFDataUnit implements DataUnit {
 	public File makeSelectQuery(String selectQuery, String filePath) throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepository(selectQuery, filePath);
 
+	}
+
+	public TupleQueryResult makeSelectQueryAsResult(String selectQuery) throws InvalidQueryException {
+		return repository.makeSelectQueryOverRepositoryAsResult(selectQuery);
 	}
 
 	/**
