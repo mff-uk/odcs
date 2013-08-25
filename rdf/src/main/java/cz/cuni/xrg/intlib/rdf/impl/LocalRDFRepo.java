@@ -2228,6 +2228,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *         map key is column name and <code>List&lt;String&gt;</code> are
 	 *         string values in this column. When query is invalid, return * *
 	 *         empty <code>Map</code>.
+	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
 	public Map<String, List<String>> makeSelectQueryOverRepository(
@@ -2235,7 +2236,66 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			throws InvalidQueryException {
 
 		Map<String, List<String>> map = new HashMap<>();
+
+		List<BindingSet> listBindings = new ArrayList<>();
+		TupleQueryResult result = null;
+		try {
+			result = makeSelectQueryOverRepositoryAsResult(selectQuery);
+
+			List<String> names = result.getBindingNames();
+
+			for (String name : names) {
+				map.put(name, new LinkedList<String>());
+			}
+
+			listBindings = result.asList();
+		} catch (QueryEvaluationException ex) {
+			throw new InvalidQueryException(
+					"This query is probably not valid. " + ex
+					.getMessage(),
+					ex);
+		} finally {
+			if (result != null) {
+				try {
+					result.close();
+				} catch (QueryEvaluationException ex) {
+					logger.warn("Failed to close RDF tuple result. "
+							+ ex.getMessage(), ex);
+				}
+			}
+		}
+
+		for (BindingSet bindingNextSet : listBindings) {
+			for (Binding next : bindingNextSet) {
+
+				String name = next.getName();
+				String value = next.getValue().stringValue();
+
+				if (map.containsKey(name)) {
+					map.get(name).add(value);
+				}
+
+			}
+		}
+
+		return map;
+	}
+
+	/**
+	 * Make select query over repository data and return TupleQueryResult
+	 * interface as result.
+	 *
+	 * @param selectQuery String representation of SPARQL select query.
+	 * @return TupleQueryResult representation of SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	@Override
+	public TupleQueryResult makeSelectQueryOverRepositoryAsResult(
+			String selectQuery)
+			throws InvalidQueryException {
+
 		RepositoryConnection connection = null;
+
 		try {
 			connection = repository.getConnection();
 
@@ -2246,46 +2306,17 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 			logger.debug("Query " + selectQuery + " is valid.");
 
-			TupleQueryResult result = null;
-			List<BindingSet> listBindings = new ArrayList<>();
 			try {
-				result = tupleQuery.evaluate();
+				TupleQueryResult result = tupleQuery.evaluate();
 				logger.debug(
 						"Query " + selectQuery + " has not null result.");
-				List<String> names = result.getBindingNames();
+				return result;
 
-				for (String name : names) {
-					map.put(name, new LinkedList<String>());
-				}
-
-				listBindings = result.asList();
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
 						"This query is probably not valid. " + ex
 						.getMessage(),
 						ex);
-			} finally {
-				if (result != null) {
-					try {
-						result.close();
-					} catch (QueryEvaluationException ex) {
-						logger.warn("Failed to close RDF tuple result. "
-								+ ex.getMessage(), ex);
-					}
-				}
-			}
-
-			for (BindingSet bindingNextSet : listBindings) {
-				for (Binding next : bindingNextSet) {
-
-					String name = next.getName();
-					String value = next.getValue().stringValue();
-
-					if (map.containsKey(name)) {
-						map.get(name).add(value);
-					}
-
-				}
 			}
 
 		} catch (MalformedQueryException ex) {
@@ -2307,7 +2338,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			}
 		}
 
-		return map;
+		throw new InvalidQueryException(
+				"Getting TupleQueryResult using SPARQL select query failed.");
 	}
 
 	/**
