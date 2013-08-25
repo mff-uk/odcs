@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
 
@@ -465,12 +466,24 @@ public interface RDFDataRepository extends DataUnit {
 			throws InvalidQueryException;
 
 	/**
+	 * Make select query over repository data and return TupleQueryResult
+	 * interface as result.
+	 *
+	 * @param selectQuery String representation of SPARQL select query.
+	 * @return TupleQueryResult representation of SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public TupleQueryResult makeSelectQueryOverRepositoryAsResult(
+			String selectQuery) throws InvalidQueryException;
+
+	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
 	 *
 	 * @param constructQuery String representation of SPARQL query.
 	 * @param formatType     Choosed type of format RDF data in result.
-	 * @param filePath       String path to file where result with RDF data is stored.
+	 * @param filePath       String path to file where result with RDF data is
+	 *                       stored.
 	 * @return File with RDF data in defined format as result of construct
 	 *         query.
 	 * @throws InvalidQueryException when query is not valid or creating file
