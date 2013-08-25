@@ -26,7 +26,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		implements Extract, ConfigDialogProvider<RDFExtractorConfig> {
 
 	public RDFExtractor() {
-		super(new RDFExtractorConfig());
+		super(RDFExtractorConfig.class);
 	}
 
 	@Override

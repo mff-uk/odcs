@@ -25,11 +25,21 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	 */
 	private ConfigWrap<C> configWrap;
 
+	/**
+	 * @param config
+	 * @deprecated use {@link #ConfigurableBase(Class)} instead
+	 */
+	@Deprecated
 	public ConfigurableBase(C config) {
 		this.config = config;
 		this.configWrap = new ConfigWrap<C>(config);
 	}
 
+	public ConfigurableBase(Class<C> configClass) {		
+		this.configWrap = new ConfigWrap<C>(configClass);
+		this.config = this.configWrap.createInstance();
+	}	
+	
 	@Override
 	public void configure(byte[] c) throws ConfigException {
 		// set configuration for configWrap

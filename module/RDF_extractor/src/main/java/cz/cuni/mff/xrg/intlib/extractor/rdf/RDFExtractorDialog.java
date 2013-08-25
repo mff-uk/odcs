@@ -111,7 +111,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * Basic constructor.
 	 */
 	public RDFExtractorDialog() {
-		super(new RDFExtractorConfig());
+		super(RDFExtractorConfig.class);
 		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);

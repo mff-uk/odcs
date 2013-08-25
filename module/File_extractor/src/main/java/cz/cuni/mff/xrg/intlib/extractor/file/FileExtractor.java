@@ -21,7 +21,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		implements Extract, ConfigDialogProvider<FileExtractorConfig> {
 
 	public FileExtractor() {
-		super(new FileExtractorConfig());
+		super(FileExtractorConfig.class);
 	}
 
 	@Override

@@ -97,7 +97,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * Basic constructor.
 	 */
 	public RDFLoaderDialog() {
-		super(new RDFLoaderConfig());
+		super(RDFLoaderConfig.class);
 		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
