@@ -50,6 +50,23 @@ public class PipelineFacade {
 		}
 		return pipeline;
 	}
+	
+	/**
+	 * Creates a clone of given pipeline and returns it as a new instance.
+	 * Original owner is not preserved, rather currently logged in user is set
+	 * as an owner of the newly created pipeline.
+	 * 
+	 * @param pipeline original pipeline to copy
+	 * @return newly copied pipeline
+	 */
+	@PreAuthorize("hasPermission(#pipeline, 'copy')")
+	public Pipeline copyPipeline(Pipeline pipeline) {
+		Pipeline nPipeline = new Pipeline(pipeline);
+		if (authCtx != null) {
+			nPipeline.setUser(authCtx.getUser());
+		}
+		return nPipeline;
+	}
 
 	/**
 	 * Returns list of all pipelines persisted in the database.

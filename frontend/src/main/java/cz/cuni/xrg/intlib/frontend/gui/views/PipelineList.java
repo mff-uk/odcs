@@ -13,6 +13,7 @@ import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -28,6 +29,8 @@ class PipelineList extends ViewComponent {
 	private IntlibPagedTable tablePipelines;
 
 	private Button btnCreatePipeline;
+	
+	private PipelineFacade pipelineFacade = App.getApp().getPipelines();
 
 	/**
 	 * Generate column in table with buttons.
@@ -64,34 +67,32 @@ class PipelineList extends ViewComponent {
 			
 			Button copyButton = new Button();
 			copyButton.setCaption("copy");
-			copyButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							
-							Pipeline pipeline = item.getBean();
-							Pipeline newPipeline = new Pipeline(pipeline);
-							newPipeline.setName("Copy of " + pipeline.getName());
-							App.getApp().getPipelines().save(newPipeline);
-							refreshData();
-							tablePipelines.setVisibleColumns("id", "name", "description","");
-						}
-					});
+			copyButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					Pipeline pipeline = item.getBean();
+					Pipeline newPipeline = pipelineFacade.copyPipeline(pipeline);
+					newPipeline.setName("Copy of " + pipeline.getName());
+					pipelineFacade.save(newPipeline);
+					refreshData();
+					tablePipelines.setVisibleColumns("id", "name", "description","");
+				}
+			});
 			layout.addComponent(copyButton); 
 
 
 			Button deleteButton = new Button();
 			deleteButton.setCaption("delete");
-			deleteButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							// navigate to PipelineEdit/New
-							App.getApp().getPipelines().delete(item.getBean());
-							// now we have to remove pipeline from table
-							source.removeItem(itemId);
-						}
-					});
+			deleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// navigate to PipelineEdit/New
+					pipelineFacade.delete(item.getBean());
+					// now we have to remove pipeline from table
+					source.removeItem(itemId);
+				}
+			});
 			layout.addComponent(deleteButton);
 
 			Button runButton = new Button();
@@ -151,8 +152,7 @@ class PipelineList extends ViewComponent {
 	 */
 	private void refreshData() {
 		int page = tablePipelines.getCurrentPage();
-		Container container = ContainerFactory.CreatePipelines(App.getApp()
-				.getPipelines().getAllPipelines());
+		Container container = ContainerFactory.CreatePipelines(pipelineFacade.getAllPipelines());
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.setFilterFieldVisible("", false);
 		tablePipelines.setCurrentPage(page);
@@ -220,8 +220,7 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setWidth("99%");
 		tablePipelines.setPageLength(10);
 		// assign data source
-		Container container = ContainerFactory.CreatePipelines(App.getApp()
-				.getPipelines().getAllPipelines());
+		Container container = ContainerFactory.CreatePipelines(pipelineFacade.getAllPipelines());
 		tablePipelines.setContainerDataSource(container);
 
 		// set columns
