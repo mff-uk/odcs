@@ -7,7 +7,9 @@ package cz.cuni.xrg.intlib.frontend.container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import org.apache.log4j.Level;
 
 /**
  *
@@ -25,12 +27,24 @@ public class InFilter implements Filter {
 
     @Override
     public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Level level = (Level)item.getItemProperty("level").getValue();
+        return collection.contains(level);
     }
 
     @Override
     public boolean appliesToProperty(Object propertyId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if("level".equals(propertyId)) {
+            return true;
+        }
+        return false;
+    }
+    
+    public Set<String> getStringSet() {
+        HashSet<String> stringSet = new HashSet<>(collection.size());
+        for(Object lvl : collection) {
+            stringSet.add(lvl.toString());
+        }
+        return stringSet;
     }
     
 }

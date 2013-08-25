@@ -153,7 +153,7 @@ public class LogMessagesTable extends CustomComponent {
                 
                 
 		IntlibLazyQueryContainer container = ContainerFactory.CreateLogMessages();
-                //container.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
+                container.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
                 messageTable.setFilterGenerator(new FilterGenerator() {
 
                     @Override
@@ -167,7 +167,11 @@ public class LogMessagesTable extends CustomComponent {
 
                     @Override
                     public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        if(propertyId.equals("level")) {
+                            Level value = (Level)((ComboBox)originatingField).getValue();
+                            return new InFilter(App.getLogs().getLevels(value), "levelString");
+                        }
+                        return null;
                     }
 
                     @Override
@@ -180,17 +184,17 @@ public class LogMessagesTable extends CustomComponent {
 
                     @Override
                     public void filterRemoved(Object propertyId) {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        
                     }
 
                     @Override
                     public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        
                     }
 
                     @Override
                     public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        return null;
                     }
                 });
 		messageTable.setContainerDataSource(container);

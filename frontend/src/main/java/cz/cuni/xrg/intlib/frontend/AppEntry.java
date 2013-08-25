@@ -134,7 +134,7 @@ public class AppEntry extends com.vaadin.ui.UI {
                         cause = t;
                     }
                 }
-                if (cause != null) {
+                if (false && cause != null) {
                     // Display the error message in a custom fashion
                     String text = String.format("Exception: %s, Message: %s", cause.getClass().getName(), cause.getMessage());
                     Notification.show("Uncaught exception appeared in system!", text, Notification.Type.ERROR_MESSAGE);

@@ -12,12 +12,14 @@ import com.vaadin.data.util.filter.Like;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -26,6 +28,9 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.Metamodel;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 import org.vaadin.addons.lazyquerycontainer.EntityQueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
@@ -324,14 +329,20 @@ public class IntlibQuery<E> implements Query, Serializable {
         
         if(filter instanceof PropertiesFilter) {
             final PropertiesFilter propertiesFilter = (PropertiesFilter) filter;
-            final Expression<String> property = (Expression) getPropertyPath(root, "properties[" + propertiesFilter.parameterName + "]");
-            return cb.equal(property, propertiesFilter.value);
+            Metamodel m = entityManager.getMetamodel();
+            EntityType<LogMessage> Log_ = m.entity(LogMessage.class);
+            Root<LogMessage> r = cq.from(LogMessage.class);
+            MapAttribute<LogMessage, String, String> ma = Log_.getDeclaredMap("properties", String.class, String.class);
+            Expression<Map<String, String>> get = r.get(ma);
+            
+            //final Expression<String> property = (Expression)((Path)get).get(propertiesFilter.parameterName);
+            return get.isNotNull(); // cb.equal(property, propertiesFilter.value);
         }
         
         if(filter instanceof InFilter) {
             final InFilter inFilter = (InFilter) filter;
             final Expression<String> property = (Expression) root.get(inFilter.name);
-            return property.in(inFilter.collection);
+            return property.in(inFilter.getStringSet());
         }
 
         throw new UnsupportedOperationException("Vaadin filter: " + filter.getClass().getName() + " is not supported.");
