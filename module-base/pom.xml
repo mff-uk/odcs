@@ -9,15 +9,15 @@
 	<artifactId>module-base</artifactId>
 	<packaging>pom</packaging>
 	<name>Module' parent project.</name>
-	<description>Maven parent project for modules-DPU implementations..</description>
+	<!-- the description is used as default for DPUs -->
+	<description>No description available.</description>
 
 	<properties>
-		<dpu.version>0.0.0</dpu.version>
-		<dpu.description>No description is available for this module.</dpu.description>
 		<!-- contains full name of the DPU main class -->
 		<dpu.mainClass></dpu.mainClass>
 		<!-- contains full name of package where the bundle.mainclass is located -->
 		<dpu.package></dpu.package>
+		<!-- use to automatically embed transitive dependencies use with causion-->
 		<embed.transitive>false</embed.transitive>
 	</properties>
 
@@ -42,14 +42,14 @@
 		<dependency> <!-- commons-web project -->
 			<groupId>cz.cuni.xrg.intlib</groupId>
 			<artifactId>commons-web</artifactId>
-			<version>${project.version}</version>
+			<version>${intlib.version}</version>
 			<type>jar</type>
 		</dependency>
 
 		<dependency> <!-- commons-module project -->
 			<groupId>cz.cuni.xrg.intlib</groupId>
 			<artifactId>commons-module</artifactId>
-			<version>${project.version}</version>
+			<version>${intlib.version}</version>
 			<type>jar</type>
 		</dependency>
 
@@ -64,7 +64,7 @@
 		<dependency> <!-- RDF data unit -->
 			<groupId>cz.cuni.xrg.intlib</groupId>
 			<artifactId>RDF</artifactId>
-			<version>${project.version}</version>
+			<version>${intlib.version}</version>
 			<type>jar</type>
 		</dependency> 	
  	
@@ -89,10 +89,10 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Bundle-Version>${dpu.version}</Bundle-Version>
-						<Bundle-Description>${dpu.description}</Bundle-Description>
-						<Export-Package>${dpu.package};version="${dpu.version}"</Export-Package>
-						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}",com.vaadin.*;version="${vaadin.version}",*</Import-Package>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-Description>${project.description}</Bundle-Description>
+						<Export-Package>${dpu.package};version="${project.version}"</Export-Package>
+						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${intlib.version}",com.vaadin.*;version="${vaadin.version}",*</Import-Package>
 						<!-- dependencies embedding -->
 						<Embed-Dependency>*;scope=compile|system</Embed-Dependency> <!-- use provided for dependencies that are provided by application -->
 						<Embed-Transitive>${embed.transitive}</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->
@@ -102,7 +102,7 @@
 						<!-- information for intlib -->
 						<DPU-Package>${dpu.package}</DPU-Package>
 						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
-						<Intlib-Version>${project.version}</Intlib-Version>
+						<Intlib-Version>${intlib.version}</Intlib-Version>
 					</instructions>					
 				</configuration>
 			</plugin>			

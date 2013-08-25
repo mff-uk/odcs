@@ -10,9 +10,9 @@
     <artifactId>RDF_extractor</artifactId>
     <packaging>bundle</packaging>
     <name>RDF_extractor</name>
+    <version>0.0.1</version>
     
     <properties>       
-        <module.version>0.0.1</module.version>
         <dpu.package>cz.cuni.mff.xrg.intlib.extractor.rdf</dpu.package>
         <dpu.mainClass>RDFExtractor</dpu.mainClass>
     </properties>

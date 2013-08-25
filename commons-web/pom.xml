@@ -65,9 +65,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- export just packages under cz.cuni.xrg.intlib.commons.web -->
-                        <Export-Package>cz.cuni.xrg.intlib.commons.web.*;version="${project.version}"</Export-Package>
+                        <Export-Package>cz.cuni.xrg.intlib.commons.web.*;version="${intlib.version}"</Export-Package>
                         <!-- import commons and vaadin -->
-                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${project.version}"</Import-Package>
+                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${intlib.version}"</Import-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>						
                     </instructions>
                 </configuration>
