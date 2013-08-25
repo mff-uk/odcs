@@ -2155,6 +2155,67 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	/**
+	 * Make construct query over repository data and return interface
+	 * GraphQueryResult as result.
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @return Interface GraphQueryResult as result of construct SPARQL query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	@Override
+	public GraphQueryResult makeConstructQueryOverRepository(
+			String constructQuery) throws InvalidQueryException {
+
+		RepositoryConnection connection = null;
+
+		try {
+			connection = repository.getConnection();
+
+			GraphQuery graphQuery = connection.prepareGraphQuery(
+					QueryLanguage.SPARQL,
+					constructQuery);
+
+			graphQuery.setDataset(getDataSetForGraph());
+
+			logger.debug("Query " + constructQuery + " is valid.");
+
+			try {
+
+				GraphQueryResult result = graphQuery.evaluate();
+				logger.debug(
+						"Query " + constructQuery + " has not null result.");
+
+				return result;
+
+			} catch (QueryEvaluationException ex) {
+				throw new InvalidQueryException(
+						"This query is probably not valid. " + ex.getMessage(),
+						ex);
+			}
+
+		} catch (MalformedQueryException ex) {
+			throw new InvalidQueryException("This query is probably not valid. "
+					+ ex.getMessage(), ex);
+		} catch (RepositoryException ex) {
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn(
+							"Failed to close connection to RDF repository while querying. "
+							+ ex.getMessage(), ex);
+				}
+			}
+		}
+
+		throw new InvalidQueryException(
+				"Getting GraphQueryResult using SPARQL construct query failed.");
+	}
+
+	/**
 	 * Make select query over repository data and return file as SPARQL XML
 	 * result.
 	 *
