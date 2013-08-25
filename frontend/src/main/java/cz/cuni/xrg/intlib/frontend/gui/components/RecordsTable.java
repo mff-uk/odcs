@@ -74,7 +74,7 @@ public class RecordsTable extends CustomComponent {
 	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
 	private void loadMessageTable(List<MessageRecord> data) {
-		Container container = ContainerFactory.CreateExecutionMessages(data);
+		Container container = ContainerFactory.createExecutionMessages(data);
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
 			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {

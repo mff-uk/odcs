@@ -10,10 +10,9 @@ import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
-import java.sql.Timestamp;
 
 /**
- * Class support creating vaadin container from List<?>.
+ * Class support creating Vaadin container from List<?>.
  * 
  * @author Petyr
  *
@@ -32,7 +31,7 @@ public class ContainerFactory {
 	 * @param data data for container
 	 * @return
 	 */
-	public static Container CreatePipelines(List<Pipeline> data) {
+	public static Container createPipelines(List<Pipeline> data) {
 		BeanContainer<Long, Pipeline> container = new BeanContainer<>( Pipeline.class );
 		// set container id
 		container.setBeanIdProperty("id");
@@ -48,7 +47,7 @@ public class ContainerFactory {
 	 * @param data data for container
 	 * @return
 	 */
-	public static Container CreateDPUTemplates(List<DPUTemplateRecord> data) {
+	public static Container createDPUTemplates(List<DPUTemplateRecord> data) {
 		BeanContainer<Long, DPUTemplateRecord> container = new BeanContainer<>( DPUTemplateRecord.class );
 		// set container id
 		container.setBeanIdProperty("id");
@@ -59,7 +58,7 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static Container CreateExecutionMessages(List<MessageRecord> data) {
+	public static Container createExecutionMessages(List<MessageRecord> data) {
 		BeanContainer<Long, MessageRecord> container = new BeanContainer<>( MessageRecord.class);
 		container.setBeanIdProperty("id");
 		container.addNestedContainerProperty("timestamp");
@@ -68,7 +67,7 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static Container CreateRDFData(List<RDFTriple> data) {
+	public static Container createRDFData(List<RDFTriple> data) {
 		BeanContainer<Long, RDFTriple> container = new BeanContainer<> (RDFTriple.class);
 		container.setBeanIdProperty("id");
 		container.addAll(data);
@@ -76,7 +75,7 @@ public class ContainerFactory {
 		return container;
 	}
 	
-	public static Container CreateLogMessages(List<LogMessage> data) {
+	public static Container createLogMessages(List<LogMessage> data) {
 		BeanContainer<Long, LogMessage> container = new BeanContainer<>( LogMessage.class);
 		container.setBeanIdProperty("id");
 		container.addAll(data);

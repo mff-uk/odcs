@@ -72,7 +72,7 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 
 	private void loadBrowserTable(List<RDFTriple> data) {
 		dataTable = new IntlibPagedTable();
-		Container container = ContainerFactory.CreateRDFData(data);
+		Container container = ContainerFactory.createRDFData(data);
 		dataTable.setContainerDataSource(container);
 
 		dataTable.setVisibleColumns("subject", "predicate", "object");

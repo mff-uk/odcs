@@ -152,7 +152,7 @@ class PipelineList extends ViewComponent {
 	 */
 	private void refreshData() {
 		int page = tablePipelines.getCurrentPage();
-		Container container = ContainerFactory.CreatePipelines(pipelineFacade.getAllPipelines());
+		Container container = ContainerFactory.createPipelines(pipelineFacade.getAllPipelines());
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.setFilterFieldVisible("", false);
 		tablePipelines.setCurrentPage(page);
@@ -220,7 +220,7 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setWidth("99%");
 		tablePipelines.setPageLength(10);
 		// assign data source
-		Container container = ContainerFactory.CreatePipelines(pipelineFacade.getAllPipelines());
+		Container container = ContainerFactory.createPipelines(pipelineFacade.getAllPipelines());
 		tablePipelines.setContainerDataSource(container);
 
 		// set columns

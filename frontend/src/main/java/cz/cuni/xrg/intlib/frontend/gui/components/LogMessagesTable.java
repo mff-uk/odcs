@@ -143,7 +143,7 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param data List of {@link LogMessages} to show in table.
 	 */
 	private void loadMessageTable(List<LogMessage> data) {
-		Container container = ContainerFactory.CreateLogMessages(data);
+		Container container = ContainerFactory.createLogMessages(data);
 
 		messageTable.setContainerDataSource(container);
 		messageTable.setVisibleColumns("date", "level", "message", "source");
