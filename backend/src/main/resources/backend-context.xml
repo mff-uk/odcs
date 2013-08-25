@@ -24,20 +24,10 @@
 		scope="prototype" lazy-init="true" />
 	
 	<!-- prototypes for contexts -->
-	<bean id="ExContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedContext"
-	    abstract="true">
-	    <constructor-arg index="0" ref="dataUnitFactory" />
-	    <constructor-arg index="1" ref="configuration" />
-	</bean>
-	
-	<bean id="extractContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedExtractContext"
-		scope="prototype" lazy-init="true" parent="ExContext" />
-	<bean id="loadContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedLoadContext"
-		scope="prototype" lazy-init="true" parent="ExContext" />
-	<bean id="transformContext" class="cz.cuni.xrg.intlib.backend.context.ExtendedTransformContext"
-		scope="prototype" lazy-init="true" parent="ExContext" />
+	<bean id="dpuContext" class="cz.cuni.xrg.intlib.backend.context.Context"
+	    scope="prototype" lazy-init="true" />
 
-	<!-- access to database on one place -->
+	 <!-- access to database on one place -->
 	<bean id="dbAccess" class="cz.cuni.xrg.intlib.backend.DatabaseAccess" />
 
 	<!-- data unit factory class -->
