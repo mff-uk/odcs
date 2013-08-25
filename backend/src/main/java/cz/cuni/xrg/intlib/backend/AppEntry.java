@@ -112,11 +112,11 @@ public class AppEntry {
 		context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
 		context.registerShutdownHook();
 		// load configuration
-		appConfig = (AppConfig)context.getBean("configuration");
+		appConfig = context.getBean(AppConfig.class);
 		// engine is setup automatically 
 		// set module facade
 		LOG.info("Configuring dynamic module worker ...");
-		modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
+		modeleFacade = context.getBean(ModuleFacade.class);
 		modeleFacade.start();		
 	}
 	
@@ -126,7 +126,7 @@ public class AppEntry {
 	private void initNetworkServer() {
 		// set TCP/IP server
 		LOG.info("Starting TCP/IP server ...");
-		server = (Server)context.getBean("server");
+		server = context.getBean(Server.class);
 		try {
 			server.init();
 		} catch (CommunicationException e1) {
@@ -144,7 +144,7 @@ public class AppEntry {
 	 */
 	private void initHeartbeat() {
 		// start heartbeat
-		heartbeat = (Heartbeat)context.getBean("heartbeat");
+		heartbeat = context.getBean(Heartbeat.class);
 		heartbeatThread = new Thread(heartbeat);
 		heartbeatThread.start();
 		LOG.info("Heartbeat is running ... ");		
