@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
@@ -491,4 +492,15 @@ public interface RDFDataRepository extends DataUnit {
 	 */
 	public File makeConstructQueryOverRepository(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException;
+
+	/**
+	 * Make construct query over repository data and return interface
+	 * GraphQueryResult as result.
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @return Interface GraphQueryResult as result of construct SPARQL query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public GraphQueryResult makeConstructQueryOverRepository(
+			String constructQuery) throws InvalidQueryException;
 }
