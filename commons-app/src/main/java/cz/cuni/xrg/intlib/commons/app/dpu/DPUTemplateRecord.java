@@ -1,5 +1,9 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import cz.cuni.xrg.intlib.commons.app.auth.SharedEntity;
+import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.user.OwnedEntity;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import javax.persistence.*;
 
 /**
@@ -16,7 +20,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "dpu_template")
-public class DPUTemplateRecord extends DPURecord {
+public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedEntity {
 
 	/**
 	 * Visibility in DPUTree.
@@ -38,6 +42,10 @@ public class DPUTemplateRecord extends DPURecord {
 	@ManyToOne(optional = true)
 	@JoinColumn(name="parent_id", nullable = true)
 	private DPUTemplateRecord parent;
+	
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User owner;
 		
 	/**
 	 * Empty ctor for JPA.
@@ -78,7 +86,17 @@ public class DPUTemplateRecord extends DPURecord {
 		this.jarDescription = dpuInstance.getTemplate() == null
 				? null : dpuInstance.getTemplate().getJarDescription();
 	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
 	
+	@Override
+	public User getOwner() {
+		return owner;
+	}
+	
+	@Override
 	public VisibilityType getVisibility() {
 		return visibility;
 	}

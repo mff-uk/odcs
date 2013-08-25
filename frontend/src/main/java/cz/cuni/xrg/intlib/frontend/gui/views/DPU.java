@@ -26,7 +26,7 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
