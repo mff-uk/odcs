@@ -93,7 +93,6 @@
 						<Bundle-Description>${dpu.description}</Bundle-Description>
 						<Export-Package>${dpu.package};version="${dpu.version}"</Export-Package>
 						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${project.version}",com.vaadin.*;version="${vaadin.version}",*</Import-Package>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<!-- dependencies embedding -->
 						<Embed-Dependency>*;scope=compile|system</Embed-Dependency> <!-- use provided for dependencies that are provided by application -->
 						<Embed-Transitive>${embed.transitive}</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->

@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,6 +61,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -195,9 +197,16 @@ class PipelineWorker implements Runnable {
 	 */
 	private void executionSuccessful() {
 		execution.setEnd(new Date());
-		// update state
-		execution.setExecutionStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
-		// save into database
+		// update state -> check logs
+		Set<Level> levels = new HashSet<>(2);
+		levels.add(Level.WARN);
+		levels.add(Level.ERROR);
+		levels.add(Level.FATAL);
+		if (database.getLog().existLogs(execution, levels)) {
+			execution.setExecutionStatus(PipelineExecutionStatus.FINISHED_WARNING);
+		} else {
+			execution.setExecutionStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+		}
 	}
 
 	/**
@@ -309,7 +318,7 @@ class PipelineWorker implements Runnable {
 		boolean executionFailed = false;
 		// run DPUs ...
 		for (Node node : dependencyGraph) {
-			boolean result;
+			boolean result = true; // be optimistic :)
 
 			// save context with the DPU that will be executed
 			ProcessingUnitInfo unitInfo = null;
@@ -374,6 +383,13 @@ class PipelineWorker implements Runnable {
 						.getDpuInstance(), execution, this));
 				executionFailed = true;
 				LOG.error("PipelineWorker: Exception", e);
+				break;
+			} catch (Error e) {
+				// use for errors like java.lang.NoClassDefFoundError				
+				eventPublisher.publishEvent(new PipelineFailedEvent(
+						e.getMessage(), node.getDpuInstance(), execution, this));
+				executionFailed = true;
+				LOG.error("PipelineWorker: Error", e);
 				break;
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);

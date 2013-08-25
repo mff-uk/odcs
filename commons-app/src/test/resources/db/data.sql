@@ -4,7 +4,7 @@ INSERT INTO SCH_EMAIL(id,e_user,e_domain)
  VALUES(1,'user','example.com');
 
 INSERT INTO USR_USER(id,username,email_id,u_password,full_name)
- VALUES(1,'jdoe',1,'ac648d84e684f632b2bb567a9ee7d1','John Doe');
+ VALUES(1,'jdoe',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Doe');
 
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,0);
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,1);
@@ -26,8 +26,8 @@ INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
 INSERT INTO DPU_INSTANCE(id,name,description,type,jar_path,configuration,dpu_id)
  VALUES(2,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar',NULL,5);
 
-INSERT INTO PPL_MODEL(id,name,description) VALUES(1,'Test 1','Testing pipeline 1.');
-INSERT INTO PPL_MODEL(id,name,description) VALUES(2,'Test 2','Testing pipeline 2.');
+INSERT INTO PPL_MODEL(id,name,description,user_id) VALUES(1,'Test 1','Testing pipeline 1.',1);
+INSERT INTO PPL_MODEL(id,name,description,user_id) VALUES(2,'Test 2','Testing pipeline 2.',1);
 
 INSERT INTO PPL_GRAPH(id,pipeline_id) VALUES(1,1);
 INSERT INTO PPL_GRAPH(id,pipeline_id) VALUES(2,2);

@@ -2,8 +2,6 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -11,15 +9,16 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import cz.cuni.xrg.intlib.commons.app.auth.PasswordHash;
-import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Login screen of application.
@@ -28,15 +27,20 @@ import java.util.logging.Logger;
  */
 public class Login extends ViewComponent {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Login.class);
+	
     private CssLayout mainLayout;
     private VerticalLayout layout;
     private TextField login;
     private PasswordField password;
+	
+	private AuthenticationManager authManager;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         buildMainLayout();
         setCompositionRoot(mainLayout);
+		authManager = App.getApp().getBean(AuthenticationManager.class);
     }
 
     private void buildMainLayout() {
@@ -84,16 +88,22 @@ public class Login extends ViewComponent {
     }
 
     private void login() {
+		
+		final Authentication authToken = new UsernamePasswordAuthenticationToken(
+			login.getValue(), password.getValue()
+		);
+
         try {
-            String userName = login.getValue();
-            User user = App.getApp().getUsers().getUserByUsername(userName);
-            if(user != null && PasswordHash.validatePassword(password.getValue(), user.getPassword())) {
-                App.getApp().setLoggedInUser(user);
-                App.getApp().getMain().refreshUserBar();
-                App.getApp().getNavigator().navigateTo(ViewNames.Initial.getUrl());
-            }
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        }
+			Authentication auth = authManager.authenticate(authToken);
+
+			// login is successful
+			App.getApp().getMain().refreshUserBar();
+			App.getApp().getNavigator().navigateTo(ViewNames.Initial.getUrl());
+
+		} catch (AuthenticationException ex) {
+			LOG.info(String.format("Invalid credentials for username ?.", login.getValue()));
+		} catch (NullPointerException ex) {
+			ex.printStackTrace();
+		}
     }
 }

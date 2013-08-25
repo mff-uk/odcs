@@ -13,6 +13,7 @@
 	<!-- Shared version number properties -->
 	<properties>
 		<org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
 		<logback.version>1.0.13</logback.version>
 	</properties>
 
@@ -148,15 +149,40 @@
 			<version>${org.springframework.version}</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- CGLIB is required for proxying classes -->
+		
+		<!-- SPRING SECURITY LIBRARIES -->
+		
+		<!-- Contains core authentication and access-contol classes and interfaces,
+		remoting support and basic provisioning APIs. Required by any application
+		which uses Spring Security. Supports standalone applications, remote clients,
+		method (service layer) security and JDBC user provisioning. -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${org.springframework.security.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- Contains filters and related web-security infrastructure code. Anything
+		with a servlet API dependency. You'll need it if you require Spring Security
+		web authentication services and URL-based access-control. -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework.security.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- CGLIB is required for proxying classes without interface -->
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>3.0</version>
 		</dependency>
 
-		<!-- ASM depends on ASM-UTIL, CGLIB depends on ASN, however ASM is loaded 
+		<!-- ASM depends on ASM-UTIL, CGLIB depends on ASM, however ASM is loaded 
 			by maven automatically while ASM-UTIL is not... -->
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
@@ -177,18 +203,18 @@
 		<dependency>
 			<groupId>org.hibernate.common</groupId>
 			<artifactId>hibernate-commons-annotations</artifactId>
-			<version>4.0.1.Final</version>
+			<version>4.0.2.Final</version>
 			<classifier>tests</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.0.1.Final</version>
+			<version>4.2.4.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.0.1.Final</version>
+			<version>4.2.4.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
@@ -198,7 +224,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>4.2.0.Final</version>
+			<version>5.0.1.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

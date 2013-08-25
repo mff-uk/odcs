@@ -81,6 +81,22 @@ public class LogFacadeTest {
 		}
 	}
 	
+	@Test
+	public void testExistLogs() {
+		long execId = 1L;
+		PipelineExecution exec = mock(PipelineExecution.class);
+		when(exec.getId()).thenReturn(execId);
+
+		Set<Level> levels = new HashSet<>(2);
+		levels.add(Level.INFO);
+		boolean exist = facade.existLogs(exec, levels); 
+		
+		List<LogMessage> logs = facade.getLogs(exec, levels);
+		boolean existExpect = !logs.isEmpty();
+				
+		assertEquals(existExpect, exist);
+	}
+	
 	private void hasExecutionProperty(LogMessage log, long executionId) {
 		
 		assertNotNull(log.getProperties());
@@ -100,4 +116,5 @@ public class LogFacadeTest {
 		}
 		assertTrue(foundLevel);
 	}
+	
 }

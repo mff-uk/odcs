@@ -246,9 +246,9 @@ public class Schedule implements Serializable {
 	}
 	
 	/**
-	 * Return estimate of time when the schedule fire. If the schedule is not
-	 * time dependent return null.
-	 *
+	 * Return time of the next execution. It the schedule is not time
+	 * dependent return null. 
+	 * 
 	 * @return Estimate of time for next execution or null.
 	 */
 	public Date getNextExecutionTimeInfo() {
@@ -260,30 +260,36 @@ public class Schedule implements Serializable {
 				return firstExecution;
 			} else {
 				Calendar calendarNextExec = Calendar.getInstance();
-				calendarNextExec.setTime(lastExecution);
-				// add value based on period
-				switch (periodUnit) {
-					case DAY:
-						calendarNextExec.add(Calendar.DAY_OF_YEAR, period);
-						break;
-					case HOUR:
-						calendarNextExec.add(Calendar.HOUR_OF_DAY, period);
-						break;
-					case MINUTE:
-						calendarNextExec.add(Calendar.MINUTE, period);
-						break;
-					case MONTH:
-						calendarNextExec.add(Calendar.MONTH, period);
-						break;
-					case SECOND:
-						calendarNextExec.add(Calendar.SECOND, period);
-						break;
-					case WEEK:
-						calendarNextExec.add(Calendar.WEEK_OF_YEAR, period);
-						break;
-					case YEAR:
-						calendarNextExec.add(Calendar.YEAR, period);
-						break;
+				Calendar calendarLastExec = Calendar.getInstance();				
+				// start on the first execution
+				calendarNextExec.setTime(firstExecution);
+				calendarLastExec.setTime(lastExecution);
+				// now add period until we are after the lastExecution
+				while (calendarNextExec.before(calendarLastExec)) {
+					// add value based on period
+					switch (periodUnit) {
+						case YEAR:
+							calendarNextExec.add(Calendar.YEAR, period);
+							break;
+						case WEEK:
+							calendarNextExec.add(Calendar.WEEK_OF_YEAR, period);
+							break;						
+						case DAY:
+							calendarNextExec.add(Calendar.DAY_OF_YEAR, period);
+							break;
+						case HOUR:
+							calendarNextExec.add(Calendar.HOUR_OF_DAY, period);
+							break;
+						case MINUTE:
+							calendarNextExec.add(Calendar.MINUTE, period);
+							break;
+						case MONTH:
+							calendarNextExec.add(Calendar.MONTH, period);
+							break;
+						case SECOND:
+							calendarNextExec.add(Calendar.SECOND, period);
+							break;
+					}
 				}
 				return calendarNextExec.getTime();
 			}

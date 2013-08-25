@@ -17,6 +17,8 @@ import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -360,8 +362,20 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make construct query over repository RDF data in DataUnit and return file
-	 * where RDF data as result are saved.
+	 * Make select query over RDF data in DataUnit and return TupleQueryResult
+	 * interface as result.
+	 *
+	 * @param selectQuery String representation of SPARQL select query.
+	 * @return TupleQueryResult representation of SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public TupleQueryResult makeSelectQueryAsResult(String selectQuery) throws InvalidQueryException {
+		return repository.makeSelectQueryOverRepositoryAsResult(selectQuery);
+	}
+
+	/**
+	 * Make construct query over RDF data in DataUnit and return file where RDF
+	 * data as result are saved.
 	 *
 	 * @param constructQuery String representation of SPARQL query.
 	 * @param formatType     Choosed type of format RDF data in result.
@@ -377,6 +391,18 @@ public class RDFDataUnit implements DataUnit {
 
 		return repository.makeConstructQueryOverRepository(constructQuery,
 				formatType, filePath);
+	}
+
+	/**
+	 * Make construct query over RDF data in DataUnit and return interface
+	 * GraphQueryResult as result.
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @return Interface GraphQueryResult as result of construct SPARQL query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public GraphQueryResult makeConstructQuery(String constructQuery) throws InvalidQueryException {
+		return repository.makeConstructQueryOverRepository(constructQuery);
 	}
 
 	/**
