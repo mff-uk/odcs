@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.auth;
 
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -19,8 +20,18 @@ public class AuthenticationContextService implements ApplicationListener<Authent
 	 * @return username if user is authenticated, empty string otherwise
 	 */
 	public String getUsername() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Authentication auth = getAuth();
 		return auth == null ? "" : auth.getName();
+	}
+	
+	/**
+	 * Retrieves currently authenticated user.
+	 * 
+	 * @return logged-in user
+	 */
+	public User getUser() {
+		Authentication auth = getAuth();
+		return auth == null ? null : (User) auth.getPrincipal();
 	}
 	
 	/**
@@ -29,7 +40,7 @@ public class AuthenticationContextService implements ApplicationListener<Authent
 	 * @return authentication status
 	 */
 	public boolean isAuthenticated() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Authentication auth = getAuth();
 		return auth == null ? false : auth.isAuthenticated();
 	}
 	
@@ -49,6 +60,15 @@ public class AuthenticationContextService implements ApplicationListener<Authent
 	@Override
 	public void onApplicationEvent(AuthenticationSuccessEvent event) {
 		SecurityContextHolder.getContext().setAuthentication(event.getAuthentication());
+	}
+	
+	/**
+	 * Helper method for getting authentication from session context.
+	 * 
+	 * @return authentication
+	 */
+	private Authentication getAuth() {
+		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
 }

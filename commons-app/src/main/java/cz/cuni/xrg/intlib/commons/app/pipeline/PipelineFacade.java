@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,18 +30,25 @@ public class PipelineFacade {
 	 */
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired(required = false)
+	private AuthenticationContextService authCtx;
 
 	/* ******************* Methods for managing Pipeline ******************** */
 
 	/**
-	 * Pipeline factory.
+	 * Pipeline factory with preset currently logged-in {@link User} as owner.
 	 * Created instance is not yet managed by {@link EntityManager}, thus needs
 	 * to be saved with {@link #save(Pipeline)} method.
 	 *
 	 * @return newly created pipeline
 	 */
 	public Pipeline createPipeline() {
-		return new Pipeline();
+		Pipeline pipeline = new Pipeline();
+		if (authCtx != null) {
+			pipeline.setUser(authCtx.getUser());
+		}
+		return pipeline;
 	}
 
 	/**
