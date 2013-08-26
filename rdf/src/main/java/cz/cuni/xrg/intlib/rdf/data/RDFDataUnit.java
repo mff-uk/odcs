@@ -153,8 +153,10 @@ public class RDFDataUnit implements DataUnit {
 	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
 	 *                Turtle, ..) if RDF format can not be detected from file
 	 *                suffix.
-	 * @param baseURI String name of defined used URI prefix namespace used by
-	 *                all triples.
+	 * @param baseURI String name of defined URI prefix namespace used by adding
+	 *                new triple statement as united prefix. If this string is
+	 *                empty, is needed to use whole URI name for each element of
+	 *                new added triple.
 	 * @throws RDFDataUnitException when extraction fail.
 	 */
 	public void addTriplesFromFile(File file, RDFFormat format, String baseURI)
@@ -170,7 +172,11 @@ public class RDFDataUnit implements DataUnit {
 	 * @param path                String path to file/directory
 	 * @param suffix              String suffix of fileName (example: ".ttl",
 	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI
+	 * @param baseURI             String name of defined URI prefix namespace
+	 *                            used by adding new triple statement as united
+	 *                            prefix. If this string is empty, is needed to
+	 *                            use whole URI name for each element of new
+	 *                            added triple.
 	 * @param useSuffix           boolean value, if extract files only with
 	 *                            defined suffix or not.
 	 * @param useStatisticHandler boolean value if detailed log and statistic
@@ -193,8 +199,11 @@ public class RDFDataUnit implements DataUnit {
 	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
 	 *                              RDFXML, Turtle, ..) if RDF format can not be
 	 *                              detected from file suffix.
-	 * @param baseURI               String name of defined used URI prefix
-	 *                              namespace used by all triples.
+	 * @param baseURI               String name of defined URI prefix namespace
+	 *                              used by adding new triple statement as
+	 *                              united prefix. If this string is empty, is
+	 *                              needed to use whole URI name for each
+	 *                              element of new added triple.
 	 * @param useStatisticalHandler boolean value, if during extraction needed
 	 *                              detail statistic about RDF triples and
 	 *                              detailed log or not.
