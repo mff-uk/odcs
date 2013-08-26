@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.util.Collections;
 import java.util.Date;
@@ -45,6 +46,7 @@ public class PipelineFacade {
 	 */
 	public Pipeline createPipeline() {
 		Pipeline pipeline = new Pipeline();
+		pipeline.setGraph(new PipelineGraph());
 		if (authCtx != null) {
 			pipeline.setUser(authCtx.getUser());
 		}
