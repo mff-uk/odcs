@@ -2155,8 +2155,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	/**
-	 * Make construct query over repository data and return interface
-	 * Graph as result contains iterator for statements (triples).
+	 * Make construct query over repository data and return interface Graph as
+	 * result contains iterator for statements (triples).
 	 *
 	 * @param constructQuery String representation of SPARQL query.
 	 * @return Interface Graph as result of construct SPARQL query.
@@ -2298,7 +2298,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		Map<String, List<String>> map = new HashMap<>();
 
 		List<BindingSet> listBindings = new ArrayList<>();
-		TupleQueryResult result = null;
+		MyTupleQueryResult result = null;
 		try {
 			result = makeSelectQueryOverRepositoryAsResult(selectQuery);
 
@@ -2342,22 +2342,20 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	}
 
 	/**
-	 * Make select query over repository data and return TupleQueryResult
-	 * interface as result.
+	 * Make select query over repository data and return MyTupleQueryResult
+	 * class as result.
 	 *
 	 * @param selectQuery String representation of SPARQL select query.
-	 * @return TupleQueryResult representation of SPARQL select query.
+	 * @return MyTupleQueryResult representation of SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public TupleQueryResult makeSelectQueryOverRepositoryAsResult(
+	public MyTupleQueryResult makeSelectQueryOverRepositoryAsResult(
 			String selectQuery)
 			throws InvalidQueryException {
 
-		RepositoryConnection connection = null;
-
 		try {
-			connection = repository.getConnection();
+			RepositoryConnection connection = repository.getConnection();
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, selectQuery);
@@ -2367,9 +2365,13 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 			logger.debug("Query " + selectQuery + " is valid.");
 
 			try {
-				TupleQueryResult result = tupleQuery.evaluate();
+				TupleQueryResult tupleResult = tupleQuery.evaluate();
 				logger.debug(
 						"Query " + selectQuery + " has not null result.");
+				
+				MyTupleQueryResult result=new MyTupleQueryResult(connection,
+						tupleResult);
+				
 				return result;
 
 			} catch (QueryEvaluationException ex) {
@@ -2386,18 +2388,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 		} catch (RepositoryException ex) {
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while querying."
-							+ ex.getMessage(), ex);
-				}
-			}
 		}
-
 		throw new InvalidQueryException(
 				"Getting TupleQueryResult using SPARQL select query failed.");
 	}

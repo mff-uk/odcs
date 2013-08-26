@@ -17,10 +17,10 @@ import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.xrg.intlib.rdf.impl.MyTupleQueryResult;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
 import org.openrdf.model.Graph;
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -443,14 +443,14 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make select query over RDF data in DataUnit and return TupleQueryResult
-	 * interface as result.
+	 * Make select query over RDF data in DataUnit and return MyTupleQueryResult
+	 * class as result.
 	 *
 	 * @param selectQuery String representation of SPARQL select query.
-	 * @return TupleQueryResult representation of SPARQL select query.
+	 * @return MyTupleQueryResult representation of SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public TupleQueryResult executeSelectQueryTupleQueryResult(
+	public MyTupleQueryResult executeSelectQueryTupleQueryResult(
 			String selectQuery) throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepositoryAsResult(selectQuery);
 	}
