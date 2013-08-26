@@ -333,6 +333,13 @@ public class LocalRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	@Override
+	public void extractFromFile(File file, RDFFormat format,
+			boolean useStatisticalHandler) throws RDFException {
+
+		extractFromFile(file, format, "", useStatisticalHandler);
+	}
+
+	@Override
 	public void extractFromFile(File file, RDFFormat format, String baseURI)
 			throws RDFException {
 
