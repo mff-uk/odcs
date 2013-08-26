@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.GraphNotEmptyException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 import java.io.*;
 import java.net.Authenticator;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jiri Tomes
  */
-public class LocalRDFRepo implements RDFDataRepository, Closeable {
+public class LocalRDFRepo implements RDFDataUnit, Closeable {
 
 	/**
 	 * Logging information about execution of method using openRDF.
@@ -1805,11 +1805,11 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 *
 	 *
 	 * @param second Type of repository contains RDF data as implementation of
-	 *               RDFDataRepository interface.
+	 *               RDFDataUnit interface.
 	 * @throws IllegalArgumentException if second repository as param is null.
 	 */
 	@Override
-	public void mergeRepositoryData(RDFDataRepository second) throws IllegalArgumentException {
+	public void mergeRepositoryData(RDFDataUnit second) throws IllegalArgumentException {
 
 		if (second == null) {
 			throw new IllegalArgumentException(
@@ -1874,7 +1874,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	 * @param targetRepository goal repository where RDF data are added.
 	 */
 	@Override
-	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
+	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo) {
 
 		if (targetRepo == null) {
 			throw new IllegalArgumentException(
@@ -2426,8 +2426,8 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	public void merge(DataUnit unit) throws IllegalArgumentException {
 
 		if (unit != null) {
-			if (unit instanceof RDFDataRepository) {
-				RDFDataRepository rdfRepository = (RDFDataRepository) unit;
+			if (unit instanceof RDFDataUnit) {
+				RDFDataUnit rdfRepository = (RDFDataUnit) unit;
 				mergeRepositoryData(rdfRepository);
 
 			} else {

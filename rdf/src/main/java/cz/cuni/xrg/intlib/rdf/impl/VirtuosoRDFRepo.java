@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -17,7 +17,7 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
  *
  * @author Jiri Tomes
  */
-public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
+public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
 
 	private String URL_Host_List;
 
@@ -63,7 +63,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 				defaultGraph, dataUnitName);
 		return virtuosoRepo;
 	}
-
+	
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
 	 *
@@ -196,7 +196,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	@Override
-	public void mergeRepositoryData(RDFDataRepository second) throws IllegalArgumentException {
+	public void mergeRepositoryData(RDFDataUnit second) throws IllegalArgumentException {
 		if (second == null) {
 			throw new IllegalArgumentException(
 					"Instance of RDFDataRepository is null");
@@ -253,7 +253,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	@Override
-	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
+	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo) {
 
 		if (targetRepo == null) {
 			throw new IllegalArgumentException(
