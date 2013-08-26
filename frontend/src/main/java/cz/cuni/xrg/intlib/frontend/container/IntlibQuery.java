@@ -19,23 +19,19 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Metamodel;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 import org.vaadin.addons.lazyquerycontainer.EntityQueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.addons.lazyquerycontainer.Query;
-
 
 /**
  * Intlib version of EntityQuery with support for more types and custom filters.
@@ -43,6 +39,7 @@ import org.vaadin.addons.lazyquerycontainer.Query;
  * @author Bogo
  */
 public class IntlibQuery<E> implements Query, Serializable {
+
     /**
      * Java serialization version UID.
      */
@@ -135,7 +132,7 @@ public class IntlibQuery<E> implements Query, Serializable {
      * Load batch of items.
      *
      * @param startIndex Starting index of the item list.
-     * @param count      Count of the items to be retrieved.
+     * @param count Count of the items to be retrieved.
      * @return List of items.
      */
     @Override
@@ -169,7 +166,9 @@ public class IntlibQuery<E> implements Query, Serializable {
     }
 
     /**
-     * Sets where criteria of JPA 2.0 Criteria API query according to Vaadin filters.
+     * Sets where criteria of JPA 2.0 Criteria API query according to Vaadin
+     * filters.
+     *
      * @param cb the CriteriaBuilder
      * @param cq the CriteriaQuery
      * @param root the root
@@ -200,7 +199,9 @@ public class IntlibQuery<E> implements Query, Serializable {
     }
 
     /**
-     * Sets order clause of JPA 2.0 Criteria API query according to Vaadin sort states.
+     * Sets order clause of JPA 2.0 Criteria API query according to Vaadin sort
+     * states.
+     *
      * @param cb the CriteriaBuilder
      * @param cq the CriteriaQuery
      * @param root the root
@@ -233,11 +234,12 @@ public class IntlibQuery<E> implements Query, Serializable {
     }
 
     /**
-     * Implements conversion of Vaadin filter to JPA 2.0 Criteria API based predicate.
-     * Supports the following operations:
+     * Implements conversion of Vaadin filter to JPA 2.0 Criteria API based
+     * predicate. Supports the following operations:
      *
-     * And, Between, Compare, Compare.Equal, Compare.Greater, Compare.GreaterOrEqual,
-     * Compare.Less, Compare.LessOrEqual, IsNull, Like, Not, Or, SimpleStringFilter
+     * And, Between, Compare, Compare.Equal, Compare.Greater,
+     * Compare.GreaterOrEqual, Compare.Less, Compare.LessOrEqual, IsNull, Like,
+     * Not, Or, SimpleStringFilter
      *
      * @param filter the Vaadin filter
      * @param cb the CriteriaBuilder
@@ -246,7 +248,7 @@ public class IntlibQuery<E> implements Query, Serializable {
      * @return the predicate
      */
     private Predicate setFilter(final Container.Filter filter, final CriteriaBuilder cb,
-                                final CriteriaQuery<?> cq, final Root<?> root) {
+            final CriteriaQuery<?> cq, final Root<?> root) {
         if (filter instanceof And) {
             final And and = (And) filter;
             final List<Container.Filter> filters = new ArrayList<Container.Filter>(and.getFilters());
@@ -326,20 +328,21 @@ public class IntlibQuery<E> implements Query, Serializable {
             return cb.like(property, "%"
                     + simpleStringFilter.getFilterString() + "%");
         }
-        
-        if(filter instanceof PropertiesFilter) {
+
+        if (filter instanceof PropertiesFilter) {
             final PropertiesFilter propertiesFilter = (PropertiesFilter) filter;
-            Metamodel m = entityManager.getMetamodel();
-            EntityType<LogMessage> Log_ = m.entity(LogMessage.class);
-            Root<LogMessage> r = cq.from(LogMessage.class);
-            MapAttribute<LogMessage, String, String> ma = Log_.getDeclaredMap("properties", String.class, String.class);
-            Expression<Map<String, String>> get = r.get(ma);
-            
-            //final Expression<String> property = (Expression)((Path)get).get(propertiesFilter.parameterName);
-            return get.isNotNull(); // cb.equal(property, propertiesFilter.value);
+            //Root<LogMessage> msg = cq.from(LogMessage.class);
+            MapJoin<LogMessage, String, String> props = root.joinMap("properties");
+			
+			
+            Predicate isFromDpu = cb.and(
+                    cb.equal(props.key(), "execution"),
+                    cb.equal(props.value(), 1));
+            //return cb.isNotNull(props);
+            return cb.equal(props.key(), "execution"); //  isFromDpu;
         }
-        
-        if(filter instanceof InFilter) {
+
+        if (filter instanceof InFilter) {
             final InFilter inFilter = (InFilter) filter;
             final Expression<String> property = (Expression) root.get(inFilter.name);
             return property.in(inFilter.getStringSet());
@@ -350,6 +353,7 @@ public class IntlibQuery<E> implements Query, Serializable {
 
     /**
      * Gets property path.
+     *
      * @param root the root where path starts form
      * @param propertyId the property ID
      * @return the path to property
@@ -373,13 +377,13 @@ public class IntlibQuery<E> implements Query, Serializable {
      * be discarded after changes have been saved and new query loaded so that
      * changed items are sorted appropriately.
      *
-     * @param addedItems    Items to be inserted.
+     * @param addedItems Items to be inserted.
      * @param modifiedItems Items to be updated.
-     * @param removedItems  Items to be deleted.
+     * @param removedItems Items to be deleted.
      */
     @Override
     public final void saveItems(final List<Item> addedItems, final List<Item> modifiedItems,
-                                final List<Item> removedItems) {
+            final List<Item> removedItems) {
         if (applicationTransactionManagement) {
             entityManager.getTransaction().begin();
         }
@@ -470,7 +474,7 @@ public class IntlibQuery<E> implements Query, Serializable {
      * @param entity bean to be converted.
      * @return item converted from bean.
      */
-    @SuppressWarnings({"rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected final Item toItem(final Object entity) {
         if (queryDefinition.isCompositeItems()) {
             final NestingBeanItem<?> beanItem = new NestingBeanItem<Object>(entity,
@@ -484,7 +488,7 @@ public class IntlibQuery<E> implements Query, Serializable {
                     compositeItem.addItemProperty(
                             propertyId,
                             new ObjectProperty(queryDefinition.getPropertyDefaultValue(propertyId), queryDefinition
-                                    .getPropertyType(propertyId), queryDefinition.isPropertyReadOnly(propertyId)));
+                            .getPropertyType(propertyId), queryDefinition.isPropertyReadOnly(propertyId)));
                 }
             }
 
@@ -515,5 +519,4 @@ public class IntlibQuery<E> implements Query, Serializable {
     protected final EntityQueryDefinition getQueryDefinition() {
         return queryDefinition;
     }
-
 }

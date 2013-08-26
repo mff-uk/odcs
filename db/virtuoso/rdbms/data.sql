@@ -107,9 +107,9 @@ INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES
 INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES(2,'admin',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Admin');
 -- Table DB.INTLIB.USR_USER 2 rows output.
 -- SELECT * FROM DB.INTLIB.USR_USER_ROLE
-INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(1,1);
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(1,0);
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,0);
 INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,1);
-INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,2);
 -- Table DB.INTLIB.USR_USER_ROLE 3 rows output.
 
 
