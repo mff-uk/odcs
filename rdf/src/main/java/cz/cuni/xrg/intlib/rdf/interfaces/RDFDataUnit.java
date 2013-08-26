@@ -18,7 +18,7 @@ import org.openrdf.rio.RDFFormat;
  * @author Petyr
  *
  */
-public interface RDFDataRepository extends DataUnit, RDFDataUnitHelper {
+public interface RDFDataUnit extends DataUnit, RDFDataUnitHelper {
 
 	/**
 	 * Add one tripple RDF (statement) to the repository.
@@ -138,7 +138,7 @@ public interface RDFDataRepository extends DataUnit, RDFDataUnitHelper {
 	 *
 	 * @param targetRepository goal repository where RDF data are added.
 	 */
-	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo);
+	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo);
 
 	/**
 	 * Make RDF data merge over repository - data in repository merge with data
@@ -146,10 +146,10 @@ public interface RDFDataRepository extends DataUnit, RDFDataUnitHelper {
 	 *
 	 *
 	 * @param second Type of repository contains RDF data as implementation of
-	 *               RDFDataRepository interface.
+	 *               RDFDataUnit interface.
 	 * @throws IllegalArgumentException if second repository as param is null.
 	 */
-	public void mergeRepositoryData(RDFDataRepository second) throws IllegalArgumentException;
+	public void mergeRepositoryData(RDFDataUnit second) throws IllegalArgumentException;
 
 	/**
 	 * Return openRDF repository needed for almost every operation using RDF.
