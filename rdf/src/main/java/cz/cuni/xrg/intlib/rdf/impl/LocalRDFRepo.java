@@ -251,6 +251,19 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	}
 
+	protected Statement createNewStatement(String subjectName,
+			String predicateName, String objectName) {
+		ValueFactory valueFaktory = repository.getValueFactory();
+
+		URI subject = valueFaktory.createURI(subjectName);
+		URI predicate = valueFaktory.createURI(predicateName);
+		Literal object = valueFaktory.createLiteral(objectName);
+
+		Statement statement = new StatementImpl(subject, predicate, object);
+
+		return statement;
+	}
+
 	protected Statement createNewStatement(String namespace, String subjectName,
 			String predicateName, String objectName) {
 
@@ -276,7 +289,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 	@Override
 	public void addTriple(String subjectName,
 			String predicateName, String objectName) {
-		addTriple("", subjectName, predicateName, objectName);
+
+		Statement statement = createNewStatement(subjectName, predicateName,
+				objectName);
+		addStatement(statement, graph);
 	}
 
 	/**
@@ -2368,10 +2384,10 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				TupleQueryResult tupleResult = tupleQuery.evaluate();
 				logger.debug(
 						"Query " + selectQuery + " has not null result.");
-				
-				MyTupleQueryResult result=new MyTupleQueryResult(connection,
+
+				MyTupleQueryResult result = new MyTupleQueryResult(connection,
 						tupleResult);
-				
+
 				return result;
 
 			} catch (QueryEvaluationException ex) {
