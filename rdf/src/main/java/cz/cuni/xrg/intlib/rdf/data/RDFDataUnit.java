@@ -245,6 +245,33 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
+	 * Extract RDF data from SPARQL endpoint to DataUnit using only data from
+	 * collection of URI graphs using authentication (name,password).
+	 *
+	 * @param endpointURL         Remote URL connection to SPARQL endpoint
+	 *                            contains RDF data.
+	 * @param namedGraphs         List with names of graph where RDF data are
+	 *                            stored.
+	 * @param query               String SPARQL query.
+	 * @param hostName            String name needed for authentication.
+	 * @param password            String password needed for authentication.
+	 * @param format              Type of RDF format for saving data (example:
+	 *                            TURTLE, RDF/XML,etc.)
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
+	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
+	 *                              fail.
+	 */
+	public void addTriplesFromSPARQLEndpoint(URL endpointURL,
+			List<String> namedGraphs,
+			String query, String hostName, String password, RDFFormat format,
+			boolean useStatisticHandler) throws RDFDataUnitException {
+
+		repository.extractFromSPARQLEndpoint(endpointURL, namedGraphs,
+				query, hostName, password, format, useStatisticHandler);
+	}
+
+	/**
 	 * Save all triples in DataUnit to defined file in defined RDF format.
 	 *
 	 * @param file       File where data be saved.
