@@ -20,8 +20,6 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -79,13 +77,6 @@ public class LocalRDFRepo implements RDFDataUnit, Closeable {
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
 
 	/**
-	 * Default name for temp directory, where this repository is placed.
-	 */
-	private final static String repoDirName = "intlib-repo";
-
-	private final static String repoFileName = "localRepository";
-
-	/**
 	 * Default name for data file.
 	 */
 	private final static String dumpName = "dump_dat.ttl";
@@ -116,65 +107,6 @@ public class LocalRDFRepo implements RDFDataUnit, Closeable {
 	 * DataUnit's name.
 	 */
 	private String dataUnitName;
-
-	/**
-	 * Create local repository in default set temp directory path. Each
-	 * directory path have to constains more that one RDF repository.
-	 *
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
-	 *                     String.
-	 * @throws RuntimeException if temp directory for repository can not create.
-	 * @return
-	 */
-	public static LocalRDFRepo createLocalRepo(String dataUnitName) throws RuntimeException {
-
-		return LocalRDFRepo.createLocalRepoInTempDirectory(repoDirName,
-				repoFileName, dataUnitName);
-	}
-
-	/**
-	 * Create temp directory "dirName", in this directory create file with
-	 * "fileName" a there is repository stored.
-	 *
-	 * @param dirName
-	 * @param fileName
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
-	 *                     String.
-	 * @throws RuntimeException if temp directory for repository can not create.
-	 * @return
-	 */
-	public static LocalRDFRepo createLocalRepoInTempDirectory(String dirName,
-			String fileName, String dataUnitName) throws RuntimeException {
-		Path repoPath = null;
-
-		try {
-			repoPath = Files.createTempDirectory(dirName);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return LocalRDFRepo.createLocalRepo(repoPath.toString(), fileName,
-				dataUnitName);
-	}
-
-	/**
-	 * Create local repository in string path 'repoPath' in the file named
-	 * 'fileName', where is repository stored.
-	 *
-	 * @param repoPath     String path to directory where can be repository
-	 *                     stored.
-	 * @param fileName     String file name, where is repository in directory
-	 *                     stored.
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
-	 *                     String.
-	 * @return
-	 */
-	public static LocalRDFRepo createLocalRepo(String repoPath, String fileName,
-			String dataUnitName) {
-		LocalRDFRepo localrepo = new LocalRDFRepo(repoPath, fileName,
-				dataUnitName);
-		return localrepo;
-	}
 
 	/**
 	 * Empty constructor - used only for inheritance.

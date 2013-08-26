@@ -37,34 +37,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
 	}
 
 	/**
-	 * Create new instance of VirtuosoRepository with a specified parameters.
-	 *
-	 * @param hostName     String name of host need to Virtuoso connection.
-	 *
-	 * @param port         String value of number of port need for connection.
-	 *
-	 * @param user         the database user on whose behalf the connection is
-	 *                     being made.
-	 *
-	 * @param password     the user's password.
-	 *
-	 * @param defaultGraph a default Graph name, used for Sesame calls, when
-	 *                     contexts list is empty, exclude exportStatements,
-	 *                     hasStatement, getStatements methods.
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
-	 *                     String.
-	 */
-	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,
-			String port, String user, String password, String defaultGraph,
-			String dataUnitName) {
-		final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port + "/charset=UTF-8/log_enable=2";
-
-		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password,
-				defaultGraph, dataUnitName);
-		return virtuosoRepo;
-	}
-	
-	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
 	 *
 	 * @param URL_Host_List the Virtuoso JDBC URL connection string or hostlist
