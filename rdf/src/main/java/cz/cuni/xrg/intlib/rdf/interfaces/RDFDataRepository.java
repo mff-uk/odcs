@@ -12,6 +12,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import org.openrdf.model.Graph;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -495,12 +496,12 @@ public interface RDFDataRepository extends DataUnit {
 
 	/**
 	 * Make construct query over repository data and return interface
-	 * GraphQueryResult as result.
+	 * Graph as result contains iterator for statements (triples).
 	 *
 	 * @param constructQuery String representation of SPARQL query.
-	 * @return Interface GraphQueryResult as result of construct SPARQL query.
+	 * @return Interface Graph as result of construct SPARQL query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public GraphQueryResult makeConstructQueryOverRepository(
+	public Graph makeConstructQueryOverRepository(
 			String constructQuery) throws InvalidQueryException;
 }

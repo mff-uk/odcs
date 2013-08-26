@@ -2156,14 +2156,14 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 
 	/**
 	 * Make construct query over repository data and return interface
-	 * GraphQueryResult as result.
+	 * Graph as result contains iterator for statements (triples).
 	 *
 	 * @param constructQuery String representation of SPARQL query.
-	 * @return Interface GraphQueryResult as result of construct SPARQL query.
+	 * @return Interface Graph as result of construct SPARQL query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public GraphQueryResult makeConstructQueryOverRepository(
+	public Graph makeConstructQueryOverRepository(
 			String constructQuery) throws InvalidQueryException {
 
 		RepositoryConnection connection = null;
@@ -2184,8 +2184,7 @@ public class LocalRDFRepo implements RDFDataRepository, Closeable {
 				GraphQueryResult result = graphQuery.evaluate();
 				logger.debug(
 						"Query " + constructQuery + " has not null result.");
-
-				return result;
+				return result.asGraph();
 
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(

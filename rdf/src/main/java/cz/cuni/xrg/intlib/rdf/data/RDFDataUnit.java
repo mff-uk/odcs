@@ -19,7 +19,7 @@ import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import org.openrdf.query.GraphQueryResult;
+import org.openrdf.model.Graph;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 
@@ -476,14 +476,14 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make construct query over RDF data in DataUnit and return interface
-	 * GraphQueryResult as result.
+	 * Make construct query over RDF data in DataUnit and return interface Graph
+	 * as result contains iterator for statements (triples).
 	 *
 	 * @param constructQuery String representation of SPARQL query.
-	 * @return Interface GraphQueryResult as result of construct SPARQL query.
+	 * @return Interface Graph as result of construct SPARQL query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public GraphQueryResult executeConstructQuery(String constructQuery) throws InvalidQueryException {
+	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
 		return repository.makeConstructQueryOverRepository(constructQuery);
 	}
 
