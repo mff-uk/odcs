@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Evaluates whether currently authorized user has a given permission on a given
@@ -18,7 +19,7 @@ import org.springframework.security.core.Authentication;
 public class IntlibPermissionEvaluator implements PermissionEvaluator {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(IntlibPermissionEvaluator.class);
-
+	
 	/**
 	 * Authorization logic for permissions on entities.
 	 * 
@@ -51,6 +52,7 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 			switch (perm.toString()) {
 				case "view" :
 				case "use" :
+				case "copy" :
 					if (VisibilityType.PUBLIC.equals(sTarget.getVisibility())) {
 						return true;
 					}
@@ -65,6 +67,19 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 				perm
 		));
 		return false;
+	}
+
+	/**
+	 * Resolves permissions on given target object for currently authenticated
+	 * user.
+	 * 
+	 * @param target entity to try permission on
+	 * @param perm permission requested on target
+	 * @return true	if authenticated user has a given permission on target,
+	 *		   false otherwise
+	 */
+	public boolean hasPermission(Object target, Object perm) {
+		return hasPermission(SecurityContextHolder.getContext().getAuthentication(), target, perm);
 	}
 
 	/**
