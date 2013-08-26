@@ -232,7 +232,7 @@ public class SchedulePipeline extends Window {
 		
 		
 
-		container = ContainerFactory.CreatePipelines();
+		container = ContainerFactory.createPipelines();
 
 		pipelines = App.getApp().getPipelines().getAllPipelines();
 

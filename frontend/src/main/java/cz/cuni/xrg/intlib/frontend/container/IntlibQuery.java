@@ -325,8 +325,8 @@ public class IntlibQuery<E> implements Query, Serializable {
             final SimpleStringFilter simpleStringFilter = (SimpleStringFilter) filter;
             final Expression<String> property = (Expression) getPropertyPath(
                     root, simpleStringFilter.getPropertyId());
-            return cb.like(property, "%"
-                    + simpleStringFilter.getFilterString() + "%");
+            return cb.like(property, "**"
+                    + simpleStringFilter.getFilterString());
         }
 
         if (filter instanceof PropertiesFilter) {
@@ -336,10 +336,9 @@ public class IntlibQuery<E> implements Query, Serializable {
 			
 			
             Predicate isFromDpu = cb.and(
-                    cb.equal(props.key(), "execution"),
-                    cb.equal(props.value(), 1));
-            //return cb.isNotNull(props);
-            return cb.equal(props.key(), "execution"); //  isFromDpu;
+                    cb.equal(props.key(), propertiesFilter.parameterName),
+                    cb.equal(props.value(), propertiesFilter.value));
+            return isFromDpu;
         }
 
         if (filter instanceof InFilter) {

@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractField;
@@ -22,8 +23,8 @@ import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Level;
 import org.tepi.filtertable.FilterGenerator;
+import org.tepi.filtertable.datefilter.DateInterval;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
-import org.vaadin.addons.lazyquerycontainer.LazyEntityContainer;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
 
 /**
@@ -39,6 +40,7 @@ public class LogMessagesTable extends CustomComponent {
 	private PipelineExecution pipelineExecution;
 	private ComboBox levelSelector;
 	private LogMessageDetail detail = null;
+	private IntlibLazyQueryContainer container;
 
 	/**
 	 * Default constructor.
@@ -76,35 +78,8 @@ public class LogMessagesTable extends CustomComponent {
 			levelSelector.addItem(level);
 			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
-		levelSelector.setValue(Level.INFO);
-//		levelSelector.addValueChangeListener(new Property.ValueChangeListener() {
-//			@Override
-//			public void valueChange(Property.ValueChangeEvent event) {
-//				filterLogMessages((Level) event.getProperty().getValue());
-//			}
-//		});
-		//mainLayout.addComponentAsFirst(levelSelector);
-
+		loadMessageTable();
 		setCompositionRoot(mainLayout);
-	}
-
-	/**
-	 * Filters messages to show only messages of given level and more severe.
-	 *
-	 * @param level {@link Level} to filter log messages.
-	 */
-	private void filterLogMessages(Level level) {
-
-		List<LogMessage> data = null; //getData(pipelineExecution, dpu, level);
-
-		// ... filter
-//		List<LogMessage> filteredData = new ArrayList<>();
-//		for (LogMessage message : data) {
-//			if (message.getLevel().isGreaterOrEqual(level)) {
-//				filteredData.add(message);
-//			}
-//		}
-		loadMessageTable(data);
 	}
 
 	/**
@@ -116,19 +91,21 @@ public class LogMessagesTable extends CustomComponent {
 	 */
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
 		this.dpu = dpu;
+		if(pipelineExecution != exec) {
+			levelSelector.setValue(exec.isDebugging() ? Level.DEBUG : Level.WARN);
+		}
 		this.pipelineExecution = exec;
 
-		Level level = Level.ALL;
-		if (levelSelector.getValue() != null) {
-			level = (Level) levelSelector.getValue();
+		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
+		c.removeDefaultFilters();
+		c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
+		if (dpu != null) {
+			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
 		}
+		c.refresh();
+		messageTable.setCurrentPage(1);
 
-		List<LogMessage> data = null; //getData(pipelineExecution, dpu, level);
-		//if(data != null) {
-			loadMessageTable(data);
-		//} else {
-		//	Notification.show("Error", "Failed to load log messages from database!", Notification.Type.ERROR_MESSAGE);
-		//}
+
 	}
 
 	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {
@@ -149,59 +126,63 @@ public class LogMessagesTable extends CustomComponent {
 	 *
 	 * @param data List of {@link LogMessages} to show in table.
 	 */
-	private void loadMessageTable(List<LogMessage> data) {
-                
-                
-		IntlibLazyQueryContainer container = ContainerFactory.CreateLogMessages();
-                container.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
-                messageTable.setFilterGenerator(new FilterGenerator() {
+	private void loadMessageTable() {
 
-                    @Override
-                    public Container.Filter generateFilter(Object propertyId, Object value) {
-                        if(propertyId.equals("level")) {
-                            Level level = (Level)value;
-                            return new InFilter(App.getLogs().getLevels((Level)value), "levelString");
-                        }
-                        return null;
-                    }
+		container = ContainerFactory.createLogMessages();
+		messageTable.setFilterGenerator(new FilterGenerator() {
+			@Override
+			public Container.Filter generateFilter(Object propertyId, Object value) {
+				if (propertyId.equals("level")) {
+					return new InFilter(App.getLogs().getLevels((Level) value), "levelString");
+				} else if (propertyId.equals("date")) {
+					DateInterval interval = (DateInterval) value;
+					if (interval.getFrom() == null) {
+						return new Compare.LessOrEqual("timestamp", interval.getTo().getTime());
+					} else if (interval.getTo() == null) {
+						return new Compare.GreaterOrEqual("timestamp", interval.getFrom().getTime());
+					} else {
+						return new Between("timestamp", interval.getFrom().getTime(), interval.getTo().getTime());
+					}
+				}
+				return null;
+			}
 
-                    @Override
-                    public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
-                        if(propertyId.equals("level")) {
-                            Level value = (Level)((ComboBox)originatingField).getValue();
-                            return new InFilter(App.getLogs().getLevels(value), "levelString");
-                        }
-                        return null;
-                    }
+			@Override
+			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
+				if (propertyId.equals("level")) {
+					Level value = (Level) ((ComboBox) originatingField).getValue();
+					return new InFilter(App.getLogs().getLevels(value), "levelString");
+				}
+				return null;
+			}
 
-                    @Override
-                    public AbstractField<?> getCustomFilterComponent(Object propertyId) {
-                        if(propertyId.equals("level")) {
-                            return levelSelector;
-                        }
-                        return null;
-                    }
+			@Override
+			public AbstractField<?> getCustomFilterComponent(Object propertyId) {
+				if (propertyId.equals("level")) {
+					return levelSelector;
+				}
+				return null;
+			}
 
-                    @Override
-                    public void filterRemoved(Object propertyId) {
-                        
-                    }
+			@Override
+			public void filterRemoved(Object propertyId) {
+			}
 
-                    @Override
-                    public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
-                        
-                    }
+			@Override
+			public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
+			}
 
-                    @Override
-                    public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
-                        return null;
-                    }
-                });
+			@Override
+			public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+				return null;
+			}
+		});
 		messageTable.setContainerDataSource(container);
 		messageTable.setVisibleColumns("date", "level", "message", "source", LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME);
 
-                messageTable.setFilterBarVisible(true);
-                
+		messageTable.setFilterBarVisible(true);
+		levelSelector.setValue(Level.INFO);
+
 		//messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
@@ -224,7 +205,6 @@ public class LogMessagesTable extends CustomComponent {
 				}
 			});
 			detailWindow.addCloseListener(new Window.CloseListener() {
-
 				@Override
 				public void windowClose(Window.CloseEvent e) {
 					detail = null;
