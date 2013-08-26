@@ -562,11 +562,10 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Save DataUnit context into given directory. In case of any problem throws
-	 * exception. The directory doesn't have to exist. The directory can be the
-	 * same as the DataUnit working directory!
+	 * Save DataUnit context into given directory. The directory doesn't have to
+	 * exist. The directory can be the same as the DataUnit working directory!
 	 *
-	 * @throws RuntimeException
+	 * @throws RuntimeException is loading context failed.
 	 */
 	@Override
 	public void load(File directory)
