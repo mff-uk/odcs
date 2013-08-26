@@ -8,9 +8,9 @@ import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
-import cz.cuni.xrg.intlib.rdf.data.RDFDataUnit;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 /**
  *
@@ -41,7 +41,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final boolean useStatisticHandler = config.UseStatisticalHandler;
 
 		try {
-			rdfDataUnit.addTriplesFromFile(extractType, path, fileSuffix,
+			rdfDataUnit.extractFromFile(extractType, path, fileSuffix,
 					baseURI, onlyThisSuffix, useStatisticHandler);
 		} catch (RDFDataUnitException e) {
 			throw new ExtractException(e.getMessage(), e);

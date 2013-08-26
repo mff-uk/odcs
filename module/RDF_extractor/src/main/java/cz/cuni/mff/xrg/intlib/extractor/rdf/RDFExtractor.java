@@ -9,8 +9,8 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
-import cz.cuni.xrg.intlib.rdf.data.RDFDataUnit;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,7 +45,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			final String query = config.SPARQL_query;
 			final boolean useStatisticHandler = config.UseStatisticalHandler;
 
-			rdfDataUnit.addTriplesFromSPARQLEndpoint(endpointURL,
+			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
 					query, hostName, password, RDFFormat.N3, useStatisticHandler);
 		} catch (MalformedURLException ex) {

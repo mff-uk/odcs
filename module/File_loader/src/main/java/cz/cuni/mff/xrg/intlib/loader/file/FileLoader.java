@@ -8,10 +8,10 @@ import cz.cuni.xrg.intlib.commons.module.data.DataUnitList;
 import cz.cuni.xrg.intlib.commons.module.data.RDFDataUnitList;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.rdf.data.RDFDataUnit;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 /**
  * @author Jiri Tomes
@@ -48,7 +48,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		final boolean canFileOverwritte = true;
 
 		try {
-			rdfDataUnit.saveTriplesToFile(directoryPath, fileName, formatType,
+			rdfDataUnit.loadToFile(directoryPath, fileName, formatType,
 					canFileOverwritte, isNameUnique);
 		} catch (RDFDataUnitException | CannotOverwriteFileException ex) {
 			throw new LoadException(ex);

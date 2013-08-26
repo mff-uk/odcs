@@ -8,9 +8,9 @@ import cz.cuni.xrg.intlib.commons.module.data.DataUnitList;
 import cz.cuni.xrg.intlib.commons.module.data.RDFDataUnitList;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.*;
-import cz.cuni.xrg.intlib.rdf.data.RDFDataUnit;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,7 +59,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final WriteGraphType graphType = config.Options;
 
 		try {
-			rdfDataUnit.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
+			rdfDataUnit.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType);
 		} catch (RDFDataUnitException ex) {
 			throw new LoadException(ex.getMessage(), ex);

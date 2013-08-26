@@ -10,8 +10,8 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
-import cz.cuni.xrg.intlib.rdf.data.RDFDataUnit;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 /**
  *
@@ -41,9 +41,9 @@ public class SPARQLTransformer
 		final String updateQuery = config.SPARQL_Update_Query;
 
 		outputDataUnit.merge(intputDataUnit);
-		
+
 		try {
-			outputDataUnit.transform(updateQuery);
+			outputDataUnit.transformUsingSPARQL(updateQuery);
 		} catch (RDFDataUnitException ex) {
 			throw new TransformException(ex.getMessage(), ex);
 		}
