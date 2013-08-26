@@ -13,6 +13,7 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
@@ -254,6 +255,30 @@ public class RDFDataUnit implements DataUnit {
 	 */
 	public void saveTriplesToFile(File file, RDFFormatType formatType) throws RDFDataUnitException {
 		repository.loadToFile(file, formatType);
+	}
+
+	/**
+	 * Save all triples in DataUnit to defined file in defined RDF format.
+	 *
+	 * @param directoryPath    Path to directory, where file with RDF data will
+	 *                         be saved.
+	 * @param fileName         Name of file for saving RDF data.
+	 * @param formatType       Type of RDF format for saving data (example:
+	 *                         TURTLE, RDF/XML,etc.)
+	 * @param canFileOverWrite boolean value, if existing file can be
+	 *                         overwritten.
+	 * @param isNameUnique     boolean value, if every pipeline execution has
+	 *                         his unique name.
+	 * @throws CannotOverwriteFileException when file is protected for
+	 *                                      overwritting.
+	 * @throws RDFDataUnitException         when loading data to file fail.
+	 */
+	public void saveTriplesToFile(String directoryPath,
+			String fileName, RDFFormatType formatType,
+			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFDataUnitException {
+
+		repository.loadToFile(directoryPath, fileName, formatType,
+				canFileOverWrite, isNameUnique);
 	}
 
 	/**
