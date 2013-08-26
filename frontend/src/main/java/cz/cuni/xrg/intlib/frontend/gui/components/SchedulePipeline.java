@@ -229,11 +229,8 @@ public class SchedulePipeline extends Window {
 		coreLayout.setSpacing(true);
 		coreLayout.setMargin(true);
 
-		
-		
+		container = ContainerFactory.createPipelines();
 
-		container = ContainerFactory.createPipelines(App.getApp()
-				.getPipelines().getAllPipelines());
 
 		pipelines = App.getApp().getPipelines().getAllPipelines();
 
@@ -681,7 +678,7 @@ public class SchedulePipeline extends Window {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 
-				if (value.toString() != "[]") {
+				if (!value.toString().equals("[]")) {
 					return;
 				}
 				throw new InvalidValueException(

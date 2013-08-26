@@ -108,8 +108,13 @@ INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES
 -- Table DB.INTLIB.USR_USER 2 rows output.
 -- SELECT * FROM DB.INTLIB.USR_USER_ROLE
 INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(1,0);
+<<<<<<< HEAD
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,0);
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,1);
+=======
 INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(1,1);
 INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,0);
+>>>>>>> master
 -- Table DB.INTLIB.USR_USER_ROLE 3 rows output.
 
 

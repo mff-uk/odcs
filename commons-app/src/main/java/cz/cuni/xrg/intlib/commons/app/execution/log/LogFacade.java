@@ -244,4 +244,8 @@ public class LogFacade {
 	public LogMessage getLog(long id) {
 		return em.find(LogMessage.class, id);
 	}
+        
+        public EntityManager getEntityManager() {
+            return em;
+        }
 }

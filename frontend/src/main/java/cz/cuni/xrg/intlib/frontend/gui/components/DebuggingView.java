@@ -190,8 +190,7 @@ public class DebuggingView extends CustomComponent {
 
         boolean loadSuccessful = loadExecutionContextReader();
 
-        List<MessageRecord> records = App.getDPUs().getAllDPURecords(pipelineExec);
-        executionRecordsTable.setDataSource(records);
+        executionRecordsTable.setPipelineExecution(pipelineExec);
 
         if (loadSuccessful && isInDebugMode) {
             refreshDpuSelector();

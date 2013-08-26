@@ -55,6 +55,7 @@ public class IntlibPagedTable extends PagedFilterTable {
         super.resetFilters(); 
         setFilterLayout();
     }
+	
     
     
         
