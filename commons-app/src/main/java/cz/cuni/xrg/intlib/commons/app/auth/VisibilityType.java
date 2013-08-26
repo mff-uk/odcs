@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.dpu;
+package cz.cuni.xrg.intlib.commons.app.auth;
 
 /**
  * Types of DPURecord Visibility.

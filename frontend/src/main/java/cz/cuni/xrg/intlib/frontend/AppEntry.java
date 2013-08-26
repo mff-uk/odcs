@@ -64,16 +64,16 @@ public class AppEntry extends com.vaadin.ui.UI {
      * Add url-view association into navigator.
      */
     private void initNavigator() {
-        initNavigatorAddSingle(ViewNames.Initial);
+        initNavigatorAddSingle(ViewNames.INITIAL);
         // TODO: check rights !!
-        initNavigatorAddSingle(ViewNames.Administrator);
-        initNavigatorAddSingle(ViewNames.DataBrowser);
+        initNavigatorAddSingle(ViewNames.ADMINISTRATOR);
+        initNavigatorAddSingle(ViewNames.DATA_BROWSER);
         initNavigatorAddSingle(ViewNames.DPU);
-        initNavigatorAddSingle(ViewNames.ExecutionMonitor);
-        initNavigatorAddSingle(ViewNames.PipelineList);
-        initNavigatorAddSingle(ViewNames.PipelineEdit);
-        initNavigatorAddSingle(ViewNames.Scheduler);
-        initNavigatorAddSingle(ViewNames.Login);
+        initNavigatorAddSingle(ViewNames.EXECUTION_MONITOR);
+        initNavigatorAddSingle(ViewNames.PIPELINE_LIST);
+        initNavigatorAddSingle(ViewNames.PIPELINE_EDIT);
+        initNavigatorAddSingle(ViewNames.SCHEDULER);
+        initNavigatorAddSingle(ViewNames.LOGIN);
 
         /* You can create new views dynamically using a view provider
          * that implements the  ViewProvider interface.
@@ -154,8 +154,8 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.getNavigator().addViewChangeListener(new ViewChangeListener() {
             @Override
             public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-                if (!event.getViewName().equals(ViewNames.Login.name()) && !checkAuthentication()) {
-                    getNavigator().navigateTo(ViewNames.Login.getUrl());
+                if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+                    getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
                     getMain().refreshUserBar();
                     return false;
                 }

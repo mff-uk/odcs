@@ -30,6 +30,7 @@ CREATE TABLE `DPU_TEMPLATE`
   `configuration` BLOB,
   `parent_id` INTEGER,
 -- DPUTemplateRecord
+  `user_id` INTEGER,
   `visibility` SMALLINT,
   `jar_description` VARCHAR(512),
   PRIMARY KEY (`id`)

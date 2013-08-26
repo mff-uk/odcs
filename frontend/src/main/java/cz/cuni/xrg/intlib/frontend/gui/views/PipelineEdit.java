@@ -314,7 +314,7 @@ class PipelineEdit extends ViewComponent {
                 App.getApp().getNavigator().navigateTo(name.getUrl());
             }
         } else {
-            App.getApp().getNavigator().navigateTo(ViewNames.PipelineList.getUrl());
+            App.getApp().getNavigator().navigateTo(ViewNames.PIPELINE_LIST.getUrl());
         }
     }
 
@@ -529,7 +529,7 @@ class PipelineEdit extends ViewComponent {
     protected Pipeline loadPipeline(ViewChangeEvent event) {
         // some information text ...
         String pipeIdstr = event.getParameters();
-        if (pipeIdstr.compareTo(ViewNames.PipelineEdit_New.getParametr()) == 0) {
+        if (pipeIdstr.compareTo(ViewNames.PIPELINE_EDIT_NEW.getParametr()) == 0) {
             // create empty, for new record
             this.pipeline = App.getApp().getPipelines().createPipeline();
             pipeline.setName("empty pipeline");
@@ -567,7 +567,7 @@ class PipelineEdit extends ViewComponent {
     }
 
     /**
-     * Enter method for PipelineEdit view.
+     * Enter method for PIPELINE_EDIT view.
      *
      * @param event {@link ViewChangeEvent}
      */

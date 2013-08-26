@@ -17,8 +17,8 @@ import org.apache.log4j.Level;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
 
 /**
- * Class support creating vaadin container from List<?>.
- *
+ * Class support creating Vaadin container from List<?>.
+ * 
  * @author Petyr
  *
  */
@@ -55,6 +55,7 @@ public class ContainerFactory {
 	 */
 	public static Container createDPUTemplates(List<DPUTemplateRecord> data) {
 		BeanContainer<Long, DPUTemplateRecord> container = new BeanContainer<>(DPUTemplateRecord.class);
+
 		// set container id
 		container.setBeanIdProperty("id");
 
@@ -74,11 +75,13 @@ public class ContainerFactory {
 		container.addContainerProperty("type", MessageRecordType.class, MessageRecordType.DPU_INFO, true, true);
 		container.addContainerProperty("dpuInstance.name", String.class, "", true, true);
 		container.addContainerProperty("shortMessage", String.class, "", true, true);
+
 		return container;
 	}
 
 	public static Container createRDFData(List<RDFTriple> data) {
 		BeanContainer<Long, RDFTriple> container = new BeanContainer<>(RDFTriple.class);
+
 		container.setBeanIdProperty("id");
 		container.addAll(data);
 
@@ -94,9 +97,10 @@ public class ContainerFactory {
 		container.addContainerProperty("message", String.class, "", true, true);
 		container.addContainerProperty("date", Date.class, null, true, true);
 
-		container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, Integer.class, 0, true, true);
-		container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, Integer.class, 0, true, true);
-		container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME, Long.class, 0, true, false);
+		//container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, Integer.class, 0, true, true);
+		//container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, Integer.class, 0, true, true);
+		//container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME, Long.class, 0, true, false);
+
 		return container;
 	}
 }

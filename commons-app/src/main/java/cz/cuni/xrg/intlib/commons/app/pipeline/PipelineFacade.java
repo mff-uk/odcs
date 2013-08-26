@@ -1,5 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +10,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,18 +31,43 @@ public class PipelineFacade {
 	 */
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired(required = false)
+	private AuthenticationContextService authCtx;
 
 	/* ******************* Methods for managing Pipeline ******************** */
 
 	/**
-	 * Pipeline factory.
+	 * Pipeline factory with preset currently logged-in {@link User} as owner.
 	 * Created instance is not yet managed by {@link EntityManager}, thus needs
 	 * to be saved with {@link #save(Pipeline)} method.
 	 *
 	 * @return newly created pipeline
 	 */
 	public Pipeline createPipeline() {
-		return new Pipeline();
+		Pipeline pipeline = new Pipeline();
+		pipeline.setGraph(new PipelineGraph());
+		if (authCtx != null) {
+			pipeline.setUser(authCtx.getUser());
+		}
+		return pipeline;
+	}
+	
+	/**
+	 * Creates a clone of given pipeline and returns it as a new instance.
+	 * Original owner is not preserved, rather currently logged in user is set
+	 * as an owner of the newly created pipeline.
+	 * 
+	 * @param pipeline original pipeline to copy
+	 * @return newly copied pipeline
+	 */
+	@PreAuthorize("hasPermission(#pipeline, 'copy')")
+	public Pipeline copyPipeline(Pipeline pipeline) {
+		Pipeline nPipeline = new Pipeline(pipeline);
+		if (authCtx != null) {
+			nPipeline.setUser(authCtx.getUser());
+		}
+		return nPipeline;
 	}
 
 	/**
@@ -44,6 +75,7 @@ public class PipelineFacade {
 	 *
 	 * @return list of pipelines
 	 */
+	@PostFilter("hasPermission(filterObject,'view')")
 	public List<Pipeline> getAllPipelines() {
 
 		@SuppressWarnings("unchecked")
@@ -61,6 +93,7 @@ public class PipelineFacade {
 	 * @param id of Pipeline
 	 * @return Pipeline
 	 */
+	@PostAuthorize("hasPermission(returnObject,'view')")
 	public Pipeline getPipeline(long id) {
 
 		return em.find(Pipeline.class, id);
@@ -72,6 +105,7 @@ public class PipelineFacade {
 	 * @param pipeline
 	 */
 	@Transactional
+	@PreAuthorize("hasPermission(#pipeline,'save')")
 	public void save(Pipeline pipeline) {
 		if (pipeline.getId() == null) {
 			em.persist(pipeline);
@@ -86,7 +120,7 @@ public class PipelineFacade {
 	 * @param pipeline
 	 */
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#pipeline, 'delete')")
+	@PreAuthorize("hasPermission(#pipeline, 'delete')")
 	public void delete(Pipeline pipeline) {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove

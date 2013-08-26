@@ -148,15 +148,6 @@ public class LogMessagesTable extends CustomComponent {
 			}
 
 			@Override
-			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
-				if (propertyId.equals("level")) {
-					Level value = (Level) ((ComboBox) originatingField).getValue();
-					return new InFilter(App.getLogs().getLevels(value), "levelString");
-				}
-				return null;
-			}
-
-			@Override
 			public AbstractField<?> getCustomFilterComponent(Object propertyId) {
 				if (propertyId.equals("level")) {
 					return levelSelector;
@@ -174,6 +165,11 @@ public class LogMessagesTable extends CustomComponent {
 
 			@Override
 			public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+				return null;
+			}
+
+			@Override
+			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
 				return null;
 			}
 		});

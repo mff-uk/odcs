@@ -9,8 +9,8 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
-import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnit;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,7 +34,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			throws ExtractException,
 			DataUnitCreateException {
 
-		RDFDataRepository repository = (RDFDataRepository) context
+		RDFDataUnit rdfDataUnit = (RDFDataUnit) context
 				.addOutputDataUnit(DataUnitType.RDF, "output");
 
 		try {
@@ -45,13 +45,14 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			final String query = config.SPARQL_query;
 			final boolean useStatisticHandler = config.UseStatisticalHandler;
 
-			repository.extractFromSPARQLEndpoint(endpointURL, defaultGraphsUri,
+			rdfDataUnit.addTriplesFromSPARQLEndpoint(endpointURL,
+					defaultGraphsUri,
 					query, hostName, password, RDFFormat.N3, useStatisticHandler);
 		} catch (MalformedURLException ex) {
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
 			throw new ExtractException(ex);
-		} catch (RDFException ex) {
+		} catch (RDFDataUnitException ex) {
 			throw new ExtractException(ex.getMessage(), ex);
 		}
 	}

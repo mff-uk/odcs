@@ -1,9 +1,14 @@
 package cz.cuni.xrg.intlib.commons.app.auth;
 
 import cz.cuni.xrg.intlib.commons.app.user.OwnedEntity;
+import cz.cuni.xrg.intlib.commons.app.user.Role;
+import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Evaluates whether currently authorized user has a given permission on a given
@@ -12,7 +17,9 @@ import org.springframework.security.core.Authentication;
  * @author Jan Vojt
  */
 public class IntlibPermissionEvaluator implements PermissionEvaluator {
-
+	
+	private final static Logger LOG = LoggerFactory.getLogger(IntlibPermissionEvaluator.class);
+	
 	/**
 	 * Authorization logic for permissions on entities.
 	 * 
@@ -25,22 +32,54 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 	@Override
 	public boolean hasPermission(Authentication auth, Object target, Object perm) {
 		
+		// administrator is almighty
+		if (auth.getAuthorities().contains(Role.ROLE_ADMIN)) {
+			return true;
+		}
+		
+		// entity owner is almighty
 		if (target instanceof OwnedEntity) {
 			OwnedEntity oTarget = (OwnedEntity) target;
-			switch (perm.toString()) {
-				case "edit" :
-				case "delete" :
-					return auth.getName().equals(oTarget.getOwner().getUsername());
+			User owner = oTarget.getOwner();
+			if (owner != null && auth.getName().equals(owner.getUsername())) {
+				return true;
 			}
 		}
 		
-		// catch all undefined instance-operation pair
-		throw new UnsupportedOperationException(String.format(
+		// check publicly viewable entities
+		if (target instanceof SharedEntity) {
+			SharedEntity sTarget = (SharedEntity) target;
+			switch (perm.toString()) {
+				case "view" :
+				case "use" :
+				case "copy" :
+					if (VisibilityType.PUBLIC.equals(sTarget.getVisibility())) {
+						return true;
+					}
+					break;
+			}
+		}
+		
+		// in other cases be restrictive
+		LOG.debug(String.format(
 				"Method hasPermission not supported for object <?> and permission <?>.",
 				target,
 				perm
 		));
-		
+		return false;
+	}
+
+	/**
+	 * Resolves permissions on given target object for currently authenticated
+	 * user.
+	 * 
+	 * @param target entity to try permission on
+	 * @param perm permission requested on target
+	 * @return true	if authenticated user has a given permission on target,
+	 *		   false otherwise
+	 */
+	public boolean hasPermission(Object target, Object perm) {
+		return hasPermission(SecurityContextHolder.getContext().getAuthentication(), target, perm);
 	}
 
 	/**

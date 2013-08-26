@@ -10,14 +10,16 @@ import org.openrdf.model.Statement;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import org.openrdf.query.GraphQueryResult;
+import org.openrdf.model.Graph;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 
@@ -93,34 +95,32 @@ public class RDFDataUnit implements DataUnit {
 		this.repository = repository;
 	}
 
+//	/**
+//	 * Add one tripple RDF (statement) to the repository. There is common namespace for subject, predicate, object. 
+//	 *
+//	 * @param commonNamespace     Common namespace for subject, predicate, object
+//	 * @param subject   Subject (relative)
+//	 * @param predicate Predicate
+//	 * @param object    Object
+//	 */
+//	public void addRDFTriple(String commonNamespace, String subject,
+//			String predicate,
+//			String object) {
+//
+//		repository.addTriple(commonNamespace, subject, predicate, object);
+//
+//	}
 	/**
-	 * Add one tripple RDF (statement) to the repository.
+	 * Add one RDF triple to the repository.
 	 *
-	 * @param namespace     String name of defined namespace
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
+	 * @param subject   Subject
+	 * @param predicate Predicate
+	 * @param object    Object
 	 */
-	public void addRDFTriple(String namespace, String subjectName,
-			String predicateName,
-			String objectName) {
+	public void addTriple(String subject,
+			String predicate, String object) {
 
-		repository.addTriple(namespace, subjectName, predicateName, objectName);
-
-	}
-
-	/**
-	 * Add one tripple RDF (statement) to the repository (default empty
-	 * namespace).
-	 *
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
-	 */
-	public void addRDFTriple(String subjectName,
-			String predicateName, String objectName) {
-
-		repository.addTriple(subjectName, predicateName, objectName);
+		repository.addTriple(subject, predicate, object);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @param file File contains RDF data to extract.
 	 * @throws RDFDataUnitException when extraction fail.
 	 */
-	public void extractRDFFromFile(File file) throws RDFDataUnitException {
+	public void addTriplesFromFile(File file) throws RDFDataUnitException {
 		repository.extractFromFile(file);
 	}
 
@@ -142,7 +142,7 @@ public class RDFDataUnit implements DataUnit {
 	 *               ..) if RDF format can not be detected from file suffix.
 	 * @throws RDFDataUnitException when extraction fail.
 	 */
-	public void extractRDFFromFile(File file, RDFFormat format) throws RDFDataUnitException {
+	public void addTriplesFromFile(File file, RDFFormat format) throws RDFDataUnitException {
 		repository.extractFromFile(file, format);
 	}
 
@@ -153,13 +153,43 @@ public class RDFDataUnit implements DataUnit {
 	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
 	 *                Turtle, ..) if RDF format can not be detected from file
 	 *                suffix.
-	 * @param baseURI String name of defined used URI prefix namespace used by
-	 *                all triples.
+	 * @param baseURI String name of defined URI prefix namespace used by adding
+	 *                new triple statement as united prefix. If this string is
+	 *                empty, is needed to use whole URI name for each element of
+	 *                new added triple.
 	 * @throws RDFDataUnitException when extraction fail.
 	 */
-	public void extractRDFFromFile(File file, RDFFormat format, String baseURI)
+	public void addTriplesFromFile(File file, RDFFormat format, String baseURI)
 			throws RDFDataUnitException {
 		repository.extractFromFile(file, format, baseURI);
+	}
+
+	/**
+	 * Extract RDF triples from RDF file and store them in DataUnit.
+	 *
+	 * @param extractType         One of defined enum type for extraction data
+	 *                            from file.
+	 * @param path                String path to file/directory
+	 * @param suffix              String suffix of fileName (example: ".ttl",
+	 *                            ".xml", etc)
+	 * @param baseURI             String name of defined URI prefix namespace
+	 *                            used by adding new triple statement as united
+	 *                            prefix. If this string is empty, is needed to
+	 *                            use whole URI name for each element of new
+	 *                            added triple.
+	 * @param useSuffix           boolean value, if extract files only with
+	 *                            defined suffix or not.
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
+	 * @throws RDFDataUnitException when extraction fail.
+	 */
+	public void addTriplesFromFile(FileExtractType extractType,
+			String path, String suffix,
+			String baseURI, boolean useSuffix, boolean useStatisticHandler)
+			throws RDFDataUnitException {
+
+		repository.extractFromFile(extractType, path, suffix, baseURI,
+				useSuffix, useStatisticHandler);
 	}
 
 	/**
@@ -169,14 +199,17 @@ public class RDFDataUnit implements DataUnit {
 	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
 	 *                              RDFXML, Turtle, ..) if RDF format can not be
 	 *                              detected from file suffix.
-	 * @param baseURI               String name of defined used URI prefix
-	 *                              namespace used by all triples.
+	 * @param baseURI               String name of defined URI prefix namespace
+	 *                              used by adding new triple statement as
+	 *                              united prefix. If this string is empty, is
+	 *                              needed to use whole URI name for each
+	 *                              element of new added triple.
 	 * @param useStatisticalHandler boolean value, if during extraction needed
 	 *                              detail statistic about RDF triples and
 	 *                              detailed log or not.
 	 * @throws RDFException when extraction fail.
 	 */
-	public void extractFromFile(File file, RDFFormat format, String baseURI,
+	public void addTriplesFromFile(File file, RDFFormat format, String baseURI,
 			boolean useStatisticalHandler) throws RDFDataUnitException {
 		repository.extractFromFile(file, format, baseURI, useStatisticalHandler);
 	}
@@ -192,12 +225,11 @@ public class RDFDataUnit implements DataUnit {
 	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
 	 *                              fail.
 	 */
-	public void extractRDFFromSPARQLEndpoint(URL endpointURL,
+	public void addTriplesFromSPARQLEndpoint(URL endpointURL,
 			String namedGraph, String query)
 			throws RDFDataUnitException {
 
-		repository
-				.extractfromSPARQLEndpoint(endpointURL, namedGraph, query);
+		repository.extractfromSPARQLEndpoint(endpointURL, namedGraph, query);
 	}
 
 	/**
@@ -213,13 +245,39 @@ public class RDFDataUnit implements DataUnit {
 	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
 	 *                              fail.
 	 */
-	public void extractRDFFromSPARQLEndpoint(URL endpointURL,
+	public void addTriplesFromSPARQLEndpoint(URL endpointURL,
 			String namedGraph, String query,
 			String hostName, String password) throws RDFDataUnitException {
 
-		repository
-				.extractFromSPARQLEndpoint(endpointURL, namedGraph, query,
+		repository.extractFromSPARQLEndpoint(endpointURL, namedGraph, query,
 				hostName, password);
+	}
+
+	/**
+	 * Extract RDF data from SPARQL endpoint to DataUnit using only data from
+	 * collection of URI graphs using authentication (name,password).
+	 *
+	 * @param endpointURL         Remote URL connection to SPARQL endpoint
+	 *                            contains RDF data.
+	 * @param namedGraphs         List with names of graph where RDF data are
+	 *                            stored.
+	 * @param query               String SPARQL query.
+	 * @param hostName            String name needed for authentication.
+	 * @param password            String password needed for authentication.
+	 * @param format              Type of RDF format for saving data (example:
+	 *                            TURTLE, RDF/XML,etc.)
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
+	 * @throws RDFDataUnitException when extraction data from SPARQL endpoint
+	 *                              fail.
+	 */
+	public void addTriplesFromSPARQLEndpoint(URL endpointURL,
+			List<String> namedGraphs,
+			String query, String hostName, String password, RDFFormat format,
+			boolean useStatisticHandler) throws RDFDataUnitException {
+
+		repository.extractFromSPARQLEndpoint(endpointURL, namedGraphs,
+				query, hostName, password, format, useStatisticHandler);
 	}
 
 	/**
@@ -231,8 +289,32 @@ public class RDFDataUnit implements DataUnit {
 	 * @throws RDFDataUnitException when saving data to file fail.
 	 *
 	 */
-	public void loadRDFToFile(File file, RDFFormatType formatType) throws RDFDataUnitException {
+	public void saveTriplesToFile(File file, RDFFormatType formatType) throws RDFDataUnitException {
 		repository.loadToFile(file, formatType);
+	}
+
+	/**
+	 * Save all triples in DataUnit to defined file in defined RDF format.
+	 *
+	 * @param directoryPath    Path to directory, where file with RDF data will
+	 *                         be saved.
+	 * @param fileName         Name of file for saving RDF data.
+	 * @param formatType       Type of RDF format for saving data (example:
+	 *                         TURTLE, RDF/XML,etc.)
+	 * @param canFileOverWrite boolean value, if existing file can be
+	 *                         overwritten.
+	 * @param isNameUnique     boolean value, if every pipeline execution has
+	 *                         his unique name.
+	 * @throws CannotOverwriteFileException when file is protected for
+	 *                                      overwritting.
+	 * @throws RDFDataUnitException         when loading data to file fail.
+	 */
+	public void saveTriplesToFile(String directoryPath,
+			String fileName, RDFFormatType formatType,
+			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFDataUnitException {
+
+		repository.loadToFile(directoryPath, fileName, formatType,
+				canFileOverWrite, isNameUnique);
 	}
 
 	/**
@@ -316,7 +398,7 @@ public class RDFDataUnit implements DataUnit {
 	/**
 	 * Transform RDF data in DataUnit using SPARQL given makeSelectQuery.
 	 *
-	 * @param updateQuery String value of update SPARQL makeSelectQuery.
+	 * @param updateQuery SPARQL Update query
 	 * @throws RDFDataUnitException when transformation fail.
 	 *
 	 */
@@ -332,8 +414,7 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make select makeSelectQuery over RDF data in DataUnit and return tables
-	 * as result.
+	 * Executes SPARQL select query over RDF data in DataUnit.
 	 *
 	 * @param selectQuery String representation of SPARQL makeSelectQuery.
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
@@ -342,21 +423,21 @@ public class RDFDataUnit implements DataUnit {
 	 *         return * empty <code>Map</code>.
 	 * @throws InvalidQueryException when makeSelectQuery is not valid.
 	 */
-	public Map<String, List<String>> makeSelectQuery(String selectQuery) throws InvalidQueryException {
+	public Map<String, List<String>> executeSelectQuery(String selectQuery)
+			throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepository(selectQuery);
 	}
 
 	/**
-	 * Make select makeSelectQuery over RDF data in DataUnit and return file as
-	 * SPARQL XML result.
+	 * Execute SPARQL query over RDF data in DataUnit.
 	 *
 	 * @param selectQuery String representation of SPARQL makeSelectQuery
 	 * @param filePath    String path to file for saving result of
 	 *                    makeSelectQuery in SPARQL XML syntax.
-	 * @return File contains result of given SPARQL select makeSelectQuery.
+	 * @return File contains result of given SPARQL select query.
 	 * @throws InvalidQueryException when makeSelectQuery is not valid.
 	 */
-	public File makeSelectQuery(String selectQuery, String filePath) throws InvalidQueryException {
+	public File executeSelectQuery(String selectQuery, String filePath) throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepository(selectQuery, filePath);
 
 	}
@@ -369,7 +450,8 @@ public class RDFDataUnit implements DataUnit {
 	 * @return TupleQueryResult representation of SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public TupleQueryResult makeSelectQueryAsResult(String selectQuery) throws InvalidQueryException {
+	public TupleQueryResult executeSelectQueryTupleQueryResult(
+			String selectQuery) throws InvalidQueryException {
 		return repository.makeSelectQueryOverRepositoryAsResult(selectQuery);
 	}
 
@@ -386,7 +468,7 @@ public class RDFDataUnit implements DataUnit {
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
-	public File makeConstructQuery(String constructQuery, String filePath,
+	public File executeConstructQuery(String constructQuery, String filePath,
 			RDFFormatType formatType) throws InvalidQueryException {
 
 		return repository.makeConstructQueryOverRepository(constructQuery,
@@ -394,19 +476,19 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Make construct query over RDF data in DataUnit and return interface
-	 * GraphQueryResult as result.
+	 * Make construct query over RDF data in DataUnit and return interface Graph
+	 * as result contains iterator for statements (triples).
 	 *
 	 * @param constructQuery String representation of SPARQL query.
-	 * @return Interface GraphQueryResult as result of construct SPARQL query.
+	 * @return Interface Graph as result of construct SPARQL query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public GraphQueryResult makeConstructQuery(String constructQuery) throws InvalidQueryException {
+	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
 		return repository.makeConstructQueryOverRepository(constructQuery);
 	}
 
 	/**
-	 * Get list all RDF triples (Statements) in DataUnit.
+	 * Get list of all RDF triples (Statements) in DataUnit.
 	 *
 	 * @see {@link RDFDataUnit#makeSelectQuery(String)}.
 	 * @return list of RDF triples
@@ -470,8 +552,7 @@ public class RDFDataUnit implements DataUnit {
 
 	/**
 	 * Save DataUnit context into given directory. In case of any problem throws
-	 * exception. The directory doesn't have to exist. The directory can be the
-	 * same as the DataUnit working directory!
+	 * exception. The directory doesn't have to exist.
 	 *
 	 * @throws RuntimeException
 	 */
@@ -481,11 +562,10 @@ public class RDFDataUnit implements DataUnit {
 	}
 
 	/**
-	 * Save DataUnit context into given directory. In case of any problem throws
-	 * exception. The directory doesn't have to exist. The directory can be the
-	 * same as the DataUnit working directory!
+	 * Save DataUnit context into given directory. The directory doesn't have to
+	 * exist. The directory can be the same as the DataUnit working directory!
 	 *
-	 * @throws RuntimeException
+	 * @throws RuntimeException is loading context failed.
 	 */
 	@Override
 	public void load(File directory)

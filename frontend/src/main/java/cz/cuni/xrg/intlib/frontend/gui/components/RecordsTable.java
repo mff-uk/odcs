@@ -76,7 +76,6 @@ public class RecordsTable extends CustomComponent {
 	/**
 	 * Loads data to the table.
 	 *
-	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
 	private void loadMessageTable() {
 		Container container = ContainerFactory.createExecutionMessages();

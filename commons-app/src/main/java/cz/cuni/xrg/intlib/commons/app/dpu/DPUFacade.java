@@ -9,6 +9,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -51,6 +53,7 @@ public class DPUFacade {
 	 * Returns list of all DPUTemplateRecords currently persisted in database.
 	 * @return DPURecord list
 	 */
+	@PostFilter("hasPermission(filterObject,'view')")
 	public List<DPUTemplateRecord> getAllTemplates() {
 
 		@SuppressWarnings("unchecked")
@@ -76,6 +79,7 @@ public class DPUFacade {
 	 * @param dpu
 	 */
 	@Transactional
+	@PreAuthorize("hasPermission(#dpu,'save')")
 	public void save(DPUTemplateRecord dpu) {
 		if (dpu.getId() == null) {
 			em.persist(dpu);
@@ -89,6 +93,7 @@ public class DPUFacade {
 	 * @param dpu
 	 */
 	@Transactional
+	@PreAuthorize("hasPermission(#dpu,'delete')")
 	public void delete(DPUTemplateRecord dpu) {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove
