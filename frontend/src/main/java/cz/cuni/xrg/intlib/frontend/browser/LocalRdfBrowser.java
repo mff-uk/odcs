@@ -7,6 +7,7 @@ import java.util.List;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 
@@ -32,7 +33,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
 	@Override
 	public void loadDataUnit(File directory, String dataUnitId) {
 		// create repository in default path - in tmp directory
-		LocalRDFRepo repository = LocalRDFRepo.createLocalRepo("");
+		LocalRDFRepo repository = RDFDataUnitFactory.createLocalRDFRepo("");
 		try {
 			// load data from store
 			repository.load(directory);

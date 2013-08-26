@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
@@ -27,7 +28,7 @@ public class SPARQLUpdateValidator implements Validator {
 	public boolean isQueryValid() {
 		boolean isValid = true;
 
-		LocalRDFRepo emptyRepo = LocalRDFRepo.createLocalRepo("");
+		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
 
 		RepositoryConnection connection = null;
 		try {
