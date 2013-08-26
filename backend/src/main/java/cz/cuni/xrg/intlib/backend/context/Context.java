@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
+import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -70,7 +71,7 @@ public class Context implements ExtractContext, TransformContext, LoadContext {
 	private DataUnitManager outputsManager;	
 	
 	/**
-	 * Used factory.
+	 * Used DataUnit factory.
 	 */
 	@Autowired
 	protected DataUnitFactory dataUnitFactory;
@@ -166,7 +167,7 @@ public class Context implements ExtractContext, TransformContext, LoadContext {
 	 * @param instruction
 	 * @throws ContextException
 	 */
-	public void addSource(Context context, String instruction)
+	public void addContext(Context context, String instruction)
 			throws ContextException {
 		// create merger class
 		DataUnitMerger merger = new DataUnitMerger();
@@ -267,16 +268,16 @@ public class Context implements ExtractContext, TransformContext, LoadContext {
 	
 	@Override
 	public void sendMessage(MessageType type, String shortMessage) {
-	//	eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type,
-	//			this, this));	
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type,
+				this, this));	
 	}
 	
 	@Override
 	public void sendMessage(MessageType type,
 			String shortMessage,
 			String fullMessage) {
-		//eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
-		//		type, this, this));
+		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
+				type, this, this));
 	}
 	
 	@Override

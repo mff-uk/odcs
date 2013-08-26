@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
@@ -48,6 +47,7 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 
 import org.apache.commons.io.FileUtils;
@@ -80,12 +80,6 @@ class PipelineWorker implements Runnable {
 	private ModuleFacade moduleFacade;
 
 	/**
-	 * Access to the database
-	 */
-	@Autowired
-	protected DatabaseAccess database;
-
-	/**
 	 * Application's configuration.
 	 */
 	@Autowired
@@ -103,6 +97,18 @@ class PipelineWorker implements Runnable {
 	@Autowired
 	private BeanFactory beanFactory;
 
+	/**
+	 * Pipeline facade.
+	 */
+	@Autowired
+	private PipelineFacade pipelineFacade;	
+	
+	/**
+	 * Log facade.
+	 */
+	@Autowired
+	private LogFacade logFacade;		
+	
 	/**
 	 * Manage mapping execution context into {@link #workDirectory}.
 	 */
@@ -142,7 +148,7 @@ class PipelineWorker implements Runnable {
 		// if in SCHEDULED changed to RUNNING
 		if (this.execution.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
 			this.execution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
-			database.getPipeline().save(this.execution);
+			pipelineFacade.save(this.execution);
 		}
 	}
 
@@ -151,11 +157,11 @@ class PipelineWorker implements Runnable {
 	 * {@link #lastSuccessfulExTime}
 	 */
 	private void loadExTimes() {
-		Date lastSucess = database.getPipeline().getLastExecTime(
+		Date lastSucess = pipelineFacade.getLastExecTime(
 				execution.getPipeline(),
 				PipelineExecutionStatus.FINISHED_SUCCESS);
 
-		Date lastSucessWarn = database.getPipeline().getLastExecTime(
+		Date lastSucessWarn = pipelineFacade.getLastExecTime(
 				execution.getPipeline(),
 				PipelineExecutionStatus.FINISHED_WARNING);
 		// null check ..
@@ -192,7 +198,7 @@ class PipelineWorker implements Runnable {
 		levels.add(Level.WARN);
 		levels.add(Level.ERROR);
 		levels.add(Level.FATAL);
-		if (database.getLog().existLogs(execution, levels)) {
+		if (logFacade.existLogs(execution, levels)) {
 			execution
 					.setExecutionStatus(PipelineExecutionStatus.FINISHED_WARNING);
 		} else {
@@ -274,8 +280,6 @@ class PipelineWorker implements Runnable {
 	public void run() {
 		// load execution times from DB
 		loadExTimes();
-
-		PipelineFacade pipelineFacade = database.getPipeline();
 
 		// add marker to logs from this thread -> both must be specified !!
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME,
@@ -494,7 +498,7 @@ class PipelineWorker implements Runnable {
 				String command = getCommandForEdge(item, node);
 				// if there is context for given data ..
 				if (contexts.containsKey(item)) {
-					context.addSource(contexts.get(item), command);
+					context.addContext(contexts.get(item), command);
 				} else {
 					// can't find context ..
 					throw new StructureException("Can't find context.");
