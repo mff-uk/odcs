@@ -178,7 +178,7 @@ public class LogMessagesTable extends CustomComponent {
 			}
 		});
 		messageTable.setContainerDataSource(container);
-		messageTable.setVisibleColumns("date", "level", "message", "source", LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME);
+		messageTable.setVisibleColumns("date", "level", "message", "source");
 
 		messageTable.setFilterBarVisible(true);
 		levelSelector.setValue(Level.INFO);
