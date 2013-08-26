@@ -154,7 +154,7 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.getNavigator().addViewChangeListener(new ViewChangeListener() {
             @Override
             public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-                if (!event.getViewName().equals(ViewNames.LOGIN.name()) && !checkAuthentication()) {
+                if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
                     getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
                     getMain().refreshUserBar();
                     return false;
