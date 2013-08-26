@@ -64,33 +64,16 @@ public interface RDFDataUnitHelper {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file    File contains RDF data to extract.
-	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
-	 *                Turtle, ..) if RDF format can not be detected from file
-	 *                suffix.
-	 * @param baseURI String name of defined used URI prefix namespace used by
-	 *                all triples.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-	public void extractFromFile(File file, RDFFormat format, String baseURI)
-			throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
 	 * @param file                  File contains RDF data to extract.
 	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
 	 *                              RDFXML, Turtle, ..) if RDF format can not be
 	 *                              detected from file suffix.
-	 * @param baseURI               String name of defined used URI prefix
-	 *                              namespace used by all triples.
 	 * @param useStatisticalHandler boolean value, if during extraction needed
 	 *                              detail statistic about RDF triples and
 	 *                              detailed log or not.
 	 * @throws RDFException when extraction fail.
 	 */
-	public void extractFromFile(File file, RDFFormat format, String baseURI,
+	public void extractFromFile(File file, RDFFormat format,
 			boolean useStatisticalHandler) throws RDFException;
 
 	/**
@@ -110,9 +93,8 @@ public interface RDFDataUnitHelper {
 	 *                   RDF/XML,etc.)
 	 * @throws RDFException when loading data to file fail.
 	 */
-	
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
-	
+
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
 	 * without endpoint authentication.
@@ -254,7 +236,7 @@ public interface RDFDataUnitHelper {
 	 * @throws RDFException when transformation fail.
 	 */
 	public void transformUsingSPARQL(String updateQuery) throws RDFException;
-	
+
 	/**
 	 * Make select query over repository data and return file as SPARQL XML
 	 * result.
@@ -320,14 +302,14 @@ public interface RDFDataUnitHelper {
 	 */
 	public Graph makeConstructQueryOverRepository(
 			String constructQuery) throws InvalidQueryException;
-	
+
 	/**
 	 * Return count of triples stored in repository.
 	 *
 	 * @return size of triples in repository.
 	 */
 	public long getTripleCount();
-	
+
 	/**
 	 * Return all triples(statements) in reposiotory as list.
 	 *
@@ -336,4 +318,10 @@ public interface RDFDataUnitHelper {
 	 */
 	public List<Statement> getRepositoryStatements();
 
+	/**
+	 * Copy all data from repository to targetRepository.
+	 *
+	 * @param targetRepository goal repository where RDF data are added.
+	 */
+	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo);
 }
