@@ -1,43 +1,24 @@
 package cz.cuni.xrg.intlib.rdf.interfaces;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
-
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
-import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
+import cz.cuni.xrg.intlib.rdf.impl.MyTupleQueryResult;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-
+import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
 
 /**
- * Enable work with RDF data repository.
+ * Interface provides methods important for DPU developers.
  *
  * @author Jiri Tomes
- * @author Petyr
- *
  */
-public interface RDFDataRepository extends DataUnit {
-
-	/**
-	 * Add one tripple RDF (statement) to the repository.
-	 *
-	 * @param namespace     String name of defined namespace
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
-	 */
-	public void addTriple(String namespace, String subjectName,
-			String predicateName,
-			String objectName);
+public interface RDFDataUnitHelper {
 
 	/**
 	 * Add one tripple RDF (statement) to the repository (default empty
@@ -63,53 +44,6 @@ public interface RDFDataRepository extends DataUnit {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param extractType         One of defined enum type for extraction data
-	 *                            from file.
-	 * @param path                String path to file/directory
-	 * @param suffix              String suffix of fileName (example: ".ttl",
-	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI prefix
-	 *                            namespace used by all triples.
-	 * @param useSuffix           boolean value, if extract files only with
-	 *                            defined suffix or not.
-	 * @param useStatisticHandler boolean value, if during extraction needed
-	 *                            detail statistic about RDF triples and
-	 *                            detailed log or not.
-	 * @throws RDFException when extraction fail.
-	 */
-	public void extractFromFile(FileExtractType extractType,
-			String path, String suffix,
-			String baseURI,
-			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param format              Specifies concrete {@link RDFFormat} (e.g.,
-	 *                            RDFXML, Turtle, ..) if RDF format can not be
-	 *                            detected from file suffix.
-	 * @param extractType         One of defined enum type for extraction data
-	 *                            from file.
-	 * @param path                String path to file/directory
-	 * @param suffix              String suffix of fileName (example: ".ttl",
-	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI prefix
-	 *                            namespace used by all triples.
-	 * @param useSuffix           boolean value, if extract files only with
-	 *                            defined suffix or not.
-	 * @param useStatisticHandler boolean value, if during extraction needed
-	 *                            detail statistic about RDF triples and
-	 *                            detailed log or not.
-	 * @throws RDFException when extraction fail.
-	 */
-	public void extractFromFile(RDFFormat format, FileExtractType extractType,
-			String path, String suffix,
-			String baseURI,
-			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
 	 * @param file File contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.
@@ -130,33 +64,16 @@ public interface RDFDataRepository extends DataUnit {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file    File contains RDF data to extract.
-	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
-	 *                Turtle, ..) if RDF format can not be detected from file
-	 *                suffix.
-	 * @param baseURI String name of defined used URI prefix namespace used by
-	 *                all triples.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-	public void extractFromFile(File file, RDFFormat format, String baseURI)
-			throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
 	 * @param file                  File contains RDF data to extract.
 	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
 	 *                              RDFXML, Turtle, ..) if RDF format can not be
 	 *                              detected from file suffix.
-	 * @param baseURI               String name of defined used URI prefix
-	 *                              namespace used by all triples.
 	 * @param useStatisticalHandler boolean value, if during extraction needed
 	 *                              detail statistic about RDF triples and
 	 *                              detailed log or not.
 	 * @throws RDFException when extraction fail.
 	 */
-	public void extractFromFile(File file, RDFFormat format, String baseURI,
+	public void extractFromFile(File file, RDFFormat format,
 			boolean useStatisticalHandler) throws RDFException;
 
 	/**
@@ -177,42 +94,6 @@ public interface RDFDataRepository extends DataUnit {
 	 * @throws RDFException when loading data to file fail.
 	 */
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param directoryPath Path to directory, where file with RDF data will be
-	 *                      saved.
-	 * @param fileName      Name of file for saving RDF data.
-	 * @param formatType    Type of RDF format for saving data (example: TURTLE,
-	 *                      RDF/XML,etc.)
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data to file fail.
-	 */
-	public void loadToFile(String directoryPath,
-			String fileName,
-			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param directoryPath    Path to directory, where file with RDF data will
-	 *                         be saved.
-	 * @param fileName         Name of file for saving RDF data.
-	 * @param formatType       Type of RDF format for saving data (example:
-	 *                         TURTLE, RDF/XML,etc.)
-	 * @param canFileOverWrite boolean value, if existing file can be
-	 *                         overwritten.
-	 * @param isNameUnique     boolean value, if every pipeline execution has
-	 *                         his unique name.
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data to file fail.
-	 */
-	public void loadToFile(String directoryPath,
-			String fileName, RDFFormatType formatType,
-			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
@@ -357,86 +238,6 @@ public interface RDFDataRepository extends DataUnit {
 	public void transformUsingSPARQL(String updateQuery) throws RDFException;
 
 	/**
-	 * Return count of triples stored in repository.
-	 *
-	 * @return size of triples in repository.
-	 */
-	public long getTripleCount();
-
-	/**
-	 * Return if RDF triple is in repository.
-	 *
-	 * @param namespace     String name of defined namespace
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
-	 * @return true if such statement is in repository, false otherwise.
-	 */
-	public boolean isTripleInRepository(String namespace, String subjectName,
-			String predicateName,
-			String objectName);
-
-	/**
-	 * Removes all RDF data from repository.
-	 */
-	public void cleanAllData();
-
-	/**
-	 * Copy all data from repository to targetRepository.
-	 *
-	 * @param targetRepository goal repository where RDF data are added.
-	 */
-	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo);
-
-	/**
-	 * Make RDF data merge over repository - data in repository merge with data
-	 * in second defined repository.
-	 *
-	 *
-	 * @param second Type of repository contains RDF data as implementation of
-	 *               RDFDataRepository interface.
-	 * @throws IllegalArgumentException if second repository as param is null.
-	 */
-	public void mergeRepositoryData(RDFDataRepository second) throws IllegalArgumentException;
-
-	/**
-	 * Return openRDF repository needed for almost every operation using RDF.
-	 *
-	 * @return openRDF repository.
-	 */
-	public Repository getDataRepository();
-
-	/**
-	 * Return URI representation of graph where RDF data are stored.
-	 *
-	 * @return graph with stored data as URI.
-	 */
-	public URI getDataGraph();
-
-	/**
-	 * Set data graph storage for given data in RDF format.
-	 *
-	 * @param newDataGraph new graph representated as URI.
-	 */
-	public void setDataGraph(URI newDataGraph);
-
-	/**
-	 * Set new data graph as default storage for data in RDF format.
-	 *
-	 * @param newStringDataGraph String name of graph as URI - starts with
-	 *                           prefix http://).
-	 */
-	public void setDataGraph(String newStringDataGraph);
-
-	/**
-	 * Return all triples(statements) in reposiotory as list.
-	 *
-	 * @return List<code>&lt;Statement&gt;</code> list of all triples in
-	 *         repository/
-	 */
-	public List<Statement> getRepositoryStatements();
-
-	/**
 	 * Make select query over repository data and return file as SPARQL XML
 	 * result.
 	 *
@@ -465,12 +266,24 @@ public interface RDFDataRepository extends DataUnit {
 			throws InvalidQueryException;
 
 	/**
+	 * Make select query over repository data and return MyTupleQueryResult
+	 * class as result.
+	 *
+	 * @param selectQuery String representation of SPARQL select query.
+	 * @return MyTupleQueryResult representation of SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public MyTupleQueryResult makeSelectQueryOverRepositoryAsResult(
+			String selectQuery) throws InvalidQueryException;
+
+	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
 	 *
 	 * @param constructQuery String representation of SPARQL query.
 	 * @param formatType     Choosed type of format RDF data in result.
-	 * @param filePath       String path to file where result with RDF data is stored.
+	 * @param filePath       String path to file where result with RDF data is
+	 *                       stored.
 	 * @return File with RDF data in defined format as result of construct
 	 *         query.
 	 * @throws InvalidQueryException when query is not valid or creating file
@@ -478,4 +291,37 @@ public interface RDFDataRepository extends DataUnit {
 	 */
 	public File makeConstructQueryOverRepository(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException;
+
+	/**
+	 * Make construct query over repository data and return interface Graph as
+	 * result contains iterator for statements (triples).
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @return Interface Graph as result of construct SPARQL query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public Graph makeConstructQueryOverRepository(
+			String constructQuery) throws InvalidQueryException;
+
+	/**
+	 * Return count of triples stored in repository.
+	 *
+	 * @return size of triples in repository.
+	 */
+	public long getTripleCount();
+
+	/**
+	 * Return all triples(statements) in reposiotory as list.
+	 *
+	 * @return List<code>&lt;Statement&gt;</code> list of all triples in
+	 *         repository/
+	 */
+	public List<Statement> getRepositoryStatements();
+
+	/**
+	 * Copy all data from repository to targetRepository.
+	 *
+	 * @param targetRepository goal repository where RDF data are added.
+	 */
+	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo);
 }

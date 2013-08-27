@@ -9,7 +9,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -19,9 +18,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Login screen of application.
+ * LOGIN screen of application.
  *
  * @author Bogo
  */
@@ -70,6 +70,7 @@ public class Login extends ViewComponent {
         layout.addComponent(logo);
 
         login = new TextField("Login:");
+		login.focus();
         layout.addComponent(login);
 
         password = new PasswordField("Password:");
@@ -95,11 +96,10 @@ public class Login extends ViewComponent {
 
         try {
 			Authentication auth = authManager.authenticate(authToken);
-			
+
 			// login is successful
-			App.getApp().setLoggedInUser(new User());
 			App.getApp().getMain().refreshUserBar();
-			App.getApp().getNavigator().navigateTo(ViewNames.Initial.getUrl());
+			App.getApp().getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
 
 		} catch (AuthenticationException ex) {
 			LOG.info(String.format("Invalid credentials for username ?.", login.getValue()));

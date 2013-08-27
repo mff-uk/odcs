@@ -9,8 +9,8 @@ import cz.cuni.xrg.intlib.commons.module.data.RDFDataUnitList;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
-import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,17 +30,18 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	@Override
 	public void load(LoadContext context)
 			throws LoadException,
-				DataUnitException {
-		DataUnitList<RDFDataRepository> dataUnitList = RDFDataUnitList
+			DataUnitException {
+		DataUnitList<RDFDataUnit> dataUnitList = RDFDataUnitList
 				.create(context);
-		
-		RDFDataRepository repository = null;
+
+		RDFDataUnit rdfDataUnit;
+
 		if (dataUnitList.filterByName("input").isEmpty()) {
 			// no named  use first
-			repository = dataUnitList.getFirst();
+			rdfDataUnit = dataUnitList.getFirst();
 		} else {
 			// there is DU with name input use it!
-			repository = dataUnitList.filterByName("input").getFirst();
+			rdfDataUnit = dataUnitList.filterByName("input").getFirst();
 		}
 
 		final String endpoint = config.SPARQL_endpoint;
@@ -58,9 +59,9 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final WriteGraphType graphType = config.Options;
 
 		try {
-			repository.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI,
+			rdfDataUnit.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType);
-		} catch (RDFException ex) {
+		} catch (RDFDataUnitException ex) {
 			throw new LoadException(ex.getMessage(), ex);
 		}
 	}
@@ -69,5 +70,4 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	public AbstractConfigDialog<RDFLoaderConfig> getConfigurationDialog() {
 		return new RDFLoaderDialog();
 	}
-
 }

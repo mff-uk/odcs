@@ -7,14 +7,13 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
-import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
@@ -54,7 +53,7 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.navigator.addView(view.getUrl(), ViewsFactory.create(view));
     }
     private MenuLayout main;
-    private User loggedUser = null;
+	
     private Date lastAction = null;
     /**
      * Time in seconds before session expirates.
@@ -65,16 +64,16 @@ public class AppEntry extends com.vaadin.ui.UI {
      * Add url-view association into navigator.
      */
     private void initNavigator() {
-        initNavigatorAddSingle(ViewNames.Initial);
+        initNavigatorAddSingle(ViewNames.INITIAL);
         // TODO: check rights !!
-        initNavigatorAddSingle(ViewNames.Administrator);
-        initNavigatorAddSingle(ViewNames.DataBrowser);
+        initNavigatorAddSingle(ViewNames.ADMINISTRATOR);
+        initNavigatorAddSingle(ViewNames.DATA_BROWSER);
         initNavigatorAddSingle(ViewNames.DPU);
-        initNavigatorAddSingle(ViewNames.ExecutionMonitor);
-        initNavigatorAddSingle(ViewNames.PipelineList);
-        initNavigatorAddSingle(ViewNames.PipelineEdit);
-        initNavigatorAddSingle(ViewNames.Scheduler);
-        initNavigatorAddSingle(ViewNames.Login);
+        initNavigatorAddSingle(ViewNames.EXECUTION_MONITOR);
+        initNavigatorAddSingle(ViewNames.PIPELINE_LIST);
+        initNavigatorAddSingle(ViewNames.PIPELINE_EDIT);
+        initNavigatorAddSingle(ViewNames.SCHEDULER);
+        initNavigatorAddSingle(ViewNames.LOGIN);
 
         /* You can create new views dynamically using a view provider
          * that implements the  ViewProvider interface.
@@ -91,6 +90,14 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
+
+        // create Spring context, always the first after application init,
+		// so that all needed beans are ready.
+        context = new ClassPathXmlApplicationContext(
+				"frontend-context.xml",
+				"commons-app-context-security.xml"
+		);
+		
         // create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
         main = new MenuLayout();
@@ -100,9 +107,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
         // create a navigator to control the views
         this.navigator = new IntlibNavigator(this, main.getViewLayout());
-
-        // create Spring context
-        context = new ClassPathXmlApplicationContext("frontend-context.xml");
 
         // add vaadin to export package list
         ModuleFacade modules = (ModuleFacade) context.getBean("moduleFacade");
@@ -150,8 +154,8 @@ public class AppEntry extends com.vaadin.ui.UI {
         this.getNavigator().addViewChangeListener(new ViewChangeListener() {
             @Override
             public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-                if (!event.getViewName().equals(ViewNames.Login.name()) && !checkAuthentication()) {
-                    getNavigator().navigateTo(ViewNames.Login.getUrl());
+                if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+                    getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
                     getMain().refreshUserBar();
                     return false;
                 }
@@ -168,18 +172,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     /**
      * Checks if there is logged in user and if its session is still valid.
-     * @return True if user and its session are valid, False otherwise.
-     * 
+	 * 
+     * @return true if user and its session are valid, false otherwise
      */
     private boolean checkAuthentication() {
-//        return true;
-        if(getLoggedInUser() == null) {
-            return false;
-        } else if(((new Date()).getTime() - getLastAction().getTime()) > timeoutSeconds * 1000) {
-            setLoggedInUser(null);
-            return false;
-        }
-        return true;
+		return getAuthCtx().isAuthenticated();
     }
 
     /**
@@ -280,24 +277,15 @@ public class AppEntry extends com.vaadin.ui.UI {
     public MenuLayout getMain() {
         return main;
     }
-
-    /**
-     * Sets logged in user.
-     *
-     * @param user New logged in user.
-     */
-    public void setLoggedInUser(User user) {
-        loggedUser = user;
-    }
-
-    /**
-     * Gets logged in user.
-     *
-     * @return Logged in user or null.
-     */
-    public User getLoggedInUser() {
-        return loggedUser;
-    }
+	
+	/**
+	 * Helper method for retrieving authentication context.
+	 * 
+	 * @return authentication context for current user session
+	 */
+	public AuthenticationContextService getAuthCtx() {
+		return getBean(AuthenticationContextService.class);
+	}
 
     /**
      * Sets last action date to current time.

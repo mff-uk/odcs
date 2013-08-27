@@ -23,10 +23,11 @@ import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
+import cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
@@ -92,6 +93,11 @@ class DPU extends ViewComponent {
 	private static String[] headers = new String[]{"Id", "Name", "Description",
 		"Author", "Actions"};
 	private DPUTemplateRecord selectedDpu; 
+	
+	/**
+	 * Evaluates permissions of currently logged in user.
+	 */
+	private IntlibPermissionEvaluator permissions = App.getApp().getBean(IntlibPermissionEvaluator.class);
 	
 
 	/**
@@ -515,7 +521,7 @@ class DPU extends ViewComponent {
 		buttonCopyDPU.setCaption("Copy");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
-		buttonCopyDPU.setEnabled(false);
+		buttonCopyDPU.setEnabled(permissions.hasPermission(selectedDpu, "copy"));
 		if(selectedDpu.getParent()!=null)
 			buttonCopyDPU.setEnabled(true);
 		buttonCopyDPU
@@ -565,6 +571,7 @@ class DPU extends ViewComponent {
 		buttonDeleteDPU.setCaption("Delete");
 		buttonDeleteDPU.setHeight("25px");
 		buttonDeleteDPU.setWidth("100px");
+		buttonDeleteDPU.setEnabled(permissions.hasPermission(selectedDpu, "delete"));
 		buttonDeleteDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -600,7 +607,7 @@ class DPU extends ViewComponent {
 		buttonExportDPU.setCaption("Export");
 		buttonExportDPU.setHeight("25px");
 		buttonExportDPU.setWidth("100px");
-		buttonExportDPU.setEnabled(false);
+		buttonExportDPU.setEnabled(permissions.hasPermission(selectedDpu, "export"));
 		buttonExportDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -621,6 +628,7 @@ class DPU extends ViewComponent {
 		buttonSaveDPU.setCaption("Save");
 		buttonSaveDPU.setHeight("25px");
 		buttonSaveDPU.setWidth("100px");
+		buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
 		buttonSaveDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -910,11 +918,11 @@ class DPU extends ViewComponent {
 							pipeId = (Long) tableData
 									.getContainerProperty(itemId, "id").getValue();
 
-							// navigate to PipelineEdit
+							// navigate to PIPELINE_EDIT
 							App.getApp()
 									.getNavigator()
 									.navigateTo(
-											ViewNames.PipelineEdit.getUrl()
+											ViewNames.PIPELINE_EDIT.getUrl()
 													+ "/" + pipeId.toString());
 
 						}
@@ -937,7 +945,7 @@ class DPU extends ViewComponent {
 							.getAllPipelines();
 					for (Pipeline item : pipelines) {
 						if (item.getId().equals(pipeId)) {
-							// navigate to PipelineEdit/New
+							// navigate to PIPELINE_EDIT/New
 							App.getApp().getPipelines().delete(item);
 							break;
 						}

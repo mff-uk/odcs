@@ -11,7 +11,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
-import cz.cuni.xrg.intlib.commons.app.user.User;
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
@@ -40,10 +40,16 @@ public class MenuLayout extends CustomComponent {
 	 */
 	private Panel viewLayout;
 
-        Label userName;
-                
-        Button logOutButton;
-        
+	Label userName;
+
+	Button logOutButton;
+	
+	/**
+	 * Authentication context used to render menu with respect to currently
+	 * logged in user.
+	 */
+	private AuthenticationContextService authCtx;
+
 	/**
 	 * Class use as command to change sub-pages.
 	 * @author Petyr
@@ -83,15 +89,16 @@ public class MenuLayout extends CustomComponent {
 	 * visual editor.
 	 */
 	public MenuLayout() {
+		authCtx = App.getApp().getAuthCtx();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// init menuBar
-		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PipelineList.getUrl()) );
+		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PIPELINE_LIST.getUrl()) );
 		menuBar.addItem("DPU Templates", new NavigateToCommand(ViewNames.DPU.getUrl()) );
-		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.ExecutionMonitor.getUrl()) );
-		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DataBrowser.getUrl()) );
-		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.Scheduler.getUrl()) );
-		menuBar.addItem("Settings", new NavigateToCommand(ViewNames.Administrator.getUrl()) );
+		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.EXECUTION_MONITOR.getUrl()) );
+		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()) );
+		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.SCHEDULER.getUrl()) );
+		menuBar.addItem("Settings", new NavigateToCommand(ViewNames.ADMINISTRATOR.getUrl()) );
 	}
 
 	private VerticalLayout buildMainLayout() {
@@ -111,21 +118,20 @@ public class MenuLayout extends CustomComponent {
 		this.menuBar.setHeight("20px");
 		//this.mainLayout.addComponent(menuBar);
                 
-                User loggedUser = App.getApp().getLoggedInUser();
-                userName = new Label(loggedUser != null ? loggedUser.getUsername() : "");
+                userName = new Label(authCtx.getUsername());
                 userName.setWidth(100, Unit.PIXELS);
                 logOutButton = new Button();
                 logOutButton.setWidth(16, Unit.PIXELS);
-                logOutButton.setVisible(loggedUser != null);
+                logOutButton.setVisible(authCtx.isAuthenticated());
                 logOutButton.setStyleName(BaseTheme.BUTTON_LINK);
                 logOutButton.setIcon(new ThemeResource("icons/logout.png"), "Log out");
                 logOutButton.addClickListener(new Button.ClickListener() {
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        App.getApp().setLoggedInUser(null);
+                        authCtx.clear();
                         refreshUserBar();
-                        App.getApp().getNavigator().navigateTo(ViewNames.Login.getUrl());
+                        App.getApp().getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
                     }
                 });
                 HorizontalLayout menuLine = new HorizontalLayout(menuBar, userName, logOutButton);
@@ -145,9 +151,8 @@ public class MenuLayout extends CustomComponent {
 	}
         
         public void refreshUserBar() {
-            User loggedUser = App.getApp().getLoggedInUser();
-            userName.setValue(loggedUser != null ? loggedUser.getUsername() : "");
-            logOutButton.setVisible(loggedUser != null);
+            userName.setValue(authCtx.getUsername());
+            logOutButton.setVisible(authCtx.isAuthenticated());
         }
 
 }

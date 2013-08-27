@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
 /**
+ * Implementation of Virtuoso repository - RDF data and intermediate results are
+ * saved in Virtuoso storage.
  *
  * @author Jiri Tomes
  */
-public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
+public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 	private String URL_Host_List;
 
@@ -26,43 +28,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	private String password;
 
 	private String defaultGraph;
-
-	/**
-	 * DataUnit's name.
-	 */
-	private String dataUnitName;
-
-	static {
-		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-	}
-
-	/**
-	 * Create new instance of VirtuosoRepository with a specified parameters.
-	 *
-	 * @param hostName     String name of host need to Virtuoso connection.
-	 *
-	 * @param port         String value of number of port need for connection.
-	 *
-	 * @param user         the database user on whose behalf the connection is
-	 *                     being made.
-	 *
-	 * @param password     the user's password.
-	 *
-	 * @param defaultGraph a default Graph name, used for Sesame calls, when
-	 *                     contexts list is empty, exclude exportStatements,
-	 *                     hasStatement, getStatements methods.
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
-	 *                     String.
-	 */
-	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,
-			String port, String user, String password, String defaultGraph,
-			String dataUnitName) {
-		final String JDBC = "jdbc:virtuoso://" + hostName + ":" + port + "/charset=UTF-8/log_enable=2";
-
-		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password,
-				defaultGraph, dataUnitName);
-		return virtuosoRepo;
-	}
 
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
@@ -92,6 +57,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 
 		setDataGraph(defaultGraph);
 
+		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
 		repository = new VirtuosoRepository(URL_Host_List, user, password,
 				defaultGraph);
 
@@ -107,57 +73,15 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	/**
-	 *
-	 * @return the Virtuoso JDBC URL connection string or hostlist for poolled
-	 *         connection.
-	 */
-	public String getURL_Host_List() {
-		return URL_Host_List;
-	}
-
-	/**
-	 *
-	 * @return User name to Virtuoso connection.
-	 */
-	public String getUser() {
-		return user;
-	}
-
-	/**
-	 *
-	 * @return Password to virtuoso connection.
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 *
-	 * @return Default graph name
-	 */
-	public String getDefaultGraph() {
-		return defaultGraph;
-	}
-
-	/**
 	 * Set new graph as default for working data in RDF format.
 	 *
 	 * @param defaultGraph String name of graph as URI - starts with prefix
 	 *                     http://).
 	 */
 	@Override
-	public final void setDataGraph(String newStringDataGraph) {
+	public void setDataGraph(String newStringDataGraph) {
 		this.defaultGraph = newStringDataGraph;
 		setDataGraph(createNewGraph(defaultGraph));
-	}
-
-	private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
-		// TODO Jirka: (from Petyr) This method is not used. Why is here? How should be used?
-		VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user,
-				password, defaultGraph, "");
-		copyAllDataToTargetRepository(newCopy);
-
-		return newCopy;
 	}
 
 	@Override
@@ -181,11 +105,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	@Override
-	public String getName() {
-		return dataUnitName;
-	}
-
-	@Override
 	public void load(File directory) {
 		//no load from file - using Virtuoso for intermediate results.
 	}
@@ -196,7 +115,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	@Override
-	public void mergeRepositoryData(RDFDataRepository second) throws IllegalArgumentException {
+	public void mergeRepositoryData(RDFDataUnit second) throws IllegalArgumentException {
 		if (second == null) {
 			throw new IllegalArgumentException(
 					"Instance of RDFDataRepository is null");
@@ -253,7 +172,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 	}
 
 	@Override
-	public void copyAllDataToTargetRepository(RDFDataRepository targetRepo) {
+	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo) {
 
 		if (targetRepo == null) {
 			throw new IllegalArgumentException(
@@ -308,5 +227,38 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataRepository {
 				}
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @return the Virtuoso JDBC URL connection string or hostlist for poolled
+	 *         connection.
+	 */
+	public String getURL_Host_List() {
+		return URL_Host_List;
+	}
+
+	/**
+	 *
+	 * @return User name to Virtuoso connection.
+	 */
+	public String getUser() {
+		return user;
+	}
+
+	/**
+	 *
+	 * @return Password to virtuoso connection.
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 *
+	 * @return Default graph name
+	 */
+	public String getDefaultGraph() {
+		return defaultGraph;
 	}
 }

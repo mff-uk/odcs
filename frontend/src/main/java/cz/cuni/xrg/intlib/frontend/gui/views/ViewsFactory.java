@@ -19,24 +19,24 @@ public class ViewsFactory {
 	 */
 	public static ViewComponent create(ViewNames view) {
 		switch(view) {
-		case Initial:
+		case INITIAL:
 			return new Initial();
-		case Administrator:
+		case ADMINISTRATOR:
 			return new Settings();
-		case DataBrowser:
+		case DATA_BROWSER:
 			return new DataBrowser();
 		case DPU:
 			return new DPU();
-		case ExecutionMonitor:
+		case EXECUTION_MONITOR:
 			return new ExecutionMonitor();
-		case PipelineEdit:
-		case PipelineEdit_New:
+		case PIPELINE_EDIT:
+		case PIPELINE_EDIT_NEW:
 			return new PipelineEdit();
-		case PipelineList:
+		case PIPELINE_LIST:
 			return new PipelineList();
-		case Scheduler:
+		case SCHEDULER:
 			return new Scheduler();
-                case Login:
+                case LOGIN:
                         return new Login();
 		default:
 			return null;
@@ -46,11 +46,11 @@ public class ViewsFactory {
 	
 	public static ViewNames getViewName(View view) {
 		if(view.getClass() == PipelineList.class) {
-			return ViewNames.PipelineList;
+			return ViewNames.PIPELINE_LIST;
 		} else if(view.getClass() == DPU.class) {
 			return ViewNames.DPU;
 		} else {
-			return ViewNames.Initial;
+			return ViewNames.INITIAL;
 		}
 	}
 	

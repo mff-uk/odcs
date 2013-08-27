@@ -7,9 +7,6 @@
 						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 	
-	<!-- Include Spring Security context configuration -->
-	<import resource="classpath:commons-app-context-security.xml" />
-	
 	<!-- application configuration -->
 	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig" />
 	

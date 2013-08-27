@@ -1,24 +1,24 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import static cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType.*;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
-
-import java.util.List;
+import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
+import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -44,8 +44,8 @@ public class RecordsTable extends CustomComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!messageTable.isSelected(event.getItemId())) {
-					BeanItem beanItem = (BeanItem) event.getItem();
-					long recordId = (long) beanItem.getItemProperty("id")
+					CompositeItem item = (CompositeItem) event.getItem();
+					long recordId = (long) item.getItemProperty("id")
 							.getValue();
 					MessageRecord record = App.getDPUs().getDPURecord(recordId);
 					showRecordDetail(record);
@@ -56,6 +56,7 @@ public class RecordsTable extends CustomComponent {
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
 		messageTable.setPageLength(5);
+		loadMessageTable();
 		setCompositionRoot(mainLayout);
 	}
 
@@ -64,17 +65,20 @@ public class RecordsTable extends CustomComponent {
 	 *
 	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
-	public void setDataSource(List<MessageRecord> data) {
-		loadMessageTable(data);
+	public void setPipelineExecution(PipelineExecution execution) {
+		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer)messageTable.getContainerDataSource().getContainer();
+		c.removeDefaultFilters();
+		c.addDefaultFilter(new Compare.Equal("execution", execution.getId()));
+		c.refresh();
+		messageTable.setCurrentPage(1);
 	}
 
 	/**
 	 * Loads data to the table.
 	 *
-	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
-	private void loadMessageTable(List<MessageRecord> data) {
-		Container container = ContainerFactory.CreateExecutionMessages(data);
+	private void loadMessageTable() {
+		Container container = ContainerFactory.createExecutionMessages();
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
 			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
@@ -114,7 +118,7 @@ public class RecordsTable extends CustomComponent {
 			// set columns
 			isInitialized = true;
 		}
-		messageTable.setVisibleColumns("timestamp", "type", "dpuInstance", "shortMessage");
+		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage");
 		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message");
                 messageTable.setFilterBarVisible(true);
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());

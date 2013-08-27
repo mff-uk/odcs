@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -50,7 +50,7 @@ public class IntlibAuthenticationProvider extends AbstractUserDetailsAuthenticat
 		
 		try {
 			if (!validatePassword(password, userDetails.getPassword())) {
-				throw new AuthenticationCredentialsNotFoundException("Invalid username and/or password.");
+				throw new BadCredentialsException("Invalid username and/or password.");
 			}
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
 			throw new RuntimeException("Could not generate password hash while authenticating user.", ex);
@@ -71,7 +71,7 @@ public class IntlibAuthenticationProvider extends AbstractUserDetailsAuthenticat
 		
 		User user = userFacade.getUserByUsername(authentication.getName());
 		if (user == null) {
-			throw new InvalidCredentialsException(username);
+			throw new BadCredentialsException(username);
 		}
 		
 		return user;

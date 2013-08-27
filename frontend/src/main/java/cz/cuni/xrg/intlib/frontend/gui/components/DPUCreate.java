@@ -57,7 +57,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
-import cz.cuni.xrg.intlib.commons.app.dpu.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;

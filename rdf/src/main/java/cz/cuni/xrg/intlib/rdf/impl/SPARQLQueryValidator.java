@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.enums.SPARQLQueryType;
 import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
 import org.openrdf.query.*;
@@ -73,7 +74,7 @@ public class SPARQLQueryValidator implements Validator {
 
 		boolean isValid = true;
 
-		LocalRDFRepo emptyRepo = LocalRDFRepo.createLocalRepo("");
+		LocalRDFRepo emptyRepo= RDFDataUnitFactory.createLocalRDFRepo("");
 		Repository repository = emptyRepo.getDataRepository();
 
 		RepositoryConnection connection = null;

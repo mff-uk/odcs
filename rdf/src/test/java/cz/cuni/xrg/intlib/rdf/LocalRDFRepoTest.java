@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.rdf;
 
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
@@ -8,7 +9,7 @@ import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class LocalRDFRepoTest {
 	/**
 	 * Local repository
 	 */
-	protected static RDFDataRepository rdfRepo;
+	protected static RDFDataUnit rdfRepo;
 
 	protected static final int THREAD_SIZE = 10;
 
@@ -64,8 +65,8 @@ public class LocalRDFRepoTest {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		rdfRepo = LocalRDFRepo.createLocalRepo(pathRepo.toString(), "localRepo",
-				"");
+		rdfRepo = RDFDataUnitFactory.createLocalRDFRepo(pathRepo.toString(),
+				"localRepo", "", "http://default");
 	}
 
 	@Test
@@ -654,7 +655,7 @@ public class LocalRDFRepoTest {
 	private void testNewTriple(String namespace,
 			String subjectName,
 			String predicateName,
-			String objectName, RDFDataRepository repository) {
+			String objectName, RDFDataUnit repository) {
 
 		long size = repository.getTripleCount();
 		boolean isInRepository = repository.isTripleInRepository(
@@ -834,9 +835,9 @@ public class LocalRDFRepoTest {
 					try {
 						Path path = Files.createTempDirectory("directory");
 
-						LocalRDFRepo localRepository = LocalRDFRepo
-								.createLocalRepo(path
-								.toString(), "local", "");
+						LocalRDFRepo localRepository = RDFDataUnitFactory
+								.createLocalRDFRepo(path
+								.toString(), "local", "", "http://default");
 
 						addParalelTripleToRepository(localRepository);
 						extractFromFileToRepository(localRepository);
@@ -859,7 +860,7 @@ public class LocalRDFRepoTest {
 
 	}
 
-	protected void addParalelTripleToRepository(RDFDataRepository repository) {
+	protected void addParalelTripleToRepository(RDFDataUnit repository) {
 
 		String namespace = "http://school/catedra/";
 		String subjectName = "KSI";
@@ -870,7 +871,7 @@ public class LocalRDFRepoTest {
 				repository);
 	}
 
-	protected void extractFromFileToRepository(RDFDataRepository repository) {
+	protected void extractFromFileToRepository(RDFDataUnit repository) {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
@@ -891,7 +892,7 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
-	protected void transformOverRepository(RDFDataRepository repository) {
+	protected void transformOverRepository(RDFDataUnit repository) {
 		String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX dcterms: <http://purl.org/dc/terms/> "
 				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
@@ -913,7 +914,7 @@ public class LocalRDFRepoTest {
 		}
 	}
 
-	protected void loadToFile(RDFDataRepository repository) {
+	protected void loadToFile(RDFDataUnit repository) {
 		String fileName = "TTL_output.ttl";
 		RDFFormatType format = RDFFormatType.TTL;
 

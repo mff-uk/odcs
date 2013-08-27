@@ -22,6 +22,7 @@ import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -190,8 +191,7 @@ public class DebuggingView extends CustomComponent {
 
         boolean loadSuccessful = loadExecutionContextReader();
 
-        List<MessageRecord> records = App.getDPUs().getAllDPURecords(pipelineExec);
-        executionRecordsTable.setDataSource(records);
+        executionRecordsTable.setPipelineExecution(pipelineExec);
 
         if (loadSuccessful && isInDebugMode) {
             refreshDpuSelector();
@@ -308,7 +308,7 @@ public class DebuggingView extends CustomComponent {
      * @return {@link ExecutionContextInfo} containing current execution
      * information.
      */
-    LocalRDFRepo getRepository(boolean onInputGraph) {
+    RDFDataUnit getRepository(boolean onInputGraph) {
         if (debugDpu == null) {
             return null;
         }

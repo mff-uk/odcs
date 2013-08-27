@@ -1,10 +1,11 @@
 package cz.cuni.xrg.intlib.rdf;
 
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,7 +34,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@BeforeClass
 	public static void setUpLogger() {
 
-		rdfRepo = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName, port, user,
+		rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(hostName, port, user,
 				password, defaultGraph, "");
 		rdfRepo.cleanAllData();
 	}
@@ -83,7 +84,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 	@Test
 	public void repositoryCopy() {
-		RDFDataRepository goal = VirtuosoRDFRepo.createVirtuosoRDFRepo(hostName,
+		RDFDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(hostName,
 				port, user, password, defaultGraph, "");
 		goal.setDataGraph("http://goal");
 
@@ -128,7 +129,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 				@Override
 				public void run() {
 
-					VirtuosoRDFRepo virtuosoRepo = VirtuosoRDFRepo
+					VirtuosoRDFRepo virtuosoRepo = RDFDataUnitFactory
 							.createVirtuosoRDFRepo(hostName, port, user,
 							password, defaultGraph, "");
 					virtuosoRepo.setDataGraph("http://myDefault");

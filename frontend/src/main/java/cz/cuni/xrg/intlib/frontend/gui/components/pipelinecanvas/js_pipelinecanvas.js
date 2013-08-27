@@ -455,17 +455,33 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // Action bar on DPU
         var actionBar = new Kinetic.Group({
-            x: rect.getWidth() - 16,
+            x: rect.getWidth() - 20,
             y: 0,
-            width: 16,
-            height: 80,
+            width: 20,
+            height: 84,
             visible: false
         });
+		
+		var rectAb = new Kinetic.Rect({
+            x: 0,
+            y: 0,
+            stroke: '#555',
+            strokeWidth: 1,
+            fill: '#ccc',
+            width: 20,
+            height: 84,
+            shadowColor: 'black',
+            shadowBlur: 2,
+            shadowOffset: [2, 2],
+            shadowOpacity: 0.2,
+            cornerRadius: 2
+        });
+		actionBar.add(rectAb);
 
         // New Connection command
         var cmdConnection = new Kinetic.Image({
-            x: 0,
-            y: 0,
+            x: 2,
+            y: 2,
             image: addConnectionIcon,
             width: 16,
             height: 16,
@@ -473,6 +489,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         cmdConnection.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
             if (stageMode === NORMAL_MODE) {
                 writeMessage(messageLayer, 'action bar clicked');
                 var mousePosition = stage.getMousePosition();
@@ -501,8 +519,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // DPU Detail command
         var cmdDetail = new Kinetic.Image({
-            x: 0,
-            y: 16,
+            x: 2,
+            y: 18,
             image: detailIcon,
             width: 16,
             height: 16,
@@ -510,6 +528,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         cmdDetail.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
             writeMessage(messageLayer, 'DPU detail requested');
             rpcProxy.onDetailRequested(dpu.id);
             evt.cancelBubble = true;
@@ -526,8 +546,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // DPU Remove command
         var cmdRemove = new Kinetic.Image({
-            x: 0,
-            y: 64,
+            x: 2,
+            y: 66,
             image: removeConnectionIcon,
             width: 16,
             height: 16,
@@ -535,6 +555,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         cmdRemove.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
             writeMessage(messageLayer, 'DPU removed');
             removeDpu(dpu);
             rpcProxy.onDpuRemoved(dpu.id);
@@ -552,8 +574,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         // Debug command
         var cmdDebug = new Kinetic.Image({
-            x: 0,
-            y: 32,
+            x: 2,
+            y: 34,
             image: debugIcon,
             width: 16,
             height: 16,
@@ -561,6 +583,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         cmdDebug.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
             writeMessage(messageLayer, 'Debug requested');
             rpcProxy.onDebugRequested(dpu.id);
             evt.cancelBubble = true;
@@ -576,14 +600,16 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         actionBar.add(cmdDebug);
 
         var cmdFormat = new Kinetic.Image({
-            x: 0,
-            y: 48,
+            x: 2,
+            y: 50,
             image: formatIcon,
             width: 16,
             height: 16,
             startScale: 1
         });
         cmdFormat.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
             writeMessage(messageLayer, 'Format clicked');
             stageMode = MULTISELECT_MODE;
             multiselect(dpu.id);
@@ -1108,14 +1134,29 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         var actionBar = new Kinetic.Group({
             x: 0,
             y: 0,
-            width: 16,
-            height: 32,
+            width: 20,
+            height: 36,
             visible: false
         });
-
-        var cmdName = new Kinetic.Image({
+		var rectAb = new Kinetic.Rect({
             x: 0,
             y: 0,
+            stroke: '#555',
+            strokeWidth: 1,
+            fill: '#ccc',
+            width: 20,
+            height: 36,
+            shadowColor: 'black',
+            shadowBlur: 2,
+            shadowOffset: [2, 2],
+            shadowOpacity: 0.2,
+            cornerRadius: 2
+        });
+		actionBar.add(rectAb);
+
+        var cmdName = new Kinetic.Image({
+            x: 2,
+            y: 2,
             image: detailIcon,
             width: 16,
             height: 16,
@@ -1123,6 +1164,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         cmdName.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
             rpcProxy.onDataUnitNameEditRequested(id);
             evt.cancelBubble = true;
         });
@@ -1131,14 +1174,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
         cmdName.on('mouseleave', function(evt) {
             deactivateTooltip();
-            evt.cancelBubble = true;
+            //evt.cancelBubble = true;
         });
         actionBar.add(cmdName);
 
         // Delete command for connection
         var cmdDelete = new Kinetic.Image({
-            x: 0,
-            y: 16,
+            x: 2,
+            y: 18,
             image: removeConnectionIcon,
             width: 16,
             height: 16,
@@ -1146,6 +1189,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
 
         cmdDelete.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
             removeConnection(id);
             rpcProxy.onConnectionRemoved(id);
             evt.cancelBubble = true;
@@ -1155,13 +1200,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         });
         cmdDelete.on('mouseleave', function(evt) {
             deactivateTooltip();
-            evt.cancelBubble = true;
+            //evt.cancelBubble = true;
         });
         actionBar.add(cmdDelete);
 
-        actionBar.on('mouseleave', function() {
+        actionBar.on('mouseleave', function(evt) {
             actionBar.setVisible(false);
             lineLayer.draw();
+			evt.cancelBubble = true;
         });
 
         var con = new Connection(id, from, to, line, actionBar, hitLine);

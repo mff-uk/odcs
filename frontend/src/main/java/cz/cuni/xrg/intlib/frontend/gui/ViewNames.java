@@ -1,23 +1,24 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
 /**
- * Store url for views. The enum name should be the same as a class name 
+ * Store URL for views. The <code>enum</code> name should be the same as a class name 
  * of view.
  * 
  * @author Petyr
  *
  */
 public enum ViewNames {
-	Initial(""),
-	Administrator("Administrator"),
-	DataBrowser("DataBrowser"),
+	
+	INITIAL(""),
+	ADMINISTRATOR("Administrator"),
+	DATA_BROWSER("DataBrowser"),
 	DPU("DPURecord"),
-	ExecutionMonitor("ExecutionMonitor"),
-	PipelineList("PipelineList"),
-	PipelineEdit("PipelineEdit"),
-	PipelineEdit_New("PipelineEdit","New"),
-	Scheduler("Scheduler"),
-        Login("Login");
+	EXECUTION_MONITOR("ExecutionMonitor"),
+	PIPELINE_LIST("PipelineList"),
+	PIPELINE_EDIT("PipelineEdit"),
+	PIPELINE_EDIT_NEW("PipelineEdit", "New"),
+	SCHEDULER("Scheduler"),
+	LOGIN("Login");
 	
 	/**
 	 * String for view.
@@ -25,7 +26,7 @@ public enum ViewNames {
 	protected String url;
 	
 	/**
-	 * Paramter for view.
+	 * Parameter for view.
 	 */
 	protected String parametr;
 	

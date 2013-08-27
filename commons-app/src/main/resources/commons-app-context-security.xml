@@ -10,10 +10,20 @@
 		<authentication-provider ref="authenticationProvider" />
 	</authentication-manager>
 	
-	<global-method-security secured-annotations="enabled" pre-post-annotations="enabled" />
+	<global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
+		<expression-handler ref="expressionHandler"/>
+	</global-method-security>
 	
 	<b:bean id="authenticationProvider" class="cz.cuni.xrg.intlib.commons.app.auth.IntlibAuthenticationProvider">
 		<b:constructor-arg ref="userFacade" />
 	</b:bean>
+	
+	<b:bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+		<b:property name="permissionEvaluator" ref="permissionEvaluator" />
+	</b:bean>
+
+	<b:bean id="authenticationContext" class="cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService" />
+	
+	<b:bean id="permissionEvaluator"  class="cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator"/>
 
 </b:beans>

@@ -120,6 +120,10 @@ public class PipelineExecution implements Serializable {
 	public PipelineExecutionStatus getExecutionStatus() {
 		return status;
 	}
+        
+        public PipelineExecutionStatus getStatus() {
+		return status;
+	}
 
 	public void setExecutionStatus(PipelineExecutionStatus newStatus) {
 		status = newStatus;
@@ -134,6 +138,10 @@ public class PipelineExecution implements Serializable {
 	}
 
 	public boolean isDebugging() {
+		return isDebugging;
+	}
+        
+        public boolean getIsDebugging() {
 		return isDebugging;
 	}
 

@@ -10,11 +10,11 @@ import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
-import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 /**
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -29,21 +29,22 @@ public class SPARQLTransformer
 	@Override
 	public void transform(TransformContext context)
 			throws TransformException,
-				DataUnitException {
-		DataUnitList<RDFDataRepository> dataUnitList = RDFDataUnitList
+			DataUnitException {
+		DataUnitList<RDFDataUnit> dataUnitList = RDFDataUnitList
 				.create(context);
-		RDFDataRepository intputRepository = dataUnitList.getFirst();
+		RDFDataUnit intputDataUnit = dataUnitList.getFirst();
 
 		// create output repository
-		RDFDataRepository outputRepository = (RDFDataRepository) context
+		RDFDataUnit outputDataUnit = (RDFDataUnit) context
 				.addOutputDataUnit(DataUnitType.RDF, "output");
 
 		final String updateQuery = config.SPARQL_Update_Query;
 
-		intputRepository.copyAllDataToTargetRepository(outputRepository);
+		outputDataUnit.merge(intputDataUnit);
+
 		try {
-			outputRepository.transformUsingSPARQL(updateQuery);
-		} catch (RDFException ex) {
+			outputDataUnit.transformUsingSPARQL(updateQuery);
+		} catch (RDFDataUnitException ex) {
 			throw new TransformException(ex.getMessage(), ex);
 		}
 
@@ -53,5 +54,4 @@ public class SPARQLTransformer
 	public AbstractConfigDialog<SPARQLTransformerConfig> getConfigurationDialog() {
 		return new SPARQLTransformerDialog();
 	}
-
 }

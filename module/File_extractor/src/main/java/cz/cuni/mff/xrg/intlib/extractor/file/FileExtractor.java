@@ -9,11 +9,11 @@ import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
-import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 /**
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -27,9 +27,10 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 	@Override
 	public void extract(ExtractContext context)
 			throws ExtractException,
-				DataUnitCreateException {
+			DataUnitCreateException {
 
-		RDFDataRepository repository = (RDFDataRepository) context
+
+		RDFDataUnit rdfDataUnit = (RDFDataUnit) context
 				.addOutputDataUnit(DataUnitType.RDF, "output");
 
 		final String baseURI = "";
@@ -40,9 +41,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final boolean useStatisticHandler = config.UseStatisticalHandler;
 
 		try {
-			repository.extractFromFile(extractType, path, fileSuffix, baseURI,
-					onlyThisSuffix, useStatisticHandler);
-		} catch (RDFException e) {
+			rdfDataUnit.extractFromFile(extractType, path, fileSuffix,
+					baseURI, onlyThisSuffix, useStatisticHandler);
+		} catch (RDFDataUnitException e) {
 			throw new ExtractException(e.getMessage(), e);
 		}
 	}
@@ -51,5 +52,4 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 	public AbstractConfigDialog<FileExtractorConfig> getConfigurationDialog() {
 		return new FileExtractorDialog();
 	}
-
 }

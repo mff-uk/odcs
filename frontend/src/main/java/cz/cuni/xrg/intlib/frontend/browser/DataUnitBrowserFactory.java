@@ -9,9 +9,10 @@ import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
-
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 /**
  * Factory for DataUnitBrowsers.
  *
@@ -87,7 +88,7 @@ public class DataUnitBrowserFactory {
 	 * 
 	 */
 	@Deprecated
-	public static LocalRDFRepo getRepository(ExecutionContextInfo context, PipelineExecution execution,
+	public static RDFDataUnit getRepository(ExecutionContextInfo context, PipelineExecution execution,
 			DPUInstanceRecord dpuInstance, DataUnitInfo info) {
 
 		// get type and directory
@@ -107,12 +108,12 @@ public class DataUnitBrowserFactory {
 		switch (info.getType()) {
 			case RDF_Local:
 				try {
-					LocalRDFRepo repository = LocalRDFRepo.createLocalRepo("");
+					LocalRDFRepo repository = RDFDataUnitFactory.createLocalRDFRepo("");
 					// load data from storage
 					repository.load(dpuStorage);
 					return repository;
 
-				} catch (Exception e) {
+				} catch (RuntimeException e) {
 					return null;
 				}
 				
@@ -131,7 +132,7 @@ public class DataUnitBrowserFactory {
 				final String defautGraph =
 						appConfig.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
 
-				VirtuosoRDFRepo virtuosoRepository = VirtuosoRDFRepo
+				VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
 						.createVirtuosoRDFRepo(hostName, port, user, password, defautGraph, "");
 				virtuosoRepository.setDataGraph("http://" + dataUnitId);
 				return virtuosoRepository;

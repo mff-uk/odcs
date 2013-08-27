@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.rdf.GraphUrl;
+import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 
@@ -47,7 +48,7 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 		final String defautGraph = appConfig
 				.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
 
-		VirtuosoRDFRepo virtosoRepository = VirtuosoRDFRepo
+		VirtuosoRDFRepo virtosoRepository = RDFDataUnitFactory
 				.createVirtuosoRDFRepo(hostName, port, user, password,
 						defautGraph, "");
 		virtosoRepository
@@ -72,7 +73,7 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 
 	private void loadBrowserTable(List<RDFTriple> data) {
 		dataTable = new IntlibPagedTable();
-		Container container = ContainerFactory.CreateRDFData(data);
+		Container container = ContainerFactory.createRDFData(data);
 		dataTable.setContainerDataSource(container);
 
 		dataTable.setVisibleColumns("subject", "predicate", "object");

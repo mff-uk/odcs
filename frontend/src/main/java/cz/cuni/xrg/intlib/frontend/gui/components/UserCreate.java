@@ -206,8 +206,8 @@ public class UserCreate extends Window {
 		userDetailsLayout.setColumnExpandRatio(1, 0.7f);
 
 		roleSelector = new TwinColSelect();
-		roleSelector.addItem(Role.ADMINISTRATOR);
-		roleSelector.addItem(Role.USER);
+		roleSelector.addItem(Role.ROLE_ADMIN);
+		roleSelector.addItem(Role.ROLE_USER);
 
 		roleSelector.setNullSelectionAllowed(true);
 		roleSelector.setMultiSelect(true);
@@ -323,10 +323,10 @@ public class UserCreate extends Window {
 				roles = new HashSet<Role>();
 				while (it.hasNext()) {
 					Object selectRole = it.next();
-					if (selectRole.equals(Role.ADMINISTRATOR)) {
-						roles.add(Role.ADMINISTRATOR);
+					if (selectRole.equals(Role.ROLE_ADMIN)) {
+						roles.add(Role.ROLE_ADMIN);
 					} else
-						roles.add(Role.USER);
+						roles.add(Role.ROLE_USER);
 				}
 
 				user.setRoles(roles);

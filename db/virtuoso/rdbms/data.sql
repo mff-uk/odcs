@@ -39,11 +39,11 @@ FOREACH HEXADECIMAL BLOB INSERT INTO DB.INTLIB.DPU_INSTANCE(id,name,description,
 END
 -- Table DB.INTLIB.DPU_INSTANCE 2 rows output.
 -- SELECT * FROM DB.INTLIB.DPU_TEMPLATE
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar','',NULL,1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(2,'RDF File Extractor','Extracts RDF data from a file.',0,'File_extractor-0.0.1.jar','',NULL,1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(3,'SPARQL Transformer','SPARQL Transformer.',1,'SPARQL_transformer-0.0.1.jar','',NULL,1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(4,'SPARQL Loader','Loads RDF data.',2,'RDF_loader-0.0.1.jar','',NULL,1,'No description in manifest.');
-INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,visibility,jar_description) VALUES(5,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar','',NULL,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,user_id,visibility,jar_description) VALUES(1,'SPARQL Extractor','Extracts RDF data.',0,'RDF_extractor-0.0.1.jar','',NULL,1,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,user_id,visibility,jar_description) VALUES(2,'RDF File Extractor','Extracts RDF data from a file.',0,'File_extractor-0.0.1.jar','',NULL,1,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,user_id,visibility,jar_description) VALUES(3,'SPARQL Transformer','SPARQL Transformer.',1,'SPARQL_transformer-0.0.1.jar','',NULL,1,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,user_id,visibility,jar_description) VALUES(4,'SPARQL Loader','Loads RDF data.',2,'RDF_loader-0.0.1.jar','',NULL,1,1,'No description in manifest.');
+INSERT INTO DB.INTLIB.DPU_TEMPLATE(id,name,description,type,jar_path,configuration,parent_id,user_id,visibility,jar_description) VALUES(5,'RDF File Loader','Loads RDF data into file.',2,'File_loader-0.0.1.jar','',NULL,1,1,'No description in manifest.');
 -- Table DB.INTLIB.DPU_TEMPLATE 5 rows output.
 -- SELECT * FROM DB.INTLIB.EXEC_CONTEXT_DPU
 -- Table DB.INTLIB.EXEC_CONTEXT_DPU 0 rows output.
@@ -78,7 +78,7 @@ INSERT INTO DB.INTLIB.PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_nam
 INSERT INTO DB.INTLIB.PPL_GRAPH(id,pipeline_id) VALUES(1,1);
 -- Table DB.INTLIB.PPL_GRAPH 1 rows output.
 -- SELECT * FROM DB.INTLIB.PPL_MODEL
-INSERT INTO DB.INTLIB.PPL_MODEL(id,name,description) VALUES(1,'DBpedia','Loads 100 triples from DBpedia.');
+INSERT INTO DB.INTLIB.PPL_MODEL(id,name,description,user_id) VALUES(1,'DBpedia','Loads 100 triples from DBpedia.',2);
 -- Table DB.INTLIB.PPL_MODEL 1 rows output.
 -- SELECT * FROM DB.INTLIB.PPL_NODE
 INSERT INTO DB.INTLIB.PPL_NODE(id,graph_id,instance_id,position_id) VALUES(1,1,1,1);
@@ -89,8 +89,9 @@ INSERT INTO DB.INTLIB.PPL_POSITION(id,pos_x,pos_y) VALUES(1,138,52);
 INSERT INTO DB.INTLIB.PPL_POSITION(id,pos_x,pos_y) VALUES(2,487,132);
 -- Table DB.INTLIB.PPL_POSITION 2 rows output.
 -- SELECT * FROM DB.INTLIB.SCH_EMAIL
-INSERT INTO DB.INTLIB.SCH_EMAIL(id,e_user,e_domain) VALUES(1,'user','example.com');
--- Table DB.INTLIB.SCH_EMAIL 1 rows output.
+INSERT INTO DB.INTLIB.SCH_EMAIL(id,e_user,e_domain) VALUES(1,'admin','example.com');
+INSERT INTO DB.INTLIB.SCH_EMAIL(id,e_user,e_domain) VALUES(2,'user','example.com');
+-- Table DB.INTLIB.SCH_EMAIL 2 rows output.
 -- SELECT * FROM DB.INTLIB.SCH_SCH_NOTIFICATION
 -- Table DB.INTLIB.SCH_SCH_NOTIFICATION 0 rows output.
 -- SELECT * FROM DB.INTLIB.SCH_SCH_NOTIFICATION_EMAIL
@@ -102,12 +103,14 @@ INSERT INTO DB.INTLIB.SCH_USR_NOTIFICATION(id,user_id,type_success,type_error) V
 INSERT INTO DB.INTLIB.SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id) VALUES(1,1);
 -- Table DB.INTLIB.SCH_USR_NOTIFICATION_EMAIL 1 rows output.
 -- SELECT * FROM DB.INTLIB.USR_USER
-INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES(1,'user',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Doe');
--- Table DB.INTLIB.USR_USER 1 rows output.
+INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES(1,'admin',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Admin');
+INSERT INTO DB.INTLIB.USR_USER(id,username,email_id,u_password,full_name) VALUES(2,'user',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John User');
+-- Table DB.INTLIB.USR_USER 2 rows output.
 -- SELECT * FROM DB.INTLIB.USR_USER_ROLE
--- Table DB.INTLIB.USR_USER_ROLE 2 rows output.
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(1,0);
 INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(1,1);
-INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,1);
+INSERT INTO DB.INTLIB.USR_USER_ROLE(user_id,role_id) VALUES(2,0);
+-- Table DB.INTLIB.USR_USER_ROLE 3 rows output.
 
 
 fk_check_input_values(1);
