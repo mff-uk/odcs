@@ -62,9 +62,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
 
 	/**
-	 * Default select query using for extraction without query in parameter.
+	 * Default construct query using for extraction without query in parameter.
 	 */
-	protected static final String DEFAUTL_SELECT_QUERY = "select ?x ?y ?z where {?x ?y ?z}";
+	protected static final String DEFAUTL_CONSTRUCT_QUERY = "construct {?x ?y ?z} where {?x ?y ?z}";
 
 	/**
 	 * Logging information about execution of method using openRDF.
@@ -634,7 +634,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String defaultGraphURI) throws RDFException {
 
 		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI,
-				DEFAUTL_SELECT_QUERY);
+				DEFAUTL_CONSTRUCT_QUERY);
 	}
 
 	/**
@@ -675,7 +675,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String defaultGraphURI, String hostName, String password) throws RDFException {
 
 		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI,
-				DEFAUTL_SELECT_QUERY, hostName, password);
+				DEFAUTL_CONSTRUCT_QUERY, hostName, password);
 	}
 
 	/**
