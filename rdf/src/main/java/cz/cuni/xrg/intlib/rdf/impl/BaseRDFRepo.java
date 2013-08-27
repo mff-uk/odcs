@@ -2019,6 +2019,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * Another repository using cause exception. For other using you have to
 	 * create new instance.
 	 */
+	@Override
 	public void shutDown() {
 
 		Thread destroyThread = new Thread(new Runnable() {
@@ -2037,6 +2038,27 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		destroyThread.setDaemon(true);
 		destroyThread.start();
+	}
+	
+	public List<RDFTriple> getRDFTriplesInRepository() {
+
+		List<RDFTriple> triples = new ArrayList<>();
+		List<Statement> statements = getRepositoryStatements();
+
+		int count = 0;
+
+		for (Statement next : statements) {
+			String subject = next.getSubject().stringValue();
+			String predicate = next.getPredicate().stringValue();
+			String object = next.getObject().stringValue();
+
+			count++;
+
+			RDFTriple triple = new RDFTriple(count, subject, predicate, object);
+			triples.add(triple);
+		}
+
+		return triples;
 	}
 
 	@Override
