@@ -205,4 +205,11 @@ public interface RDFDataUnit extends DataUnit, RDFDataUnitHelper {
 	 *                           prefix http://).
 	 */
 	public void setDataGraph(String newStringDataGraph);
+	
+	/**
+	 * Definitely destroy repository - use after all working in repository.
+	 * Another repository using cause exception. For other using you have to
+	 * create new instance.
+	 */
+	public void shutDown();
 }
