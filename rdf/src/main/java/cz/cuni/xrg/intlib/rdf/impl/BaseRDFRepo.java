@@ -1908,14 +1908,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				String predicate = nextStatement.getPredicate().stringValue();
 				String object = nextStatement.getObject().stringValue();
 
-				object = object.replaceAll("<br\\s*/>", "")
-						.replaceAll("\\s+", "_")
-						.replaceAll("<", "â€ą")
-						.replaceAll(">", "â€ş");
-
-				String appendLine = "<" + subject + "> <" + predicate + "> <" + object + "> . ";
-				builder.append(appendLine.replaceAll("\\s+", " ").replaceAll(
-						"\"", "'"));
+				subject=subject.replaceAll("\\s+","").replaceAll("\"","'");
+				predicate=predicate.replaceAll("\\s+","").replaceAll("\"","'");
+				
+				String appendLine = "<" + subject + "> <" + predicate + "> \"" + object + "\" . ";
+				builder.append(appendLine);
 
 				count++;
 				if (count == sizeSplit) {
