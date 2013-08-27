@@ -422,7 +422,7 @@ public class LocalRDFRepoTest {
 			long sizeBefore = rdfRepo.getTripleCount();
 
 			try {
-				rdfRepo.extractfromSPARQLEndpoint(endpointURL, defaultGraphUri,
+				rdfRepo.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
 						query);
 			} catch (RDFException e) {
 				fail(e.getMessage());
