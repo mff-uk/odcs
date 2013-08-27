@@ -23,7 +23,7 @@ public class SPARQLTransformer
 		implements Transform, ConfigDialogProvider<SPARQLTransformerConfig> {
 
 	public SPARQLTransformer() {
-		super(new SPARQLTransformerConfig());
+		super(SPARQLTransformerConfig.class);
 	}
 
 	@Override

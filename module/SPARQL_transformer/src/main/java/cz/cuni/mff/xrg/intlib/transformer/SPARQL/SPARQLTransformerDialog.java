@@ -40,7 +40,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	 * Basic constructor.
 	 */
 	public SPARQLTransformerDialog() {
-		super(new SPARQLTransformerConfig());
+		super(SPARQLTransformerConfig.class);
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}

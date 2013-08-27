@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
-import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.backend.scheduling.event.SchedulerCheckDatabase;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.PeriodUnit;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
+import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 
 /**
  * Take care about execution of scheduled plans.
@@ -30,11 +31,17 @@ public class Scheduler implements ApplicationListener {
 	private static final int MINUTE_TOLERANCE = 50;
 
 	/**
-	 * Access to the database
+	 * Pipeline facade.
 	 */
 	@Autowired
-	protected DatabaseAccess database;
-
+	private PipelineFacade pipelineFacade;
+	
+	/**
+	 * Schedule facade.
+	 */
+	@Autowired
+	private ScheduleFacade scheduleFacade;
+	
 	/**
 	 * Create execution for given schedule. Also if the schedule is runOnce then
 	 * disable it. Ignore enable/disable option for schedule.
@@ -55,8 +62,8 @@ public class Scheduler implements ApplicationListener {
 		pipelineExec.setSilentMode(false);
 
 		// save data into DB -> in next DB check Engine start the execution
-		database.getPipeline().save(pipelineExec);
-		database.getSchedule().save(schedule);
+		pipelineFacade.save(pipelineExec);
+		scheduleFacade.save(schedule);
 	}
 	
 	@Override
@@ -67,7 +74,7 @@ public class Scheduler implements ApplicationListener {
 			if (pipelineFinishedEvent.getExecution().getSilentMode()) {
 				// pipeline run in silent mode .. ignore
 			} else {
-				List<Schedule> toRun = database.getSchedule().getFollowers(
+				List<Schedule> toRun = scheduleFacade.getFollowers(
 						pipelineFinishedEvent.getExecution().getPipeline());
 				// for each .. run
 				for (Schedule schedule : toRun) {
@@ -80,8 +87,7 @@ public class Scheduler implements ApplicationListener {
 			// check DB for pipelines based on time scheduling
 			Date now = new Date();
 			// get all pipelines that are time based
-			List<Schedule> candidates = database.getSchedule()
-					.getAllTimeBased();
+			List<Schedule> candidates = scheduleFacade.getAllTimeBased();
 			// check ..
 			for (Schedule schedule : candidates) {
 				// we use information about next execution

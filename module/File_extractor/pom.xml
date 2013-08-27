@@ -9,11 +9,9 @@
     </parent>
     <artifactId>File_extractor</artifactId>
     <packaging>bundle</packaging>
+    <version>0.0.1</version>
     
     <properties>       
-    	<!-- specify module version -->
-        <dpu.version>0.0.1</dpu.version>
-        <dpu.description>Manifest description. File extractor.</dpu.description>
         <dpu.package>cz.cuni.mff.xrg.intlib.extractor.file</dpu.package>
         <dpu.mainClass>FileExtractor</dpu.mainClass>
     </properties>

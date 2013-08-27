@@ -3,12 +3,12 @@ package cz.cuni.xrg.intlib.backend.execution;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.backend.DatabaseAccess;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineRestart;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 import java.io.File;
@@ -48,12 +48,6 @@ public class Engine
 	protected ApplicationEventPublisher eventPublisher;	
 	
 	/**
-	 * Access to the database
-	 */
-	@Autowired
-	protected DatabaseAccess database;	
-	
-	/**
 	 * Application's configuration.
 	 */
 	@Autowired
@@ -65,6 +59,12 @@ public class Engine
 	 */
 	@Autowired
 	private BeanFactory beanFactory;
+	
+	/**
+	 * Pipeline facade.
+	 */
+	@Autowired
+	private PipelineFacade pipelineFacade;
 	
 	/**
 	 * Thread pool.
@@ -113,7 +113,7 @@ public class Engine
 	 */
 	protected void run(PipelineExecution pipelineExecution) {
 		PipelineWorker pipelineWorker = 
-				beanFactory.getBean("pipelineWorker", PipelineWorker.class);
+				beanFactory.getBean(PipelineWorker.class);
 		// set execution
 		pipelineWorker.init(pipelineExecution);
 		// execute
@@ -125,8 +125,7 @@ public class Engine
 	 * concurrently.
 	 */
 	protected synchronized void checkDatabase() {
-		List<PipelineExecution> toExecute = database.getPipeline()
-				.getAllExecutions();
+		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions();
 		// run pipeline executions ..
 		for (PipelineExecution item : toExecute) {
 			if (item.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
@@ -148,8 +147,7 @@ public class Engine
 		
 		startUpDone = true;
 		// list executions
-		List<PipelineExecution> toExecute = database.getPipeline()
-				.getAllExecutions();
+		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions();
 		for (PipelineExecution execution : toExecute) {
 			if (execution.getExecutionStatus() == PipelineExecutionStatus.RUNNING) {
 				// hanging pipeline ..
@@ -202,7 +200,7 @@ public class Engine
 					// send message .. about restart
 					eventPublisher.publishEvent(new PipelineRestart(execution, this));
 				}
-				database.getPipeline().save(execution);
+				pipelineFacade.save(execution);
 			}
 		}
 	}

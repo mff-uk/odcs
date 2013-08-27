@@ -210,10 +210,9 @@ public class ExecutionContextInfo implements Serializable {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		// ..
-		String path = getWorkingPath() + File.separatorChar + DPU_ID_PREFIX
+		return getWorkingPath() + File.separatorChar + DPU_ID_PREFIX
 				+ dpuInstance.getId().toString() + File.separatorChar
 				+ WORKING_TMP_DIR;
-		return path;
 	}
 
 	/**
@@ -227,11 +226,10 @@ public class ExecutionContextInfo implements Serializable {
 	 */
 	public String getDataUnitRootStoragePath(DPUInstanceRecord dpuInstance) {
 		// secure DPU record existence
-		getContext(dpuInstance);
+		getContext(dpuInstance);		
 		// ..
-		String path = getWorkingPath() + +File.separatorChar + DPU_ID_PREFIX
+		return getWorkingPath() + File.separatorChar + DPU_ID_PREFIX
 				+ dpuInstance.getId().toString();
-		return path;
 	}
 
 	/**
@@ -263,9 +261,8 @@ public class ExecutionContextInfo implements Serializable {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		// ..
-		String path = getStoragePath() + File.separatorChar + DPU_ID_PREFIX
+		return getStoragePath() + File.separatorChar + DPU_ID_PREFIX
 				+ dpuInstance.getId().toString();
-		return path;
 	}
 
 	/**
@@ -340,4 +337,12 @@ public class ExecutionContextInfo implements Serializable {
 		return File.separatorChar + execution.getId().toString();
 	}
 
+	/**
+	 * Return respective pipeline execution.
+	 * @return
+	 */
+	public PipelineExecution getExecution() {
+		return this.execution;
+	}
+	
 }

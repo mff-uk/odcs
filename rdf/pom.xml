@@ -11,8 +11,6 @@
 	<description />
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<sesame.version>2.7.0-beta1</sesame.version>
 	</properties>
 
@@ -268,4 +266,5 @@
         </dependency>
 			
 	</dependencies>
+	
 </project>

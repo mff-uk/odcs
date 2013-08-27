@@ -21,7 +21,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		implements Load, ConfigDialogProvider<FileLoaderConfig> {
 
 	public FileLoader() {
-		super(new FileLoaderConfig());
+		super(FileLoaderConfig.class);
 	}
 
 	@Override

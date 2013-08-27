@@ -10,10 +10,9 @@
     <artifactId>SPARQL_transformer</artifactId>
     <packaging>bundle</packaging>
     <name>SPARQL_transformer</name>
+    <version>0.0.1</version>
     
     <properties>       
-    	<!-- specify module version -->
-        <dpu.version>0.0.1</dpu.version>
         <dpu.package>cz.cuni.mff.xrg.intlib.transformer.SPARQL</dpu.package>
         <dpu.mainClass>SPARQLTransformer</dpu.mainClass>        
     </properties>

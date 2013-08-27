@@ -9,9 +9,9 @@
     </parent>
     <artifactId>File_loader</artifactId>
     <packaging>bundle</packaging>
+    <version>0.0.1</version>
     
     <properties>       
-        <dpu.version>0.0.1</dpu.version>
         <dpu.package>cz.cuni.mff.xrg.intlib.loader.file</dpu.package>
         <dpu.mainClass>FileLoader</dpu.mainClass>
     </properties>

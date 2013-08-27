@@ -24,7 +24,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		implements Load, ConfigDialogProvider<RDFLoaderConfig> {
 
 	public RDFLoader() {
-		super(new RDFLoaderConfig());
+		super(RDFLoaderConfig.class);
 	}
 
 	@Override

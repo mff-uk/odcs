@@ -37,6 +37,12 @@ public class ConfigWrap<T extends DPUConfigObject> {
 		this.xstream.setClassLoader(configClass.getClassLoader());
 	}
 
+	/**
+	 * 
+	 * @param configClass
+	 * @deprecated Use {@link #ConfigWrap(Class)}
+	 */
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public ConfigWrap(T config) {
 		this.configClass = (Class<T>) config.getClass();

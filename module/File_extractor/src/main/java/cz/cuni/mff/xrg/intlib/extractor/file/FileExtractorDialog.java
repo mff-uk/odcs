@@ -92,7 +92,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 *  Basic constructor.
 	 */
 	public FileExtractorDialog() {
-		super(new FileExtractorConfig());
+		super(FileExtractorConfig.class);
 		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);

@@ -58,7 +58,7 @@ public class AppEntry {
 	/**
 	 * Module facade.
 	 */
-	private ModuleFacade modeleFacade = null;
+	private ModuleFacade moduleFacade = null;
 			
 	/**
 	 * Server for network communication.
@@ -112,12 +112,12 @@ public class AppEntry {
 		context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
 		context.registerShutdownHook();
 		// load configuration
-		appConfig = (AppConfig)context.getBean("configuration");
+		appConfig = context.getBean(AppConfig.class);
 		// engine is setup automatically 
 		// set module facade
 		LOG.info("Configuring dynamic module worker ...");
-		modeleFacade = (ModuleFacade)context.getBean("moduleFacade");
-		modeleFacade.start();		
+		moduleFacade = context.getBean(ModuleFacade.class);
+		moduleFacade.start();		
 	}
 	
 	/**
@@ -126,7 +126,7 @@ public class AppEntry {
 	private void initNetworkServer() {
 		// set TCP/IP server
 		LOG.info("Starting TCP/IP server ...");
-		server = (Server)context.getBean("server");
+		server = context.getBean(Server.class);
 		try {
 			server.init();
 		} catch (CommunicationException e1) {
@@ -144,7 +144,7 @@ public class AppEntry {
 	 */
 	private void initHeartbeat() {
 		// start heartbeat
-		heartbeat = (Heartbeat)context.getBean("heartbeat");
+		heartbeat = context.getBean(Heartbeat.class);
 		heartbeatThread = new Thread(heartbeat);
 		heartbeatThread.start();
 		LOG.info("Heartbeat is running ... ");		
@@ -169,8 +169,8 @@ public class AppEntry {
 		initHeartbeat();
 		
 		// print some information ..
-		LOG.info("DPURecord directory:" + appConfig.getString(ConfigProperty.MODULE_PATH));
-		LOG.info("Listening on port:" + appConfig.getInteger(ConfigProperty.BACKEND_PORT));
+		LOG.info("DPURecord directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));
+		LOG.info("Listening on port: " + appConfig.getInteger(ConfigProperty.BACKEND_PORT));
 		LOG.info("Running ...");
 		
 		// infinite loop
@@ -198,7 +198,7 @@ public class AppEntry {
 		} catch (InterruptedException e) {
 		}
 		LOG.info("Stopping OSGI framework ...");
-		modeleFacade.stop();
+		moduleFacade.stop();
 		LOG.info("Closing spring context ...");
 		heartbeatThread.interrupt();
 		context.close();

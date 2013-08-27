@@ -61,7 +61,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 *  Basic constructor.
 	 */
 	public FileLoaderDialog() {
-		super(new FileLoaderConfig());
+		super(FileLoaderConfig.class);
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();

@@ -13,6 +13,12 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	 */
     private ConfigWrap<C> configWrap; 
 	
+    /**
+     * 
+     * @param config
+     * @deprecated use {@link #BaseConfigDialog(Class)} instead
+     */
+    @Deprecated
     public BaseConfigDialog(C config) {
     	this.configWrap = new ConfigWrap<>(config);
     }
