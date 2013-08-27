@@ -70,6 +70,7 @@ public class Login extends ViewComponent {
         layout.addComponent(logo);
 
         login = new TextField("Login:");
+		login.focus();
         layout.addComponent(login);
 
         password = new PasswordField("Password:");
