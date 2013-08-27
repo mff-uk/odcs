@@ -166,11 +166,39 @@ public interface RDFDataUnitHelper {
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
 	 * @param defaultGraphUri name of graph where RDF data are stored.
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
+	 */
+	public void extractFromSPARQLEndpoint(URL enpointURL, String defaultGraphURI)
+			throws RDFException;
+
+	/**
+	 * Extract RDF data from SPARQL endpoint to repository using only data from
+	 * URI graph without authentication.
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphUri name of graph where RDF data are stored.
 	 * @param query           String SPARQL query.
 	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
-	public void extractfromSPARQLEndpoint(URL endpointURL,
+	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query) throws RDFException;
+
+	/**
+	 * Extract RDF data from SPARQL endpoint to repository using only data from
+	 * URI graph using authentication (name,password).
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphUri name of graph where RDF data are stored.
+	 * @param hostName        String name needed for authentication.
+	 * @param password        String password needed for authentication.
+	 *
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
+	 */
+	public void extractFromSPARQLEndpoint(URL endpointURL,
+			String defaultGraphURI, String hostName,
+			String password) throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from

@@ -35,7 +35,7 @@ import org.openrdf.rio.*;
 import org.slf4j.Logger;
 
 /**
- * Abstract class provides common parent methods for RDFDataUnit implementation.  
+ * Abstract class provides common parent methods for RDFDataUnit implementation.
  *
  * @author Jiri Tomes
  */
@@ -60,6 +60,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * Default name for graph using for store RDF data.
 	 */
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
+
+	/**
+	 * Default select query using for extraction without query in parameter.
+	 */
+	protected static final String DEFAUTL_SELECT_QUERY = "select ?x ?y ?z where {?x ?y ?z}";
 
 	/**
 	 * Logging information about execution of method using openRDF.
@@ -621,12 +626,29 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
+	 * @param defaultGraphUri name of graph where RDF data are stored.
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
+	 */
+	@Override
+	public void extractFromSPARQLEndpoint(URL endpointURL,
+			String defaultGraphURI) throws RDFException {
+
+		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI,
+				DEFAUTL_SELECT_QUERY);
+	}
+
+	/**
+	 * Extract RDF data from SPARQL endpoint to repository using only data from
+	 * URI graph without authentication.
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
 	 * @param defaultGraphUri name of graph where RDF data are loading.
 	 * @param query           String SPARQL query.
 	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
-	public void extractfromSPARQLEndpoint(URL endpointURL,
+	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query) throws RDFException {
 
 		List<String> endpointGraphsURI = new ArrayList<>();
@@ -634,6 +656,26 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "",
 				RDFFormat.N3, false);
+	}
+
+	/**
+	 * Extract RDF data from SPARQL endpoint to repository using only data from
+	 * URI graph using authentication (name,password).
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphUri name of graph where RDF data are stored.
+	 * @param hostName        String name needed for authentication.
+	 * @param password        String password needed for authentication.
+	 *
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
+	 */
+	@Override
+	public void extractFromSPARQLEndpoint(URL endpointURL,
+			String defaultGraphURI, String hostName, String password) throws RDFException {
+
+		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI,
+				DEFAUTL_SELECT_QUERY, hostName, password);
 	}
 
 	/**
@@ -2039,7 +2081,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		destroyThread.setDaemon(true);
 		destroyThread.start();
 	}
-	
+
 	public List<RDFTriple> getRDFTriplesInRepository() {
 
 		List<RDFTriple> triples = new ArrayList<>();
