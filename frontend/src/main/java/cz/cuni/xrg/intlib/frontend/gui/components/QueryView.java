@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.DownloadStreamResource;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
@@ -132,7 +133,7 @@ public class QueryView extends CustomComponent {
 	 * repository.
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
-	private boolean prepareDownloadData(LocalRDFRepo repository, String constructQuery) throws InvalidQueryException {
+	private boolean prepareDownloadData(RDFDataUnit repository, String constructQuery) throws InvalidQueryException {
 
 		Object o = formatSelect.getValue();
 		if (o == null) {
@@ -202,7 +203,7 @@ public class QueryView extends CustomComponent {
 	
 		
 			try {
-				LocalRDFRepo repository = parent.getRepository(onInputGraph);
+				RDFDataUnit repository = parent.getRepository(onInputGraph);
 				if(repository == null) {
 					return;
 				}

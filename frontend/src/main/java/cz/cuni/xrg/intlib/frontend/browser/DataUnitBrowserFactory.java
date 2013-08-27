@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 /**
  * Factory for DataUnitBrowsers.
  *
@@ -87,7 +88,7 @@ public class DataUnitBrowserFactory {
 	 * 
 	 */
 	@Deprecated
-	public static LocalRDFRepo getRepository(ExecutionContextInfo context, PipelineExecution execution,
+	public static RDFDataUnit getRepository(ExecutionContextInfo context, PipelineExecution execution,
 			DPUInstanceRecord dpuInstance, DataUnitInfo info) {
 
 		// get type and directory
