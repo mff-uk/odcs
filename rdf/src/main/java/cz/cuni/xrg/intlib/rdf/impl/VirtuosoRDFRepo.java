@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
 /**
+ * Implementation of Virtuoso repository - RDF data and intermediate results are
+ * saved in Virtuoso storage.
  *
  * @author Jiri Tomes
  */
-public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
+public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 	private String URL_Host_List;
 
@@ -26,15 +28,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
 	private String password;
 
 	private String defaultGraph;
-
-	/**
-	 * DataUnit's name.
-	 */
-	private String dataUnitName;
-
-	static {
-		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-	}
 
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
@@ -64,6 +57,7 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
 
 		setDataGraph(defaultGraph);
 
+		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
 		repository = new VirtuosoRepository(URL_Host_List, user, password,
 				defaultGraph);
 
@@ -79,57 +73,15 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
 	}
 
 	/**
-	 *
-	 * @return the Virtuoso JDBC URL connection string or hostlist for poolled
-	 *         connection.
-	 */
-	public String getURL_Host_List() {
-		return URL_Host_List;
-	}
-
-	/**
-	 *
-	 * @return User name to Virtuoso connection.
-	 */
-	public String getUser() {
-		return user;
-	}
-
-	/**
-	 *
-	 * @return Password to virtuoso connection.
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 *
-	 * @return Default graph name
-	 */
-	public String getDefaultGraph() {
-		return defaultGraph;
-	}
-
-	/**
 	 * Set new graph as default for working data in RDF format.
 	 *
 	 * @param defaultGraph String name of graph as URI - starts with prefix
 	 *                     http://).
 	 */
 	@Override
-	public final void setDataGraph(String newStringDataGraph) {
+	public void setDataGraph(String newStringDataGraph) {
 		this.defaultGraph = newStringDataGraph;
 		setDataGraph(createNewGraph(defaultGraph));
-	}
-
-	private VirtuosoRDFRepo getCopyOfVirtuosoReposiotory() {
-		// TODO Jirka: (from Petyr) This method is not used. Why is here? How should be used?
-		VirtuosoRDFRepo newCopy = new VirtuosoRDFRepo(URL_Host_List, user,
-				password, defaultGraph, "");
-		copyAllDataToTargetRepository(newCopy);
-
-		return newCopy;
 	}
 
 	@Override
@@ -150,11 +102,6 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
 	@Override
 	public DataUnitType getType() {
 		return DataUnitType.RDF_Virtuoso;
-	}
-
-	@Override
-	public String getName() {
-		return dataUnitName;
 	}
 
 	@Override
@@ -280,5 +227,38 @@ public class VirtuosoRDFRepo extends LocalRDFRepo implements RDFDataUnit {
 				}
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @return the Virtuoso JDBC URL connection string or hostlist for poolled
+	 *         connection.
+	 */
+	public String getURL_Host_List() {
+		return URL_Host_List;
+	}
+
+	/**
+	 *
+	 * @return User name to Virtuoso connection.
+	 */
+	public String getUser() {
+		return user;
+	}
+
+	/**
+	 *
+	 * @return Password to virtuoso connection.
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 *
+	 * @return Default graph name
+	 */
+	public String getDefaultGraph() {
+		return defaultGraph;
 	}
 }
