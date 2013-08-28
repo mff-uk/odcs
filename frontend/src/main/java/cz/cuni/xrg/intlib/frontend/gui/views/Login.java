@@ -6,6 +6,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -83,6 +84,9 @@ public class Login extends ViewComponent {
             }
         });
         layout.addComponent(loginButton);
+		Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", "email@address.com"));
+		info.setContentMode(ContentMode.HTML);
+		layout.addComponent(info);
         layout.setSizeUndefined();
         mainLayout.addComponent(layout);
 
@@ -103,9 +107,9 @@ public class Login extends ViewComponent {
 			App.getApp().getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
 
 		} catch (AuthenticationException ex) {
+			password.setValue("");
 			LOG.info(String.format("Invalid credentials for username ?.", login.getValue()));
-		} catch (NullPointerException ex) {
-			ex.printStackTrace();
-		}
+			Notification.show(String.format("Invalid credentials for username %s.", login.getValue()), Notification.Type.ERROR_MESSAGE);
+		} 
     }
 }
