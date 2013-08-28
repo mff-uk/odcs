@@ -12,8 +12,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
-import cz.cuni.xrg.intlib.backend.dpu.event.DPUFailedEvent;
-import cz.cuni.xrg.intlib.backend.dpu.event.DPUWrongState;
+import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.backend.execution.dpu.StructureException;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -177,7 +176,7 @@ public final class Executor implements Runnable {
 				if (sourceContext == null) {
 					throw new StructureException("Missing context for '"
 							+ source.getDpuInstance().getName()
-							+ "' required by '" 
+							+ "' required by '"
 							+ node.getDpuInstance().getName() + "'");
 				}
 				// add data
@@ -192,7 +191,8 @@ public final class Executor implements Runnable {
 
 	/**
 	 * Create context for given {@link Node}. Also add data from all the
-	 * ancestor's {@link Context}s. In case of error publish error event message.
+	 * ancestor's {@link Context}s. In case of error publish error event
+	 * message.
 	 * 
 	 * @param dpu DPU for which we create context.
 	 * @return Null in case of error.
@@ -209,12 +209,12 @@ public final class Executor implements Runnable {
 				try {
 					addContextData(item, context);
 				} catch (ContextException e) {
-					eventPublisher.publishEvent(
-							PipelineFailedEvent.create(e, dpu, execution, this));
+					eventPublisher.publishEvent(PipelineFailedEvent.create(e,
+							dpu, execution, this));
 					return null;
 				} catch (StructureException e) {
-					eventPublisher.publishEvent(
-							PipelineFailedEvent.create(e, dpu, execution, this));
+					eventPublisher.publishEvent(PipelineFailedEvent.create(e,
+							dpu, execution, this));
 					return null;
 				}
 			}
@@ -269,25 +269,27 @@ public final class Executor implements Runnable {
 			} else if (dpuInstance instanceof Load) {
 				((Load) dpuInstance).load(context);
 			}
-		} catch (ExtractException | TransformException | LoadException ex) {
-			eventPublisher.publishEvent(new DPUFailedEvent(ex, context, this));
+		} catch (ExtractException | TransformException | LoadException e) {
+			eventPublisher
+					.publishEvent(DPUEvent.createFailed(context, this, e));
 			return false;
-		} catch (DataUnitException ex) {
-			eventPublisher.publishEvent(new DPUFailedEvent(ex, context, this));
+		} catch (DataUnitException e) {
+			eventPublisher.publishEvent(DPUEvent.createDataUnitFailed(context,
+					this, e));
 			return false;
 		} catch (DPUException e) {
-			eventPublisher.publishEvent(
-					PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));
+			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
+					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Exception e) {
-			eventPublisher.publishEvent(
-					PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));			
+			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
+					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Error e) {
-			eventPublisher.publishEvent(
-					PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));			
-			return false;			
-		}		
+			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
+					node.getDpuInstance(), execution, this));
+			return false;
+		}
 		return true;
 	}
 
@@ -317,8 +319,9 @@ public final class Executor implements Runnable {
 	}
 
 	/**
-	 * Load instance of node to execute. In case of error return null and 
+	 * Load instance of node to execute. In case of error return null and
 	 * publish error event message.
+	 * 
 	 * @param dpu DPU for which create instance.
 	 * @return Null in case of error.
 	 */
@@ -327,8 +330,8 @@ public final class Executor implements Runnable {
 		try {
 			dpuInstance = loadInstance();
 		} catch (ModuleException e) {
-			eventPublisher.publishEvent(
-					PipelineFailedEvent.create(e, dpu, execution, this));
+			eventPublisher.publishEvent(PipelineFailedEvent.create(e, dpu,
+					execution, this));
 			// cancel the execution
 			return null;
 		}
@@ -337,7 +340,7 @@ public final class Executor implements Runnable {
 
 	/**
 	 * Execute given {@link Node} from
-	 * {@link cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline}. Set 
+	 * {@link cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline}. Set
 	 * {@link #executionSuccessful}. Does not set DPUExecutionState.FINISHED
 	 * state for {@link ProcessingUnitInfo}.
 	 * 
@@ -366,11 +369,11 @@ public final class Executor implements Runnable {
 		// call PreExecutors
 		if (!executePreExecutors(dpuInstance, context)) {
 			return false;
-		}		
+		}
 		if (unitInfo.getState() == DPUExecutionState.RUNNING) {
 			// we can continue with this state
-			eventPublisher.publishEvent(new DPUWrongState(context, this,
-					"DPU is in wrong state.", ""));
+			eventPublisher.publishEvent(DPUEvent
+					.createWrongState(context, this));
 			return false;
 		}
 		// set state to RUNNING and save this, by this we announce
@@ -422,6 +425,5 @@ public final class Executor implements Runnable {
 	public boolean executionFailed() {
 		return !executionSuccessful;
 	}
-
 
 }

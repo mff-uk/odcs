@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
-import cz.cuni.xrg.intlib.backend.dpu.event.DPUPreExecutorFailed;
+import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.backend.execution.dpu.PreExecutor;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -44,8 +44,8 @@ class Configurator implements PreExecutor {
 		try {
 			configurable.configure(dpu.getRawConf());
 		} catch (ConfigException e) {
-			eventPublisher.publishEvent(new DPUPreExecutorFailed(context, this,
-					"Failed to configure DPU.", e));
+			eventPublisher.publishEvent(
+					DPUEvent.createPreExecutorFailed(context, this, "Failed to configure DPU."));
 			// stop the execution
 			return false;
 		}
