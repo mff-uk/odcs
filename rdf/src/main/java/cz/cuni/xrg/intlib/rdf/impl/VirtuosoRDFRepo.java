@@ -55,9 +55,10 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		this.defaultGraph = defaultGraph;
 		this.dataUnitName = dataUnitName;
 
-		setDataGraph(defaultGraph);
-
 		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
+		
+		setDataGraph(defaultGraph);
+		
 		repository = new VirtuosoRepository(URL_Host_List, user, password,
 				defaultGraph);
 
