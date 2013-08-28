@@ -11,6 +11,11 @@ import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
  */
 public enum DPUExecutionState {
 	/**
+	 * The DPU is in pre-processing state. It's 
+	 * the default state.
+	 */
+	PREPROCESSING,
+	/**
 	 * The DPU is currently being executed.
 	 */
 	RUNNING,

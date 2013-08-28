@@ -33,7 +33,7 @@ public class ProcessingUnitInfo implements Serializable {
 	 * Describe state of the DPU execution.
 	 */
 	@Enumerated(EnumType.ORDINAL)
-	private DPUExecutionState state = DPUExecutionState.RUNNING;
+	private DPUExecutionState state = DPUExecutionState.PREPROCESSING;
 
 	/**
 	 * Storage for dataUnits descriptors.
