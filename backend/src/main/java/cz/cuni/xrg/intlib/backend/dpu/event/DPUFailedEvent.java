@@ -16,13 +16,8 @@ public final class DPUFailedEvent extends DPUEvent {
 	
 	public static final String MESSAGE = "DPU failed.";
 	
-	public DPUFailedEvent(Exception exception, Context context, Object source) {
-		super(context, source, MessageRecordType.DPU_ERROR, MESSAGE);
-		// transform stack trace into string
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		exception.printStackTrace(pw);
-		this.longMessage = sw.toString();		
+	public DPUFailedEvent(Exception ex, Context context, Object source) {
+		super(context, source, MessageRecordType.DPU_ERROR, MESSAGE, ex);
 	}	
 	
 }

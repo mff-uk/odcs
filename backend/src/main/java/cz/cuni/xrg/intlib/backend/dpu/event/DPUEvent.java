@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.backend.dpu.event;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 
 import org.springframework.context.ApplicationEvent;
@@ -64,6 +66,23 @@ public abstract class DPUEvent extends ApplicationEvent {
 		this.longMessage = "";
 	}
 
+	public DPUEvent(Context context,
+			Object source,
+			MessageRecordType type,
+			String shortMessage,
+			Exception ex) {
+		super(source);
+		this.time = new Date();
+		this.context = context;
+		this.type = type;
+		this.shortMessage = shortMessage;
+		// transform stack trace into string
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		ex.printStackTrace(pw);
+		this.longMessage = sw.toString();	
+	}	
+	
 	public DPUEvent(Context context,
 			Object source,
 			MessageRecordType type,

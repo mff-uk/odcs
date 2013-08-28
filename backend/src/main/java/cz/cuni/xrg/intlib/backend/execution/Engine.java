@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.execution;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.backend.execution.pipeline.Executor;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineRestart;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -109,15 +110,13 @@ public class Engine
 	 * Ask executorService to run the pipeline. Call {@link #startUp} before
 	 * this function.
 	 * 
-	 * @param pipelineExecution
+	 * @param execution
 	 */
-	protected void run(PipelineExecution pipelineExecution) {
-		PipelineWorker pipelineWorker = 
-				beanFactory.getBean(PipelineWorker.class);
-		// set execution
-		pipelineWorker.init(pipelineExecution);
+	protected void run(PipelineExecution execution) {
+		Executor executor = beanFactory.getBean(Executor.class);		
+		executor.bind(execution);
 		// execute
-		this.executorService.execute(pipelineWorker);
+		this.executorService.execute(executor);
 	}
 
 	/**

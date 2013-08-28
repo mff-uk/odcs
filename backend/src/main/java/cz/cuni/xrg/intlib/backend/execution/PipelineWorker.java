@@ -39,6 +39,7 @@ import cz.cuni.xrg.intlib.backend.dpu.event.DPUCompleteEvent;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUFailedEvent;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUStartEvent;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUNoOutputEvent;
+import cz.cuni.xrg.intlib.backend.execution.pipeline.Executor;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
@@ -65,6 +66,7 @@ import org.springframework.context.ApplicationEventPublisher;
  * @author Petyr
  * 
  */
+@Deprecated
 class PipelineWorker implements Runnable {
 
 	/**

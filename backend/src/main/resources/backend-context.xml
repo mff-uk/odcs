@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
- http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+ 		http://www.springframework.org/schema/context 
+ 		http://www.springframework.org/schema/context/spring-context.xsd"
 	xmlns:context="http://www.springframework.org/schema/context">
 
 	<import resource="classpath:commons-app-context.xml" />
 
-	<!-- Module configuration needs to be defined here, because it differs from 
+	<!-- module configuration needs to be defined here, because it differs from 
 		frontend -->
 	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
 		<constructor-arg value="BACKEND" />
@@ -19,13 +21,18 @@
 	<!-- engine itself, take care about executing of PipelineExecution -->
 	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine" />
 
-	<!-- prototype for pipeline worker bean -->
-	<bean id="pipelineWorker" class="cz.cuni.xrg.intlib.backend.execution.PipelineWorker"
-		scope="prototype" lazy-init="true" />
-	
 	<!-- prototypes for contexts -->
 	<bean id="dpuContext" class="cz.cuni.xrg.intlib.backend.context.Context"
-	    scope="prototype" lazy-init="true" />
+		scope="prototype" lazy-init="true" />
+
+	<!-- pipeline executor -->
+	<bean id="pipelineExecutor" class="cz.cuni.xrg.intlib.backend.execution.pipeline.Executor"
+		scope="prototype" lazy-init="true" />
+	<!-- DPU executor -->
+	<bean id="dpuExecutor" class="cz.cuni.xrg.intlib.backend.execution.dpu.Executor"
+		scope="prototype" lazy-init="true" />
+	<!-- autodiscovery for DPU's pre/post executors -->
+	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
 
 	<!-- data unit factory class -->
 	<bean id="dataUnitFactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory" />
