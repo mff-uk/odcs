@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.backend.communication;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,10 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
-import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.communication.Messages;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 
@@ -38,67 +34,6 @@ public class Server implements Runnable {
 	 */
 	public static final int TCPIP_TIMEOUT = 1000;
 	
-    /**
-     * Class for handling communication with single client.
-     *
-     * @author Petyr
-     *
-     */
-    private class ClientCommunicator implements Runnable {
-    	
-        /**
-         * Communication socket.
-         */
-        private Socket socket;
-        
-        /**
-         * Event publisher used to publicise events.
-         */        
-        private ApplicationEventPublisher eventPublisher;
-        
-        /**
-         * The creator. Used in events as a source.
-         */
-        private Server server;
-
-        public ClientCommunicator(Socket socket, ApplicationEventPublisher eventPublisher, Server server) {
-            this.socket = socket;
-            this.eventPublisher = eventPublisher;
-            this.server = server;
-        }
-
-        @Override
-        public void run() {
-            // read message
-            Messages msg = Messages.Uknown;
-            try (DataInputStream stream = new DataInputStream(socket.getInputStream())) {
-                    int messageId = stream.readInt();
-                    // translate id to Message enum value
-                    msg = Messages.getEnum(messageId);
-            } catch (IOException e) {
-				throw new RuntimeException(e);
-            } finally {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-			
-            // decide what to do next based on message
-            switch (msg) {
-                case Uknown:
-                    // unknown command, ignore
-                    break;
-                case CheckDatabase:
-                    // send event to engine to check database
-                    // as a source use Server class instance (the one who create us)
-                    eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, server));
-                    break;
-            }
-        }
-    }
-    
     /**
      * Application configuration.
      */
