@@ -20,6 +20,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -129,7 +130,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 				if (backendStatusThread != null) {
 					backendStatusThread.interrupt();
 				}
-				if(backendClient != null) {
+				if (backendClient != null) {
 					backendClient.close();
 				}
 
@@ -142,15 +143,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.setErrorHandler(new DefaultErrorHandler() {
 			@Override
 			public void error(com.vaadin.server.ErrorEvent event) {
-				// Find the final cause
-				Throwable cause = null;
-				for (Throwable t = event.getThrowable(); t != null;
-						t = t.getCause()) {
-					if (t.getCause() == null) // We're at final cause
-					{
-						cause = t;
-					}
-				}
+				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
 					// Display the error message in a custom fashion
 					String text = String.format("Exception: %s, Message: %s", cause.getClass().getName(), cause.getMessage());

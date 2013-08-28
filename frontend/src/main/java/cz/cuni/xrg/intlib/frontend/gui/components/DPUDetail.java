@@ -20,6 +20,7 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 import cz.cuni.xrg.intlib.rdf.exceptions.SPARQLValidationException;
@@ -35,13 +36,9 @@ import org.vaadin.dialogs.ConfirmDialog;
 public class DPUDetail extends Window {
 
 	private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
-
 	private DPUInstanceWrap dpuInstance;
-
 	private TextField dpuName;
-
 	private TextArea dpuDescription;
-
 	/**
 	 * DPU's configuration dialog.
 	 */
@@ -119,11 +116,11 @@ public class DPUDetail extends Window {
 					Type.ERROR_MESSAGE);
 		}
 
-		
+
 		if (confDialog == null) {
 		} else {
 			// configure
-			try{
+			try {
 				dpuInstance.configuredDialog();
 			} catch (ConfigException e) {
 				Notification.show(
@@ -203,16 +200,20 @@ public class DPUDetail extends Window {
 			dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription
 					.getValue().trim());
 			dpuInstance.saveConfig();
-		} catch (ConfigException ce) {
+		} catch (Exception ce) {
 			if (ce instanceof SPARQLValidationException) {
 
 				Notification.show("Query Validator",
 						"Query is not valid: "
 						+ ce.getMessage(),
 						Notification.Type.ERROR_MESSAGE);
-			} else {
+			} else if (ce instanceof ConfigException) {
 				Notification.show("Failed to save configuration. Reason:", ce
 						.getMessage(), Type.ERROR_MESSAGE);
+			} else {
+				Throwable rootCause = IntlibHelper.findFinalCause(ce);
+				String text = String.format("Exception: %s, Message: %s", rootCause.getClass().getName(), rootCause.getMessage());
+				Notification.show("Method for storing configuration threw exception:", text, Type.ERROR_MESSAGE);
 			}
 			return false;
 		}
@@ -235,7 +236,7 @@ public class DPUDetail extends Window {
 		}
 		return false;
 	}
-	
+
 	private boolean validate() {
 		try {
 			dpuName.validate();
