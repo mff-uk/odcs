@@ -16,6 +16,9 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 /**
  * Load configuration into DPU.
  * 
+ * If the DPU does not implements {@link Configurable} interface 
+ * immediately return true. 
+ * 
  * @author Petyr
  * 
  */

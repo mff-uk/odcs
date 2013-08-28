@@ -15,10 +15,7 @@ import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUFailedEvent;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUWrongState;
 import cz.cuni.xrg.intlib.backend.execution.StructureException;
-import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineContextErrorEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineModuleErrorEvent;
-import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineStructureError;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
@@ -211,13 +208,13 @@ public final class Executor implements Runnable {
 			for (Node item : ancestors) {
 				try {
 					addContextData(item, context);
-				} catch (StructureException e) {
-					eventPublisher.publishEvent(new PipelineStructureError(e, dpu,
-							execution, this));
-					return null;
 				} catch (ContextException e) {
-					eventPublisher.publishEvent(new PipelineContextErrorEvent(e, dpu,
-							execution, this));
+					eventPublisher.publishEvent(
+							PipelineFailedEvent.create(e, dpu, execution, this));
+					return null;
+				} catch (StructureException e) {
+					eventPublisher.publishEvent(
+							PipelineFailedEvent.create(e, dpu, execution, this));
 					return null;
 				}
 			}
@@ -279,19 +276,18 @@ public final class Executor implements Runnable {
 			eventPublisher.publishEvent(new DPUFailedEvent(ex, context, this));
 			return false;
 		} catch (DPUException e) {
-			eventPublisher.publishEvent(new PipelineFailedEvent(e, node
-					.getDpuInstance(), execution, this));
+			eventPublisher.publishEvent(
+					PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Exception e) {
-			eventPublisher.publishEvent(new PipelineFailedEvent(e, node
-					.getDpuInstance(), execution, this));
+			eventPublisher.publishEvent(
+					PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));			
 			return false;
 		} catch (Error e) {
-			// use for errors like java.lang.NoClassDefFoundError
-			eventPublisher.publishEvent(new PipelineFailedEvent(e.getMessage(),
-					node.getDpuInstance(), execution, this));
-			return false;
-		}
+			eventPublisher.publishEvent(
+					PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));			
+			return false;			
+		}		
 		return true;
 	}
 
@@ -331,8 +327,8 @@ public final class Executor implements Runnable {
 		try {
 			dpuInstance = loadInstance();
 		} catch (ModuleException e) {
-			eventPublisher.publishEvent(new PipelineModuleErrorEvent(e, dpu,
-					execution, this));
+			eventPublisher.publishEvent(
+					PipelineFailedEvent.create(e, dpu, execution, this));
 			// cancel the execution
 			return null;
 		}

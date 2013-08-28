@@ -3,47 +3,131 @@ package cz.cuni.xrg.intlib.backend.pipeline.event;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import cz.cuni.xrg.intlib.backend.context.ContextException;
+import cz.cuni.xrg.intlib.backend.execution.StructureException;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
- * Event is published if the pipeline is terminated due the error in DPURecord.
+ * Event is published if the pipeline is terminated due the error. To create
+ * the event use static methods. 
  * 
  * @author Petyr
  * 
  */
 public final class PipelineFailedEvent extends PipelineEvent {
 
+	private String shortMessage;
+	
 	private String longMessage;
-
-	public PipelineFailedEvent(String message,
+	
+	protected PipelineFailedEvent(String shortMessage,
+			String longMessage,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
 		super(dpuInstance, pipelineExec, source);
-		this.longMessage = message;
+		this.shortMessage = shortMessage;
+		this.longMessage = longMessage;
 	}
-
-	public PipelineFailedEvent(Exception exception,
+	
+	protected PipelineFailedEvent(
+			String shortMessage,
+			Exception exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
 		super(dpuInstance, pipelineExec, source);
+		this.shortMessage = shortMessage;
 		// transform stack trace into string
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		exception.printStackTrace(pw);
-
 		this.longMessage = sw.toString();
 	}
 
+	protected PipelineFailedEvent(
+			String shortMessage,
+			String longMessagePrefix,
+			Exception exception,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		super(dpuInstance, pipelineExec, source);
+		this.shortMessage = shortMessage;
+		// transform stack trace into string
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		exception.printStackTrace(pw);
+		this.longMessage = longMessagePrefix + sw.toString();
+	}
+	
+	public static PipelineFailedEvent create(Exception exception,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		return new PipelineFailedEvent("Pipeline execution failed.",
+				"Execution failed because of non-specific exception: ",
+				exception,
+				dpuInstance,
+				pipelineExec,
+				source);		
+	}
+	
+	public static PipelineFailedEvent create(Error error,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		return new PipelineFailedEvent("Pipeline execution failed.",
+				"Execution failed due to error: " + error.getMessage(),
+				dpuInstance,
+				pipelineExec,
+				source);		
+	}	
+	
+	public static PipelineFailedEvent create(ContextException exception,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		return new PipelineFailedEvent("Pipeline execution failed.",
+				"Failed to prepare Context for DPURecord because of exception: ",
+				exception,
+				dpuInstance,
+				pipelineExec,
+				source);
+	}
+	
+	public static PipelineFailedEvent create(ModuleException exception,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		return new PipelineFailedEvent("Pipeline execution failed.",
+				"Loading of DPURecord implementation thrown fallowing exception: ",
+				exception,
+				dpuInstance,
+				pipelineExec,
+				source);
+	}
+	
+	public static PipelineFailedEvent create(StructureException exception,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		return new PipelineFailedEvent("Pipeline execution failed.",
+				"Root structure exception: ",
+				exception,
+				dpuInstance,
+				pipelineExec,
+				source);
+	}	
+	
 	@Override
 	public MessageRecord getRecord() {
 		return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR,
-				dpuInstance, execution, "Pipeline execution failed.",
-				"Pipeline execution terminated because of: " + longMessage);
+				dpuInstance, execution, shortMessage, longMessage);
 	}
 
 }

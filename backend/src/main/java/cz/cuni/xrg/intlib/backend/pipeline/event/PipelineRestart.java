@@ -13,13 +13,13 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 public final class PipelineRestart extends PipelineEvent {
 
     public PipelineRestart(PipelineExecution pipelineExec, Object source) {
-        super(pipelineExec, source);
+        super(null, pipelineExec, source);
     }
 
 	@Override
 	public MessageRecord getRecord() {
-		return new MessageRecord(time, MessageRecordType.PIPELINE_INFO, null, execution, 
-				"Pipeline execution restart.", "");
+		return new MessageRecord(time, MessageRecordType.PIPELINE_INFO, null, 
+				execution, 	"Pipeline execution has been restarted.", "");
 	}	
 	
 }

@@ -30,13 +30,6 @@ public abstract class PipelineEvent extends ApplicationEvent {
 	 */
 	protected PipelineExecution execution;
 
-	public PipelineEvent(PipelineExecution execution, Object source) {
-		super(source);
-		time = new Date();
-		this.dpuInstance = null;
-		this.execution = execution;
-	}
-
 	public PipelineEvent(DPUInstanceRecord dpuInstance,
 			PipelineExecution execution,
 			Object source) {

@@ -1,8 +1,5 @@
 package cz.cuni.xrg.intlib.backend.dpu.event;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
 

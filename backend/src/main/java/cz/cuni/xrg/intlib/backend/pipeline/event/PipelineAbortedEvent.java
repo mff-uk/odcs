@@ -12,23 +12,15 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
  */
 public final class PipelineAbortedEvent extends PipelineEvent {
 
-	/**
-	 * The reason for pipeline abort.
-	 */
-	private final String message;
-
-	public PipelineAbortedEvent(String message,
-			PipelineExecution pipelineExec,
-			Object source) {
-		super(pipelineExec, source);
-		this.message = message;
+	public PipelineAbortedEvent(PipelineExecution pipelineExec,	Object source) {
+		super(null, pipelineExec, source);
 	}
 
 	@Override
 	public MessageRecord getRecord() {
-		return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR,
-				dpuInstance, execution, "Pipeline execution aborted.",
-				"Pipeline execution aborted on user request with message: "
-						+ message);
+		return new MessageRecord(time, MessageRecordType.PIPELINE_INFO,
+				dpuInstance, execution, 
+				"Pipeline execution aborted.",
+				"Pipeline execution aborted on user request.");
 	}
 }
