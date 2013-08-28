@@ -11,8 +11,6 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.GraphUrl;
 import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
-import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
-import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 /**
