@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.backend.execution;
+package cz.cuni.xrg.intlib.backend.execution.event;
 
 import org.springframework.context.ApplicationEvent;
 

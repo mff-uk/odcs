@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.backend;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
-import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
-import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
+import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
+import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.backend.scheduling.event.SchedulerCheckDatabase;
 
 /**
