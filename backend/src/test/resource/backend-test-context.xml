@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+ 		http://www.springframework.org/schema/context 
+ 		http://www.springframework.org/schema/context/spring-context.xsd"
+	xmlns:context="http://www.springframework.org/schema/context">
+
+	<!-- special inMemory ApplicationEventPuiblisher -->
+	<!--
+		<bean class="cz.cuni.xrg.intlib.backend.spring.InMemoryAppEventPublisher" />
+	-->
+
+	<!-- scan for pre/post executors -->
+	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
+
+	<context:annotation-config />
+
+</beans>

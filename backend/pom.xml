@@ -18,6 +18,20 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency> <!-- spring test support -->		
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework.version}</version>
+			<scope>test</scope>
+		</dependency>		
+		
+		<dependency> <!-- mockito for tests -->
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.8.4</version>
+			<scope>test</scope>
+		</dependency>		
 
 		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>

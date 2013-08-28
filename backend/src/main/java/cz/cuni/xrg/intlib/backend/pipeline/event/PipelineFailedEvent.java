@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import cz.cuni.xrg.intlib.backend.context.ContextException;
-import cz.cuni.xrg.intlib.backend.execution.StructureException;
+import cz.cuni.xrg.intlib.backend.execution.dpu.StructureException;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecordType;
@@ -64,6 +64,18 @@ public final class PipelineFailedEvent extends PipelineEvent {
 		exception.printStackTrace(pw);
 		this.longMessage = longMessagePrefix + sw.toString();
 	}
+	
+	public static PipelineFailedEvent create(String shortMessage,
+			String longMessage,
+			DPUInstanceRecord dpuInstance,
+			PipelineExecution pipelineExec,
+			Object source) {
+		return new PipelineFailedEvent(shortMessage,
+				longMessage,
+				dpuInstance,
+				pipelineExec,
+				source);		
+	}	
 	
 	public static PipelineFailedEvent create(Exception exception,
 			DPUInstanceRecord dpuInstance,

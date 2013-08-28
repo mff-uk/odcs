@@ -14,7 +14,7 @@ import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUFailedEvent;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUWrongState;
-import cz.cuni.xrg.intlib.backend.execution.StructureException;
+import cz.cuni.xrg.intlib.backend.execution.dpu.StructureException;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;

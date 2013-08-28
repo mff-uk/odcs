@@ -183,11 +183,11 @@ public class Engine
 							// use first node ..
 							Node node = execution.getPipeline().getGraph()
 									.getNodes().iterator().next();
-							eventPublisher
-									.publishEvent(new PipelineFailedEvent(
-											"Failed to recover. The working directory can't be deleted.",
-											node.getDpuInstance(), execution,
-											this));
+							eventPublisher.publishEvent(
+									PipelineFailedEvent.create(
+											"Failed to recover.",
+											"The working directory can't be deleted."
+											, null, execution, this));
 						}
 						// set pipeline execution to failed
 						execution
