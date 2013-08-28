@@ -95,6 +95,9 @@ public class Server implements Runnable {
                     // as a source use Server class instance (the one who create us)
                     eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, server));
                     break;
+				case HeartBeat:
+					//HeartBeat command, do nothing
+					break;
             }
         }
     }

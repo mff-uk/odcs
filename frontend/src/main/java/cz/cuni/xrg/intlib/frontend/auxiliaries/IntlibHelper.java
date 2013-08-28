@@ -70,11 +70,7 @@ public class IntlibHelper {
         if (inDebugMode && debugNode != null) {
             pipelineExec.setDebugNode(debugNode);
         }
-        // do some settings here
-        AppConfig config = App.getApp().getAppConfiguration();
-        Client client = new Client(
-                config.getString(ConfigProperty.BACKEND_HOST),
-                config.getInteger(ConfigProperty.BACKEND_PORT));
+        Client client = App.getApp().getBackendClient();
 
         // send message to backend
         try {
