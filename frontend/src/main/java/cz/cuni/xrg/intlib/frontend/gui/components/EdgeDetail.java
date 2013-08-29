@@ -12,7 +12,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import cz.cuni.xrg.intlib.commons.app.data.EdgeCompiler;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,8 +41,8 @@ public class EdgeDetail extends Window {
 
 	private TextField edgeName;
 	
-	private ArrayList<String> outputUnits;
-	private ArrayList<String> inputUnits;
+	private List<String> outputUnits;
+	private List<String> inputUnits;
 	private List<MutablePair<List<Integer>, Integer>> mappings;
 
 	private ListSelect outputSelect;
@@ -47,7 +51,10 @@ public class EdgeDetail extends Window {
 	
 	private HashMap<String, MutablePair<List<Integer>, Integer>> map;
 	
-	
+	/**
+	 * Class for working with edge's script.
+	 */
+	private EdgeCompiler edgeCompiler = new EdgeCompiler(App.getApp().getModules());
 
 	/**
 	 * Basic constructor, takes {@link Edge} which detail should be showed.
@@ -84,7 +91,8 @@ public class EdgeDetail extends Window {
 		outputSelect.setWidth(250, Unit.PIXELS);
 		outputSelect.setImmediate(true);
 		outputSelect.setRows(10);
-		outputUnits = edge.getFrom().getDpuInstance().getTemplate().getOutputDataUnits();
+		outputUnits = edgeCompiler.getOutputNames(edge.getFrom().getDpuInstance()); 
+				
 		for(String unit : outputUnits) {
 			outputSelect.addItem(unit);
 		}
@@ -98,7 +106,8 @@ public class EdgeDetail extends Window {
 		inputSelect.setNullSelectionAllowed(false);
 		inputSelect.setImmediate(true);
 		inputSelect.setRows(10);
-		inputUnits = edge.getFrom().getDpuInstance().getTemplate().getInputDataUnits();
+		inputUnits = edgeCompiler.getInputNames(edge.getTo().getDpuInstance()); 
+
 		for(String unit : inputUnits) {
 			inputSelect.addItem(unit);
 		}
@@ -143,7 +152,9 @@ public class EdgeDetail extends Window {
 		mappingsSelect.setMultiSelect(true);
 		mappingsSelect.setNewItemsAllowed(false);
 		mappingsSelect.setImmediate(true);
-		mappings = edge.getDataUnitMappings();
+		// inputUnits and outputUnits are already set !
+		mappings = edgeCompiler.decompileMapping(edge.getScript(), outputUnits, inputUnits); 
+				
 		for(MutablePair<List<Integer>, Integer> mapping : mappings) {
 			addMappingToList(mapping);
 		}
@@ -230,7 +241,9 @@ public class EdgeDetail extends Window {
 			if (!validate()) {
 				return false;
 			}
-			edge.setDataUnitMappings(mappings);
+			String script = 
+					edgeCompiler.compileScript(mappings, outputUnits, inputUnits);			
+			edge.setScript(script);			
 			return true;
 	}
 
