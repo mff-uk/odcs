@@ -14,6 +14,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -59,6 +62,7 @@ public class UserFacade {
 	/**
 	 * @return list of all users persisted in database
 	 */
+	@PostFilter("hasPermission(filterObject, 'view')")
 	public List<User> getAllUsers() {
 
 		@SuppressWarnings("unchecked")
@@ -74,12 +78,14 @@ public class UserFacade {
 	 * @param id primary key
 	 * @return user with given id or <code>null<code>
 	 */
+	@PostAuthorize("hasPermission(returnObject, 'view')")
 	public User getUser(long id) {
 		return em.find(User.class, id);
 	}
 	
 	/**
-	 * Find User by his unique username.
+	 * Find User by his unique username. This method is not secured, so that
+	 * yet unauthenticated users can login.
 	 * 
 	 * @param username
 	 * @return user
@@ -104,6 +110,7 @@ public class UserFacade {
 	 * @param user
 	 */
 	@Transactional
+	@PreAuthorize("hasPermission(#user, 'save')")
 	public void save(User user) {
 		if (user.getId() == null) {
 			em.persist(user);
@@ -118,6 +125,7 @@ public class UserFacade {
 	 * @param user
 	 */
 	@Transactional
+	@PreAuthorize("hasPermission(#user, 'delete')")
 	public void delete(User user) {
 		// we might be trying to remove detached entity
 		// lets fetch it again and then try to remove

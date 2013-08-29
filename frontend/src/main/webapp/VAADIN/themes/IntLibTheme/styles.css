@@ -126,6 +126,15 @@ overflow: auto !important;
 	    background-color: #eeeeee;
 }
 
+.select-hide-tb {
+	overflow: auto !important;
+	
+}
+
+.v-select-select {
+	overflow: auto !important;
+}
+
 
 
   

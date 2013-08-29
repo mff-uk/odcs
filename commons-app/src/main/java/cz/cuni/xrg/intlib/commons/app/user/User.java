@@ -36,7 +36,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Entity
 @Table(name = "usr_user")
-public class User implements UserDetails, RoleHolder, Resource {
+public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 
 	/**
 	 * Primary key for entity.
@@ -198,5 +198,10 @@ public class User implements UserDetails, RoleHolder, Resource {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	@Override
+	public User getOwner() {
+		return this;
 	}
 }

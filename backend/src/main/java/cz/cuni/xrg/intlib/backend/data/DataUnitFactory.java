@@ -44,26 +44,6 @@ public class DataUnitFactory {
 	}
 
 	/**
-	 * Crete {@link DataUnit} of given type.
-	 * 
-	 * @param classType Class of requested data unit.
-	 * @param id DataUnit's id assigned by application, must be unique!
-	 * @param name DataUnit's name, can't be changed in future.
-	 * @param directory DataUnit's working directory.
-	 * @return
-	 * @throws DataUnitCreateException
-	 */
-	public DataUnit create(Class<?> classType, String id, String name, File directory)
-			throws DataUnitCreateException {
-		DataUnitType type = null;
-		// just convert classType to DataUnitType and recall create method
-		if (classType == RDFDataUnit.class) {
-			type = DataUnitType.RDF;
-		}
-		return create(type, id, name, directory);
-	}
-
-	/**
 	 * Create {@link DataUnit} and store information about it into the context.
 	 * 
 	 * @param type Requested type of data unit.
