@@ -4,6 +4,7 @@ import cz.cuni.xrg.intlib.commons.app.auth.SharedEntity;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.user.OwnedEntity;
 import cz.cuni.xrg.intlib.commons.app.user.User;
+import java.util.ArrayList;
 import javax.persistence.*;
 
 /**
@@ -119,5 +120,23 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	
 	public void setParent(DPUTemplateRecord parent) {
 		this.parent = parent;
+	}
+
+	public ArrayList<String> getOutputDataUnits() {
+		//TODO: get real data
+		ArrayList<String> output = new ArrayList<>();
+		output.add("output 1");
+		output.add("output 2");
+		output.add("output 3");
+		output.add("output 4");
+		return output;
+	}
+
+	public ArrayList<String> getInputDataUnits() {
+		//TODO: get real data
+		ArrayList<String> input = new ArrayList<>();
+		input.add("input 1");
+		input.add("input 2");
+		return input;
 	}
 }
