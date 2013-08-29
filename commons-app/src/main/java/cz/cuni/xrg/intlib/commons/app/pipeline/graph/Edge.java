@@ -2,8 +2,13 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Edge represents oriented connection between nodes of the graph.
@@ -132,5 +137,14 @@ public class Edge implements Serializable {
 	
 	public Long getId() {
 		return id;
+	}
+
+	public List<MutablePair<List<Integer>, Integer>> getDataUnitMappings() {
+		//TODO: Load mappings
+		return new LinkedList<>(Arrays.asList(new MutablePair<>(Arrays.asList(1,2), 1)));
+	}
+
+	public void setDataUnitMappings(List<MutablePair<List<Integer>, Integer>> mappings) {
+		//TODO: Save mappings
 	}
 }
