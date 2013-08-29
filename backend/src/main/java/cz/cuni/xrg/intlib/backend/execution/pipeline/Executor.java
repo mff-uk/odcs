@@ -254,13 +254,14 @@ public class Executor implements Runnable {
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
 		}
-		// ending ..
-		LOG.debug("Execution finished");
+		// ending ..		
 		// set time then the pipeline's execution finished
 		execution.setEnd(new Date());
 		if (executionFailed) {
+			LOG.debug("Execution failed");
 			executionFailed();
 		} else {
+			LOG.debug("Execution finished");
 			executionSuccessful();
 			// publish information for the rest of the application
 			eventPublisher.publishEvent(new PipelineFinished(execution, this));			

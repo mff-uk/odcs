@@ -3,6 +3,9 @@ package cz.cuni.xrg.intlib.backend.context;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
@@ -15,6 +18,8 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
  */
 class DataUnitMerger {
 
+	private static final Logger LOG = LoggerFactory.getLogger(DataUnitMerger.class);
+	
 	/**
 	 * Search for first command that can be applied to the DataUnit with given
 	 * name.
@@ -79,16 +84,18 @@ class DataUnitMerger {
 					// renaming .. we need second arg
 					if (cmdSplit.length == 2) {
 						leftDataUnitName = cmdSplit[1];
+						LOG.info("renaming: {} -> {}", rightDataUnitName, leftDataUnitName);
 					} else {
 						// not enough parameters .. use right name
 						leftDataUnitName = rightDataUnitName;
+						LOG.info("passing: {}", rightDataUnitName);
 					}
 				} else if (cmdSplit[0].compareToIgnoreCase(
 						DataUnitMergerInstructions.Drop.getValue()) == 0) {
-					// drop this DataUnit -> skip 
+					// drop this DataUnit -> skip
+					LOG.info("dropping: {}", rightDataUnitName);
 					continue;
-				}
-			
+				}			
 			}
 			
 			// create new data unit (in context into which we merge)
