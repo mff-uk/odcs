@@ -488,11 +488,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL,
-			List<String> endpointGraphsURI, String userName,
+			List<String> namedGraph, String userName,
 			String password, WriteGraphType graphType) throws RDFException {
 
+                //check that SPARQL endpoint URL is correct
 		if (endpointURL == null) {
-			final String message = "Mandatory URL path in extractor from SPARQL is null.";
+			final String message = "SPARQL Endpoint URL must be specified";
 
 			logger.debug(message);
 			throw new RDFException(message);
@@ -506,7 +507,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			if (!endpointName.startsWith("http://")) {
 				message = "Endpoint url name have to started with prefix \"http://\".";
 			} else if (endpointName.contains(" ")) {
-				message = "Endpoint url constains write spaces";
+				message = "Endpoint url constains white spaces";
 			}
 			if (message != null) {
 				logger.debug(message);
@@ -515,20 +516,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		}
 
-		if (endpointGraphsURI == null) {
-			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
+		if (namedGraph == null) {
+			final String message = "Named graph must be specifed";
 
 			logger.debug(message);
 			throw new RDFException(message);
 
-		} else if (endpointGraphsURI.isEmpty()) {
-			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
+		} else if (namedGraph.isEmpty()) {
+			final String message = "Named graph must be specifed";
 
 			logger.debug(message);
 			throw new RDFException(message);
 		}
 
-		final int graphSize = endpointGraphsURI.size();
 
 		authenticate(userName, password);
 
@@ -538,30 +538,32 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			connection = repository.getConnection();
 
-			for (int i = 0; i < graphSize; i++) {
+			for (int i = 0; i < namedGraph.size(); i++) {
 
-				final String endpointGraph = endpointGraphsURI.get(i);
+				final String endpointGraph = namedGraph.get(i);
 
 				try {
 					switch (graphType) {
 						case MERGE:
 							break;
 						case OVERRIDE: {
+                                                        //TODO check use of clear/drop graph
 							clearEndpointGraph(endpointURL, endpointGraph);
 						}
 						break;
 						case FAIL: {
 
+                                                        //if target graph is not empty, exception is thrown
+                                                    
 							long SPARQLGraphSize = getSPARQLEnpointGraphSize(
 									endpointURL, endpointGraph);
 
-							boolean sourceNotEmpty = SPARQLGraphSize > 0;
 
-							if (sourceNotEmpty) {
+							if (SPARQLGraphSize > 0) {
 								throw new GraphNotEmptyException(
 										"Graph <" + endpointGraph + "> is not empty (has "
 										+ SPARQLGraphSize
-										+ " triples) - Loading to SPARQL endpoint FAIL.");
+										+ " triples) - Loading to SPARQL endpoint FAILs.");
 							}
 
 						}
@@ -570,12 +572,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 					}
 				} catch (GraphNotEmptyException ex) {
-					logger.debug(ex.getMessage());
+					logger.error(ex.getMessage());
 
 
 					throw new RDFException(ex.getMessage(), ex);
 				}
 
+                                //starting to load data to target SPARQL endpoint
+                                
 				List<String> dataParts = getInsertPartsTriplesQuery(
 						STATEMENTS_COUNT);
 				final int partsCount = dataParts.size();
