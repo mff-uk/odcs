@@ -1912,9 +1912,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				URI predicate = nextStatement.getPredicate();
 				Value object = nextStatement.getObject();
 
-				String appendLine = getSubjectInsertText(subject)
-						+ getPredicateInsertText(predicate)
-						+ getObjectInsertText(object) + ".";
+                                //String appendLine = prepare(subject) + " " + prepare(predicate) + " " + prepare(object) + ".";
+                                
+                                
+				String appendLine = getSubjectInsertText(subject) + " "
+						+ getPredicateInsertText(predicate) + " "
+						+ getObjectInsertText(object) + " .";
 
 				builder.append(appendLine);
 
@@ -1941,40 +1944,69 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private String getSubjectInsertText(Resource subject) throws IllegalArgumentException {
 
 		if (subject instanceof URI) {
-			return "<" + subject.stringValue() + "> ";
-		}
+		   return prepareURIresource((URI)subject);
+                }
 
 		if (subject instanceof BNode) {
-			BNode node = (BNode) subject;
-			return "<" + node.stringValue() + "> ";
-		}
-
-		throw new IllegalArgumentException("Object must be URI or blank node");
+		     return prepareBlankNodeResource((BNode) subject);
+                }
+		throw new IllegalArgumentException("Subject must be URI or blank node");
 	}
 
 	private String getPredicateInsertText(URI predicate) {
-		return "<" + predicate.stringValue() + "> ";
+	    if (predicate instanceof URI) {
+		   return prepareURIresource((URI)predicate);
+                }	
+            throw new IllegalArgumentException("Predicatemust be URI");
 
 	}
 
 	private String getObjectInsertText(Value object) throws IllegalArgumentException {
 
 		if (object instanceof URI) {
-			return "<" + object.stringValue() + "> ";
-		}
+		   return prepareURIresource((URI)object);
+                }
 
 		if (object instanceof BNode) {
-			BNode node = (BNode) object;
-			return "<" + node.stringValue() + "> ";
-		}
+		     return prepareBlankNodeResource((BNode) object);
+                }
 
 		if (object instanceof Literal) {
-			return "\"" + object.stringValue() + "\" ";
+			return prepareLiteral((Literal) object);
 		}
 
 		throw new IllegalArgumentException(
 				"Object must be URI, blank node or literal");
 	}
+        
+        private String prepareURIresource(URI uri) {
+           return "<" + uri.stringValue() + ">";
+        }
+        
+         private String prepareBlankNodeResource(BNode bnode) {
+           return "_:" + bnode.getID();
+         }
+         
+         private String prepareLiteral(Literal lit) {
+           String label = "\"\"\"" + lit.getLabel() + "\"\"\"";
+           if (lit.getLanguage() != null) {
+               //there is language tag
+               return label + "@" + lit.getLanguage();
+                          }
+           else if (lit.getDatatype() != null) {
+//               if (lit.getDatatype().stringValue().equals("http://www.w3.org/2001/XMLSchema#string")) {
+//                   //if data type is String, return just literal value.
+//                   return label;
+//               }
+//               else {
+                 return label + "^^" + prepareURIresource(lit.getDatatype());
+//               }
+           }
+           //plain literal (return in """)
+           return label;
+           
+         
+         }
 
 	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
 			Resource... graphs) throws RDFException {
@@ -2206,4 +2238,5 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected void setReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
 	}
-}
+
+    }
