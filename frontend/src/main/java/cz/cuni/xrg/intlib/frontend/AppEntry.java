@@ -5,6 +5,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
+import com.vaadin.server.SystemError;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -25,6 +26,8 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -146,7 +149,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
 					// Display the error message in a custom fashion
-					String text = String.format("Exception: %s, Message: %s", cause.getClass().getName(), cause.getMessage());
+					String text = String.format("Exception: %s, Message: %s, Source: %s", cause.getClass().getName(), cause.getMessage(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
 					Notification.show("Uncaught exception appeared in system!", text, Notification.Type.ERROR_MESSAGE);
 				} else {
 					// Do the default error handling (optional)

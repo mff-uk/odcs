@@ -5,6 +5,8 @@ import com.vaadin.ui.Notification;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Thread used to automatically refresh data in DebuggingView.
@@ -35,6 +37,12 @@ public class RefreshThread extends Thread {
     @Override
     public void run() {
         boolean isRunFinished = false;
+		try {
+			Thread.sleep(interval);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(RefreshThread.class.getName()).log(Level.SEVERE, null, ex);
+			return;
+		}
 
         while (!isRunFinished) {
 
@@ -47,7 +55,7 @@ public class RefreshThread extends Thread {
                     if (debug.isRefreshingAutomatically()) {
                         lastStatus = true;
                         debug.refreshContent();
-                        Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
+                        //Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
                     } else {
                         lastStatus = false;
                     }
