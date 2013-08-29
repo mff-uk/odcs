@@ -309,8 +309,11 @@ public class Context implements ExtractContext, TransformContext, LoadContext {
 
 	@Override
 	public File getJarPath() {
-		File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH)
-				+ dpuInstance.getJarPath());
+//		File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH)
+//				+ dpuInstance.getJarPath());
+//                
+                File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH) + File.separator  + ModuleFacadeConfig.DPU_DIRECTORY + File.separator 
++                                + dpuInstance.getJarPath());
 		return path;
 	}
 	
