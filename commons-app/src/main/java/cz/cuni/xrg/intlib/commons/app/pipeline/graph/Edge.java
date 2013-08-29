@@ -42,14 +42,14 @@ public class Edge implements Serializable {
 	private PipelineGraph graph;
 
 	@Column(name = "data_unit_name", nullable = true)
-	private String dataUnitName;
+	private String script;
 
-	public void setDataUnitName(String name) {
-		dataUnitName = name;
+	public void setScript(String script) {
+		this.script = script;
 	}
 
-	public String getDataUnitName() {
-		return dataUnitName;
+	public String getScript() {
+		return script;
 	}
 
 	/**
@@ -76,10 +76,10 @@ public class Edge implements Serializable {
 	 * @param to
 	 * @param dataUnitName
 	 */
-	public Edge(Node from, Node to, String dataUnitName) {
+	public Edge(Node from, Node to, String script) {
 		this.from = from;
 		this.to = to;
-		this.dataUnitName = dataUnitName;
+		this.script = script;
 	}
 
 	/**
@@ -139,12 +139,4 @@ public class Edge implements Serializable {
 		return id;
 	}
 
-	public List<MutablePair<List<Integer>, Integer>> getDataUnitMappings() {
-		//TODO: Load mappings
-		return new LinkedList<>(Arrays.asList(new MutablePair<>(Arrays.asList(1,2), 1)));
-	}
-
-	public void setDataUnitMappings(List<MutablePair<List<Integer>, Integer>> mappings) {
-		//TODO: Save mappings
-	}
 }

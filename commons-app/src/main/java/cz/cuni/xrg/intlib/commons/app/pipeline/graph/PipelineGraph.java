@@ -82,7 +82,7 @@ public class PipelineGraph implements Serializable {
 			Edge newEdge = new Edge(
 				nMap.get(oldEdge.getFrom()),
 				nMap.get(oldEdge.getTo()),
-				oldEdge.getDataUnitName()
+				oldEdge.getScript()
 			);
 			newEdge.setGraph(this);
 			edges.add(newEdge);

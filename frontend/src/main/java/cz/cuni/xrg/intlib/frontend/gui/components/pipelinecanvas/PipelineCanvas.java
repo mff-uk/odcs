@@ -195,7 +195,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
             getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY());
         }
         for (Edge edge : graph.getEdges()) {
-            getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getDataUnitName());
+            getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
         }
     }
 
@@ -246,7 +246,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
             @Override
             public void windowClose(CloseEvent e) {
                 //fireDetailClosed(Edge.class);
-                getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getDataUnitName());
+                getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
             }
         });
         App.getApp().addWindow(edgeDetailDialog);
