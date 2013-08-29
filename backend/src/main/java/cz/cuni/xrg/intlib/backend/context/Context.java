@@ -18,6 +18,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
@@ -309,11 +310,9 @@ public class Context implements ExtractContext, TransformContext, LoadContext {
 
 	@Override
 	public File getJarPath() {
-//		File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH)
-//				+ dpuInstance.getJarPath());
-//                
-                File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH) + File.separator  + ModuleFacadeConfig.DPU_DIRECTORY + File.separator 
-+                                + dpuInstance.getJarPath());
+        File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH) + 
+        		File.separator + ModuleFacadeConfig.DPU_DIRECTORY + 
+        		File.separator + dpuInstance.getJarPath());
 		return path;
 	}
 	
