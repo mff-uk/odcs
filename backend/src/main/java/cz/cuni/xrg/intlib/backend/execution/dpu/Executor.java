@@ -180,7 +180,7 @@ public final class Executor implements Runnable {
 							+ node.getDpuInstance().getName() + "'");
 				}
 				// add data
-				context.addContext(sourceContext, item.getDataUnitName());
+				context.addContext(sourceContext, item.getScript());
 				return;
 			}
 		}
