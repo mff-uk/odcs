@@ -26,7 +26,7 @@ public @interface InputDataUnit {
 	 * Name which identify input {@link DataUnit}.
 	 * @return
 	 */
-	public String name() default "output";
+	public String name() default "input";
 	
 	/**
 	 * If false then only {@link DataUnit} with name equal to the

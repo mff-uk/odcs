@@ -36,27 +36,28 @@ public class ModuleFacadeConfig {
 	/**
 	 * Contains list of common packages to export. Must not end with comma.
 	 */
-	private static final String PACKAGE_BASE = "cz.cuni.xrg.intlib.commons;version=\"0.0.1\","
+	private static final String PACKAGE_BASE = 
+			  "cz.cuni.xrg.intlib.commons;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.configuration;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.context;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.data;version=\"0.0.1\","
-			+ "cz.cuni.xrg.intlib.commons.event;version=\"0.0.1\","
+			+ "cz.cuni.xrg.intlib.commons.dpu;version=\"0.0.1\","
+			+ "cz.cuni.xrg.intlib.commons.dpu.annotation;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.extractor;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.loader;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.message;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.transformer;version=\"0.0.1\","
 			+ "org.openrdf.rio,"
 			+ "org.apache.log4j,org.slf4j;version=\"1.7.5\","
-			+
 			// RDF package
-			"cz.cuni.xrg.intlib.rdf.enums,"
+			+ "cz.cuni.xrg.intlib.rdf.enums,"
 			+ "cz.cuni.xrg.intlib.rdf.exceptions,"
 			+ "cz.cuni.xrg.intlib.rdf.impl,"
-			+ "cz.cuni.xrg.intlib.rdf.interfaces," +
-			// lib for serialisation
-			"com.thoughtworks.xstream," +
+			+ "cz.cuni.xrg.intlib.rdf.interfaces,"
+			// library for configuration serialisation
+			+ "com.thoughtworks.xstream,"
 			// java packages
-			"java.lang,javax";
+			+ "java.lang,javax";
 
 	/**
 	 * Path to the root directory, does not end on file separator.
