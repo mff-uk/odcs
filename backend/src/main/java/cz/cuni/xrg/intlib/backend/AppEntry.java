@@ -16,8 +16,8 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import cz.cuni.xrg.intlib.backend.communication.Server;
-import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
-import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
+import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
+import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;

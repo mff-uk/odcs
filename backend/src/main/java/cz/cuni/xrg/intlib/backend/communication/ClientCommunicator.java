@@ -6,8 +6,8 @@ import java.net.Socket;
 
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.xrg.intlib.backend.execution.EngineEvent;
-import cz.cuni.xrg.intlib.backend.execution.EngineEventType;
+import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
+import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.Messages;
 
 /**
