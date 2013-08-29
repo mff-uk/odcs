@@ -491,7 +491,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			List<String> namedGraph, String userName,
 			String password, WriteGraphType graphType) throws RDFException {
 
-                //check that SPARQL endpoint URL is correct
+		//check that SPARQL endpoint URL is correct
 		if (endpointURL == null) {
 			final String message = "SPARQL Endpoint URL must be specified";
 
@@ -547,14 +547,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						case MERGE:
 							break;
 						case OVERRIDE: {
-                                                        //TODO check use of clear/drop graph
+							//TODO check use of clear/drop graph
 							clearEndpointGraph(endpointURL, endpointGraph);
 						}
 						break;
 						case FAIL: {
 
-                                                        //if target graph is not empty, exception is thrown
-                                                    
+							//if target graph is not empty, exception is thrown
+
 							long SPARQLGraphSize = getSPARQLEnpointGraphSize(
 									endpointURL, endpointGraph);
 
@@ -578,8 +578,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					throw new RDFException(ex.getMessage(), ex);
 				}
 
-                                //starting to load data to target SPARQL endpoint
-                                
+				//starting to load data to target SPARQL endpoint
+
 				List<String> dataParts = getInsertPartsTriplesQuery(
 						STATEMENTS_COUNT);
 				final int partsCount = dataParts.size();
@@ -1908,14 +1908,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			for (Statement nextStatement : statements) {
 
-				String subject = nextStatement.getSubject().stringValue();
-				String predicate = nextStatement.getPredicate().stringValue();
-				String object = nextStatement.getObject().stringValue();
+				Resource subject = nextStatement.getSubject();
+				URI predicate = nextStatement.getPredicate();
+				Value object = nextStatement.getObject();
 
-				subject=subject.replaceAll("\\s+","").replaceAll("\"","'");
-				predicate=predicate.replaceAll("\\s+","").replaceAll("\"","'");
-				
-				String appendLine = "<" + subject + "> <" + predicate + "> \"" + object + "\" . ";
+				String appendLine = getSubjectInsertText(subject)
+						+ getPredicateInsertText(predicate)
+						+ getObjectInsertText(object) + ".";
+
 				builder.append(appendLine);
 
 				count++;
@@ -1936,6 +1936,44 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 
 		return parts;
+	}
+
+	private String getSubjectInsertText(Resource subject) throws IllegalArgumentException {
+
+		if (subject instanceof URI) {
+			return "<" + subject.stringValue() + "> ";
+		}
+
+		if (subject instanceof BNode) {
+			BNode node = (BNode) subject;
+			return "<" + node.stringValue() + "> ";
+		}
+
+		throw new IllegalArgumentException("Object must be URI or blank node");
+	}
+
+	private String getPredicateInsertText(URI predicate) {
+		return "<" + predicate.stringValue() + "> ";
+
+	}
+
+	private String getObjectInsertText(Value object) throws IllegalArgumentException {
+
+		if (object instanceof URI) {
+			return "<" + object.stringValue() + "> ";
+		}
+
+		if (object instanceof BNode) {
+			BNode node = (BNode) object;
+			return "<" + node.stringValue() + "> ";
+		}
+
+		if (object instanceof Literal) {
+			return "\"" + object.stringValue() + "\" ";
+		}
+
+		throw new IllegalArgumentException(
+				"Object must be URI, blank node or literal");
 	}
 
 	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
