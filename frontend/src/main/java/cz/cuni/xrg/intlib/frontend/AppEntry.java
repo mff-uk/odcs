@@ -5,13 +5,10 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.SystemError;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
-import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
@@ -20,18 +17,17 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -45,15 +41,26 @@ import org.vaadin.dialogs.ConfirmDialog;
 @Theme("IntLibTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
+	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
+	
 	/**
 	 * Used to resolve url request and select active view.
 	 */
 	private com.vaadin.navigator.Navigator navigator;
+	
 	/**
 	 * Spring application context.
 	 */
 	private ApplicationContext context;
-
+	
+	private MenuLayout main;
+	
+	private Date lastAction = null;
+	
+	private Thread backendStatusThread;
+	
+	private Client backendClient;
+		
 	/**
 	 * Add a single view to {@link #navigator}.
 	 *
@@ -62,15 +69,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private void initNavigatorAddSingle(ViewNames view) {
 		this.navigator.addView(view.getUrl(), ViewsFactory.create(view));
 	}
-	private MenuLayout main;
-	private Date lastAction = null;
-	Thread backendStatusThread;
-	private Client backendClient;
-	/**
-	 * Time in seconds before session expirates.
-	 */
-	private int timeoutSeconds = 300;
-
+	
 	/**
 	 * Add url-view association into navigator.
 	 */
@@ -122,10 +121,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 		ModuleFacade modules = (ModuleFacade) context.getBean("moduleFacade");
 		modules.start();
 
-		// TODO: set module relative path .. ?
-//		this.modules.installDirectory(App.getWebAppDirectory() + "/OSGI/libs/");
-//		cz.cuni.xrg.intlib.commons.app.dpu.DPURecord.HACK_basePath = App.getWebAppDirectory() + "/OSGI";
-
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
@@ -151,12 +146,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 					// Display the error message in a custom fashion
 					String text = String.format("Exception: %s, Message: %s, Source: %s", cause.getClass().getName(), cause.getMessage(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
 					Notification.show("Uncaught exception appeared in system!", text, Notification.Type.ERROR_MESSAGE);
+					// and log ...
+					LOG.error("Uncaught exception", cause);
 				} else {
 					// Do the default error handling (optional)
 					doDefault(event);
 				}
 			}
 		});
+		
 		/**
 		 * Checking user every time request is made.
 		 */
