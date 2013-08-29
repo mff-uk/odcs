@@ -44,8 +44,8 @@ INSERT INTO PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name)
 INSERT INTO EXEC_CONTEXT_PIPELINE(id,directory)
  VALUES(1,'/tmp/intlib/context-dir');
 
-INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context_id,schedule_id,silent_mode,debugnode_id)
- VALUES(1,5,1,0,NULL,NULL,1,NULL,1,NULL);
+INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context_id,schedule_id,silent_mode,debugnode_id,stop)
+ VALUES(1,5,1,0,NULL,NULL,1,NULL,1,NULL,0);
 
 -- schedule define by times when to run pipeline
 INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)

@@ -396,6 +396,11 @@ class ExecutionMonitor extends ViewComponent implements ClickListener {
                     .getValue();
             switch (caption) {
                 case "stop":
+                	PipelineExecution pipelineExec = 
+                		App.getApp().getPipelines().getExecution(exeId);
+                	pipelineExec.stop();
+                	App.getApp().getPipelines().save(pipelineExec);
+                	// TODO Maria: Disable 'stop' button
                     break;
                 case "showlog":
                     logLayout = buildlogLayout();

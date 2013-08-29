@@ -89,6 +89,12 @@ public class PipelineExecution implements Serializable {
 	private boolean silentMode;
 
 	/**
+	 * True if pipeline should or has been stoped on user request.
+	 */
+	@Column(name = "stop")
+	private boolean stop;
+	
+	/**
 	 * No-arg constructor for JPA
 	 */
 	public PipelineExecution() {
@@ -107,6 +113,7 @@ public class PipelineExecution implements Serializable {
 		this.isDebugging = false;
 		this.schedule = null;
 		this.silentMode = true;
+		this.stop = false;
 		
 		// Execution context is obligatory, so that we do not need to check for
 		// nulls everywhere. A new execution has an empty context.
@@ -202,6 +209,14 @@ public class PipelineExecution implements Serializable {
 		this.debugNode = debugNode;
 	}
 
+	public boolean getStop() {
+		return stop;
+	}
+	
+	public void stop() {
+		stop = true;
+	}
+	
 	/**
 	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
 	 * 

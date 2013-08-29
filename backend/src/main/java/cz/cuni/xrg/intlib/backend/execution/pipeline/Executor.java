@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
+import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
@@ -233,6 +234,15 @@ public class Executor implements Runnable {
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
 		// execute each node
 		for (Node node : dependencyGraph) {
+			
+			// check for user request to stop execution -> we need new instance
+			if (pipelineFacade.getExecution(execution.getId()).getStop()) {
+				// stop the execution
+				eventPublisher.publishEvent(
+						new PipelineAbortedEvent(execution, this));
+				executionFailed = true;
+				break;
+			}
 			
 			// put dpuInstance id to MDC, so we can identify logs related to the
 			// dpuInstance

@@ -88,6 +88,7 @@ CREATE TABLE `EXEC_PIPELINE`
   `schedule_id` INTEGER,
   `silent_mode` SMALLINT,
   `debugnode_id` INTEGER,
+  `stop` SMALLINT,
   PRIMARY KEY (`id`)
 );
 
