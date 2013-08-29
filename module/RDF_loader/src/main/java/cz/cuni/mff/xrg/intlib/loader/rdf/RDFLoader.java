@@ -1,11 +1,10 @@
 package cz.cuni.mff.xrg.intlib.loader.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+import cz.cuni.xrg.intlib.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.module.data.DataUnitList;
-import cz.cuni.xrg.intlib.commons.module.data.RDFDataUnitList;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
@@ -23,6 +22,9 @@ import java.util.List;
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		implements Load, ConfigDialogProvider<RDFLoaderConfig> {
 
+	@InputDataUnit
+	public RDFDataUnit rdfDataUnit;
+	
 	public RDFLoader() {
 		super(RDFLoaderConfig.class);
 	}
@@ -31,18 +33,6 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	public void load(LoadContext context)
 			throws LoadException,
 			DataUnitException {
-		DataUnitList<RDFDataUnit> dataUnitList = RDFDataUnitList
-				.create(context);
-
-		RDFDataUnit rdfDataUnit;
-
-		if (dataUnitList.filterByName("input").isEmpty()) {
-			// no named  use first
-			rdfDataUnit = dataUnitList.getFirst();
-		} else {
-			// there is DU with name input use it!
-			rdfDataUnit = dataUnitList.filterByName("input").getFirst();
-		}
 
 		final String endpoint = config.SPARQL_endpoint;
 		URL endpointURL = null;

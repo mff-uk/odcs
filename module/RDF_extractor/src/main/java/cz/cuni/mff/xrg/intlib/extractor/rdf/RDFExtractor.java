@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.intlib.extractor.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
-import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -25,6 +25,9 @@ import org.openrdf.rio.RDFFormat;
 public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		implements Extract, ConfigDialogProvider<RDFExtractorConfig> {
 
+	@OutputDataUnit
+	public RDFDataUnit rdfDataUnit;
+	
 	public RDFExtractor() {
 		super(RDFExtractorConfig.class);
 	}
@@ -33,9 +36,6 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	public void extract(ExtractContext context)
 			throws ExtractException,
 			DataUnitCreateException {
-
-		RDFDataUnit rdfDataUnit = (RDFDataUnit) context
-				.addOutputDataUnit(DataUnitType.RDF, "output");
 
 		try {
 			final URL endpointURL = new URL(config.SPARQL_endpoint);

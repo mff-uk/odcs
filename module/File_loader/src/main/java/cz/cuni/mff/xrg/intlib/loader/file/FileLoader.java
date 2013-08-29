@@ -1,11 +1,9 @@
 package cz.cuni.mff.xrg.intlib.loader.file;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+import cz.cuni.xrg.intlib.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.module.data.DataUnitList;
-import cz.cuni.xrg.intlib.commons.module.data.RDFDataUnitList;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
@@ -20,26 +18,15 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		implements Load, ConfigDialogProvider<FileLoaderConfig> {
 
+	@InputDataUnit
+	public RDFDataUnit rdfDataUnit;
+
 	public FileLoader() {
 		super(FileLoaderConfig.class);
 	}
 
 	@Override
-	public void load(LoadContext context)
-			throws LoadException,
-			DataUnitException {
-		DataUnitList<RDFDataUnit> dataUnitList = RDFDataUnitList
-				.create(context);
-
-		RDFDataUnit rdfDataUnit;
-		
-		if (dataUnitList.filterByName("input").isEmpty()) {
-			// no named  use first
-			rdfDataUnit = dataUnitList.getFirst();
-		} else {
-			// there is DU with name input use it!
-			rdfDataUnit = dataUnitList.filterByName("input").getFirst();
-		}
+	public void load(LoadContext context) throws LoadException {
 
 		final String directoryPath = config.DirectoryPath;
 		final String fileName = config.FileName;
