@@ -70,7 +70,7 @@ public class RecordsTable extends CustomComponent {
 		c.removeDefaultFilters();
 		c.addDefaultFilter(new Compare.Equal("execution", execution.getId()));
 		c.refresh();
-		messageTable.setCurrentPage(1);
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
 	/**

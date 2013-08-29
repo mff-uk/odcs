@@ -1,12 +1,17 @@
 package cz.cuni.xrg.intlib.commons.app.user;
 
+import cz.cuni.xrg.intlib.commons.app.auth.PasswordHash;
 import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -130,7 +135,11 @@ public class User implements UserDetails, RoleHolder, Resource {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+		try {
+			this.password = PasswordHash.createHash(password);
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+		}
     }
 
     @Override

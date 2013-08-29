@@ -103,7 +103,7 @@ public class LogMessagesTable extends CustomComponent {
 			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
 		}
 		c.refresh();
-		messageTable.setCurrentPage(1);
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 
 
 	}

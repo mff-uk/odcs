@@ -71,7 +71,8 @@ public class RDFDataUnitFactory {
 	 * @throws RuntimeException if temp directory for repository can not create.
 	 * @return
 	 */
-	private static LocalRDFRepo createLocalRepoInTempDirectory(String dataUnitName,
+	private static LocalRDFRepo createLocalRepoInTempDirectory(
+			String dataUnitName,
 			String dirName,
 			String id) throws RuntimeException {
 		Path repoPath = null;
@@ -90,8 +91,6 @@ public class RDFDataUnitFactory {
 	 * Create RDFDataUnitFactory as new instance of VirtuosoRepository as
 	 * storage.
 	 *
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
-	 *                     String.
 	 * @param hostName     String name of host need to Virtuoso connection.
 	 * @param port         String value of number of port need for connection to
 	 *                     Virtuoso.
@@ -102,11 +101,13 @@ public class RDFDataUnitFactory {
 	 * @param namedGraph   A default graph name, used for Sesame calls, when
 	 *                     contexts list is empty, exclude exportStatements,
 	 *                     hasStatement, getStatements methods.
+	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
+	 *                     String.
 	 * @return
 	 */
-	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String dataUnitName,
-			String hostName, String port, String user,
-			String password, String namedGraph) {
+	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,
+			String port,
+			String user, String password, String namedGraph, String dataUnitName) {
 
 		final String JDBC = "jdbc:virtuoso://" + hostName + ":"
 				+ port + "/charset=UTF-8/log_enable=2";

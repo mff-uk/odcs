@@ -95,21 +95,21 @@ public class DebuggingView extends CustomComponent {
      * Builds main layout.
      */
     public final void buildMainLayout() {
-        leavePageListener = new ViewChangeListener() {
-            @Override
-            public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-                 App.getApp().getNavigator().removeViewChangeListener(leavePageListener);
-//                 if(refreshThread != null && refreshThread.isAlive()) {
-//                     refreshThread.interrupt();
-//                 }
-                return true;
-            }
-
-            @Override
-            public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
-            }
-        };
-        App.getApp().getNavigator().addViewChangeListener(leavePageListener);
+//        leavePageListener = new ViewChangeListener() {
+//            @Override
+//            public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
+//                 App.getApp().getNavigator().removeViewChangeListener(leavePageListener);
+////                 if(refreshThread != null && refreshThread.isAlive()) {
+////                     refreshThread.interrupt();
+////                 }
+//                return true;
+//            }
+//
+//            @Override
+//            public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
+//            }
+//        };
+//        App.getApp().getNavigator().addViewChangeListener(leavePageListener);
         mainLayout = new VerticalLayout();
 
         if (isFromCanvas) {
@@ -279,7 +279,7 @@ public class DebuggingView extends CustomComponent {
 
             DataUnitInfo dataUnitInfo = iter.next();
             //If I Have only one data unit, I use it, otherwise select the right input/output data unit.
-            if (indexes.size() == 1 || showInput) {
+            if (indexes.size() == 1 || showInput == dataUnitInfo.isInput()) {
                 DataUnitBrowser duBrowser;
                 try {
                     //File dumpDir = ctxReader.getDataUnitStorage(debugDpu, dataUnitInfo.getIndex());

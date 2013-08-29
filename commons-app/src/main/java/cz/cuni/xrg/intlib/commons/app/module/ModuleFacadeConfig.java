@@ -20,7 +20,7 @@ public class ModuleFacadeConfig {
 	/**
 	 * Name for directory where DPUs are stored.
 	 */
-	private static final String DPU_DIRECTORY = "dpu";
+	public static final String DPU_DIRECTORY = "dpu";
 
 	/**
 	 * Name for directory with libraries.

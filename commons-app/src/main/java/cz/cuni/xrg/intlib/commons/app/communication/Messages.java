@@ -17,7 +17,11 @@ public enum Messages {
 	/**
 	 * Request for database check, probably because of new work.
 	 */
-	,CheckDatabase(1);
+	,CheckDatabase(1)
+	/**
+	 * Heartbeat message
+	 */
+	,HeartBeat(2);
 	
 	/**
 	 * Contains mapping from (Integer)id to (Enum)Messages.
