@@ -28,7 +28,7 @@ public class ModuleFacadeConfig {
 	private static final String LIB_DIRECTORY = "lib";
 
 	/**
-	 * Name for directory in {@link #LIB_DIRECTORY} where special libs for
+	 * Name for directory in {@link #LIB_DIRECTORY} where special libraries for
 	 * backend (Vaadin, .. ) are stored.
 	 */
 	private static final String LIB_BACKEND_DIRECTORY = "backend";
@@ -57,8 +57,15 @@ public class ModuleFacadeConfig {
 			// library for configuration serialisation
 			+ "com.thoughtworks.xstream,"
 			// java packages
-			+ "java.lang,javax";
+			+ "java.lang";
 
+	/**
+	 * Contains list of packages exported from frontend. Does not start
+	 * nor end on separator.
+	 */
+	private static final String FRONTEND_BASE = 
+			"cz.cuni.xrg.intlib.commons.web;version=\"0.0.1\"";
+	
 	/**
 	 * Path to the root directory, does not end on file separator.
 	 */
@@ -89,8 +96,8 @@ public class ModuleFacadeConfig {
 			this.rootDirectory = this.rootDirectory.substring(0,
 					this.rootDirectory.length() - 1);
 		}
-
-		try {
+		
+		try {					
 			this.additionalPackages = conf.getString(Application.FRONTEND
 					.equals(app)
 					? ConfigProperty.MODULE_FRONT_EXPOSE
@@ -99,6 +106,20 @@ public class ModuleFacadeConfig {
 			// missing configuration -> use empty
 			this.additionalPackages = "";
 		}
+		if (Application.FRONTEND.equals(app)) {
+			// frontend is running -> we need to export Vaadin packages as well
+			if (this.additionalPackages.isEmpty()) {
+				// just fill with Vaadin packages
+			} else {
+				// first add separator
+				this.additionalPackages += ',';
+			}
+			// add Vaadin and frontend packages
+			final String vaadinPackages = com.vaadin.PackageList.PACKAGES;
+			this.additionalPackages += vaadinPackages + "," + FRONTEND_BASE;
+		}		
+		
+		
 		this.useBackendLibs = !Application.FRONTEND.equals(app);
 	}
 

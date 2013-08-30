@@ -226,7 +226,7 @@ public class AnnotationProcessor implements PreExecutor {
 					this, message));
 			return false;
 		}
-		LOG.info("Create output DataUnitfor field: {}", field.getName());			
+		LOG.info("Create output DataUnit for field: {}", field.getName());			
 		// and set it
 		return setDataUnit(field, dpuInstance, dataUnit, context);
 	}
