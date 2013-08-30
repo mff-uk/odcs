@@ -24,11 +24,20 @@
  	
  	<dependencies>
  		<!-- TODO 6: add dependencies here -->
+       
+                <!-- Sample dependency defining a maven artifact - Saxon JAR - available on Maven repositories. If you have configured on your machine access to any maven repository, the following lines should work for you and should automatically make SAXON HE 9.2.1.5 available. The dependency (jar file) will be automaticaly
+ 			added to the resulting OSGi bundle  
+                <dependency>
+                    <groupId>net.sourceforge.saxon</groupId>
+                    <artifactId>saxonhe</artifactId>
+                    <version>9.2.1.5</version>
+                    <type>jar</type>
+                </dependency>
+                -->
  		 		
- 		<!-- use following code to import local dependency 
- 			from project file\lib\MyLib.java. The jar file will be automaticaly
- 			added to the result jar file -->
- 		<!-- 
+ 		<!-- Alternatively, if you would like to refer to local dependency on the file system,  use following code to import local dependency 
+ 			from sample project (folder) file\lib\MyLib.java. The dependency (jar file) will be automaticaly
+ 			added to the resulting OSGi bundle. Prefer the reference to publicly available Maven repository (previous dependency example) over local repository (the following dependency example) - if you move the development of DPU to a different machine, local repository will not work there. 
 		<dependency>
 			<groupId>com.surname.intlib</groupId>
 			<artifactId>MyLib</artifactId>
