@@ -234,16 +234,7 @@ public class Executor implements Runnable {
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
 		// execute each node
 		for (Node node : dependencyGraph) {
-			
-			// check for user request to stop execution -> we need new instance
-			if (pipelineFacade.getExecution(execution.getId()).getStop()) {
-				// stop the execution
-				eventPublisher.publishEvent(
-						new PipelineAbortedEvent(execution, this));
-				executionFailed = true;
-				break;
-			}
-			
+						
 			// put dpuInstance id to MDC, so we can identify logs related to the
 			// dpuInstance
 			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME,
@@ -253,8 +244,44 @@ public class Executor implements Runnable {
 					beanFactory.getBean(cz.cuni.xrg.intlib.backend.execution.dpu.Executor.class);
 			dpuExecutor.bind(node, dependencyGraph, contexts, execution, lastSuccessfulExTime);
 			
-			// TODO Petyr: run in parallel thread and check for abort
-			dpuExecutor.run();
+			Thread executorThread = new Thread(dpuExecutor);
+			executorThread.start();
+			// repeat until the executorThread is running
+			while(executorThread.isAlive()) {
+				boolean stopExecution = false;
+				
+				try {
+					// sleep for two seconds
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// request stop
+					stopExecution = true;
+				}
+				
+				// check for user request to stop execution -> we need new instance
+				if (pipelineFacade.getExecution(execution.getId()).getStop()) {
+					// request stop
+					stopExecution = true;
+					// publish message about termination
+					eventPublisher.publishEvent(
+							new PipelineAbortedEvent(execution, this));	
+				}
+				
+				if (stopExecution) {
+					LOG.debug("Terminating the DPU thread ...");
+					// kill executorThread, and wait for it to die
+					executorThread.interrupt();					
+					try {
+						executorThread.join();
+					} catch (InterruptedException e) {
+						// if we are interrupt stop waiting  
+					}
+					LOG.debug("DPU thread terminated");
+					executionFailed = true;
+					// end the cycle
+					break;
+				}
+			}
 
 			// ..
 			if (dpuExecutor.executionFailed()) {
