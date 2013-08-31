@@ -250,12 +250,15 @@ public interface RDFDataUnitHelper {
 	 *                            TURTLE, RDF/XML,etc.)
 	 * @param useStatisticHandler boolean value if detailed log and statistic
 	 *                            are awailable or not.
+	 * @param extractFail         boolean value, if true stop pipeline(cause
+	 *                            exception) when no triples were extracted. if
+	 *                            false step triple count extraction criterium.
 	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
 			String query, String hostName, String password, RDFFormat format,
-			boolean useStatisticHandler) throws RDFException;
+			boolean useStatisticHandler, boolean extractFail) throws RDFException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
