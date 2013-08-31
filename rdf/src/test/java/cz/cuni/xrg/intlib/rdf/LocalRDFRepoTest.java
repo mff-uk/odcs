@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.rdf;
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
 import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
@@ -485,10 +486,11 @@ public class LocalRDFRepoTest {
 			String name = "SPARQL";
 			String password = "nejlepsipaper";
 			WriteGraphType graphType = WriteGraphType.MERGE;
+			InsertType insertType= InsertType.SKIP_BAD_PARTS;
 
 			try {
 				rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name,
-						password, graphType);
+						password, graphType,insertType);
 			} catch (RDFException e) {
 				fail(e.getMessage());
 			}
