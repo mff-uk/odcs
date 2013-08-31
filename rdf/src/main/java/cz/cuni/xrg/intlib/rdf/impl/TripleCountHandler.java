@@ -29,4 +29,8 @@ public class TripleCountHandler extends RDFHandlerBase {
 	public void resetTripleCount() {
 		count = 0;
 	}
+
+	public boolean isEmpty() {
+		return count == 0;
+	}
 }
