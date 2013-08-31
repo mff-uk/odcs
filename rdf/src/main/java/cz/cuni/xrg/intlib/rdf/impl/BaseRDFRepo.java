@@ -604,9 +604,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 						inputStreamReader.close();
 					} catch (RDFException e) {
-						throw new RDFException(
+						final String message =
 								"Inserting failt to " + processing + " data part. "
-								+ e.getMessage(), e);
+								+ e.getMessage();
+						logger.error(message);
+
+						throw new RDFException(message, e);
 					} catch (IOException e) {
 						throw new RDFException(e.getMessage(), e);
 					}
