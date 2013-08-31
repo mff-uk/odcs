@@ -17,9 +17,9 @@ import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 
 /**
  * Base abstract class for the DPURecord event.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class DPUEvent extends ApplicationEvent {
 
@@ -58,7 +58,7 @@ public class DPUEvent extends ApplicationEvent {
 		this.time = new Date();
 		this.context = context;
 		this.type = type;
-		this.shortMessage = shortMessage;
+		this.shortMessage = shortMessage + ex.getMessage();
 		// transform stack trace into string
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
@@ -80,7 +80,8 @@ public class DPUEvent extends ApplicationEvent {
 	}
 
 	/**
-	 * Create event which announce that DPU execution started. 
+	 * Create event which announce that DPU execution started.
+	 *
 	 * @param context
 	 * @param source
 	 * @return
@@ -88,11 +89,11 @@ public class DPUEvent extends ApplicationEvent {
 	public static DPUEvent createStart(Context context, Object source) {
 		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
 				"DPU starteds.", "");
-	}	
-	
+	}
+
 	/**
 	 * Create event for DPU successful execution.
-	 * 
+	 *
 	 * @param context
 	 * @param source
 	 * @return
@@ -104,7 +105,7 @@ public class DPUEvent extends ApplicationEvent {
 
 	/**
 	 * Create event which warn about missing DPU's output dataUnits.
-	 * 
+	 *
 	 * @param context
 	 * @param source
 	 * @return
@@ -116,7 +117,7 @@ public class DPUEvent extends ApplicationEvent {
 
 	/**
 	 * Create event that announce wrong DPU state before start of the execution.
-	 * 
+	 *
 	 * @param context
 	 * @param source
 	 * @return
@@ -129,7 +130,7 @@ public class DPUEvent extends ApplicationEvent {
 	/**
 	 * Create event which indicate that there has been an error in executing
 	 * single DPU's preprocessor.
-	 * 
+	 *
 	 * @param context
 	 * @param source
 	 * @param longMessage Description of the error.
@@ -145,7 +146,7 @@ public class DPUEvent extends ApplicationEvent {
 	/**
 	 * Create event which indicate that there has been an error in executing
 	 * single DPU's post-processor.
-	 * 
+	 *
 	 * @param context
 	 * @param source
 	 * @param longMessage Description of the error.
@@ -159,34 +160,38 @@ public class DPUEvent extends ApplicationEvent {
 	}
 
 	/**
-	 * Create event which indicate that the DPU execution failed because 
-	 * DPU throw exception.
+	 * Create event which indicate that the DPU execution failed because DPU
+	 * throw exception.
+	 *
 	 * @param context
 	 * @param source
 	 * @param ex
 	 * @return
 	 */
-	public static DPUEvent createFailed(Context context, Object source, Exception e) {
+	public static DPUEvent createFailed(Context context, Object source,
+			Exception e) {
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
-				"DPU execution failed.", e);
+				"DPU execution failed. ", e);
 	}
-	
+
 	/**
-	 * Create event which indicate that the execution of DPU failed 
-	 * because of {@link DataUnitException}.
+	 * Create event which indicate that the execution of DPU failed because of
+	 * {@link DataUnitException}.
+	 *
 	 * @param context
 	 * @param source
 	 * @param e
 	 * @return
 	 */
-	public static DPUEvent createDataUnitFailed(Context context, Object source, DataUnitException e) {
+	public static DPUEvent createDataUnitFailed(Context context, Object source,
+			DataUnitException e) {
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
 				"DataUnit error.", e);
-	}	
-	
+	}
+
 	/**
 	 * Record that describes event.
-	 * 
+	 *
 	 * @return record
 	 */
 	public MessageRecord getRecord() {
@@ -202,5 +207,4 @@ public class DPUEvent extends ApplicationEvent {
 	public DPUInstanceRecord getDpuInstance() {
 		return context.getDpuInstance();
 	}
-
 }
