@@ -137,6 +137,11 @@ public class AnnotationProcessor implements PreExecutor {
 		LinkedList<DataUnit> typeMatch = filter(context.getInputs(),
 				field.getType());
 		if (typeMatch.isEmpty()) {
+			// check if not optional 
+			if (annotation.optional()) {
+				return true;
+			}			
+			
 			final String message = "No input for field: " + field.getName()
 					+ " All inputs have different type.";
 			eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
@@ -153,6 +158,10 @@ public class AnnotationProcessor implements PreExecutor {
 				return setDataUnit(field, dpuInstance, typeMatch.getFirst(),
 						context);
 			} else {
+				// check if not optional 
+				if (annotation.optional()) {
+					return true;
+				}			
 				// error
 				final String message = "Can't  find DataUnit with required name for field:"
 						+ field.getName();

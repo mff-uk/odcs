@@ -36,4 +36,10 @@ public @interface InputDataUnit {
 	 */
 	public boolean relaxed() default true;
 	
+	/**
+	 * If false the execution failed if there is no suitable DataUnit
+	 * that can be used.
+	 * @return
+	 */
+	public boolean optional() default false;
 }
