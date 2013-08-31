@@ -27,7 +27,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
-	
+
 	public RDFExtractor() {
 		super(RDFExtractorConfig.class);
 	}
@@ -44,10 +44,12 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			final List<String> defaultGraphsUri = config.GraphsUri;
 			final String query = config.SPARQL_query;
 			final boolean useStatisticHandler = config.UseStatisticalHandler;
+			final boolean extractFail = config.ExtractFail;
 
 			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
-					query, hostName, password, RDFFormat.N3, useStatisticHandler);
+					query, hostName, password, RDFFormat.N3,
+					useStatisticHandler,extractFail);
 		} catch (MalformedURLException ex) {
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
