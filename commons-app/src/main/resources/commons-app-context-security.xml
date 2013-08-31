@@ -10,7 +10,7 @@
 		<authentication-provider ref="authenticationProvider" />
 	</authentication-manager>
 	
-	<global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
+	<global-method-security secured-annotations="disabled" pre-post-annotations="disabled">
 		<expression-handler ref="expressionHandler"/>
 	</global-method-security>
 	

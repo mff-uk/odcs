@@ -158,6 +158,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		/**
 		 * Checking user every time request is made.
 		 */
+		/*
 		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
 			@Override
 			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
@@ -174,7 +175,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
 			}
 		});
-
+		*/
 		AppConfig config = getAppConfiguration();
 		backendClient = new Client(
 				config.getString(ConfigProperty.BACKEND_HOST),
