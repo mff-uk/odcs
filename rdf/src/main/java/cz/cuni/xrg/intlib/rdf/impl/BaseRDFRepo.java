@@ -57,6 +57,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final int HTTP_UNAUTORIZED_RESPONSE = 401;
 
 	/**
+	 * Represent http error code returns when inserting data in bad format.
+	 */
+	protected static final int HTTP_BAD_RESPONSE = 400;
+
+	/**
 	 * Default name for graph using for store RDF data.
 	 */
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
@@ -588,19 +593,23 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 					final String query = dataParts.get(j);
 
-					String myquery = getEncodedQuery(query);
-					InputStreamReader inputStreamReader = getEndpointStreamReader(
-							endpointURL, endpointGraph, myquery,
-							RDFFormat.N3);
+					final String processing = String.valueOf(j + 1) + "/" + String
+							.valueOf(partsCount);
 
+					String myquery = getEncodedQuery(query);
 					try {
+						InputStreamReader inputStreamReader = getEndpointStreamReader(
+								endpointURL, endpointGraph, myquery,
+								RDFFormat.N3);
+
 						inputStreamReader.close();
+					} catch (RDFException e) {
+						throw new RDFException(
+								"Inserting failt to " + processing + " data part. "
+								+ e.getMessage(), e);
 					} catch (IOException e) {
 						throw new RDFException(e.getMessage(), e);
 					}
-
-					final String processing = String.valueOf(j + 1) + "/" + String
-							.valueOf(partsCount);
 
 					logger.debug(
 							"Data " + processing + " part loaded successful");
@@ -1587,6 +1596,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				if (httpResponseCode == HTTP_UNAUTORIZED_RESPONSE) {
 					message.append(
 							". Your USERNAME and PASSWORD for connection is wrong.");
+				} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
+
+					try (InputStream errorStream = httpConnection
+							.getErrorStream()) {
+
+						try (BufferedReader reader = new BufferedReader(
+								new InputStreamReader(
+								errorStream, Charset.forName(encode)))) {
+
+							String cause = ". Caused by " + reader.readLine();
+
+							message.append(cause);
+						}
+					}
+
 
 				} else {
 					message.append(
@@ -1987,7 +2011,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private String prepareLiteral(Literal literal) {
-		String label = "\"\"\"" + literal.getLabel() + "\"\"\"";
+		String label = "\"" + literal.getLabel() + "\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
 			return label + "@" + literal.getLanguage();
