@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 
@@ -14,23 +15,25 @@ import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
  *
  */
 public class RDFLoaderConfig implements DPUConfigObject {
-	
-    public String SPARQL_endpoint = "";
-    
-    public String Host_name = "";
-    
-    public String Password = "";
-    
-    public List<String> GraphsUri = new LinkedList<>();
-    
-    public WriteGraphType Options = WriteGraphType.OVERRIDE;
-    
+
+	public String SPARQL_endpoint = "";
+
+	public String Host_name = "";
+
+	public String Password = "";
+
+	public List<String> GraphsUri = new LinkedList<>();
+
+	public WriteGraphType graphOption = WriteGraphType.OVERRIDE;
+
+	public InsertType insertOption = InsertType.SKIP_BAD_PARTS;
+
 	@Override
 	public boolean isValid() {
-		return SPARQL_endpoint != null && 
-				Host_name != null && 
-				Password != null && 
-				GraphsUri != null && 
-				Options != null;
-	} 
+		return SPARQL_endpoint != null
+				&& Host_name != null
+				&& Password != null
+				&& GraphsUri != null
+				&& graphOption != null;
+	}
 }
