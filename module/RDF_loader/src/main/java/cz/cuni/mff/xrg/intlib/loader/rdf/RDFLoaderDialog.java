@@ -11,6 +11,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -43,6 +44,12 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 */
 	private OptionGroup optionGroupDetail;
 
+	/**
+	 * For declaration what to do with invalid data insert part for loading data
+	 * to SPARQL endpoint.
+	 */
+	private OptionGroup dataPartsOption;
+
 	private VerticalLayout verticalLayoutCore;
 
 	private GridLayout gridLayoutAdm;
@@ -72,13 +79,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private Validator.InvalidValueException ex;
 
-	/**
-	 * Right SPARQL VALIDATOR - default false.
-	 */
-	private boolean isQueryValid = false;
-
-	private String errorMessage = "no errors";
-
 	private Label labelSparql;
 
 	private GridLayout gridLayoutGraph;
@@ -92,6 +92,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	int n = 1;
 
 	private List<GraphItem> graphItems = new ArrayList<>();
+
+	private List<InsertItem> insertItems = new ArrayList<>();
 
 	/**
 	 * Basic constructor.
@@ -118,7 +120,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 */
 	private String getGraphDescription(WriteGraphType type) {
 		if (graphItems.isEmpty()) {
-			mapData();
+			mapGraphItems();
 		}
 
 		for (GraphItem item : graphItems) {
@@ -126,6 +128,28 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 				return item.getDescription();
 			}
 		}
+		return "";
+	}
+
+	/**
+	 * Get description of chosed way, how to insert RDF data part to SPARQL
+	 * endpoint: Uses in {@link #setConfiguration} for setiing
+	 * {@link #dataPartsOption}
+	 *
+	 * @param type Type of insert data parts: {@link InsertType#SKIP_BAD_PARTS}
+	 *             or {@link InsertType#STOP_WHEN_BAD_PART}
+	 * @return description that corresponds to specific type or ""
+	 */
+	private String getInsertDescription(InsertType type) {
+		if (insertItems.isEmpty()) {
+			mapInsertItems();
+		}
+		for (InsertItem item : insertItems) {
+			if (item.getType().equals(type)) {
+				return item.getDescription();
+			}
+		}
+
 		return "";
 	}
 
@@ -141,7 +165,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 */
 	private WriteGraphType getGraphType(String desc) {
 		if (graphItems.isEmpty()) {
-			mapData();
+			mapGraphItems();
 		}
 
 		for (GraphItem item : graphItems) {
@@ -154,28 +178,76 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	}
 
 	/**
+	 * Get type of insert RDF data part to SPARQL endpoint:
+	 * {@link InsertType#SKIP_BAD_PARTS} or
+	 * {@link InsertType#STOP_WHEN_BAD_PART}. Uses in {@link #getConfiguration}
+	 * for determine the type by description that located in
+	 * {@link #dataPartsOption}
+	 *
+	 * @param desc String with description of chosed way, how to load RDF data
+	 *             to named graph from {@link #dataPartsOption}
+	 * @return type that corresponds to desc or InsertType.STOP_WHEN_BAD_PART in
+	 *         case of absence.
+	 */
+	private InsertType getInsertType(String desc) {
+		if (insertItems.isEmpty()) {
+			mapInsertItems();
+		}
+
+		for (InsertItem item : insertItems) {
+			if (item.getDescription().equals(desc)) {
+				return item.getType();
+			}
+		}
+
+		return InsertType.STOP_WHEN_BAD_PART;
+	}
+
+	/**
 	 * Set values of {@link #optionGroupDetail}
 	 */
 	private void mapData() {
 
 		if (graphItems.isEmpty()) {
-			GraphItem override = new GraphItem(WriteGraphType.OVERRIDE,
-					"Overwrite target graph");
-			GraphItem merge = new GraphItem(WriteGraphType.MERGE,
-					"Merge with target graph's content");
-			GraphItem fail = new GraphItem(WriteGraphType.FAIL,
-					"Fail if the target graph exists");
-
-			graphItems.add(override);
-			graphItems.add(merge);
-			graphItems.add(fail);
-
-			optionGroupDetail.addItem(override.getDescription());
-			optionGroupDetail.addItem(merge.getDescription());
-			optionGroupDetail.addItem(fail.getDescription());
-			optionGroupDetail.setValue(override.getDescription());
-
+			mapGraphItems();
 		}
+
+		if (insertItems.isEmpty()) {
+			mapInsertItems();
+		}
+
+	}
+
+	private void mapGraphItems() {
+		GraphItem override = new GraphItem(WriteGraphType.OVERRIDE,
+				"Overwrite target graph");
+		GraphItem merge = new GraphItem(WriteGraphType.MERGE,
+				"Merge with target graph's content");
+		GraphItem fail = new GraphItem(WriteGraphType.FAIL,
+				"Fail if the target graph exists");
+
+		graphItems.add(override);
+		graphItems.add(merge);
+		graphItems.add(fail);
+
+		optionGroupDetail.addItem(override.getDescription());
+		optionGroupDetail.addItem(merge.getDescription());
+		optionGroupDetail.addItem(fail.getDescription());
+
+		optionGroupDetail.setValue(override.getDescription());
+	}
+
+	private void mapInsertItems() {
+		InsertItem skip = new InsertItem(InsertType.SKIP_BAD_PARTS, "SKIP bad insert parts");
+		InsertItem stop = new InsertItem(InsertType.STOP_WHEN_BAD_PART, "FAIL if there is a bad part. ");
+
+		insertItems.add(skip);
+		insertItems.add(stop);
+
+		dataPartsOption.addItem(skip.getDescription());
+		dataPartsOption.addItem(stop.getDescription());
+
+		dataPartsOption.setValue(skip.getDescription());
 	}
 
 	/**
@@ -492,7 +564,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 				@Override
 				public void validate(Object value) throws Validator.InvalidValueException {
 					if (value != null) {
-						String namedGraph = value.toString().toString().trim();
+						String namedGraph = value.toString().trim();
 
 						if (namedGraph.isEmpty()) {
 							return;
@@ -585,22 +657,28 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
 
-		// OptionGroup Options
-		optionGroupDetail = new OptionGroup();
-		optionGroupDetail.setCaption("Options:");
+		// OptionGroup graphOption
+		optionGroupDetail = new OptionGroup("Graph options:");
 		optionGroupDetail.setImmediate(false);
 		optionGroupDetail.setWidth("-1px");
 		optionGroupDetail.setHeight("-1px");
 		optionGroupDetail.setMultiSelect(false);
 		verticalLayoutDetails.addComponent(optionGroupDetail);
 
+		dataPartsOption = new OptionGroup("Insert part options:");
+		dataPartsOption.setImmediate(false);
+		dataPartsOption.setWidth("-1px");
+		dataPartsOption.setHeight("-1px");
+		dataPartsOption.setMultiSelect(false);
+		verticalLayoutDetails.addComponent(dataPartsOption);
+
 		return verticalLayoutDetails;
 	}
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface and 
-	 * configuring DPU
+	 * to configuration object implementing {@link DPUConfigObject} interface
+	 * and configuring DPU
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
 	 *                         {@link #comboBoxSparql} contains null value.
@@ -615,9 +693,15 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		} else {
 			saveEditedTexts();
 			RDFLoaderConfig config = new RDFLoaderConfig();
+
 			String graphDescription = (String) optionGroupDetail.getValue();
+			String insertDescription = (String) dataPartsOption.getValue();
+
 			WriteGraphType graphType = getGraphType(graphDescription);
-			config.Options = graphType;
+			InsertType insertType = getInsertType(insertDescription);
+
+			config.graphOption = graphType;
+			config.insertOption = insertType;
 			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
 			config.Host_name = textFieldNameAdm.getValue().trim();
 			config.Password = passwordFieldPass.getValue();
@@ -631,14 +715,15 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * Load values from configuration object implementing {@link Config}
 	 * interface and configuring DPU into the dialog where the configuration
 	 * object may be edited.
-	 * 
+	 *
 	 * @throws ConfigException Exception which might be thrown when components
-	 *             {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 *                         null	null	null	null	null	null	null	null	null	null
+	 *                         null	null	null	null	null	null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
 	 *             {@link #passwordFieldPass}, {@link #optionGroupDetail},
-	 *             {@link #griddata} , in read-only mode or when requested
-	 *             operation is not supported.
+	 *             {@link #griddata} , in read-only mode or when requested operation is not
+	 *                         supported.
 	 * @param conf Object holding configuration which is used to initialize
-	 *            fields in the configuration dialog.
+	 *             fields in the configuration dialog.
 	 */
 	@Override
 	public void setConfiguration(RDFLoaderConfig conf) throws ConfigException {
@@ -653,10 +738,14 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			textFieldNameAdm.setValue(conf.Host_name.trim());
 			passwordFieldPass.setValue(conf.Password);
 
-			WriteGraphType graphType = conf.Options;
-			String description = getGraphDescription(graphType);
+			WriteGraphType graphType = conf.graphOption;
+			InsertType insertType = conf.insertOption;
 
-			optionGroupDetail.setValue(description);
+			String graphDescription = getGraphDescription(graphType);
+			String insertDescription = getInsertDescription(insertType);
+
+			optionGroupDetail.setValue(graphDescription);
+			dataPartsOption.setValue(insertDescription);
 
 			try {
 				griddata = conf.GraphsUri;
@@ -677,9 +766,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 class GraphItem {
 
-	WriteGraphType type;
+	private WriteGraphType type;
 
-	String description;
+	private String description;
 
 	public GraphItem(WriteGraphType type, String description) {
 		this.type = type;
@@ -688,6 +777,26 @@ class GraphItem {
 	}
 
 	public WriteGraphType getType() {
+		return type;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+}
+
+class InsertItem {
+
+	private InsertType type;
+
+	private String description;
+
+	public InsertItem(InsertType type, String description) {
+		this.type = type;
+		this.description = description;
+	}
+
+	public InsertType getType() {
 		return type;
 	}
 
