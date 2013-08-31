@@ -109,8 +109,8 @@ public class RDFDataUnitFactory {
 			String port,
 			String user, String password, String namedGraph, String dataUnitName) {
 
-                //log_enable=2 -> disables logging, enables row-by-row autocommit, see
-                //http://docs.openlinksw.com/virtuoso/fn_log_enable.html
+		//log_enable=2 -> disables logging, enables row-by-row autocommit, see
+		//http://docs.openlinksw.com/virtuoso/fn_log_enable.html
 		final String JDBC = "jdbc:virtuoso://" + hostName + ":"
 				+ port + "/charset=UTF-8/log_enable=2";
 
