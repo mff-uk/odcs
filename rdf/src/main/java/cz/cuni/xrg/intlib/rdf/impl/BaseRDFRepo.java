@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.rdf.impl;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import static cz.cuni.xrg.intlib.rdf.enums.FileExtractType.*;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
 import static cz.cuni.xrg.intlib.rdf.enums.WriteGraphType.*;
@@ -10,6 +11,7 @@ import static cz.cuni.xrg.intlib.rdf.enums.WriteGraphType.*;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.GraphNotEmptyException;
+import cz.cuni.xrg.intlib.rdf.exceptions.InsertPartException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
@@ -438,15 +440,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
 	 * @param defaultGraphURI name of graph where RDF data are loading.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART)
 	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			WriteGraphType graphType) throws RDFException {
+			WriteGraphType graphType, InsertType insertType) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphURI);
 
-		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "", graphType);
+		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
+				graphType, insertType);
 	}
 
 	/**
@@ -458,24 +466,46 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param defaultGraphURI name of graph where RDF data are loading.
 	 * @param name            String name needed for authentication.
 	 * @param password        String password needed for authentication.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			String name, String password, WriteGraphType graphType) throws RDFException {
+			String name, String password, WriteGraphType graphType,
+			InsertType insertType) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
-				graphType);
+				graphType, insertType);
 	}
 
+	/**
+	 * Load RDF data from repository to SPARQL endpointURL to the collection of
+	 * URI graphs without endpoint authentication.
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphURI List with names of graph where RDF data are
+	 *                        loading.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
+	 * @throws RDFException when loading data to SPARQL endpoint fail.
+	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL,
-			List<String> endpointGraphsURI, WriteGraphType graphType) throws RDFException {
+			List<String> endpointGraphsURI, WriteGraphType graphType,
+			InsertType insertType) throws RDFException {
 
 		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
-				graphType);
+				graphType, insertType);
 	}
 
 	/**
@@ -490,12 +520,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> namedGraph, String userName,
-			String password, WriteGraphType graphType) throws RDFException {
+			String password, WriteGraphType graphType, InsertType insertType)
+			throws RDFException {
 
 		//check that SPARQL endpoint URL is correct
 		if (endpointURL == null) {
@@ -604,20 +638,31 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 								RDFFormat.N3);
 
 						inputStreamReader.close();
-					} catch (RDFException e) {
-						final String message =
-								"Inserting failt to " + processing + " data part. "
-								+ e.getMessage();
-						logger.error(message);
 
-						throw new RDFException(message, e);
+						logger.debug(
+								"Data " + processing + " part loaded successful");
+
+					} catch (InsertPartException e) {
+						String message;
+
+						switch (insertType) {
+							case SKIP_BAD_PARTS: //go to next part
+								message = "Data " + processing + " part was skiped. "
+										+ e.getMessage();
+								logger.warn(message);
+								break;
+							case STOP_WHEN_BAD_PART:
+
+								message = "Inserting failt to " + processing + " data part. "
+										+ e.getMessage();
+								logger.error(message);
+
+								throw new RDFException(message, e);
+						}
+
 					} catch (IOException e) {
 						throw new RDFException(e.getMessage(), e);
 					}
-
-					logger.debug(
-							"Data " + processing + " part loaded successful");
-
 				}
 			}
 
@@ -857,11 +902,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 					try {
 						parser.parse(inputStreamReader, endpointGraph);
-						
+
 						if (extractFail) {
 							caseNoTriples(handler);
 						}
-						
+
 						if (graph != null) {
 							connection.add(handler.getStatements(), graph);
 						} else {
@@ -1645,6 +1690,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 							String cause = ". Caused by " + reader.readLine();
 
 							message.append(cause);
+
+							throw new InsertPartException(message.toString());
 						}
 					}
 
