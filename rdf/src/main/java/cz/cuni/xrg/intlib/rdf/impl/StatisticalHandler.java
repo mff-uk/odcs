@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
+import cz.cuni.xrg.intlib.rdf.interfaces.TripleCounter;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.openrdf.model.Statement;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * triples and detail log.
  *
  */
-public class StatisticalHandler extends RDFHandlerBase {
+public class StatisticalHandler extends RDFHandlerBase implements TripleCounter {
 
 	private Collection<Statement> statements = new ArrayList<>();
 
@@ -30,11 +31,12 @@ public class StatisticalHandler extends RDFHandlerBase {
 			super.handleStatement(st);
 			statements.add(st);
 			tripleCount++;
-			
+
 			logger.debug(
-					"Added next triple n."+tripleCount+": subject:" + st.getSubject() + " predicate:"
+					"Added next triple n." + tripleCount + ": subject:" + st
+					.getSubject() + " predicate:"
 					+ st.getPredicate() + " object:" + st.getObject());
-			
+
 
 		} catch (RDFHandlerException e) {
 			logger.error("Error by adding next triple");
@@ -72,8 +74,18 @@ public class StatisticalHandler extends RDFHandlerBase {
 	 *
 	 * @return count of extracted RDF triples
 	 */
+	@Override
 	public long getTripleCount() {
 		return tripleCount;
+	}
+
+	/**
+	 *
+	 * @return true if there is no triples, false otherwise.
+	 */
+	@Override
+	public boolean isEmpty() {
+		return tripleCount == 0;
 	}
 
 	/**
@@ -90,6 +102,14 @@ public class StatisticalHandler extends RDFHandlerBase {
 	 */
 	public void clear() {
 		statements.clear();
+		reset();
+	}
+
+	/**
+	 * Set count of extracted triples to 0.
+	 */
+	@Override
+	public void reset() {
 		tripleCount = 0;
 	}
 }
