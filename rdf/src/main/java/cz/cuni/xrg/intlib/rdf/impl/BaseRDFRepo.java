@@ -13,6 +13,7 @@ import cz.cuni.xrg.intlib.rdf.exceptions.GraphNotEmptyException;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
+import cz.cuni.xrg.intlib.rdf.interfaces.TripleCounter;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
@@ -834,10 +835,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						RDFParser parser = getRDFParser(format, handler);
 						try {
 							parser.parse(inputStreamReader, endpointGraph);
-							if (handler.isEmpty()) {
-								throw new RDFException(
-										"No extracted triples from SPARQL endpoint");
-							}
+							caseNoTriples(handler);
 						} catch (RDFHandlerException e) {
 							logger.debug(e.getMessage(), e);
 						}
@@ -859,7 +857,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 					try {
 						parser.parse(inputStreamReader, endpointGraph);
-
+						
+						if (extractFail) {
+							caseNoTriples(handler);
+						}
+						
 						if (graph != null) {
 							connection.add(handler.getStatements(), graph);
 						} else {
@@ -915,6 +917,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		parser.setRDFHandler(handler);
 
 		return parser;
+	}
+
+	private void caseNoTriples(TripleCounter handler) throws RDFException {
+
+		if (handler.isEmpty()) {
+			throw new RDFException("No extracted triples from SPARQL endpoint");
+		}
 	}
 
 	/**
