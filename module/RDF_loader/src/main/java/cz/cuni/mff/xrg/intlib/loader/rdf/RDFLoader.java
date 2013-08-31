@@ -7,6 +7,7 @@ import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.*;
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
@@ -24,7 +25,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
-	
+
 	public RDFLoader() {
 		super(RDFLoaderConfig.class);
 	}
@@ -46,11 +47,12 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final List<String> defaultGraphsURI = config.GraphsUri;
 		final String hostName = config.Host_name;
 		final String password = config.Password;
-		final WriteGraphType graphType = config.Options;
+		final WriteGraphType graphType = config.graphOption;
+		final InsertType insertType = config.insertOption;
 
 		try {
 			rdfDataUnit.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI,
-					hostName, password, graphType);
+					hostName, password, graphType,insertType);
 		} catch (RDFDataUnitException ex) {
 			throw new LoadException(ex.getMessage(), ex);
 		}
