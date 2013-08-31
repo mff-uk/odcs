@@ -41,7 +41,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	/**
 	 * CheckBox to specify whether the extraction fails if there is no triple.
 	 */
-	private CheckBox checkBoxFail;
+	private CheckBox extractFail;
 
 	private Label labelOpt;
 
@@ -588,13 +588,13 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		verticalLayoutDetails.addComponent(labelOpt);
 
 		// CheckBox Extraction fails if there is no triple extracted.
-		checkBoxFail = new CheckBox();
-		checkBoxFail
+		extractFail = new CheckBox();
+		extractFail
 				.setCaption("Extraction fails if there is no triple extracted.");
-		checkBoxFail.setImmediate(false);
-		checkBoxFail.setWidth("-1px");
-		checkBoxFail.setHeight("-1px");
-		verticalLayoutDetails.addComponent(checkBoxFail);
+		extractFail.setImmediate(false);
+		extractFail.setWidth("-1px");
+		extractFail.setHeight("-1px");
+		verticalLayoutDetails.addComponent(extractFail);
 
 		//Statistical handler
 		//TODO MARIA - set parameters and placement for this component
@@ -609,8 +609,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface and
-	 * configuring DPU
+	 * to configuration object implementing {@link DPUConfigObject} interface
+	 * and configuring DPU
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
 	 *                         {@link #comboBoxSparql} contains null value.
@@ -632,22 +632,23 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			config.Password = passwordFieldPass.getValue();
 			config.SPARQL_query = textAreaConstr.getValue().trim();
 			config.GraphsUri = griddata;
-			config.ExtractFail = checkBoxFail.getValue();
+			config.ExtractFail = extractFail.getValue();
 			config.UseStatisticalHandler = useHandler.getValue();
+			config.ExtractFail = extractFail.getValue();
 
 			return config;
 		}
 	}
 
 	/**
-	 * Load values from configuration object implementing {@link DPUConfigObject}
-	 * interface and configuring DPU into the dialog where the configuration
-	 * object may be edited.
+	 * Load values from configuration object implementing
+	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
+	 * where the configuration object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
-    * {@link #textAreaConstr}, {@link #checkBoxFail}, {@link #useHandler}, {@link #griddata},
+	 *                         null	null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+    * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
 	 *                         requested operation is not supported.
@@ -655,7 +656,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 *             fields in the configuration dialog.
 	 */
 	@Override
-	public void setConfiguration(RDFExtractorConfig conf) throws ConfigException{
+	public void setConfiguration(RDFExtractorConfig conf) throws ConfigException {
 		try {
 			String endp = conf.SPARQL_endpoint.trim();
 
@@ -667,8 +668,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			textFieldNameAdm.setValue(conf.Host_name.trim());
 			passwordFieldPass.setValue(conf.Password);
 			textAreaConstr.setValue(conf.SPARQL_query.trim());
-			checkBoxFail.setValue(conf.ExtractFail);
+			extractFail.setValue(conf.ExtractFail);
 			useHandler.setValue(conf.UseStatisticalHandler);
+			extractFail.setValue(conf.ExtractFail);
 
 			griddata = conf.GraphsUri;
 			if (griddata == null) {
