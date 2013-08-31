@@ -21,8 +21,8 @@
 	<b:bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
 		<b:property name="permissionEvaluator" ref="permissionEvaluator" />
 	</b:bean>
-
-	<b:bean id="authenticationContext" class="cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService" />
+	
+	<b:bean id="authenticationContext" class="cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext" />
 	
 	<b:bean id="permissionEvaluator"  class="cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator"/>
 

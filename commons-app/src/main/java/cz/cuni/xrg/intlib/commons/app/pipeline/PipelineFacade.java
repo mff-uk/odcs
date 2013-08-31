@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
-import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.util.Collections;
@@ -33,7 +33,7 @@ public class PipelineFacade {
 	private EntityManager em;
 	
 	@Autowired(required = false)
-	private AuthenticationContextService authCtx;
+	private AuthenticationContext authCtx;
 
 	/* ******************* Methods for managing Pipeline ******************** */
 

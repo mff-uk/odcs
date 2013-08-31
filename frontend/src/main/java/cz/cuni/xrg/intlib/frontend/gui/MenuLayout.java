@@ -5,7 +5,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -13,7 +12,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
-import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
@@ -46,7 +45,7 @@ public class MenuLayout extends CustomComponent {
 	 * Authentication context used to render menu with respect to currently
 	 * logged in user.
 	 */
-	private AuthenticationContextService authCtx;
+	private AuthenticationContext authCtx;
 
 	/**
 	 * Class use as command to change sub-pages.

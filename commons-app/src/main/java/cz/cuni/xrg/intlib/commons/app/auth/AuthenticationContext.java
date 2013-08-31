@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.auth;
 
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  *
  * @author Jan Vojt
  */
-public class AuthenticationContextService implements ApplicationListener<AuthenticationSuccessEvent> {
+public class AuthenticationContext implements ApplicationListener<AuthenticationSuccessEvent> {
 	
 	/**
 	 * Retrieves username of currently logged in user from session.
@@ -35,12 +36,21 @@ public class AuthenticationContextService implements ApplicationListener<Authent
 	
 	/**
 	 * Decides whether any user is currently successfully authenticated.
+	 * Anonymous users are not considered authenticated.
 	 * 
 	 * @return authentication status
 	 */
 	public boolean isAuthenticated() {
 		Authentication auth = getAuth();
-		return auth == null ? false : auth.isAuthenticated();
+		if (auth == null) {
+			return false;
+		}
+		
+		if (auth instanceof AnonymousAuthenticationToken) {
+			return false;
+		}
+		
+		return auth.isAuthenticated();
 	}
 	
 	/**

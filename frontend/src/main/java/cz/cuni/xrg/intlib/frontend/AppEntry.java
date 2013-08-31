@@ -5,13 +5,11 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.SystemError;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
-import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
@@ -20,18 +18,14 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Date;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.vaadin.dialogs.ConfirmDialog;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -101,18 +95,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-
-		// create Spring context, always the first after application init,
-		// so that all needed beans are ready.
-		context = new ClassPathXmlApplicationContext(
-				"frontend-context.xml",
-				"commons-app-context-security.xml");
+		
+		// Initialize Spring Context.
+		context = WebApplicationContextUtils.getRequiredWebApplicationContext(
+			RequestHolder.getRequest().getSession().getServletContext()
+		);
 
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
 		main = new MenuLayout();
-		//Panel mainPanel = new Panel();
-		//mainPanel.setContent(main);
 		setContent(main);
 
 		// create a navigator to control the views
@@ -160,22 +151,22 @@ public class AppEntry extends com.vaadin.ui.UI {
 		/**
 		 * Checking user every time request is made.
 		 */
-		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
-			@Override
-			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
-					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
-					getMain().refreshUserBar();
-					return false;
-				}
-				setActive();
-				return true;
-			}
-
-			@Override
-			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
-			}
-		});
+//		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+//			@Override
+//			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
+//				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+//					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
+//					getMain().refreshUserBar();
+//					return false;
+//				}
+//				setActive();
+//				return true;
+//			}
+//
+//			@Override
+//			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
+//			}
+//		});
 
 		AppConfig config = getAppConfiguration();
 		backendClient = new Client(
@@ -297,8 +288,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 *
 	 * @return authentication context for current user session
 	 */
-	public AuthenticationContextService getAuthCtx() {
-		return getBean(AuthenticationContextService.class);
+	public AuthenticationContext getAuthCtx() {
+		return getBean(AuthenticationContext.class);
 	}
 
 	/**

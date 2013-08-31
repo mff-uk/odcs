@@ -111,17 +111,18 @@
 			<version>${vaadin.version}</version>
 		</dependency>
                 
-                <dependency>
-                    <groupId>org.vaadin.addons</groupId>
-                    <artifactId>pagingcomponent</artifactId>
-                    <version>0.9.4</version>
-                </dependency>
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>pagingcomponent</artifactId>
+			<version>0.9.4</version>
+		</dependency>
                 
-                <dependency>
-                    <groupId>org.vaadin.addons.lazyquerycontainer</groupId>
-                    <artifactId>vaadin-lazyquerycontainer</artifactId>
-                    <version>2.0.9</version>
-                </dependency>
+		<dependency>
+			<groupId>org.vaadin.addons.lazyquerycontainer</groupId>
+			<artifactId>vaadin-lazyquerycontainer</artifactId>
+			<version>2.0.9</version>
+		</dependency>
+		
 		<!--
 		  Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 		  
@@ -159,6 +160,18 @@
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>3.1.4.RELEASE</version>
+		 <exclusions>
+		  <exclusion>
+		   <artifactId>spring-expression</artifactId>
+		   <groupId>org.springframework</groupId>
+		  </exclusion>
+		 </exclusions>
+		</dependency>
 
     </dependencies>
 

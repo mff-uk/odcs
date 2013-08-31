@@ -10,16 +10,18 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import cz.cuni.xrg.intlib.frontend.AuthenticationService;
+import cz.cuni.xrg.intlib.frontend.RequestHolder;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * LOGIN screen of application.
@@ -35,13 +37,13 @@ public class Login extends ViewComponent {
     private TextField login;
     private PasswordField password;
 	
-	private AuthenticationManager authManager;
+	private AuthenticationService authService;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         buildMainLayout();
         setCompositionRoot(mainLayout);
-		authManager = App.getApp().getBean(AuthenticationManager.class);
+		authService = App.getApp().getBean(AuthenticationService.class);
     }
 
     private void buildMainLayout() {
@@ -99,7 +101,7 @@ public class Login extends ViewComponent {
 		);
 
         try {
-			Authentication auth = authManager.authenticate(authToken);
+			authService.login(login.getValue(), password.getValue(), RequestHolder.getRequest());
 
 			// login is successful
 			App.getApp().setupBackendStatusChecking();
