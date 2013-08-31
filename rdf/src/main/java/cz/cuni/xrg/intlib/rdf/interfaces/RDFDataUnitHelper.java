@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.rdf.interfaces;
 
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
@@ -104,10 +105,13 @@ public interface RDFDataUnitHelper {
 	 * @param defaultGraphURI name of graph where RDF data are loading.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-			WriteGraphType graphType) throws RDFException;
+			WriteGraphType graphType, InsertType insertType) throws RDFException;
 
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
@@ -120,11 +124,15 @@ public interface RDFDataUnitHelper {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			String name,
-			String password, WriteGraphType graphType) throws RDFException;
+			String password, WriteGraphType graphType, InsertType insertType)
+			throws RDFException;
 
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the collection of
@@ -136,10 +144,14 @@ public interface RDFDataUnitHelper {
 	 *                        loading.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL,
-			List<String> endpointGraphsURI, WriteGraphType graphType) throws RDFException;
+			List<String> endpointGraphsURI, WriteGraphType graphType,
+			InsertType insertType) throws RDFException;
 
 	/**
 	 * Load RDF data from repository to SPARQL endpointURL to the collection of
@@ -153,11 +165,15 @@ public interface RDFDataUnitHelper {
 	 * @param password        String password needed for authentication.
 	 * @param graphType       One of way, how to solve loading RDF data to graph
 	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fail.
 	 */
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
-			String password, WriteGraphType graphType) throws RDFException;
+			String password, WriteGraphType graphType, InsertType insertType)
+			throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
