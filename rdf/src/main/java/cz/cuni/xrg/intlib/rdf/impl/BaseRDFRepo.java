@@ -671,7 +671,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		endpointGraphsURI.add(defaultGraphUri);
 
 		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "",
-				RDFFormat.N3, false);
+				RDFFormat.N3, false, false);
 	}
 
 	/**
@@ -738,7 +738,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		endpointGraphsURI.add(defaultGraphUri);
 
 		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query,
-				hostName, password, format, false);
+				hostName, password, format, false, false);
 	}
 
 	/**
@@ -756,6 +756,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                            TURTLE, RDF/XML,etc.)
 	 * @param useStatisticHandler boolean value if detailed log and statistic
 	 *                            are awailable or not.
+	 * @param extractFail         boolean value, if true stop pipeline(cause
+	 *                            exception) when no triples were extracted. if
+	 *                            false step triple count extraction criterium.
 	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
@@ -766,7 +769,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String hostName,
 			String password,
 			RDFFormat format,
-			boolean useStatisticHandler) throws RDFException {
+			boolean useStatisticHandler, boolean extractFail) throws RDFException {
 
 		if (endpointURL == null) {
 			final String message = "Mandatory URL path in extractor from SPARQL is null.";
@@ -820,10 +823,26 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				final String endpointGraph = endpointGraphsURI.get(i);
 
+
 				InputStreamReader inputStreamReader = getEndpointStreamReader(
 						endpointURL, endpointGraph, query, format);
 
 				if (!useStatisticHandler) {
+
+					if (extractFail) {
+						TripleCountHandler handler = new TripleCountHandler();
+						RDFParser parser = getRDFParser(format, handler);
+						try {
+							parser.parse(inputStreamReader, endpointGraph);
+							if (handler.isEmpty()) {
+								throw new RDFException(
+										"No extracted triples from SPARQL endpoint");
+							}
+						} catch (RDFHandlerException e) {
+							logger.debug(e.getMessage(), e);
+						}
+					}
+
 					if (graph != null) {
 
 						connection.add(inputStreamReader, endpointGraph,
@@ -836,8 +855,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				} else {
 					StatisticalHandler handler = new StatisticalHandler();
 
-					RDFParser parser = Rio.createParser(format);
-					parser.setRDFHandler(handler);
+					RDFParser parser = getRDFParser(format, handler);
 
 					try {
 						parser.parse(inputStreamReader, endpointGraph);
@@ -890,6 +908,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			}
 		}
 
+	}
+
+	private RDFParser getRDFParser(RDFFormat format, RDFHandler handler) {
+		RDFParser parser = Rio.createParser(format);
+		parser.setRDFHandler(handler);
+
+		return parser;
 	}
 
 	/**
