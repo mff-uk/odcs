@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
+import cz.cuni.xrg.intlib.rdf.interfaces.TripleCounter;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.helpers.RDFHandlerBase;
@@ -12,7 +13,7 @@ import org.openrdf.rio.helpers.RDFHandlerBase;
  *
  * @author Jiri Tomes
  */
-public class TripleCountHandler extends RDFHandlerBase {
+public class TripleCountHandler extends RDFHandlerBase implements TripleCounter {
 
 	private long count = 0;
 
@@ -22,14 +23,17 @@ public class TripleCountHandler extends RDFHandlerBase {
 		count++;
 	}
 
-	public long getLoadedCount() {
+	@Override
+	public long getTripleCount() {
 		return count;
 	}
 
-	public void resetTripleCount() {
+	@Override
+	public void reset() {
 		count = 0;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return count == 0;
 	}
