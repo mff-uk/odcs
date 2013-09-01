@@ -13,15 +13,15 @@ public enum Messages {
 	/**
 	 * Unknown message, or error during communication.
 	 */	
-	Uknown(0)
+	UNKNOWN(0)
 	/**
 	 * Request for database check, probably because of new work.
 	 */
-	,CheckDatabase(1)
+	,CHECK_DATABASE(1)
 	/**
 	 * Heartbeat message
 	 */
-	,HeartBeat(2);
+	,HEARTBEAT(2);
 	
 	/**
 	 * Contains mapping from (Integer)id to (Enum)Messages.
@@ -64,7 +64,7 @@ public enum Messages {
 			return idToMessages.get(id);
 		} else {
 			// unknown message
-			return Uknown;
+			return UNKNOWN;
 		}
 	}
 }

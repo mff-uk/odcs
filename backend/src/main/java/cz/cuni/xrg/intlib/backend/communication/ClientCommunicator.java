@@ -42,7 +42,7 @@ class ClientCommunicator implements Runnable {
     @Override
     public void run() {
         // read message
-        Messages msg = Messages.Uknown;
+        Messages msg = Messages.UNKNOWN;
         try (DataInputStream stream = new DataInputStream(socket.getInputStream())) {
                 int messageId = stream.readInt();
                 // translate id to Message enum value
@@ -59,13 +59,13 @@ class ClientCommunicator implements Runnable {
 		
         // decide what to do next based on message
         switch (msg) {
-            case Uknown:
+            case UNKNOWN:
                 // unknown command, ignore
                 break;
-            case CheckDatabase:
+            case CHECK_DATABASE:
                 // send event to engine to check database
                 // as a source use Server class instance (the one who create us)
-                eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, server));
+                eventPublisher.publishEvent(new EngineEvent(EngineEventType.CHECK_DATABASE, server));
                 break;
         }
     }

@@ -66,12 +66,22 @@ public class AppConfig {
 	 * @param key
 	 * @return 
 	 */
-	public Integer getInteger(ConfigProperty key) {
+	public int getInteger(ConfigProperty key) {
 		String value = getString(key);
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException ex) {
 			throw new InvalidConfigPropertyException(key, value);
 		}
+	}
+	
+	/**
+	 * Gets boolean value of given configuration property.
+	 * 
+	 * @param key
+	 * @return 
+	 */
+	public boolean getBoolean(ConfigProperty key) {
+		return Boolean.parseBoolean(getString(key));
 	}
 }

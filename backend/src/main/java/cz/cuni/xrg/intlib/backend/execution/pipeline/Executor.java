@@ -30,6 +30,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
+import javax.persistence.EntityNotFoundException;
 
 /**
  * Execute given pipeline. The {@link Executor} must be bind to the certain
@@ -102,7 +103,13 @@ public class Executor implements Runnable {
 		contexts = new HashMap<>();
 		// update state
 		this.execution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
-		pipelineFacade.save(this.execution);
+		
+		try {
+			pipelineFacade.save(this.execution);
+		} catch (EntityNotFoundException ex) {
+			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+		}
+
 		// load last execution time
 		Date lastSucess = pipelineFacade.getLastExecTime(
 				execution.getPipeline(),
@@ -110,7 +117,7 @@ public class Executor implements Runnable {
 		Date lastSucessWarn = pipelineFacade.getLastExecTime(
 				execution.getPipeline(),
 				PipelineExecutionStatus.FINISHED_WARNING);
-		// null check ..
+
 		if (lastSucess == null) {
 			this.lastSuccessfulExTime = lastSucessWarn;
 		} else if (lastSucessWarn == null) {
@@ -221,6 +228,7 @@ public class Executor implements Runnable {
 	 * Run the execution.
 	 */
 	private void execute() {
+		
 		boolean executionFailed = false;
 		// add marker to logs from this thread -> both must be specified !!
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME,
@@ -228,8 +236,16 @@ public class Executor implements Runnable {
 		LOG.debug("Started");
 		// set start time
 		execution.setStart(new Date());
-		// contextInfo is in pipeline so by saving pipeline we also save context
-		pipelineFacade.save(execution);
+		
+		try {
+			// contextInfo is in pipeline so by saving pipeline we also save context
+			pipelineFacade.save(execution);
+		} catch (EntityNotFoundException ex) {
+			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+			// no work was done yet, we can finish without cleaning up
+			return;
+		}
+		
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
 		// execute each node
@@ -246,6 +262,7 @@ public class Executor implements Runnable {
 			
 			Thread executorThread = new Thread(dpuExecutor);
 			executorThread.start();
+			
 			// repeat until the executorThread is running
 			while(executorThread.isAlive()) {
 				boolean stopExecution = false;
@@ -259,26 +276,18 @@ public class Executor implements Runnable {
 				}
 				
 				// check for user request to stop execution -> we need new instance
-				if (pipelineFacade.getExecution(execution.getId()).getStop()) {
-					// request stop
+				PipelineExecution uptodateExecution = pipelineFacade.getExecution(execution.getId());
+				if (uptodateExecution == null) {
+					LOG.warn("Seems like someone deleted our execution.");
 					stopExecution = true;
-					// publish message about termination
-					eventPublisher.publishEvent(
-							new PipelineAbortedEvent(execution, this));	
+				} else if (uptodateExecution.getStop()) {
+					stopExecution = true;
+					eventPublisher.publishEvent(new PipelineAbortedEvent(execution, this));	
 				}
 				
 				if (stopExecution) {
-					LOG.debug("Terminating the DPU thread ...");
-					// kill executorThread, and wait for it to die
-					executorThread.interrupt();					
-					try {
-						executorThread.join();
-					} catch (InterruptedException e) {
-						// if we are interrupt stop waiting  
-					}
-					LOG.debug("DPU thread terminated");
+					stopExecution(executorThread);
 					executionFailed = true;
-					// end the cycle
 					break;
 				}
 			}
@@ -303,17 +312,39 @@ public class Executor implements Runnable {
 			// publish information for the rest of the application
 			eventPublisher.publishEvent(new PipelineFinished(execution, this));			
 		}
+		
 		// save the execution for the last time
-		pipelineFacade.save(execution);
+		try {
+			pipelineFacade.save(execution);
+		} catch (EntityNotFoundException ex) {
+			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+		}
+
 		// do clean/up
 		cleanup();
 		// clear all threads markers
 		MDC.clear();		
 	}
-
+	
 	@Override
 	public void run() {
 		execute();
 	}
 
+	/**
+	 * Stops pipeline execution. Usually invoke by user action.
+	 * 
+	 * @param executorThread thread servicing execution which needs to be stopped
+	 */
+	private void stopExecution(Thread executorThread) {
+		LOG.debug("Terminating the DPU thread ...");
+		// kill executorThread, and wait for it to die
+		executorThread.interrupt();
+		try {
+			executorThread.join();
+		} catch (InterruptedException e) {
+			// if we are interrupt stop waiting  
+		}
+		LOG.debug("DPU thread terminated");
+	}
 }

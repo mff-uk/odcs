@@ -20,6 +20,8 @@ public enum ConfigProperty {
 	VIRTUOSO_USER("virtuoso.user"),
 	VIRTUOSO_PASSWORD("virtuoso.password"),
 	VIRTUOSO_DEFAULT_GRAPH("virtuoso.defautgraph"),
+	VIRTUOSO_RETRIES("virtuoso.retries"),
+	VIRTUOSO_WAIT("virtuoso.wait"),
 	
 	MODULE_PATH("module.path"),
 	MODULE_FRONT_EXPOSE("module.frontend.expose"),
@@ -32,7 +34,8 @@ public enum ConfigProperty {
 	EMAIL_FROM_EMAIL("email.from"),	
 	EMAIL_AUTHORIZATION("email.authorization"),
 	EMAIL_USERNAME("email.username"),
-	EMAIL_PASSWORD("email.password")
+	EMAIL_PASSWORD("email.password"),
+	EMAIL_ADMIN("email.admin")
 	;
 	
 	private final String property;

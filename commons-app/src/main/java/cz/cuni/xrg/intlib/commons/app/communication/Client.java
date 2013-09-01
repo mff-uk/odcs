@@ -79,7 +79,7 @@ public class Client {
 		// communication
 		try {
 			try (DataOutputStream stream = new DataOutputStream(socket.getOutputStream())) {
-				stream.writeInt(Messages.HeartBeat.getMessage());
+				stream.writeInt(Messages.HEARTBEAT.getMessage());
 				stream.flush();
 			}
 			close();
@@ -103,7 +103,7 @@ public class Client {
 		// communication
 		try {
 			try (DataOutputStream stream = new DataOutputStream(socket.getOutputStream())) {
-				stream.writeInt(Messages.CheckDatabase.getMessage());
+				stream.writeInt(Messages.CHECK_DATABASE.getMessage());
 				// flush and close .. 
 				stream.flush();
 			}

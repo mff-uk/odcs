@@ -13,7 +13,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
-import cz.cuni.xrg.intlib.backend.execution.dpu.StructureException;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
@@ -34,6 +33,9 @@ import cz.cuni.xrg.intlib.commons.loader.Load;
 import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.transformer.Transform;
 import cz.cuni.xrg.intlib.commons.transformer.TransformException;
+import javax.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Execute a single {@link DPUInstanceRecord} from {@link PipelineExecution}.
@@ -116,6 +118,9 @@ public final class Executor implements Runnable {
 	 * Time of last successful execution. Can be null.
 	 */
 	private Date lastExecutionTime;
+	
+	/** Logger */
+	private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
 
 	/**
 	 * Bind executor to the given {@link PipelineExecution} and
@@ -379,7 +384,14 @@ public final class Executor implements Runnable {
 		// set state to RUNNING and save this, by this we announce
 		// that we have started the execution of this DPU
 		unitInfo.setState(DPUExecutionState.RUNNING);
-		pipelineFacade.save(execution);
+		
+		try {
+			pipelineFacade.save(execution);
+		} catch (EntityNotFoundException ex) {
+			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+			return false;
+		}
+		
 		// execute the given instance - also catch all exception
 		if (executeInstance(dpuInstance, context)) {
 			// execute finished successfully
@@ -413,7 +425,13 @@ public final class Executor implements Runnable {
 		executionSuccessful = execute(dpu, unitInfo);
 		// set finished state
 		unitInfo.setState(DPUExecutionState.FINISHED);
-		pipelineFacade.save(execution);
+		
+		try {
+			pipelineFacade.save(execution);
+		} catch (EntityNotFoundException ex) {
+			// Pipeline execution was probably deleted by user
+			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+		}
 	}
 
 	/**

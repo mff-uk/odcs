@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -201,7 +202,12 @@ public class Engine
 					// send message .. about restart
 					eventPublisher.publishEvent(new PipelineRestart(execution, this));
 				}
-				pipelineFacade.save(execution);
+				
+				try {
+					pipelineFacade.save(execution);
+				} catch (EntityNotFoundException ex) {
+					LOG.warn("Seems like someone deleted our pipeline run.", ex);
+				}
 			}
 		}
 	}
@@ -213,10 +219,10 @@ public class Engine
 	 */
 	protected synchronized void onEvent(EngineEventType type) {
 		switch (type) {
-		case CheckDatabase:
+		case CHECK_DATABASE:
 			checkDatabase();
 			break;
-		case StartUp:
+		case STARTUP:
 			if (startUpDone) {
 				// already called
 			} else {

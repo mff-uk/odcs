@@ -32,6 +32,11 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 	@Override
 	public boolean hasPermission(Authentication auth, Object target, Object perm) {
 		
+		// check for missing authentication context
+		if (auth == null) {
+			return false;
+		}
+		
 		// administrator is almighty
 		if (auth.getAuthorities().contains(Role.ROLE_ADMIN)) {
 			return true;
