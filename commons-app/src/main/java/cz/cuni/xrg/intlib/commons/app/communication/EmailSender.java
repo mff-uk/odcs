@@ -69,39 +69,21 @@ public final class EmailSender {
 	public EmailSender(AppConfig appConfig) {
 		// get options
 
-		this.enabled = convertToBoolean(appConfig
-				.getString(ConfigProperty.EMAIL_ENABLED));
+		this.enabled = appConfig.getBoolean(ConfigProperty.EMAIL_ENABLED);
 
 		this.smtpHost = appConfig.getString(ConfigProperty.EMAIL_SMTP_HOST);
 		this.smtpPort = appConfig.getString(ConfigProperty.EMAIL_SMTP_PORT);
 
-		this.useTTL = convertToBoolean(appConfig
-				.getString(ConfigProperty.EMAIL_SMTP_TTL));
+		this.useTTL = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TTL);
 
 		this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
 
-		this.authentication = convertToBoolean(appConfig
-				.getString(ConfigProperty.EMAIL_AUTHORIZATION));
+		this.authentication = appConfig.getBoolean(ConfigProperty.EMAIL_AUTHORIZATION);
 
 		if (this.authentication) {
 			// get data for authentication
 			this.username = appConfig.getString(ConfigProperty.EMAIL_USERNAME);
 			this.password = appConfig.getString(ConfigProperty.EMAIL_PASSWORD);
-		}
-	}
-
-	/**
-	 * Convert value from string to boolean. As true are used values "1" and
-	 * "true" (with ignore case)
-	 * 
-	 * @param value
-	 * @return
-	 */
-	private boolean convertToBoolean(String value) {
-		if (value.compareTo("1") == 0 || value.compareToIgnoreCase("true") == 0) {
-			return true;
-		} else {
-			return false;
 		}
 	}
 
