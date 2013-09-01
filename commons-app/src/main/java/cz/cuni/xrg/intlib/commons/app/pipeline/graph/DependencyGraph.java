@@ -22,7 +22,7 @@ public class DependencyGraph implements Iterable<Node> {
     /**
      * List of Extractor nodes - nodes without dependencies
      */
-    private Set<DependencyNode> extractors = new HashSet<>();
+    private Set<DependencyNode> starters = new HashSet<>();
 	
 	/**
 	 * Cache used for fast searching of node ancestors. A {@link Node} with no
@@ -37,7 +37,7 @@ public class DependencyGraph implements Iterable<Node> {
      */
     public DependencyGraph(PipelineGraph graph) {
         buildDependencyGraph(graph);
-        findExtractors();
+        findStarters();
     }
 
 	/**
@@ -71,7 +71,7 @@ public class DependencyGraph implements Iterable<Node> {
 		
 		// rebuild dependencies in trimmed graph
 		buildDependencyGraph(tGraph);
-		findExtractors();
+		findStarters();
 	}
 	
     /**
@@ -84,10 +84,10 @@ public class DependencyGraph implements Iterable<Node> {
     }
 
     /**
-     * @return the extractors
+     * @return the extractors without inputs = the nodes which may be run first
      */
-    public Set<DependencyNode> getExtractors() {
-        return extractors;
+    public Set<DependencyNode> getStarters() {
+        return starters;
     }
 
     /**
@@ -100,15 +100,16 @@ public class DependencyGraph implements Iterable<Node> {
     }
     
     /**
-     * Finds extractors in the dependency graph. Always call after dependency
-     * graph is built!
+     * Finds extractors without input in the dependency graph. Starter node is
+	 * a node which does not have any dependencies and thus may be run first.
+	 * Always call after dependency graph is built!
      */
-    private void findExtractors() {
-		extractors = new HashSet<>();
+    private void findStarters() {
+		starters = new HashSet<>();
         for (DependencyNode node : dGraph.values()) {
             // extractors have no dependencies
             if (node.getDependencies().isEmpty()) {
-                extractors.add(node);
+                starters.add(node);
             }
         }
     }

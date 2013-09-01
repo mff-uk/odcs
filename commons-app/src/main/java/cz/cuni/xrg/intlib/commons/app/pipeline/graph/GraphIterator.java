@@ -21,7 +21,7 @@ public class GraphIterator implements Iterator<Node> {
 	 * @param graph
 	 */
 	public GraphIterator(DependencyGraph graph) {
-		this.stack = graph.getExtractors();
+		this.stack = graph.getStarters();
 	}
 
 	/**
