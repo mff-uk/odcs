@@ -16,14 +16,14 @@ import cz.cuni.xrg.intlib.backend.scheduling.event.SchedulerCheckDatabase;
 public class Heartbeat implements Runnable, ApplicationEventPublisherAware {
 
 	/**
-	 * Event publisher used to publicise events.
+	 * Event publisher used to publish events.
 	 */
 	private ApplicationEventPublisher eventPublisher = null;	
 	
 	/**
 	 * Interval for events publishing. 
 	 */
-	private static int CHECK_INTERVAL = 1000 * 30;
+	private static final int CHECK_INTERVAL = 1000 * 30;
 	
 	@Override
 	public void run() {

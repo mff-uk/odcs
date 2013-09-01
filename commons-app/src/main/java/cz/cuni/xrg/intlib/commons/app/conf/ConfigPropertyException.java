@@ -22,6 +22,13 @@ public abstract class ConfigPropertyException extends RuntimeException {
 	public ConfigPropertyException(ConfigProperty property) {
 		this.property = property;
 	}
+	
+	/**
+	 * @return configuration property, where exception occurred
+	 */
+	public ConfigProperty getProperty() {
+		return this.property;
+	}
 
 	/**
 	 * Error message.

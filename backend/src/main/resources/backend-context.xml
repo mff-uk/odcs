@@ -28,11 +28,10 @@
 	<!-- pipeline executor -->
 	<bean id="pipelineExecutor" class="cz.cuni.xrg.intlib.backend.execution.pipeline.Executor"
 		scope="prototype" lazy-init="true" />
+	
 	<!-- DPU executor -->
 	<bean id="dpuExecutor" class="cz.cuni.xrg.intlib.backend.execution.dpu.Executor"
 		scope="prototype" lazy-init="true" />
-	<!-- autodiscovery for DPU's pre/post executors -->
-	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
 
 	<!-- data unit factory class -->
 	<bean id="dataUnitFactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory" />
@@ -45,5 +44,11 @@
 
 	<!-- scheduler -->
 	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" />
+	
+	<!-- replace facades from commons -->
+	<bean id="pipelineFacade" class="cz.cuni.xrg.intlib.backend.facade.PipelineFacade" />
 
+	<!-- autodiscovery for DPU's pre/post executors -->
+	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
+	
 </beans>
