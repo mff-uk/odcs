@@ -213,10 +213,10 @@ public class Engine
 	 */
 	protected synchronized void onEvent(EngineEventType type) {
 		switch (type) {
-		case CheckDatabase:
+		case CHECK_DATABASE:
 			checkDatabase();
 			break;
-		case StartUp:
+		case STARTUP:
 			if (startUpDone) {
 				// already called
 			} else {

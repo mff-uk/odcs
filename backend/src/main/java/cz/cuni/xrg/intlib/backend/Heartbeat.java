@@ -39,7 +39,7 @@ public class Heartbeat implements Runnable, ApplicationEventPublisherAware {
 			}
 			
 			// let engine check database
-			eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, this));
+			eventPublisher.publishEvent(new EngineEvent(EngineEventType.CHECK_DATABASE, this));
 			// and the scheduler as well
 			eventPublisher.publishEvent(new SchedulerCheckDatabase(this));			
 		}

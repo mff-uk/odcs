@@ -65,7 +65,7 @@ class ClientCommunicator implements Runnable {
             case CheckDatabase:
                 // send event to engine to check database
                 // as a source use Server class instance (the one who create us)
-                eventPublisher.publishEvent(new EngineEvent(EngineEventType.CheckDatabase, server));
+                eventPublisher.publishEvent(new EngineEvent(EngineEventType.CHECK_DATABASE, server));
                 break;
         }
     }

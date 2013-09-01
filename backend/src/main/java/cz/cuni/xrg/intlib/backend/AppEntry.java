@@ -161,7 +161,7 @@ public class AppEntry {
 		init();
 		
 		// publish event for engine about start of the execution
-		context.publishEvent(new EngineEvent(EngineEventType.StartUp, AppEntry.class));
+		context.publishEvent(new EngineEvent(EngineEventType.STARTUP, AppEntry.class));
 				
 		// start server
 		initNetworkServer();
