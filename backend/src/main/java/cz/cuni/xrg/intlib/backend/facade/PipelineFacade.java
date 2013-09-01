@@ -10,6 +10,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,8 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 			attempts++;
 			super.save(pipeline);
 			return;
+		} catch (EntityNotFoundException ex) {
+			throw ex;
 		} catch (PersistenceException ex) {
 			handleRetries(attempts, ex);
 		}
@@ -125,6 +128,8 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 			attempts++;
 			super.save(exec);
 			return;
+		} catch (EntityNotFoundException ex) {
+			throw ex;
 		} catch (PersistenceException ex) {
 			handleRetries(attempts, ex);
 		}
