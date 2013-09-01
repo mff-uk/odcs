@@ -2,8 +2,10 @@ package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.rdf.interfaces.TripleCounter;
 import org.openrdf.model.Statement;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.helpers.RDFHandlerBase;
+
 
 /**
  * Class for counting of extracted triples from SPARQL endpoint. Need for using
@@ -13,8 +15,11 @@ import org.openrdf.rio.helpers.RDFHandlerBase;
  *
  * @author Jiri Tomes
  */
-public class TripleCountHandler extends RDFHandlerBase implements TripleCounter {
+public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
+	public TripleCountHandler(RepositoryConnection connection) {
+		super(connection);
+	}	
 	private long count = 0;
 
 	@Override
@@ -37,4 +42,6 @@ public class TripleCountHandler extends RDFHandlerBase implements TripleCounter 
 	public boolean isEmpty() {
 		return count == 0;
 	}
+	
+	
 }
