@@ -16,8 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import java.util.Arrays;
 
-public final class EmailSender {
+public class EmailSender {
 
 	private static Logger LOG = LoggerFactory.getLogger(EmailSender.class);
 
@@ -67,23 +68,21 @@ public final class EmailSender {
 	 * @param appConfig
 	 */
 	public EmailSender(AppConfig appConfig) {
-		// get options
 
 		this.enabled = appConfig.getBoolean(ConfigProperty.EMAIL_ENABLED);
+		
+		if (this.enabled) {
+			this.smtpHost = appConfig.getString(ConfigProperty.EMAIL_SMTP_HOST);
+			this.smtpPort = appConfig.getString(ConfigProperty.EMAIL_SMTP_PORT);
+			this.useTTL = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TTL);
+			this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
+			this.authentication = appConfig.getBoolean(ConfigProperty.EMAIL_AUTHORIZATION);
 
-		this.smtpHost = appConfig.getString(ConfigProperty.EMAIL_SMTP_HOST);
-		this.smtpPort = appConfig.getString(ConfigProperty.EMAIL_SMTP_PORT);
-
-		this.useTTL = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TTL);
-
-		this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
-
-		this.authentication = appConfig.getBoolean(ConfigProperty.EMAIL_AUTHORIZATION);
-
-		if (this.authentication) {
-			// get data for authentication
-			this.username = appConfig.getString(ConfigProperty.EMAIL_USERNAME);
-			this.password = appConfig.getString(ConfigProperty.EMAIL_PASSWORD);
+			if (this.authentication) {
+				// get data for authentication
+				this.username = appConfig.getString(ConfigProperty.EMAIL_USERNAME);
+				this.password = appConfig.getString(ConfigProperty.EMAIL_PASSWORD);
+			}
 		}
 	}
 
@@ -97,7 +96,12 @@ public final class EmailSender {
 	 * @param emails
 	 * @return
 	 */
-	public boolean send(String subject, String body, List<String> emails) {
+	public boolean send(String subject, String body, List<String> recipients) {
+		
+		if (!enabled) {
+			return false;
+		}
+		
 		// prepare properties
 		Properties props = new Properties();
 		if (useTTL) {
@@ -109,11 +113,12 @@ public final class EmailSender {
 		
 		props.put("mail.pop3s.ssl.trust","*");
 		
-		Session session = null;
+		Session session;
 		if (authentication) {
 			props.put("mail.smtp.auth", "true");
 			session = Session.getInstance(props,
 					new javax.mail.Authenticator() {
+						@Override
 						protected PasswordAuthentication getPasswordAuthentication() {
 							return new PasswordAuthentication(username,
 									password);
@@ -128,7 +133,7 @@ public final class EmailSender {
 		Message msg = new MimeMessage(session);
 		try {
 			msg.setFrom(new InternetAddress(fromEmail));
-			for (String email : emails) {
+			for (String email : recipients) {
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
 						email));
 			}
@@ -141,6 +146,18 @@ public final class EmailSender {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Sends email to a single recipient.
+	 * 
+	 * @param subject
+	 * @param body
+	 * @param recipient
+	 * @return 
+	 */
+	public boolean send(String subject, String body, String recipient) {
+		return send(subject, body, Arrays.asList(recipient));
 	}
 
 }

@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.backend.facade;
 
+import cz.cuni.xrg.intlib.commons.app.communication.EmailSender;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.conf.MissingConfigPropertyException;
@@ -36,6 +37,14 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 	 * Number of milliseconds to wait before next retrial.
 	 */
 	private int wait = 2000;
+	
+	/**
+	 * Number of email notifications about failures already sent.
+	 */
+	private static int emailsSent = 0;
+	
+	@Autowired(required = false)
+	private EmailSender emailSender;
 	
 	@Autowired(required = false)
 	private AppConfig config;
@@ -164,6 +173,10 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 	private void handleRetries(int attempts, PersistenceException ex) {
 		
 		LOG.warn(String.format("Database is down after %d attempts.", attempts));
+		if (attempts == 1) {
+			// send notification after first error only
+			notify(ex);
+		}
 		
 		boolean loop = true;
 		if (retries >= 0) {
@@ -176,10 +189,27 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 				LOG.error("Thread interrupted while sleeping.", e);
 			}
 		} else if (!loop) {
-			LOG.error(String.format("Giving up on database after %d retries."));
+			LOG.error(String.format("Giving up on database after %d retries.", attempts));
 			throw ex;
 		}
 	}
 	
+	/**
+	 * Sends email notification to administrator about DB outage.
+	 * 
+	 * @param ex 
+	 */
+	private void notify(PersistenceException ex) {
+		if (emailSender != null) {
+			synchronized (PipelineFacade.class) {
+				if (emailsSent <= 0) {
+					String subject = "Intlib - RDBMS error";
+					String recipient = config.getString(ConfigProperty.EMAIL_ADMIN);
+					emailSender.send(subject, ex.toString(), recipient);
+					emailsSent++;
+				}
+			}
+		}
+	}
 	
 }

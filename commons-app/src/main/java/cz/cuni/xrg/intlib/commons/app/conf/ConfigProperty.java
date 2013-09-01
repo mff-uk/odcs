@@ -34,7 +34,8 @@ public enum ConfigProperty {
 	EMAIL_FROM_EMAIL("email.from"),	
 	EMAIL_AUTHORIZATION("email.authorization"),
 	EMAIL_USERNAME("email.username"),
-	EMAIL_PASSWORD("email.password")
+	EMAIL_PASSWORD("email.password"),
+	EMAIL_ADMIN("email.admin")
 	;
 	
 	private final String property;

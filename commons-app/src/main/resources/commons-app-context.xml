@@ -44,7 +44,12 @@
 	<bean id="logFacade" class="cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade" />
 
 	<!-- Facade for managing shedules -->
-	<bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" />	
+	<bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" />
+	
+	<!-- Service responsible for delivering emails -->
+	<bean id="emailSender" class="cz.cuni.xrg.intlib.commons.app.communication.EmailSender">
+		<constructor-arg ref="configuration" />
+	</bean>
 	
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
 	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig">
