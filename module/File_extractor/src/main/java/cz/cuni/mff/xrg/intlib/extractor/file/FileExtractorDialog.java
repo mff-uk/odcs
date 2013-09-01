@@ -39,15 +39,16 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	/**
 	 * ComboBox to set RDF format (Auto, RDF/XML, TTL, TriG, N3)
 	 */
-	private ComboBox comboBoxFormat; 
+	private ComboBox comboBoxFormat;
 
 	private CheckBox useHandler;  //Statistical handler
 
 	private Label labelFormat;
 
 	/**
-	 * TextField for set file extension that will be processed in some directory.
-	 * Uses in case of FileExtractType.PATH_TO_DIRECTORY of {@link #pathType}
+	 * TextField for set file extension that will be processed in some
+	 * directory. Uses in case of FileExtractType.PATH_TO_DIRECTORY of
+	 * {@link #pathType}
 	 */
 	private TextField textFieldOnly;
 
@@ -56,7 +57,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	/**
 	 * TextField to set destination of the file
 	 */
-	private TextField textFieldPath; 
+	private TextField textFieldPath;
 
 	private HorizontalLayout horizontalLayoutOnly;
 
@@ -65,7 +66,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	/**
 	 * OptionGroup for path type definition
 	 */
-	private OptionGroup pathType; 
+	private OptionGroup pathType;
 
 	private FileExtractType extractType;
 
@@ -89,7 +90,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	private VerticalLayout verticalLayoutDetails;
 
 	/**
-	 *  Basic constructor.
+	 * Basic constructor.
 	 */
 	public FileExtractorDialog() {
 		super(FileExtractorConfig.class);
@@ -108,8 +109,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	}
 
 	/**
-	 * Set format data to {@link #comboBoxFormat} and type data 
-	 * to OptionGroup {@link #pathType}
+	 * Set format data to {@link #comboBoxFormat} and type data to OptionGroup
+	 * {@link #pathType}
 	 */
 	private void mapData() {
 
@@ -138,13 +139,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface and 
-	 * configuring DPU
-	 * 
-	 * @throws ConfigException Exception which might be thrown when field {@link #textFieldPath}
-	 * contains null value.
-	 * @return conf Object holding configuration which is used in {@link #setConfiguration} 
-	 * to initialize fields in the configuration dialog.
+	 * to configuration object implementing {@link DPUConfigObject} interface
+	 * and configuring DPU
+	 *
+	 * @throws ConfigException Exception which might be thrown when field
+	 *                         {@link #textFieldPath} contains null value.
+	 * @return conf Object holding configuration which is used in
+	 *         {@link #setConfiguration} to initialize fields in the
+	 *         configuration dialog.
 	 */
 	@Override
 	public FileExtractorConfig getConfiguration() throws ConfigException {
@@ -153,12 +155,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			FileExtractorConfig conf = new FileExtractorConfig();
-			
-			if(extractType == FileExtractType.UPLOAD_FILE){
-				conf.Path = FileUploadReceiver.path + "/" +textFieldPath.getValue().trim();
 
-			}
-			else{
+			if (extractType == FileExtractType.UPLOAD_FILE) {
+				conf.Path = FileUploadReceiver.path + "/" + textFieldPath
+						.getValue().trim();
+
+			} else {
 				conf.Path = textFieldPath.getValue().trim();
 			}
 
@@ -185,13 +187,16 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		}
 	}
 
-    /**
-    * Load values from configuration object implementing {@link DPUConfigObject} interface 
-    * and configuring DPU into the dialog where the configuration object may be edited.
-    *
-    * @throws ConfigException Exception not used in current implementation of this method.
-    * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
-    */
+	/**
+	 * Load values from configuration object implementing
+	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
+	 * where the configuration object may be edited.
+	 *
+	 * @throws ConfigException Exception not used in current implementation of
+	 *                         this method.
+	 * @param conf Object holding configuration which is used to initialize
+	 *             fields in the configuration dialog.
+	 */
 	@Override
 	public void setConfiguration(FileExtractorConfig conf) {
 
@@ -199,12 +204,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
 
-		
+
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 
-			 String filepath = conf.Path.trim();
-			 String filename = filepath.substring(filepath.lastIndexOf("/") + 1, filepath.length());
-			
+			String filepath = conf.Path.trim();
+			String filename = filepath.substring(filepath.lastIndexOf("/") + 1,
+					filepath.length());
+
 			textFieldPath.setReadOnly(false); // allow value settings
 			textFieldPath.setValue(filename.trim()); // set value
 			textFieldPath.setReadOnly(true); // forbid
@@ -224,8 +230,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
-	 * 
-	 * @return mainLayout GridLayout with all components of configuration dialog.
+	 *
+	 * @return mainLayout GridLayout with all components of configuration
+	 *         dialog.
 	 */
 	private GridLayout buildMainLayout() {
 
@@ -262,8 +269,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	}
 
 	/**
-	 * Return message to {@link #pathType} in accordance with file extract type of the item. 
-	 * 
+	 * Return message to {@link #pathType} in accordance with file extract type
+	 * of the item.
+	 *
 	 * @param type FileExtractType of {@link #pathType} item
 	 * @return message. String that assign to the {@link #pathType} item
 	 */
@@ -291,10 +299,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	}
 
 	/**
-	 * Builds layout contains Core tab components of {@link #tabSheet}.
-	 * Calls from {@link #buildMainLayout}
-
-	 * @return gridLayoutCore. GridLayout with components located at the Core tab.
+	 * Builds layout contains Core tab components of {@link #tabSheet}. Calls
+	 * from {@link #buildMainLayout}
+	 *
+	 * @return gridLayoutCore. GridLayout with components located at the Core
+	 *         tab.
 	 */
 	private GridLayout buildGridLayoutCore() {
 		// common part: create layout
@@ -398,7 +407,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 								textFieldPath.setReadOnly(false);
 								//File was upload to the temp folder. 
 								//Path to this file is setting to the textFieldPath field
-								textFieldPath.setValue(FileUploadReceiver.fileName
+								textFieldPath.setValue(
+										FileUploadReceiver.fileName
 										.toString());
 								textFieldPath.setReadOnly(true);
 							} //If upload was interrupt by user
@@ -459,7 +469,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					horizontalLayoutOnly.setSpacing(true);
 
 					// labelOnly
-					horizontalLayoutOnly.addComponent(new Label("If directory, process only files with extension:"));
+					horizontalLayoutOnly.addComponent(new Label(
+							"If directory, process only files with extension:"));
 
 					// textFieldOnly
 					textFieldOnly = new TextField("");
@@ -469,7 +480,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					horizontalLayoutOnly.addComponent(textFieldOnly);
 					horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
 							Alignment.TOP_RIGHT);
-						
+
 					//Adding component for specify file extension
 					gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
 
@@ -511,12 +522,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 		return gridLayoutCore;
 	}
-	
-	/**
-	 * Builds layout contains Details tab components of {@link #tabSheet}.
-	 * Calls from {@link #buildMainLayout}
 
-	 * @return verticalLayoutDetails. VerticalLayout with components located at the Details tab.
+	/**
+	 * Builds layout contains Details tab components of {@link #tabSheet}. Calls
+	 * from {@link #buildMainLayout}
+	 *
+	 * @return verticalLayoutDetails. VerticalLayout with components located at
+	 *         the Details tab.
 	 */
 	private VerticalLayout buildVerticalLayoutDetails() {
 		// common part: create layout
@@ -539,27 +551,32 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 //TODO: Petyr move the next two classes: UploadInfoWindow and FileUploadReceiver to 
 //commons-web for enable to use it also from fronted
-
 /**
  * Dialog for uploading status. Appear automatically after file upload start.
- * 
- *  @author Maria Kukhar
+ *
+ * @author Maria Kukhar
  *
  */
 class UploadInfoWindow extends Window implements Upload.StartedListener,
 		Upload.ProgressListener, Upload.FinishedListener {
 
 	private static final long serialVersionUID = 1L;
+
 	private final Label state = new Label();
+
 	private final Label fileName = new Label();
+
 	private final Label textualProgress = new Label();
+
 	private final ProgressIndicator pi = new ProgressIndicator();
+
 	private final Button cancelButton;
+
 	private final Upload upload;
-	
+
 	/**
 	 * Basic constructor
-	 * 
+	 *
 	 * @param upload. Upload component
 	 */
 	public UploadInfoWindow(Upload nextUpload) {
@@ -621,10 +638,9 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		upload.addProgressListener(this);
 		upload.addFinishedListener(this);
 	}
-	
+
 	/**
-	 *  this method gets called immediately after upload is
-	 *  finished
+	 * this method gets called immediately after upload is finished
 	 */
 	@Override
 	public void uploadFinished(final FinishedEvent event) {
@@ -636,8 +652,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	}
 
 	/**
-	 *  this method gets called immediately after upload is
-	 *  started
+	 * this method gets called immediately after upload is started
 	 */
 	@Override
 	public void uploadStarted(final StartedEvent event) {
@@ -654,22 +669,21 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	}
 
 	/**
-	 *  this method shows update progress
+	 * this method shows update progress
 	 */
 	@Override
 	public void updateProgress(final long readBytes, final long contentLength) {
 		// this method gets called several times during the update
 		pi.setValue(new Float(readBytes / (float) contentLength));
-		textualProgress.setValue("Processed " + (readBytes/1024) + " k bytes of "
-				+ (contentLength/1024) +" k");
+		textualProgress.setValue(
+				"Processed " + (readBytes / 1024) + " k bytes of "
+				+ (contentLength / 1024) + " k");
 	}
-
-
 }
 
 /**
  * Upload selected file to template directory
- * 
+ *
  * @author Maria Kukhar
  *
  */
@@ -686,16 +700,17 @@ class FileUploadReceiver implements Receiver {
 	public static String fileName;
 
 	public static File file;
+
 	public static Path path;
 
 	/**
-	 * return an OutputStream 
+	 * return an OutputStream
 	 */
 	@Override
 	public OutputStream receiveUpload(final String filename,
 			final String MIMEType) {
 		fileName = filename;
-		
+
 
 		try {
 			//create template directory
@@ -714,30 +729,29 @@ class FileUploadReceiver implements Receiver {
 
 			fos = new OutputStream() {
 				@Override
-				
 				public void write(final int b) throws IOException {
 					total++;
-					
+
 					fstream.write(b);
-					
+
 
 				}
-				
-				 public void write(byte b[], int off, int len) throws IOException {
-			        if (b == null) {
-			            throw new NullPointerException();
-			        } else if ((off < 0) || (off > b.length) || (len < 0) ||
-			                   ((off + len) > b.length) || ((off + len) < 0)) {
-			            throw new IndexOutOfBoundsException();
-			        } else if (len == 0) {
-			            return;
-			        }
-			        fstream.write(b, off, len);
-			        total+=len;
-			        
-			        
-			    }
 
+				@Override
+				public void write(byte b[], int off, int len) throws IOException {
+					if (b == null) {
+						throw new NullPointerException();
+					} else if ((off < 0) || (off > b.length) || (len < 0)
+							|| ((off + len) > b.length) || ((off + len) < 0)) {
+						throw new IndexOutOfBoundsException();
+					} else if (len == 0) {
+						return;
+					}
+					fstream.write(b, off, len);
+					total += len;
+
+
+				}
 
 				@Override
 				public void close() throws IOException {
@@ -755,5 +769,4 @@ class FileUploadReceiver implements Receiver {
 		}
 
 	}
-
 }
