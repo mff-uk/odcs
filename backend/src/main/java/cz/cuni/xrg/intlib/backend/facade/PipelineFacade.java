@@ -14,6 +14,7 @@ import javax.persistence.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for managing pipelines, which tolerates database crashes. This facade
@@ -82,6 +83,7 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 	}
 
 	@Override
+	@Transactional
 	public void save(Pipeline pipeline) {
 		int attempts = 0;
 		while (true) try {
@@ -116,6 +118,7 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 	}
 
 	@Override
+	@Transactional
 	public void save(PipelineExecution exec) {
 		int attempts = 0;
 		while (true) try {
@@ -128,6 +131,7 @@ public class PipelineFacade extends cz.cuni.xrg.intlib.commons.app.pipeline.Pipe
 	}
 
 	@Override
+	@Transactional
 	public void delete(PipelineExecution exec) {
 		int attempts = 0;
 		while (true) try {
