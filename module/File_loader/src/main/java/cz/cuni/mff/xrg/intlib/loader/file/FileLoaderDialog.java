@@ -12,7 +12,7 @@ import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import java.util.List;
 
 /**
- * Configuration dialog for DPU RDF File Loader. 
+ * Configuration dialog for DPU RDF File Loader.
  *
  * @author Maria
  *
@@ -37,12 +37,12 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	/**
 	 * ComboBox to set output RDF format (RDF/XML, TTL, TriG, N3)
 	 */
-	private ComboBox comboBoxFormat; 
+	private ComboBox comboBoxFormat;
 
 	private Label labelFormat;
 
 	/**
-	 * CheckBox to set that each run of the loader should generate a new file, 
+	 * CheckBox to set that each run of the loader should generate a new file,
 	 * e.g. {name}-00001.ttl, {name}-00002.ttl.
 	 */
 	private CheckBox checkBoxDiffName;
@@ -50,23 +50,31 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	/**
 	 * TextField to set name of the file (without extension).
 	 */
-	private TextField textFieldFileName; 
+	private TextField textFieldFileName;
 
 	/**
-	 * TextField to set path to the local directory to which the file should be stored.
+	 * TextField to set path to the local directory to which the file should be
+	 * stored.
 	 */
-	private TextField textFieldDir;	
+	private TextField textFieldDir;
+
+	private Validator.InvalidValueException ex;
 
 	/**
-	 *  Basic constructor.
+	 * Basic constructor.
 	 */
 	public FileLoaderDialog() {
 		super(FileLoaderConfig.class);
+		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
 	}
 
+	private void inicialize()
+	{
+		ex=new Validator.InvalidValueException("Valid");
+	}
 	
 	/**
 	 * Set format data to {@link #comboBoxFormat}
@@ -86,8 +94,9 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
-	 * 
-	 * @return mainLayout GridLayout with all components of configuration dialog.
+	 *
+	 * @return mainLayout GridLayout with all components of configuration
+	 *         dialog.
 	 */
 	private GridLayout buildMainLayout() {
 		// common part: create layout
@@ -127,12 +136,12 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		return mainLayout;
 	}
 
-	
 	/**
-	 * Builds layout contains Core tab components of {@link #tabSheet}.
-	 * Calls from {@link #buildMainLayout}
-
-	 * @return verticalLayoutCore. VerticalLayout with components located at the Core tab.
+	 * Builds layout contains Core tab components of {@link #tabSheet}. Calls
+	 * from {@link #buildMainLayout}
+	 *
+	 * @return verticalLayoutCore. VerticalLayout with components located at the
+	 *         Core tab.
 	 */
 	private VerticalLayout buildVerticalLayoutCore() {
 		// common part: create layout
@@ -159,7 +168,8 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 						.isEmpty()) {
 					return;
 				}
-				throw new InvalidValueException("Directory must be filled!");
+				ex = new InvalidValueException("Directory must be filled!");
+				throw ex;
 			}
 		});
 		verticalLayoutCore.addComponent(textFieldDir);
@@ -179,7 +189,9 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 						.isEmpty()) {
 					return;
 				}
-				throw new InvalidValueException("File name must be filled!");
+
+				ex = new InvalidValueException("File name must be filled!");
+				throw ex;
 			}
 		});
 		verticalLayoutCore.addComponent(textFieldFileName);
@@ -223,22 +235,22 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		return verticalLayoutCore;
 	}
 
-
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface and 
-	 * configuring DPU
-	 * 
-	 * @throws ConfigException Exception which might be thrown when fields {@link #textFieldFileName} 
-	 * and {@link #textFieldDir} contain null value.
-	 * @return config Object holding configuration which is used in {@link #setConfiguration} 
-	 * to initialize fields in the configuration dialog.
+	 * to configuration object implementing {@link DPUConfigObject} interface
+	 * and configuring DPU
+	 *
+	 * @throws ConfigException Exception which might be thrown when fields
+	 *                         {@link #textFieldFileName} and
+	 *                         {@link #textFieldDir} contain null value.
+	 * @return config Object holding configuration which is used in
+	 *         {@link #setConfiguration} to initialize fields in the
+	 *         configuration dialog.
 	 */
-	
 	@Override
 	public FileLoaderConfig getConfiguration() throws ConfigException {
 		if ((!textFieldDir.isValid()) || (!textFieldFileName.isValid())) {
-			throw new ConfigException();
+			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			FileLoaderConfig config = new FileLoaderConfig();
 			config.DiffName = checkBoxDiffName.getValue();
@@ -250,15 +262,18 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 	}
 
-    /**
-    * Load values from configuration object implementing {@link DPUConfigObject} interface and 
-    * configuring DPU into the dialog where the configuration object may be edited.
-    * 
-    * @throws ConfigException Exception which might be thrown when components 
-    * {@link #textFieldFileName}, {@link #textFieldDir}, {@link #checkBoxDiffName}, {@link #comboBoxFormat} 
-    * in read-only mode or when values loading to this fields could not be converted.
-    * @param conf Object holding configuration which is used to initialize fields in the configuration dialog.
-    */
+	/**
+	 * Load values from configuration object implementing
+	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
+	 * where the configuration object may be edited.
+	 *
+	 * @throws ConfigException Exception which might be thrown when components
+	 *                         {@link #textFieldFileName}, {@link #textFieldDir}, {@link #checkBoxDiffName}, {@link #comboBoxFormat}
+	 *                         in read-only mode or when values loading to this
+	 *                         fields could not be converted.
+	 * @param conf Object holding configuration which is used to initialize
+	 *             fields in the configuration dialog.
+	 */
 	@Override
 	public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
 		try {
@@ -266,9 +281,9 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 			textFieldDir.setValue(conf.DirectoryPath.trim());
 			textFieldFileName.setValue(conf.FileName.trim());
 			comboBoxFormat.setValue(conf.RDFFileFormat);
-		} catch (Property.ReadOnlyException | Converter.ConversionException ex) {
+		} catch (Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception
-			throw new ConfigException(ex.getMessage(), ex);
+			throw new ConfigException(e.getMessage(), e);
 		}
 	}
 }
