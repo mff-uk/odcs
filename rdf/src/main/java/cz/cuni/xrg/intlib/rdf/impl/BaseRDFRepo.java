@@ -876,7 +876,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				if (!useStatisticHandler) {
 
 					if (extractFail) {
-						TripleCountHandler handler = new TripleCountHandler();
+						TripleCountHandler handler = new TripleCountHandler(
+								connection);
+
+						if (graph != null) {
+							handler.enforceContext(graph);
+						}
 						RDFParser parser = getRDFParser(format, handler);
 						try {
 							parser.parse(inputStreamReader, endpointGraph);
@@ -886,15 +891,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						}
 					}
 
-					if (graph != null) {
-
-						connection.add(inputStreamReader, endpointGraph,
-								format,
-								graph);
-					} else {
-						connection.add(inputStreamReader, endpointGraph,
-								format);
-					}
 				} else {
 					StatisticalHandler handler = new StatisticalHandler();
 
@@ -2095,7 +2091,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private String prepareLiteral(Literal literal) {
-		String label = "\"" + literal.getLabel() + "\"";
+		String label = "\"\"\"" + literal.getLabel() + "\"\"\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
 			return label + "@" + literal.getLanguage();
