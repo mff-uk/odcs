@@ -271,6 +271,8 @@ public class PipelineGraph implements Serializable {
 
 	/**
 	 * Validates new edge in graph.
+	 * TODO refactor and use <code>Exception</code>s instead of <code>String</code>s.
+	 * 
 	 * @param fromId
 	 * @param toId
 	 * @return null on success, error message otherwise
@@ -280,9 +282,6 @@ public class PipelineGraph implements Serializable {
         Node to = getNodeById(toId);
 
 		// Rules validation with corresponding error messages.
-		if(to.getDpuInstance().getType() == DPUType.EXTRACTOR) {
-			return "Extractor cannot have an input edge!";
-		}
 		if(from.getDpuInstance().getType() == DPUType.LOADER) {
 			return "Loader cannot have an output edge!";
 		}
