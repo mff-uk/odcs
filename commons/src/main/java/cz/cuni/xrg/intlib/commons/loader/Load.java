@@ -8,7 +8,9 @@ import cz.cuni.xrg.intlib.commons.dpu.DPUException;
  * 
  * 
  * @author Jiri Tomes
+ * @deprecated use {@link cz.cuni.xrg.intlib.common.dpu.DPU} instead
  */
+@Deprecated
 public interface Load {
 
 	/**

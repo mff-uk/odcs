@@ -10,7 +10,7 @@ package cz.cuni.xrg.intlib.commons.dpu;
  * @author Petyr
  *
  */
-public abstract class DPUException extends RuntimeException {
+public class DPUException extends Exception {
 
     public DPUException(Throwable cause) {
         super(cause);

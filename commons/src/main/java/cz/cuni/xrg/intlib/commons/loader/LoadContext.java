@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
  * @author Petyr
  * @see Load
  */
+@Deprecated
 public interface LoadContext extends ProcessingContext, ContextInputs { 
 	
 }
