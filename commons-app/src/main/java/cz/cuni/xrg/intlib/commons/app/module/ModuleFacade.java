@@ -138,15 +138,17 @@ public class ModuleFacade {
 
 	/**
 	 * Return content of manifest for given bundle that is stored in DPU's
-	 * directory.
+	 * directory. This method does not load DPU into system.
 	 * 
 	 * @param relativePath Relative path in DPU's directory.
 	 * @return Description stored in manifest file or null in case of error.
+	 * @deprecated Use {@link cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer#getJarDescription(String)}
 	 */
+	@Deprecated
 	public String getJarDescription(String relativePath) {
 
-		String uri = "file:///" + configuration.getDpuFolder() + File.separator
-				+ relativePath;
+		final String uri = "file:///" + configuration.getDpuFolder()
+				+ File.separator + relativePath;
 
 		URL url;
 		try {
@@ -168,6 +170,38 @@ public class ModuleFacade {
 			// in case of exception return null
 			return null;
 		}
+	}
+
+	/**
+	 * Return content of manifest file (properties) for given jar-file that is
+	 * stored in DPU's directory. This method does not load DPU into system.
+	 * 
+	 * @param relativePath Relative path in DPU's directory.
+	 * @return Jar attributes or null in case of error.
+	 */
+	public Attributes getJarProperties(String relativePath) {
+
+		final String uri = "file:///" + configuration.getDpuFolder()
+				+ File.separator + relativePath;
+
+		URL url;
+		try {
+			url = new URL(uri);
+		} catch (MalformedURLException ex) {
+			LOG.error("Failed to read create utl from {}", relativePath, ex);
+			return null;
+		}
+
+		Attributes attributes = null;
+		try (InputStream is = url.openStream()) {
+			Manifest manifest = new Manifest(is);
+			attributes = manifest.getMainAttributes();
+			is.close();
+		} catch (IOException ex) {
+			LOG.error("Failed to read attributes for: '{}'", uri, ex);
+			return null;
+		}
+		return attributes;
 	}
 
 	/**

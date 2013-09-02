@@ -53,6 +53,7 @@ import com.vaadin.ui.Upload.StartedEvent;
 
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
@@ -389,22 +390,20 @@ public class DPUCreate extends Window {
 						return;
 
 					}
-					String jarDescription = App.getApp().getModules()
-							.getJarDescription(relativePath);
+					
+					DPUExplorer dpuExplorer = App.getApp().getDPUExplorere();
+					
+					String jarDescription = dpuExplorer.getJarDescription(relativePath);
 					if (jarDescription == null) {
 						// failed to read description .. use empty string ?
 						jarDescription = "";
 					}
 
 					// check type ..
-					DPUType dpuType = null;
-					if (dpuObject instanceof Extract) {
-						dpuType = DPUType.EXTRACTOR;
-					} else if (dpuObject instanceof Transform) {
-						dpuType = DPUType.TRANSFORMER;
-					} else if (dpuObject instanceof Load) {
-						dpuType = DPUType.LOADER;
-					} else {
+					DPUType dpuType = dpuExplorer.getType(dpuObject, relativePath);
+					if (dpuType == null) {
+						// TODO Petyr, Maria: uninstall the DPU from Intlib as well
+						
 						// unknown type .. delete dpu and throw error
 						destFile.delete();
 						uploadFile.setReadOnly(false);
