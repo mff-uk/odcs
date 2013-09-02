@@ -110,40 +110,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected boolean isReadOnly;
 
 	/**
-	 * Add one tripple RDF (statement) to the repository (default empty
-	 * namespace).
-	 *
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
-	 */
-	@Override
-	public void addTriple(String subjectName,
-			String predicateName, String objectName) {
-
-		Statement statement = createNewStatement(subjectName, predicateName,
-				objectName);
-		addStatement(statement, graph);
-	}
-
-	/**
-	 * Add one tripple RDF (statement) to the repository.
-	 *
-	 * @param namespace     String name of defined namespace
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
-	 */
-	@Override
-	public void addTriple(String namespace, String subjectName,
-			String predicateName, String objectName) {
-
-		Statement statement = createNewStatement(namespace, subjectName,
-				predicateName, objectName);
-		addStatement(statement, graph);
-	}
-
-	/**
 	 * Add all RDF data from string to repository.
 	 *
 	 * @param rdfString string constains RDF data.
@@ -1108,22 +1074,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * Return if RDF triple is in repository.
 	 *
-	 * @param namespace     String name of defined namespace
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
+	 * @param subject   URI or blank node for subject
+	 * @param predicate URI for predicate
+	 * @param object    URI, blank node or literal for object
 	 * @return true if such statement is in repository, false otherwise.
 	 */
 	@Override
-	public boolean isTripleInRepository(String namespace, String subjectName,
-			String predicateName, String objectName) {
+	public boolean isTripleInRepository(Resource subject,
+			URI predicate, Value object) {
 		boolean hasTriple = false;
 
 
-
 		RepositoryConnection connection = null;
-		Statement statement = createNewStatement(namespace, subjectName,
-				predicateName, objectName);
+		Statement statement = new StatementImpl(subject, predicate, object);
 
 		try {
 			connection = repository.getConnection();
@@ -2228,33 +2191,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	protected Statement createNewStatement(String subjectName,
-			String predicateName, String objectName) {
-		ValueFactory valueFaktory = repository.getValueFactory();
-
-		URI subject = valueFaktory.createURI(subjectName);
-		URI predicate = valueFaktory.createURI(predicateName);
-		Literal object = valueFaktory.createLiteral(objectName);
-
-		Statement statement = new StatementImpl(subject, predicate, object);
-
-		return statement;
-	}
-
-	protected Statement createNewStatement(String namespace, String subjectName,
-			String predicateName, String objectName) {
-
-		ValueFactory valueFaktory = repository.getValueFactory();
-
-		URI subject = valueFaktory.createURI(namespace, subjectName);
-		URI predicate = valueFaktory.createURI(namespace, predicateName);
-		Literal object = valueFaktory.createLiteral(objectName);
-
-		Statement statement = new StatementImpl(subject, predicate, object);
-
-		return statement;
-	}
-
 	protected URI createNewGraph(String graphURI) {
 		if (graphURI.toLowerCase().startsWith("http://")) {
 
@@ -2380,5 +2316,96 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	protected void setReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
+	}
+	
+	/**
+	 * Add one tripple RDF (statement) to the repository.
+	 *
+	 * @param subject   One of type for subject - URI,BlankNode.
+	 * @param predicate URI for subject.
+	 * @param object    One of type for object - URI,BlankNode or Literal.
+	 */
+	@Override
+	public void addTriple(Resource subject, URI predicate, Value object) {
+		Statement statement = new StatementImpl(subject, predicate, object);
+		addStatement(statement, graph);
+
+	}
+
+	/**
+	 * Create new blank node with defined id.
+	 *
+	 * @param id String value of ID.
+	 * @return created blank node.
+	 */
+	@Override
+	public BNode createBlankNode(String id) {
+		ValueFactory factory = repository.getValueFactory();
+		return factory.createBNode(id);
+	}
+
+	/**
+	 * Create new URI from namespace and localname.
+	 *
+	 * @param namespace String name of used namespace
+	 * @param localName String local name.
+	 * @return created URI.
+	 */
+	@Override
+	public URI createURI(String namespace, String localName) {
+		ValueFactory factory = repository.getValueFactory();
+		return factory.createURI(namespace, localName);
+
+	}
+
+	/**
+	 * Create new URI from String.
+	 *
+	 * @param uri String value for URI.
+	 * @return created URI.
+	 */
+	@Override
+	public URI createURI(String uri) {
+		ValueFactory factory = repository.getValueFactory();
+		return factory.createURI(uri);
+
+	}
+
+	/**
+	 * Create new typed literal.
+	 *
+	 * @param literalLabel String value for literal.
+	 * @param dataType     URI of data type for {@literal}.
+	 * @return created typed literal.
+	 */
+	@Override
+	public Literal createLiteral(String literalLabel, URI dataType) {
+		ValueFactory factory = repository.getValueFactory();
+		return factory.createLiteral(literalLabel, dataType);
+	}
+
+	/**
+	 * Create new language literal.
+	 *
+	 * @param literalLabel String value for literal.
+	 * @param language     String value for language.
+	 * @return created language literal.
+	 */
+	@Override
+	public Literal createLiteral(String literalLabel, String language) {
+		ValueFactory factory = repository.getValueFactory();
+		return factory.createLiteral(literalLabel, language);
+	}
+
+	/**
+	 * Create new label literal.
+	 *
+	 * @param literalLabel String value for literal.
+	 * @return created language literal.
+	 */
+	@Override
+	public Literal createLiteral(String literalLabel) {
+		ValueFactory factory = repository.getValueFactory();
+		return factory.createLiteral(literalLabel);
 	}
 }
