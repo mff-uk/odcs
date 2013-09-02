@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
  * @author Petyr
  * @see Transform
  */
+@Deprecated
 public interface TransformContext
 		extends ProcessingContext, ContextInputs, ContextOutputs {
 

@@ -12,6 +12,7 @@ import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
  * @author Petyr
  * @see Extract
  */
+@Deprecated
 public interface ExtractContext extends ProcessingContext, ContextOutputs {
 
 }

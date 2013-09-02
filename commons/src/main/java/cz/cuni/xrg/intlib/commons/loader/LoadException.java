@@ -7,6 +7,7 @@ package cz.cuni.xrg.intlib.commons.loader;
  * @see Load
  * @author Petyr
  */
+@Deprecated
 public class LoadException extends Exception {
 
     public LoadException(Throwable cause) {

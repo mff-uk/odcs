@@ -7,6 +7,7 @@ package cz.cuni.xrg.intlib.commons.extractor;
  * @see Extract
  * @author Petyr
  */
+@Deprecated
 public class ExtractException extends Exception {
 
     public ExtractException(Throwable cause) {

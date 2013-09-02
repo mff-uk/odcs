@@ -7,6 +7,7 @@ package cz.cuni.xrg.intlib.commons.transformer;
  * @see Transform
  * @author Petyr
  */
+@Deprecated
 public class TransformException extends Exception {
 
     public TransformException(Throwable cause) {
