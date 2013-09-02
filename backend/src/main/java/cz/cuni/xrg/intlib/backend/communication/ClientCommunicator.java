@@ -58,7 +58,7 @@ class ClientCommunicator implements Runnable {
 		}
 		
         // decide what to do next based on message
-        switch (msg) {
+        switch (msg) {        	
             case UNKNOWN:
                 // unknown command, ignore
                 break;
@@ -67,6 +67,9 @@ class ClientCommunicator implements Runnable {
                 // as a source use Server class instance (the one who create us)
                 eventPublisher.publishEvent(new EngineEvent(EngineEventType.CHECK_DATABASE, server));
                 break;
+            case HEARTBEAT:
+            	// just heart beat, do not do anything
+            	break;
         }
     }
 }

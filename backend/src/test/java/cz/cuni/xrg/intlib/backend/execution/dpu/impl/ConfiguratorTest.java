@@ -1,17 +1,14 @@
 package cz.cuni.xrg.intlib.backend.execution.dpu.impl;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
+import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

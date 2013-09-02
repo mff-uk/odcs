@@ -183,9 +183,6 @@ public class Engine
 									execution.getId(), execution.getPipeline()
 											.getId());
 						} else {
-							// use first node ..
-							Node node = execution.getPipeline().getGraph()
-									.getNodes().iterator().next();
 							eventPublisher.publishEvent(
 									PipelineFailedEvent.create(
 											"Failed to recover.",

@@ -2,8 +2,6 @@ package cz.cuni.xrg.intlib.commons.app.scheduling;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
