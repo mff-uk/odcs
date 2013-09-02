@@ -7,8 +7,10 @@ import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import java.io.File;
+import org.openrdf.model.Resource;
 
 import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
 
@@ -20,18 +22,6 @@ import org.openrdf.rio.RDFFormat;
  *
  */
 public interface RDFDataUnit extends DataUnit, RDFDataUnitHelper {
-
-	/**
-	 * Add one tripple RDF (statement) to the repository.
-	 *
-	 * @param namespace     String name of defined namespace
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
-	 */
-	public void addTriple(String namespace, String subjectName,
-			String predicateName,
-			String objectName);
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
@@ -151,15 +141,13 @@ public interface RDFDataUnit extends DataUnit, RDFDataUnitHelper {
 	/**
 	 * Return if RDF triple is in repository.
 	 *
-	 * @param namespace     String name of defined namespace
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
+	 * @param subject   URI or blank node for subject
+	 * @param predicate URI for predicate
+	 * @param object    URI, blank node or literal for object
 	 * @return true if such statement is in repository, false otherwise.
 	 */
-	public boolean isTripleInRepository(String namespace, String subjectName,
-			String predicateName,
-			String objectName);
+	public boolean isTripleInRepository(Resource subject,
+			URI predicate, Value object);
 
 	/**
 	 * Removes all RDF data from repository.
@@ -212,4 +200,6 @@ public interface RDFDataUnit extends DataUnit, RDFDataUnitHelper {
 	 * create new instance.
 	 */
 	public void shutDown();
+	
+	
 }
