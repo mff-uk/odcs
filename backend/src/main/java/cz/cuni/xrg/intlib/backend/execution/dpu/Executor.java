@@ -396,8 +396,10 @@ public final class Executor implements Runnable {
 		}
 		
 		// execute the given instance - also catch all exception
+		eventPublisher.publishEvent(DPUEvent.createStart(context, this));
 		if (executeInstance(dpuInstance, context)) {
 			// execute finished successfully
+			eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
 		} else {
 			return false;
 		}
