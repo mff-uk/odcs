@@ -194,6 +194,28 @@ public class PipelineFacade {
 
 		return resultList;
 	}
+	
+	/**
+	 * Fetch executions for given pipeline in given status.
+	 * @param pipeline Pipeline which executions should be fetched.
+	 * @param status Execution status, in which execution should be.
+	 * @return PipelineExecutions
+	 * 
+	 */
+	public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
+		@SuppressWarnings("unchecked")
+		List<PipelineExecution> resultList = Collections.checkedList(
+				em.createQuery(
+				"SELECT e FROM PipelineExecution e" +
+				" WHERE e.pipeline = :pipe" +
+				" AND e.status = :status")
+				.setParameter("pipe", pipeline)
+				.setParameter("status", status)
+				.getResultList(),
+				PipelineExecution.class
+		);
+		return resultList;
+	}
 
 	/**
 	 * Return end time of latest execution of given status for given pipeline.

@@ -10,8 +10,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
@@ -20,7 +23,9 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
+import java.util.List;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
+import org.vaadin.dialogs.ConfirmDialog;
 
 class PipelineList extends ViewComponent {
 
@@ -88,9 +93,33 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							App.getApp().getPipelines().delete(pipeline);
-							// now we have to remove pipeline from table
-							source.removeItem(itemId);
+							String message = "Would you like to really delete the pipeline and all associated records (DPU instances e.g.)?";
+							if(isExecInSystem(pipeline, PipelineExecutionStatus.RUNNING)) {
+								message += "\nPipeline is running currently, the current run will be cancelled!";
+							}
+							if(isExecInSystem(pipeline, PipelineExecutionStatus.SCHEDULED)) {
+								message += "\nPipeline is scheduled currently, the scheduled execution will be deleted!";
+							}
+							if(!App.getSchedules().getSchedulesFor(pipeline).isEmpty()) {
+								message += "\nThere is/are scheduler rules with the pipeline, it/they will be deleted!";
+							}
+							
+							ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
+
+								@Override
+								public void onClose(ConfirmDialog cd) {
+									if(cd.isConfirmed()) {
+										App.getApp().getPipelines().delete(pipeline);
+										// now we have to remove pipeline from table
+										source.removeItem(itemId);
+										refreshData();
+										tablePipelines.setVisibleColumns("id", "name", "description","");
+									}
+								}
+							});
+							
+							
+							
 						}
 					});
 			layout.addComponent(deleteButton);
@@ -139,6 +168,16 @@ class PipelineList extends ViewComponent {
 			return layout;
 		}
 
+	}
+	
+	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
+		List<PipelineExecution> execs = App.getPipelines().getExecutions(pipeline, status);
+		if(execs.isEmpty()) {
+			return false;
+		} else {
+			//TODO: Differentiate by user maybe ?!
+			return true;
+		}
 	}
 	
 	/**
