@@ -70,6 +70,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
 
 	/**
+	 * Graph name using for transaktion to loading to SPARQL endpoint.
+	 */
+	protected static final String TEMP_GRAPH_NAME = "http://tempGraph";
+
+	/**
 	 * Default construct query using for extraction without query in parameter.
 	 */
 	protected static final String DEFAUTL_CONSTRUCT_QUERY = "construct {?x ?y ?z} where {?x ?y ?z}";
@@ -622,48 +627,26 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				List<String> dataParts = getInsertPartsTriplesQuery(
 						STATEMENTS_COUNT);
-				final int partsCount = dataParts.size();
 
-				for (int j = 0; j < partsCount; j++) {
+				if (insertType == InsertType.STOP_WHEN_BAD_PART) {
 
-					final String query = dataParts.get(j);
-
-					final String processing = String.valueOf(j + 1) + "/" + String
-							.valueOf(partsCount);
-
-					String myquery = getEncodedQuery(query);
 					try {
-						InputStreamReader inputStreamReader = getEndpointStreamReader(
-								endpointURL, endpointGraph, myquery,
-								RDFFormat.N3);
-
-						inputStreamReader.close();
-
-						logger.debug(
-								"Data " + processing + " part loaded successful");
+						loadDataParts(endpointURL, TEMP_GRAPH_NAME, dataParts,
+								insertType);
+						loadDataParts(endpointURL, endpointGraph, dataParts,
+								insertType);
 
 					} catch (InsertPartException e) {
-						String message;
-
-						switch (insertType) {
-							case SKIP_BAD_PARTS: //go to next part
-								message = "Data " + processing + " part was skiped. "
-										+ e.getMessage();
-								logger.warn(message);
-								break;
-							case STOP_WHEN_BAD_PART:
-
-								message = "Inserting failt to " + processing + " data part. "
-										+ e.getMessage();
-								logger.error(message);
-
-								throw new RDFException(message, e);
-						}
-
-					} catch (IOException e) {
 						throw new RDFException(e.getMessage(), e);
+					} finally {
+						clearEndpointGraph(endpointURL, TEMP_GRAPH_NAME);
 					}
+
+				} else {
+					loadDataParts(endpointURL, endpointGraph, dataParts,
+							insertType);
 				}
+
 			}
 
 		} catch (RepositoryException ex) {
@@ -679,6 +662,54 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				}
 			}
 
+		}
+	}
+
+	private void loadDataParts(URL endpointURL, String endpointGraph,
+			List<String> dataParts, InsertType insertType)
+			throws RDFException {
+
+		final int partsCount = dataParts.size();
+
+		for (int j = 0; j < partsCount; j++) {
+
+			final String query = dataParts.get(j);
+
+			final String processing = String.valueOf(j + 1) + "/" + String
+					.valueOf(partsCount);
+
+			String myquery = getEncodedQuery(query);
+			try {
+				InputStreamReader inputStreamReader = getEndpointStreamReader(
+						endpointURL, endpointGraph, myquery,
+						RDFFormat.N3);
+
+				inputStreamReader.close();
+
+				logger.debug(
+						"Data " + processing + " part loaded successful");
+
+			} catch (InsertPartException e) {
+				String message;
+
+				switch (insertType) {
+					case SKIP_BAD_PARTS: //go to next part
+						message = "Data " + processing + " part was skiped. "
+								+ e.getMessage();
+						logger.warn(message);
+						break;
+					case STOP_WHEN_BAD_PART:
+
+						message = "Inserting failt to " + processing + " data part. "
+								+ e.getMessage();
+						logger.error(message);
+
+						throw new InsertPartException(message, e);
+				}
+
+			} catch (IOException e) {
+				throw new RDFException(e.getMessage(), e);
+			}
 		}
 	}
 
