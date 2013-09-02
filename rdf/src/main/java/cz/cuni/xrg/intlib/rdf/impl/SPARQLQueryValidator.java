@@ -3,6 +3,8 @@ package cz.cuni.xrg.intlib.rdf.impl;
 import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.enums.SPARQLQueryType;
 import cz.cuni.xrg.intlib.rdf.interfaces.Validator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
@@ -43,8 +45,35 @@ public class SPARQLQueryValidator implements Validator {
 		return type1.equals(type2);
 	}
 
+	private String getQueryWithoutPrexices(String myQuery) {
+
+		String regex = ".*prefix\\s+[\\w]+[:]?\\s+[<]?http://[\\w:/\\.#]+[>]?\\s+";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(myQuery.toLowerCase());
+
+		boolean hasResult = matcher.find();
+
+		if (hasResult) {
+
+			int index = matcher.end();
+
+			while (matcher.find()) {
+				index = matcher.end();
+			}
+
+			String result = myQuery.substring(index, myQuery.length())
+					.toLowerCase();
+
+			return result;
+
+
+		}
+
+		return myQuery.trim().toLowerCase();
+	}
+
 	private SPARQLQueryType getSPARQLQueryType() {
-		String myQyery = query.toLowerCase().replaceAll(" ", "");
+		String myQyery = getQueryWithoutPrexices(query);
 
 		SPARQLQueryType myType = SPARQLQueryType.UNKNOWN;
 
@@ -74,7 +103,7 @@ public class SPARQLQueryValidator implements Validator {
 
 		boolean isValid = true;
 
-		LocalRDFRepo emptyRepo= RDFDataUnitFactory.createLocalRDFRepo("");
+		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
 		Repository repository = emptyRepo.getDataRepository();
 
 		RepositoryConnection connection = null;
