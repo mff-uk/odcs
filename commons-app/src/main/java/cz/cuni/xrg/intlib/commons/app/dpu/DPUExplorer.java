@@ -66,12 +66,6 @@ public class DPUExplorer {
 		} else if (DPUInstance instanceof Load) {
 			return DPUType.LOADER;
 		}
-		// we try to use pom.xml information
-		Attributes attributes = moduleFacade.getJarProperties(relativePath);
-		if (attributes == null) {
-			// can't load information .. we run out of options
-			return null;
-		}
 		
 		// try use annotations to resolve DPU type
 		Class<?> objectClass = DPUInstance.getClass();
@@ -83,7 +77,12 @@ public class DPUExplorer {
 			return DPUType.LOADER;
 		}		
 		
-		// use pom.xml
+		// we try to use pom.xml information
+		Attributes attributes = moduleFacade.getJarProperties(relativePath);
+		if (attributes == null) {
+			// can't load information .. we run out of options
+			return null;
+		}
 		String typeName = attributes.getValue(DPU_TYPE_NAME);
 		if (DPU_TYPE_EXTRACTOR.compareToIgnoreCase(typeName) == 0) {
 			return DPUType.EXTRACTOR;
