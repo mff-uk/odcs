@@ -9,7 +9,6 @@ import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openrdf.model.*;
@@ -74,7 +73,9 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 		try {
 			repository.initialize();
-			logger.info("New repository incicialized");
+			logger.info("New local repository with data graph <"
+					+ getDataGraph().stringValue()
+					+ "> successfully incicialized.");
 
 		} catch (RepositoryException ex) {
 			logger.debug(ex.getMessage());
@@ -301,8 +302,6 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		}
 
 	}
-
-	
 
 	private File getFileForDirectory(File directory) {
 

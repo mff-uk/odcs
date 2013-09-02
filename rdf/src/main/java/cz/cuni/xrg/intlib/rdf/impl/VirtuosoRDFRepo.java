@@ -56,15 +56,17 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		this.dataUnitName = dataUnitName;
 
 		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-		
+
 		setDataGraph(defaultGraph);
-		
+
 		repository = new VirtuosoRepository(URL_Host_List, user, password,
 				defaultGraph);
 
 		try {
 			repository.initialize();
-			logger.info("Virtuoso repository successfully incicialized");
+			logger.info("Virtuoso repository with data graph <"
+					+ defaultGraph
+					+ "> successfully incicialized.");
 
 		} catch (RepositoryException ex) {
 			logger.warn("Your Virtuoso is maybe turn off.");
@@ -97,7 +99,9 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	@Override
 	public void release() {
 		shutDown();
-		logger.info("Virtuoso repository succesfully shut down");
+		logger.info("Virtuoso repository with data graph <"
+				+ getDefaultGraph()
+				+ "> succesfully shut down");
 	}
 
 	@Override

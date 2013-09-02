@@ -2273,7 +2273,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			public void run() {
 				try {
 					repository.shutDown();
-					logger.debug("Repository destroyed SUCCESSFULL");
+					logger.debug("Repository with data graph <"+getDataGraph().stringValue()+"> destroyed SUCCESSFULL.");
 				} catch (RepositoryException ex) {
 					logger.debug(
 							"Repository was not destroyed - potencial problems with locks .");
