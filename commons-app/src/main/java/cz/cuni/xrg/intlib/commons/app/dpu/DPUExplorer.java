@@ -20,26 +20,6 @@ import cz.cuni.xrg.intlib.commons.dpu.annotation.AsLoader;
  *
  */
 public class DPUExplorer {
-
-	/**
-	 * Name of property that store DPU type in pom.xml.
-	 */
-	private static final String DPU_TYPE_NAME = "dpu-type";
-	
-	/**
-	 * Value of {@link @DPU_TYPE_NAME} that identify {@link DPUType#EXTRACTOR}.
-	 */
-	private static final String DPU_TYPE_EXTRACTOR = "extractor";
-	
-	/**
-	 * Value of {@link @DPU_TYPE_NAME} that identify {@link DPUType#TRANSFORMER}.
-	 */	
-	private static final String DPU_TYPE_TRANFORMER = "transformer";
-	
-	/**
-	 * Value of {@link @DPU_TYPE_NAME} that identify {@link DPUType#LOADER}.
-	 */	
-	private static final String DPU_TYPE_LOADER = "loader";
 	
 	/**
 	 * Name of property that store jar-file's description.
@@ -77,21 +57,7 @@ public class DPUExplorer {
 			return DPUType.LOADER;
 		}		
 		
-		// we try to use pom.xml information
-		Attributes attributes = moduleFacade.getJarProperties(relativePath);
-		if (attributes == null) {
-			// can't load information .. we run out of options
-			return null;
-		}
-		String typeName = attributes.getValue(DPU_TYPE_NAME);
-		if (DPU_TYPE_EXTRACTOR.compareToIgnoreCase(typeName) == 0) {
-			return DPUType.EXTRACTOR;
-		} else if (DPU_TYPE_TRANFORMER.compareToIgnoreCase(typeName) == 0) {
-			return DPUType.TRANSFORMER;
-		} else if (DPU_TYPE_LOADER.compareToIgnoreCase(typeName) == 0) {
-			return DPUType.LOADER;
-		}
-		
+		// we do not know
 		return null;
 	}
 	
