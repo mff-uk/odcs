@@ -15,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
  * @author Petyr
  *
  */
-public class EventListenerDatabase implements ApplicationListener {
+public class EventListenerDatabase implements ApplicationListener<ApplicationEvent> {
 	
 	@Autowired
 	private DPUFacade dpuFacade;

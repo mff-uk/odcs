@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.backend.scheduling;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.backend.scheduling.event.SchedulerCheckDatabase;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
-import cz.cuni.xrg.intlib.commons.app.scheduling.PeriodUnit;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 
@@ -22,13 +20,7 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
  * @author Petyr
  * 
  */
-public class Scheduler implements ApplicationListener {
-
-	/**
-	 * Size of max minutes differences for two times that should be considered
-	 * to be the same.
-	 */
-	private static final int MINUTE_TOLERANCE = 50;
+public class Scheduler implements ApplicationListener<ApplicationEvent> {
 
 	/**
 	 * Pipeline facade.

@@ -1,12 +1,9 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
-import static cz.cuni.xrg.intlib.rdf.enums.FileExtractType.*;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
-
-import static cz.cuni.xrg.intlib.rdf.enums.WriteGraphType.*;
 
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;

@@ -2,13 +2,8 @@ package cz.cuni.xrg.intlib.commons.app.pipeline.graph;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Edge represents oriented connection between nodes of the graph.
