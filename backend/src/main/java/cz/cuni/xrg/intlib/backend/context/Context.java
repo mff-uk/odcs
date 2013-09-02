@@ -24,12 +24,14 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
 import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 
-public class Context implements ExtractContext, TransformContext, LoadContext {
+public class Context implements ExtractContext, TransformContext, LoadContext,
+	DPUContext {
 
 	/**
 	 * Name of directory for shared DPU's data.

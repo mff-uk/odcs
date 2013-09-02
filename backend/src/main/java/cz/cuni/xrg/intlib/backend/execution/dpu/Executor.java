@@ -26,6 +26,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
@@ -273,6 +274,8 @@ public final class Executor implements Runnable {
 				((Transform) dpuInstance).transform(context);
 			} else if (dpuInstance instanceof Load) {
 				((Load) dpuInstance).load(context);
+			} else if (dpuInstance instanceof DPU) {
+				((DPU)dpuInstance).execute(context);
 			}
 		} catch (ExtractException | TransformException | LoadException e) {
 			eventPublisher
