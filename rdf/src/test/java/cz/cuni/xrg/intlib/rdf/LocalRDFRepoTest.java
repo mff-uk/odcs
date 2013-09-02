@@ -19,6 +19,9 @@ import java.net.URL;
 import java.nio.file.*;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import static org.junit.Assert.*;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
@@ -83,7 +86,11 @@ public class LocalRDFRepoTest {
 		String predicateName = "isResposibleFor";
 		String objectName = "Lecture";
 
-		testNewTriple(namespace, subjectName, predicateName, objectName, rdfRepo);
+		Resource subject = rdfRepo.createURI(namespace, subjectName);
+		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Value object = rdfRepo.createLiteral(objectName);
+
+		testNewTriple(subject, predicate, object, rdfRepo);
 
 	}
 
@@ -94,7 +101,11 @@ public class LocalRDFRepoTest {
 		String predicateName = "hasFriend";
 		String objectName = "Pavel";
 
-		testNewTriple(namespace, subjectName, predicateName, objectName, rdfRepo);
+		Resource subject = rdfRepo.createURI(namespace, subjectName);
+		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Value object = rdfRepo.createLiteral(objectName);
+
+		testNewTriple(subject, predicate, object, rdfRepo);
 	}
 
 	@Test
@@ -104,7 +115,11 @@ public class LocalRDFRepoTest {
 		String predicateName = "object";
 		String objectName = "predicate";
 
-		testNewTriple(namespace, subjectName, predicateName, objectName, rdfRepo);
+		Resource subject = rdfRepo.createURI(namespace, subjectName);
+		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Value object = rdfRepo.createLiteral(objectName);
+
+		testNewTriple(subject, predicate, object, rdfRepo);
 	}
 
 	@Test
@@ -486,11 +501,11 @@ public class LocalRDFRepoTest {
 			String name = "SPARQL";
 			String password = "nejlepsipaper";
 			WriteGraphType graphType = WriteGraphType.MERGE;
-			InsertType insertType= InsertType.SKIP_BAD_PARTS;
+			InsertType insertType = InsertType.SKIP_BAD_PARTS;
 
 			try {
 				rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name,
-						password, graphType,insertType);
+						password, graphType, insertType);
 			} catch (RDFException e) {
 				fail(e.getMessage());
 			}
@@ -510,15 +525,18 @@ public class LocalRDFRepoTest {
 		String predicateName = "playes_in";
 		String objectName = "Dalas_Stars";
 
+		Resource subject = rdfRepo.createURI(namespace, subjectName);
+		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Value object = rdfRepo.createLiteral(objectName);
+
 		String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
 				+ "INSERT { ?who ?what 'Boston_Bruins' } "
 				+ "WHERE { ?who ?what 'Dalas_Stars' }";
 
-		rdfRepo.addTriple(
-				namespace, subjectName, predicateName, objectName);
+		rdfRepo.addTriple(subject, predicate, object);
 
 		boolean beforeUpdate = rdfRepo.isTripleInRepository(
-				namespace, subjectName, predicateName, objectName);
+				subject, predicate, object);
 		assertTrue(beforeUpdate);
 
 		try {
@@ -528,7 +546,7 @@ public class LocalRDFRepoTest {
 		}
 
 		boolean afterUpdate = rdfRepo.isTripleInRepository(
-				namespace, subjectName, predicateName, objectName);
+				subject, predicate, object);
 		assertFalse(afterUpdate);
 	}
 
@@ -654,17 +672,14 @@ public class LocalRDFRepoTest {
 
 	}
 
-	private void testNewTriple(String namespace,
-			String subjectName,
-			String predicateName,
-			String objectName, RDFDataUnit repository) {
+	private void testNewTriple(Resource subject, URI predicate,
+			Value object, RDFDataUnit repository) {
 
 		long size = repository.getTripleCount();
 		boolean isInRepository = repository.isTripleInRepository(
-				namespace, subjectName, predicateName, objectName);
+				subject, predicate, object);
 
-		repository.addTriple(
-				namespace, subjectName, predicateName, objectName);
+		repository.addTriple(subject, predicate, object);
 		long expectedSize = repository.getTripleCount();
 
 		if (isInRepository) {
@@ -869,8 +884,11 @@ public class LocalRDFRepoTest {
 		String predicateName = "isResposibleFor";
 		String objectName = "Lecture";
 
-		testNewTriple(namespace, subjectName, predicateName, objectName,
-				repository);
+		Resource subject = rdfRepo.createURI(namespace, subjectName);
+		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Value object = rdfRepo.createLiteral(objectName);
+
+		testNewTriple(subject, predicate, object, repository);
 	}
 
 	protected void extractFromFileToRepository(RDFDataUnit repository) {
