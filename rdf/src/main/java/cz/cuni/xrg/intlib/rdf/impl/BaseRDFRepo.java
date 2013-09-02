@@ -920,6 +920,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						} catch (RDFHandlerException e) {
 							logger.debug(e.getMessage(), e);
 						}
+					} else {
+						if (graph != null) {
+							connection.add(inputStreamReader, endpointGraph,
+									format, graph);
+						} else {
+							connection.add(inputStreamReader, endpointGraph,
+									format);
+						}
+
 					}
 
 				} else {
@@ -2273,7 +2282,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			public void run() {
 				try {
 					repository.shutDown();
-					logger.debug("Repository with data graph <"+getDataGraph().stringValue()+"> destroyed SUCCESSFULL.");
+					logger.debug("Repository with data graph <" + getDataGraph()
+							.stringValue() + "> destroyed SUCCESSFULL.");
 				} catch (RepositoryException ex) {
 					logger.debug(
 							"Repository was not destroyed - potencial problems with locks .");
