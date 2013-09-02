@@ -10,6 +10,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -84,7 +85,7 @@ public class Login extends ViewComponent {
             }
         });
         layout.addComponent(loginButton);
-		Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", "email@address.com"));
+		Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", App.getAppConfig().getString(ConfigProperty.EMAIL_ADMIN)));
 		info.setContentMode(ContentMode.HTML);
 		layout.addComponent(info);
         layout.setSizeUndefined();
