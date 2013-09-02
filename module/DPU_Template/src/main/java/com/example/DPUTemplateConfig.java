@@ -7,26 +7,28 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  */
 public class DPUTemplateConfig implements DPUConfigObject {
 
-        DPUTemplateConfig() {
-            width = 100;
-            height = 100;
-        }
+    private int width;
+    
+    private int height;	
+	
+	// DPUTemplateConfig must provide public non-parametric constructor
+    public DPUTemplateConfig() {
+        width = 100;
+        height = 100;
+    }
+    
+    public DPUTemplateConfig(int w, int h) {
+        width = w;
+        height = h;
+    }
         
-        DPUTemplateConfig(int w, int h) {
-            width = w;
-            height = h;
-        }
-        
-        private int width;
-        private int height;
-        
-        public int getWidth() {
-            return width;    
-        }
-        
-         public int getHeight() {
-            return height;    
-        }
+    public int getWidth() {
+        return width;    
+    }
+    
+     public int getHeight() {
+        return height;    
+    }
 
 	@Override
 	public boolean isValid() {

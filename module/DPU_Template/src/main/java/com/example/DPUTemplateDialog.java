@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 public class DPUTemplateDialog extends BaseConfigDialog<DPUTemplateConfig> {
 
 	public DPUTemplateDialog() {
-		super(new DPUTemplateConfig());
+		super(DPUTemplateConfig.class);
 	}
 
 	@Override
