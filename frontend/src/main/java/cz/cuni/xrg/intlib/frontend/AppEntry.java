@@ -11,6 +11,7 @@ import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -265,6 +266,14 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return (AppConfig) context.getBean("configuration");
 	}
 
+	/**
+	 * Return class that can be used to explore DPUs.
+	 * @return
+	 */
+	public DPUExplorer getDPUExplorere() {
+		return (DPUExplorer) context.getBean(DPUExplorer.class);
+	}
+	
 	/**
 	 * Fetches spring bean.
 	 *

@@ -56,6 +56,9 @@
 		<constructor-arg ref="configuration" />
 	</bean>
 
+	<!-- Service or exploring DPUs -->
+	<bean id="DPUExplorer" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer" />
+	
 	<context:annotation-config />
 
 	<tx:annotation-driven />
