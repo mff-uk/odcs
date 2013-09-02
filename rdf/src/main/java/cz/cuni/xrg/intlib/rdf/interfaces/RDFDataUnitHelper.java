@@ -10,8 +10,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import org.openrdf.model.Graph;
-import org.openrdf.model.Statement;
+import org.openrdf.model.*;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -22,15 +21,13 @@ import org.openrdf.rio.RDFFormat;
 public interface RDFDataUnitHelper {
 
 	/**
-	 * Add one tripple RDF (statement) to the repository (default empty
-	 * namespace).
+	 * Add one tripple RDF (statement) to the repository.
 	 *
-	 * @param subjectName   String name of subject
-	 * @param predicateName String name of predicate
-	 * @param objectName    String name of object
+	 * @param subject   One of type for subject - URI,BlankNode.
+	 * @param predicate URI for subject.
+	 * @param object    One of type for object - URI,BlankNode or Literal.
 	 */
-	public void addTriple(String subjectName,
-			String predicateName, String objectName);
+	public void addTriple(Resource subject, URI predicate, Value object);
 
 	/**
 	 * Add all RDF data from string to repository.
@@ -371,4 +368,55 @@ public interface RDFDataUnitHelper {
 	 * @param targetRepository goal repository where RDF data are added.
 	 */
 	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo);
+
+	/**
+	 * Create new blank node with defined id.
+	 *
+	 * @param id String value of ID.
+	 * @return created blank node.
+	 */
+	public BNode createBlankNode(String id);
+
+	/**
+	 * Create new URI from namespace and localname.
+	 *
+	 * @param namespace String name of used namespace
+	 * @param localName String local name.
+	 * @return created URI.
+	 */
+	public URI createURI(String namespace, String localName);
+
+	/**
+	 * Create new URI from String.
+	 *
+	 * @param uri String value for URI.
+	 * @return created URI.
+	 */
+	public URI createURI(String uri);
+
+	/**
+	 * Create new typed literal.
+	 *
+	 * @param literalLabel String value for literal.
+	 * @param dataType     URI of data type for {@literal}.
+	 * @return created typed literal.
+	 */
+	public Literal createLiteral(String literalLabel, URI dataType);
+
+	/**
+	 * Create new language literal.
+	 *
+	 * @param literalLabel String value for literal.
+	 * @param language     String value for language.
+	 * @return created language literal.
+	 */
+	public Literal createLiteral(String literalLabel, String language);
+
+	/**
+	 * Create new label literal.
+	 *
+	 * @param literalLabel String value for literal.
+	 * @return created language literal.
+	 */
+	public Literal createLiteral(String literalLabel);
 }
