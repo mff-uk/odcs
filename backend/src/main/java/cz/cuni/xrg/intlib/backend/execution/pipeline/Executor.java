@@ -264,9 +264,8 @@ public class Executor implements Runnable {
 			executorThread.start();
 			
 			// repeat until the executorThread is running
+			boolean stopExecution = false;
 			while(executorThread.isAlive()) {
-				boolean stopExecution = false;
-				
 				try {
 					// sleep for two seconds
 					Thread.sleep(2000);
@@ -287,11 +286,17 @@ public class Executor implements Runnable {
 				
 				if (stopExecution) {
 					stopExecution(executorThread);
-					executionFailed = true;
+					// jump out of waiting cycle
 					break;
 				}
+			} // end of single DPU thread execution 
+			
+			if (stopExecution) {
+				// we should stop the execution
+				executionFailed = true;
+				// jump out of pipeline
+				break;
 			}
-
 			// ..
 			if (dpuExecutor.executionFailed()) {
 				// continue
