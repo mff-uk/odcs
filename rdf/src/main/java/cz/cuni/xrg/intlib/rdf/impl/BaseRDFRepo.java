@@ -412,6 +412,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART)
 	 * @throws RDFException when loading data fault.
 	 */
+	@Override
 	public void loadToSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			WriteGraphType graphType, InsertType insertType) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
@@ -437,6 +438,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
+	@Override
 	public void loadToSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			String name, String password, WriteGraphType graphType,
 			InsertType insertType) throws RDFException {
@@ -462,6 +464,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
+	@Override
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, WriteGraphType graphType,
 			InsertType insertType) throws RDFException {
@@ -487,6 +490,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
+	@Override
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> namedGraph, String userName,
 			String password, WriteGraphType graphType, InsertType insertType)
@@ -763,6 +767,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        TURTLE, RDF/XML,etc.)
 	 * @throws RDFException when extraction data fault.
 	 */
+	@Override
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query, String hostName,
 			String password, RDFFormat format) throws RDFException {
@@ -2008,8 +2013,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				URI predicate = nextStatement.getPredicate();
 				Value object = nextStatement.getObject();
 
-				//String appendLine = prepare(subject) + " " + prepare(predicate) + " " + prepare(object) + ".";
-
 				String appendLine = getSubjectInsertText(subject) + " "
 						+ getPredicateInsertText(predicate) + " "
 						+ getObjectInsertText(object) + " .";
@@ -2088,13 +2091,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			//there is language tag
 			return label + "@" + literal.getLanguage();
 		} else if (literal.getDatatype() != null) {
-//               if (lit.getDatatype().stringValue().equals("http://www.w3.org/2001/XMLSchema#string")) {
-//                   //if data type is String, return just literal value.
-//                   return label;
-//               }
-//               else {
 			return label + "^^" + prepareURIresource(literal.getDatatype());
-//               }
 		}
 		//plain literal (return in """)
 		return label;
