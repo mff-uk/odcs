@@ -89,18 +89,16 @@ public RDFDataUnit inputDataUnit;
 		provides methods for dealing with RDF content being passed in <code>RDFDataUnit</code> from one DPU to another DPU.  
 		The selected methods of <code>RDFDataUnitHelper</code> interface, which may be called on  <code>RDFDataUnit</code>s by the DPU developer for processing content of data units or for filling the data units with new RDF data, are: 
 		<ul>
-                        <li> Methods for adding new RDF triples to Data Units
+                         <li> Methods for adding new RDF triples to Data Units
                         <ul>
-                            <li>addTriple(String s, String p, String o) - Add the defined triple (s,p,o) to the DataUnit.  </li>
-         <li>addTriplesFromFile(File file) - Add triples from file to the data unit. The file type is
-	 determined by file's extension. </li>
-          <li>addTriplesFromTurtleFile(File file) - Add triples from file to the data unit. The file type is Turtle (TTL) </li>
-          <li>addTriplesFromRDFXMLFile(File file) - Add triples from file to the data unit. The file type is RDF/XML </li>
-                        <li>addTriplesFromFile(File file, RDFFormat format) - Add triples from file to the data unit. The file type is
+                            <li>addTriple(Resource subject, URI predicate, Value object) - Add the defined triple (s,p,o) to the DataUnit.  </li>
+          <li>addFromTurtleFile(File file) - Add triples from file to the data unit. The file type is Turtle (TTL) </li>
+          <li>addFromRDFXMLFile(File file) - Add triples from file to the data unit. The file type is RDF/XML </li>
+                        <li>addFromFile(File file, RDFFormat format) - Add triples from file to the data unit. The file type is
 	 explicitely specified </li>
          
-         <li>addTriplesFromSPARQLEndpoint(URL endpointURL, String namedGraph) - Add triples from SPARQL endpoint specified by the endpoint URL and named graph to the data unit. </li>
-           <li>addTriplesFromSPARQLEndpoint(URL endpointURL, String namedGraph,String user, String password) - Add triples from SPARQL endpoint specified by the endpoint URL, named graph to the data unit, using user and password provided. </li>
+         <li>addFromSPARQLEndpoint(URL endpointURL, String namedGraph) - Add triples from SPARQL endpoint specified by the endpoint URL and named graph to the data unit. </li>
+           <li>addFromSPARQLEndpoint(URL endpointURL, String namedGraph,String user, String password) - Add triples from SPARQL endpoint specified by the endpoint URL, named graph to the data unit, using user and password provided. </li>
 
                         </ul>
                         </li>  
@@ -108,7 +106,7 @@ public RDFDataUnit inputDataUnit;
                         <li> Methods for retrieving RDF triples from Data Unit
                         <ul>
                             <li>List<Statement> getTriples() - Get list of all RDF triples (Statements) in DataUnit.</li>
-                            <li>saveTriplesToFile(File file, RDFFormatType formatType)  - Saves triples from data unit to file. The file type is
+                            <li>storeToFile(File file, RDFFormatType formatType)  - Saves triples from data unit to file. The file type is
 	 explicitely specified. </li>
                             <li>executeSelectQuery(String selectQuery) - Execute SPARQL select query over RDF data in DataUnit.</li>
                             <li>executeConstructQuery(String selectQuery) - Execute SPARQL construct query over RDF data in DataUnit.</li>
