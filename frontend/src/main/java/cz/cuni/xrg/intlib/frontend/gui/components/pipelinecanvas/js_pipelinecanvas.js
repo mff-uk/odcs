@@ -755,6 +755,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 					writeMessage(messageLayer, 'Format by CTRL');
 					stageMode = MULTISELECT_MODE;
 					multiselect(dpu.id);
+					return;
 					//writeMessage(messageLayer, 'DPU removed - CTRL');
 					//removeDpu(dpu);
 					//rpcProxy.onDpuRemoved(dpu.id);
@@ -771,12 +772,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 					writeMessage(messageLayer, 'Clicking on:' + dpu.name);
 					lineLayer.add(newConnLine);
 					lineLayer.draw();
-
+					return;
 				}
 				if (!isDragging) {
 					evt.cancelBubble = true;
 				}
-			} else if (stageMode === NORMAL_MODE || stageMode === STANDARD_MODE) {
+			} 
+			if (stageMode === NORMAL_MODE || stageMode === STANDARD_MODE) {
 				var now = Date.now();
 				if (lastClickedDpu !== null && lastClickedTime !== null) {
 					if (lastClickedDpu === group && now - lastClickedTime < 500) {
@@ -801,6 +803,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		dpuLayer.draw();
 
 		rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale));
+	}
+	
+	function checkMode() {
+		return stageMode === STANDARD_MODE;
 	}
 
 	/**
