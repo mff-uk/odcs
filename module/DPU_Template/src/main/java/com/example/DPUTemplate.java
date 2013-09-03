@@ -10,11 +10,11 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
-// TODO You can choose AsLoader or AsExtractor instead of AsTransformer
+// TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsTransformer
 public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
 		implements DPU, 
-		// TODO If you do not want the dialog, delete the following line
+		// If you do not want the dialog, delete the following line
 		// 	and getConfigurationDialog function
 		ConfigDialogProvider<DPUTemplateConfig> 
 	{
@@ -34,13 +34,15 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
 		return new DPUTemplateDialog();
 	}
 
+        // TODO 2: Implement the method execute being called when the DPU is launched
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException,
 				DataUnitException {
-		// TODO Execute your DPU here
 		
 		// DPU's configuration is accessible under 'this.config' 
+                // DPU's context is accessible under 'context'
+                // DPU's data units are accessible under 'rdfInput' and 'rdfOutput'
 	}
 	
 }
