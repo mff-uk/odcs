@@ -98,17 +98,31 @@ class DataUnitMerger {
 				}			
 			}
 			
-			// create new data unit (in context into which we merge)
-			DataUnit newDataUnit;
-			try {
-				newDataUnit = left.addDataUnit(rightDataUnit.getType(), leftDataUnitName);
-			} catch (DataUnitCreateException e) {
-				throw new ContextException("Failed to create input object.", e);
+			// we need dataUnit into which merge data
+			DataUnit leftDataUnit = null;
+			// first check for existing one
+			for(DataUnit item : left.getDataUnits()) {
+				if (item.getName().compareTo(leftDataUnitName) == 0 && 
+						item.getType() == rightDataUnit.getType()) {
+					LOG.info("merge into existing dataUnit: {}", rightDataUnitName);
+					// DataUnit with same name and type already exist, use it
+					leftDataUnit = item;
+					break;
+				}
 			}
-
+			
+			// create new data unit (in context into which we merge)			
+			if (leftDataUnit == null) {
+				try {
+					LOG.info("creating new dataUnit: {}", rightDataUnitName);
+					leftDataUnit = left.addDataUnit(rightDataUnit.getType(), leftDataUnitName);
+				} catch (DataUnitCreateException e) {
+					throw new ContextException("Failed to create input object.", e);
+				}
+			}
 			// and copy the data
 			try {
-				newDataUnit.merge(rightDataUnit);
+				leftDataUnit.merge(rightDataUnit);
 			} catch (IllegalArgumentException e) {
 				throw new ContextException(
 						"Can't merge data units, type miss match.", e);
