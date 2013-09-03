@@ -705,9 +705,12 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 newConnStart = null;
             } else if (stageMode === NORMAL_MODE) {
                 if (evt.ctrlKey) {
-                    writeMessage(messageLayer, 'DPU removed - CTRL');
-                    removeDpu(dpu);
-                    rpcProxy.onDpuRemoved(dpu.id);
+					writeMessage(messageLayer, 'Format by CTRL');
+					stageMode = MULTISELECT_MODE;
+					multiselect(dpu.id);
+                    //writeMessage(messageLayer, 'DPU removed - CTRL');
+                    //removeDpu(dpu);
+                    //rpcProxy.onDpuRemoved(dpu.id);
                 } else if (evt.shiftKey) {
                     writeMessage(messageLayer, 'New Edge - SHIFT');
                     var mousePosition = stage.getMousePosition();
@@ -1252,6 +1255,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         dpus[con.from].connectionFrom.splice(idx, 1);
         idx = dpus[con.to].connectionTo.indexOf(id);
         dpus[con.to].connectionTo.splice(idx, 1);
+		if(con.dataUnitNameText !== null) {
+			con.dataUnitNameText.setVisible(false);
+			con.dataUnitNameText = null;
+		}
         con.line.destroy();
         con.arrowLeft.destroy();
         con.arrowRight.destroy();
