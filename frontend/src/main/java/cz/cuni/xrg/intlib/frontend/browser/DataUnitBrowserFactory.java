@@ -29,7 +29,7 @@ public class DataUnitBrowserFactory {
 	 * @param context       The pipelineExecution context.
 	 * @param execution     Respective PipelineExecution.
 	 * @param dpuInstance   Owner of DataUnit.
-	 * @param dataUnitIndex Index of data unit.
+	 * @param dataUnitInfo  Info about data unit.
 	 * @return Browser or null if there is no browser for given type.
 	 * @throws DataUnitNotFoundException
 	 * @throws BrowserInitFailedException

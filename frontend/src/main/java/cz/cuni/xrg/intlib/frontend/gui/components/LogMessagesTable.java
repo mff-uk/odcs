@@ -89,18 +89,19 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param exec {@link PipelineExecution} which log to show.
 	 * @param dpu {@link DPUInstanceRecord} or null.
 	 */
-	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
+	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, boolean isRefresh) {
 		this.dpu = dpu;
-		if(pipelineExecution != exec) {
+		if (pipelineExecution != exec && !isRefresh) {
 			levelSelector.setValue(exec.isDebugging() ? Level.DEBUG : Level.WARN);
 		}
-		this.pipelineExecution = exec;
-
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
-		c.removeDefaultFilters();
-		c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
-		if (dpu != null) {
-			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
+		if (!isRefresh) {
+			this.pipelineExecution = exec;
+			c.removeDefaultFilters();
+			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
+			if (dpu != null) {
+				c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
+			}
 		}
 		c.refresh();
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());

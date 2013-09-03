@@ -51,7 +51,8 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final InsertType insertType = config.insertOption;
 
 		try {
-			rdfDataUnit.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI,
+			
+			rdfDataUnit.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType,insertType);
 		} catch (RDFDataUnitException ex) {
 			throw new DPUException(ex.getMessage(), ex);
