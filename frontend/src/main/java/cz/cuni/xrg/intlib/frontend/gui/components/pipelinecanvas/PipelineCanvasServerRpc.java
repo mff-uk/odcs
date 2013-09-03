@@ -63,4 +63,11 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
          * Occurs when operation which should be available to undo happens.
          */
         public void onStoreHistory();
+		
+	/**
+	 * Occures when copy of given DPURecord is requested.
+	 * 
+	 * @param dpuId Id of node, which should be copied.
+	 */
+	public void onDpuCopyRequested(int dpuId, int x, int y);
 }

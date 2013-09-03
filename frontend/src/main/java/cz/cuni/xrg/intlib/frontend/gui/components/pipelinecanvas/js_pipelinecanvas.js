@@ -137,6 +137,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
     var debugIcon = null;
     var detailIcon = null;
     var formatIcon = null;
+	var copyIcon = null;
     var distributeIcon = null;
 
     var backgroundRect = null;
@@ -247,6 +248,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         formatIcon = new Image();
         formatIcon.src = basePath + "format.png";
+		
+		copyIcon = new Image();
+		copyIcon.src = basePath + "copy.png";
 
         distributeIcon = new Image();
         distributeIcon.src = basePath + "distribute.png";
@@ -465,7 +469,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             x: rect.getWidth() - 20,
             y: 0,
             width: 20,
-            height: 84,
+            height: 100,
             visible: false
         });
 		
@@ -476,7 +480,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             strokeWidth: 1,
             fill: '#ccc',
             width: 20,
-            height: 84,
+            height: 100,
             shadowColor: 'black',
             shadowBlur: 2,
             shadowOffset: [2, 2],
@@ -554,7 +558,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         // DPU Remove command
         var cmdRemove = new Kinetic.Image({
             x: 2,
-            y: 66,
+            y: 82,
             image: removeConnectionIcon,
             width: 16,
             height: 16,
@@ -608,7 +612,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         var cmdFormat = new Kinetic.Image({
             x: 2,
-            y: 50,
+            y: 66,
             image: formatIcon,
             width: 16,
             height: 16,
@@ -630,6 +634,31 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
             evt.cancelBubble = true;
         });
         actionBar.add(cmdFormat);
+		
+		var cmdCopy = new Kinetic.Image({
+            x: 2,
+            y: 50,
+            image: copyIcon,
+            width: 16,
+            height: 16,
+            startScale: 1
+        });
+        cmdCopy.on('click', function(evt) {
+			actionBar.setVisible(false);
+			dpuLayer.draw();
+            writeMessage(messageLayer, 'Copy clicked');
+			var mousePosition = stage.getMousePosition();
+            rpcProxy.onDpuCopyRequested(dpu.id, parseInt(mousePosition.x / scale), parseInt(mousePosition.y / scale));
+            evt.cancelBubble = true;
+        });
+        cmdCopy.on('mouseenter', function(evt) {
+            activateTooltip('Copy DPU');
+        });
+        cmdCopy.on('mouseleave', function(evt) {
+            deactivateTooltip();
+            evt.cancelBubble = true;
+        });
+        actionBar.add(cmdCopy);
 
 
         group.add(rect);
@@ -1078,7 +1107,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
                 newValue += dpu.group.get('Rect')[0].getHeight() + step;
             }
             moveLine(dpu.id);
-            rpcProxy.onDpuMoved(dpu.id, parseInt(dpu.group.getX()), parseInt(dpu.group.getY()))
+            rpcProxy.onDpuMoved(dpu.id, parseInt(dpu.group.getX()), parseInt(dpu.group.getY()));
         }
         dpuLayer.draw();
     }
