@@ -5,6 +5,7 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 /**
  *
  * @author Jiri Tomes
+ * @author tknap
  */
 public class SPARQLTransformerConfig implements DPUConfigObject {
 
@@ -12,6 +13,6 @@ public class SPARQLTransformerConfig implements DPUConfigObject {
 
 	@Override
 	public boolean isValid() {
-		return SPARQL_Update_Query != null;
+		return !SPARQL_Update_Query.isEmpty();
 	}
 }

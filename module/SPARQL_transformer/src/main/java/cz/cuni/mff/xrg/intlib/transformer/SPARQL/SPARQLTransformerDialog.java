@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.intlib.transformer.SPARQL;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
 
@@ -28,22 +29,64 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	private Label labelUpQuer;
 
 	/**
-	 * Right SPARQL VALIDATOR - default false.
+	 * SPARQL VALIDATOR - default false.
 	 */
 	private boolean isQueryValid = false;
-
-	private InvalidValueException ex;
-
-	private String errorMessage = "no errors";
+	private String validationErrorMessage = "";
 
 	/**
-	 * Basic constructor.
+	 * Constructor.
 	 */
 	public SPARQLTransformerDialog() {
 		super(SPARQLTransformerConfig.class);
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
+        
+        /**
+	 * Load values from configuration object implementing {@link DPUConfigObject}
+	 * interface and configuring DPU into the dialog where the configuration
+	 * object may be edited.
+	 *
+	 * @throws ConfigException Exception not used in current implementation of
+	 *                         this method.
+	 * @param conf Object holding configuration which is used to initialize
+	 *             fields in the configuration dialog.
+	 */
+	@Override
+	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
+		txtQuery.setValue(conf.SPARQL_Update_Query);
+	}
+
+	/**
+	 * Set values from from dialog where the configuration object may be edited
+	 * to configuration object implementing {@link DPUConfigObject} interface and
+	 * configuring DPU
+	 *
+	 * @throws ConfigException Exception which might be thrown when
+	 *                         {@link #isQueryValid} is false.
+	 * @return conf Object holding configuration which is used in
+	 *         {@link #setConfiguration} to initialize fields in the
+	 *         configuration dialog.
+	 */
+	@Override
+	public SPARQLTransformerConfig getConfiguration() throws ConfigException {
+
+		//Right SPARQL VALIDATOR - default false
+		if (!txtQuery.isValid()) {
+                    InvalidValueException ex = new EmptyValueException("SPARQL query must be filled");	
+                    throw new ConfigException(ex.getMessage(), ex);
+		} else if (!isQueryValid) {
+			throw new SPARQLValidationException(validationErrorMessage);
+		} else {
+
+			SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
+			conf.SPARQL_Update_Query = txtQuery.getValue().trim();
+
+			return conf;
+		}
+	}
+        
 
 	/**
 	 * Builds main layout with all dialog components.
@@ -85,7 +128,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 				if (!validator.isQueryValid()) {
 
 					isQueryValid = false;
-					errorMessage = validator.getErrorMessage();
+					validationErrorMessage = validator.getErrorMessage();
 
 				} else {
 					isQueryValid = true;
@@ -99,9 +142,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.toString().isEmpty()) {
-					ex = new EmptyValueException(
-							"Update query must be filled");
-					throw ex;
+					
+					throw  new EmptyValueException("SPARQL query must be filled");
 				}
 			}
 		});
@@ -120,46 +162,5 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		return mainLayout;
 	}
 
-	/**
-	 * Load values from configuration object implementing {@link DPUConfigObject}
-	 * interface and configuring DPU into the dialog where the configuration
-	 * object may be edited.
-	 *
-	 * @throws ConfigException Exception not used in current implementation of
-	 *                         this method.
-	 * @param conf Object holding configuration which is used to initialize
-	 *             fields in the configuration dialog.
-	 */
-	@Override
-	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
-		txtQuery.setValue(conf.SPARQL_Update_Query.trim());
-	}
-
-	/**
-	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface and
-	 * configuring DPU
-	 *
-	 * @throws ConfigException Exception which might be thrown when
-	 *                         {@link #isQueryValid} is false.
-	 * @return conf Object holding configuration which is used in
-	 *         {@link #setConfiguration} to initialize fields in the
-	 *         configuration dialog.
-	 */
-	@Override
-	public SPARQLTransformerConfig getConfiguration() throws ConfigException {
-
-		//Right SPARQL VALIDATOR - default false
-		if (!txtQuery.isValid()) {
-			throw new ConfigException(ex.getMessage(), ex);
-		} else if (!isQueryValid) {
-			throw new SPARQLValidationException(errorMessage);
-		} else {
-
-			SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
-			conf.SPARQL_Update_Query = txtQuery.getValue().trim();
-
-			return conf;
-		}
-	}
+	
 }
