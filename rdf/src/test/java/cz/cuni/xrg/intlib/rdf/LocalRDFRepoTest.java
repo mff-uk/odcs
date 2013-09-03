@@ -458,64 +458,64 @@ public class LocalRDFRepoTest {
 	 * for build, use only when debugging
 	 */
 //    @Test
-	@Category(IntegrationTest.class)
-	public void extractDataFromSPARQLEndpointNamePasswordTest() {
-		try {
-			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
-			String defaultGraphUri = "";
-			String query = "select * where {?s ?o ?p} LIMIT 10";
-			String name = "SPARQL";
-			String password = "nejlepsipaper";
-
-			RDFFormat format = RDFFormat.N3;
-
-			long sizeBefore = rdfRepo.getTripleCount();
-
-			try {
-				rdfRepo.extractFromSPARQLEndpoint(
-						endpointURL, defaultGraphUri, query, name, password,
-						format);
-			} catch (RDFException e) {
-				fail(e.getMessage());
-			}
-
-			long sizeAfter = rdfRepo.getTripleCount();
-
-			assertTrue(sizeBefore < sizeAfter);
-
-		} catch (MalformedURLException ex) {
-			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
-		}
-	}
+//	@Category(IntegrationTest.class)
+//	public void extractDataFromSPARQLEndpointNamePasswordTest() {
+//		try {
+//			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
+//			String defaultGraphUri = "";
+//			String query = "select * where {?s ?o ?p} LIMIT 10";
+//			String name = "SPARQL";
+//			String password = "nejlepsipaper";
+//
+//			RDFFormat format = RDFFormat.N3;
+//
+//			long sizeBefore = rdfRepo.getTripleCount();
+//
+//			try {
+//				rdfRepo.extractFromSPARQLEndpoint(
+//						endpointURL, defaultGraphUri, query, name, password,
+//						format);
+//			} catch (RDFException e) {
+//				fail(e.getMessage());
+//			}
+//
+//			long sizeAfter = rdfRepo.getTripleCount();
+//
+//			assertTrue(sizeBefore < sizeAfter);
+//
+//		} catch (MalformedURLException ex) {
+//			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+//		}
+//	}
 
 	/**
 	 * This is not unit test, as it depends on remote server -> commented out
 	 * for build, use only when debugging
 	 */
-//    @Test
-	@Category(IntegrationTest.class)
-	public void loadDataToSPARQLEndpointTest() {
-		try {
-			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
-			String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
-			String name = "SPARQL";
-			String password = "nejlepsipaper";
-			WriteGraphType graphType = WriteGraphType.MERGE;
-			InsertType insertType = InsertType.SKIP_BAD_PARTS;
-
-			try {
-				rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name,
-						password, graphType, insertType);
-			} catch (RDFException e) {
-				fail(e.getMessage());
-			}
-
-
-		} catch (MalformedURLException ex) {
-			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
-		}
-
-	}
+////    @Test
+//	@Category(IntegrationTest.class)
+//	public void loadDataToSPARQLEndpointTest() {
+//		try {
+//			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
+//			String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
+//			String name = "SPARQL";
+//			String password = "nejlepsipaper";
+//			WriteGraphType graphType = WriteGraphType.MERGE;
+//			InsertType insertType = InsertType.SKIP_BAD_PARTS;
+//
+//			try {
+//				rdfRepo.loadtoSPARQLEndpoint(endpointURL, defaultGraphUri, name,
+//						password, graphType, insertType);
+//			} catch (RDFException e) {
+//				fail(e.getMessage());
+//			}
+//
+//
+//		} catch (MalformedURLException ex) {
+//			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+//		}
+//
+//	}
 
 	/*TEST TO DO !!!*/ @Test
 	public void transformUsingSPARQLUpdate() {
