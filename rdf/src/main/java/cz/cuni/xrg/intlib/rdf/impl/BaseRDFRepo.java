@@ -106,7 +106,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	protected boolean isReadOnly;
 
-
 	@Override
 	public void addFromFile(File file) throws RDFException {
 		extractFromFile(file, RDFFormat.RDFXML, "", false);
@@ -144,39 +143,28 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	/**
-	 * Extract RDF triples from RDF file to repository.
+	 * Extract RDF triples from TURTLE file to repository.
 	 *
-	 * @param file  File which contains RDF data to extract.
+	 * @param file File which contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
 	public void addFromTurtleFile(File file) throws RDFException {
-//		extractFromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "",
-//				"", false, false);
-                
-                extractFromFile(file, RDFFormat.TURTLE, "", false);
-
+		extractFromFile(file, RDFFormat.TURTLE, "", false);
 	}
-        
-        /**
+
+	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file  File which contains RDF data to extract.
+	 * @param file File which contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
 	public void addFromRDFXMLFile(File file) throws RDFException {
-//		extractFromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "",
-//				"", false, false);
-                
-                extractFromFile(file, RDFFormat.RDFXML, "", false);
-
+		extractFromFile(file, RDFFormat.RDFXML, "", false);
 	}
-        
-        
-        
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
@@ -429,7 +417,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphURI);
 
-		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
+		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
 				graphType, insertType);
 	}
 
@@ -449,13 +437,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
-	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
+	public void loadToSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			String name, String password, WriteGraphType graphType,
 			InsertType insertType) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphURI);
 
-		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
+		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
 				graphType, insertType);
 	}
 
@@ -474,11 +462,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
-	public void loadtoSPARQLEndpoint(URL endpointURL,
+	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, WriteGraphType graphType,
 			InsertType insertType) throws RDFException {
 
-		loadtoSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
+		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
 				graphType, insertType);
 	}
 
@@ -499,7 +487,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
-	public void loadtoSPARQLEndpoint(URL endpointURL,
+	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> namedGraph, String userName,
 			String password, WriteGraphType graphType, InsertType insertType)
 			throws RDFException {
@@ -805,6 +793,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                            false step triple count extraction criterium.
 	 * @throws RDFException when extraction data fault.
 	 */
+	@Override
 	public void extractFromSPARQLEndpoint(
 			URL endpointURL,
 			List<String> endpointGraphsURI,
@@ -1204,6 +1193,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
+	@Override
 	public File makeConstructQueryOverRepository(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException {
 
@@ -2316,7 +2306,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected void setReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
 	}
-	
+
 	/**
 	 * Add one RDF triple (statement) to the repository.
 	 *
@@ -2342,8 +2332,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		ValueFactory factory = repository.getValueFactory();
 		return factory.createBNode(id);
 	}
-
-	
 
 	/**
 	 * Create new URI from String.
