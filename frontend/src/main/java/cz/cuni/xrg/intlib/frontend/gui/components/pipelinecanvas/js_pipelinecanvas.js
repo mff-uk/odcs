@@ -328,6 +328,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
      */
     function updateEdge(id, dataUnitName) {
         var con = connections[id];
+		var stroke = '#555';
+		if(dataUnitName === null || dataUnitName === "") {
+			stroke = '#F00';
+		} 
+		con.line.setStroke(stroke);
+		con.arrowLeft.setStroke(stroke);
+		con.arrowRight.setStroke(stroke);
         if (dataUnitName === null && con.dataUnitNameText !== null) {
             con.dataUnitNameText.destroy();
             con.dataUnitNameText = null;
@@ -1087,18 +1094,22 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         var dpuTo = dpus[to].group;
 
         var linePoints = computeConnectionPoints2(dpuFrom, dpuTo);
+		var stroke = '#555';
+		if(dataUnitName === null || dataUnitName === "") {
+			stroke = '#F00';
+		}
 
         // Graphic representation of connection
         line = new Kinetic.Line({
             points: linePoints,
-            stroke: '#555',
+            stroke: stroke,
             strokeWidth: 1.5
         });
 
         var hitLine = new Kinetic.Line({
             points: linePoints,
             strokeWidth: 15,
-            stroke: '#555',
+            stroke: stroke,
             opacity: 0
         });
 
@@ -1115,13 +1126,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
         var lineArrowLeft = new Kinetic.Line({
             points: computeLeftArrowPoints(linePoints),
-            stroke: '#555',
+            stroke: stroke,
             strokeWidth: 1
         });
 
         var lineArrowRight = new Kinetic.Line({
             points: computeRightArrowPoints(linePoints),
-            stroke: '#555',
+            stroke: stroke,
             strokeWidth: 1
         });
 
@@ -1287,6 +1298,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
     function highlightDpuLines(dpu, highlight) {
         var stroke = "#555";
+		var strokeRed = "#F00";
         var strokeWidth = 1.5;
         if (highlight) {
             stroke = "#222";
@@ -1294,20 +1306,26 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
         }
         for (lineId in dpu.connectionFrom) {
             var conn = connections[dpu.connectionFrom[lineId]];
-            conn.line.setStroke(stroke);
+			var originalStroke = conn.line.getStroke();
+			if(originalStroke !== strokeRed) {
+				conn.line.setStroke(stroke);
+				conn.arrowLeft.setStroke(stroke);
+				conn.arrowRight.setStroke(stroke);
+			}
             conn.line.setStrokeWidth(strokeWidth);
-            conn.arrowLeft.setStroke(stroke);
             conn.arrowLeft.setStrokeWidth(strokeWidth);
-            conn.arrowRight.setStroke(stroke);
             conn.arrowRight.setStrokeWidth(strokeWidth);
         }
         for (lineId in dpu.connectionTo) {
             conn = connections[dpu.connectionTo[lineId]];
-            conn.line.setStroke(stroke);
+            var originalStroke = conn.line.getStroke();
+			if(originalStroke !== strokeRed) {
+				conn.line.setStroke(stroke);
+				conn.arrowLeft.setStroke(stroke);
+				conn.arrowRight.setStroke(stroke);
+			}
             conn.line.setStrokeWidth(strokeWidth);
-            conn.arrowLeft.setStroke(stroke);
             conn.arrowLeft.setStrokeWidth(strokeWidth);
-            conn.arrowRight.setStroke(stroke);
             conn.arrowRight.setStrokeWidth(strokeWidth);
         }
         lineLayer.draw();

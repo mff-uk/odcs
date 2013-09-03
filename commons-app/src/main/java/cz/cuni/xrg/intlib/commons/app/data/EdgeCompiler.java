@@ -13,8 +13,10 @@ import cz.cuni.xrg.intlib.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
+import java.util.Arrays;
 
 /**
  * Class provide functionality that enable create script for single edge from
@@ -199,5 +201,20 @@ public final class EdgeCompiler {
 			}
 		}
 		return mappings;
+	}
+
+	/**
+	 * Constructs default mapping if source DPU has exactly one output data unit and target DPU also has exactly one input data unit.
+	 * 
+	 * @param edge Edge which default mapping shloud be created.
+	 */
+	public void addDefaultMapping(Edge edge) {
+		List<String> outputDataUnits = getOutputNames(edge.getFrom().getDpuInstance());
+		List<String> inputDataUnits = getInputNames(edge.getTo().getDpuInstance());
+		if(outputDataUnits.size() == 1 && inputDataUnits.size() == 1) {
+			MutablePair<List<Integer>, Integer> defaultMapping = new MutablePair<>(Arrays.asList(0), 0);
+			String script = compileScript(Arrays.asList(defaultMapping), outputDataUnits, inputDataUnits);
+			edge.setScript(script);
+		}
 	}
 }
