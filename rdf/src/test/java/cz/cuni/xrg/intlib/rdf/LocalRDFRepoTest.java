@@ -86,8 +86,8 @@ public class LocalRDFRepoTest {
 		String predicateName = "isResposibleFor";
 		String objectName = "Lecture";
 
-		Resource subject = rdfRepo.createURI(namespace, subjectName);
-		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Resource subject = rdfRepo.createURI(namespace + subjectName);
+		URI predicate = rdfRepo.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
@@ -101,8 +101,8 @@ public class LocalRDFRepoTest {
 		String predicateName = "hasFriend";
 		String objectName = "Pavel";
 
-		Resource subject = rdfRepo.createURI(namespace, subjectName);
-		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Resource subject = rdfRepo.createURI(namespace + subjectName);
+		URI predicate = rdfRepo.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
@@ -115,8 +115,8 @@ public class LocalRDFRepoTest {
 		String predicateName = "object";
 		String objectName = "predicate";
 
-		Resource subject = rdfRepo.createURI(namespace, subjectName);
-		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Resource subject = rdfRepo.createURI(namespace + subjectName);
+		URI predicate = rdfRepo.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
@@ -438,7 +438,7 @@ public class LocalRDFRepoTest {
 			long sizeBefore = rdfRepo.getTripleCount();
 
 			try {
-				rdfRepo.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
+				rdfRepo.addFromSPARQLEndpoint(endpointURL, defaultGraphUri,
 						query);
 			} catch (RDFException e) {
 				fail(e.getMessage());
@@ -525,8 +525,8 @@ public class LocalRDFRepoTest {
 		String predicateName = "playes_in";
 		String objectName = "Dalas_Stars";
 
-		Resource subject = rdfRepo.createURI(namespace, subjectName);
-		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Resource subject = rdfRepo.createURI(namespace + subjectName);
+		URI predicate = rdfRepo.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
@@ -540,7 +540,7 @@ public class LocalRDFRepoTest {
 		assertTrue(beforeUpdate);
 
 		try {
-			rdfRepo.transformUsingSPARQL(updateQuery);
+			rdfRepo.transform(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -605,7 +605,7 @@ public class LocalRDFRepoTest {
 				+ "}";
 
 		try {
-			rdfRepo.transformUsingSPARQL(updateQuery);
+			rdfRepo.transform(updateQuery);
 		} catch (RDFException e) {
 			//*VIRTUOSO TODO !!! */ fail(e.getMessage());
 		}
@@ -652,7 +652,7 @@ public class LocalRDFRepoTest {
 				+ "WHERE {?s s:streetAddress ?o}} FILTER (BOUND(?x))}";
 
 		try {
-			rdfRepo.transformUsingSPARQL(updateQuery);
+			rdfRepo.transform(updateQuery);
 		} catch (RDFException e) {
 			//*VIRTUOSO*/fail(e.getMessage());
 		}
@@ -751,7 +751,7 @@ public class LocalRDFRepoTest {
 				+ "  ?s ?p ?s1 . }";
 
 		try {
-			rdfRepo.transformUsingSPARQL(updateQuery);
+			rdfRepo.transform(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -778,7 +778,7 @@ public class LocalRDFRepoTest {
 				+ "  ?s ?p ?o . }";
 
 		try {
-			rdfRepo.transformUsingSPARQL(updateQuery);
+			rdfRepo.transform(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -803,7 +803,7 @@ public class LocalRDFRepoTest {
 
 
 		try {
-			rdfRepo.transformUsingSPARQL(updateQuery);
+			rdfRepo.transform(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -884,8 +884,8 @@ public class LocalRDFRepoTest {
 		String predicateName = "isResposibleFor";
 		String objectName = "Lecture";
 
-		Resource subject = rdfRepo.createURI(namespace, subjectName);
-		URI predicate = rdfRepo.createURI(namespace, predicateName);
+		Resource subject = rdfRepo.createURI(namespace + subjectName);
+		URI predicate = rdfRepo.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, repository);
@@ -928,7 +928,7 @@ public class LocalRDFRepoTest {
 				+ "  ?s ?p ?o . }";
 
 		try {
-			repository.transformUsingSPARQL(updateQuery);
+			repository.transform(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}

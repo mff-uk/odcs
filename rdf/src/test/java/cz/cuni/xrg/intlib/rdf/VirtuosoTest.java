@@ -65,7 +65,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	public void addDataUsingTransformer() {
 		String query = "insert data {<http://test>  <http://test>  <http://test> .}";
 		try {
-			rdfRepo.transformUsingSPARQL(query);
+			rdfRepo.transform(query);
 		} catch (RDFException ex) {
 			fail(ex.getMessage());
 		}

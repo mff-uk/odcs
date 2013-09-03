@@ -209,7 +209,7 @@ public class QueryView extends CustomComponent {
 				}
 				
 				if (isSelectQuery) {
-					data = repository.makeSelectQueryOverRepository(query);
+					data = repository.executeSelectQuery(query);
 				} else {
 					isQuerySuccessful = prepareDownloadData(repository, query);
 				}

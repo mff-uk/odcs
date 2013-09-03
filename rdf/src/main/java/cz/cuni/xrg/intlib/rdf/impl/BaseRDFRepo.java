@@ -74,7 +74,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * Default construct query using for extraction without query in parameter.
 	 */
-	protected static final String DEFAUTL_CONSTRUCT_QUERY = "construct {?x ?y ?z} where {?x ?y ?z}";
+	protected static final String DEFAULT_CONSTRUCT_QUERY = "construct {?x ?y ?z} where {?x ?y ?z}";
 
 	/**
 	 * Logging information about execution of method using openRDF.
@@ -106,31 +106,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	protected boolean isReadOnly;
 
-	/**
-	 * Add all RDF data from string to repository.
-	 *
-	 * @param rdfString string constains RDF data.
-	 * @param format    RDF format of given string - used to select parser.
-	 *
-	 * @throws RDFException when adding RDF data failt.
-	 */
-	@Override
-	public void addRDFString(String rdfString, RDFFormat format) throws RDFException {
-		addRDFStringToRepository(rdfString, format, graph);
-	}
 
 	@Override
-	public void extractFromFile(File file) throws RDFException {
+	public void addFromFile(File file) throws RDFException {
 		extractFromFile(file, RDFFormat.RDFXML, "", false);
 	}
 
 	@Override
-	public void extractFromFile(File file, RDFFormat format) throws RDFException {
+	public void addFromFile(File file, RDFFormat format) throws RDFException {
 		extractFromFile(file, format, "", false);
 	}
 
 	@Override
-	public void extractFromFile(File file, RDFFormat format,
+	public void addFromFile(File file, RDFFormat format,
 			boolean useStatisticalHandler) throws RDFException {
 
 		extractFromFile(file, format, "", useStatisticalHandler);
@@ -158,16 +146,37 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param path String path to file
+	 * @param file  File which contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
-	public void extractFromLocalTurtleFile(String path) throws RDFException {
-		extractFromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "",
-				"", false, false);
+	public void addFromTurtleFile(File file) throws RDFException {
+//		extractFromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "",
+//				"", false, false);
+                
+                extractFromFile(file, RDFFormat.TURTLE, "", false);
 
 	}
+        
+        /**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file  File which contains RDF data to extract.
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
+	@Override
+	public void addFromRDFXMLFile(File file) throws RDFException {
+//		extractFromFile(RDFFormat.TURTLE, FileExtractType.PATH_TO_FILE, path, "",
+//				"", false, false);
+                
+                extractFromFile(file, RDFFormat.RDFXML, "", false);
+
+	}
+        
+        
+        
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
@@ -264,7 +273,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	@Override
-	public void loadToFile(File file, RDFFormatType formatType) throws RDFException {
+	public void storeToFile(File file, RDFFormatType formatType) throws RDFException {
 
 		if (file == null) {
 
@@ -415,8 +424,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART)
 	 * @throws RDFException when loading data fault.
 	 */
-	@Override
-	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
+	public void loadToSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			WriteGraphType graphType, InsertType insertType) throws RDFException {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphURI);
@@ -441,7 +449,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
-	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 			String name, String password, WriteGraphType graphType,
 			InsertType insertType) throws RDFException {
@@ -467,7 +474,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
-	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, WriteGraphType graphType,
 			InsertType insertType) throws RDFException {
@@ -493,7 +499,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fault.
 	 */
-	@Override
 	public void loadtoSPARQLEndpoint(URL endpointURL,
 			List<String> namedGraph, String userName,
 			String password, WriteGraphType graphType, InsertType insertType)
@@ -686,11 +691,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	@Override
-	public void extractFromSPARQLEndpoint(URL endpointURL,
+	public void addFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphURI) throws RDFException {
 
-		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI,
-				DEFAUTL_CONSTRUCT_QUERY);
+		addFromSPARQLEndpoint(endpointURL, defaultGraphURI,
+				DEFAULT_CONSTRUCT_QUERY);
 	}
 
 	/**
@@ -704,7 +709,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
-	public void extractFromSPARQLEndpoint(URL endpointURL,
+	public void addFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query) throws RDFException {
 
 		List<String> endpointGraphsURI = new ArrayList<>();
@@ -727,11 +732,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	@Override
-	public void extractFromSPARQLEndpoint(URL endpointURL,
+	public void addFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphURI, String hostName, String password) throws RDFException {
 
-		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI,
-				DEFAUTL_CONSTRUCT_QUERY, hostName, password);
+		addFromSPARQLEndpoint(endpointURL, defaultGraphURI,
+				DEFAULT_CONSTRUCT_QUERY, hostName, password);
 	}
 
 	/**
@@ -748,7 +753,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
-	public void extractFromSPARQLEndpoint(URL endpointURL,
+	public void addFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphURI, String query, String hostName,
 			String password) throws RDFException {
 
@@ -770,7 +775,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                        TURTLE, RDF/XML,etc.)
 	 * @throws RDFException when extraction data fault.
 	 */
-	@Override
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphUri, String query, String hostName,
 			String password, RDFFormat format) throws RDFException {
@@ -801,7 +805,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                            false step triple count extraction criterium.
 	 * @throws RDFException when extraction data fault.
 	 */
-	@Override
 	public void extractFromSPARQLEndpoint(
 			URL endpointURL,
 			List<String> endpointGraphsURI,
@@ -977,7 +980,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException when transformation fault.
 	 */
 	@Override
-	public void transformUsingSPARQL(String updateQuery) throws RDFException {
+	public void transform(String updateQuery) throws RDFException {
 
 		RepositoryConnection connection = null;
 		try {
@@ -1152,7 +1155,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *         repository/
 	 */
 	@Override
-	public List<Statement> getRepositoryStatements() {
+	public List<Statement> getTriples() {
 		List<Statement> statemens = new ArrayList<>();
 
 		if (repository != null) {
@@ -1201,7 +1204,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
-	@Override
 	public File makeConstructQueryOverRepository(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException {
 
@@ -1276,7 +1278,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public Graph makeConstructQueryOverRepository(
+	public Graph executeConstructQuery(
 			String constructQuery) throws InvalidQueryException {
 
 		RepositoryConnection connection = null;
@@ -1404,7 +1406,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public Map<String, List<String>> makeSelectQueryOverRepository(
+	public Map<String, List<String>> executeSelectQuery(
 			String selectQuery)
 			throws InvalidQueryException {
 
@@ -1413,7 +1415,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		List<BindingSet> listBindings = new ArrayList<>();
 		MyTupleQueryResult result = null;
 		try {
-			result = makeSelectQueryOverRepositoryAsResult(selectQuery);
+			result = executeSelectQueryAsTuples(selectQuery);
 
 			List<String> names = result.getBindingNames();
 
@@ -1463,7 +1465,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public MyTupleQueryResult makeSelectQueryOverRepositoryAsResult(
+	public MyTupleQueryResult executeSelectQueryAsTuples(
 			String selectQuery)
 			throws InvalidQueryException {
 
@@ -2003,7 +2005,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		StringBuilder builder = new StringBuilder();
 
-		List<Statement> statements = getRepositoryStatements();
+		List<Statement> statements = getTriples();
 
 		if (!statements.isEmpty()) {
 			builder.append(insertStart);
@@ -2232,7 +2234,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public List<RDFTriple> getRDFTriplesInRepository() {
 
 		List<RDFTriple> triples = new ArrayList<>();
-		List<Statement> statements = getRepositoryStatements();
+		List<Statement> statements = getTriples();
 
 		int count = 0;
 
@@ -2316,7 +2318,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 	
 	/**
-	 * Add one tripple RDF (statement) to the repository.
+	 * Add one RDF triple (statement) to the repository.
 	 *
 	 * @param subject   One of type for subject - URI,BlankNode.
 	 * @param predicate URI for subject.
@@ -2341,19 +2343,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return factory.createBNode(id);
 	}
 
-	/**
-	 * Create new URI from namespace and localname.
-	 *
-	 * @param namespace String name of used namespace
-	 * @param localName String local name.
-	 * @return created URI.
-	 */
-	@Override
-	public URI createURI(String namespace, String localName) {
-		ValueFactory factory = repository.getValueFactory();
-		return factory.createURI(namespace, localName);
-
-	}
+	
 
 	/**
 	 * Create new URI from String.

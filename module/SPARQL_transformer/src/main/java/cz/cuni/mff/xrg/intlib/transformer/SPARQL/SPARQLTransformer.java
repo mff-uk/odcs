@@ -46,7 +46,7 @@ public class SPARQLTransformer
 
 		final String updateQuery = config.SPARQL_Update_Query;
 		try {
-			outputDataUnit.transformUsingSPARQL(updateQuery);
+			outputDataUnit.transform(updateQuery);
 		} catch (RDFDataUnitException ex) {
 			throw new DPUException(ex.getMessage(), ex);
 		}

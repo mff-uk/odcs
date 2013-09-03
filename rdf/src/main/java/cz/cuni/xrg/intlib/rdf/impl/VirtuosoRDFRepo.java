@@ -177,7 +177,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	}
 
 	@Override
-	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo) {
+	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
 
 		if (targetRepo == null) {
 			throw new IllegalArgumentException(

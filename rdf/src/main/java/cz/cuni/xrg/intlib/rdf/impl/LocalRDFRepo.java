@@ -203,7 +203,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			if (!sourceConnection.isEmpty()) {
 
 				List<Statement> sourceStatemens = second
-						.getRepositoryStatements();
+						.getTriples();
 
 				targetConnection = repository.getConnection();
 
@@ -251,7 +251,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * @param targetRepository goal repository where RDF data are added.
 	 */
 	@Override
-	public void copyAllDataToTargetRepository(RDFDataUnit targetRepo) {
+	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
 
 		if (targetRepo == null) {
 			throw new IllegalArgumentException(
@@ -267,7 +267,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 			if (!sourceConnection.isEmpty()) {
 
-				List<Statement> sourceStatemens = this.getRepositoryStatements();
+				List<Statement> sourceStatemens = this.getTriples();
 
 				targetConnection = targetRepository.getConnection();
 
