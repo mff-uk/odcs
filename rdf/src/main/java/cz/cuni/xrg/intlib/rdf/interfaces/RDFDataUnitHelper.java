@@ -20,20 +20,19 @@ import org.openrdf.rio.RDFFormat;
  */
 public interface RDFDataUnitHelper {
 
-	
-        /**
-	 * Add one RDF triple (statement) to the repository. Subject, predicate, object 
-         * may be prepare by the corresponding methods createURI, createBlankNode, or createLiteral
+	/**
+	 * Add one RDF triple (statement) to the repository. Subject, predicate,
+	 * object may be prepare by the corresponding methods createURI,
+	 * createBlankNode, or createLiteral
 	 *
 	 * @param subject   One of type for subject - URI, Blank node.
 	 * @param predicate URI for subject.
 	 * @param object    One of type for object - URI, Blank node or Literal.
 	 */
 	public void addTriple(Resource subject, URI predicate, Value object);
-        
-        
-        /**
-	 * Create new blank node with the defined id. 
+
+	/**
+	 * Create new blank node with the defined id.
 	 *
 	 * @param id String value of ID, e.g., b12345
 	 * @return created blank node, e.g., _:b12345.
@@ -43,8 +42,10 @@ public interface RDFDataUnitHelper {
 	/**
 	 * Create new URI resource.
 	 *
-	 * @param uri String value for URI, e.g., "http://linked.opendata.cz/resource/test".
-	 * @return created URI, e.g., &lt;http://linked.opendata.cz/resource/test&gt.
+	 * @param uri String value for URI, e.g.,
+	 *            "http://linked.opendata.cz/resource/test".
+	 * @return created URI, e.g.,
+	 *         &lt;http://linked.opendata.cz/resource/test&gt.
 	 */
 	public URI createURI(String uri);
 
@@ -52,8 +53,11 @@ public interface RDFDataUnitHelper {
 	 * Create new typed literal.
 	 *
 	 * @param literalLabel String value for literal, e.g., "myValue".
-	 * @param dataType     URI of data type for the literal, e.g., "http://www.w3.org/2001/XMLSchema#dateTime". It does not support prefixes.
-	 * @return Created typed literal, e.g., """myValue"""^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+	 * @param dataType     URI of data type for the literal, e.g.,
+	 *                     "http://www.w3.org/2001/XMLSchema#dateTime". It does
+	 *                     not support prefixes.
+	 * @return Created typed literal, e.g.,
+	 *         """myValue"""^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 	 */
 	public Literal createLiteral(String literalLabel, URI dataType);
 
@@ -61,8 +65,10 @@ public interface RDFDataUnitHelper {
 	 * Create new language literal.
 	 *
 	 * @param literalLabel String value for literal, e.g., "myValue".
-	 * @param language     String value for language tag, e.g. "de" for German literal.
-	 * @return Created language literal, e.g., """myValue"""@de.
+	 * @param language     String value for language tag, e.g. "de" for German
+	 *                     literal.
+	 * @return Created language literal, e.g., """myValue"""
+	 * @de.
 	 */
 	public Literal createLiteral(String literalLabel, String language);
 
@@ -72,9 +78,9 @@ public interface RDFDataUnitHelper {
 	 * @param literalLabel String value for literal, e.g., "myValue".
 	 * @return created language literal.
 	 */
-	public Literal createLiteral(String literalLabel) ;
-        
-        /**
+	public Literal createLiteral(String literalLabel);
+
+	/**
 	 * Check if RDF triple is in repository.
 	 *
 	 * @param subject   URI or blank node for subject
@@ -82,14 +88,12 @@ public interface RDFDataUnitHelper {
 	 * @param object    URI, blank node or literal for object
 	 * @return true if such RDF triple is in repository, false otherwise.
 	 */
-        public boolean isTripleInRepository(Resource subject,
+	public boolean isTripleInRepository(Resource subject,
 			URI predicate, Value object);
-        
-        
-        
-        
+
 	/**
-	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML serialization of RDF data
+	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
+	 * serialization of RDF data
 	 *
 	 * @param file File contains RDF data to extract.
 	 *
@@ -115,9 +119,9 @@ public interface RDFDataUnitHelper {
 	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
 	 *                              RDFXML, Turtle, ..) if RDF format can not be
 	 *                              detected from file suffix.
-	 * @param useStatisticalHandler boolean value, if during extraction the 
-	 *                              detailed statistic about parsed RDF triples and
-	 *                              detailed log is needed or not
+	 * @param useStatisticalHandler boolean value, if during extraction the
+	 *                              detailed statistic about parsed RDF triples
+	 *                              and detailed log is needed or not
 	 * @throws RDFException when extraction fail.
 	 */
 	public void addFromFile(File file, RDFFormat format,
@@ -126,16 +130,16 @@ public interface RDFDataUnitHelper {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file  File which contains RDF data to extract.
+	 * @param file File which contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
 	public void addFromTurtleFile(File file) throws RDFException;
-        
-        /**
+
+	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file  File which contains RDF data to extract.
+	 * @param file File which contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
@@ -150,85 +154,6 @@ public interface RDFDataUnitHelper {
 	 * @throws RDFException when loading data to file fail.
 	 */
 	public void storeToFile(File file, RDFFormatType formatType) throws RDFException;
-
-//	/**
-//	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
-//	 * without endpoint authentication.
-//	 *
-//	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-//	 *                        RDF data.
-//	 * @param defaultGraphURI name of graph where RDF data are loading.
-//	 * @param graphType       One of way, how to solve loading RDF data to graph
-//	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-//	 * @param insertType      One of way, how solve loading RDF data parts to
-//	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
-//	 *                        STOP_WHEN_BAD_PART).
-//	 * @throws RDFException when loading data fail.
-//	 */
-//	public void loadToSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-//			WriteGraphType graphType, InsertType insertType) throws RDFException;
-
-//	/**
-//	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
-//	 * with endpoint authentication (name,password).
-//	 *
-//	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-//	 *                        RDF data.
-//	 * @param defaultGraphURI name of graph where RDF data are loading.
-//	 * @param name            String name needed for authentication.
-//	 * @param password        String password needed for authentication.
-//	 * @param graphType       One of way, how to solve loading RDF data to graph
-//	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-//	 * @param insertType      One of way, how solve loading RDF data parts to
-//	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
-//	 *                        STOP_WHEN_BAD_PART).
-//	 * @throws RDFException when loading data to SPARQL endpoint fail.
-//	 */
-//	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
-//			String name,
-//			String password, WriteGraphType graphType, InsertType insertType)
-//			throws RDFException;
-
-//	/**
-//	 * Load RDF data from repository to SPARQL endpointURL to the collection of
-//	 * URI graphs without endpoint authentication.
-//	 *
-//	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-//	 *                        RDF data.
-//	 * @param defaultGraphURI List with names of graph where RDF data are
-//	 *                        loading.
-//	 * @param graphType       One of way, how to solve loading RDF data to graph
-//	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-//	 * @param insertType      One of way, how solve loading RDF data parts to
-//	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
-//	 *                        STOP_WHEN_BAD_PART).
-//	 * @throws RDFException when loading data to SPARQL endpoint fail.
-//	 */
-//	public void loadtoSPARQLEndpoint(URL endpointURL,
-//			List<String> endpointGraphsURI, WriteGraphType graphType,
-//			InsertType insertType) throws RDFException;
-
-//	/**
-//	 * Load RDF data from repository to SPARQL endpointURL to the collection of
-//	 * URI graphs with endpoint authentication (name,password).
-//	 *
-//	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-//	 *                        RDF data.
-//	 * @param defaultGraphURI List with names of graph where RDF data are
-//	 *                        loading.
-//	 * @param userName        String name needed for authentication.
-//	 * @param password        String password needed for authentication.
-//	 * @param graphType       One of way, how to solve loading RDF data to graph
-//	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-//	 * @param insertType      One of way, how solve loading RDF data parts to
-//	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
-//	 *                        STOP_WHEN_BAD_PART).
-//	 * @throws RDFException when loading data fail.
-//	 */
-//	public void loadtoSPARQLEndpoint(URL endpointURL,
-//			List<String> endpointGraphsURI, String userName,
-//			String password, WriteGraphType graphType, InsertType insertType)
-//			throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
@@ -288,30 +213,14 @@ public interface RDFDataUnitHelper {
 			String defaultGraphURI, String query, String hostName,
 			String password) throws RDFException;
 
-//	/**
-//	 * Extract RDF data from SPARQL endpoint to repository using only data from
-//	 * URI graph using authentication (name,password).
-//	 *
-//	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-//	 *                        RDF data.
-//	 * @param defaultGraphUri name of graph where RDF data are stored.
-//	 * @param query           String SPARQL query.
-//	 * @param hostName        String name needed for authentication.
-//	 * @param password        String password needed for authentication.
-//	 * @param format          Type of RDF format for saving data (example:
-//	 *                        TURTLE, RDF/XML,etc.)
-//	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-//	 */
-//	public void extractFromSPARQLEndpoint(URL endpointURL,
-//			String defaultGraphUri, String query,
-//			String hostName, String password, RDFFormat format) throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
 	 * collection of URI graphs using authentication (name,password).
-         * 
-         * TODO Jirka : This method is used by RDFExtractor, but it should be refactored, it 
-         * has 8 params, everything which has more than 4-5 params is strange and result of poor design typically.
+	 *
+	 * TODO Jirka : This method is used by RDFExtractor, but it should be
+	 * refactored, it has 8 params, everything which has more than 4-5 params is
+	 * strange and result of poor design typically.
 	 *
 	 * @param endpointURL         Remote URL connection to SPARQL endpoint
 	 *                            contains RDF data.
@@ -329,7 +238,7 @@ public interface RDFDataUnitHelper {
 	 *                            false step triple count extraction criterium.
 	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
-        @Deprecated
+	@Deprecated
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
 			String query, String hostName, String password, RDFFormat format,
@@ -395,7 +304,7 @@ public interface RDFDataUnitHelper {
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
-        @Deprecated
+	@Deprecated
 	public File makeConstructQueryOverRepository(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException;
 
@@ -431,6 +340,4 @@ public interface RDFDataUnitHelper {
 	 * @param targetRepository goal repository where RDF data are added.
 	 */
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo);
-
-	
 }
