@@ -171,6 +171,8 @@ public interface RDFDataUnitHelper {
 //	/**
 //	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
 //	 * with endpoint authentication (name,password).
+//         * 
+//         * TODO method too complex, not suitable for RDFDataUnit
 //	 *
 //	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 //	 *                        RDF data.
@@ -184,6 +186,7 @@ public interface RDFDataUnitHelper {
 //	 *                        STOP_WHEN_BAD_PART).
 //	 * @throws RDFException when loading data to SPARQL endpoint fail.
 //	 */
+//        @Deprecated
 //	public void loadtoSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
 //			String name,
 //			String password, WriteGraphType graphType, InsertType insertType)
@@ -208,27 +211,30 @@ public interface RDFDataUnitHelper {
 //			List<String> endpointGraphsURI, WriteGraphType graphType,
 //			InsertType insertType) throws RDFException;
 
-//	/**
-//	 * Load RDF data from repository to SPARQL endpointURL to the collection of
-//	 * URI graphs with endpoint authentication (name,password).
-//	 *
-//	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-//	 *                        RDF data.
-//	 * @param defaultGraphURI List with names of graph where RDF data are
-//	 *                        loading.
-//	 * @param userName        String name needed for authentication.
-//	 * @param password        String password needed for authentication.
-//	 * @param graphType       One of way, how to solve loading RDF data to graph
-//	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-//	 * @param insertType      One of way, how solve loading RDF data parts to
-//	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
-//	 *                        STOP_WHEN_BAD_PART).
-//	 * @throws RDFException when loading data fail.
-//	 */
-//	public void loadtoSPARQLEndpoint(URL endpointURL,
-//			List<String> endpointGraphsURI, String userName,
-//			String password, WriteGraphType graphType, InsertType insertType)
-//			throws RDFException;
+	/**
+	 * Load RDF data from repository to SPARQL endpointURL to the collection of
+	 * URI graphs with endpoint authentication (name,password).
+	 *
+         * TODO method too complex, not suitable for RDFDataUnit
+         * 
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphURI List with names of graph where RDF data are
+	 *                        loading.
+	 * @param userName        String name needed for authentication.
+	 * @param password        String password needed for authentication.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
+	 * @throws RDFException when loading data fail.
+	 */
+        @Deprecated
+	public void loadtoSPARQLEndpoint(URL endpointURL,
+			List<String> endpointGraphsURI, String userName,
+			String password, WriteGraphType graphType, InsertType insertType)
+			throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
