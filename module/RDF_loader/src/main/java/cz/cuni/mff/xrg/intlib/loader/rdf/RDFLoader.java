@@ -1,10 +1,10 @@
 package cz.cuni.mff.xrg.intlib.loader.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+import cz.cuni.xrg.intlib.commons.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
+import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.loader.LoadContext;
-import cz.cuni.xrg.intlib.commons.loader.LoadException;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.*;
 import cz.cuni.xrg.intlib.rdf.enums.InsertType;
@@ -21,7 +21,7 @@ import java.util.List;
  * @author Petyr
  */
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
-		implements Load, ConfigDialogProvider<RDFLoaderConfig> {
+		implements DPU, ConfigDialogProvider<RDFLoaderConfig> {
 
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -31,8 +31,8 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	}
 
 	@Override
-	public void load(LoadContext context)
-			throws LoadException,
+	public void execute(DPUContext context)
+			throws DPUException,
 			DataUnitException {
 
 		final String endpoint = config.SPARQL_endpoint;
@@ -41,7 +41,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			endpointURL = new URL(endpoint);
 		} catch (MalformedURLException ex) {
 
-			throw new LoadException(ex);
+			throw new DPUException(ex);
 		}
 
 		final List<String> defaultGraphsURI = config.GraphsUri;
@@ -54,7 +54,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			rdfDataUnit.loadtoSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType,insertType);
 		} catch (RDFDataUnitException ex) {
-			throw new LoadException(ex.getMessage(), ex);
+			throw new DPUException(ex.getMessage(), ex);
 		}
 	}
 
