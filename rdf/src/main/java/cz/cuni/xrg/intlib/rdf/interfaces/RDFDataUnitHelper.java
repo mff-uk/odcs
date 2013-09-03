@@ -306,30 +306,34 @@ public interface RDFDataUnitHelper {
 //			String defaultGraphUri, String query,
 //			String hostName, String password, RDFFormat format) throws RDFException;
 
-//	/**
-//	 * Extract RDF data from SPARQL endpoint to repository using only data from
-//	 * collection of URI graphs using authentication (name,password).
-//	 *
-//	 * @param endpointURL         Remote URL connection to SPARQL endpoint
-//	 *                            contains RDF data.
-//	 * @param defaultGraphsUri    List with names of graph where RDF data are
-//	 *                            stored.
-//	 * @param query               String SPARQL query.
-//	 * @param hostName            String name needed for authentication.
-//	 * @param password            String password needed for authentication.
-//	 * @param format              Type of RDF format for saving data (example:
-//	 *                            TURTLE, RDF/XML,etc.)
-//	 * @param useStatisticHandler boolean value if detailed log and statistic
-//	 *                            are awailable or not.
-//	 * @param extractFail         boolean value, if true stop pipeline(cause
-//	 *                            exception) when no triples were extracted. if
-//	 *                            false step triple count extraction criterium.
-//	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-//	 */
-//	public void extractFromSPARQLEndpoint(URL endpointURL,
-//			List<String> endpointGraphsURI,
-//			String query, String hostName, String password, RDFFormat format,
-//			boolean useStatisticHandler, boolean extractFail) throws RDFException;
+	/**
+	 * Extract RDF data from SPARQL endpoint to repository using only data from
+	 * collection of URI graphs using authentication (name,password).
+         * 
+         * TODO Jirka : This method is used by RDFExtractor, but it should be refactored, it 
+         * has 8 params, everything which has more than 4-5 params is strange and result of poor design typically.
+	 *
+	 * @param endpointURL         Remote URL connection to SPARQL endpoint
+	 *                            contains RDF data.
+	 * @param defaultGraphsUri    List with names of graph where RDF data are
+	 *                            stored.
+	 * @param query               String SPARQL query.
+	 * @param hostName            String name needed for authentication.
+	 * @param password            String password needed for authentication.
+	 * @param format              Type of RDF format for saving data (example:
+	 *                            TURTLE, RDF/XML,etc.)
+	 * @param useStatisticHandler boolean value if detailed log and statistic
+	 *                            are awailable or not.
+	 * @param extractFail         boolean value, if true stop pipeline(cause
+	 *                            exception) when no triples were extracted. if
+	 *                            false step triple count extraction criterium.
+	 * @throws RDFException when extraction data from SPARQL endpoint fail.
+	 */
+        @Deprecated
+	public void extractFromSPARQLEndpoint(URL endpointURL,
+			List<String> endpointGraphsURI,
+			String query, String hostName, String password, RDFFormat format,
+			boolean useStatisticHandler, boolean extractFail) throws RDFException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.

@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.intlib.extractor.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
+import cz.cuni.xrg.intlib.commons.dpu.DPUException;
+import cz.cuni.xrg.intlib.commons.dpu.annotation.AsExtractor;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.xrg.intlib.commons.extractor.Extract;
 import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
@@ -22,8 +26,9 @@ import org.openrdf.rio.RDFFormat;
  * @author Jiri Tomes
  * @author Petyr
  */
+@AsExtractor
 public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
-		implements Extract, ConfigDialogProvider<RDFExtractorConfig> {
+		implements DPU, ConfigDialogProvider<RDFExtractorConfig> {
 
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -33,8 +38,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	}
 
 	@Override
-	public void extract(ExtractContext context)
-			throws ExtractException,
+	public void execute(DPUContext context)
+			throws DPUException,
 			DataUnitCreateException {
 
 		try {
@@ -53,9 +58,9 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		} catch (MalformedURLException ex) {
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
-			throw new ExtractException(ex);
+			throw new DPUException(ex);
 		} catch (RDFDataUnitException ex) {
-			throw new ExtractException(ex.getMessage(), ex);
+			throw new DPUException(ex.getMessage(), ex);
 		}
 	}
 
