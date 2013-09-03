@@ -66,7 +66,7 @@ interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject {}  </code> <
                 Currently only RDF data units (units passing RDF data) are available. 
                 </p>
                 
-                 <p>Data units cannot be created directly. To create DataUnit, introduce new <code>RDFDataUnit</code> attribute of the created DPU and annotate it with <code>@OutputDataUnit</code> for output data unit and <code>@InputDataUnit</code> for input data unit. </p>
+                 <p>Data units cannot be created directly. To create DataUnit, introduce new <code>RDFDataUnit</code> <b>public</b> attribute of the created DPU and annotate it with <code>@OutputDataUnit</code> for output data unit and <code>@InputDataUnit</code> for input data unit. </p>
         
         <p>The following example demonstrate the functionality of adding new output data unit for the given DPU. By adding new data unit, you create new output data flow unit, which may be then filled with the data being outputted by that DPU. Every DPU may create one or more output data units.
 <div class="code"> <pre> <code>
@@ -256,7 +256,7 @@ Import-Package: com.vaadin.data,com.vaadin.data.util,com.vaadin.server,c
         
         
         Manifest file  <code>maninifest.mf</code> also contains lines with <code>DPU-MainClass</code> and
-	<code>DPU-Package</code> that are essential for bundle use. <code>DPU-MainClass</code> points to the main class of the DPU which is called when the DPU is executed on the pipeline. <code>DPU-Package</code> contains name of the OSGi bundle (package).
+	<code>DPU-Package</code> that are essential for bundle use. <code>DPU-MainClass</code> contains name of the main class of the DPU which is called when the DPU is executed on the pipeline. <code>DPU-Package</code> contains name of the package in which the main class is located.
         
         <h3>Maven</h3>
         <p><a href="http://maven.apache.org/">Apache Maven</a> is a software project management and comprehension tool. 
