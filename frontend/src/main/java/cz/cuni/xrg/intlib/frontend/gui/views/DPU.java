@@ -9,9 +9,16 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FailedListener;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.StartedListener;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -25,9 +32,13 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
+import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
@@ -40,10 +51,18 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
+import cz.cuni.xrg.intlib.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.PipelineStatus;
+import cz.cuni.xrg.intlib.frontend.gui.components.UploadInfoWindow;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -71,6 +90,11 @@ class DPU extends ViewComponent {
 	private DPUTree dpuTree;// Tree contains available DPUs.
 	private TextField dpuName; // name of selected DPU Template
 	private TextArea dpuDescription; // description of selected DPU Template
+	private Upload reloadFile; // button for reload JAR file
+	private FileUploadReceiver fileUploadReceiver;
+	public static UploadInfoWindow uploadInfoWindow;
+	private boolean  errorExtension=false;
+	private Label jarPath;
 	/**
 	 * DPU Template details TabSheet contains General, Template Configuration, DPU instances tabs
 	 */
@@ -449,8 +473,98 @@ class DPU extends ViewComponent {
 		jarPathLayout.setSpacing(true);
 		jarPathLayout.setHeight("100%");
 		dpuSettingsLayout.addComponent(new Label("JAR path:"),0,3);
-		Label jPath = new Label( selectedDpuWrap.getDPUTemplateRecord().getJarPath() );
-		dpuSettingsLayout.addComponent(jPath,1,3);
+		jarPath = new Label( selectedDpuWrap.getDPUTemplateRecord().getJarPath() );
+
+		
+		//reload JAR file button
+		fileUploadReceiver = new FileUploadReceiver();		
+		reloadFile = new Upload(null, fileUploadReceiver);
+		reloadFile.setImmediate(true);
+		reloadFile.setButtonCaption("Replace");
+		reloadFile.addStyleName("horizontalgroup");
+		reloadFile.setHeight("40px");
+
+		reloadFile.addStartedListener(new StartedListener() {
+
+			/**
+			 * Upload start listener. If selected file has JAR extension then 
+			 * an upload status window with upload progress bar will be shown. 
+			 * If selected file has other extension, then upload will be interrupted and 
+			 * error notification will be shown.
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void uploadStarted(final StartedEvent event) {
+				String filename = event.getFilename();
+				String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
+				String jar = "jar";
+				
+				if(!jar.equals(extension)){
+					reloadFile.interruptUpload();
+					errorExtension=true;
+					Notification.show(
+							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
+
+					return;
+					
+				}
+				
+				if (uploadInfoWindow.getParent() == null) {
+					UI.getCurrent().addWindow(uploadInfoWindow);
+				}
+				uploadInfoWindow.setClosable(false);
+				
+
+			}
+		});
+
+		
+		reloadFile.addSucceededListener(new SucceededListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void uploadSucceeded(SucceededEvent event) {
+				uploadInfoWindow.close();
+				if(!errorExtension){
+
+					copyToTarget();
+				}
+				else{
+					errorExtension=false;
+				}
+				
+			}
+		});
+		
+
+		reloadFile.addFailedListener(new FailedListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void uploadFailed(FailedEvent event) {
+				uploadInfoWindow.close();
+				if(errorExtension){
+					errorExtension=false;
+				}
+				
+				Notification.show(
+						"Uploading "
+				                + event.getFilename() + " failed.", Notification.Type.ERROR_MESSAGE);
+
+				return;
+
+			}
+		});
+		
+		// Upload status window
+		uploadInfoWindow = new UploadInfoWindow(reloadFile);
+		
+		jarPathLayout.addComponent(jarPath);
+		jarPathLayout.addComponent(reloadFile);
+		dpuSettingsLayout.addComponent(jarPathLayout,1,3);
 		
 		// Description of JAR of DPU Template.
 		dpuSettingsLayout.addComponent(new Label("Description of JAR:"),0,4);
@@ -463,6 +577,160 @@ class DPU extends ViewComponent {
 		verticalLayoutData.addComponent(dpuSettingsLayout);
 
 		return verticalLayoutData;
+	}
+	
+	//reload jar
+	private void copyToTarget(){
+		
+		if (FileUploadReceiver.path != null) {
+			String pojPath = App.getApp().getAppConfiguration()
+					.getString(ConfigProperty.MODULE_PATH);
+			File srcFile = new File(FileUploadReceiver.file.toString());
+			File destFile = new File(pojPath + File.separator + "dpu" + File.separator + FileUploadReceiver.fName);
+
+			//checking if uploaded file already exist in the /target/dpu/ 
+			boolean exists = destFile.exists();
+			//if uploaded file doesn't exist in the /target/dpu/
+			if (!exists) {
+				try {
+					//copy file from template folder to the  /target/dpu/ 
+					copyFile(srcFile, destFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+					// error, just exit
+					System.exit(0);
+				}
+				
+			} else {
+				//uploaded file already exist in the /target/dpu/ 
+				List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
+				String sameDpuName ="";
+				for (DPUTemplateRecord dpu : dpus){
+					//if find DPUTemplateRecord that used this file, get it name 
+					if(dpu.getJarPath().equals(FileUploadReceiver.fName)){
+						sameDpuName = dpu.getName();
+						break;
+					}			
+				}
+				//if we get the name of DPUTemplateRecord that used this file, show notification
+				if (sameDpuName!=""){
+					Notification.show(
+							"File with the name " + FileUploadReceiver.fName +" is already used in the DPU template " + dpuName,
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+				//else, copy file from template folder to the  /target/dpu/ 
+				else{
+					try {
+						copyFile(srcFile, destFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+						// error, just exit
+						System.exit(0);
+					}
+					
+				}
+
+
+			}
+
+			String relativePath = FileUploadReceiver.fName;
+			// we try to load new JAR .. to find out more about it,
+			// start by obtaining ModuleFacade
+			Object dpuObject = null;
+			try {
+				dpuObject = App.getApp().getModules()
+						.getObject(relativePath);
+			} catch (BundleInstallFailedException
+					| ClassLoadFailedException | FileNotFoundException e) {
+				// for some reason we can't load bundle .. delete dpu
+				// and show message to the user
+				destFile.delete();
+				Notification.show(
+						"Can't load bundle because of exception:",
+						e.getMessage(), Notification.Type.ERROR_MESSAGE);
+				return;
+
+			}
+			
+			DPUExplorer dpuExplorer = App.getApp().getDPUExplorere();
+			
+			String jarDescription = dpuExplorer.getJarDescription(relativePath);
+			if (jarDescription == null) {
+				// failed to read description .. use empty string ?
+				jarDescription = "";
+			}
+
+			// check type ..
+			DPUType dpuType = dpuExplorer.getType(dpuObject, relativePath);
+			if (dpuType == null) {
+				// TODO Petyr, Maria: uninstall the DPU from Intlib as well
+				
+				// unknown type .. delete dpu and throw error
+				destFile.delete();
+				Notification.show("Unknown DPURecord type.",
+						"Upload another file",
+						Notification.Type.ERROR_MESSAGE);
+				return;
+
+			}
+			else{
+				if(dpuType.equals(selectedDpu.getType())){
+				// now we know all what we need add new JAR to DPU template
+					selectedDpu.setJarPath(FileUploadReceiver.fName);
+					selectedDpu.setJarDescription(jarDescription);
+					App.getDPUs().save(selectedDpu);
+				}
+				else{
+					
+					// wrong type .. delete dpu and throw error
+					destFile.delete();
+					Notification.show("Wrong DPURecord type.",
+							"Upload another file",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+			}
+
+			//refresh data in dialog 
+			setGenralTabValues();
+			
+
+		}
+	}
+	
+	/**
+	 * Copy file from some source to some destination. 
+	 * 
+	 * @param src File that we want to copy.
+	 * @param dest Destination where we want to copy src.
+	 * @throws IOException Exception which might be thrown when I/O exception of some sort has occurred.
+	 */
+	public static void copyFile(File src, File dest) throws IOException {
+
+		InputStream inStream = null;
+		OutputStream outStream = null;
+		try {
+
+			inStream = new FileInputStream(src);
+			outStream = new FileOutputStream(dest); 
+
+			byte[] buffer = new byte[1024];
+
+			int length;
+			while ((length = inStream.read(buffer)) > 0) {
+				outStream.write(buffer, 0, length);
+			}
+
+			if (inStream != null)
+				inStream.close();
+			if (outStream != null)
+				outStream.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -719,6 +987,7 @@ class DPU extends ViewComponent {
 	 */
 
 
+	@SuppressWarnings("unchecked")
 	public IndexedContainer getTableData() {
 
 		IndexedContainer result = new IndexedContainer();
