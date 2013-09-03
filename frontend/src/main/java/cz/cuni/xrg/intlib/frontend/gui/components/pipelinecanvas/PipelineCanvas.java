@@ -3,22 +3,24 @@ package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
+import cz.cuni.xrg.intlib.commons.app.data.EdgeCompiler;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
-import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUDetail;
 import cz.cuni.xrg.intlib.frontend.gui.components.EdgeDetail;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.List;
 import java.util.Stack;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * Component for visualization of the pipeline.
@@ -162,7 +164,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         String result = graph.validateNewEdge(dpuFrom, dpuTo);
         if (result == null) {
             int connectionId = graph.addEdge(dpuFrom, dpuTo);
-            getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, null);
+			EdgeCompiler edgeCompiler = new EdgeCompiler(App.getApp().getModules());
+			Edge edge = graph.getEdgeById(connectionId);
+			edgeCompiler.addDefaultMapping(edge);
+			
+            getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edge.getScript());
         } else {
             Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
         }
