@@ -7,14 +7,12 @@ package cz.cuni.xrg.intlib.commons.app.execution;
  * Start -> Element | Element; Start
  * Element -> Name Command		// The commands apply on all the DataUnits with given name
  * Command -> rename Name		// rename DataUnit
- * Command -> drop				// drop DataUnit
  * 
  * @author Petyr
  *
  */
 public enum DataUnitMergerInstructions {
 	Rename("rename"),
-	Drop("drop"),
 	Separator(";");
 	
 	/**

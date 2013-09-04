@@ -76,8 +76,9 @@ class DataUnitMerger {
 			// get command
 			String cmd = this.findRule(rightDataUnitName, instruction);
 			if (cmd == "") {
-				// nothing .. use name from the rightDataUnit 
-				leftDataUnitName = rightDataUnitName;
+				// there is no mapping
+				// IGNORE DATAUNIT
+				continue;				
 			} else {
 				String[] cmdSplit = cmd.split(" ");
 				if (cmdSplit[0].compareToIgnoreCase(
@@ -91,12 +92,11 @@ class DataUnitMerger {
 						leftDataUnitName = rightDataUnitName;
 						LOG.info("passing: {}", rightDataUnitName);
 					}
-				} else if (cmdSplit[0].compareToIgnoreCase(
-						DataUnitMergerInstructions.Drop.getValue()) == 0) {
-					// drop this DataUnit -> skip
-					LOG.info("dropping: {}", rightDataUnitName);
+				} else {
+					// unknown command
+					LOG.error("dataUnit droped bacause of unknown command: {}", cmd);
 					continue;
-				}			
+				}
 			}
 			
 			// we need dataUnit into which merge data
