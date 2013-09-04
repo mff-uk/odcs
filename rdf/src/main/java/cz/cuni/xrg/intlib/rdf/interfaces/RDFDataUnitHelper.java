@@ -159,8 +159,8 @@ public interface RDFDataUnitHelper {
 	 * Load RDF data from repository to SPARQL endpointURL to the collection of
 	 * URI graphs with endpoint authentication (name,password).
 	 *
-         * TODO method too complex, not suitable for RDFDataUnit
-         * 
+	 * TODO method too complex, not suitable for RDFDataUnit
+	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
 	 * @param defaultGraphURI List with names of graph where RDF data are
@@ -174,8 +174,8 @@ public interface RDFDataUnitHelper {
 	 *                        STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data fail.
 	 */
-        @Deprecated
-	public void loadtoSPARQLEndpoint(URL endpointURL,
+	@Deprecated
+	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
 			String password, WriteGraphType graphType, InsertType insertType)
 			throws RDFException;
@@ -237,7 +237,6 @@ public interface RDFDataUnitHelper {
 	public void addFromSPARQLEndpoint(URL endpointURL,
 			String defaultGraphURI, String query, String hostName,
 			String password) throws RDFException;
-
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from

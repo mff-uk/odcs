@@ -1,8 +1,13 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
+import java.net.URL;
+import java.util.List;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
