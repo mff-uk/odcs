@@ -1,11 +1,9 @@
 package cz.cuni.xrg.intlib.commons.dpu;
 
 /**
- * Base abstract class for exception that are connected to the 
- * general dpu's problems that are not covered by other exceptions.
- * 
- * As the exception extends {@link RuntimeException} it does not have to 
- * be declared in methods or catch. 
+ * Base class for exception that are connected to the dpu's problems. Can be 
+ * also thrown by {@link DPU#execute(DPUContext)} to indicate that the execution 
+ * failed.
  * 
  * @author Petyr
  *
