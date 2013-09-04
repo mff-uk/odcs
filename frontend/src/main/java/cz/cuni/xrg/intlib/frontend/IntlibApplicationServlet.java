@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.atmosphere.cpr.AtmosphereFramework;
-import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.DefaultBroadcasterFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -53,24 +52,8 @@ public class IntlibApplicationServlet extends VaadinServlet {
 		// First clear the security context, as we need to load it from session.
 		SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
 		
-        // The handler will sett this attribute prior to call the filterchain
-		// (that will conclude with the servlet).
-        Object p = request.getAttribute(FilterablePushHandler.WEB_SOCKET_PUSH_REROUTED);
-
-        if(p != null && p.equals(true)) {
-			//the handler also pass the AtmosphereResource
-			AtmosphereResource resource = (AtmosphereResource) request
-					.getAttribute(FilterablePushHandler.ATMOSPHERE_RESOURCE);
-			handler.onRequest(resource);
-
-			request.removeAttribute(
-					FilterablePushHandler.WEB_SOCKET_PUSH_REROUTED);
-			request.removeAttribute(FilterablePushHandler.ATMOSPHERE_RESOURCE);
-		} else {
-			// If this is not a "simulated" request from the push handler,
-			// handle normally.
-			super.service(request, response);
-		}
+		// Do the business.
+		super.service(request, response);
 		
 		// We remove the request from the thread local, there's no reason
 		// to keep it once the work is done. Next request might be serviced

@@ -12,9 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class FilterablePushHandler extends PushHandler {
    
-    public static final String WEB_SOCKET_PUSH_REROUTED = "com.vaadin.server.communication.FilterablePushHandler.WEB_SOCKET_PUSH_REROUTED";
-    public static final String ATMOSPHERE_RESOURCE = "com.vaadin.server.communication.FilterablePushHandler.ATMOSPHERE_RESOURCE";
-   
     public FilterablePushHandler(VaadinServletService service) {
         super(service);
     }
