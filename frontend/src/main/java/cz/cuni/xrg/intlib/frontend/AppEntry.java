@@ -5,9 +5,11 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
-import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContextService;
+
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
@@ -24,12 +26,15 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
+
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -102,18 +107,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-
-		// create Spring context, always the first after application init,
-		// so that all needed beans are ready.
-		context = new ClassPathXmlApplicationContext(
-				"frontend-context.xml",
-				"commons-app-context-security.xml");
+		
+		// Initialize Spring Context.
+		context = WebApplicationContextUtils.getRequiredWebApplicationContext(
+			RequestHolder.getRequest().getSession().getServletContext()
+		);
 
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
 		main = new MenuLayout();
-		//Panel mainPanel = new Panel();
-		//mainPanel.setContent(main);
 		setContent(main);
 
 		// create a navigator to control the views
@@ -200,7 +202,18 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * @return true if user and its session are valid, false otherwise
 	 */
 	private boolean checkAuthentication() {
-		return getAuthCtx().isAuthenticated();
+		boolean authenticated = getAuthCtx().isAuthenticated();
+		if (!authenticated) {
+			// try fetching authentication from session
+			Authentication auth = VaadinSession.getCurrent().getAttribute(Authentication.class);
+			if (auth != null) {
+				AuthenticationContext authCtx = getBean(AuthenticationContext.class);
+				authCtx.setAuthentication(auth);
+				authenticated = authCtx.isAuthenticated();
+			}
+		}
+		
+		return authenticated;
 	}
 
 	/**
@@ -315,8 +328,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 *
 	 * @return authentication context for current user session
 	 */
-	public AuthenticationContextService getAuthCtx() {
-		return getBean(AuthenticationContextService.class);
+	public AuthenticationContext getAuthCtx() {
+		return getBean(AuthenticationContext.class);
 	}
 
 	/**
