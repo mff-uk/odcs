@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.rdf.interfaces;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
+import cz.cuni.xrg.intlib.commons.data.ManagableDataUnit;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
 import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
@@ -23,7 +24,7 @@ import org.openrdf.rio.RDFFormat;
  * @author Petyr
  *
  */
-public interface RDFDataUnit extends DataUnit, RDFDataUnitHelper {
+public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHelper {
 
 	/**
 	 * Extract RDF triples from RDF file to repository.

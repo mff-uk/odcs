@@ -2245,7 +2245,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	@Override
-	public String getName() {
+	public String getURI() {
 		return dataUnitName;
 	}
 
