@@ -21,6 +21,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.data.ManagableDataUnit;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
@@ -79,16 +80,16 @@ public class AnnotationProcessor implements PreExecutor {
 	}
 
 	/**
-	 * Filter given list of {@link DataUnit}s by using {@link Class}.
+	 * Filter given list of {@link ManagableDataUnit}s by using {@link Class}.
 	 * 
 	 * @param candidates
 	 * @param type
-	 * @return List with {@link DataUnits} can be empty, can not be null.
+	 * @return List with {@link ManagableDataUnit} can be empty, can not be null.
 	 */
-	protected LinkedList<DataUnit> filter(List<DataUnit> candidates,
+	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates,
 			Class<?> type) {
-		LinkedList<DataUnit> result = new LinkedList<DataUnit>();
-		for (DataUnit item : candidates) {
+		LinkedList<ManagableDataUnit> result = new LinkedList<ManagableDataUnit>();
+		for (ManagableDataUnit item : candidates) {
 			if (type.isInstance(item)) {
 				result.add(item);
 			}
@@ -97,17 +98,17 @@ public class AnnotationProcessor implements PreExecutor {
 	}
 
 	/**
-	 * Filter given list of {@link DataUnit}s according to their names. Is case
+	 * Filter given list of {@link ManagableDataUnit}s according to their URI. Is case
 	 * insensitive.
 	 * 
 	 * @param candidates
 	 * @param type
-	 * @return List with {@link DataUnits} can be empty, can not be null.
+	 * @return List with {@link ManagableDataUnit} can be empty, can not be null.
 	 */
-	protected LinkedList<DataUnit> filter(List<DataUnit> candidates, String name) {
-		LinkedList<DataUnit> result = new LinkedList<DataUnit>();
-		for (DataUnit item : candidates) {
-			if (item.getName().compareToIgnoreCase(name) == 0) {
+	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates, String name) {
+		LinkedList<ManagableDataUnit> result = new LinkedList<ManagableDataUnit>();
+		for (ManagableDataUnit item : candidates) {
+			if (item.getURI().compareToIgnoreCase(name) == 0) {
 				result.add(item);
 			}
 		}
@@ -134,7 +135,7 @@ public class AnnotationProcessor implements PreExecutor {
 		final Field field = annotationContainer.getField();
 		final InputDataUnit annotation = annotationContainer.getAnnotation();
 		
-		LinkedList<DataUnit> typeMatch = filter(context.getInputs(),
+		LinkedList<ManagableDataUnit> typeMatch = filter(context.getInputs(),
 				field.getType());
 		if (typeMatch.isEmpty()) {
 			// check if not optional 
@@ -149,7 +150,7 @@ public class AnnotationProcessor implements PreExecutor {
 			return false;
 		}
 		// now we filter by name
-		LinkedList<DataUnit> nameMatch = filter(typeMatch, annotation.name());
+		LinkedList<ManagableDataUnit> nameMatch = filter(typeMatch, annotation.name());
 		if (nameMatch.isEmpty()) {
 			if (annotation.relaxed()) {
 				LOG.info("Assign DataUnit names: {} for field: {}",
@@ -170,8 +171,8 @@ public class AnnotationProcessor implements PreExecutor {
 				return false;
 			}
 		} else {
-			LOG.info("Assign DataUnit names: {} for field: {}",
-					nameMatch.getFirst().getName(), field.getName());			
+			LOG.info("Assign DataUnit URI: {} for field: {}",
+					nameMatch.getFirst().getURI(), field.getName());			
 			// use first with required name
 			return setDataUnit(field, dpuInstance, nameMatch.getFirst(),
 					context);
@@ -224,7 +225,7 @@ public class AnnotationProcessor implements PreExecutor {
 			return false;
 		}
 		// let's create dataUnit
-		DataUnit dataUnit = null;
+		ManagableDataUnit dataUnit = null;
 		try {
 			dataUnit = context.addOutputDataUnit(type, annotation.name());
 		} catch (DataUnitCreateException e) {

@@ -24,14 +24,11 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.data.ManagableDataUnit;
 import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
-import cz.cuni.xrg.intlib.commons.loader.LoadContext;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
-import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
 
-public class Context implements ExtractContext, TransformContext, LoadContext,
-	DPUContext {
+public class Context implements DPUContext {
 
 	/**
 	 * Name of directory for shared DPU's data.
@@ -123,7 +120,7 @@ public class Context implements ExtractContext, TransformContext, LoadContext,
 	 * Save all data units.
 	 */
 	public void sealInputs() {
-		for (DataUnit item : inputsManager.getDataUnits()) {
+		for (ManagableDataUnit item : inputsManager.getDataUnits()) {
 			item.madeReadOnly();
 		}
 	}	
@@ -174,16 +171,21 @@ public class Context implements ExtractContext, TransformContext, LoadContext,
 			throws ContextException {
 		// create merger class
 		DataUnitMerger merger = new DataUnitMerger();
-		// merge custom data
-		/*
-		try {
-			customData.putAll(context.getCustomData());
-		} catch (Exception e) {
-			throw new ContextException("Error while merging custom data.", e);
-		}*/
 		// merge dataUnits
 		merger.merger(inputsManager, 
 				context.outputsManager.getDataUnits(), instruction);
+	}
+	
+	/**
+	 * Create required {@link ManagableDataUnit} and add it to the context.
+	 * @param type Type of {@link ManagableDataUnit} to create.
+	 * @param name DataUnit name.
+	 * @return Created DataUni.
+	 * @throws DataUnitCreateException
+	 */
+	public ManagableDataUnit addOutputDataUnit(DataUnitType type, String name)
+			throws DataUnitCreateException {
+		return outputsManager.addDataUnit(type, name);
 	}
 	
 	/**
@@ -203,13 +205,21 @@ public class Context implements ExtractContext, TransformContext, LoadContext,
 	}
 	
 	/**
-	 * Return list of all output {@link DataUnit}s.
+	 * Return list of all input {@link ManagableDataUnit}s.
 	 * @return
 	 */
-	public List<DataUnit> getOutputs() {
-		return outputsManager.getDataUnits();
+	public List<ManagableDataUnit> getInputs() {
+		return inputsManager.getDataUnits();
 	}	
 	
+	/**
+	 * Return list of all output {@link ManagableDataUnit}s.
+	 * @return
+	 */
+	public List<ManagableDataUnit> getOutputs() {
+		return outputsManager.getDataUnits();
+	}	
+		
 	/**
 	 * Return engine's general working directory.
 	 * 
@@ -305,12 +315,6 @@ public class Context implements ExtractContext, TransformContext, LoadContext,
 	}
 
 	@Override
-	public Map<String, Object> getCustomData() {
-		// TODO Petyr: Use custom data from ExecutionContextInfo
-		return null;
-	}
-
-	@Override
 	public File getJarPath() {
         File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH) + 
         		File.separator + ModuleFacadeConfig.DPU_DIRECTORY + 
@@ -339,24 +343,4 @@ public class Context implements ExtractContext, TransformContext, LoadContext,
 		return result;
 	}
 	
-	// - - - - - - - - - context inputs/outputs - - - - - - - - - //
-	
-	@Override
-	public DataUnit addOutputDataUnit(DataUnitType type, String name)
-			throws DataUnitCreateException {
-		return outputsManager.addDataUnit(type, name);
-	}
-
-	@Override
-	public DataUnit addOutputDataUnit(DataUnitType type,
-			String name,
-			Object config) throws DataUnitCreateException {
-		return outputsManager.addDataUnit(type, name, config);
-	}
-
-	@Override
-	public List<DataUnit> getInputs() {
-		return inputsManager.getDataUnits();
-	}
-
 }

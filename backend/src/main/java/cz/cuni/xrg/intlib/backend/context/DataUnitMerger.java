@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
+import cz.cuni.xrg.intlib.commons.data.ManagableDataUnit;
 
 /**
  * Basic interface for data merger.
@@ -61,15 +62,15 @@ class DataUnitMerger {
 	 *            {@link cz.cuni.xrg.intlib.commons.app.execution.DataUnitMergerInstructions}
 	 * @throw ContextException
 	 */
-	public void merger(DataUnitManager left, List<DataUnit> right, 
+	public void merger(DataUnitManager left, List<ManagableDataUnit> right, 
 			String instruction) throws ContextException {
-		Iterator<DataUnit> iterRight = right.iterator();
+		Iterator<ManagableDataUnit> iterRight = right.iterator();
 
 		// add the rest from right
 		while (iterRight.hasNext()) {
 			
 			DataUnit rightDataUnit = iterRight.next();
-			String rightDataUnitName = rightDataUnit.getName();
+			String rightDataUnitName = rightDataUnit.getURI();
 			// name for new DataUnit, use right's name as default
 			String leftDataUnitName = rightDataUnitName;
 			// get command
@@ -99,10 +100,10 @@ class DataUnitMerger {
 			}
 			
 			// we need dataUnit into which merge data
-			DataUnit leftDataUnit = null;
+			ManagableDataUnit leftDataUnit = null;
 			// first check for existing one
-			for(DataUnit item : left.getDataUnits()) {
-				if (item.getName().compareTo(leftDataUnitName) == 0 && 
+			for(ManagableDataUnit item : left.getDataUnits()) {
+				if (item.getURI().compareTo(leftDataUnitName) == 0 && 
 						item.getType() == rightDataUnit.getType()) {
 					LOG.info("merge into existing dataUnit: {}", rightDataUnitName);
 					// DataUnit with same name and type already exist, use it

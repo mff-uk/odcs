@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.data.ManagableDataUnit;
 import cz.cuni.xrg.intlib.rdf.GraphUrl;
 import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
@@ -53,7 +54,7 @@ public class DataUnitFactory {
 	 * @return DataUnit
 	 * @throws DataUnitCreateException
 	 */
-	public DataUnit create(DataUnitType type,
+	public ManagableDataUnit create(DataUnitType type,
 			String id,
 			String name,
 			File directory) throws DataUnitCreateException {
@@ -94,24 +95,4 @@ public class DataUnitFactory {
 		}
 	}
 
-	/**
-	 * Create {@link DataUnit} and store information about it into the context.
-	 * 
-	 * @param type Requested type of data unit.
-	 * @param id DataUnit's id assigned by application, must be unique!
-	 * @param name DataUnit's name, can't be changed in future.
-	 * @param directory DataUnit's working directory.
-	 * @param configObject Configuration object for DataUnit.
-	 * @return Container with created DataUnit.
-	 * @throws DataUnitCreateException
-	 */
-	public DataUnit create(DataUnitType type,
-			String id,
-			String name,
-			File directory,
-			Object configObject) throws DataUnitCreateException {
-		//
-		throw new DataUnitCreateException(
-				"Required DataUnit does not support configuration.");
-	}
 }

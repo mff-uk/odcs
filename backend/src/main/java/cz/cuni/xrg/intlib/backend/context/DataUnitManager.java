@@ -21,9 +21,10 @@ import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
+import cz.cuni.xrg.intlib.commons.data.ManagableDataUnit;
 
 /**
- * Class provide functionality pro manage list of {@link DataUnit}s.
+ * Class provide functionality pro manage list of {@link ManagableDataUnit}s.
  * 
  * @author Petyr
  * 
@@ -33,12 +34,12 @@ final class DataUnitManager {
 	/**
 	 * Store outputs.
 	 */
-	private List<DataUnit> dataUnits;
+	private List<ManagableDataUnit> dataUnits;
 
 	/**
 	 * Mapping from {@link outputs} to indexes.
 	 */
-	private Map<DataUnit, Integer> indexes;
+	private Map<ManagableDataUnit, Integer> indexes;
 
 	/**
 	 * DPUInstanceRecord as owner of this context.
@@ -167,7 +168,7 @@ final class DataUnitManager {
 	 * Save stored {@link DataUnit}s into {@link #workingDir}.
 	 */
 	public void save() {
-		for (DataUnit item : dataUnits) {
+		for (ManagableDataUnit item : dataUnits) {
 			try {
 				// get directory
 				File directory = new File(workingDir,
@@ -186,7 +187,7 @@ final class DataUnitManager {
 	 * this instance.
 	 */
 	public void delete() {
-		for (DataUnit item : dataUnits) {
+		for (ManagableDataUnit item : dataUnits) {
 			item.delete();
 		}
 		dataUnits.clear();
@@ -197,7 +198,7 @@ final class DataUnitManager {
 	 * this instance.
 	 */
 	public void release() {
-		for (DataUnit item : dataUnits) {
+		for (ManagableDataUnit item : dataUnits) {
 			item.release();
 		}
 		dataUnits.clear();
@@ -226,7 +227,7 @@ final class DataUnitManager {
 						context.generateDataUnitId(dpuInstance, index);
 				File directory = new File(workingDir,
 						context.getDataUnitTmpPath(dpuInstance, index));				
-				DataUnit dataUnit = dataUnitFactory.create(info.getType(), 
+				ManagableDataUnit dataUnit = dataUnitFactory.create(info.getType(), 
 						id, info.getName(), directory);
 				// add into DataUnitManager
 				dataUnits.add(dataUnit);
@@ -257,7 +258,7 @@ final class DataUnitManager {
 	 * @return Created DataUnit.
 	 * @throw DataUnitCreateException
 	 */	
-	public DataUnit addDataUnit(DataUnitType type, String name)
+	public ManagableDataUnit addDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
 		// check for type changes only for outputs
 		if (!isInput) {
@@ -274,46 +275,7 @@ final class DataUnitManager {
 		File directory = new File(workingDir, context.getDataUnitTmpPath(
 				dpuInstance, index));
 		// create instance
-		DataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
-		// add to storage
-		dataUnits.add(dataUnit);
-		indexes.put(dataUnit, index);
-		//
-		return dataUnit;
-	}
-
-	/**
-	 * Request creating a new DataUnit of given type with given 
-	 * configuration. If the requested
-	 * {@link DataUnit} can't be created from any reason the 
-	 * {@link DataUnitCreateException} is thrown.
-	 * The DataUnit's name can be further changed.
-	 * 
-	 * @param type Type of DataUnit.
-	 * @param name DataUnit's name.
-	 * @param configu DataUnit initial configuration object.
-	 * @return Created DataUnit.
-	 * @throw DataUnitCreateException
-	 */
-	public DataUnit addDataUnit(DataUnitType type, String name, Object config)
-			throws DataUnitCreateException {
-		// check for type changes only for outputs
-		if (!isInput) {
-			type = checkType(type);
-		}
-		// gather information for new DataUnit
-		Integer index;
-		if (isInput) {
-			index = context.createInput(dpuInstance, name, type);
-		} else {
-			index = context.createOutput(dpuInstance, name, type);
-		}
-		String id = context.generateDataUnitId(dpuInstance, index);
-		File directory = new File(workingDir, context.getDataUnitTmpPath(
-				dpuInstance, index));
-		// create instance
-		DataUnit dataUnit = dataUnitFactory.create(type, id, name, directory,
-				config);
+		ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
 		// add to storage
 		dataUnits.add(dataUnit);
 		indexes.put(dataUnit, index);
@@ -325,7 +287,7 @@ final class DataUnitManager {
 	 * Return access to all stored DataUnits.
 	 * @return
 	 */
-	public List<DataUnit> getDataUnits() {
+	public List<ManagableDataUnit> getDataUnits() {
 		return dataUnits;
 	}
 }

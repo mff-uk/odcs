@@ -28,12 +28,6 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
-import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.loader.LoadException;
-import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,19 +262,11 @@ public final class Executor implements Runnable {
 	private boolean executeInstance(Object dpuInstance, Context context) {
 		// execute
 		try {
-			if (dpuInstance instanceof Extract) {
-				((Extract) dpuInstance).extract(context);
-			} else if (dpuInstance instanceof Transform) {
-				((Transform) dpuInstance).transform(context);
-			} else if (dpuInstance instanceof Load) {
-				((Load) dpuInstance).load(context);
-			} else if (dpuInstance instanceof DPU) {
+			if (dpuInstance instanceof DPU) {
 				((DPU)dpuInstance).execute(context);
+			} else {
+				// can not be executed
 			}
-		} catch (ExtractException | TransformException | LoadException e) {
-			eventPublisher
-					.publishEvent(DPUEvent.createFailed(context, this, e));
-			return false;
 		} catch (DataUnitException e) {
 			eventPublisher.publishEvent(DPUEvent.createDataUnitFailed(context,
 					this, e));
