@@ -220,6 +220,15 @@ CREATE TABLE `USR_USER_ROLE`
   PRIMARY KEY (`user_id`, `role_id`)
 );
 
+CREATE TABLE `RDF_PREFIX`
+(
+  `id` INTEGER NOT NULL,
+  `name` VARCHAR(25) NOT NULL,
+  `uri` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE (`name`)
+);
+
 -- CONSTRAINTS #################################################################
 
 

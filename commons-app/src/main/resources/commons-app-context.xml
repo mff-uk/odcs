@@ -45,6 +45,9 @@
 
 	<!-- Facade for managing shedules -->
 	<bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" />
+
+	<!-- Facade for managing RDF namespace prefixes -->
+	<bean id="prefixFacade" class="cz.cuni.xrg.intlib.commons.app.rdf.namespace.NamespacePrefixFacade" />
 	
 	<!-- Service responsible for delivering emails -->
 	<bean id="emailSender" class="cz.cuni.xrg.intlib.commons.app.communication.EmailSender">

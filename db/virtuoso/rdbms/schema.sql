@@ -20,6 +20,7 @@ DROP TABLE "DB"."INTLIB"."PPL_POSITION";
 DROP TABLE "DB"."INTLIB"."USR_USER_ROLE";
 DROP TABLE "DB"."INTLIB"."USR_USER";
 DROP TABLE "DB"."INTLIB"."SCH_EMAIL";
+DROP TABLE "DB"."INTLIB"."RDF_PREFIX";
 
 
 CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
@@ -235,6 +236,15 @@ CREATE TABLE "DB"."INTLIB"."USR_USER_ROLE"
   "user_id" INTEGER NOT NULL,
   "role_id" INTEGER NOT NULL,
   PRIMARY KEY ("user_id", "role_id")
+);
+
+CREATE TABLE "DB"."INTLIB"."RDF_PREFIX"
+(
+  "id" INTEGER NOT NULL,
+  "name" VARCHAR(25) NOT NULL,
+  "uri" VARCHAR(255) NOT NULL,
+  PRIMARY KEY ("id"),
+  UNIQUE ("name")
 );
 
 -- CONSTRAINTS #################################################################
