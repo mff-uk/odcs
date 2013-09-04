@@ -6,9 +6,6 @@ import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsExtractor;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.message.MessageType;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
@@ -68,4 +65,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	public AbstractConfigDialog<RDFExtractorConfig> getConfigurationDialog() {
 		return new RDFExtractorDialog();
 	}
+
+	@Override
+	public void cleanUp() {	}
+	
 }

@@ -1,14 +1,14 @@
 package cz.cuni.mff.xrg.intlib.extractor.file;
 
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+import cz.cuni.xrg.intlib.commons.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
+import cz.cuni.xrg.intlib.commons.dpu.annotation.AsExtractor;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
-import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 
 /**
@@ -16,8 +16,9 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
  * @author Jiri Tomes
  * @author Petyr
  */
+@AsExtractor
 public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
-		implements Extract, ConfigDialogProvider<FileExtractorConfig> {
+		implements DPU, ConfigDialogProvider<FileExtractorConfig> {
 
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -27,7 +28,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 	}
 
 	@Override
-	public void extract(ExtractContext context) throws ExtractException {
+	public void execute(DPUContext context) throws DataUnitException {
 
 		final String baseURI = "";
 		final FileExtractType extractType = config.fileExtractType;
@@ -36,16 +37,16 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final boolean onlyThisSuffix = config.OnlyThisSuffix;
 		final boolean useStatisticHandler = config.UseStatisticalHandler;
 
-		try {
-			rdfDataUnit.extractFromFile(extractType, path, fileSuffix, baseURI,
-					onlyThisSuffix, useStatisticHandler);
-		} catch (RDFDataUnitException e) {
-			throw new ExtractException(e.getMessage(), e);
-		}
+		rdfDataUnit.extractFromFile(extractType, path, fileSuffix, baseURI,
+				onlyThisSuffix, useStatisticHandler);
 	}
 
 	@Override
 	public AbstractConfigDialog<FileExtractorConfig> getConfigurationDialog() {
 		return new FileExtractorDialog();
 	}
+
+	@Override
+	public void cleanUp() {	}
+	
 }

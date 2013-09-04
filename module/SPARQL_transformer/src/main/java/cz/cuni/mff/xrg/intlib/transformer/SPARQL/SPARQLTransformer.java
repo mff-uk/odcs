@@ -8,14 +8,10 @@ import cz.cuni.xrg.intlib.commons.dpu.annotation.AsTransformer;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
-import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.commons.transformer.TransformContext;
-import cz.cuni.xrg.intlib.commons.transformer.TransformException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
-
 
 /**
  *
@@ -56,4 +52,8 @@ public class SPARQLTransformer
 	public AbstractConfigDialog<SPARQLTransformerConfig> getConfigurationDialog() {
 		return new SPARQLTransformerDialog();
 	}
+
+	@Override
+	public void cleanUp() {	}
+	
 }

@@ -1,16 +1,14 @@
 package cz.cuni.mff.xrg.intlib.extractor.silklinker;
 
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractContext;
-import cz.cuni.xrg.intlib.commons.extractor.ExtractException;
+import cz.cuni.xrg.intlib.commons.dpu.DPU;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
+import cz.cuni.xrg.intlib.commons.dpu.annotation.AsExtractor;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
 import de.fuberlin.wiwiss.silk.Silk;
 import java.io.File;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,15 +17,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author tomasknap
  */
+@AsExtractor
 public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
-	implements Extract,  ConfigDialogProvider<SilkLinkerConfig>, BundleActivator {
-
+	implements DPU, ConfigDialogProvider<SilkLinkerConfig> {
     
     private static final Logger LOG = LoggerFactory.getLogger(
 			SilkLinker.class);
 
     public SilkLinker() {
-    	super(new SilkLinkerConfig());
+    	super(SilkLinkerConfig.class);
     }
     
     @Override
@@ -35,19 +33,15 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
         return new SilkLinkerDialog();
     }
 
-    // TODO 2: Provide implementation of unimplemented methods 
     @Override
-    public void extract(ExtractContext context) throws ExtractException {
-
-    	silk();
-    	
+    public void execute(DPUContext context) {
         //inputs (sample config file is in the file module/Silk_Linker/be-sameAs.xml)
-        //File conf = new File(config.getSilkConf());
+        File conf = new File(config.getSilkConf());
         
         //Execution of the Silk linker (xml conf is an important input!)
         //TODO Petr: solve the problem when loading XML conf
         //LOG.info("Silk is being launched");
-        //Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
+        Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
         //LOG.info("Silk finished");
         
         //TODO Tomas: dialog - uploader + context.getWorkingDir(), show the uploaded file in textarea
@@ -88,25 +82,9 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
         }
         */
     }
-    
-    protected void silk() {
-    	LOG.info("DPU classLoader: {}", this.getClass().getClassLoader().toString());
-    	LOG.info("Silk classLoader: {}", Silk.class.getClassLoader().toString());
-    	
-		File conf = new File("e:/Tmp/be-sameAs.xml");
-		Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
-    }
-
-    @Override
-	public void start(BundleContext arg0) throws Exception {
-		LOG.info("silk-exec: start");
-		silk();
-	}
 
 	@Override
-	public void stop(BundleContext arg0) throws Exception {
-		LOG.info("silk-exec: stop");
-	}
+	public void cleanUp() {	}
 	
 }
 
