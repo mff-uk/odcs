@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.module.file;
 
-import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
+
 
 /**
  * Class for easier management of DPU's files. 
@@ -9,9 +10,9 @@ import cz.cuni.xrg.intlib.commons.context.ProcessingContext;
  */
 public final class FileManager {
 
-	private ProcessingContext context;
+	private DPUContext context;
 	
-	public FileManager(ProcessingContext context) {
+	public FileManager(DPUContext context) {
 		this.context = context;
 	}
 	

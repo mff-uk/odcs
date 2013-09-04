@@ -7,7 +7,6 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 
 /**
@@ -17,18 +16,16 @@ import static org.mockito.Mockito.*;
  *
  */
 public class ConfigurableBaseTest {
-
+	
 	/**
 	 * Dummy implementation of {@link ConfigurableBase}
 	 * @author Petyr
 	 *
 	 */
-	private class ConfigurableDummy extends ConfigurableBase<DPUConfigObject> {
-
+	private class ConfigurableDummy extends ConfigurableBase<ConfigDummy> {
 		public ConfigurableDummy() {
-			super(mock(DPUConfigObject.class, withSettings().serializable()));
-		}
-		
+			super(ConfigDummy.class);
+		}		
 	}
 	
 	/**

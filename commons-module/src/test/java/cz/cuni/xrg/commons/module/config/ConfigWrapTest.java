@@ -27,7 +27,7 @@ public class ConfigWrapTest {
 	@Before
 	public void setup() {
 		configObject = mock(DPUConfigObject.class, withSettings().serializable());
-		configWrap = new ConfigWrap(configObject);
+		configWrap = new ConfigWrap(configObject.getClass());
 	}
 	
 	@Test

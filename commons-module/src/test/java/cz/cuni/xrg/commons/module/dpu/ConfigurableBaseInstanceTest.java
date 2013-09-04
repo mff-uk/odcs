@@ -7,7 +7,6 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Test suite for {@link ConfigurableBase} class.
@@ -15,10 +14,18 @@ import static org.mockito.Mockito.*;
  * @author Petyr
  *
  */
-public class ConfigurableBaseInstanceTest extends ConfigurableBase<DPUConfigObject> {
+public class ConfigurableBaseInstanceTest extends ConfigurableBase<ConfigDummy> {
 
 	public ConfigurableBaseInstanceTest() {
-		super(mock(DPUConfigObject.class, withSettings().serializable()));
+		super(ConfigDummy.class);
+	}
+	
+	/**
+	 * Test that initial configuration has been set propoerly.
+	 */
+	@Test 
+	public void initialConfigNotNull() {
+		assertNotNull(config);
 	}
 	
 	/**

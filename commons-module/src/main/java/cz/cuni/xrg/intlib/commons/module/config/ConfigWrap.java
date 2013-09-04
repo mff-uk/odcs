@@ -18,19 +18,19 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  * @author Petyr
  *
  */
-public class ConfigWrap<T extends DPUConfigObject> {
+public class ConfigWrap<C extends DPUConfigObject> {
 
 	/**
 	 * Configuration's class.
 	 */
-	private Class<T> configClass;
+	private Class<C> configClass;
 
 	/**
 	 * Stream for de/serialization.
 	 */
 	private XStream xstream;
 
-	public ConfigWrap(Class<T> configClass) {
+	public ConfigWrap(Class<C> configClass) {
 		this.configClass = configClass;
 		this.xstream = new XStream();
 		// set class loader
@@ -43,10 +43,11 @@ public class ConfigWrap<T extends DPUConfigObject> {
 	 *
 	 * @return Object instance or null.
 	 */
-	public T createInstance() {
+	public C createInstance() {
 		try {
 			return configClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -59,16 +60,16 @@ public class ConfigWrap<T extends DPUConfigObject> {
 	 * @throws ConfigException
 	 */
 	@SuppressWarnings("unchecked")
-	public T deserialize(byte[] c) throws ConfigException {
+	public C deserialize(byte[] c) throws ConfigException {
 		if (c == null || c.length == 0) {
 			return null;
 		}
-		T config = null;
+		C config = null;
 		// reconstruct object form byte[]
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(c); ObjectInputStream objIn = xstream
 				.createObjectInputStream(byteIn)) {
 			Object obj = objIn.readObject();
-			config = (T) obj;
+			config = (C) obj;
 		} catch (IOException e) {
 			throw new ConfigException("Can't deserialize configuration.", e);
 		} catch (ClassNotFoundException e) {
@@ -87,7 +88,7 @@ public class ConfigWrap<T extends DPUConfigObject> {
 	 * @return Serialized configuration, can be null.
 	 * @throws ConfigException
 	 */
-	public byte[] serialize(T config) throws ConfigException {
+	public byte[] serialize(C config) throws ConfigException {
 		if (config == null) {
 			return null;
 		}
