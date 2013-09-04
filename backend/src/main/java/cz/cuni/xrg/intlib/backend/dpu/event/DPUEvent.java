@@ -88,7 +88,7 @@ public class DPUEvent extends ApplicationEvent {
 	 */
 	public static DPUEvent createStart(Context context, Object source) {
 		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
-				"DPU starteds.", "");
+				"DPU started.", "");
 	}
 
 	/**

@@ -289,6 +289,10 @@ public final class Executor implements Runnable {
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
+		} catch(InterruptedException e) {
+			// DPU interrupted on request, do not log just return false
+			// to stop the execution
+			return false;
 		} catch (Exception e) {
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));

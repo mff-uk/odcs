@@ -174,14 +174,14 @@ public class DebuggingView extends CustomComponent {
         mainLayout.setSizeFull();
         mainLayout.addComponent(tabs);
 
-        fillContent();
+        fillContent(false);
     }
 
     /**
      * Fills DebuggingView with data, obtained from objects passed in
      * constructor.
      */
-    public void fillContent() {
+    public void fillContent(boolean isRefresh) {
 
         if (isFromCanvas) {
             ThemeResource icon = IntlibHelper.getIconForExecutionStatus(pipelineExec.getExecutionStatus());
@@ -214,7 +214,7 @@ public class DebuggingView extends CustomComponent {
         }
 
         //Content of text log file
-        logMessagesTable.setDpu(pipelineExec, isInDebugMode ? (DPUInstanceRecord) dpuSelector.getValue() : null);
+        logMessagesTable.setDpu(pipelineExec, isInDebugMode ? (DPUInstanceRecord) dpuSelector.getValue() : null, isRefresh);
 
         //Query View
         if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished()) {
@@ -239,7 +239,7 @@ public class DebuggingView extends CustomComponent {
      */
     public void refreshContent() {
         pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
-        fillContent();
+        fillContent(true);
         fireRefreshRequest();
         if (debugDpu != null) {
             queryView.setGraphs(debugDpu.getType());

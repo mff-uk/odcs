@@ -27,6 +27,7 @@ public interface ContextOutputs {
 	 * @return Created DataUnit.
 	 * @throw DataUnitCreateException
 	 */
+	@Deprecated
 	public DataUnit addOutputDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException;
 
@@ -42,7 +43,9 @@ public interface ContextOutputs {
 	 * @param configu DataUnit initial configuration object.
 	 * @return Created DataUnit.
 	 * @throw DataUnitCreateException
+	 * @deprecated use annotations instead
 	 */
+	@Deprecated
 	public DataUnit addOutputDataUnit(DataUnitType type,
 			String name,
 			Object config) throws DataUnitCreateException;	

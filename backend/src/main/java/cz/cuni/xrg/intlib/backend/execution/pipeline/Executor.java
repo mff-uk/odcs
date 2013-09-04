@@ -296,12 +296,13 @@ public class Executor implements Runnable {
 				executionFailed = true;
 				// jump out of pipeline
 				break;
-			}
-			// ..
-			if (dpuExecutor.executionFailed()) {
-				// continue
-				executionFailed = true;
-				break;
+			} else {
+				// pipeline continue, check for DPU result
+				if (dpuExecutor.executionFailed()) {
+					// continue
+					executionFailed = true;
+					break;
+				}
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
 		}
