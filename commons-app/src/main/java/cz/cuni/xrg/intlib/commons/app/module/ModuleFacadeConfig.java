@@ -36,8 +36,7 @@ public class ModuleFacadeConfig {
 	/**
 	 * Contains list of common packages to export. Must not end with comma.
 	 */
-	private static final String PACKAGE_BASE = 
-			  "cz.cuni.xrg.intlib.commons;version=\"0.0.1\","
+	private static final String PACKAGE_BASE = "cz.cuni.xrg.intlib.commons;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.configuration;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.context;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.data;version=\"0.0.1\","
@@ -60,12 +59,11 @@ public class ModuleFacadeConfig {
 			+ "java.lang";
 
 	/**
-	 * Contains list of packages exported from frontend. Does not start
-	 * nor end on separator.
+	 * Contains list of packages exported from frontend. Does not start nor end
+	 * on separator.
 	 */
-	private static final String FRONTEND_BASE = 
-			"cz.cuni.xrg.intlib.commons.web;version=\"0.0.1\"";
-	
+	private static final String FRONTEND_BASE = "cz.cuni.xrg.intlib.commons.web;version=\"0.0.1\"";
+
 	/**
 	 * Path to the root directory, does not end on file separator.
 	 */
@@ -83,6 +81,25 @@ public class ModuleFacadeConfig {
 	private boolean useBackendLibs;
 
 	/**
+	 * Append new packages to the current one, insert separator if needed.
+	 * 
+	 * @param packages The current packages, can be empty.
+	 * @param toAdd String with list of new packages. Must not start nor end
+	 *            with separator. 
+	 */
+	private void appendPackages(StringBuilder packages, String toAdd) {
+		final int length = packages.length(); 
+		if (length == 0 || packages.charAt(length - 1) == ',') {
+			// no separator need
+		} else {
+			// add separator
+			packages.append(',');
+		}
+		// add packages
+		packages.append(toAdd);
+	}
+
+	/**
 	 * Module configuration is constructed directly from {@link AppConfig}.
 	 * 
 	 * @param conf
@@ -96,30 +113,29 @@ public class ModuleFacadeConfig {
 			this.rootDirectory = this.rootDirectory.substring(0,
 					this.rootDirectory.length() - 1);
 		}
-		
-		try {					
-			this.additionalPackages = conf.getString(Application.FRONTEND
+
+		StringBuilder packageList = new StringBuilder();
+		try {
+			String configPackages = conf.getString(Application.FRONTEND
 					.equals(app)
 					? ConfigProperty.MODULE_FRONT_EXPOSE
 					: ConfigProperty.MODULE_BACK_EXPOSE);
+			packageList.append(configPackages);
 		} catch (MissingConfigPropertyException e) {
 			// missing configuration -> use empty
-			this.additionalPackages = "";
 		}
+
 		if (Application.FRONTEND.equals(app)) {
 			// frontend is running -> we need to export Vaadin packages as well
-			if (this.additionalPackages.isEmpty()) {
-				// just fill with Vaadin packages
-			} else {
-				// first add separator
-				this.additionalPackages += ',';
-			}
-			// add Vaadin and frontend packages
-			final String vaadinPackages = com.vaadin.PackageList.PACKAGES;
-			this.additionalPackages += vaadinPackages + "," + FRONTEND_BASE;
-		}		
-		
-		
+			appendPackages(packageList, com.vaadin.PackageList.PACKAGES);
+			appendPackages(packageList, FRONTEND_BASE);
+		}
+
+		// in every case add org.seasame packages
+		appendPackages(packageList, org.openrdf.PackageList.PACKAGES);
+
+		this.additionalPackages = packageList.toString();
+		// check if load data from backend's library directory
 		this.useBackendLibs = !Application.FRONTEND.equals(app);
 	}
 
