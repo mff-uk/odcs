@@ -12,17 +12,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	 * Used to convert configuration object into byte array and back.
 	 */
     private ConfigWrap<C> configWrap; 
-	
-    /**
-     * 
-     * @param config
-     * @deprecated use {@link #BaseConfigDialog(Class)} instead
-     */
-    @Deprecated
-    public BaseConfigDialog(C config) {
-    	this.configWrap = new ConfigWrap<>(config);
-    }
-    
+	    
     public BaseConfigDialog(Class<C> configClass) {
     	this.configWrap = new ConfigWrap<>(configClass);
     }    
@@ -45,6 +35,16 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	@Override
 	public byte[] getConfig() throws ConfigException {
 		return configWrap.serialize(getConfiguration());
+	}
+	
+	@Override
+	public String getToolTip() {
+		return null;
+	}
+	
+	@Override
+	public String getDescription() {
+		return null;
 	}
 	
 	/**
