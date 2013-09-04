@@ -20,7 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @see {@link RequestHolder}
  * @author Jan Vojt
  */
-public class RequestHolderApplicationServlet extends VaadinServlet {
+public class IntlibApplicationServlet extends VaadinServlet {
 	
 	
 	/**
