@@ -37,6 +37,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private Pipeline pip;
 	private Stack<PipelineGraph> historyStack;
 	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
+	
+//	private final String STANDARD_MODE = "standard_mode";
+//	private final String DEVELOP_MODE = "develop_mode";
+//	private String canvasMode = DEVELOP_MODE;
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -377,5 +381,18 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		graph.moveNode(copyNode.hashCode(), x, y);
 		getRpcProxy(PipelineCanvasClientRpc.class)
 				.addNode(copyNode.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), x, y);
+	}
+
+	/**
+	 * Changes mode of the pipeline canvas.
+	 * 
+	 */
+	public void changeMode(String newMode) {
+//		if(canvasMode.equals(STANDARD_MODE)) {
+//			canvasMode = DEVELOP_MODE;
+//		} else {
+//			canvasMode = STANDARD_MODE;
+//		}
+		getRpcProxy(PipelineCanvasClientRpc.class).setStageMode(newMode);
 	}
 }

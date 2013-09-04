@@ -92,6 +92,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		},
 		clearStage: function() {
 			clearStage();
+		},
+		setStageMode: function(newMode) {
+			setStageMode(newMode);
 		}
 	});
 
@@ -107,7 +110,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 
 	/** Pipeline states
-	 * 	NORMAL_MODE - standard mode, DPUs can be dragged
+	 * 	DEVELOP_MODE - standard mode, DPUs can be dragged
 	 *  NEW_CONNECTION_MODE - new connection is being created, line follows mouse
 	 *  MULTISELECT_MODE - multiselecting is active for formatting actions
 	 *  STANDARD_MODE - read-only mode of pipeline canvas
@@ -115,11 +118,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 * **/
 	// Stage state constants
 	var NEW_CONNECTION_MODE = "new_connection_mode";
-	var NORMAL_MODE = "normal_mode";
+	var DEVELOP_MODE = "develop_mode";
 	var MULTISELECT_MODE = "multiselect_mode";
 	var STANDARD_MODE = "standard_mode";
 
-	var stageMode = NORMAL_MODE;
+	var stageMode = DEVELOP_MODE;
 
 	/** New connection related variables **/
 	//Adding new connection
@@ -206,7 +209,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 				newConnLine.destroy();
 				newConnLine = null;
 				newConnStart = null;
-				stageMode = NORMAL_MODE;
+				stageMode = DEVELOP_MODE;
 				lineLayer.draw();
 			} else if (stageMode === MULTISELECT_MODE) {
 				cancelMultiselect();
@@ -470,7 +473,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			x: posX / scale,
 			y: posY / scale,
 			rotationDeg: 0,
-			draggable: true
+			draggable: stageMode !== STANDARD_MODE
 		});
 
 		// Action bar on DPU
@@ -511,7 +514,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		cmdConnection.on('click', function(evt) {
 			actionBar.setVisible(false);
 			dpuLayer.draw();
-			if (stageMode === NORMAL_MODE) {
+			if (stageMode === DEVELOP_MODE) {
 				writeMessage(messageLayer, 'action bar clicked');
 				var mousePosition = stage.getMousePosition();
 				newConnLine = new Kinetic.Line({
@@ -676,7 +679,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 		// Handling the visibility of actionBar
 		group.on('mouseenter', function() {
-			if (stageMode === NORMAL_MODE) {
+			if (stageMode === DEVELOP_MODE) {
 				actionBar.setVisible(true);
 				actionBar.moveToTop();
 				writeMessage(messageLayer, 'mouseentered');
@@ -740,7 +743,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			if (stageMode === NEW_CONNECTION_MODE) {
 				newConnLine.destroy();
 				newConnLine = null;
-				stageMode = NORMAL_MODE;
+				stageMode = DEVELOP_MODE;
 				idFrom = newConnStart.id;
 				idTo = dpu.id; //getDpuByPosition(stage.getMousePosition());
 				if (idTo !== 0) {
@@ -750,7 +753,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			} else if (stageMode === MULTISELECT_MODE) {
 				multiselect(dpu.id);
 				evt.cancelBubble = true;
-			} else if (stageMode === NORMAL_MODE) {
+			} else if (stageMode === DEVELOP_MODE) {
 				if (evt.ctrlKey) {
 					writeMessage(messageLayer, 'Format by CTRL');
 					stageMode = MULTISELECT_MODE;
@@ -778,7 +781,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 					evt.cancelBubble = true;
 				}
 			} 
-			if (stageMode === NORMAL_MODE || stageMode === STANDARD_MODE) {
+			if (stageMode === DEVELOP_MODE || stageMode === STANDARD_MODE) {
 				var now = Date.now();
 				if (lastClickedDpu !== null && lastClickedTime !== null) {
 					if (lastClickedDpu === group && now - lastClickedTime < 500) {
@@ -843,7 +846,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		}
 		formattingActionBar.setVisible(false);
 		dpuLayer.draw();
-		stageMode = NORMAL_MODE;
+		stageMode = DEVELOP_MODE;
 	}
 
 	/**
@@ -1167,6 +1170,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		hitLine.on('click', function(evt) {
+			if(checkMode()) {
+				return;
+			}
 			var ab = connections[id].actionBar;
 			var pos = stage.getMousePosition();
 			pos.x = (pos.x - 8) / scale;
@@ -1604,6 +1610,15 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		}
 
 		return [startX, startY, endX, endY];
+	}
+	
+	function setStageMode(newMode) {
+		stageMode = newMode;
+		var draggable = stageMode !== STANDARD_MODE;
+		for (var dpuId in dpus) {
+			var dpu = dpus[dpuId].group;
+			dpu.setDraggable(draggable);
+		}
 	}
 
 	jQuery(document).ready(function() {

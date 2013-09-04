@@ -67,5 +67,12 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * Clears stage.
 	 */
 	public void clearStage();
+	
+	/**
+	 * Sets new mode of the stage.
+	 * @param newMode New mode, either "standard_mode" or "develop_mode"
+	 * 
+	 */
+	public void setStageMode(String newMode);
 
 }
