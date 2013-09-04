@@ -25,7 +25,7 @@ public interface DPUConfigObject extends Serializable {
 	 * 
 	 * @return Can be null.
 	 */
-	String getToolTip();
+	// String getToolTip();
 
 	/**
 	 * Return configuration summary that can be used as DPU description. The
@@ -35,5 +35,5 @@ public interface DPUConfigObject extends Serializable {
 	 * 
 	 * @return Can be null.
 	 */
-	String getDescription();
+	// String getDescription();
 }
