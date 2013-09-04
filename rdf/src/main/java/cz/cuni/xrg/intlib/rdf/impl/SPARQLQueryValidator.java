@@ -93,49 +93,52 @@ public class SPARQLQueryValidator implements Validator {
 	@Override
 	public boolean isQueryValid() {
 
-		if (requireSPARQLType) {
-			SPARQLQueryType myType = getSPARQLQueryType();
-			if (!isSameType(myType, requiredType)) {
-				message = requiredType.toString() + " SPARQL type is required.";
-				return false;
-			}
-		}
-
-		boolean isValid = true;
-
-		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
-		Repository repository = emptyRepo.getDataRepository();
-
-		RepositoryConnection connection = null;
-		try {
-			connection = repository.getConnection();
-
-			Query myQuery = connection.prepareQuery(QueryLanguage.SPARQL, query);
-
-
-		} catch (MalformedQueryException e) {
-			message = e.getCause().getMessage();
-			isValid = false;
-
-		} catch (RepositoryException ex) {
-
-			throw new RuntimeException("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					throw new RuntimeException(
-							"Failed to close connection to RDF repository while querying."
-							+ ex.getMessage(), ex);
-				}
-			}
-		}
-
-		emptyRepo.release();
-
-		return isValid;
+                //TODO temporary hack, jirka solve #347 before removing the hack
+                return true;
+            
+//		if (requireSPARQLType) {
+//			SPARQLQueryType myType = getSPARQLQueryType();
+//			if (!isSameType(myType, requiredType)) {
+//				message = requiredType.toString() + " SPARQL type is required.";
+//				return false;
+//			}
+//		}
+//
+//		boolean isValid = true;
+//
+//		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
+//		Repository repository = emptyRepo.getDataRepository();
+//
+//		RepositoryConnection connection = null;
+//		try {
+//			connection = repository.getConnection();
+//
+//			Query myQuery = connection.prepareQuery(QueryLanguage.SPARQL, query);
+//
+//
+//		} catch (MalformedQueryException e) {
+//			message = e.getCause().getMessage();
+//			isValid = false;
+//
+//		} catch (RepositoryException ex) {
+//
+//			throw new RuntimeException("Connection to RDF repository failed. "
+//					+ ex.getMessage(), ex);
+//		} finally {
+//			if (connection != null) {
+//				try {
+//					connection.close();
+//				} catch (RepositoryException ex) {
+//					throw new RuntimeException(
+//							"Failed to close connection to RDF repository while querying."
+//							+ ex.getMessage(), ex);
+//				}
+//			}
+//		}
+//
+//		emptyRepo.release();
+//
+//		return isValid;
 
 	}
 
