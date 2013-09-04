@@ -210,6 +210,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 				AuthenticationContext authCtx = getBean(AuthenticationContext.class);
 				authCtx.setAuthentication(auth);
 				authenticated = authCtx.isAuthenticated();
+				
+				// if we are loading from session we need to refresh user bar
+				getMain().refreshUserBar();
 			}
 		}
 		
