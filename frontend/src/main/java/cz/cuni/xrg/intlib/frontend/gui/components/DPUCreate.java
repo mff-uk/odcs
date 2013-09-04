@@ -7,68 +7,36 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.Validator;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedListener;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Upload.StartedEvent;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.transformer.Transform;
-import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUInstanceWrap;
 
 /**
  * Dialog for the DPU template creation. Called from the {@link #DPU}.  Allows to upload a JAR file

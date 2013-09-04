@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
  * @author Petyr
  *
  */
-public interface ManagableDataUnit {
+public interface ManagableDataUnit extends DataUnit {
 
 	/**
 	 * Made this DataUnit read-only. This instance will be used as a input for

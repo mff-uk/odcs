@@ -5,9 +5,6 @@ import java.util.jar.Attributes;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.extractor.Extract;
-import cz.cuni.xrg.intlib.commons.loader.Load;
-import cz.cuni.xrg.intlib.commons.transformer.Transform;
 
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsExtractor;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsTransformer;
@@ -39,14 +36,6 @@ public class DPUExplorer {
 	 * @return Null if nothing about type can be found.
 	 */
 	public DPUType getType(Object DPUInstance, String relativePath) {
-		if (DPUInstance instanceof Extract) {
-			return DPUType.EXTRACTOR;
-		} else if (DPUInstance instanceof Transform) {
-			return DPUType.TRANSFORMER;
-		} else if (DPUInstance instanceof Load) {
-			return DPUType.LOADER;
-		}
-		
 		// try use annotations to resolve DPU type
 		Class<?> objectClass = DPUInstance.getClass();
 		if (objectClass.getAnnotation(AsExtractor.class) != null) {
