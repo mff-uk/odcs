@@ -22,10 +22,18 @@ public class FilterablePushHandler extends PushHandler {
     @Override
     public void onRequest(AtmosphereResource resource) {
 
+		// Hold the original request
 		AtmosphereRequest req = resource.getRequest();
 		RequestHolder.setRequest(req);
 		SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
+		
+		// Do the business.
 		super.onRequest(resource);
+		
+		// cleanup
+		RequestHolder.clean();
+		SecurityContextHolder.clearContext();
+		
     }
    
 }

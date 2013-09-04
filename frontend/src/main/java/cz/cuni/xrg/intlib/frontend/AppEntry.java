@@ -25,6 +25,7 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
 import java.util.Date;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -151,22 +152,22 @@ public class AppEntry extends com.vaadin.ui.UI {
 		/**
 		 * Checking user every time request is made.
 		 */
-//		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
-//			@Override
-//			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-//				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
-//					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
-//					getMain().refreshUserBar();
-//					return false;
-//				}
-//				setActive();
-//				return true;
-//			}
-//
-//			@Override
-//			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
-//			}
-//		});
+		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+			@Override
+			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
+				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
+					getMain().refreshUserBar();
+					return false;
+				}
+				setActive();
+				return true;
+			}
+
+			@Override
+			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
+			}
+		});
 
 		AppConfig config = getAppConfiguration();
 		backendClient = new Client(
@@ -181,7 +182,18 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * @return true if user and its session are valid, false otherwise
 	 */
 	private boolean checkAuthentication() {
-		return getAuthCtx().isAuthenticated();
+		boolean authenticated = getAuthCtx().isAuthenticated();
+		if (!authenticated) {
+			// try fetching authentication from session
+			Authentication auth = VaadinSession.getCurrent().getAttribute(Authentication.class);
+			if (auth != null) {
+				AuthenticationContext authCtx = getBean(AuthenticationContext.class);
+				authCtx.setAuthentication(auth);
+				authenticated = authCtx.isAuthenticated();
+			}
+		}
+		
+		return authenticated;
 	}
 
 	/**

@@ -8,9 +8,10 @@
 	<!-- import common security context -->
 	<b:import resource="classpath:commons-app-context-security.xml" />
 	
-	 <http auto-config='true'>
-		 <intercept-url pattern="/**" access="ROLE_USER" />
-	 </http>
+<!--	<http pattern="/VAADIN/**" security="none"/>
+	<http auto-config='true'>
+		<intercept-url pattern="/**" access="ROLE_USER" />
+	</http>-->
 
 <!--	<http pattern="/#!Login*" security="none"/>
 	<http pattern="/VAADIN/**" security="none"/>
@@ -22,7 +23,7 @@
 	<b:bean id="authenticationService" class="cz.cuni.xrg.intlib.frontend.AuthenticationService" />
 	
 	<b:bean id="logoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
-		<b:property name="invalidateHttpSession" value="false" />
+		<b:property name="invalidateHttpSession" value="true" />
 	</b:bean>
 
 </b:beans>

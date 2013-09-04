@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Embedded;
@@ -13,6 +14,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
+import cz.cuni.xrg.intlib.frontend.AuthenticationService;
+import cz.cuni.xrg.intlib.frontend.RequestHolder;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
@@ -41,11 +44,17 @@ public class MenuLayout extends CustomComponent {
 	Label userName;
 	Button logOutButton;
 	Embedded backendStatus;
+	
 	/**
 	 * Authentication context used to render menu with respect to currently
 	 * logged in user.
 	 */
 	private AuthenticationContext authCtx;
+	
+	/**
+	 * Authentication service handling logging in and out.
+	 */
+	private AuthenticationService authService;
 
 	/**
 	 * Class use as command to change sub-pages.
@@ -88,6 +97,8 @@ public class MenuLayout extends CustomComponent {
 	 */
 	public MenuLayout() {
 		authCtx = App.getApp().getAuthCtx();
+		authService = App.getApp().getBean(AuthenticationService.class);
+		
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// init menuBar
@@ -130,6 +141,7 @@ public class MenuLayout extends CustomComponent {
 		logOutButton.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
+				authService.logout(RequestHolder.getRequest());
 				authCtx.clear();
 				refreshUserBar();
 				App.getApp().getNavigator().navigateTo(ViewNames.LOGIN.getUrl());

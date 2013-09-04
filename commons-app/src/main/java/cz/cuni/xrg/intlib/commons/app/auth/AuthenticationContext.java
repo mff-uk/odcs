@@ -20,7 +20,7 @@ public class AuthenticationContext implements ApplicationListener<Authentication
 	 * @return username if user is authenticated, empty string otherwise
 	 */
 	public String getUsername() {
-		Authentication auth = getAuth();
+		Authentication auth = getAuthentication();
 		return auth == null ? "" : auth.getName();
 	}
 	
@@ -30,7 +30,7 @@ public class AuthenticationContext implements ApplicationListener<Authentication
 	 * @return logged-in user
 	 */
 	public User getUser() {
-		Authentication auth = getAuth();
+		Authentication auth = getAuthentication();
 		return auth == null ? null : (User) auth.getPrincipal();
 	}
 	
@@ -41,7 +41,7 @@ public class AuthenticationContext implements ApplicationListener<Authentication
 	 * @return authentication status
 	 */
 	public boolean isAuthenticated() {
-		Authentication auth = getAuth();
+		Authentication auth = getAuthentication();
 		if (auth == null) {
 			return false;
 		}
@@ -76,8 +76,18 @@ public class AuthenticationContext implements ApplicationListener<Authentication
 	 * 
 	 * @return authentication
 	 */
-	private Authentication getAuth() {
+	public Authentication getAuthentication() {
 		return SecurityContextHolder.getContext().getAuthentication();
+	}
+	
+	/**
+	 * Allows setting the authentication from external modules. This is needed
+	 * for instance when loading authentication from session in web frontend.
+	 * 
+	 * @param authentication 
+	 */
+	public void setAuthentication(Authentication authentication) {
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
 }
