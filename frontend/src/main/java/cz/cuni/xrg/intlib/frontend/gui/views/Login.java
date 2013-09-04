@@ -103,7 +103,6 @@ public class Login extends ViewComponent {
 			Authentication auth = authManager.authenticate(authToken);
 
 			// login is successful
-			App.getApp().setupBackendStatusChecking();
 			App.getApp().getMain().refreshUserBar();
 			App.getApp().getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
 

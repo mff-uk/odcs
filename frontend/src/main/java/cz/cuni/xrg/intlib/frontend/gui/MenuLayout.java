@@ -149,6 +149,8 @@ public class MenuLayout extends CustomComponent {
 		//this.viewLayout.setMargin(false);
 		this.viewLayout.setStyleName("viewLayout");
 		this.mainLayout.addComponent(viewLayout);
+		
+		refreshBackendStatus(false);
 
 		return this.mainLayout;
 	}

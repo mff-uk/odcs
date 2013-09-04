@@ -20,6 +20,7 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
@@ -58,7 +59,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	private Date lastAction = null;
 	
-	private Thread backendStatusThread;
+	private RefreshThread refreshThread;
 	
 	private Client backendClient;
 		
@@ -126,8 +127,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 			@Override
 			public void detach(DetachEvent event) {
 				getModules().stop();
-				if (backendStatusThread != null) {
-					backendStatusThread.interrupt();
+				if (refreshThread != null) {
+					refreshThread.interrupt();
 				}
 				if (backendClient != null) {
 					backendClient.close();
@@ -159,16 +160,25 @@ public class AppEntry extends com.vaadin.ui.UI {
 		/**
 		 * Checking user every time request is made.
 		 */
-		/*
+
 		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
 			@Override
 			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
-					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
-					getMain().refreshUserBar();
-					return false;
+//				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+//					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
+//					getMain().refreshUserBar();
+//					return false;
+//				}
+//				setActive();
+				if(refreshThread == null) {
+					setupRefreshThread();
 				}
-				setActive();
+				
+				if(event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
+					refreshThread.setExecutionMonitor((ExecutionMonitor)event.getNewView());
+				} else {
+					refreshThread.setExecutionMonitor(null);
+				}
 				return true;
 			}
 
@@ -176,7 +186,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
 			}
 		});
-		*/
+
 		AppConfig config = getAppConfiguration();
 		backendClient = new Client(
 				config.getString(ConfigProperty.BACKEND_HOST),
@@ -325,40 +335,16 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return lastAction;
 	}
 
-	public void setupBackendStatusChecking() {
-		main.refreshBackendStatus(false);
-		if (backendStatusThread == null) {
-			backendStatusThread = new Thread() {
-				private boolean isRunning = false;
-
-				@Override
-				public void run() {
-					boolean lastStatus = false;
-					//boolean isRunning = false;
-					while (true) {
-						isRunning = getBackendClient().checkStatus();
-						if (lastStatus != isRunning) {
-							lastStatus = isRunning;
-							main.getUI().access(new Runnable() {
-								@Override
-								public void run() {
-									main.refreshBackendStatus(isRunning);
-								}
-							});
-						}
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							break;
-						}
-					}
-				}
-			};
-			backendStatusThread.start();
-		}
+	public void setupRefreshThread() {
+		refreshThread = new RefreshThread(3000);
+		refreshThread.start();
 	}
 
 	public Client getBackendClient() {
 		return backendClient;
+	}
+	
+	public RefreshThread getRefreshThread() {
+		return refreshThread;
 	}
 }
