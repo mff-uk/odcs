@@ -237,7 +237,7 @@ class DPU extends ViewComponent {
 		mainLayout.addComponent(buttonBar);
 		
 		//layout with  DPURecord tree and DPURecord details 
-		GridLayout dpuLayout = buildDpuLayout();
+		dpuLayout = buildDpuLayout();
 		mainLayout.addComponent(dpuLayout);
 
 		return mainLayout;
@@ -554,8 +554,6 @@ class DPU extends ViewComponent {
 						"Uploading "
 				                + event.getFilename() + " failed.", Notification.Type.ERROR_MESSAGE);
 
-				return;
-
 			}
 		});
 		
@@ -613,7 +611,7 @@ class DPU extends ViewComponent {
 					}			
 				}
 				//if we get the name of DPUTemplateRecord that used this file, show notification
-				if (sameDpuName!=""){
+				if (!"".equals(sameDpuName)){
 					Notification.show(
 							"File with the name " + FileUploadReceiver.fName +" is already used in the DPU template " + dpuName,
 							Notification.Type.ERROR_MESSAGE);
@@ -708,12 +706,10 @@ class DPU extends ViewComponent {
 	 */
 	public static void copyFile(File src, File dest) throws IOException {
 
-		InputStream inStream = null;
-		OutputStream outStream = null;
 		try {
 
-			inStream = new FileInputStream(src);
-			outStream = new FileOutputStream(dest); 
+			InputStream inStream = new FileInputStream(src);
+			OutputStream outStream = new FileOutputStream(dest); 
 
 			byte[] buffer = new byte[1024];
 
@@ -722,9 +718,7 @@ class DPU extends ViewComponent {
 				outStream.write(buffer, 0, length);
 			}
 
-			if (inStream != null)
 				inStream.close();
-			if (outStream != null)
 				outStream.close();
 
 		} catch (IOException e) {

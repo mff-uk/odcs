@@ -11,7 +11,6 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -21,7 +20,6 @@ import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
-import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.util.*;
 import java.util.logging.Level;
@@ -59,8 +57,6 @@ public class DebuggingView extends CustomComponent {
     private boolean isFromCanvas;
     private Embedded iconStatus;
     private CheckBox refreshAutomatically = null;
-    private RefreshThread refreshThread = null;
-    private ViewChangeListener leavePageListener;
 
     /**
      * Default constructor.
@@ -139,8 +135,7 @@ public class DebuggingView extends CustomComponent {
             optionLine.addComponent(refreshAutomatically);
             optionLine.setComponentAlignment(refreshAutomatically, Alignment.MIDDLE_RIGHT);
             
-            refreshThread = new RefreshThread(2000, this.pipelineExec, this);
-            refreshThread.start();
+            App.getApp().getRefreshThread().refreshExecution(this.pipelineExec, this);
         }
         mainLayout.addComponent(optionLine);
 
@@ -477,8 +472,7 @@ public class DebuggingView extends CustomComponent {
         this.debugDpu = instance;
         refreshContent();
         if(refreshAutomatically.getValue()) {
-            refreshThread = new RefreshThread(2000, this.pipelineExec, this);
-            refreshThread.start();
+            App.getApp().getRefreshThread().refreshExecution(this.pipelineExec, this);
         }
     }
 }

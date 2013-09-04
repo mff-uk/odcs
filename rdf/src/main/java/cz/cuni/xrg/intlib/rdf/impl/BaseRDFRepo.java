@@ -1642,7 +1642,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		final String endpointGraph = endpointGraphURI.replace(
 				" ", "+");
-		final String myquery = query.replace(" ", "+");
+		final String myquery = getEncodedString(query);
 
 		final String encoder = getEncoder(format);
 
@@ -1722,17 +1722,20 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
-	private String getEncoder(RDFFormat format) throws RDFException {
-		String encoder = null;
-
+	private String getEncodedString(String text) throws RDFException {
+		String result = null;
 		try {
-			encoder = URLEncoder.encode(format.getDefaultMIMEType(), encode);
-
+			result = URLEncoder.encode(text, encode);
 		} catch (UnsupportedEncodingException e) {
 			String message = "Encode " + encode + " is not supported. ";
 			logger.debug(message);
 			throw new RDFException(message + e.getMessage(), e);
 		}
+		return result;
+	}
+
+	private String getEncoder(RDFFormat format) throws RDFException {
+		String encoder = getEncodedString(format.getDefaultMIMEType());
 		return encoder;
 	}
 
