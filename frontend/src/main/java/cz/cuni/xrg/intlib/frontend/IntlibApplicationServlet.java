@@ -25,7 +25,7 @@ public class IntlibApplicationServlet extends VaadinServlet {
 	/**
 	 * The push handler.
 	 */
-    FilterablePushHandler handler;
+    IntlibPushHandler handler;
    
     @Override
     protected VaadinServletService createServletService(
@@ -37,10 +37,9 @@ public class IntlibApplicationServlet extends VaadinServlet {
 				.lookup("/*").getBroadcasterConfig().getAtmosphereConfig().framework();
        
         // replace the handler registered by vaadin with this one
-        handler = new FilterablePushHandler(service);
+        handler = new IntlibPushHandler(service);
         framework.addAtmosphereHandler("/*", handler);
        
-        assert service.ensurePushAvailable() == true;
         return service;
     }
 
