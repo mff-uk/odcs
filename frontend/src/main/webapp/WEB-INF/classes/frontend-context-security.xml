@@ -7,18 +7,6 @@
 	
 	<!-- import common security context -->
 	<b:import resource="classpath:commons-app-context-security.xml" />
-	
-<!--	<http pattern="/VAADIN/**" security="none"/>
-	<http auto-config='true'>
-		<intercept-url pattern="/**" access="ROLE_USER" />
-	</http>-->
-
-<!--	<http pattern="/#!Login*" security="none"/>
-	<http pattern="/VAADIN/**" security="none"/>
-	<http auto-config='true'>
-		<intercept-url pattern="/**" access="ROLE_USER" />
-		<form-login login-page='/#!Login'/>
-	</http>-->
   
 	<b:bean id="authenticationService" class="cz.cuni.xrg.intlib.frontend.AuthenticationService" />
 	
