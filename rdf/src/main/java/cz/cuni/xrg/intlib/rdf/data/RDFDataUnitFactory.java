@@ -38,9 +38,8 @@ public class RDFDataUnitFactory {
 	public static LocalRDFRepo createLocalRDFRepo(String repoPath, String id,
 			String dataUnitName, String namedGraph) {
 
-		LocalRDFRepo localRepo = new LocalRDFRepo(repoPath, id, dataUnitName);
-		localRepo.setDataGraph(namedGraph);
-
+		LocalRDFRepo localRepo = new LocalRDFRepo(repoPath, id, namedGraph,
+				dataUnitName);
 		return localRepo;
 	}
 
