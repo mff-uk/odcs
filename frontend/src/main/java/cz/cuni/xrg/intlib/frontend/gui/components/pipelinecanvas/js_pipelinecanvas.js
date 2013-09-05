@@ -775,8 +775,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 				if (evt.ctrlKey) {
 					writeMessage(messageLayer, 'Format by CTRL');
 					stageMode = MULTISELECT_MODE;
+					actionBar.setVisible(false);
 					multiselect(dpu.id);
-					return;
 					//writeMessage(messageLayer, 'DPU removed - CTRL');
 					//removeDpu(dpu);
 					//rpcProxy.onDpuRemoved(dpu.id);
@@ -793,7 +793,6 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 					writeMessage(messageLayer, 'Clicking on:' + dpu.name);
 					lineLayer.add(newConnLine);
 					lineLayer.draw();
-					return;
 				}
 				if (!isDragging) {
 					evt.cancelBubble = true;
