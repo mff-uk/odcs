@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.backend.communication;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -82,9 +83,18 @@ public class Server implements Runnable {
      * @throws CommunicationException
      */
     public void init() throws CommunicationException {
+    	int port = appConfiguration.getInteger(ConfigProperty.BACKEND_PORT);
         // open socket
         try {
-            this.socket = new ServerSocket(appConfiguration.getInteger(ConfigProperty.BACKEND_PORT));
+            this.socket = new ServerSocket(port);
+        } catch (BindException e){
+        	//LOG.error("TCP/IP port {} already used.", port);
+        	LOG.error("TCP/IP port {} already used.", port);
+        	// check if not used by JVM_Bind
+        	if (e.getMessage().contains("JVM_Bind")) {
+        		LOG.info("Another instance of Intlib is probably running.");
+        	}
+        	throw new CommunicationException(e);
         } catch (IOException e) {
             throw new CommunicationException(e);
         }
@@ -97,11 +107,10 @@ public class Server implements Runnable {
         try {
 			socket.setSoTimeout(TCPIP_TIMEOUT);
 		} catch (SocketException e) {
-			LOG.error("Failed to set timeout for TCPIP socket.", e);
+			LOG.error("Failed to set timeout for TCP/IP socket.", e);
 		}
         // wait for connection
         while (running) {
-
             Socket newSocket;
             try {
                 newSocket = socket.accept();

@@ -103,40 +103,47 @@ public class AppEntry {
 			AppConfig.confPath = configFileLocation;
 		}		
 	}
-	
+
 	/**
-	 * All initialization goes here.
+	 * Initialise spring and load configuration.
 	 */
-	private void init() {
+	private void initSpring() {
 		// load spring
 		context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
 		context.registerShutdownHook();
 		// load configuration
 		appConfig = context.getBean(AppConfig.class);
+	}
+	
+	/**
+	 * OSGI's initialization goes here.
+	 */
+	private void initOSGI() {
 		// engine is setup automatically 
 		// set module facade
 		LOG.info("Configuring dynamic module worker ...");
 		moduleFacade = context.getBean(ModuleFacade.class);
-		moduleFacade.start();		
+		moduleFacade.start();
 	}
-	
+		
 	/**
 	 * Initialise and start network TCP/IP server.
+	 * @return False it the TCP/IP server cannot be unidealised.
 	 */
-	private void initNetworkServer() {
+	private boolean initNetworkServer() {
 		// set TCP/IP server
 		LOG.info("Starting TCP/IP server ...");
 		server = context.getBean(Server.class);
 		try {
 			server.init();
-		} catch (CommunicationException e1) {
-			LOG.error("Fatal error: Can't start server");
-			context.close();
-			return;
+		} catch (CommunicationException e) {
+			// LOG.error("Fatal error: Can't start server", e);
+			return false;
 		}
 		// start server in another thread
 		serverThread = new Thread(server);
-		serverThread.start();		
+		serverThread.start();	
+		return true;
 	}
 	
 	/**
@@ -149,7 +156,7 @@ public class AppEntry {
 		heartbeatThread.start();
 		LOG.info("Heartbeat is running ... ");		
 	}
-	
+		
 	/**
 	 * Main execution method.
 	 * @param args
@@ -158,13 +165,26 @@ public class AppEntry {
 		// parse args
 		parseArgs(args);
 		// initialise
-		init();
+		initSpring();		
+		initOSGI();
 		
-		// publish event for engine about start of the execution
+		// publish event for engine about start of the execution,
+		// so backend can recover for unexpected shutdown 
 		context.publishEvent(new EngineEvent(EngineEventType.STARTUP, AppEntry.class));
 				
 		// start server
-		initNetworkServer();
+		if (initNetworkServer()) {
+			// continue
+		} else {
+			// this can be because of another instance is running
+			
+			// terminate the execution			
+			LOG.info("Stopping OSGI framework ...");
+			moduleFacade.stop();
+			context.close();
+			LOG.info("Closing application ...");
+			return;
+		}
 		// start heartbeat
 		initHeartbeat();
 		
