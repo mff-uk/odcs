@@ -210,7 +210,7 @@ class PipelineList extends ViewComponent {
 		
 		HorizontalLayout topLine = new HorizontalLayout();
 		topLine.setSpacing(true);
-		topLine.setWidth(100, Unit.PERCENTAGE);
+		//topLine.setWidth(100, Unit.PERCENTAGE);
 		
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("Create pipeline");
@@ -227,7 +227,7 @@ class PipelineList extends ViewComponent {
 					}
 				});
 		topLine.addComponent(btnCreatePipeline);
-		topLine.setComponentAlignment(btnCreatePipeline, Alignment.MIDDLE_RIGHT);
+		//topLine.setComponentAlignment(btnCreatePipeline, Alignment.MIDDLE_RIGHT);
 
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
@@ -242,11 +242,11 @@ class PipelineList extends ViewComponent {
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
-		topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
+		//topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
 		
-		Label topLineFiller = new Label();
-		topLine.addComponentAsFirst(topLineFiller);
-		topLine.setExpandRatio(topLineFiller, 1.0f);
+//		Label topLineFiller = new Label();
+//		topLine.addComponentAsFirst(topLineFiller);
+//		topLine.setExpandRatio(topLineFiller, 1.0f);
 		mainLayout.addComponent(topLine);
 
 		tablePipelines = new IntlibPagedTable();

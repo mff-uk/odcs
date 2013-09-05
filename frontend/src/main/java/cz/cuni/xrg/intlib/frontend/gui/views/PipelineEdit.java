@@ -104,7 +104,7 @@ class PipelineEdit extends ViewComponent {
 				} else if (c instanceof VerticalLayout) {
 					return "position: fixed; left: 20px; top: 280px;";
 				} else if (c instanceof HorizontalLayout) {
-					return "position: fixed; bottom: 16px; right: 16px; height: 30px; width: 100%; background: #eee; padding: 10px;";
+					return "position: fixed; bottom: 16px; left: 20px; height: 30px; background: #eee; padding: 10px;";
 				}
 				return null;
 			}
@@ -259,11 +259,11 @@ class PipelineEdit extends ViewComponent {
 
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("100%");
-		Label labelFiller = new Label(" ");
+		//buttonBar.setWidth("100%");
+		//Label labelFiller = new Label(" ");
 		//labelFiller.setWidth("100%");
-		buttonBar.addComponent(labelFiller);
-		buttonBar.setExpandRatio(labelFiller, 1.0f);
+		//buttonBar.addComponent(labelFiller);
+		//buttonBar.setExpandRatio(labelFiller, 1.0f);
 
 
 		Button buttonRevert = new Button("Revert to last commit");
@@ -598,6 +598,7 @@ class PipelineEdit extends ViewComponent {
 		pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
+		Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
 		return true;
 	}
 

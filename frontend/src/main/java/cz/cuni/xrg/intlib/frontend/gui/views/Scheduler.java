@@ -86,7 +86,7 @@ class Scheduler extends ViewComponent {
 		//Layout for buttons Add new scheduling rule and Clear Filters on the top.
 		HorizontalLayout topLine = new HorizontalLayout();
 		topLine.setSpacing(true);
-		topLine.setWidth(100, Unit.PERCENTAGE);
+		//topLine.setWidth(100, Unit.PERCENTAGE);
 
 		Button addRuleButton = new Button();
 		addRuleButton.setCaption("Add new scheduling rule");
@@ -106,7 +106,7 @@ class Scheduler extends ViewComponent {
 			}
 		});
 		topLine.addComponent(addRuleButton);
-		topLine.setComponentAlignment(addRuleButton, Alignment.MIDDLE_RIGHT);
+		//topLine.setComponentAlignment(addRuleButton, Alignment.MIDDLE_RIGHT);
 
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
@@ -120,11 +120,11 @@ class Scheduler extends ViewComponent {
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
-		topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
+		//topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
 
-		Label topLineFiller = new Label();
-		topLine.addComponentAsFirst(topLineFiller);
-		topLine.setExpandRatio(topLineFiller, 1.0f);
+//		Label topLineFiller = new Label();
+//		topLine.addComponentAsFirst(topLineFiller);
+//		topLine.setExpandRatio(topLineFiller, 1.0f);
 		mainLayout.addComponent(topLine);
 
 		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());

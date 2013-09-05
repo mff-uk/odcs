@@ -97,7 +97,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         //Layout for buttons Refresh and Clear Filters on the top.
         HorizontalLayout topLine = new HorizontalLayout();
         topLine.setSpacing(true);
-        topLine.setWidth(100, Unit.PERCENTAGE);
+        //topLine.setWidth(100, Unit.PERCENTAGE);
         //Refresh button. Refreshing the table
         Button refreshButton = new Button("Refresh", new ClickListener() {
             @Override
@@ -107,7 +107,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
             }
         });
         topLine.addComponent(refreshButton);
-        topLine.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
+        //topLine.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
         //Clear Filters button. Clearing filters on the table with executions.
         Button buttonDeleteFilters = new Button();
         buttonDeleteFilters.setCaption("Clear Filters");
@@ -122,11 +122,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
             }
         });
         topLine.addComponent(buttonDeleteFilters);
-        topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
+        //topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
 
-        Label topLineFiller = new Label();
-        topLine.addComponentAsFirst(topLineFiller);
-        topLine.setExpandRatio(topLineFiller, 1.0f);
+//        Label topLineFiller = new Label();
+//        topLine.addComponentAsFirst(topLineFiller);
+//        topLine.setExpandRatio(topLineFiller, 1.0f);
         monitorTableLayout.addComponent(topLine);
 
         tableData = getTableData();
@@ -397,6 +397,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 	pipelineExec.stop();
                 	App.getApp().getPipelines().save(pipelineExec);
                 	// TODO Maria: Disable 'stop' button
+					Notification.show("Pipeline execution stopped.", Notification.Type.HUMANIZED_MESSAGE);
                     break;
                 case "showlog":
                     logLayout = buildlogLayout();
