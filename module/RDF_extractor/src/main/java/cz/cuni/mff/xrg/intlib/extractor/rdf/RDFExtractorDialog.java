@@ -5,6 +5,7 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -682,4 +683,13 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			throw new ConfigException(e.getMessage(), e);
 		}
 	}
+	
+	@Override
+	public String getDescription() {
+		StringBuilder description = new StringBuilder();
+		description.append("Extract from SPARQL: ");
+		description.append( (String) comboBoxSparql.getValue() );
+		return description.toString();
+	}
+	
 }

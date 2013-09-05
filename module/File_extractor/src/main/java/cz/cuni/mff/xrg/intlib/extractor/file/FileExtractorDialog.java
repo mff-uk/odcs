@@ -228,6 +228,22 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	}
 
+	@Override
+	public String getDescription() {
+		String path = null;
+		if (extractType == FileExtractType.UPLOAD_FILE) {
+			path = FileUploadReceiver.path + "/" + textFieldPath
+					.getValue().trim();
+		} else {
+			path = textFieldPath.getValue().trim();
+		}
+		// create description
+		StringBuilder description = new StringBuilder();
+		description.append("Extract from: ");
+		description.append(path);
+		return description.toString();
+	}
+	
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
 	 *

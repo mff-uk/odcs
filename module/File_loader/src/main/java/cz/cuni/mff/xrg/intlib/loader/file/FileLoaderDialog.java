@@ -9,6 +9,8 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
+
+import java.io.File;
 import java.util.List;
 
 /**
@@ -286,4 +288,16 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 			throw new ConfigException(e.getMessage(), e);
 		}
 	}
+	
+	@Override
+	public String getDescription() {
+		String path = textFieldDir.getValue().trim() + 
+				textFieldFileName.getValue().trim();
+		// create description
+		StringBuilder description = new StringBuilder();
+		description.append("Load to: ");
+		description.append(path);
+		return description.toString();
+	}
+	
 }

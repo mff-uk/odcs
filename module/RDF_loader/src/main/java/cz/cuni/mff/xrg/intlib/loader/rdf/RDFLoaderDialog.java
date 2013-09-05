@@ -762,6 +762,15 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			throw new ConfigException(e.getMessage(), e);
 		}
 	}
+	
+	@Override
+	public String getDescription() {
+		StringBuilder description = new StringBuilder();
+		description.append("Load to SPARQL: ");
+		description.append( (String) comboBoxSparql.getValue() );
+		return description.toString();
+	}	
+	
 }
 
 class GraphItem {
