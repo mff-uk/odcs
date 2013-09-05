@@ -42,10 +42,7 @@ public class ModuleFacadeConfig {
 			+ "cz.cuni.xrg.intlib.commons.data;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.dpu;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.dpu.annotation;version=\"0.0.1\","
-			+ "cz.cuni.xrg.intlib.commons.extractor;version=\"0.0.1\","
-			+ "cz.cuni.xrg.intlib.commons.loader;version=\"0.0.1\","
 			+ "cz.cuni.xrg.intlib.commons.message;version=\"0.0.1\","
-			+ "cz.cuni.xrg.intlib.commons.transformer;version=\"0.0.1\","
 			+ "org.openrdf.rio,"
 			+ "org.apache.log4j,org.slf4j;version=\"1.7.5\","
 			// RDF package
