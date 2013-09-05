@@ -5,6 +5,7 @@ import com.vaadin.server.communication.PushHandler;
 import javax.servlet.http.HttpServletRequest;
 import org.atmosphere.cpr.AtmosphereRequest;
 import org.atmosphere.cpr.AtmosphereResource;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -25,12 +26,19 @@ public class IntlibPushHandler extends PushHandler {
     public void onRequest(AtmosphereResource resource) {
 
 		// Hold the original request
-		AtmosphereRequest req = resource.getRequest();
-		RequestHolder.setRequest(req);
+		AtmosphereRequest request = resource.getRequest();
+		RequestHolder.setRequest(request);
 
 		// Clear the security context just in case it was not properly cleared
 		// when executing previous job on this thread.
 		SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
+		
+		// Load authentication context from session (if there is any).
+		Authentication auth = (Authentication) request.getSession()
+				.getAttribute(AuthenticationService.SESSION_KEY);
+		if (auth != null) {
+			SecurityContextHolder.getContext().setAuthentication(auth);
+		}
 		
 		// Do the business.
 		super.onRequest(resource);

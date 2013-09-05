@@ -5,7 +5,6 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
 
@@ -33,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -202,21 +200,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * @return true if user and its session are valid, false otherwise
 	 */
 	private boolean checkAuthentication() {
-		boolean authenticated = getAuthCtx().isAuthenticated();
-		if (!authenticated) {
-			// try fetching authentication from session
-			Authentication auth = VaadinSession.getCurrent().getAttribute(Authentication.class);
-			if (auth != null) {
-				AuthenticationContext authCtx = getBean(AuthenticationContext.class);
-				authCtx.setAuthentication(auth);
-				authenticated = authCtx.isAuthenticated();
-				
-				// if we are loading from session we need to refresh user bar
-				getMain().refreshUserBar();
-			}
-		}
-		
-		return authenticated;
+		return getAuthCtx().isAuthenticated();
 	}
 
 	/**

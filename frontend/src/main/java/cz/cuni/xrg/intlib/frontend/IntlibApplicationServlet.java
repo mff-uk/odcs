@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.atmosphere.cpr.AtmosphereFramework;
 import org.atmosphere.cpr.DefaultBroadcasterFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -48,8 +49,16 @@ public class IntlibApplicationServlet extends VaadinServlet {
 		
 		// Store current HTTP request in thread-local, so we can access it later.
 		RequestHolder.setRequest(request);
+		
 		// First clear the security context, as we need to load it from session.
 		SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
+		
+		// Load authentication context from session (if there is any).
+		Authentication auth = (Authentication) request.getSession()
+				.getAttribute(AuthenticationService.SESSION_KEY);
+		if (auth != null) {
+			SecurityContextHolder.getContext().setAuthentication(auth);
+		}
 		
 		// Do the business.
 		super.service(request, response);

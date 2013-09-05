@@ -58,6 +58,7 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 				case "view" :
 				case "use" :
 				case "copy" :
+				case "export" :
 					if (VisibilityType.PUBLIC.equals(sTarget.getVisibility())) {
 						return true;
 					}

@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend;
 
-import com.vaadin.server.VaadinSession;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +17,11 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
  * @author Jan Vojt
  */
 public class AuthenticationService {
+	
+	/**
+	 * Attribute key for storing {@link Authentication} in HTTP session.
+	 */
+	public static final String SESSION_KEY = "authentication";
 	
 	@Autowired
 	@Qualifier("authenticationManager")
@@ -43,7 +47,7 @@ public class AuthenticationService {
 
 		Authentication authentication = authManager.authenticate(token);
 		
-		VaadinSession.getCurrent().setAttribute(Authentication.class, authentication);
+		RequestHolder.getRequest().getSession().setAttribute(SESSION_KEY, authentication);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
@@ -60,6 +64,6 @@ public class AuthenticationService {
 		logoutHandler.logout(httpRequest, null, authentication);
 
 		// clear session
-		VaadinSession.getCurrent().setAttribute(Authentication.class, null);
+		RequestHolder.getRequest().getSession().removeAttribute(SESSION_KEY);
 	}
 }
