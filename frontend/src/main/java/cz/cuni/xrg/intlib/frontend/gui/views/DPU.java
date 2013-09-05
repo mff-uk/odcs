@@ -42,6 +42,7 @@ import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
@@ -1018,11 +1019,10 @@ class DPU extends ViewComponent {
 	
 	/**
 	 * Return container with data that used in {@link #instancesTable}.
+	 * TODO Refactor!! Merge common logic with {@link #deleteDPU()}, use method {@link PipelineFacade#getPipelinesUsingDPU(cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord).
 	 * 
 	 * @return result IndexedContainer for {@link #instancesTable}
 	 */
-
-
 	@SuppressWarnings("unchecked")
 	public IndexedContainer getTableData() {
 

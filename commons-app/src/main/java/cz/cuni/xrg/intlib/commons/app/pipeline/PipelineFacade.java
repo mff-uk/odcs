@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.util.Collections;
@@ -86,7 +87,7 @@ public class PipelineFacade {
 
 		return resultList;
 	}
-
+	
 	/**
 	 * Find pipeline in database by ID and return it.
 	 *
@@ -133,7 +134,32 @@ public class PipelineFacade {
 			LOG.warn("Pipeline with ID " + pipeline.getId() + " was not found and so cannot be deleted!");
 		}
 	}
+	
+	/**
+	 * Fetches all pipelines using give DPU template.
+	 * 
+	 * @param dpu template
+	 * @return pipelines using DPU template
+	 */
+	@PreAuthorize("hasPermission(#dpu, 'view')")
+	public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
 
+		@SuppressWarnings("unchecked")
+		List<Pipeline> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM Pipeline e"
+				+ " LEFT JOIN e.graph g"
+				+ " LEFT JOIN g.nodes n"
+				+ " LEFT JOIN n.dpuInstance i"
+				+ " LEFT JOIN i.template t"
+				+ " WHERE t = :dpu"
+				).setParameter("dpu", dpu)
+				.getResultList(),
+				Pipeline.class
+		);
+
+		return resultList;
+	}
+	
 	/* ******************** Methods for managing PipelineExecutions ********* */
 
 	/**

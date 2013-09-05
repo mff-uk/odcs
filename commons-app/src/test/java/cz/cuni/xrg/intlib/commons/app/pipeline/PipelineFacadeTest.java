@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
@@ -15,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
 import static org.junit.Assert.*;
 
 /**
@@ -162,5 +164,30 @@ public class PipelineFacadeTest {
 		
 		assertNotNull(exec.getContext());
 		assertNotNull(context.getId());
+	}
+	
+	@Test
+	@Transactional
+	public void testGetPipelinesUsingDPU() {
+		DPUTemplateRecord dpu = new DPUTemplateRecord();
+		dpu.setId(1L);
+		
+		List<Pipeline> pipes = facade.getPipelinesUsingDPU(dpu);
+		
+		assertNotNull(pipes);
+		assertEquals(1, pipes.size());
+		assertEquals("Test 1", pipes.get(0).getName());
+	}
+	
+	@Test
+	@Transactional
+	public void testGetPipelinesUsingUnusedDPU() {
+		DPUTemplateRecord dpu = new DPUTemplateRecord();
+		dpu.setId(2L);
+		
+		List<Pipeline> pipes = facade.getPipelinesUsingDPU(dpu);
+		
+		assertNotNull(pipes);
+		assertEquals(0, pipes.size());
 	}
 }
