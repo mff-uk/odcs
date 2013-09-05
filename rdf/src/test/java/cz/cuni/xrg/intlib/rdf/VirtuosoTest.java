@@ -85,9 +85,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@Test
 	public void repositoryCopy() {
 		RDFDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(hostName,
-				port, user, password, defaultGraph, "");
-		goal.setDataGraph("http://goal");
-
+				port, user, password, "http://goal", "");
 		try {
 			goal.merge(rdfRepo);
 		} catch (IllegalArgumentException e) {
@@ -131,8 +129,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 					VirtuosoRDFRepo virtuosoRepo = RDFDataUnitFactory
 							.createVirtuosoRDFRepo(hostName, port, user,
-							password, defaultGraph, "");
-					virtuosoRepo.setDataGraph("http://myDefault");
+							password, "http://myDefault", "");
 
 					addParalelTripleToRepository(virtuosoRepo);
 					extractFromFileToRepository(virtuosoRepo);
