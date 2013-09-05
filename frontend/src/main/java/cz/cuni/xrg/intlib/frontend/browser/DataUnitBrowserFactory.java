@@ -26,10 +26,10 @@ public class DataUnitBrowserFactory {
 	/**
 	 * Return browser for specified DataUnit.
 	 *
-	 * @param context       The pipelineExecution context.
-	 * @param execution     Respective PipelineExecution.
-	 * @param dpuInstance   Owner of DataUnit.
-	 * @param dataUnitInfo  Info about data unit.
+	 * @param context      The pipelineExecution context.
+	 * @param execution    Respective PipelineExecution.
+	 * @param dpuInstance  Owner of DataUnit.
+	 * @param dataUnitInfo Info about data unit.
 	 * @return Browser or null if there is no browser for given type.
 	 * @throws DataUnitNotFoundException
 	 * @throws BrowserInitFailedException
@@ -134,15 +134,11 @@ public class DataUnitBrowserFactory {
 						appConfig.getString(ConfigProperty.VIRTUOSO_USER);
 				final String password =
 						appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
-				final String defautGraph =
-						appConfig.getString(
-						ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
 
 				VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
 						.createVirtuosoRDFRepo(hostName, port, user, password,
-						defautGraph, "");
-				virtuosoRepository.setDataGraph(GraphUrl.translateDataUnitId(
-						dataUnitId));
+						GraphUrl.translateDataUnitId(dataUnitId), "");
+
 				return virtuosoRepository;
 
 			default:

@@ -18,9 +18,9 @@ import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 /**
  * Implementation of browser for
  * {@link cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF}.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 class VirtuosoRdfBrowser extends DataUnitBrowser {
 
@@ -45,14 +45,10 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 		final String user = appConfig.getString(ConfigProperty.VIRTUOSO_USER);
 		final String password = appConfig
 				.getString(ConfigProperty.VIRTUOSO_PASSWORD);
-		final String defautGraph = appConfig
-				.getString(ConfigProperty.VIRTUOSO_DEFAULT_GRAPH);
 
 		VirtuosoRDFRepo virtosoRepository = RDFDataUnitFactory
 				.createVirtuosoRDFRepo(hostName, port, user, password,
-						defautGraph, "");
-		virtosoRepository
-				.setDataGraph(GraphUrl.translateDataUnitId(dataUnitId));
+				GraphUrl.translateDataUnitId(dataUnitId), "");
 
 		data = virtosoRepository.getRDFTriplesInRepository();
 		// close repository
@@ -79,5 +75,4 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 		dataTable.setVisibleColumns("subject", "predicate", "object");
 		dataTable.setFilterBarVisible(true);
 	}
-
 }
