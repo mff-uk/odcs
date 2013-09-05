@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Embedded;
