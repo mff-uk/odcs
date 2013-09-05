@@ -94,7 +94,11 @@ public class DPUDetail extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("400px");
 		dpuDescription.setHeight("60px");
-		dpuDescription.setValue(dpu.getDescription().trim());
+		if (dpu.useDPUDescription()) {
+			// leave dpuDescription blank
+		} else {		
+			dpuDescription.setValue(dpu.getDescription().trim());
+		}
 		dpuDescription.addValidator(new MaxLengthValidator(255));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
@@ -196,9 +200,28 @@ public class DPUDetail extends Window {
 			if (!validate()) {
 				return false;
 			}
+			
+			String userDescription = dpuDescription.getValue().trim();
+			if (userDescription.isEmpty()) {
+				String dialogDescription = confDialog.getDescription();
+				if (dialogDescription == null) {
+					// dialog description is not supported .. we have no 
+					// description at all
+					dpuInstance.getDPUInstanceRecord().setDescription("");
+					dpuInstance.getDPUInstanceRecord().setUseDPUDescription(false);
+				} else {
+					// use dialogDescription
+					dpuInstance.getDPUInstanceRecord().setDescription(dialogDescription);
+					dpuInstance.getDPUInstanceRecord().setUseDPUDescription(true);
+				}				
+			} else {
+				// use user provided description
+				dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription
+						.getValue().trim());
+				dpuInstance.getDPUInstanceRecord().setUseDPUDescription(false);
+			}
+			
 			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue().trim());
-			dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription
-					.getValue().trim());
 			dpuInstance.saveConfig();
 		} catch (Exception ce) {
 			if (ce instanceof SPARQLValidationException) {

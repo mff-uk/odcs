@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,6 +24,12 @@ public class DPUInstanceRecord extends DPURecord {
 	private DPUTemplateRecord template;
 
 	/**
+	 * DPURecord tool tip.
+	 */
+	@Column(name="tool_tip")
+	private String toolTip;	
+	
+	/**
 	 * Empty ctor because of JPA.
 	 */
 	public DPUInstanceRecord() {}
@@ -38,6 +45,7 @@ public class DPUInstanceRecord extends DPURecord {
 	public DPUInstanceRecord(DPUInstanceRecord dpuInstance) {
 		super(dpuInstance);
 		template = dpuInstance.getTemplate();
+		toolTip = dpuInstance.getToolTip();
 	}
 	
 	/**
@@ -47,6 +55,7 @@ public class DPUInstanceRecord extends DPURecord {
 	 */
 	public DPUInstanceRecord(String name, DPUType type) {
 		super(name, type);
+		toolTip = null;
 	}
 	
 	/**
@@ -58,6 +67,7 @@ public class DPUInstanceRecord extends DPURecord {
 		super(template);
 		// and set out variables
 		this.template = template;
+		this.toolTip = null;
 	}
 	
 	public DPUTemplateRecord getTemplate() {
@@ -66,5 +76,13 @@ public class DPUInstanceRecord extends DPURecord {
 
 	public void setTemplate(DPUTemplateRecord template) {
 		this.template = template;
+	}
+
+	public String getToolTip() {
+		return toolTip;
+	}
+
+	public void setToolTip(String toolTip) {
+		this.toolTip = toolTip;
 	}
 }

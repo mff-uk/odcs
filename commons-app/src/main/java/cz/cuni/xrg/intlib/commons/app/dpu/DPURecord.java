@@ -31,12 +31,19 @@ public class DPURecord {
 	@Column(name="name")
     private String name;
     
+	/**
+	 * If true then the value of {@link #description} has been 
+	 * created by DPU's dialog.  
+	 */
+	@Column(name="use_dpu_description")
+	private boolean useDPUDescription;
+	
     /**
-     * DPURecord description, provided by user.
+     * DPURecord description, can be provided by user or by the DPU's dialog.
      */
 	@Column(name="description")
     private String description;
-    
+    	
     /**
      * DPURecord type, determined by associated jar file.
 	 * TODO move to {@link DPUTemplateRecord}?
@@ -69,7 +76,7 @@ public class DPURecord {
     /**
      * Allow empty constructor for JPA.
      */
-    public DPURecord() {}
+    public DPURecord() { }
 
     /**
      * Constructor with name and type of DPURecord.
@@ -80,6 +87,7 @@ public class DPURecord {
     public DPURecord(String name, DPUType type) {
         this.name = name;
         this.type = type;
+        this.useDPUDescription = false;
     }
 
     /**
@@ -88,6 +96,7 @@ public class DPURecord {
      */
     public DPURecord(DPURecord dpuRecord) {
     	this.name = dpuRecord.name;
+    	this.useDPUDescription = dpuRecord.useDPUDescription;
     	this.description = dpuRecord.description;
     	this.type = dpuRecord.type;
     	this.jarPath = dpuRecord.jarPath;
@@ -118,6 +127,14 @@ public class DPURecord {
         this.name = name;
     }
 
+    public boolean useDPUDescription() {
+    	return useDPUDescription;
+    }
+    
+    public void setUseDPUDescription(boolean useDPUDescription) {
+    	this.useDPUDescription = useDPUDescription;
+    }
+    
     public String getDescription() {
         return description;
     }
