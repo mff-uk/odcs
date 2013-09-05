@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -85,6 +86,7 @@ public class Login extends ViewComponent {
             }
         });
         layout.addComponent(loginButton);
+		password.addShortcutListener(new Button.ClickShortcut(loginButton, ShortcutAction.KeyCode.ENTER));
 		Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", App.getAppConfig().getString(ConfigProperty.EMAIL_ADMIN)));
 		info.setContentMode(ContentMode.HTML);
 		layout.addComponent(info);

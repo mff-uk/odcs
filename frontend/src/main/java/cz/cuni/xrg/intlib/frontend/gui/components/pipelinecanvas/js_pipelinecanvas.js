@@ -150,6 +150,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 
 	var tooltip = null;
 	var formattingActionBar = null;
+	
+	var visibleActionBar = null;
 
 	/** Init function which builds entire stage for pipeline */
 	function init() {
@@ -170,18 +172,22 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			if (checkMode()) {
 				return;
 			}
+			var mousePos = stage.getMousePosition();
 			if (isDragging) {
 				// Takes care of repositioning connections on dragged DPU
-				var mousePos = stage.getMousePosition();
 				var x = mousePos.x / scale;
 				var y = mousePos.y / scale;
 				//writeMessage(messageLayer, 'x: ' + x + ', y: ' + y);
 				moveLine(dragId);
 			} else if (stageMode === NEW_CONNECTION_MODE) {
 				// Repositioning new connection line
-				var mousePosition = stage.getMousePosition();
-				newConnLine.setPoints(computeConnectionPoints3(newConnStart.group, mousePosition.x / scale, mousePosition.y / scale));
+				newConnLine.setPoints(computeConnectionPoints3(newConnStart.group, mousePos.x / scale, mousePos.y / scale));
 				lineLayer.draw();
+			} 
+			else if(visibleActionBar !== null) {
+				visibleActionBar.setVisible(false);	
+				visibleActionBar = null;
+				dpuLayer.draw();
 			}
 		});
 
@@ -500,6 +506,10 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			cornerRadius: 2
 		});
 		actionBar.add(rectAb);
+		
+//		actionBar.on("mouseleave", function() {
+//			actionBar.setVisible(false);
+//		});
 
 		// New Connection command
 		var cmdConnection = new Kinetic.Image({
@@ -532,7 +542,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 		cmdConnection.on('mouseenter', function(evt) {
 			activateTooltip('Create new edge');
-			//evt.cancelBubble = true;
+			evt.cancelBubble = true;
 		});
 		cmdConnection.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -559,7 +569,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 		cmdDetail.on('mouseenter', function(evt) {
 			activateTooltip('Show detail');
-			//evt.cancelBubble = true;
+			evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -587,7 +597,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 		cmdRemove.on('mouseenter', function(evt) {
 			activateTooltip('Remove DPU');
-			//evt.cancelBubble = true;
+			evt.cancelBubble = true;
 		});
 		cmdRemove.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -614,7 +624,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 		cmdDebug.on('mouseenter', function(evt) {
 			activateTooltip('Debug to this DPU');
-			//evt.cancelBubble = true;
+			evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -640,6 +650,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 		cmdFormat.on('mouseenter', function(evt) {
 			activateTooltip('DPU layout formatting');
+			evt.cancelBubble = true;
 		});
 		cmdFormat.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -665,6 +676,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 		cmdCopy.on('mouseenter', function(evt) {
 			activateTooltip('Copy DPU');
+			evt.cancelBubble = true;
 		});
 		cmdCopy.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -678,13 +690,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		group.add(actionBar);
 
 		// Handling the visibility of actionBar
-		group.on('mouseenter', function() {
+		group.on('mouseenter', function(evt) {
 			if (stageMode === DEVELOP_MODE) {
 				actionBar.setVisible(true);
 				actionBar.moveToTop();
+				visibleActionBar = actionBar;
 				writeMessage(messageLayer, 'mouseentered');
 				dpuLayer.draw();
-				//	actionLayer.draw();
+				evt.cancelBubble = true;
 			} else if (stageMode === MULTISELECT_MODE) {
 				formattingActionBar.setVisible(true);
 				formattingActionBar.moveToTop();
@@ -697,12 +710,17 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		group.on('mouseleave', function() {
-			actionBar.setVisible(false);
+			//actionBar.setVisible(false);
+			//dpuLayer.draw();
 			if (stageMode === MULTISELECT_MODE) {
 				//formattingActionBar.setVisible(false);
 			}
 			dpuLayer.draw();
 			return;
+		});
+		
+		group.on('mousemove', function(evt) {
+			evt.cancelBubble = true;
 		});
 
 		// Registering for drag
@@ -1410,7 +1428,11 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			var dpu = dpus[dpuId].group;
 
 			var SminX = dpu.getPosition().x;
-			var SmaxX = SminX + dpu.children[0].getWidth();
+			var height = dpu.children[0].getWidth();
+			if(height < 100) {
+				height = 100;
+			}
+			var SmaxX = SminX + height;
 			var SminY = dpu.getPosition().y;
 			var SmaxY = SminY + dpu.children[0].getHeight();
 
@@ -1418,7 +1440,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 				return dpuId;
 			}
 		}
-		return 0;
+		return -1;
 	}
 
 	function computeLeftArrowPoints(points) {

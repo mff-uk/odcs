@@ -148,8 +148,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
 					// Display the error message in a custom fashion
-					String text = String.format("Exception: %s, Message: %s, Source: %s", cause.getClass().getName(), cause.getMessage(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
-					Notification.show("Uncaught exception appeared in system!", text, Notification.Type.ERROR_MESSAGE);
+					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
+					Notification.show(cause.getMessage(), text, Notification.Type.ERROR_MESSAGE);
 					// and log ...
 					LOG.error("Uncaught exception", cause);
 				} else {
