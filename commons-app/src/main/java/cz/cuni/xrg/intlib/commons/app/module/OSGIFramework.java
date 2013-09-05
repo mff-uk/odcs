@@ -127,6 +127,19 @@ class OSGIFramework {
 	}
 
 	/**
+	 * Return bundle if loaded, otherwise return null. 
+	 * @param uri Uri to install bundle from.
+	 * @return BundleContainer for given URL or null.
+	 */
+	public BundleContainer getBundle(String uri) {
+		// has bundle been already loaded?
+		if (loadedBundles.containsKey(uri)) {
+			return loadedBundles.get(uri);
+		}
+		return null;
+	}
+	
+	/**
 	 * Install bundle into framework.
 	 * 
 	 * @param uri Uri to install bundle from.
@@ -162,7 +175,7 @@ class OSGIFramework {
 	 * @param bundle Bundle to uninstall.
 	 * @return False if exception was thrown during uninstalling.
 	 */
-	private boolean uninstallBundle(BundleContainer bundleContainer) {
+	public boolean uninstallBundle(BundleContainer bundleContainer) {
 		try {
 			if (bundleContainer == null) {
 				return true;
@@ -212,14 +225,9 @@ class OSGIFramework {
 		String fullMainClassName = packageName + "." + className;
 		// load object
 		Object loadedObject;
-		try {
-			loadedObject = bundleContainer.loadClass(fullMainClassName);
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException e) {
-			LOG.error("Failed to load class for '{}'", uri, e);
-			throw new ClassLoadFailedException(e);
-		}
-
+		// can throw ClassLoadFailedException
+		loadedObject = bundleContainer.loadClass(fullMainClassName);
+		
 		return loadedObject;
 	}
 

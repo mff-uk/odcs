@@ -99,6 +99,23 @@ public class ModuleFacade {
 	}
 
 	/**
+	 * Uninstall bundle from system, use with caution. No instance
+	 * of any class from bundle should exist.
+	 * @param relativePath
+	 */
+	public void uninstall(String relativePath) {
+		String uri = "file:///" + configuration.getDpuFolder() + File.separator
+				+ relativePath;		
+		BundleContainer container = framework.getBundle(uri);
+		if (container != null) {
+			// we have something to uninstall
+			framework.uninstallBundle(container);
+		} else {
+			// bundle has not been installed
+		}
+	}
+	
+	/**
 	 * Return class loader for bundle.
 	 * 
 	 * @param relativePath RelativePath Relative path in DPU's directory.
@@ -118,59 +135,6 @@ public class ModuleFacade {
 		return container.getClassLoader();
 	}
 
-	/**
-	 * Check if the bundle exist.
-	 * 
-	 * @param relativePath RelativePath Relative path in DPU's directory.
-	 * @throws FileNotFoundException
-	 */
-	private void checkExistance(String relativePath)
-			throws FileNotFoundException {
-		File file = new File(configuration.getDpuFolder() + File.separator
-				+ relativePath);
-		if (file.exists()) {
-			// file exist ..
-		} else {
-			throw new FileNotFoundException("File '" + file.getAbsolutePath()
-					+ "' does not exist.");
-		}
-	}
-
-	/**
-	 * Return content of manifest for given bundle that is stored in DPU's
-	 * directory. This method does not load DPU into system.
-	 * 
-	 * @param relativePath Relative path in DPU's directory.
-	 * @return Description stored in manifest file or null in case of error.
-	 * @deprecated Use {@link cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer#getJarDescription(String)}
-	 */
-	@Deprecated
-	public String getJarDescription(String relativePath) {
-
-		final String uri = "file:///" + configuration.getDpuFolder()
-				+ File.separator + relativePath;
-
-		URL url;
-		try {
-			url = new URL(uri);
-		} catch (MalformedURLException ex) {
-			LOG.error("Failed to read create utl from {}", relativePath, ex);
-			return null;
-		}
-
-		try (InputStream is = url.openStream()) {
-			Manifest manifest = new Manifest(is);
-			Attributes mainAttribs = manifest.getMainAttributes();
-			String description = (String) mainAttribs.get("Description");
-
-			is.close();
-			return description;
-		} catch (IOException ex) {
-			LOG.error("Failed to read description from {}", uri, ex);
-			// in case of exception return null
-			return null;
-		}
-	}
 
 	/**
 	 * Return content of manifest file (properties) for given jar-file that is
@@ -204,6 +168,24 @@ public class ModuleFacade {
 		return attributes;
 	}
 
+	/**
+	 * Check if the bundle exist.
+	 * 
+	 * @param relativePath RelativePath Relative path in DPU's directory.
+	 * @throws FileNotFoundException
+	 */
+	private void checkExistance(String relativePath)
+			throws FileNotFoundException {
+		File file = new File(configuration.getDpuFolder() + File.separator
+				+ relativePath);
+		if (file.exists()) {
+			// file exist ..
+		} else {
+			throw new FileNotFoundException("File '" + file.getAbsolutePath()
+					+ "' does not exist.");
+		}
+	}
+		
 	/**
 	 * Load files in given directories (non-recursive). If the file is *.jar
 	 * then load id as a bundle.

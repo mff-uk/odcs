@@ -46,19 +46,21 @@ class BundleContainer {
 	 * Load class with given name from the bundle.
 	 * @param className Class name prefixed with packages.
 	 * @return Loaded class.
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
+	 * @throws ClassLoadFailedException
 	 */
 	public Object loadClass(String className) 
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+			throws ClassLoadFailedException {
 		Class<?> loaderClass = null;
 		if (loadedClassCtors.containsKey(className)) {
 			// class already been loaded 
 			loaderClass = this.loadedClassCtors.get(className);
 		} else {
 			// try to load class -> throw: ClassNotFoundException
-            loaderClass = bundle.loadClass(className);
+            try {
+				loaderClass = bundle.loadClass(className);
+			} catch (ClassNotFoundException e) {
+				throw new ModuleException(e);
+			}
             // store loaded class
             this.loadedClassCtors.put(className, loaderClass);
 		}
@@ -66,11 +68,15 @@ class BundleContainer {
 		// we have loader, create instance ..		
 		Object result = null;
 		try {
-			result = loaderClass.newInstance(); // throw: InstantiationException, IllegalAccessException
-		} catch (NoClassDefFoundError ex) {
-			// we just change the type to ClassNotFoundException
-			// so it can properly catch
-			throw new ClassNotFoundException(ex.getMessage());
+			result = loaderClass.newInstance();
+		} catch (InstantiationException e) {
+			throw new ClassLoadFailedException(e);
+		} catch (IllegalAccessException e) {
+			throw new ClassLoadFailedException(e);
+		} catch (NoClassDefFoundError e) {
+			throw new ClassLoadFailedException(e);
+		} catch (NoSuchMethodError e) {
+			throw new ClassLoadFailedException(e);
 		}
 		// return instance
 		return result;
@@ -103,4 +109,5 @@ class BundleContainer {
 		}
 		return classLoader;
 	}
+	
 }
