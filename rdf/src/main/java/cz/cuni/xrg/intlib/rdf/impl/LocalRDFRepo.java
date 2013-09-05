@@ -48,12 +48,13 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 *                       empty String.
 	 */
 	public LocalRDFRepo(String repositoryPath, String fileName,
-			String dataUnitName) {
-		callConstructorSetting(repositoryPath, fileName, dataUnitName);
+			String namedGraph, String dataUnitName) {
+		callConstructorSetting(repositoryPath, fileName, namedGraph,
+				dataUnitName);
 	}
 
 	private void callConstructorSetting(String repoPath, String fileName,
-			String dataUnitName) {
+			String namedGraph, String dataUnitName) {
 		setReadOnly(false);
 
 		long timeToStart = 1000L;
@@ -66,7 +67,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		repository = new SailRepository(memStore);
 		repository.setDataDir(dataFile);
 
-		setDataGraph(DEFAULT_GRAPH_NAME);
+		setDataGraph(namedGraph);
 		WorkingRepoDirectory = dataFile.getParentFile();
 
 		this.dataUnitName = dataUnitName;
