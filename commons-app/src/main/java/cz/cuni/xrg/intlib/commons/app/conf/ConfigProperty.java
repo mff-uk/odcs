@@ -19,7 +19,7 @@ public enum ConfigProperty {
 	VIRTUOSO_PORT("virtuoso.port"),
 	VIRTUOSO_USER("virtuoso.user"),
 	VIRTUOSO_PASSWORD("virtuoso.password"),
-	VIRTUOSO_DEFAULT_GRAPH("virtuoso.defautgraph"),
+	
 	VIRTUOSO_RETRIES("virtuoso.retries"),
 	VIRTUOSO_WAIT("virtuoso.wait"),
 	
