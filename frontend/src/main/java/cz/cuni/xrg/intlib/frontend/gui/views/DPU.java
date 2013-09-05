@@ -170,6 +170,7 @@ class DPU extends ViewComponent {
 
 		// Buttons on the top: "Create DPU", "Import DPU", "Export All"
 		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setSpacing(true);
 		
 		Button buttonCreateDPU = new Button();
 		buttonCreateDPU.setCaption("Create DPU template");
