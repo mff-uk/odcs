@@ -417,6 +417,12 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         }
     }
 
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
+
     /**
      * Settings icons to the table filters "status" and "debug"
      *

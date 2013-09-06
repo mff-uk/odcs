@@ -1098,6 +1098,12 @@ class DPU extends ViewComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	@Override
+	public boolean isModified() {
+		//TODO: Implement properly
+		return false;
+	}
+
 	/**
 	 * Generate column in table {@link #instancesTable}. with buttons:Detail,
 	 * Delete, Status.

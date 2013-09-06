@@ -653,4 +653,11 @@ public class Settings extends ViewComponent {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
+
+	@Override
+	public boolean isModified() {
+		//TODO: Implement properly.
+		//There are no editable fields.
+		return false;
+	}
 }
