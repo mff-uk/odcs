@@ -67,11 +67,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
 
 	/**
-	 * Graph name using for transaktion to loading to SPARQL endpoint.
-	 */
-	protected static final String TEMP_GRAPH_NAME = "http://tempGraph";
-
-	/**
 	 * Default construct query using for extraction without query in parameter.
 	 */
 	protected static final String DEFAULT_CONSTRUCT_QUERY = "construct {?x ?y ?z} where {?x ?y ?z}";
@@ -588,10 +583,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				List<String> dataParts = getInsertPartsTriplesQuery(
 						STATEMENTS_COUNT);
 
+				final String tempGraph = endpointGraph + "/temp";
+
 				if (insertType == InsertType.STOP_WHEN_BAD_PART) {
 
 					try {
-						loadDataParts(endpointURL, TEMP_GRAPH_NAME, dataParts,
+						loadDataParts(endpointURL, tempGraph, dataParts,
 								insertType);
 						loadDataParts(endpointURL, endpointGraph, dataParts,
 								insertType);
@@ -599,7 +596,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					} catch (InsertPartException e) {
 						throw new RDFException(e.getMessage(), e);
 					} finally {
-						clearEndpointGraph(endpointURL, TEMP_GRAPH_NAME);
+						clearEndpointGraph(endpointURL, tempGraph);
 					}
 
 				} else {

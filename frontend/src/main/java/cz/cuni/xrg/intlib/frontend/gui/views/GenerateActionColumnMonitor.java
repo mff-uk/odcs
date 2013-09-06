@@ -10,7 +10,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 
 /**
  * Generate the column "actions" in the table with pipeline execution records 
- * in  {@link ExecutionMonitor} with buttons: Stop, Show log, Debug data.  
+ * in  {@link ExecutionMonitor} with buttons: Cancel, Show log, Debug data.  
  * 
  * @author Maria Kukhar
  *
@@ -50,11 +50,11 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 			testStatus = (PipelineExecutionStatus) propStatus.getValue();
 			testDebug = (boolean) prop2.getValue();
 			
-			//If item execution status is SCHEDULED then for that item will be shown Stop button
+			//If item execution status is SCHEDULED then for that item will be shown Cancel button
 			if (testStatus == PipelineExecutionStatus.SCHEDULED || 
 					testStatus == PipelineExecutionStatus.RUNNING ) {
-				Button stopButton = new Button("Stop");
-				stopButton.setData(new ActionButtonData("stop", itemId));
+				Button stopButton = new Button("Cancel");
+				stopButton.setData(new ActionButtonData("cancel", itemId));
 				stopButton.setWidth("90px");
 				box.addComponent(stopButton);
 				if (this.clickListener != null)

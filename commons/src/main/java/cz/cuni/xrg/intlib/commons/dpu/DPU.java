@@ -28,7 +28,7 @@ public interface DPU {
 
 	/**
 	 * Is called if and only if the @{link #execute} executive thread is
-	 * interrupted. This method should clean the DPU content.
+	 * interrupted. This method may be implemented to clean up any resources held by the DPU. 
 	 */
 	public void cleanUp();
 }

@@ -1,8 +1,7 @@
 package cz.cuni.xrg.intlib.commons.message;
 
 /**
- * Types of messages that can be send through the context. (ExtractContext,
- * TransformContext, LoadContext)
+ * Types of messages that can be send through the context. 
  * 
  * @author Petyr
  * 

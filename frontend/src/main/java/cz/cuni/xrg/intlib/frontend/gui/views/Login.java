@@ -114,4 +114,10 @@ public class Login extends ViewComponent {
 			Notification.show(String.format("Invalid credentials for username %s.", login.getValue()), Notification.Type.ERROR_MESSAGE);
 		} 
     }
+
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
 }

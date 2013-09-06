@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 import cz.cuni.xrg.intlib.commons.app.data.EdgeCompiler;
@@ -37,6 +38,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private Pipeline pip;
 	private Stack<PipelineGraph> historyStack;
 	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
+	private boolean isModified = false;
 	
 //	private final String STANDARD_MODE = "standard_mode";
 //	private final String DEVELOP_MODE = "develop_mode";
@@ -82,6 +84,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			@Override
 			public void onDpuMoved(int dpuId, int newX, int newY) {
 				dpuMoved(dpuId, newX, newY);
+				//setModified();
 			}
 
 			@Override
@@ -107,6 +110,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onDpuCopyRequested(int dpuId, int x, int y) {
+				storeHistoryGraph();
 				copyDpu(dpuId, x, y);
 			}
 		});
@@ -222,6 +226,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			App.getDPUs().delete(instance);
 		}
 		pipeline.setGraph(graph);
+		isModified = false;
 	}
 
 	@Override
@@ -358,11 +363,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	private void storeHistoryGraph() {
 		PipelineGraph clonedGraph = graph.cloneGraph();
-
+		isModified = true;
 		if (historyStack.isEmpty()) {
 			//Make undo button enabled.
 			fireDetailClosed(PipelineGraph.class);
 		}
+		
 		historyStack.push(clonedGraph);
 	}
 
@@ -394,5 +400,19 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 //			canvasMode = STANDARD_MODE;
 //		}
 		getRpcProxy(PipelineCanvasClientRpc.class).setStageMode(newMode);
+	}
+
+	/**
+	 * Returns if PipelineCanvas was modified since last save.
+	 * 
+	 * @return Is modified?
+	 * 
+	 */
+	public boolean isModified() {
+		return isModified;
+	}
+
+	public void cancelChanges() {
+		isModified = false;
 	}
 }

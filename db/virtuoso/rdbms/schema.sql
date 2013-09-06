@@ -44,6 +44,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
 -- DPURecord
   "id" INTEGER IDENTITY,
   "name" VARCHAR(45),
+  "use_dpu_description" SMALLINT,
   "description" VARCHAR(255),  
   "type" SMALLINT,
   "jar_path" VARCHAR(255),

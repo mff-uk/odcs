@@ -7,6 +7,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
@@ -23,6 +24,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
+import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
 
@@ -186,6 +188,37 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
 			}
 		});
+		
+		 // attach a listener so that we'll get asked isViewChangeAllowed?
+        this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+			private String pendingViewAndParameters;
+			@Override
+            public boolean beforeViewChange(ViewChangeEvent event) {
+                if (event.getOldView() != null && ((ViewComponent)event.getOldView()).isModified()) {
+
+                    // save the View where the user intended to go
+                    pendingViewAndParameters = event.getViewName();
+                    if (event.getParameters() != null) {
+                        pendingViewAndParameters += "/";
+                        pendingViewAndParameters += event
+                                .getParameters();
+                    }
+
+                    // Prompt the user to save or cancel if the name is changed
+                    Notification.show("Please apply or cancel your changes",
+                            Type.WARNING_MESSAGE);
+
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+			@Override
+            public void afterViewChange(ViewChangeEvent event) {
+                pendingViewAndParameters = null;
+            }
+        });
 
 		AppConfig config = getAppConfiguration();
 		backendClient = new Client(

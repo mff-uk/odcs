@@ -3,7 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.dpu.annotation;
 import java.lang.reflect.Field;
 
 /**
- * Simple class used to store filed with it's respective annotation. Does
+ * Simple class used to store field with it's respective annotation. Does
  * not contains all annotations.
  * 
  * @author Petyr

@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
 /**
- * 
+ * Exception thrown when OSGI bundle cannot be installed
  * 
  * @author Petyr
  *

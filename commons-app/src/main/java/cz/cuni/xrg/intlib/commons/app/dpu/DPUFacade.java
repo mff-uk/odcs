@@ -266,4 +266,14 @@ public class DPUFacade {
 		em.remove(record);
 	}
 
+	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
+		@SuppressWarnings("unchecked")
+		List<DPUTemplateRecord> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM DPUTemplateRecord e WHERE e.parent = :tmpl").setParameter("tmpl", parent).getResultList(),
+				DPUTemplateRecord.class
+		);
+
+		return resultList;
+	}
+
 }

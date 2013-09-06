@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Contains and manage information about execution for single {@link DPU}. The
  * information class (this) is created at the start of the DPU execution. So the
- * information class in not accessible for all the DPUs from the begining of the
+ * information class in not accessible for all the DPUs from the beginning of the
  * execution.
  * 
  * @author Petyr

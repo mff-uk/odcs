@@ -183,7 +183,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
             }
         });
 
-        //Actions column. Contains actions buttons: Debug data, Show log, Stop.
+        //Actions column. Contains actions buttons: Debug data, Show log, Cancel.
         monitorTable.addGeneratedColumn("actions",
                 new GenerateActionColumnMonitor(this));
 
@@ -375,7 +375,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
     }
 
     /**
-     * Identify the button type was pushed (stop, showlog, debug ) with the help
+     * Identify the button type was pushed (cancel, showlog, debug ) with the help
      * of {@link ActionButtonData}. Then produces a corresponding action. Opens
      * {@link DebuggingView}
      */
@@ -391,13 +391,14 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
             exeId = (Long) tableData.getContainerProperty(itemId, "id")
                     .getValue();
             switch (caption) {
-                case "stop":
+                case "cancel":
                 	PipelineExecution pipelineExec = 
                 		App.getApp().getPipelines().getExecution(exeId);
                 	pipelineExec.stop();
                 	App.getApp().getPipelines().save(pipelineExec);
-                	// TODO Maria: Disable 'stop' button
-					Notification.show("Pipeline execution stopped.", Notification.Type.HUMANIZED_MESSAGE);
+                	senderButton.setVisible(false);
+					refresh();
+					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
                     break;
                 case "showlog":
                     logLayout = buildlogLayout();
@@ -415,6 +416,12 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 
         }
     }
+
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
 
     /**
      * Settings icons to the table filters "status" and "debug"

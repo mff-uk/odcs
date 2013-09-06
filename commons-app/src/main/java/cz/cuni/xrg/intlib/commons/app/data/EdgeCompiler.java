@@ -19,7 +19,7 @@ import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
 import java.util.Arrays;
 
 /**
- * Class provide functionality that enable create script for single edge from
+ * Class provides functionality that enable create script for single edge from
  * list of DataUnit's names and list of indexes. Also the list of indexes can be
  * recreated from list of names and program.
  * 

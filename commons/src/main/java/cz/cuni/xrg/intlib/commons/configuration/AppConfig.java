@@ -36,7 +36,7 @@ public class AppConfig {
 	 * Constructor reads configuration file.
 	 */
 	public AppConfig() {
-		LOG.log(Level.INFO, "Loading configuration from: {0}", confPath);
+		LOG.log(Level.INFO, "Loading configuration from: {}", confPath);
 		try {
 			FileInputStream stream = new FileInputStream(confPath);
 			prop.load(stream);
