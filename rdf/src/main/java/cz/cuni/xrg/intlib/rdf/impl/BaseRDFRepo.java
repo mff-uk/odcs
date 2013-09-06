@@ -1681,12 +1681,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				throw new RDFException(message.toString());
 			}
 
-		} catch (IOException e) {
-			logger.debug("Endpoint URL stream can not open");
+		}
+		catch(UnknownHostException e) {
+			final String message="Unknown host: ";
+			throw new RDFException(message+e.getMessage(),e);
+		}
+		catch (IOException e) {
+			final String message="Endpoint URL stream can not open. ";
+			logger.debug(message);
 			if (httpConnection != null) {
 				httpConnection.disconnect();
 			}
-			throw new RDFException(e.getMessage(), e);
+			throw new RDFException(message+e.getMessage(), e);
 		}
 
 		try {
