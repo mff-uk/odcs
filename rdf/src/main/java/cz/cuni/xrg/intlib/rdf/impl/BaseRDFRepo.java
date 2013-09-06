@@ -635,10 +635,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			final String processing = String.valueOf(j + 1) + "/" + String
 					.valueOf(partsCount);
 
-			String myquery = getEncodedQuery(query);
 			try {
 				InputStreamReader inputStreamReader = getEndpointStreamReader(
-						endpointURL, endpointGraph, myquery,
+						endpointURL, endpointGraph, query,
 						RDFFormat.N3);
 
 				inputStreamReader.close();
@@ -1578,17 +1577,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	private String getEncodedQuery(String query) throws RDFException {
-		try {
-			String myquery = URLEncoder.encode(query, encode);
-			return myquery;
-		} catch (UnsupportedEncodingException ex) {
-			String message = "Encoding " + encode + " is not supported.";
-			logger.debug(message);
-			throw new RDFException(message + ex.getMessage(), ex);
-		}
-	}
-
 	long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph) throws RDFException {
 		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
 
@@ -1637,8 +1625,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String endpointGraphURI, String query,
 			RDFFormat format) throws RDFException {
 
-		final String endpointGraph = endpointGraphURI.replace(
-				" ", "+");
+		final String endpointGraph = getEncodedString(endpointGraphURI);
 		final String myquery = getEncodedString(query);
 
 		final String encoder = getEncoder(format);
