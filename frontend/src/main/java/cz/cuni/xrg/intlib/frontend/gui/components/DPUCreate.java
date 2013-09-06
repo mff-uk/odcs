@@ -385,11 +385,9 @@ public class DPUCreate extends Window {
 					}
 
 					// now we know all what we need create record in Database
-					dpuTemplate = new DPUTemplateRecord(dpuName.getValue(),
-							dpuType);
+					dpuTemplate = App.getDPUs().createTemplate(dpuName.getValue(), dpuType);
 					dpuTemplate.setDescription(dpuDescription.getValue());
-					dpuTemplate.setVisibility((VisibilityType) groupVisibility
-							.getValue());
+					dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
 					dpuTemplate.setJarPath(FileUploadReceiver.fName);
 					dpuTemplate.setJarDescription(jarDescription);
 
