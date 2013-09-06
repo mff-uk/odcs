@@ -10,8 +10,8 @@ import com.vaadin.ui.Notification;
 
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;

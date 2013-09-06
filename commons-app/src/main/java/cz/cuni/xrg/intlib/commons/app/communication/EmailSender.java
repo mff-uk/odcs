@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.communication;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,9 +15,8 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
-import java.util.Arrays;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 
 public class EmailSender {
 

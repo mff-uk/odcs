@@ -11,7 +11,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.frontend.AuthenticationService;
 import cz.cuni.xrg.intlib.frontend.RequestHolder;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;

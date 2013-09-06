@@ -1,7 +1,7 @@
 package ch.qos.logback.classic.db;
 
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
 import virtuoso.ConfigurableDataSource;
 
 /**

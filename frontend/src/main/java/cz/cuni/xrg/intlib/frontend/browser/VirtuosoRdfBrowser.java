@@ -5,8 +5,8 @@ import com.vaadin.ui.VerticalLayout;
 import java.io.File;
 import java.util.List;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
