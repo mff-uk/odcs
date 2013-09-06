@@ -90,6 +90,7 @@ public class RecordsTable extends CustomComponent {
 					ThemeResource img = null;
 					switch (type) {
 						case DPU_INFO:
+						case PIPELINE_INFO:
 							img = new ThemeResource("icons/ok.png");
 							break;
 						case DPU_LOG:
@@ -165,6 +166,7 @@ public class RecordsTable extends CustomComponent {
 			MessageRecordType type = (MessageRecordType) value;
 			switch (type) {
 				case DPU_INFO:
+				case PIPELINE_INFO:
 					img = new ThemeResource("icons/ok.png");
 					break;
 				case DPU_LOG:
