@@ -41,8 +41,9 @@ public class AppConfig {
 			FileInputStream stream = new FileInputStream(confPath);
 			prop.load(stream);
 		} catch (IOException ex) {
-			LOG.log(Level.SEVERE, "Could not read configuration file at " + confPath + ".", ex);
-			throw new RuntimeException(ex);
+			throw new ConfigFileNotFoundException(ex);
+		} catch (IllegalArgumentException ex) {
+			throw new MalformedConfigFileException(ex);
 		}
 	}
 	
