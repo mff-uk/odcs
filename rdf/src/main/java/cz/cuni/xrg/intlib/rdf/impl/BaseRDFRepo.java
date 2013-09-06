@@ -204,7 +204,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param useSuffix           boolean value, if extract files only with
 	 *                            defined suffix or not.
 	 * @param useStatisticHandler boolean value if detailed log and statistic
-	 *                            are awailable or not.
+	 *                            are available or not.
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
@@ -660,7 +660,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						break;
 					case STOP_WHEN_BAD_PART:
 
-						message = "Inserting failt to " + processing + " data part. "
+						message = "Inserting failed to " + processing + " data part. "
 								+ e.getMessage();
 						logger.error(message);
 
@@ -825,13 +825,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 
 		if (endpointGraphsURI == null) {
-			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
+			final String message = "Mandatory graph's name(s) in extractor from SPARQL is null.";
 
 			logger.debug(message);
 			throw new RDFException(message);
 
 		} else if (endpointGraphsURI.isEmpty()) {
-			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
+			final String message = "Mandatory graph's name(s) in extractor from SPARQL is empty.";
 
 			logger.debug(message);
 			throw new RDFException(message);
@@ -932,7 +932,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		} catch (RepositoryException e) {
 
-			final String message = "Repository connection failt: " + e
+			final String message = "Repository connection failed: " + e
 					.getMessage();
 
 			logger.debug(message);
@@ -1247,7 +1247,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		} catch (RDFHandlerException ex) {
-			logger.error("RDF handler failt. " + ex.getMessage(), ex);
+			logger.error("RDF handler failed. " + ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
