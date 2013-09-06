@@ -7,7 +7,7 @@ import com.vaadin.data.Validator;
  * 
  * @author Bogo
  */
-public class MaxLengthValidator implements Validator {
+public final class MaxLengthValidator implements Validator {
 
 	private int maxLength = 1000;
 

@@ -5,6 +5,13 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.module.config.ConfigWrap;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 
+/**
+ * 
+ * Class which should be used by DPU developer as a base class from which his DPU's configuration dialog is derived. 
+ * 
+ * @author petyr
+ * @param <C> Particular configuration  object of the DPU
+ */
 public abstract class BaseConfigDialog<C extends DPUConfigObject>
 		extends AbstractConfigDialog<C> {
 

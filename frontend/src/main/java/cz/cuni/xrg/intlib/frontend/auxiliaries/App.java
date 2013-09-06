@@ -14,7 +14,7 @@ import cz.cuni.xrg.intlib.frontend.AppEntry;
  * The purpose of the class is to wrap some function class
  * and made writing code easier.
  * 
- * Class can not be instantiated.
+ * Class cannot be instantiated.
  * 
  * @author Petyr
  *

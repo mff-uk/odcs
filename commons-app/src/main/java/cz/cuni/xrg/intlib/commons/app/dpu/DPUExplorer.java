@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.commons.dpu.annotation.AsTransformer;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsLoader;
 
 /**
- * Class provides methods that can be used to explore DPU instance.
+ * Class which provides methods that can be used to explore DPU instance.
  * 
  * @author Petyr
  *
@@ -19,7 +19,7 @@ import cz.cuni.xrg.intlib.commons.dpu.annotation.AsLoader;
 public class DPUExplorer {
 	
 	/**
-	 * Name of property that store jar-file's description.
+	 * Name of property that stores jar-file's description.
 	 */
 	private static final String DPU_JAR_DESCRIPTION_NAME = "Description";
 	

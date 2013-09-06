@@ -5,7 +5,8 @@ import java.io.FileNotFoundException;
 
 /**
  * Provide additional functionality to the @{link DataUnit} that
- * enable management in sense of load, store, merge and delete
+ * enable management in sense of load, store, merge and delete. It is separated from the DataUnit interface because DPU developer 
+ * do not need to see methods needed by the engine and defined in ManagableDataUnit
  * 
  * @author Petyr
  *

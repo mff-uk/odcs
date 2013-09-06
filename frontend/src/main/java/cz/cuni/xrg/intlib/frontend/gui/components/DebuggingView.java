@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Property;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -15,7 +14,6 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;

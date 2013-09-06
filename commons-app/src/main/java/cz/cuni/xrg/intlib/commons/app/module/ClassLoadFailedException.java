@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.commons.app.module;
 
 /**
  * 
+ * Exception thrown when OSGI bundle cannot be loaded, because ... how it differs from BundleInstallFaikedException TODO Petyr
  * 
  * @author Petyr
  *

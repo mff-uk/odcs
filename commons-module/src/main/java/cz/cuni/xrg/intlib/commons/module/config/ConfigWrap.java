@@ -12,8 +12,8 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 
 /**
- * Class provide functionality to serialise, deserialize and create instance of
- * {@link DPUConfigObject}.
+ * Class provides functionality to serialize, deserialize and create instance of
+ * {@link DPUConfigObject}. {@link DPUConfigObject} is serialized as XML, using XStream.
  *
  * @author Petyr
  *

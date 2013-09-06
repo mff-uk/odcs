@@ -81,8 +81,8 @@ public class IntlibHelper {
 			client.checkDatabase();
 		} catch (CommunicationException e) {
 			ConfirmDialog.show(UI.getCurrent(), "Pipeline execution",
-					"Backend is offline. Should the pipeline be launched when possible or do you want to cancel the execution?",
-					"Launch when possible", "Cancel the execution", new ConfirmDialog.Listener() {
+					"Backend is offline. Should the pipeline be scheduled to be launched when backend is online or do you want to cancel the execution?",
+					"Schedule", "Cancel", new ConfirmDialog.Listener() {
 				@Override
 				public void onClose(ConfirmDialog cd) {
 					if (cd.isConfirmed()) {
@@ -99,7 +99,7 @@ public class IntlibHelper {
 		}
 
 		// show message about action
-		Notification.show("pipeline execution started ..",
+		Notification.show("Pipeline execution started ..",
 				Notification.Type.HUMANIZED_MESSAGE);
 
 		return pipelineExec;

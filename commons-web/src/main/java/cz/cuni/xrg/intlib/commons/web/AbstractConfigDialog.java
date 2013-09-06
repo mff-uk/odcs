@@ -6,7 +6,8 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 
 /**
- * Base abstract class for configuration dialog.
+ * Base abstract class for a configuration dialog. DPU developer should extend 
+ * his DPU's configuration dialog from {@link BaseConfigDialog} instead of this class. 
  * 
  * @author Petyr
  * 
@@ -47,6 +48,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	 * 
 	 * @return Can be null.
 	 */	
+        @Override
 	public abstract String getDescription();
 	
 }
