@@ -215,6 +215,7 @@ public class PipelineExecution implements Serializable {
 	
 	public void stop() {
 		stop = true;
+		status = PipelineExecutionStatus.CANCELLED;
 	}
 	
 	/**

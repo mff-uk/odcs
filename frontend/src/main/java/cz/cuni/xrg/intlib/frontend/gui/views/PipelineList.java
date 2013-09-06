@@ -37,6 +37,12 @@ class PipelineList extends ViewComponent {
 	
 	private PipelineFacade pipelineFacade = App.getApp().getPipelines();
 
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
+
 	/**
 	 * Generate column in table with buttons.
 	 * @author Petyr

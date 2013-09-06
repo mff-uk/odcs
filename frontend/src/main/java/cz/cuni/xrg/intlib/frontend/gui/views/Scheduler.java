@@ -303,6 +303,12 @@ class Scheduler extends ViewComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
+
 	/**
 	 * Generate column "commands" in the table {@link #schedulerTable}.
 	 *

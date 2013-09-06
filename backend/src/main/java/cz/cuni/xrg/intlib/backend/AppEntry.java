@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.backend;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,7 +19,7 @@ import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
 /**

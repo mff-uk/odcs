@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.browser;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import java.io.File;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;

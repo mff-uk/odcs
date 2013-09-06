@@ -104,7 +104,7 @@ public class MenuLayout extends CustomComponent {
 		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PIPELINE_LIST.getUrl()));
 		menuBar.addItem("DPU Templates", new NavigateToCommand(ViewNames.DPU.getUrl()));
 		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.EXECUTION_MONITOR.getUrl()));
-		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
+//		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
 		menuBar.addItem("Scheduler", new NavigateToCommand(ViewNames.SCHEDULER.getUrl()));
 		menuBar.addItem("Settings", new NavigateToCommand(ViewNames.ADMINISTRATOR.getUrl()));
 	}

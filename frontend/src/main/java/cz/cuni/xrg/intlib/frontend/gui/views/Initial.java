@@ -50,4 +50,10 @@ class Initial extends ViewComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
+
 }

@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
@@ -9,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +29,27 @@ public class DPUFacade {
 	 */
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired(required = false)
+	private AuthenticationContext authCtx;
 
 	/* ******************* Methods for DPUTemplateRecord management *********************** */
+	
+	/**
+	 * Creates DPU template with given name of given type and assigns currently
+	 * logged in user as owner.
+	 * 
+	 * @param name
+	 * @param type
+	 * @return newly created DPU template
+	 */
+	public DPUTemplateRecord createTemplate(String name, DPUType type) {
+		DPUTemplateRecord dpu = new DPUTemplateRecord(name, type);
+		if (authCtx != null) {
+			dpu.setOwner(authCtx.getUser());
+		}
+		return dpu;
+	}
 
 	/**
 	 * Creates a new DPURecord with the same properties and configuration as in given
@@ -264,6 +285,16 @@ public class DPUFacade {
 	@Transactional
 	public void delete(MessageRecord record) {
 		em.remove(record);
+	}
+
+	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
+		@SuppressWarnings("unchecked")
+		List<DPUTemplateRecord> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM DPUTemplateRecord e WHERE e.parent = :tmpl").setParameter("tmpl", parent).getResultList(),
+				DPUTemplateRecord.class
+		);
+
+		return resultList;
 	}
 
 }

@@ -20,8 +20,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
@@ -137,6 +137,13 @@ public class Executor implements Runnable {
 	private void executionFailed() {
 		execution.setExecutionStatus(PipelineExecutionStatus.FAILED);
 	}
+	
+	/**
+	 * Should be called in case that the execution was cancelled by user. Does not save the {@link PipelineExecution} into database.
+	 */
+	private void executionCancelled() {
+		execution.setExecutionStatus(PipelineExecutionStatus.CANCELLED);
+	}
 
 	/**
 	 * Should be called in case that the execution has finished without error.
@@ -230,6 +237,7 @@ public class Executor implements Runnable {
 	private void execute() {
 		
 		boolean executionFailed = false;
+		boolean executionCancelled = false;
 		// add marker to logs from this thread -> both must be specified !!
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME,
 				Long.toString(execution.getId()));
@@ -281,6 +289,7 @@ public class Executor implements Runnable {
 					stopExecution = true;
 				} else if (uptodateExecution.getStop()) {
 					stopExecution = true;
+					executionCancelled = true;
 					eventPublisher.publishEvent(new PipelineAbortedEvent(execution, this));	
 				}
 				
@@ -310,8 +319,13 @@ public class Executor implements Runnable {
 		// set time then the pipeline's execution finished
 		execution.setEnd(new Date());
 		if (executionFailed) {
-			LOG.debug("Execution failed");
-			executionFailed();
+			if(executionCancelled) {
+				LOG.debug("Execution cancelled");
+				executionCancelled();
+			} else {
+				LOG.debug("Execution failed");
+				executionFailed();
+			}
 		} else {
 			LOG.debug("Execution finished");
 			executionSuccessful();
