@@ -75,6 +75,7 @@ public class ModuleFacade {
 	 * instances from ModuleFacade.
 	 */
 	public void stop() {
+		LOG.info("Stopping OSGI framework ...");
 		framework.stop();
 	}
 

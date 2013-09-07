@@ -115,17 +115,6 @@ public class AppEntry {
 		// load configuration
 		appConfig = context.getBean(AppConfig.class);
 	}
-	
-	/**
-	 * OSGI's initialization goes here.
-	 */
-	private void initOSGI() {
-		// engine is setup automatically 
-		// set module facade
-		LOG.info("Configuring dynamic module worker ...");
-		moduleFacade = context.getBean(ModuleFacade.class);
-		moduleFacade.start();
-	}
 		
 	/**
 	 * Initialise and start network TCP/IP server.
@@ -169,8 +158,6 @@ public class AppEntry {
 		// initialise
 		initSpring();		
 
-		initOSGI();
-		
 		// publish event for engine about start of the execution,
 		// so backend can recover for unexpected shutdown 
 		context.publishEvent(new EngineEvent(EngineEventType.STARTUP, AppEntry.class));
@@ -182,8 +169,6 @@ public class AppEntry {
 			// this can be because of another instance is running
 			
 			// terminate the execution			
-			LOG.info("Stopping OSGI framework ...");
-			moduleFacade.stop();
 			context.close();
 			LOG.info("Closing application ...");
 			return;
@@ -220,8 +205,6 @@ public class AppEntry {
 			Thread.sleep(2 * Server.TCPIP_TIMEOUT);
 		} catch (InterruptedException e) {
 		}
-		LOG.info("Stopping OSGI framework ...");
-		moduleFacade.stop();
 		LOG.info("Closing spring context ...");
 		heartbeatThread.interrupt();
 		context.close();

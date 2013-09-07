@@ -27,7 +27,8 @@
 	</bean>
 
 	<!-- support for loading DPUs -->
-	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade">
+	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade"
+	    init-method="start" destroy-method="stop">
 	    <constructor-arg ref="moduleFacadeConfiguration" />
 	</bean>
 

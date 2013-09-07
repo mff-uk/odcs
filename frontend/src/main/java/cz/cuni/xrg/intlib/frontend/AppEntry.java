@@ -122,14 +122,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		// create a navigator to control the views
 		this.navigator = new IntlibNavigator(this, main.getViewLayout());
 
-		// add vaadin to export package list
-		ModuleFacade modules = (ModuleFacade) context.getBean("moduleFacade");
-		modules.start();
-
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
-				getModules().stop();
 				if (refreshThread != null) {
 					refreshThread.interrupt();
 				}
