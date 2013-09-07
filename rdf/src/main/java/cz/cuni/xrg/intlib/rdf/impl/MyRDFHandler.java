@@ -3,7 +3,9 @@ package cz.cuni.xrg.intlib.rdf.impl;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import java.io.OutputStream;
 import java.io.Writer;
+import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.n3.N3Writer;
 import org.openrdf.rio.ntriples.NTriplesWriter;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
@@ -17,7 +19,7 @@ import org.openrdf.rio.turtle.TurtleWriter;
  *
  * @author Jiri Tomes
  */
-public class MyRDFHandler {
+public class MyRDFHandler implements RDFHandler {
 
 	private RDFHandler handler;
 
@@ -40,7 +42,7 @@ public class MyRDFHandler {
 	private void setHandler(OutputStream os) {
 
 		switch (formatType) {
-			
+
 			case N3:
 				handler = new N3Writer(os);
 				break;
@@ -95,5 +97,30 @@ public class MyRDFHandler {
 
 		}
 
+	}
+
+	@Override
+	public void startRDF() throws RDFHandlerException {
+		handler.startRDF();
+	}
+
+	@Override
+	public void endRDF() throws RDFHandlerException {
+		handler.endRDF();
+	}
+
+	@Override
+	public void handleNamespace(String prefix, String uri) throws RDFHandlerException {
+		handler.handleNamespace(prefix, uri);
+	}
+
+	@Override
+	public void handleStatement(Statement st) throws RDFHandlerException {
+		handler.handleStatement(st);
+	}
+
+	@Override
+	public void handleComment(String comment) throws RDFHandlerException {
+		handler.handleComment(comment);
 	}
 }
