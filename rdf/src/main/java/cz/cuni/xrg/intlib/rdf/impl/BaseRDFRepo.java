@@ -1218,8 +1218,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				FileOutputStream os = new FileOutputStream(file);
 
-				MyRDFHandler myGoal = new MyRDFHandler(os, formatType);
-				RDFHandler goal = myGoal.getRDFHandler();
+				MyRDFHandler goal = new MyRDFHandler(os, formatType);
 
 				graphQuery.evaluate(goal);
 
@@ -1681,18 +1680,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				throw new RDFException(message.toString());
 			}
 
-		}
-		catch(UnknownHostException e) {
-			final String message="Unknown host: ";
-			throw new RDFException(message+e.getMessage(),e);
-		}
-		catch (IOException e) {
-			final String message="Endpoint URL stream can not open. ";
+		} catch (UnknownHostException e) {
+			final String message = "Unknown host: ";
+			throw new RDFException(message + e.getMessage(), e);
+		} catch (IOException e) {
+			final String message = "Endpoint URL stream can not open. ";
 			logger.debug(message);
 			if (httpConnection != null) {
 				httpConnection.disconnect();
 			}
-			throw new RDFException(message+e.getMessage(), e);
+			throw new RDFException(message + e.getMessage(), e);
 		}
 
 		try {
@@ -1767,9 +1764,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						RDFFormat.RDFXML);
 				formatType = RDFFormatType.getTypeByRDFFormat(newFormat);
 			}
-			MyRDFHandler myHandler = new MyRDFHandler(os, formatType);
-
-			RDFHandler handler = myHandler.getRDFHandler();
+			MyRDFHandler handler = new MyRDFHandler(os, formatType);
 
 			connection = repository.getConnection();
 
