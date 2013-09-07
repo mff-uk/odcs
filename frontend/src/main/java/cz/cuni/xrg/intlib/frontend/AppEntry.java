@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import virtuoso.jdbc4.VirtuosoException;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -147,6 +148,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void error(com.vaadin.server.ErrorEvent event) {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
+					if(cause.getClass() == VirtuosoException.class && ((VirtuosoException)cause).getErrorCode() == VirtuosoException.IOERROR) {
+						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
+						return;
+					}
+					
 					// Display the error message in a custom fashion
 					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
 					Notification.show(cause.getMessage(), text, Notification.Type.ERROR_MESSAGE);
