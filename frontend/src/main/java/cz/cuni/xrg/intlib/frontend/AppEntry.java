@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
@@ -47,6 +48,7 @@ import virtuoso.jdbc4.VirtuosoException;
  */
 @Push(PushMode.AUTOMATIC)
 @Theme("IntLibTheme")
+@PreserveOnRefresh
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
