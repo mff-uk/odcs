@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.pipeline.event;
 import org.springframework.context.ApplicationEvent;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 
 /**
  * Report that pipelineExecution is finished. This does not inherit from 
@@ -26,6 +27,17 @@ public final class PipelineFinished extends ApplicationEvent {
 
 	public PipelineExecution getExecution() {
 		return execution;
+	}
+	
+	/**
+	 * Return true if respective execution finished with 
+	 * {@link PipelineExecutionStatus#FINISHED_SUCCESS} or 
+	 * {@link PipelineExecutionStatus#FINISHED_WARNING}.
+	 * @return
+	 */
+	public boolean sucess() {
+		return execution.getStatus() == PipelineExecutionStatus.FINISHED_SUCCESS ||
+				execution.getStatus() == PipelineExecutionStatus.FINISHED_WARNING;
 	}
 	
 }

@@ -50,6 +50,8 @@ public class Scheduler implements ApplicationListener<ApplicationEvent> {
 		// create PipelineExecution
 		PipelineExecution pipelineExec = new PipelineExecution(
 				schedule.getPipeline());
+		// set related scheduler
+		pipelineExec.setSchedule(schedule);
 		// will wake up other pipelines on end ..
 		pipelineExec.setSilentMode(false);
 
@@ -63,6 +65,14 @@ public class Scheduler implements ApplicationListener<ApplicationEvent> {
 
 		if (event instanceof PipelineFinished) {
 			PipelineFinished pipelineFinishedEvent = (PipelineFinished) event;
+			
+			if (pipelineFinishedEvent.sucess()) {
+				// success continue
+			} else {
+				// execution failed -> ignore
+				return;
+			}			
+			
 			if (pipelineFinishedEvent.getExecution().getSilentMode()) {
 				// pipeline run in silent mode .. ignore
 			} else {
@@ -95,4 +105,5 @@ public class Scheduler implements ApplicationListener<ApplicationEvent> {
 			// unknown event .. ignore
 		}
 	}
+	
 }

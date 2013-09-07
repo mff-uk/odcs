@@ -48,6 +48,9 @@
 	<!-- replace facades from commons -->
 	<bean id="pipelineFacade" class="cz.cuni.xrg.intlib.backend.facade.PipelineFacade" />
 
+	<!-- component for sending email based on events -->
+	<bean id="emailComunicator" class="cz.cuni.xrg.intlib.backend.communication.EmailComunicator" />
+	
 	<!-- autodiscovery for DPU's pre/post executors -->
 	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
 	

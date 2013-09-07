@@ -123,8 +123,7 @@ public class Schedule implements Serializable {
 	/**
 	 * Empty constructor. Used by JPA. Do not use otherwise.
 	 */
-	public Schedule() {
-	}
+	public Schedule() {	}
 
 	public String getName() {
 		return name;
@@ -252,6 +251,13 @@ public class Schedule implements Serializable {
 	 * @return Estimate of time for next execution or null.
 	 */
 	public Date getNextExecutionTimeInfo() {
+		
+		if (enabled) {			
+		} else {
+			// pipeline disabled 
+			return null;
+		}
+		
 		if (type == ScheduleType.AFTER_PIPELINE) {
 			return null;
 		} else { // ScheduleType.PERIODICALLY
@@ -259,6 +265,11 @@ public class Schedule implements Serializable {
 				// no execution so far .. so we run in time of first execution
 				return firstExecution;
 			} else {
+				// unknown period
+				if (periodUnit == null) {
+					return null;
+				}
+				
 				Calendar calendarNextExec = Calendar.getInstance();
 				Calendar calendarLastExec = Calendar.getInstance();				
 				// start on the first execution

@@ -331,10 +331,8 @@ public class Executor implements Runnable {
 		} else {
 			LOG.debug("Execution finished");
 			executionSuccessful();
-			// publish information for the rest of the application
-			eventPublisher.publishEvent(new PipelineFinished(execution, this));			
 		}
-		
+
 		// save the execution for the last time
 		try {
 			pipelineFacade.save(execution);
@@ -342,6 +340,10 @@ public class Executor implements Runnable {
 			LOG.warn("Seems like someone deleted our pipeline run.", ex);
 		}
 
+		// publish information for the rest of the application
+		// that the execution finished .. 
+		eventPublisher.publishEvent(new PipelineFinished(execution, this));			
+		
 		// do clean/up
 		cleanup();
 		// clear all threads markers
