@@ -698,7 +698,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 				writeMessage(messageLayer, 'mouseentered');
 				dpuLayer.draw();
 				evt.cancelBubble = true;
-			} else if (stageMode === MULTISELECT_MODE) {
+			} else if (stageMode === MULTISELECT_MODE && dpu.isInMultiselect && !evt.ctrlKey) {
 				formattingActionBar.setVisible(true);
 				formattingActionBar.moveToTop();
 				var pos = stage.getMousePosition();
