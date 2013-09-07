@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.backend.execution;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
@@ -12,7 +12,6 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 import java.io.File;
 import java.io.IOException;

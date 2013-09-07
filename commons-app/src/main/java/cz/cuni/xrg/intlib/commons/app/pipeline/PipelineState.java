@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.pipeline;
 
 /**
- * Set of possible system states.
+ * Set of possible states of the pipeline. 
  *
  * @author Jiri Tomes
  */

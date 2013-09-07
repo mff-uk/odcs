@@ -1,6 +1,8 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -58,6 +60,10 @@ class PipelineEdit extends ViewComponent {
 	private String canvasMode = DEVELOP_MODE;
 	private Tab standardTab;
 	private Tab developTab;
+	
+	Button buttonSave;
+	Button buttonSaveAndClose;
+	Button buttonCancel;
 
 	/**
 	 * Empty constructor.
@@ -125,7 +131,9 @@ class PipelineEdit extends ViewComponent {
 					App.getApp().push();
 				} else if (klass == PipelineGraph.class) {
 					undo.setEnabled(true);
-				}
+					setupButtons();
+				} 
+				
 			}
 
 			@Override
@@ -290,9 +298,10 @@ class PipelineEdit extends ViewComponent {
 		});
 		buttonBar.addComponent(buttonCommit);
 
-		Button buttonSave = new Button("Save");
+		buttonSave = new Button("Save");
 		buttonSave.setHeight("25px");
 		buttonSave.setWidth("150px");
+		buttonSave.setImmediate(true);
 		buttonSave.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -301,10 +310,11 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonSave);
-		Button button = new Button("Save & Close");
-		button.setHeight("25px");
-		button.setWidth("150px");
-		button.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+		buttonSaveAndClose = new Button("Save & Close");
+		buttonSaveAndClose.setHeight("25px");
+		buttonSaveAndClose.setWidth("150px");
+		buttonSaveAndClose.setImmediate(true);
+		buttonSaveAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
@@ -313,13 +323,16 @@ class PipelineEdit extends ViewComponent {
 				}
 			}
 		});
-		buttonBar.addComponent(button);
-		Button buttonCancel = new Button("Cancel");
+		buttonBar.addComponent(buttonSaveAndClose);
+		buttonCancel = new Button("Cancel");
 		buttonCancel.setHeight("25px");
 		buttonCancel.setWidth("150px");
 		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
+				pipelineName.discard();
+				pipelineDescription.discard();
+				pc.cancelChanges();
 				closeView();
 			}
 		});
@@ -333,6 +346,11 @@ class PipelineEdit extends ViewComponent {
 		calculateCanvasDimensions(bounds);
 
 		return mainLayout;
+	}
+	
+	private void setupButtons() {
+		buttonSave.setEnabled(isModified());
+		buttonSaveAndClose.setEnabled(isModified());
 	}
 
 	/**
@@ -441,6 +459,7 @@ class PipelineEdit extends ViewComponent {
 		pipelineName.setImmediate(true);
 		pipelineName.setWidth("200px");
 		pipelineName.setHeight("-1px");
+		pipelineName.setBuffered(true);
 		pipelineName.addValidator(new Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
@@ -450,6 +469,13 @@ class PipelineEdit extends ViewComponent {
 				throw new InvalidValueException("Name must be filled!");
 			}
 		});
+		pipelineName.addValueChangeListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				setupButtons();
+			}
+		});
 		pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
 		Label descriptionLabel = new Label("Description");
 		descriptionLabel.setImmediate(false);
@@ -457,10 +483,18 @@ class PipelineEdit extends ViewComponent {
 		descriptionLabel.setHeight("-1px");
 		pipelineSettingsLayout.addComponent(descriptionLabel, 0, 1);
 		pipelineDescription = new TextArea();
-		pipelineDescription.setImmediate(false);
+		pipelineDescription.setImmediate(true);
 		pipelineDescription.setWidth("400px");
 		pipelineDescription.setHeight("60px");
+		pipelineDescription.setBuffered(true);
 		pipelineDescription.addValidator(new MaxLengthValidator(255));
+		pipelineDescription.addValueChangeListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				setupButtons();
+			}
+		});
 		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
 //		Label permissionLabel = new Label("Permissions");
@@ -548,8 +582,8 @@ class PipelineEdit extends ViewComponent {
 	protected Pipeline loadPipeline(String id) {
 		// get data from DB ..
 		this.pipeline = App.getApp().getPipelines().getPipeline(Long.parseLong(id));
-		pipelineName.setValue(this.pipeline.getName());
-		pipelineDescription.setValue(this.pipeline.getDescription());
+		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
+		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		return pipeline;
 	}
 
@@ -594,11 +628,14 @@ class PipelineEdit extends ViewComponent {
 		}
 		undo.setEnabled(false);
 		this.pipeline.setName(pipelineName.getValue());
+		pipelineName.commit();
 		this.pipeline.setDescription(pipelineDescription.getValue());
+		pipelineDescription.commit();
 		pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
 		Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
+		setupButtons();
 		return true;
 	}
 
@@ -702,5 +739,10 @@ class PipelineEdit extends ViewComponent {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean isModified() {
+		return pipelineName.isModified() || pipelineDescription.isModified() || pc.isModified();
 	}
 }

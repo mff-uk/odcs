@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
@@ -18,7 +19,9 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -116,9 +119,16 @@ public class EdgeDetail extends Window {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				Set<String> outputs = (Set<String>)outputSelect.getValue();
+				//Iterate whole collection to preserve order and identify same mapping with different order of selecting.
+				Set<String> outputs = new HashSet<>(); //Set<String>)outputSelect.getValue();
+				Collection<String> outputItems = (Collection<String>)outputSelect.getItemIds();
+				for(String outputItem : outputItems) {
+					if(outputSelect.isSelected(outputItem)) {
+						outputs.add(outputItem);
+					}
+				}
 				String input = (String)inputSelect.getValue();
-				if(outputs == null || outputs.size() < 1 || input == null) {
+				if(outputs.isEmpty() || input == null) {
 					Notification.show("At least one output and exactly one input must be selected!", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
@@ -128,8 +138,9 @@ public class EdgeDetail extends Window {
 					left.add(outputUnits.indexOf(output));
 				}
 				MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
-				mappings.add(mapping);
-				addMappingToList(mapping);
+				if(addMappingToList(mapping)) {
+					mappings.add(mapping);
+				}
 			}
 		});
 		mapButton.setWidth(130, Unit.PIXELS);
@@ -258,7 +269,7 @@ public class EdgeDetail extends Window {
 		return true;
 	}
 
-	private void addMappingToList(MutablePair<List<Integer>, Integer> mapping) throws UnsupportedOperationException {
+	private boolean addMappingToList(MutablePair<List<Integer>, Integer> mapping) throws UnsupportedOperationException {
 		Iterator<Integer> iter = mapping.left.iterator();
 		String leftSide = outputUnits.get(iter.next());
 		while(iter.hasNext()) {
@@ -266,6 +277,7 @@ public class EdgeDetail extends Window {
 		}
 		String strMapping = String.format("%s -> %s", leftSide, inputUnits.get(mapping.right));
 		map.put(strMapping, mapping);
-		mappingsSelect.addItem(strMapping);
+		Item result = mappingsSelect.addItem(strMapping);
+		return result != null;
 	}
 }

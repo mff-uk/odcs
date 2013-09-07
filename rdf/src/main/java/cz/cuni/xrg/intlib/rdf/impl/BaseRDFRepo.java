@@ -67,11 +67,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
 
 	/**
-	 * Graph name using for transaktion to loading to SPARQL endpoint.
-	 */
-	protected static final String TEMP_GRAPH_NAME = "http://tempGraph";
-
-	/**
 	 * Default construct query using for extraction without query in parameter.
 	 */
 	protected static final String DEFAULT_CONSTRUCT_QUERY = "construct {?x ?y ?z} where {?x ?y ?z}";
@@ -204,7 +199,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param useSuffix           boolean value, if extract files only with
 	 *                            defined suffix or not.
 	 * @param useStatisticHandler boolean value if detailed log and statistic
-	 *                            are awailable or not.
+	 *                            are available or not.
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
@@ -588,10 +583,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				List<String> dataParts = getInsertPartsTriplesQuery(
 						STATEMENTS_COUNT);
 
+				final String tempGraph = endpointGraph + "/temp";
+
 				if (insertType == InsertType.STOP_WHEN_BAD_PART) {
 
 					try {
-						loadDataParts(endpointURL, TEMP_GRAPH_NAME, dataParts,
+						loadDataParts(endpointURL, tempGraph, dataParts,
 								insertType);
 						loadDataParts(endpointURL, endpointGraph, dataParts,
 								insertType);
@@ -599,7 +596,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					} catch (InsertPartException e) {
 						throw new RDFException(e.getMessage(), e);
 					} finally {
-						clearEndpointGraph(endpointURL, TEMP_GRAPH_NAME);
+						clearEndpointGraph(endpointURL, tempGraph);
 					}
 
 				} else {
@@ -638,10 +635,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			final String processing = String.valueOf(j + 1) + "/" + String
 					.valueOf(partsCount);
 
-			String myquery = getEncodedQuery(query);
 			try {
 				InputStreamReader inputStreamReader = getEndpointStreamReader(
-						endpointURL, endpointGraph, myquery,
+						endpointURL, endpointGraph, query,
 						RDFFormat.N3);
 
 				inputStreamReader.close();
@@ -660,7 +656,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						break;
 					case STOP_WHEN_BAD_PART:
 
-						message = "Inserting failt to " + processing + " data part. "
+						message = "Inserting failed to " + processing + " data part. "
 								+ e.getMessage();
 						logger.error(message);
 
@@ -825,13 +821,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 
 		if (endpointGraphsURI == null) {
-			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is null.";
+			final String message = "Mandatory graph's name(s) in extractor from SPARQL is null.";
 
 			logger.debug(message);
 			throw new RDFException(message);
 
 		} else if (endpointGraphsURI.isEmpty()) {
-			final String message = "Mandatory graph´s name(s) in extractor from SPARQL is empty.";
+			final String message = "Mandatory graph's name(s) in extractor from SPARQL is empty.";
 
 			logger.debug(message);
 			throw new RDFException(message);
@@ -932,7 +928,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		} catch (RepositoryException e) {
 
-			final String message = "Repository connection failt: " + e
+			final String message = "Repository connection failed: " + e
 					.getMessage();
 
 			logger.debug(message);
@@ -1222,8 +1218,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				FileOutputStream os = new FileOutputStream(file);
 
-				MyRDFHandler myGoal = new MyRDFHandler(os, formatType);
-				RDFHandler goal = myGoal.getRDFHandler();
+				MyRDFHandler goal = new MyRDFHandler(os, formatType);
 
 				graphQuery.evaluate(goal);
 
@@ -1247,7 +1242,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		} catch (RDFHandlerException ex) {
-			logger.error("RDF handler failt. " + ex.getMessage(), ex);
+			logger.error("RDF handler failed. " + ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
@@ -1581,17 +1576,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	private String getEncodedQuery(String query) throws RDFException {
-		try {
-			String myquery = URLEncoder.encode(query, encode);
-			return myquery;
-		} catch (UnsupportedEncodingException ex) {
-			String message = "Encoding " + encode + " is not supported.";
-			logger.debug(message);
-			throw new RDFException(message + ex.getMessage(), ex);
-		}
-	}
-
 	long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph) throws RDFException {
 		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
 
@@ -1640,8 +1624,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String endpointGraphURI, String query,
 			RDFFormat format) throws RDFException {
 
-		final String endpointGraph = endpointGraphURI.replace(
-				" ", "+");
+		final String endpointGraph = getEncodedString(endpointGraphURI);
 		final String myquery = getEncodedString(query);
 
 		final String encoder = getEncoder(format);
@@ -1697,12 +1680,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				throw new RDFException(message.toString());
 			}
 
+		} catch (UnknownHostException e) {
+			final String message = "Unknown host: ";
+			throw new RDFException(message + e.getMessage(), e);
 		} catch (IOException e) {
-			logger.debug("Endpoint URL stream can not open");
+			final String message = "Endpoint URL stream can not open. ";
+			logger.debug(message);
 			if (httpConnection != null) {
 				httpConnection.disconnect();
 			}
-			throw new RDFException(e.getMessage(), e);
+			throw new RDFException(message + e.getMessage(), e);
 		}
 
 		try {
@@ -1777,9 +1764,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						RDFFormat.RDFXML);
 				formatType = RDFFormatType.getTypeByRDFFormat(newFormat);
 			}
-			MyRDFHandler myHandler = new MyRDFHandler(os, formatType);
-
-			RDFHandler handler = myHandler.getRDFHandler();
+			MyRDFHandler handler = new MyRDFHandler(os, formatType);
 
 			connection = repository.getConnection();
 

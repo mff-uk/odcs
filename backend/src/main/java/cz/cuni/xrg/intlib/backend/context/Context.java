@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -14,8 +13,8 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUMessage;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;

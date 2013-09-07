@@ -18,5 +18,12 @@ public abstract class ViewComponent extends CustomComponent implements View{
 	 */
 	@Override
 	public abstract void enter(ViewChangeEvent event);
+	
+	/**
+	 * Method for testing if ViewCoponent was modified since last save.
+	 * 
+	 * @return Is component modified?
+	 */
+	public abstract boolean isModified();
 
 }

@@ -238,8 +238,12 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	}
 
 	private void mapInsertItems() {
-		InsertItem skip = new InsertItem(InsertType.SKIP_BAD_PARTS, "SKIP bad insert parts");
-		InsertItem stop = new InsertItem(InsertType.STOP_WHEN_BAD_PART, "FAIL if there is a bad part. ");
+		InsertItem skip = new InsertItem(InsertType.SKIP_BAD_PARTS,
+				"In case of data errors, continue with the loading "
+				+ "process, resulting data will be incomplete. ");
+		InsertItem stop = new InsertItem(InsertType.STOP_WHEN_BAD_PART,
+				"In case of data errors, stop the loading process and "
+				+ "end with an error.");
 
 		insertItems.add(skip);
 		insertItems.add(stop);
@@ -247,7 +251,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		dataPartsOption.addItem(skip.getDescription());
 		dataPartsOption.addItem(stop.getDescription());
 
-		dataPartsOption.setValue(skip.getDescription());
+		dataPartsOption.setValue(stop.getDescription());
 	}
 
 	/**
@@ -718,7 +722,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 *                         null	null	null	null	null	null	null	null	null	null
+	 *                         null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
 	 *             {@link #passwordFieldPass}, {@link #optionGroupDetail},
 	 *             {@link #griddata} , in read-only mode or when requested operation is not
 	 *                         supported.
@@ -762,15 +767,14 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			throw new ConfigException(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();
 		description.append("Load to SPARQL: ");
-		description.append( (String) comboBoxSparql.getValue() );
+		description.append((String) comboBoxSparql.getValue());
 		return description.toString();
-	}	
-	
+	}
 }
 
 class GraphItem {

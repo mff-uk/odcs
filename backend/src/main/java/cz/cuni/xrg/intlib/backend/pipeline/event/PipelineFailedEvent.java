@@ -12,18 +12,18 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 
 /**
- * Event is published if the pipeline is terminated due the error. To create
- * the event use static methods. 
- * 
+ * Event is published if the pipeline is terminated due the error. To create the
+ * event use static methods.
+ *
  * @author Petyr
- * 
+ *
  */
 public final class PipelineFailedEvent extends PipelineEvent {
 
 	private String shortMessage;
-	
+
 	private String longMessage;
-	
+
 	protected PipelineFailedEvent(String shortMessage,
 			String longMessage,
 			DPUInstanceRecord dpuInstance,
@@ -33,7 +33,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 		this.shortMessage = shortMessage;
 		this.longMessage = longMessage;
 	}
-	
+
 	protected PipelineFailedEvent(
 			String shortMessage,
 			Exception exception,
@@ -64,7 +64,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 		exception.printStackTrace(pw);
 		this.longMessage = longMessagePrefix + sw.toString();
 	}
-	
+
 	public static PipelineFailedEvent create(String shortMessage,
 			String longMessage,
 			DPUInstanceRecord dpuInstance,
@@ -74,21 +74,21 @@ public final class PipelineFailedEvent extends PipelineEvent {
 				longMessage,
 				dpuInstance,
 				pipelineExec,
-				source);		
-	}	
-	
+				source);
+	}
+
 	public static PipelineFailedEvent create(Exception exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
 		return new PipelineFailedEvent("Pipeline execution failed.",
-				"Execution failed because of non-specific exception: ",
+				"Execution failed because: " + exception.getMessage(),
 				exception,
 				dpuInstance,
 				pipelineExec,
-				source);		
+				source);
 	}
-	
+
 	public static PipelineFailedEvent create(Error error,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
@@ -97,9 +97,9 @@ public final class PipelineFailedEvent extends PipelineEvent {
 				"Execution failed due to error: " + error.getMessage(),
 				dpuInstance,
 				pipelineExec,
-				source);		
-	}	
-	
+				source);
+	}
+
 	public static PipelineFailedEvent create(ContextException exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
@@ -111,7 +111,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 				pipelineExec,
 				source);
 	}
-	
+
 	public static PipelineFailedEvent create(ModuleException exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
@@ -123,7 +123,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 				pipelineExec,
 				source);
 	}
-	
+
 	public static PipelineFailedEvent create(StructureException exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
@@ -134,12 +134,11 @@ public final class PipelineFailedEvent extends PipelineEvent {
 				dpuInstance,
 				pipelineExec,
 				source);
-	}	
-	
+	}
+
 	@Override
 	public MessageRecord getRecord() {
 		return new MessageRecord(time, MessageRecordType.PIPELINE_ERROR,
 				dpuInstance, execution, shortMessage, longMessage);
 	}
-
 }

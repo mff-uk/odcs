@@ -30,13 +30,13 @@ class OSGIFramework {
 	 * Store loaded bundles. Bundles are store under their name.
 	 */
 	private java.util.Map<String, BundleContainer> loadedBundles = new java.util.HashMap<>();
-
+	
 	/**
 	 * Logger class.
 	 */
 	private static final Logger LOG = LoggerFactory
 			.getLogger(OSGIFramework.class);
-
+	
 	/**
 	 * Return configuration used to start up OSGi implementation.
 	 * 
@@ -104,7 +104,6 @@ class OSGIFramework {
 	 * Stop OSGi framework. Does not uninstall installed bundles.
 	 */
 	public void stop() {
-		// TODO: Petyr uninstall all bundles
 		for (BundleContainer bundle : loadedBundles.values()) {
 			try {
 				bundle.uninstall();

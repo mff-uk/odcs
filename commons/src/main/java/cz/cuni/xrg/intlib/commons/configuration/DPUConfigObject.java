@@ -3,8 +3,8 @@ package cz.cuni.xrg.intlib.commons.configuration;
 import java.io.Serializable;
 
 /**
- * Base interface for dpu's configuration. <b>All the configuration object must
- * provide public parameter less constructor!</b>
+ * Base interface for DPU's configuration. <b>All the configuration objects must
+ * provide public parameter-less constructor!</b>
  * 
  * @author Petyr
  */

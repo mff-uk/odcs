@@ -20,8 +20,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
@@ -195,7 +195,7 @@ public class Executor implements Runnable {
 	 * directory if the pipeline does not run in debug mode.
 	 */
 	private void cleanup() {
-		LOG.debug("Clean up");
+		LOG.debug("Clean up ...");
 		// release/delete all contexts
 		for (Context item : contexts.values()) {
 			if (execution.isDebugging()) {
@@ -212,6 +212,8 @@ public class Executor implements Runnable {
 			deleteDebugDate();
 		}
 		// result directory is never deleted
+		
+		LOG.debug("Clean up finished");
 	}
 
 	/**
@@ -343,7 +345,7 @@ public class Executor implements Runnable {
 		// do clean/up
 		cleanup();
 		// clear all threads markers
-		MDC.clear();		
+		MDC.clear();
 	}
 	
 	@Override

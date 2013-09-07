@@ -33,7 +33,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 * Construct a VirtuosoRepository with a specified parameters.
 	 *
 	 * @param URL_Host_List the Virtuoso JDBC URL connection string or hostlist
-	 *                      for poolled connection.
+	 *                      for pooled connection.
 	 *
 	 * @param user          the database user on whose behalf the connection is
 	 *                      being made.
@@ -59,19 +59,16 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 		setDataGraph(defaultGraph);
 
-		repository = new VirtuosoRepository(URL_Host_List, user, password,
-				defaultGraph);
+		repository = new FailureTolerantRepositoryWrapper(
+			new VirtuosoRepository(URL_Host_List, user, password, defaultGraph)
+		);
 
 		try {
 			repository.initialize();
-			logger.info("Virtuoso repository with data graph <"
-					+ defaultGraph
-					+ "> successfully incicialized.");
+			logger.info("Virtuoso repository with data graph <{}> successfully incicialized.", defaultGraph);
 
 		} catch (RepositoryException ex) {
-			logger.warn("Your Virtuoso is maybe turn off.");
-			logger.debug(ex.getMessage());
-
+			logger.warn("Your Virtuoso might be offline.", ex);
 		}
 	}
 

@@ -7,11 +7,12 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
@@ -23,6 +24,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
+import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.views.*;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import virtuoso.jdbc4.VirtuosoException;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -145,6 +148,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void error(com.vaadin.server.ErrorEvent event) {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
+					if(cause.getClass() == VirtuosoException.class && ((VirtuosoException)cause).getErrorCode() == VirtuosoException.IOERROR) {
+						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
+						return;
+					}
+					
 					// Display the error message in a custom fashion
 					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
 					Notification.show(cause.getMessage(), text, Notification.Type.ERROR_MESSAGE);
@@ -186,6 +194,37 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
 			}
 		});
+		
+		 // attach a listener so that we'll get asked isViewChangeAllowed?
+        this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+			private String pendingViewAndParameters;
+			@Override
+            public boolean beforeViewChange(ViewChangeEvent event) {
+                if (event.getOldView() != null && ((ViewComponent)event.getOldView()).isModified()) {
+
+                    // save the View where the user intended to go
+                    pendingViewAndParameters = event.getViewName();
+                    if (event.getParameters() != null) {
+                        pendingViewAndParameters += "/";
+                        pendingViewAndParameters += event
+                                .getParameters();
+                    }
+
+                    // Prompt the user to save or cancel if the name is changed
+                    Notification.show("Please apply or cancel your changes",
+                            Type.WARNING_MESSAGE);
+
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+			@Override
+            public void afterViewChange(ViewChangeEvent event) {
+                pendingViewAndParameters = null;
+            }
+        });
 
 		AppConfig config = getAppConfiguration();
 		backendClient = new Client(

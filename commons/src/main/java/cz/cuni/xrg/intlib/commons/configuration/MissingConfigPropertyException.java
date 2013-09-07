@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.conf;
+package cz.cuni.xrg.intlib.commons.configuration;
 
 /**
  * Represents an error caused by missing property in configuration.

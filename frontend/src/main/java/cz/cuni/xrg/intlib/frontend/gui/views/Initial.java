@@ -31,15 +31,12 @@ class Initial extends ViewComponent {
 		label.setImmediate(false);
 		label.setWidth("-1px");
 		label.setHeight("-1px");
-		label.setValue("<p>Welcome to the administration interface of the ETL tool for RDF data.</p>" +
+		label.setValue("<p>Welcome to the administration interface of ODCleanStore - ETL tool for RDF data.</p>" +
 				"<p>The tool uses data processing pipelines for obtaining, processing, and storing RDF data;<br/>" +
-				"makes data processing highly customizable by employing custom data processing units;<br/>" +
-				"provides data processing monitoring, debugging, and schedulling capabilities.<br/>" + 
+				"makes data processing highly customizable by allowing to use custom plugins -- data processing units (DPUs) -- on the pipelines;<br/>" +
+				"provides monitoring, debugging, and schedulling of ETL tasks.<br/>" + 
 				"</p>" +
-				"<p>Linked Data management tool is a joint effort of <a href=\"http://xrg.ksi.ms.mff.cuni.cz/\">XRG Research Group</a> of Charles University in Prague " +
-				"and Semantic Web Company, Vienna. <br/>The tool is build on the idea of <a href=\"http://sourceforge.net/p/odcleanstore/home/Home/\">ODCleanStore</a> " +
-				"(developed by Charles University in Prague) and LDM tools (developed by Semantic Web Company, Vienna). <br/>" +
-				"For more information and latest version, please visit the <a href=\"https://github.com/mff-uk/intlib\"> website of the tool </a>. </p><p> For description of iteration 1 features and acceptance tests (examples of use), see <a href=\"https://grips.semantic-web.at/display/LOD2/1.+iteration\"> (requires access to confluence) </p>");
+				"<p>For more information, please visit the <a href=\"http://www.ksi.mff.cuni.cz/~knap/odcs/\"> website of the tool </a>. </p>");
 						
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label, "top:40.0px;left:80.0px;");
@@ -51,6 +48,12 @@ class Initial extends ViewComponent {
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
+	}
+
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
 	}
 
 }
