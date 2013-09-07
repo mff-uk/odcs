@@ -88,7 +88,6 @@ public class Server implements Runnable {
         try {
             this.socket = new ServerSocket(port);
         } catch (BindException e){
-        	//LOG.error("TCP/IP port {} already used.", port);
         	LOG.error("TCP/IP port {} already used.", port);
         	// check if not used by JVM_Bind
         	if (e.getMessage().contains("JVM_Bind")) {
@@ -107,7 +106,8 @@ public class Server implements Runnable {
         try {
 			socket.setSoTimeout(TCPIP_TIMEOUT);
 		} catch (SocketException e) {
-			LOG.error("Failed to set timeout for TCP/IP socket.", e);
+			LOG.error("Failed to set timeout for TCP/IP socket.");
+			LOG.debug("", e);
 		}
         // wait for connection
         while (running) {
@@ -123,7 +123,8 @@ public class Server implements Runnable {
             } catch(SocketTimeoutException e) {
             	// just timeout .. 
             } catch (IOException e) {
-            	LOG.error("Failed to accept incoming connection.", e);
+            	LOG.error("Failed to accept incoming connection.");
+            	LOG.debug("", e);
             }            
         }
 
@@ -135,6 +136,7 @@ public class Server implements Runnable {
         }
 
         executorService.shutdownNow();
+
         // wait for the end .. 
         try {
             while (!executorService.awaitTermination(TCPIP_TIMEOUT / 2, TimeUnit.MILLISECONDS));

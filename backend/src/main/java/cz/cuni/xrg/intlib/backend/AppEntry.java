@@ -4,6 +4,8 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -19,6 +21,7 @@ import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
+import cz.cuni.xrg.intlib.commons.app.communication.EmailSender;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
@@ -94,8 +97,9 @@ public class AppEntry {
 			CommandLine cmd = parser.parse( options, args);
 			// read args ..
 			configFileLocation = cmd.getOptionValue("config");
-		} catch (ParseException e) {			
-			LOG.error("Unexpected exception:" + e.getMessage());
+		} catch (ParseException e) {
+			LOG.error("Failed to parse program's arguments.");
+			LOG.debug("Unexpected exception:" + e.getMessage());
 		}
 		
 		// override default configuration path if it has been provided
@@ -137,7 +141,8 @@ public class AppEntry {
 		try {
 			server.init();
 		} catch (CommunicationException e) {
-			// LOG.error("Fatal error: Can't start server", e);
+			LOG.error("Can't start TCP/IP server");
+			LOG.debug("", e);
 			return false;
 		}
 		// start server in another thread
@@ -166,6 +171,7 @@ public class AppEntry {
 		parseArgs(args);
 		// initialise
 		initSpring();		
+
 		initOSGI();
 		
 		// publish event for engine about start of the execution,
@@ -189,7 +195,7 @@ public class AppEntry {
 		initHeartbeat();
 		
 		// print some information ..
-		LOG.info("DPURecord directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));
+		LOG.info("Module's directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));
 		LOG.info("Listening on port: " + appConfig.getInteger(ConfigProperty.BACKEND_PORT));
 		LOG.info("Running ...");
 		
