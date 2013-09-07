@@ -86,6 +86,11 @@ public class Settings extends ViewComponent {
 	private boolean errors = false;
 
 	private ViewChangeListener leavePageListener;
+	
+	/**
+	 * Currently logged in user.
+	 */
+	private User loggedUser;
 
 	/**
 	 *
@@ -358,8 +363,7 @@ public class Settings extends ViewComponent {
 		notificationsLayout.setHeight("100%");
 
 		notificationsLayout = emailNotifications.buildEmailNotificationsLayout();
-		emailNotifications.getUserNotificationRecord(App.getApp().getUsers()
-				.getUser(1L));
+		emailNotifications.getUserNotificationRecord(loggedUser);
 		notificationsLayout.setStyleName("settings");
 
 		HorizontalLayout buttonBarNotify = buildButtonBar();
@@ -393,8 +397,7 @@ public class Settings extends ViewComponent {
 
 		emailLayout = email.initializeEmailList();
 
-		User user = App.getApp().getUsers().getUser(1L);
-		email.getUserEmailNotification(user);
+		email.getUserEmailNotification(loggedUser);
 
 		HorizontalLayout buttonBarMyAcc = buildButtonBar();
 
@@ -520,22 +523,21 @@ public class Settings extends ViewComponent {
 			return;
 		}
 
-		User user = App.getApp().getUsers().getUser(1L);
-		UserNotificationRecord notification = user.getNotification();
+		UserNotificationRecord notification = loggedUser.getNotification();
 		if (notification != null) {
 
 			email.setUserEmailNotification(notification);
 			emailNotifications.setUserNotificatonRecord(notification);
-			user.setNotification(notification);
+			loggedUser.setNotification(notification);
 		} else {
 
 			UserNotificationRecord userNotificationRecord = new UserNotificationRecord();
-			userNotificationRecord.setUser(App.getApp().getUsers().getUser(1L));
+			userNotificationRecord.setUser(loggedUser);
 			emailNotifications.setUserNotificatonRecord(userNotificationRecord);
 			email.setUserEmailNotification(userNotificationRecord);
-			user.setNotification(userNotificationRecord);
+			loggedUser.setNotification(userNotificationRecord);
 		}
-		App.getApp().getUsers().save(user);
+		App.getApp().getUsers().save(loggedUser);
 
 		if (shownTab.equals(accountButton)) {
 			accountLayout = buildMyAccountLayout();
@@ -567,9 +569,7 @@ public class Settings extends ViewComponent {
 		}
 
 
-
-		User user = App.getApp().getUsers().getUser(1L);
-		Set<EmailAddress> aldEmails = user.getNotification().getEmails();
+		Set<EmailAddress> aldEmails = loggedUser.getNotification().getEmails();
 		UserNotificationRecord newNotification = new UserNotificationRecord();
 		email.setUserEmailNotification(newNotification);
 		Set<EmailAddress> newEmails = newNotification.getEmails();
@@ -613,10 +613,9 @@ public class Settings extends ViewComponent {
 	private void notificationSaveConfirmation(final Button pressedButton,
 			final VerticalLayout layoutShow) {
 
-		User user = App.getApp().getUsers().getUser(1L);
-		NotificationRecordType aldSuccessEx = user.getNotification()
+		NotificationRecordType aldSuccessEx = loggedUser.getNotification()
 				.getTypeSuccess();
-		NotificationRecordType aldErrorEx = user.getNotification()
+		NotificationRecordType aldErrorEx = loggedUser.getNotification()
 				.getTypeError();
 		UserNotificationRecord newNotification = new UserNotificationRecord();
 		emailNotifications.setUserNotificatonRecord(newNotification);
@@ -650,6 +649,7 @@ public class Settings extends ViewComponent {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		loggedUser = App.getApp().getAuthCtx().getUser();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}

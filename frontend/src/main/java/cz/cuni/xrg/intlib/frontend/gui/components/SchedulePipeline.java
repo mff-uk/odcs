@@ -564,8 +564,7 @@ public class SchedulePipeline extends Window {
         emailLayout = new GridLayout();
         emailLayout = email.initializeEmailList();
         notificationsLayout.addComponent(emailLayout);
-        User user=  App.getApp().getUsers().getUser(1L);
-        email.getUserEmailNotification(user);
+        email.getUserEmailNotification(App.getApp().getAuthCtx().getUser());
 
         notifyThis = new CheckBox();
         notifyThis.setImmediate(true);
