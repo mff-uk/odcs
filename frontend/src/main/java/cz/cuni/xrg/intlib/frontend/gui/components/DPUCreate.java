@@ -370,8 +370,7 @@ public class DPUCreate extends Window {
 					// check type ..
 					DPUType dpuType = dpuExplorer.getType(dpuObject, relativePath);
 					if (dpuType == null) {
-						// TODO Petyr, Maria: uninstall the DPU from Intlib as well
-						
+						App.getApp().getModules().uninstall(relativePath);
 						// unknown type .. delete dpu and throw error
 						destFile.delete();
 						uploadFile.setReadOnly(false);
