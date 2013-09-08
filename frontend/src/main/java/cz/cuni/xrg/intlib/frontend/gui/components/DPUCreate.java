@@ -1,13 +1,11 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
+
+import com.google.gwt.thirdparty.guava.common.io.Files;
 
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
@@ -38,6 +36,9 @@ import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Dialog for the DPU template creation. Called from the {@link #DPU}.  Allows to upload a JAR file
  * and on base of it create a new DPU template that will be stored to the DPU template tree.
@@ -46,6 +47,8 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
  *
  */
 public class DPUCreate extends Window {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DPUCreate.class);
 
 	private TextField dpuName;
 
@@ -292,20 +295,8 @@ public class DPUCreate extends Window {
 					File destFile = new File(pojPath + File.separator + "dpu" + File.separator + FileUploadReceiver.fName);
 
 					//checking if uploaded file already exist in the /target/dpu/ 
-					boolean exists = destFile.exists();
-					//if uploaded file doesn't exist in the /target/dpu/
-					if (!exists) {
-						try {
-							//copy file from template folder to the  /target/dpu/ 
-							copyFile(srcFile, destFile);
-						} catch (IOException e) {
-							e.printStackTrace();
-							// error, just exit
-							System.exit(0);
-						}
-						
-					} else {
-						//uploaded file already exist in the /target/dpu/ 
+					if (destFile.exists()) {
+						// uploaded file already exist in the /target/dpu/ 
 						List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
 						String dpuName ="";
 						for (DPUTemplateRecord dpu : dpus){
@@ -315,32 +306,35 @@ public class DPUCreate extends Window {
 								break;
 							}			
 						}
-						//if we get the name of DPUTemplateRecord that used this file, show notification
-						if (dpuName!=""){
+						
+						if (dpuName.isEmpty()){
+							// copy file from template folder to the /target/dpu/
+							try {
+								Files.copy(srcFile, destFile);
+							} catch (IOException ex) {
+								throw new RuntimeException(ex);
+							}
+						} else {
+							// if we get the name of DPUTemplateRecord that used
+							// this file, show notification
 							Notification.show(
 									"File " + FileUploadReceiver.fName +" is already used in the DPU template " + dpuName,
 									Notification.Type.ERROR_MESSAGE);
 							return;
 						}
-						//else, copy file from template folder to the  /target/dpu/ 
-						else{
-							try {
-								copyFile(srcFile, destFile);
-							} catch (IOException e) {
-								e.printStackTrace();
-								// error, just exit
-								System.exit(0);
-							}
-							
+					} else {
+						// if uploaded file doesn't exist in the /target/dpu/
+						try {
+							Files.copy(srcFile, destFile);
+						} catch (IOException ex) {
+							throw new RuntimeException(ex);
 						}
-
-
 					}
 
 					String relativePath = FileUploadReceiver.fName;
 					// we try to load new DPU .. to find out more about it,
 					// start by obtaining ModuleFacade
-					Object dpuObject = null;
+					Object dpuObject;
 					try {
 						dpuObject = App.getApp().getModules()
 								.getObject(relativePath);
@@ -422,40 +416,4 @@ public class DPUCreate extends Window {
 		setSizeUndefined();
 	}
 
-	/**
-	 * Copy file from some source to some destination. 
-	 * 
-	 * @param src File that we want to copy.
-	 * @param dest Destination where we want to copy src.
-	 * @throws IOException Exception which might be thrown when I/O exception of some sort has occurred.
-	 */
-	public static void copyFile(File src, File dest) throws IOException {
-
-		InputStream inStream = null;
-		OutputStream outStream = null;
-		try {
-
-			inStream = new FileInputStream(src);
-			outStream = new FileOutputStream(dest); 
-
-			byte[] buffer = new byte[1024];
-
-			int length;
-			while ((length = inStream.read(buffer)) > 0) {
-				outStream.write(buffer, 0, length);
-			}
-
-			if (inStream != null)
-				inStream.close();
-			if (outStream != null)
-				outStream.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 }
-
-
