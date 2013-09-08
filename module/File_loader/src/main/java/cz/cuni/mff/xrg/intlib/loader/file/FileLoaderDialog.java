@@ -159,7 +159,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		textFieldDir = new TextField();
 		textFieldDir.setNullRepresentation("");
 		textFieldDir.setCaption("Directory:");
-		textFieldDir.setImmediate(false);
+		textFieldDir.setImmediate(true);
 		textFieldDir.setWidth("100%");
 		textFieldDir.setHeight("-1px");
 		textFieldDir.setInputPrompt("C:\\ted\\");
@@ -180,7 +180,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		textFieldFileName = new TextField();
 		textFieldFileName.setNullRepresentation("");
 		textFieldFileName.setCaption("File name:");
-		textFieldFileName.setImmediate(false);
+		textFieldFileName.setImmediate(true);
 		textFieldFileName.setWidth("100%");
 		textFieldFileName.setHeight("-1px");
 		textFieldFileName.setInputPrompt("test-ted.ttl");

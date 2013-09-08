@@ -149,7 +149,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		});
 
 		txtQuery.setNullRepresentation("");
-		txtQuery.setImmediate(false);
+		txtQuery.setImmediate(true);
 		txtQuery.setWidth("100%");
 		txtQuery.setHeight("211px");
 		txtQuery.setInputPrompt(

@@ -345,7 +345,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				// text field for path to file/directory, HTTP URL or path to upload file
 				textFieldPath = new TextField();
 				textFieldPath.setNullRepresentation("");
-				textFieldPath.setImmediate(false);
+				textFieldPath.setImmediate(true);
 				textFieldPath.setWidth("100%");
 				textFieldPath.setHeight("-1px");
 

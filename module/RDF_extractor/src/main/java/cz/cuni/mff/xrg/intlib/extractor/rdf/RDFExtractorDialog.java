@@ -518,7 +518,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		// SPARQL Construct component
 		gridLayoutConstr = new GridLayout();
-		gridLayoutConstr.setImmediate(false);
+		gridLayoutConstr.setImmediate(true);
 		gridLayoutConstr.setWidth("100%");
 		gridLayoutConstr.setHeight("-1px");
 		gridLayoutConstr.setMargin(false);
@@ -538,7 +538,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		// textAreaConstr
 		textAreaConstr = new TextArea();
 		textAreaConstr.setNullRepresentation("");
-		textAreaConstr.setImmediate(false);
+		textAreaConstr.setImmediate(true);
 		textAreaConstr.setWidth("100%");
 		textAreaConstr.setHeight("100px");
 		textAreaConstr.setInputPrompt(
