@@ -3,10 +3,12 @@ package cz.cuni.xrg.intlib.commons.app.dpu;
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import java.io.File;
 
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +95,35 @@ public class DPUFacade {
 	 */
 	public DPUTemplateRecord getTemplate(long id) {
 		return em.find(DPUTemplateRecord.class, id);
+	}
+	
+	/**
+	 * Fetch DPU template using given JAR file.
+	 * 
+	 * <p>
+	 * TODO Currently files are compared only by filename. It would be better
+	 *		if we compared file content hash instead.
+	 * 
+	 * <p>
+	 * TODO This method cannot use any security filters, because it is used in
+	 *		file upload listener. For details see GH-415.
+	 * 
+	 * @param jarFile
+	 * @return DPU using given JAR file, or <code>null</code>
+	 */
+	public DPUTemplateRecord getTemplateByJarFile(File jarFile) {
+		
+		DPUTemplateRecord result = null;
+		try {
+			result = em.createQuery(
+				"SELECT e FROM DPUTemplateRecord e"
+				+ " WHERE e.jarPath = :path", DPUTemplateRecord.class
+			).setParameter("path", jarFile.getPath()).getSingleResult();
+		} catch (NoResultException ex) {
+			// just return null if nothing is found
+		}
+		
+		return result;
 	}
 
 	/**

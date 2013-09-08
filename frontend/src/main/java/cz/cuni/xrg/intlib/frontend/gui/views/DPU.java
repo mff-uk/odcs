@@ -32,6 +32,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
+
 import cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
@@ -57,15 +58,11 @@ import cz.cuni.xrg.intlib.frontend.gui.components.PipelineStatus;
 import cz.cuni.xrg.intlib.frontend.gui.components.UploadInfoWindow;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -667,21 +664,14 @@ class DPU extends ViewComponent {
 			File srcFile = new File(FileUploadReceiver.file.toString());
 			File destFile = new File(pojPath + File.separator + "dpu" + File.separator + FileUploadReceiver.fName);
 
-			//checking if uploaded file already exist in the /target/dpu/ 
+			// checking if uploaded file already exist in the /target/dpu/ 
 			if (destFile.exists()) {
 				
-				//uploaded file already exist in the /target/dpu/ 
-				List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
-				String sameDpuName = "";
-				for (DPUTemplateRecord dpu : dpus) {
-					//if find DPUTemplateRecord that used this file, get it name 
-					if (dpu.getJarPath().equals(FileUploadReceiver.fName)) {
-						sameDpuName = dpu.getName();
-						break;
-					}
-				}
+				// uploaded file already exist in the /target/dpu/ 
+				DPUTemplateRecord dpu = App.getApp().getDPUs()
+						.getTemplateByJarFile(srcFile);
 				
-				if (sameDpuName.isEmpty()) {
+				if (dpu == null) {
 					// copy file from template folder to the /target/dpu/
 					try {
 						Files.copy(srcFile, destFile);
