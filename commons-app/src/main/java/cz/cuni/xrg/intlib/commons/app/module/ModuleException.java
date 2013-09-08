@@ -1,12 +1,12 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
 /**
- * Base module exception.
+ * Base exception used by {@link ModuleFacade} and related classes.
  * 
  * @author Petyr
  *
  */
-public class ModuleException extends RuntimeException {
+public class ModuleException extends Exception {
 
 	public ModuleException(Throwable cause) {
         super(cause);

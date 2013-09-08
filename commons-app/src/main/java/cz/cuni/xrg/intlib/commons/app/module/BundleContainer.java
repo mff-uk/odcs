@@ -59,7 +59,7 @@ class BundleContainer {
             try {
 				loaderClass = bundle.loadClass(className);
 			} catch (ClassNotFoundException e) {
-				throw new ModuleException(e);
+				throw new ClassLoadFailedException(e);
 			}
             // store loaded class
             this.loadedClassCtors.put(className, loaderClass);
