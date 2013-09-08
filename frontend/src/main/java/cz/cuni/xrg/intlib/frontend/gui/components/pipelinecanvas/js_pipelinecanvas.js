@@ -776,6 +776,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 					writeMessage(messageLayer, 'Format by CTRL');
 					stageMode = MULTISELECT_MODE;
 					actionBar.setVisible(false);
+					if(selectedDpu !== null) {
+						var selectedDpuId = selectedDpu.id;
+						setSelectedDpu(null);
+						if(selectedDpuId !== dpu.id) {
+							multiselect(selectedDpuId);
+						}
+					}
 					multiselect(dpu.id);
 					//writeMessage(messageLayer, 'DPU removed - CTRL');
 					//removeDpu(dpu);
