@@ -128,6 +128,7 @@ class PipelineEdit extends ViewComponent {
 				if (klass == Node.class) {
 					dpuTree.refresh();
 					dpuTree.markAsDirty();
+					setupButtons();
 					App.getApp().push();
 				} else if (klass == PipelineGraph.class) {
 					undo.setEnabled(true);
