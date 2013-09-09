@@ -101,6 +101,7 @@ public class MenuLayout extends CustomComponent {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// init menuBar
+		menuBar.addItem("ODCleanStore", new NavigateToCommand(ViewNames.INITIAL.getUrl()));
 		menuBar.addItem("Pipelines", new NavigateToCommand(ViewNames.PIPELINE_LIST.getUrl()));
 		menuBar.addItem("DPU Templates", new NavigateToCommand(ViewNames.DPU.getUrl()));
 		menuBar.addItem("Execution Monitor", new NavigateToCommand(ViewNames.EXECUTION_MONITOR.getUrl()));
