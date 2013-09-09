@@ -27,8 +27,7 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
 public interface DPUContext {
 
 	/**
-	 * Send message about execution. If the message type is DEBUG and the
-	 * pipeline is not running in debug mode the message is ignored.
+	 * Send message about execution. 
 	 * 
 	 * @param type Type of message.
 	 * @param shortMessage Short message, should not be more than 50 chars.
@@ -36,8 +35,7 @@ public interface DPUContext {
 	public void sendMessage(MessageType type, String shortMessage);
 
 	/**
-	 * Send message about execution.If the message type is DEBUG and the
-	 * pipeline is not running in debug mode the message is ignored.
+	 * Send message about execution.
 	 * 
 	 * @param type Type of message.
 	 * @param shortMessage Short message, should not be more than 50 chars.

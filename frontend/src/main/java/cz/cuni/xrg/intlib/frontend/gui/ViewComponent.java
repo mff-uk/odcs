@@ -24,6 +24,12 @@ public abstract class ViewComponent extends CustomComponent implements View{
 	 * 
 	 * @return Is component modified?
 	 */
-	public abstract boolean isModified();
+	public boolean isModified() {
+		return false;
+	}
+
+	public boolean saveChanges() {
+		return true;
+	}
 
 }

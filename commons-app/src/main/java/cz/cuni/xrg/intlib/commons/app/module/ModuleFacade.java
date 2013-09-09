@@ -100,13 +100,14 @@ public class ModuleFacade {
 	}
 
 	/**
-	 * Uninstall bundle from system, use with caution. No instance
-	 * of any class from bundle should exist.
+	 * Uninstall bundle from system, use with caution. No instance of any class
+	 * from bundle should exist.
+	 * 
 	 * @param relativePath
 	 */
 	public void uninstall(String relativePath) {
 		String uri = "file:///" + configuration.getDpuFolder() + File.separator
-				+ relativePath;		
+				+ relativePath;
 		BundleContainer container = framework.getBundle(uri);
 		if (container != null) {
 			// we have something to uninstall
@@ -115,7 +116,7 @@ public class ModuleFacade {
 			// bundle has not been installed
 		}
 	}
-	
+
 	/**
 	 * Return class loader for bundle.
 	 * 
@@ -135,7 +136,6 @@ public class ModuleFacade {
 		// get class loader
 		return container.getClassLoader();
 	}
-
 
 	/**
 	 * Return content of manifest file (properties) for given jar-file that is
@@ -186,14 +186,16 @@ public class ModuleFacade {
 					+ "' does not exist.");
 		}
 	}
-		
+
 	/**
 	 * Load files in given directories (non-recursive). If the file is *.jar
 	 * then load id as a bundle.
 	 * 
 	 * @param directoryPath system path to directory. Not prefixed by file:///
+	 * @throws LibsLoadFailedException
 	 */
-	private void installDirectories(List<String> directoryPaths) {
+	private void installDirectories(List<String> directoryPaths)
+			throws LibsLoadFailedException {
 		for (String directory : directoryPaths) {
 			installDirectory(directory);
 		}

@@ -5,7 +5,6 @@ import java.util.Set;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Validator;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -42,51 +41,27 @@ import cz.cuni.xrg.intlib.frontend.gui.components.UsersList;
 public class Settings extends ViewComponent {
 
 	private static final long serialVersionUID = 1L;
-
 	private GridLayout mainLayout;
-
 	private VerticalLayout accountLayout;
-
 	private VerticalLayout notificationsLayout;
-
 	private VerticalLayout usersLayout;
-
 	private VerticalLayout recordsLayout;
-
 	private VerticalLayout pipelinesLayout;
-
 	private VerticalLayout prefixesLayout;
-
 	private VerticalLayout tabsLayout;
-
 	private Button notificationsButton;
-
 	private Button accountButton;
-
 	private Button usersButton;
-
 	private Button recordsButton;
-
 	private Button pipelinesButton;
-
 	private Button prefixesButton;
-
 	private Button shownTab = null;
-
 	private UsersList usersList;
-
 	private HorizontalLayout buttonBar;
-
 	private EmailComponent email;
-
 	private EmailNotifications emailNotifications;
-
 	private GridLayout emailLayout;
-
 	private boolean errors = false;
-
-	private ViewChangeListener leavePageListener;
-	
 	/**
 	 * Currently logged in user.
 	 */
@@ -104,27 +79,6 @@ public class Settings extends ViewComponent {
 	}
 
 	private GridLayout buildMainLayout() {
-		leavePageListener = new ViewChangeListener() {
-			@Override
-			public boolean beforeViewChange(ViewChangeEvent event) {
-				if (shownTab.equals(notificationsButton)) {
-					notificationSaveConfirmation(accountButton, accountLayout);
-				} else if (shownTab.equals(accountButton)) {
-					myAccountSaveConfirmation(notificationsButton,
-							notificationsLayout);
-				}
-				return true;
-			}
-
-			@Override
-			public void afterViewChange(ViewChangeEvent event) {
-				if (!event.getNewView().equals(Settings.this)) {
-					App.getApp().getNavigator().removeViewChangeListener(
-							leavePageListener);
-				}
-			}
-		};
-		App.getApp().getNavigator().addViewChangeListener(leavePageListener);
 		// common part: create layout
 		mainLayout = new GridLayout(2, 1);
 		mainLayout.setImmediate(false);
@@ -354,7 +308,7 @@ public class Settings extends ViewComponent {
 	 * notifications tab
 	 *
 	 * @return notificationsLayout Layout with components of Schedule
-	 *         notifications.
+	 * notifications.
 	 */
 	private VerticalLayout buildNotificationsLayout() {
 
@@ -492,7 +446,7 @@ public class Settings extends ViewComponent {
 	 * Showing active tab.
 	 *
 	 * @param pressedButton Tab that was pressed.
-	 * @param layoutShow    Layaut will be shown.
+	 * @param layoutShow Layaut will be shown.
 	 */
 	private void buttonPush(Button pressedButton, VerticalLayout layoutShow) {
 
@@ -513,14 +467,14 @@ public class Settings extends ViewComponent {
 	/**
 	 * Savig changes that relating to Schedule Notification.
 	 */
-	private void saveEmailNotifications() {
+	private boolean saveEmailNotifications() {
 
 
 		if (!emailValidationText().equals("")) {
 			errors = true;
 			Notification.show("Failed to save settings, reason:",
 					emailValidationText(), Notification.Type.ERROR_MESSAGE);
-			return;
+			return false;
 		}
 
 		UserNotificationRecord notification = loggedUser.getNotification();
@@ -544,7 +498,7 @@ public class Settings extends ViewComponent {
 			mainLayout.removeComponent(1, 0);
 			mainLayout.addComponent(accountLayout, 1, 0);
 		}
-
+		return true;
 	}
 
 	/**
@@ -554,26 +508,11 @@ public class Settings extends ViewComponent {
 	 * confirmation window will not be shown.
 	 *
 	 * @param pressedButton New tab that was push.
-	 * @param layoutShow    Layout will be shown after save/discard changes.
+	 * @param layoutShow Layout will be shown after save/discard changes.
 	 */
 	private void myAccountSaveConfirmation(final Button pressedButton,
 			final VerticalLayout layoutShow) {
-
-		email.saveEditedTexts();
-
-		if (!emailValidationText().equals("")) {
-			errors = true;
-			Notification.show("", emailValidationText(),
-					Notification.Type.ERROR_MESSAGE);
-			return;
-		}
-
-
-		Set<EmailAddress> aldEmails = loggedUser.getNotification().getEmails();
-		UserNotificationRecord newNotification = new UserNotificationRecord();
-		email.setUserEmailNotification(newNotification);
-		Set<EmailAddress> newEmails = newNotification.getEmails();
-		if (!aldEmails.equals(newEmails)) {
+		if (isMyAccountModified()) {
 
 			//open confirmation dialog
 			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:",
@@ -608,21 +547,11 @@ public class Settings extends ViewComponent {
 	 * confirmation window will not be shown.
 	 *
 	 * @param pressedButton New tab that was push.
-	 * @param layoutShow    Layout will be shown after save/discard changes.
+	 * @param layoutShow Layout will be shown after save/discard changes.
 	 */
 	private void notificationSaveConfirmation(final Button pressedButton,
 			final VerticalLayout layoutShow) {
-
-		NotificationRecordType aldSuccessEx = loggedUser.getNotification()
-				.getTypeSuccess();
-		NotificationRecordType aldErrorEx = loggedUser.getNotification()
-				.getTypeError();
-		UserNotificationRecord newNotification = new UserNotificationRecord();
-		emailNotifications.setUserNotificatonRecord(newNotification);
-		NotificationRecordType newSuccessEx = newNotification.getTypeSuccess();
-		NotificationRecordType newErrorEx = newNotification.getTypeError();
-		if (!aldSuccessEx.equals(newSuccessEx) || !aldErrorEx.equals(newErrorEx)) {
-
+		if (areNotificationsModified()) {
 			//open confirmation dialog
 			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:",
 					"Do you want to save the changes on Scheduler notifications tab?",
@@ -656,8 +585,56 @@ public class Settings extends ViewComponent {
 
 	@Override
 	public boolean isModified() {
-		//TODO: Implement properly.
-		//There are no editable fields.
+
+		if (shownTab.equals(notificationsButton)) {
+			return areNotificationsModified();
+		} else if (shownTab.equals(accountButton)) {
+			return isMyAccountModified();
+		}
 		return false;
+	}
+	
+	@Override
+	public boolean saveChanges() {
+		if (shownTab.equals(notificationsButton) || shownTab.equals(accountButton)) {
+			return saveEmailNotifications();
+		} 
+		return true;
+	}
+
+	private boolean areNotificationsModified() {
+		if(loggedUser.getNotification() == null) {
+			return true;
+		}
+		NotificationRecordType aldSuccessEx = loggedUser.getNotification()
+				.getTypeSuccess();
+		NotificationRecordType aldErrorEx = loggedUser.getNotification()
+				.getTypeError();
+		UserNotificationRecord newNotification = new UserNotificationRecord();
+		emailNotifications.setUserNotificatonRecord(newNotification);
+		NotificationRecordType newSuccessEx = newNotification.getTypeSuccess();
+		NotificationRecordType newErrorEx = newNotification.getTypeError();
+		return !aldSuccessEx.equals(newSuccessEx) || !aldErrorEx.equals(newErrorEx);
+	}
+
+	private boolean isMyAccountModified() {
+		email.saveEditedTexts();
+
+		if (!emailValidationText().equals("")) {
+			errors = true;
+			Notification.show("", emailValidationText(),
+					Notification.Type.ERROR_MESSAGE);
+			return true;
+		}
+
+		UserNotificationRecord record = loggedUser.getNotification();
+		if (record == null) {
+			return true;
+		}
+		Set<EmailAddress> aldEmails = record.getEmails();
+		UserNotificationRecord newNotification = new UserNotificationRecord();
+		email.setUserEmailNotification(newNotification);
+		Set<EmailAddress> newEmails = newNotification.getEmails();
+		return !aldEmails.equals(newEmails);
 	}
 }

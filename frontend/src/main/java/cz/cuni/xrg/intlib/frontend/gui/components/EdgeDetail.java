@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
@@ -10,7 +9,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -26,10 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Window showing Edge detail. Currently only corresponding DataUnit can be named.
@@ -41,8 +37,6 @@ public class EdgeDetail extends Window {
 	private final static Logger LOG = LoggerFactory.getLogger(EdgeDetail.class);
 
 	private final Edge edge;
-
-	private TextField edgeName;
 	
 	private List<String> outputUnits;
 	private List<String> inputUnits;
@@ -77,16 +71,6 @@ public class EdgeDetail extends Window {
 
 		GridLayout edgeSettingsLayout = new GridLayout(3, 10);
 		edgeSettingsLayout.setSpacing(true);
-
-//		Label outputLabel = new Label("Output data units of the source DPU:");
-//		outputLabel.setWidth("-1px");
-//		outputLabel.setHeight("-1px");
-//		edgeSettingsLayout.addComponent(outputLabel, 0, 0);
-//		
-//		Label inputLabel = new Label("Input data units of the target DPU:");
-//		inputLabel.setWidth("-1px");
-//		inputLabel.setHeight("-1px");
-//		edgeSettingsLayout.addComponent(inputLabel, 1, 0);
 		
 		outputSelect = new ListSelect("Output data units of the source DPU:");
 		outputSelect.setMultiSelect(true);

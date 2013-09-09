@@ -22,6 +22,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
@@ -128,11 +129,14 @@ class PipelineEdit extends ViewComponent {
 				if (klass == Node.class) {
 					dpuTree.refresh();
 					dpuTree.markAsDirty();
+					setupButtons();
 					App.getApp().push();
 				} else if (klass == PipelineGraph.class) {
 					undo.setEnabled(true);
 					setupButtons();
-				} 
+				} else if (klass == Edge.class) {
+					setupButtons();
+				}
 				
 			}
 
@@ -745,4 +749,9 @@ class PipelineEdit extends ViewComponent {
 	public boolean isModified() {
 		return pipelineName.isModified() || pipelineDescription.isModified() || pc.isModified();
 	}
+	
+	@Override
+	public boolean saveChanges() {
+		return savePipeline();
+	}		
 }

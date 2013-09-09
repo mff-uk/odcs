@@ -24,6 +24,11 @@
 		<constructor-arg value="BACKEND" />
 	</bean>
 
+	<!-- Override moduleFacade, do NOT start the OSGI automatically  -->
+	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade">
+	    <constructor-arg ref="moduleFacadeConfiguration" />
+	</bean>	
+	
 	<!-- Creates an in-memory database populated with test data for fast testing -->
 	<jdbc:embedded-database id="dataSource" type="H2">
 		<jdbc:script location="classpath:db/schema.sql"/>

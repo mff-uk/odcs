@@ -7,7 +7,9 @@
 		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcFilter">
 		   <requiredKey>execution</requiredKey>
 		</filter>	    
-	    
+	    <!-- execution level based filtering -->
+		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcExecutionLevelFilter" />
+		
 		<connectionSource class="ch.qos.logback.classic.db.ConfigurableConnectionSource" />
 	</appender>
 

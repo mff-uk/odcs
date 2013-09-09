@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
-import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 import cz.cuni.xrg.intlib.commons.app.data.EdgeCompiler;
@@ -245,6 +244,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
+				isModified = true;
 				fireDetailClosed(Node.class);
 				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
@@ -262,7 +262,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		edgeDetailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				//fireDetailClosed(Edge.class);
+				isModified = true;
+				fireDetailClosed(Edge.class);
 				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
 			}
 		});

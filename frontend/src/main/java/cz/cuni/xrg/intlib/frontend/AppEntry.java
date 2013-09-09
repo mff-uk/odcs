@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.vaadin.dialogs.ConfirmDialog;
 import virtuoso.jdbc4.VirtuosoException;
 
 /**
@@ -175,7 +176,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 					return false;
 				}
 				setActive();
-				if(refreshThread == null) {
+				if(refreshThread == null || !refreshThread.isAlive()) {
 					setupRefreshThread();
 				}
 				
@@ -195,11 +196,19 @@ public class AppEntry extends com.vaadin.ui.UI {
 		 // attach a listener so that we'll get asked isViewChangeAllowed?
         this.getNavigator().addViewChangeListener(new ViewChangeListener() {
 			private String pendingViewAndParameters;
+			private ViewComponent lastView;
+			boolean forceViewChange = false;
 			@Override
             public boolean beforeViewChange(ViewChangeEvent event) {
+				if(forceViewChange) {
+					forceViewChange = false;
+					pendingViewAndParameters = null;
+					return true;
+				}
                 if (event.getOldView() != null && ((ViewComponent)event.getOldView()).isModified()) {
 
                     // save the View where the user intended to go
+					lastView = (ViewComponent)event.getOldView();
                     pendingViewAndParameters = event.getViewName();
                     if (event.getParameters() != null) {
                         pendingViewAndParameters += "/";
@@ -208,8 +217,21 @@ public class AppEntry extends com.vaadin.ui.UI {
                     }
 
                     // Prompt the user to save or cancel if the name is changed
-                    Notification.show("Please apply or cancel your changes",
-                            Type.WARNING_MESSAGE);
+					ConfirmDialog.show(getUI(), "Unsaved changes", "Please apply or cancel your changes", "Save", "Discard changes", new ConfirmDialog.Listener() {
+
+						@Override
+						public void onClose(ConfirmDialog cd) {
+							if(cd.isConfirmed()) {
+								if(!lastView.saveChanges()) {
+									return;
+								}
+							} else {
+								forceViewChange = true;
+							}
+							navigator.navigateTo(pendingViewAndParameters);
+						}
+					});
+                    //Notification.show("Please apply or cancel your changes", Type.WARNING_MESSAGE);
 
                     return false;
                 } else {
