@@ -118,6 +118,8 @@ public class DPUDetail extends Window {
 		} catch (FileNotFoundException e) {
 			Notification.show("Failed to load DPU.", e.getMessage(),
 					Type.ERROR_MESSAGE);
+		} catch (Exception ex) {
+			Notification.show("Failed to load DPU.", ex.getMessage(), Type.ERROR_MESSAGE);
 		}
 
 
@@ -128,7 +130,7 @@ public class DPUDetail extends Window {
 				dpuInstance.configuredDialog();
 			} catch (ConfigException e) {
 				Notification.show(
-						"Failed to load configuration. The dialog defaul configuration is used.",
+						"Failed to load configuration. The dialog default configuration is used.",
 						e.getMessage(), Type.WARNING_MESSAGE);
 				LOG.error("Failed to load configuration for {}", dpuInstance
 						.getDPUInstanceRecord().getId(), e);

@@ -12,7 +12,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload.FailedEvent;
@@ -32,6 +31,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
@@ -140,7 +140,7 @@ class DPU extends ViewComponent {
 	}
 
 	/**
-	 * Layout contains DPU Tenplates page elements: buttons on the top: "Create
+	 * Layout contains DPU Templates page elements: buttons on the top: "Create
 	 * DPU", "Import DPU", "Export All"; layout with DPU Templates tree
 	 * {@link DPUTree} and DPU Template details
 	 *
@@ -442,6 +442,9 @@ class DPU extends ViewComponent {
 				Notification.show(
 						"File not found",
 						ex.getMessage(), Type.ERROR_MESSAGE);
+				LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+			} catch (Exception ex) {
+				Notification.show("Failed to load configuration dialog", ex.getMessage(), Type.ERROR_MESSAGE);
 				LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
 			}
 

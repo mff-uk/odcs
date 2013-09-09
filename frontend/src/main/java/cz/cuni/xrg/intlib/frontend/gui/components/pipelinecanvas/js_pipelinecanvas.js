@@ -1391,6 +1391,13 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			stroke = "#222";
 			strokeWidth = 2.5;
 		}
+		var rect = dpu.group.get('Rect')[0];
+		if(highlight) {
+			rect.setStrokeWidth(4);
+		} else {
+			rect.setStrokeWidth(2);
+		}
+		
 		for (lineId in dpu.connectionFrom) {
 			var conn = connections[dpu.connectionFrom[lineId]];
 			var originalStroke = conn.line.getStroke();
