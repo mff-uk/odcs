@@ -603,6 +603,9 @@ public class Settings extends ViewComponent {
 	}
 
 	private boolean areNotificationsModified() {
+		if(loggedUser.getNotification() == null) {
+			return true;
+		}
 		NotificationRecordType aldSuccessEx = loggedUser.getNotification()
 				.getTypeSuccess();
 		NotificationRecordType aldErrorEx = loggedUser.getNotification()
@@ -624,8 +627,11 @@ public class Settings extends ViewComponent {
 			return true;
 		}
 
-
-		Set<EmailAddress> aldEmails = loggedUser.getNotification().getEmails();
+		UserNotificationRecord record = loggedUser.getNotification();
+		if (record == null) {
+			return true;
+		}
+		Set<EmailAddress> aldEmails = record.getEmails();
 		UserNotificationRecord newNotification = new UserNotificationRecord();
 		email.setUserEmailNotification(newNotification);
 		Set<EmailAddress> newEmails = newNotification.getEmails();
