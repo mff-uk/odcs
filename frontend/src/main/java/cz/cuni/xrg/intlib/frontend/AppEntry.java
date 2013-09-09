@@ -175,7 +175,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 					return false;
 				}
 				setActive();
-				if(refreshThread == null) {
+				if(refreshThread == null || !refreshThread.isAlive()) {
 					setupRefreshThread();
 				}
 				

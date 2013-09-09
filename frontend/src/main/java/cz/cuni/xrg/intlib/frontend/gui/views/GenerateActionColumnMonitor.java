@@ -65,7 +65,8 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 			if (((testStatus == PipelineExecutionStatus.FAILED) || 
 					(testStatus == PipelineExecutionStatus.FINISHED_SUCCESS) || 
 					(testStatus == PipelineExecutionStatus.FINISHED_WARNING) ||
-					(testStatus == PipelineExecutionStatus.RUNNING))
+					(testStatus == PipelineExecutionStatus.RUNNING) ||
+					(testStatus == PipelineExecutionStatus.CANCELLED))
 					&& !testDebug) {
 				Button logButton = new Button("Show log");
 				logButton.setData(new ActionButtonData("showlog", itemId));
