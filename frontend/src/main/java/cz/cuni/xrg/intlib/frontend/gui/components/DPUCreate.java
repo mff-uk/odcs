@@ -35,6 +35,7 @@ import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.gui.AuthenticationAwareButtonClickListenerWrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,7 +266,8 @@ public class DPUCreate extends Window {
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
 		Button saveButton = new Button("Save");
-		saveButton.addClickListener(new ClickListener() {
+		
+		saveButton.addClickListener(new AuthenticationAwareButtonClickListenerWrapper(new ClickListener() {
 
 			/**
 			 * After pushing the button Save will be checked validation of the mandatory fields:
@@ -296,18 +298,12 @@ public class DPUCreate extends Window {
 
 					//checking if uploaded file already exist in the /target/dpu/ 
 					if (destFile.exists()) {
-						// uploaded file already exist in the /target/dpu/ 
-						List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
-						String dpuName ="";
-						for (DPUTemplateRecord dpu : dpus){
-							//if find DPUTemplateRecord that used this file, get it name 
-							if(dpu.getJarPath().equals(FileUploadReceiver.fName)){
-								dpuName = dpu.getName();
-								break;
-							}			
-						}
 						
-						if (dpuName.isEmpty()){
+						// uploaded file already exist in the /target/dpu/ 
+						DPUTemplateRecord dpu = App.getApp().getDPUs()
+								.getTemplateByJarFile(srcFile);
+				
+						if (dpu == null) {
 							// copy file from template folder to the /target/dpu/
 							try {
 								Files.copy(srcFile, destFile);
@@ -315,13 +311,15 @@ public class DPUCreate extends Window {
 								throw new RuntimeException(ex);
 							}
 						} else {
-							// if we get the name of DPUTemplateRecord that used
-							// this file, show notification
-							Notification.show(
-									"File " + FileUploadReceiver.fName +" is already used in the DPU template " + dpuName,
-									Notification.Type.ERROR_MESSAGE);
+							// if we get the name of DPUTemplateRecord that used this
+							// file, show notification
+							Notification.show(String.format(
+								"File with name %s is already used in the DPU template %s.",
+								FileUploadReceiver.fName, dpuName
+							), Notification.Type.ERROR_MESSAGE);
 							return;
 						}
+						
 					} else {
 						// if uploaded file doesn't exist in the /target/dpu/
 						try {
@@ -388,11 +386,10 @@ public class DPUCreate extends Window {
 
 					App.getDPUs().save(dpuTemplate);
 					close();
-
 				}
 			}
 
-		});
+		}));
 		buttonBar.addComponent(saveButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
