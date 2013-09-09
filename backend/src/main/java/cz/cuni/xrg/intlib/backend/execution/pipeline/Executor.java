@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
+import cz.cuni.xrg.intlib.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
@@ -151,10 +151,10 @@ public class Executor implements Runnable {
 	 */
 	private void executionSuccessful() {
 		// update state -> check logs
-		Set<Level> levels = new HashSet<>(2);
-		levels.add(Level.WARN);
-		levels.add(Level.ERROR);
-		levels.add(Level.FATAL);
+		Set<org.apache.log4j.Level> levels = new HashSet<>(2);
+		levels.add(org.apache.log4j.Level.WARN);
+		levels.add(org.apache.log4j.Level.ERROR);
+		levels.add(org.apache.log4j.Level.FATAL);
 		if (logFacade.existLogs(execution, levels)) {
 			execution
 					.setExecutionStatus(PipelineExecutionStatus.FINISHED_WARNING);
@@ -237,16 +237,8 @@ public class Executor implements Runnable {
 	 * Run the execution.
 	 */
 	private void execute() {
-		
-		boolean executionFailed = false;
-		boolean executionCancelled = false;
-		// add marker to logs from this thread -> both must be specified !!
-		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME,
-				Long.toString(execution.getId()));
-		LOG.debug("Started");
 		// set start time
 		execution.setStart(new Date());
-		
 		try {
 			// contextInfo is in pipeline so by saving pipeline we also save context
 			pipelineFacade.save(execution);
@@ -255,6 +247,21 @@ public class Executor implements Runnable {
 			// no work was done yet, we can finish without cleaning up
 			return;
 		}
+		
+		boolean executionFailed = false;
+		boolean executionCancelled = false;
+		// add marker to logs from this thread -> both must be specified !!
+		final String executionId = Long.toString(execution.getId());		
+		if (!execution.isDebugging()) {
+			// add minimal level to MDCExecutionLevelFilter
+			MdcExecutionLevelFilter.add(executionId, 
+					ch.qos.logback.classic.Level.WARN);
+		}
+		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME,
+				executionId);
+		
+		// log start of the pipeline
+		LOG.debug("Started");		
 		
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
@@ -346,6 +353,10 @@ public class Executor implements Runnable {
 		
 		// do clean/up
 		cleanup();
+		
+		// unregister MDC execution filter
+		MdcExecutionLevelFilter.remove(executionId);
+		
 		// clear all threads markers
 		MDC.clear();
 	}
