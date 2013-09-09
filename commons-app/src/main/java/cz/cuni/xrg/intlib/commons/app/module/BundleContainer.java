@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 
 import org.osgi.framework.Bundle;
@@ -95,6 +96,14 @@ class BundleContainer {
 		bundle = null;
 	}
 
+	/**
+	 * Return content of manifest.mf file.
+	 * @return
+	 */
+	public Dictionary<String, String> getHeaders() {
+		return bundle.getHeaders();
+	}
+	
 	public Bundle getBundle() {
 		return bundle;
 	}

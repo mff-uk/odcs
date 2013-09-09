@@ -2,13 +2,8 @@ package cz.cuni.xrg.intlib.commons.app.module;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Dictionary;
 import java.util.List;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +75,20 @@ public class ModuleFacade {
 	}
 
 	/**
+	 * Create URL to the file in DPU's directory.
+	 * @param relativePath
+	 * @return
+	 */
+	private String createURI(String relativePath) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("file:///");
+		strBuilder.append(configuration.getDpuFolder());
+		strBuilder.append(File.separator);
+		strBuilder.append(relativePath);
+		return strBuilder.toString();
+	}
+
+	/**
 	 * Load main class from bundle and return it as object.
 	 * 
 	 * @param relativePath Relative path in DPU's directory.
@@ -93,8 +102,7 @@ public class ModuleFacade {
 				ClassLoadFailedException,
 				FileNotFoundException {
 		checkExistance(relativePath); // throw FileNotFoundException
-		String uri = "file:///" + configuration.getDpuFolder() + File.separator
-				+ relativePath;
+		final String uri = createURI(relativePath);
 		// throw BundleInstallFailedException
 		return framework.loadClass(uri);
 	}
@@ -106,8 +114,7 @@ public class ModuleFacade {
 	 * @param relativePath
 	 */
 	public void uninstall(String relativePath) {
-		String uri = "file:///" + configuration.getDpuFolder() + File.separator
-				+ relativePath;
+		final String uri = createURI(relativePath);
 		BundleContainer container = framework.getBundle(uri);
 		if (container != null) {
 			// we have something to uninstall
@@ -129,8 +136,7 @@ public class ModuleFacade {
 			throws BundleInstallFailedException,
 				FileNotFoundException {
 		checkExistance(relativePath); // throw FileNotFoundException
-		String uri = "file:///" + configuration.getDpuFolder() + File.separator
-				+ relativePath;
+		final String uri = createURI(relativePath);
 		// throw BundleInstallFailedException
 		BundleContainer container = framework.installBundle(uri);
 		// get class loader
@@ -139,34 +145,27 @@ public class ModuleFacade {
 
 	/**
 	 * Return content of manifest file (properties) for given jar-file that is
-	 * stored in DPU's directory. This method does not load DPU into system.
+	 * stored in DPU's directory. This method does load jar-file into system.
+	 * To unload jar-file use {@link #uninstall(String)} 
 	 * 
 	 * @param relativePath Relative path in DPU's directory.
 	 * @return Jar attributes or null in case of error.
 	 */
-	public Attributes getJarProperties(String relativePath) {
-
-		final String uri = "file:///" + configuration.getDpuFolder()
-				+ File.separator + relativePath;
-
-		URL url;
+	public Dictionary<String, String> getJarProperties(String relativePath) {
 		try {
-			url = new URL(uri);
-		} catch (MalformedURLException ex) {
-			LOG.error("Failed to read create utl from {}", relativePath, ex);
+			checkExistance(relativePath);
+		} catch (FileNotFoundException e) {
 			return null;
 		}
-
-		Attributes attributes = null;
-		try (InputStream is = url.openStream()) {
-			Manifest manifest = new Manifest(is);
-			attributes = manifest.getMainAttributes();
-			is.close();
-		} catch (IOException ex) {
-			LOG.error("Failed to read attributes for: '{}'", uri, ex);
+		final String uri = createURI(relativePath);
+		
+		BundleContainer container;
+		try {
+			container = framework.installBundle(uri);
+		} catch (BundleInstallFailedException e) {
 			return null;
 		}
-		return attributes;
+		return container.getHeaders();
 	}
 
 	/**

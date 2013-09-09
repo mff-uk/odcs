@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import java.util.jar.Attributes;
+import java.util.Dictionary;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +21,7 @@ public class DPUExplorer {
 	/**
 	 * Name of property that stores jar-file's description.
 	 */
-	private static final String DPU_JAR_DESCRIPTION_NAME = "Description";
+	private static final String DPU_JAR_DESCRIPTION_NAME = "Bundle-Description";
 	
 	/**
 	 * Module facade used to access the DPU instances.
@@ -59,11 +59,12 @@ public class DPUExplorer {
 	 */	
 	public String getJarDescription(String relativePath) {
 		// we try to use pom.xml information
-		Attributes attributes = moduleFacade.getJarProperties(relativePath);
+		Dictionary<String,String> attributes = moduleFacade.getJarProperties(relativePath);
 		if (attributes == null) {
 			// can't load information .. we run out of options
 			return null;
 		}
-		return attributes.getValue(DPU_JAR_DESCRIPTION_NAME);
+		return attributes.get(DPU_JAR_DESCRIPTION_NAME);
 	}
+	
 }

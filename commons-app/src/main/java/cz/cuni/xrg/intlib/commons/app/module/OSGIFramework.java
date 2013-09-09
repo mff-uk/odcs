@@ -83,7 +83,7 @@ class OSGIFramework {
 			// start OSGi container ..
 			framework.start();
 		} catch (org.osgi.framework.BundleException ex) {
-			LOG.error("Failed to lstart framework.", ex);
+			LOG.error("Failed to start OSGI framework.", ex);
 			// failed to start/initiate framework
 			throw new FrameworkStartFailedException(
 					"Failed to start OSGi framework.", ex);
@@ -139,7 +139,8 @@ class OSGIFramework {
 	}
 	
 	/**
-	 * Install bundle into framework.
+	 * Secure that the bundle is installed in framework. If framework is
+	 * already loaded do not reload it again. 
 	 * 
 	 * @param uri Uri to install bundle from.
 	 * @return BundleContainer or null.
@@ -209,7 +210,7 @@ class OSGIFramework {
 		// load bundle
 		BundleContainer bundleContainer = installBundle(uri);
 		// get location of bundle main class
-		String packageName = (String) bundleContainer.getBundle().getHeaders()
+		String packageName = (String) bundleContainer.getHeaders()
 				.get("DPU-Package");
 		if (packageName == null) {
 			LOG.error("'DPU-Package' undefined for '{}'", uri);
