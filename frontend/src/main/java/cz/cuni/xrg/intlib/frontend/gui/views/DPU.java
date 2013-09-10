@@ -48,6 +48,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.xrg.intlib.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
@@ -561,7 +562,7 @@ class DPU extends ViewComponent {
 		});
 
 
-		reloadFile.addSucceededListener(new SucceededListener() {
+		reloadFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new SucceededListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -574,7 +575,7 @@ class DPU extends ViewComponent {
 				}
 
 			}
-		});
+		}));
 
 
 		reloadFile.addFailedListener(new FailedListener() {
