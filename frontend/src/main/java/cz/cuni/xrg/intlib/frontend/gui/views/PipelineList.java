@@ -3,7 +3,6 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -83,9 +82,10 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							Pipeline newPipeline = new Pipeline(pipeline);
-							newPipeline.setName("Copy of " + pipeline.getName());
-							App.getApp().getPipelines().save(newPipeline);
+							PipelineFacade pplFacade = App.getApp().getPipelines();
+							Pipeline nPipeline = pplFacade.copyPipeline(pipeline);
+							nPipeline.setName("Copy of " + pipeline.getName());
+							pplFacade.save(nPipeline);
 							refreshData();
 							tablePipelines.setVisibleColumns("id", "name", "description","");
 						}
