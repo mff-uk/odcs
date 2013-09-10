@@ -26,7 +26,9 @@ public class RDFLoaderConfig implements DPUConfigObject {
 
 	public WriteGraphType graphOption = WriteGraphType.OVERRIDE;
 
-	public InsertType insertOption = InsertType.SKIP_BAD_PARTS;
+	public InsertType insertOption = InsertType.STOP_WHEN_BAD_PART;
+
+	public long chunkSize = 100;
 
 	@Override
 	public boolean isValid() {
