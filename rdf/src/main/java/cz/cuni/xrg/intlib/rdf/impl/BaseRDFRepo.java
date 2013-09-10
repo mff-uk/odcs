@@ -288,30 +288,24 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param directoryPath Path to directory, where file with RDF data will be
-	 *                      saved.
-	 * @param fileName      Name of file for saving RDF data.
-	 * @param formatType    Type of RDF format for saving data (example: TURTLE,
-	 *                      RDF/XML,etc.)
+	 * @param filePath   Path to file, where RDF data will be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 *                   RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
-	public void loadToFile(String directoryPath,
-			String fileName,
+	public void loadToFile(String filePath,
 			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException {
 
-		loadToFile(directoryPath, fileName, formatType, false,
-				false);
+		loadToFile(filePath, formatType, false, false);
 	}
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param directoryPath    Path to directory, where file with RDF data will
-	 *                         be saved.
-	 * @param fileName         Name of file for saving RDF data.
+	 * @param filePath         Path to file, where RDF data will be saved.
 	 * @param formatType       Type of RDF format for saving data (example:
 	 *                         TURTLE, RDF/XML,etc.)
 	 * @param canFileOverWrite boolean value, if existing file can be
@@ -323,51 +317,30 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
-	public void loadToFile(String directoryPath,
-			String fileName, RDFFormatType formatType,
+	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
 
-		if (directoryPath == null || fileName == null) {
+		if (filePath == null) {
 
-			final String message;
-
-			if (directoryPath == null) {
-				message = "Mandatory directory path in File_loader is null.";
-			} else {
-				message = "Mandatory file name in File_loader is null.";
-			}
+			final String message = "Mandatory file path in File_loader is null.";
 
 			logger.debug(message);
 			throw new RDFException(message);
 
 
-		} else if (directoryPath.isEmpty() || fileName.isEmpty()) {
+		} else if (filePath.isEmpty()) {
 
-			final String message;
-
-			if (directoryPath.isEmpty()) {
-				message = "Mandatory directory path in File_loader is empty.";
-			} else {
-				message = "Mandatory file name in File_loader is empty.";
-			}
-
+			final String message = "Mandatory file path in File_loader is empty.";
 			logger.debug(message);
 			throw new RDFException(message);
 		}
 
-		final String slash = File.separator;
-
-		if (!directoryPath.endsWith(slash)) {
-			directoryPath += slash;
-		}
-
-		File directory = new File(directoryPath);
+		File dataFile = new File(filePath);
+		File directory = new File(dataFile.getParent());
 
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
-
-		File dataFile = new File(directoryPath + fileName);
 
 		if (!dataFile.exists()) {
 			createNewFile(dataFile);
@@ -376,9 +349,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			if (isNameUnique) {
 
 				String uniqueFileName = UniqueNameGenerator
-						.getNextName(fileName);
+						.getNextName(dataFile.getName());
 
-				dataFile = new File(directoryPath + uniqueFileName);
+				dataFile = new File(directory, uniqueFileName);
 				createNewFile(dataFile);
 
 			} else if (canFileOverWrite) {
@@ -680,7 +653,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			final String processing = String.valueOf(counter) + "/" + String
 					.valueOf(partsCount);
-
+			authenticate("dba", "dba");
 			try {
 				InputStreamReader inputStreamReader = getEndpointStreamReader(
 						endpointURL, endpointGraph, query,
@@ -1792,10 +1765,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		final String encoder = getEncoder(format);
 
+		String parameters = "default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder;
+
 		URL call = null;
 		try {
-			call = new URL(
-					endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
+			call = new URL(endpointURL.toString());
 		} catch (MalformedURLException e) {
 			final String message = "Malfolmed URL exception by construct extract URL. ";
 			logger.debug(message);
@@ -1805,6 +1779,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		HttpURLConnection httpConnection = null;
 		try {
 			httpConnection = (HttpURLConnection) call.openConnection();
+			httpConnection.setRequestMethod("POST");
+			httpConnection.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+
+			httpConnection.setRequestProperty("Content-Length", ""
+					+ Integer.toString(parameters.getBytes().length));
+
+			httpConnection.setUseCaches(false);
+			httpConnection.setDoInput(true);
+			httpConnection.setDoOutput(true);
+
+			try (OutputStream os = httpConnection.getOutputStream()) {
+				os.write(parameters.getBytes());
+				os.flush();
+			}
 
 			int httpResponseCode = httpConnection.getResponseCode();
 
