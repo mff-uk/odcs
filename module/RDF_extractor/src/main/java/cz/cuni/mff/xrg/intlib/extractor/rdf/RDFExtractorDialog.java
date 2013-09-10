@@ -5,7 +5,6 @@ import com.vaadin.ui.*;
 import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,9 +94,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private InvalidValueException ex;
 
 	/**
-	 * Right SPARQL VALIDATOR - default false.
+	 * Right SPARQL VALIDATOR - default true.
 	 */
-	private boolean isQueryValid = false;
+	private boolean isQueryValid = true;
 
 	private String errorMessage = "no errors";
 
@@ -544,23 +543,16 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		textAreaConstr.setInputPrompt(
 				"CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
 
-		textAreaConstr.addValidator(new Validator() {
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.toString().isEmpty()) {
-					ex = new EmptyValueException(
-							"SPARQL construct query must be filled");
-					throw ex;
-				}
-			}
-		});
-
 		textAreaConstr.addValueChangeListener(
 				new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 
 				final String query = textAreaConstr.getValue().trim();
+				if (query.isEmpty()) {
+					isQueryValid = true;
+					return;
+				}
 
 				cz.cuni.xrg.intlib.rdf.interfaces.Validator validator = new SPARQLQueryValidator(
 						query, SPARQLQueryType.CONSTRUCT);
@@ -621,7 +613,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
-		if (!comboBoxSparql.isValid() | !textAreaConstr.isValid() | !areGraphsNameValid()) {
+		if (!comboBoxSparql.isValid() | !areGraphsNameValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(errorMessage);
@@ -648,7 +640,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	null	null	null	null	null	null	null
+	 *                         null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
@@ -683,13 +676,12 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			throw new ConfigException(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();
 		description.append("Extract from SPARQL: ");
-		description.append( (String) comboBoxSparql.getValue() );
+		description.append((String) comboBoxSparql.getValue());
 		return description.toString();
 	}
-	
 }
