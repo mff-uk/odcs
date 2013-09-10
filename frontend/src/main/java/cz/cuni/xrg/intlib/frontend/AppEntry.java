@@ -7,6 +7,9 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.shared.communication.PushMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -37,6 +40,7 @@ import org.springframework.context.ApplicationContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import virtuoso.jdbc4.VirtuosoException;
 
 /**
@@ -121,6 +125,27 @@ public class AppEntry extends com.vaadin.ui.UI {
 		// in panel, for possible vertical scrolling
 		main = new MenuLayout();
 		setContent(main);
+		
+		ConfirmDialog.Factory df = new DefaultConfirmDialogFactory() {
+			// We change the default order of the buttons
+			@Override
+			public ConfirmDialog create(String caption, String message,
+					String okCaption, String cancelCaption) {
+				ConfirmDialog d = super.create(caption, message,
+						okCaption,
+						cancelCaption);
+
+				// Change the order of buttons
+				Button ok = d.getOkButton();
+				HorizontalLayout buttons = (HorizontalLayout) ok.getParent();
+				buttons.removeComponent(ok);
+				buttons.addComponent(ok, 1);
+				buttons.setComponentAlignment(ok, Alignment.MIDDLE_RIGHT);
+
+				return d;
+			}
+		};
+		ConfirmDialog.setFactory(df);
 
 		// create a navigator to control the views
 		this.navigator = new IntlibNavigator(this, main.getViewLayout());
