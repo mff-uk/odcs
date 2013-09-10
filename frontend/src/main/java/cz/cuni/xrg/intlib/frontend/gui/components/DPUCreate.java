@@ -91,7 +91,7 @@ public class DPUCreate extends Window {
 		dpuGeneralSettingsLayout.addComponent(nameLabel, 0, 0);
 
 		dpuName = new TextField();
-		dpuName.setImmediate(false);
+		dpuName.setImmediate(true);
 		dpuName.setWidth("310px");
 		dpuName.setHeight("-1px");
 		//settings of mandatory
@@ -120,19 +120,6 @@ public class DPUCreate extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("310px");
 		dpuDescription.setHeight("60px");
-		//settings of mandatory
-		dpuDescription.addValidator(new Validator() {
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class
-						&& !((String) value).isEmpty()) {
-					return;
-				}
-				throw new InvalidValueException("Description must be filled!");
-
-			}
-		});
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 		
 		//Visibility of DPU Template: label & OptionGroup
@@ -282,8 +269,7 @@ public class DPUCreate extends Window {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// checking validation of the mandatory fields
-				if ((!dpuName.isValid()) || (!dpuDescription.isValid())
-						|| (!uploadFile.isValid())) {
+				if (!dpuName.isValid() || (!uploadFile.isValid())) {
 					Notification.show("Failed to save DPURecord",
 							"Mandatory fields should be filled",
 							Notification.Type.ERROR_MESSAGE);
