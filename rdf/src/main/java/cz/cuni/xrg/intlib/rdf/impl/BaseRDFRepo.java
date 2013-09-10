@@ -45,7 +45,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * How many triples is possible to add to SPARQL endpoind at once.
 	 */
-	protected static final int STATEMENTS_COUNT = 10;
+	protected static final long DEFAULT_CHUNK_SIZE = 10;
 
 	/**
 	 * Represent successfully connection using HTTP.
@@ -388,7 +388,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
-				graphType, insertType);
+				graphType, insertType, DEFAULT_CHUNK_SIZE);
 	}
 
 	/**
@@ -415,7 +415,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
-				graphType, insertType);
+				graphType, insertType, DEFAULT_CHUNK_SIZE);
 	}
 
 	/**
@@ -439,7 +439,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			InsertType insertType) throws RDFException {
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
-				graphType, insertType);
+				graphType, insertType, DEFAULT_CHUNK_SIZE);
 	}
 
 	/**
@@ -457,12 +457,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param insertType      One of way, how solve loading RDF data parts to
 	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
 	 *                        STOP_WHEN_BAD_PART).
+	 * @param chunkSize       Size of insert part of triples which insert at
+	 *                        once to SPARQL endpoint.
 	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> namedGraph, String userName,
-			String password, WriteGraphType graphType, InsertType insertType)
+			String password, WriteGraphType graphType, InsertType insertType,
+			long chunkSize)
 			throws RDFException {
 
 		//check that SPARQL endpoint URL is correct
@@ -559,8 +562,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				if (insertType == InsertType.STOP_WHEN_BAD_PART) {
 
 					try {
-						loadDataParts(endpointURL, tempGraph, insertType);
-						loadDataParts(endpointURL, endpointGraph, insertType);
+						loadDataParts(endpointURL, tempGraph, insertType,
+								chunkSize);
+						loadDataParts(endpointURL, endpointGraph, insertType,
+								chunkSize);
 
 					} catch (InsertPartException e) {
 						throw new RDFException(e.getMessage(), e);
@@ -569,7 +574,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					}
 
 				} else {
-					loadDataParts(endpointURL, endpointGraph, insertType);
+					loadDataParts(endpointURL, endpointGraph, insertType,
+							chunkSize);
 				}
 
 			}
@@ -590,12 +596,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
-	private long getPartsCount() {
+	private long getPartsCount(long chunkSize) {
 
 		long triples = getTripleCount();
-		long partsCount = triples / STATEMENTS_COUNT;
+		long partsCount = triples / chunkSize;
 
-		if (partsCount * STATEMENTS_COUNT != triples) {
+		if (partsCount * chunkSize != triples) {
 			partsCount++;
 		}
 
@@ -634,22 +640,22 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private void loadDataParts(URL endpointURL, String endpointGraph,
-			InsertType insertType)
+			InsertType insertType, long chunkSize)
 			throws RDFException {
 
 		RepositoryConnection conection = getRepoConnection();
 		RepositoryResult<Statement> lazy = getRepoResult();
 
-		String part = getInsertQueryPart(STATEMENTS_COUNT, lazy);
+		String part = getInsertQueryPart(chunkSize, lazy);
 
 		long counter = 0;
-		long partsCount = getPartsCount();
+		long partsCount = getPartsCount(chunkSize);
 
 		while (part != null) {
 			counter++;
 
 			final String query = part;
-			part = getInsertQueryPart(STATEMENTS_COUNT, lazy);
+			part = getInsertQueryPart(chunkSize, lazy);
 
 			final String processing = String.valueOf(counter) + "/" + String
 					.valueOf(partsCount);
@@ -1205,7 +1211,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return statemens;
 	}
 
-	private String getInsertQueryPart(int sizeSplit,
+	private String getInsertQueryPart(long sizeSplit,
 			RepositoryResult<Statement> lazy) {
 
 		final String insertStart = "INSERT {";
@@ -1215,7 +1221,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		builder.append(insertStart);
 
-		int count = 0;
+		long count = 0;
 
 		try {
 			while (lazy.hasNext()) {
