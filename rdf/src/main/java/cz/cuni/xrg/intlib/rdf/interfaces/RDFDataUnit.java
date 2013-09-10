@@ -108,25 +108,20 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param directoryPath Path to directory, where file with RDF data will be
-	 *                      saved.
-	 * @param fileName      Name of file for saving RDF data.
-	 * @param formatType    Type of RDF format for saving data (example: TURTLE,
-	 *                      RDF/XML,etc.)
+	 * @param filePath   Path to file, where RDF data will be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 *                   RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data to file fail.
 	 */
-	public void loadToFile(String directoryPath,
-			String fileName,
+	public void loadToFile(String filePath,
 			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param directoryPath    Path to directory, where file with RDF data will
-	 *                         be saved.
-	 * @param fileName         Name of file for saving RDF data.
+	 * @param filePath         Path to file, where RDF data will be saved.
 	 * @param formatType       Type of RDF format for saving data (example:
 	 *                         TURTLE, RDF/XML,etc.)
 	 * @param canFileOverWrite boolean value, if existing file can be
@@ -137,8 +132,7 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data to file fail.
 	 */
-	public void loadToFile(String directoryPath,
-			String fileName, RDFFormatType formatType,
+	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
 	/**
