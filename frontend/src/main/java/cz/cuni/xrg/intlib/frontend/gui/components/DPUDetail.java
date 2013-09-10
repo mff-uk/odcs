@@ -137,6 +137,8 @@ public class DPUDetail extends Window {
 			}
 			// add to layout
 			confDialog.setWidth("100%");
+			
+			setResizable(true);
 			mainLayout.addComponent(confDialog);
 		}
 
