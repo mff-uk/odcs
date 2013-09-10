@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Embedded;
@@ -124,7 +125,7 @@ public class MenuLayout extends CustomComponent {
 		this.menuBar = new MenuBar();
 		this.menuBar.setImmediate(false);
 		this.menuBar.setWidth("100.0%");
-		this.menuBar.setHeight("20px");
+		this.menuBar.setHeight("35px");
 		this.menuBar.setHtmlContentAllowed(true);
 		//this.mainLayout.addComponent(menuBar);
 		
@@ -151,6 +152,10 @@ public class MenuLayout extends CustomComponent {
 		HorizontalLayout menuLine = new HorizontalLayout(menuBar, backendStatus, userName, logOutButton);
 		menuLine.setSpacing(true);
 		menuLine.setWidth(100, Unit.PERCENTAGE);
+		menuLine.setHeight(35, Unit.PIXELS);
+		menuLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_CENTER);
+		menuLine.setComponentAlignment(userName, Alignment.MIDDLE_CENTER);
+		menuLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_CENTER);
 		menuLine.setExpandRatio(menuBar, 1.0f);
 		this.mainLayout.addComponent(menuLine);
 

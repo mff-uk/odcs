@@ -10,8 +10,11 @@
 
 /* Menubar */
 .v-menubar {
+	background-image: none !important;
 	font-size: 15px;
-	background-color: black;
+	background-color: black !important;
+	line-height: 35px; 
+	text-align: left;
 	/*color: red;*/
 }
 
