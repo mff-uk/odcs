@@ -30,14 +30,13 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 	@Override
 	public void execute(DPUContext context) throws DPUException {
 
-		final String directoryPath = config.DirectoryPath;
-		final String fileName = config.FileName;
+		final String filePath = config.FilePath;
 		final RDFFormatType formatType = config.RDFFileFormat;
 		final boolean isNameUnique = config.DiffName;
 		final boolean canFileOverwritte = true;
 
 		try {
-			rdfDataUnit.loadToFile(directoryPath, fileName, formatType,
+			rdfDataUnit.loadToFile(filePath, formatType,
 					canFileOverwritte, isNameUnique);
 		} catch (RDFException | CannotOverwriteFileException ex) {
 			throw new DPUException(ex);
