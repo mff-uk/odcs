@@ -12,9 +12,7 @@ import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
  */
 public class FileLoaderConfig implements DPUConfigObject {
 
-	public String DirectoryPath = "";
-
-	public String FileName = "";
+	public String FilePath = "";
 
 	public RDFFormatType RDFFileFormat = RDFFormatType.AUTO;
 
@@ -22,8 +20,7 @@ public class FileLoaderConfig implements DPUConfigObject {
 
 	@Override
 	public boolean isValid() {
-		return DirectoryPath != null &&
-				FileName != null &&
-				RDFFileFormat != null;
+		return FilePath != null
+				&& RDFFileFormat != null;
 	}
 }
