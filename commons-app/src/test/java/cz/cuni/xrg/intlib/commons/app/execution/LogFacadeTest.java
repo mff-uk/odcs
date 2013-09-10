@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.execution;
 
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogException;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogExceptionLine;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,6 +97,23 @@ public class LogFacadeTest {
 		boolean existExpect = !logs.isEmpty();
 				
 		assertEquals(existExpect, exist);
+	}
+	
+	@Test
+	public void testGetLogException() {
+		LogMessage message = facade.getLog(1L);
+		assertNotNull(message);
+		
+		LogException logEx = facade.getLogException(message);
+		assertNotNull(logEx);
+		assertEquals(3, logEx.getLines().size());
+		assertTrue(logEx.toString().contains("\n"));
+		
+		// check order
+		int i = 1;
+		for (LogExceptionLine line : logEx.getLines()) {
+			assertEquals(i++, line.getLineIndex());
+		}
 	}
 	
 	private void hasExecutionProperty(LogMessage log, long executionId) {

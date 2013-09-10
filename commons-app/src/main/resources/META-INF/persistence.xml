@@ -9,6 +9,7 @@
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord</class>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage</class>
+		<class>cz.cuni.xrg.intlib.commons.app.execution.log.LogExceptionLine</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo</class>		
