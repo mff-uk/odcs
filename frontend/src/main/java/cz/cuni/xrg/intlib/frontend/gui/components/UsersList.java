@@ -59,7 +59,6 @@ public class UsersList {
 		//Layout for buttons Add new user and Clear Filters on the top.
 		HorizontalLayout topLine = new HorizontalLayout();
 		topLine.setSpacing(true);
-		topLine.setWidth(100, Unit.PERCENTAGE);
 
 		Button addUserButton = new Button();
 		addUserButton.setCaption("Create new user");
@@ -87,7 +86,6 @@ public class UsersList {
 			}
 		});
 		topLine.addComponent(addUserButton);
-		topLine.setComponentAlignment(addUserButton, Alignment.MIDDLE_RIGHT);
 
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
@@ -105,14 +103,7 @@ public class UsersList {
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
-		topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
-
-		Label topLineFiller = new Label();
-		topLine.addComponentAsFirst(topLineFiller);
-		topLine.setExpandRatio(topLineFiller, 1.0f);
 		usersListLayout.addComponent(topLine);
-
-		
 		
         tableData = getTableData(App.getApp().getUsers().getAllUsers());
 
