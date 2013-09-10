@@ -85,6 +85,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private TextField textFieldGraph;
 
+	/**
+	 * For setting size of insert part to load.
+	 */
+	private TextField chunkParts;
+
 	private Button buttonGraphRem;
 
 	private Button buttonGraphAdd;
@@ -239,17 +244,18 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private void mapInsertItems() {
 		InsertItem skip = new InsertItem(InsertType.SKIP_BAD_PARTS,
-				"In case of data errors, continue with the loading "
+				"Continue with the loading "
 				+ "process, resulting data will be incomplete. ");
 		InsertItem stop = new InsertItem(InsertType.STOP_WHEN_BAD_PART,
-				"In case of data errors, stop the loading process and "
+				"Stop the loading process and "
 				+ "end with an error.");
 
-		insertItems.add(skip);
 		insertItems.add(stop);
+		insertItems.add(skip);
 
-		dataPartsOption.addItem(skip.getDescription());
+
 		dataPartsOption.addItem(stop.getDescription());
+		dataPartsOption.addItem(skip.getDescription());
 
 		dataPartsOption.setValue(stop.getDescription());
 	}
@@ -661,6 +667,44 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
 
+		// Create chunkparts
+		chunkParts = new TextField("Chunk size of triples which insert at once");
+		chunkParts.setValue("100");
+		chunkParts.setNullRepresentation("");
+		chunkParts.setImmediate(false);
+		chunkParts.setWidth("100%");
+		chunkParts.setHeight("-1px");
+		chunkParts.setInputPrompt(
+				"Chunk size of triples which insert at once");
+		chunkParts.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+				if (value != null) {
+					String size = value.toString().trim();
+
+					try {
+						long result = Long.parseLong(size);
+
+						if (result <= 0) {
+							ex = new InvalidValueException(
+									"Chunk size must be number greater than 0");
+							throw ex;
+						}
+
+					} catch (NumberFormatException e) {
+						ex = new InvalidValueException(
+								"Chunk size must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new EmptyValueException("Chunk size is a null");
+				}
+			}
+		});
+
+		verticalLayoutDetails.addComponent(chunkParts);
+
 		// OptionGroup graphOption
 		optionGroupDetail = new OptionGroup("Graph options:");
 		optionGroupDetail.setImmediate(false);
@@ -669,7 +713,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		optionGroupDetail.setMultiSelect(false);
 		verticalLayoutDetails.addComponent(optionGroupDetail);
 
-		dataPartsOption = new OptionGroup("Insert part options:");
+		dataPartsOption = new OptionGroup("In case of data errors:");
 		dataPartsOption.setImmediate(false);
 		dataPartsOption.setWidth("-1px");
 		dataPartsOption.setHeight("-1px");
@@ -692,7 +736,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 */
 	@Override
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
-		if (!comboBoxSparql.isValid() | !areGraphsNameValid()) {
+		if (!comboBoxSparql.isValid() | !chunkParts.isValid() | !areGraphsNameValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			saveEditedTexts();
@@ -704,12 +748,15 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			WriteGraphType graphType = getGraphType(graphDescription);
 			InsertType insertType = getInsertType(insertDescription);
 
+			long chunkSize = Long.parseLong(chunkParts.getValue());
+
 			config.graphOption = graphType;
 			config.insertOption = insertType;
 			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
 			config.Host_name = textFieldNameAdm.getValue().trim();
 			config.Password = passwordFieldPass.getValue();
 			config.GraphsUri = griddata;
+			config.chunkSize = chunkSize;
 
 			return config;
 		}
@@ -721,6 +768,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
+	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
@@ -751,6 +799,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 			optionGroupDetail.setValue(graphDescription);
 			dataPartsOption.setValue(insertDescription);
+
+			String chunkSize = String.valueOf(conf.chunkSize);
+			chunkParts.setValue(chunkSize);
 
 			try {
 				griddata = conf.GraphsUri;
