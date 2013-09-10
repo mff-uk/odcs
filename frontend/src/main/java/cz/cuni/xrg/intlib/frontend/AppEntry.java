@@ -178,12 +178,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 				setActive();
 				if(refreshThread == null || !refreshThread.isAlive()) {
 					setupRefreshThread();
+					LOG.debug("Starting new refresh thread.");
 				}
 				
-				if(event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
-					refreshThread.setExecutionMonitor((ExecutionMonitor)event.getNewView());
-				} else {
+				if(!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
 					refreshThread.setExecutionMonitor(null);
+					refreshThread.refreshExecution(null, null);
 				}
 				return true;
 			}
@@ -394,7 +394,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	}
 
 	public void setupRefreshThread() {
-		refreshThread = new RefreshThread(3000);
+		refreshThread = new RefreshThread(5000);
 		refreshThread.start();
 	}
 

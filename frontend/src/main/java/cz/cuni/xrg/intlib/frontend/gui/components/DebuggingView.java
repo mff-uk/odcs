@@ -132,8 +132,6 @@ public class DebuggingView extends CustomComponent {
             refreshAutomatically.setImmediate(true);
             optionLine.addComponent(refreshAutomatically);
             optionLine.setComponentAlignment(refreshAutomatically, Alignment.MIDDLE_RIGHT);
-            
-            App.getApp().getRefreshThread().refreshExecution(this.pipelineExec, this);
         }
         mainLayout.addComponent(optionLine);
 

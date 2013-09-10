@@ -216,6 +216,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         hsplit.setLocked(true);
 
         monitorTable.refreshRowCache();
+		
+		App.getApp().getRefreshThread().setExecutionMonitor(this);
 
         return mainLayout;
     }
@@ -276,6 +278,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
+				App.getApp().getRefreshThread().refreshExecution(null, null);
 
                 hsplit.setSplitPosition(100, Unit.PERCENTAGE);
                 hsplit.setLocked(true);
@@ -299,7 +302,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 
         logLayout.addComponent(buttonBar);
         logLayout.setExpandRatio(buttonBar, 0);
-
+		
+		if(pipelineExec.getExecutionStatus() == RUNNING || pipelineExec.getExecutionStatus() == SCHEDULED) {
+			App.getApp().getRefreshThread().refreshExecution(pipelineExec, debugView);
+		}
         return logLayout;
 
     }
