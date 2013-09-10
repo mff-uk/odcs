@@ -172,12 +172,15 @@ public interface RDFDataUnitHelper {
 	 * @param insertType      One of way, how solve loading RDF data parts to
 	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
 	 *                        STOP_WHEN_BAD_PART).
+	 * @param chunkSize       Size of insert part of triples which insert at
+	 *                        once to SPARQL endpoint.
 	 * @throws RDFException when loading data fail.
 	 */
 	@Deprecated
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
-			String password, WriteGraphType graphType, InsertType insertType)
+			String password, WriteGraphType graphType, InsertType insertType,
+			long chnnkSize)
 			throws RDFException;
 
 	/**
