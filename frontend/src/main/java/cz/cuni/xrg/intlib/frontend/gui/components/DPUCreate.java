@@ -35,7 +35,7 @@ import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.gui.AuthenticationAwareButtonClickListenerWrapper;
+import cz.cuni.xrg.intlib.frontend.gui.AuthAwareButtonClickWrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,7 +254,7 @@ public class DPUCreate extends Window {
 
 		Button saveButton = new Button("Save");
 		
-		saveButton.addClickListener(new AuthenticationAwareButtonClickListenerWrapper(new ClickListener() {
+		saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
 
 			/**
 			 * After pushing the button Save will be checked validation of the mandatory fields:

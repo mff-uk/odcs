@@ -18,7 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * 
  * @author Jan Vojt
  */
-public class AuthenticationAwareButtonClickListenerWrapper implements Button.ClickListener {
+public class AuthAwareButtonClickWrapper implements Button.ClickListener {
 	
 	/**
 	 * Wrapped listener.
@@ -30,7 +30,7 @@ public class AuthenticationAwareButtonClickListenerWrapper implements Button.Cli
 	 */
 	private Authentication authentication;
 
-	public AuthenticationAwareButtonClickListenerWrapper(Button.ClickListener clickListener) {
+	public AuthAwareButtonClickWrapper(Button.ClickListener clickListener) {
 		this.clickListener = clickListener;
 		authentication = SecurityContextHolder.getContext().getAuthentication();
 	}
