@@ -30,6 +30,7 @@ import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * How many triples is possible to add to SPARQL endpoind at once.
 	 */
-	protected static final int STATEMENTS_COUNT = 10;
+	protected static final long DEFAULT_CHUNK_SIZE = 10;
 
 	/**
 	 * Represent successfully connection using HTTP.
@@ -287,30 +288,24 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param directoryPath Path to directory, where file with RDF data will be
-	 *                      saved.
-	 * @param fileName      Name of file for saving RDF data.
-	 * @param formatType    Type of RDF format for saving data (example: TURTLE,
-	 *                      RDF/XML,etc.)
+	 * @param filePath   Path to file, where RDF data will be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 *                   RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
-	public void loadToFile(String directoryPath,
-			String fileName,
+	public void loadToFile(String filePath,
 			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException {
 
-		loadToFile(directoryPath, fileName, formatType, false,
-				false);
+		loadToFile(filePath, formatType, false, false);
 	}
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param directoryPath    Path to directory, where file with RDF data will
-	 *                         be saved.
-	 * @param fileName         Name of file for saving RDF data.
+	 * @param filePath         Path to file, where RDF data will be saved.
 	 * @param formatType       Type of RDF format for saving data (example:
 	 *                         TURTLE, RDF/XML,etc.)
 	 * @param canFileOverWrite boolean value, if existing file can be
@@ -322,51 +317,30 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException                 when loading data fault.
 	 */
 	@Override
-	public void loadToFile(String directoryPath,
-			String fileName, RDFFormatType formatType,
+	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
 
-		if (directoryPath == null || fileName == null) {
+		if (filePath == null) {
 
-			final String message;
-
-			if (directoryPath == null) {
-				message = "Mandatory directory path in File_loader is null.";
-			} else {
-				message = "Mandatory file name in File_loader is null.";
-			}
+			final String message = "Mandatory file path in File_loader is null.";
 
 			logger.debug(message);
 			throw new RDFException(message);
 
 
-		} else if (directoryPath.isEmpty() || fileName.isEmpty()) {
+		} else if (filePath.isEmpty()) {
 
-			final String message;
-
-			if (directoryPath.isEmpty()) {
-				message = "Mandatory directory path in File_loader is empty.";
-			} else {
-				message = "Mandatory file name in File_loader is empty.";
-			}
-
+			final String message = "Mandatory file path in File_loader is empty.";
 			logger.debug(message);
 			throw new RDFException(message);
 		}
 
-		final String slash = File.separator;
-
-		if (!directoryPath.endsWith(slash)) {
-			directoryPath += slash;
-		}
-
-		File directory = new File(directoryPath);
+		File dataFile = new File(filePath);
+		File directory = new File(dataFile.getParent());
 
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
-
-		File dataFile = new File(directoryPath + fileName);
 
 		if (!dataFile.exists()) {
 			createNewFile(dataFile);
@@ -375,9 +349,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			if (isNameUnique) {
 
 				String uniqueFileName = UniqueNameGenerator
-						.getNextName(fileName);
+						.getNextName(dataFile.getName());
 
-				dataFile = new File(directoryPath + uniqueFileName);
+				dataFile = new File(directory, uniqueFileName);
 				createNewFile(dataFile);
 
 			} else if (canFileOverWrite) {
@@ -414,7 +388,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
-				graphType, insertType);
+				graphType, insertType, DEFAULT_CHUNK_SIZE);
 	}
 
 	/**
@@ -441,7 +415,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
-				graphType, insertType);
+				graphType, insertType, DEFAULT_CHUNK_SIZE);
 	}
 
 	/**
@@ -465,7 +439,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			InsertType insertType) throws RDFException {
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
-				graphType, insertType);
+				graphType, insertType, DEFAULT_CHUNK_SIZE);
 	}
 
 	/**
@@ -483,12 +457,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param insertType      One of way, how solve loading RDF data parts to
 	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
 	 *                        STOP_WHEN_BAD_PART).
+	 * @param chunkSize       Size of insert part of triples which insert at
+	 *                        once to SPARQL endpoint.
 	 * @throws RDFException when loading data fault.
 	 */
 	@Override
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> namedGraph, String userName,
-			String password, WriteGraphType graphType, InsertType insertType)
+			String password, WriteGraphType graphType, InsertType insertType,
+			long chunkSize)
 			throws RDFException {
 
 		//check that SPARQL endpoint URL is correct
@@ -580,18 +557,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				//starting to load data to target SPARQL endpoint
 
-				List<String> dataParts = getInsertPartsTriplesQuery(
-						STATEMENTS_COUNT);
-
 				final String tempGraph = endpointGraph + "/temp";
 
 				if (insertType == InsertType.STOP_WHEN_BAD_PART) {
 
 					try {
-						loadDataParts(endpointURL, tempGraph, dataParts,
-								insertType);
-						loadDataParts(endpointURL, endpointGraph, dataParts,
-								insertType);
+						loadDataParts(endpointURL, tempGraph, insertType,
+								chunkSize);
+						loadDataParts(endpointURL, endpointGraph, insertType,
+								chunkSize);
 
 					} catch (InsertPartException e) {
 						throw new RDFException(e.getMessage(), e);
@@ -600,8 +574,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					}
 
 				} else {
-					loadDataParts(endpointURL, endpointGraph, dataParts,
-							insertType);
+					loadDataParts(endpointURL, endpointGraph, insertType,
+							chunkSize);
 				}
 
 			}
@@ -622,19 +596,70 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	private long getPartsCount(long chunkSize) {
+
+		long triples = getTripleCount();
+		long partsCount = triples / chunkSize;
+
+		if (partsCount * chunkSize != triples) {
+			partsCount++;
+		}
+
+		return partsCount;
+	}
+
+	private RepositoryConnection getRepoConnection() {
+
+		RepositoryConnection con = null;
+		try {
+			con = repository.getConnection();
+
+		} catch (RepositoryException e) {
+			logger.debug(e.getMessage(), e);
+		} finally {
+			return con;
+		}
+	}
+
+	private RepositoryResult<Statement> getRepoResult() {
+
+		RepositoryResult<Statement> repoResult = null;
+
+		try {
+			RepositoryConnection connection = repository.getConnection();
+
+			repoResult = connection.getStatements(null, null, null, true,
+					graph);
+
+		} catch (RepositoryException ex) {
+			logger.debug(ex.getMessage(), ex);
+		} finally {
+			return repoResult;
+
+		}
+	}
+
 	private void loadDataParts(URL endpointURL, String endpointGraph,
-			List<String> dataParts, InsertType insertType)
+			InsertType insertType, long chunkSize)
 			throws RDFException {
 
-		final int partsCount = dataParts.size();
+		RepositoryConnection conection = getRepoConnection();
+		RepositoryResult<Statement> lazy = getRepoResult();
 
-		for (int j = 0; j < partsCount; j++) {
+		String part = getInsertQueryPart(chunkSize, lazy);
 
-			final String query = dataParts.get(j);
+		long counter = 0;
+		long partsCount = getPartsCount(chunkSize);
 
-			final String processing = String.valueOf(j + 1) + "/" + String
+		while (part != null) {
+			counter++;
+
+			final String query = part;
+			part = getInsertQueryPart(chunkSize, lazy);
+
+			final String processing = String.valueOf(counter) + "/" + String
 					.valueOf(partsCount);
-
+			authenticate("dba", "dba");
 			try {
 				InputStreamReader inputStreamReader = getEndpointStreamReader(
 						endpointURL, endpointGraph, query,
@@ -665,6 +690,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			} catch (IOException e) {
 				throw new RDFException(e.getMessage(), e);
+			} finally {
+				if (conection != null) {
+					try {
+						conection.close();
+					} catch (RepositoryException ex) {
+						logger.error(ex.getMessage(), ex);
+					}
+				}
 			}
 		}
 	}
@@ -703,7 +736,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		List<String> endpointGraphsURI = new ArrayList<>();
 		endpointGraphsURI.add(defaultGraphUri);
 
-		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "", "",
+		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "",
+				"",
 				RDFFormat.N3, false, false);
 	}
 
@@ -745,7 +779,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String defaultGraphURI, String query, String hostName,
 			String password) throws RDFException {
 
-		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI, query, hostName,
+		extractFromSPARQLEndpoint(endpointURL, defaultGraphURI, query,
+				hostName,
 				password, RDFFormat.N3);
 	}
 
@@ -1146,20 +1181,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public List<Statement> getTriples() {
+
 		List<Statement> statemens = new ArrayList<>();
 
 		if (repository != null) {
-			RepositoryConnection connection = null;
 
+			RepositoryConnection connection = getRepoConnection();
 			try {
-				connection = repository.getConnection();
+				RepositoryResult<Statement> lazy = getRepoResult();
 
-				if (graph != null) {
-					statemens = connection.getStatements(null, null, null, true,
-							graph).asList();
-				} else {
-					statemens = connection.getStatements(null, null, null, true)
-							.asList();
+				while (lazy.hasNext()) {
+					Statement next = lazy.next();
+					statemens.add(next);
 				}
 
 			} catch (RepositoryException ex) {
@@ -1169,16 +1202,119 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					try {
 						connection.close();
 					} catch (RepositoryException ex) {
-						logger.warn(
-								"Failed to close connection to RDF repository. "
-								+ ex.getMessage(), ex);
+						logger.debug(ex.getMessage(), ex);
 					}
 				}
 			}
 
 		}
-
 		return statemens;
+	}
+
+	private String getInsertQueryPart(long sizeSplit,
+			RepositoryResult<Statement> lazy) {
+
+		final String insertStart = "INSERT {";
+		final String insertStop = "} ";
+
+		StringBuilder builder = new StringBuilder();
+
+		builder.append(insertStart);
+
+		long count = 0;
+
+		try {
+			while (lazy.hasNext()) {
+
+				Statement next = lazy.next();
+
+				Resource subject = next.getSubject();
+				URI predicate = next.getPredicate();
+				Value object = next.getObject();
+
+				String appendLine = getSubjectInsertText(subject) + " "
+						+ getPredicateInsertText(predicate) + " "
+						+ getObjectInsertText(object) + " .";
+
+				builder.append(appendLine);
+
+				count++;
+				if (count == sizeSplit) {
+					builder.append(insertStop);
+					return builder.toString();
+
+				}
+			}
+
+			if (count > 0) {
+				builder.append(insertStop);
+				return builder.toString();
+			}
+		} catch (RepositoryException e) {
+			logger.debug(e.getMessage(), e);
+		}
+
+		return null;
+
+	}
+
+	private String getSubjectInsertText(Resource subject) throws IllegalArgumentException {
+
+		if (subject instanceof URI) {
+			return prepareURIresource((URI) subject);
+		}
+
+		if (subject instanceof BNode) {
+			return prepareBlankNodeResource((BNode) subject);
+		}
+		throw new IllegalArgumentException("Subject must be URI or blank node");
+	}
+
+	private String getPredicateInsertText(URI predicate) {
+		if (predicate instanceof URI) {
+			return prepareURIresource((URI) predicate);
+		}
+		throw new IllegalArgumentException("Predicatemust be URI");
+
+	}
+
+	private String getObjectInsertText(Value object) throws IllegalArgumentException {
+
+		if (object instanceof URI) {
+			return prepareURIresource((URI) object);
+		}
+
+		if (object instanceof BNode) {
+			return prepareBlankNodeResource((BNode) object);
+		}
+
+		if (object instanceof Literal) {
+			return prepareLiteral((Literal) object);
+		}
+
+		throw new IllegalArgumentException(
+				"Object must be URI, blank node or literal");
+	}
+
+	private String prepareURIresource(URI uri) {
+		return "<" + uri.stringValue() + ">";
+	}
+
+	private String prepareBlankNodeResource(BNode bnode) {
+		return "_:" + bnode.getID();
+	}
+
+	private String prepareLiteral(Literal literal) {
+		String label = "\"\"\"" + literal.getLabel() + "\"\"\"";
+		if (literal.getLanguage() != null) {
+			//there is language tag
+			return label + "@" + literal.getLanguage();
+		} else if (literal.getDatatype() != null) {
+			return label + "^^" + prepareURIresource(literal.getDatatype());
+		}
+		//plain literal (return in """)
+		return label;
+
 	}
 
 	/**
@@ -1229,14 +1365,17 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
-						"This query is probably not valid. " + ex.getMessage(),
+						"This query is probably not valid. " + ex
+						.getMessage(),
 						ex);
 			} catch (IOException ex) {
-				logger.error("Stream were not closed. " + ex.getMessage(), ex);
+				logger.error("Stream were not closed. " + ex.getMessage(),
+						ex);
 			}
 
 		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException("This query is probably not valid. "
+			throw new InvalidQueryException(
+					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			logger.error("Connection to RDF repository failed. "
@@ -1268,8 +1407,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public Graph executeConstructQuery(
-			String constructQuery) throws InvalidQueryException {
+	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
 
 		RepositoryConnection connection = null;
 
@@ -1293,12 +1431,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
-						"This query is probably not valid. " + ex.getMessage(),
+						"This query is probably not valid. " + ex
+						.getMessage(),
 						ex);
 			}
 
 		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException("This query is probably not valid. "
+			throw new InvalidQueryException(
+					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			logger.error("Connection to RDF repository failed. "
@@ -1350,7 +1490,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			createNewFile(file);
 
 			FileOutputStream os = new FileOutputStream(file);
-			TupleQueryResultWriter tupleHandler = new SPARQLResultsXMLWriter(os);
+			TupleQueryResultWriter tupleHandler = new SPARQLResultsXMLWriter(
+					os);
 
 			tupleQuery.evaluate(tupleHandler);
 			return file;
@@ -1390,9 +1531,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *
 	 * @param selectQuery String representation of SPARQL select query.
 	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
-	 *         map key is column name and <code>List&lt;String&gt;</code> are
-	 *         string values in this column. When query is invalid, return * *
-	 *         empty <code>Map</code>.
+	 *         map key is column name * * and <code>List&lt;String&gt;</code>
+	 *         are string values in this column. When query is invalid, return *
+	 *         * * * empty <code>Map</code>.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
@@ -1474,7 +1615,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				logger.debug(
 						"Query " + selectQuery + " has not null result.");
 
-				MyTupleQueryResult result = new MyTupleQueryResult(connection,
+				MyTupleQueryResult result = new MyTupleQueryResult(
+						connection,
 						tupleResult);
 
 				return result;
@@ -1629,10 +1771,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		final String encoder = getEncoder(format);
 
+		String parameters = "default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder;
+
 		URL call = null;
 		try {
-			call = new URL(
-					endpointURL.toString() + "?default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder);
+			call = new URL(endpointURL.toString());
 		} catch (MalformedURLException e) {
 			final String message = "Malfolmed URL exception by construct extract URL. ";
 			logger.debug(message);
@@ -1642,6 +1785,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		HttpURLConnection httpConnection = null;
 		try {
 			httpConnection = (HttpURLConnection) call.openConnection();
+			httpConnection.setRequestMethod("POST");
+			httpConnection.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+
+			httpConnection.setRequestProperty("Content-Length", ""
+					+ Integer.toString(parameters.getBytes().length));
+
+			httpConnection.setUseCaches(false);
+			httpConnection.setDoInput(true);
+			httpConnection.setDoOutput(true);
+
+			try (OutputStream os = httpConnection.getOutputStream()) {
+				os.write(parameters.getBytes());
+				os.flush();
+			}
 
 			int httpResponseCode = httpConnection.getResponseCode();
 
@@ -1977,114 +2135,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} finally {
 			return handler;
 		}
-	}
-
-	protected List<String> getInsertPartsTriplesQuery(int sizeSplit) {
-
-		final String insertStart = "INSERT {";
-		final String insertStop = "} ";
-
-		List<String> parts = new ArrayList<>();
-
-		StringBuilder builder = new StringBuilder();
-
-		List<Statement> statements = getTriples();
-
-		if (!statements.isEmpty()) {
-			builder.append(insertStart);
-
-			int count = 0;
-
-			for (Statement nextStatement : statements) {
-
-				Resource subject = nextStatement.getSubject();
-				URI predicate = nextStatement.getPredicate();
-				Value object = nextStatement.getObject();
-
-				String appendLine = getSubjectInsertText(subject) + " "
-						+ getPredicateInsertText(predicate) + " "
-						+ getObjectInsertText(object) + " .";
-
-				builder.append(appendLine);
-
-				count++;
-				if (count == sizeSplit) {
-					builder.append(insertStop);
-					parts.add(builder.toString());
-
-					builder = new StringBuilder();
-					builder.append(insertStart);
-					count = 0;
-				}
-			}
-
-			if (count > 0) {
-				builder.append(insertStop);
-				parts.add(builder.toString());
-			}
-		}
-
-		return parts;
-	}
-
-	private String getSubjectInsertText(Resource subject) throws IllegalArgumentException {
-
-		if (subject instanceof URI) {
-			return prepareURIresource((URI) subject);
-		}
-
-		if (subject instanceof BNode) {
-			return prepareBlankNodeResource((BNode) subject);
-		}
-		throw new IllegalArgumentException("Subject must be URI or blank node");
-	}
-
-	private String getPredicateInsertText(URI predicate) {
-		if (predicate instanceof URI) {
-			return prepareURIresource((URI) predicate);
-		}
-		throw new IllegalArgumentException("Predicatemust be URI");
-
-	}
-
-	private String getObjectInsertText(Value object) throws IllegalArgumentException {
-
-		if (object instanceof URI) {
-			return prepareURIresource((URI) object);
-		}
-
-		if (object instanceof BNode) {
-			return prepareBlankNodeResource((BNode) object);
-		}
-
-		if (object instanceof Literal) {
-			return prepareLiteral((Literal) object);
-		}
-
-		throw new IllegalArgumentException(
-				"Object must be URI, blank node or literal");
-	}
-
-	private String prepareURIresource(URI uri) {
-		return "<" + uri.stringValue() + ">";
-	}
-
-	private String prepareBlankNodeResource(BNode bnode) {
-		return "_:" + bnode.getID();
-	}
-
-	private String prepareLiteral(Literal literal) {
-		String label = "\"\"\"" + literal.getLabel() + "\"\"\"";
-		if (literal.getLanguage() != null) {
-			//there is language tag
-			return label + "@" + literal.getLanguage();
-		} else if (literal.getDatatype() != null) {
-			return label + "^^" + prepareURIresource(literal.getDatatype());
-		}
-		//plain literal (return in """)
-		return label;
-
-
 	}
 
 	protected void addRDFStringToRepository(String rdfString, RDFFormat format,

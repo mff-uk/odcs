@@ -22,6 +22,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.SCHEDULED;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
@@ -430,7 +432,7 @@ class PipelineEdit extends ViewComponent {
 		debugWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {
-				//closeDebug();
+				App.getApp().getRefreshThread().refreshExecution(null, null);
 			}
 		});
 		debugWindow.addResizeListener(new Window.ResizeListener() {
@@ -439,6 +441,10 @@ class PipelineEdit extends ViewComponent {
 				debug.resize(e.getWindow().getHeight());
 			}
 		});
+		
+		if(pExec.getExecutionStatus() == RUNNING || pExec.getExecutionStatus() == SCHEDULED) {
+			App.getApp().getRefreshThread().refreshExecution(pExec, debug);
+		}
 		App.getApp().addWindow(debugWindow);
 	}
 

@@ -48,6 +48,7 @@ import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.xrg.intlib.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUCreate;
@@ -311,20 +312,8 @@ class DPU extends ViewComponent {
 		return dpuLayout;
 	}
 	
-	private void selectNewDPU(ItemClickEvent event){
-
-		//If the first level of the DPU tree (category Extractors, Transformer, Loaders)
-		//was selected then information layout will be shown.
-		if (event.getItemId().getClass() != DPUTemplateRecord.class) {
-			dpuLayout.removeComponent(dpuDetailLayout);
-			dpuLayout.removeComponent(layoutInfo);
-			dpuLayout.addComponent(layoutInfo, 2, 0);
-			return;
-		}
-
-		selectedDpu = (DPUTemplateRecord) event
-				.getItemId();
-		
+	private void selectNewDPU(DPUTemplateRecord dpu) {
+		selectedDpu = dpu;
 		saveAllow = permissions.hasPermission(selectedDpu, "save");
 
 
@@ -346,6 +335,20 @@ class DPU extends ViewComponent {
 			dpuLayout.addComponent(layoutInfo, 2, 0);
 
 		}
+	}
+	
+	private void selectNewDPU(ItemClickEvent event){
+
+		//If the first level of the DPU tree (category Extractors, Transformer, Loaders)
+		//was selected then information layout will be shown.
+		if (event.getItemId().getClass() != DPUTemplateRecord.class) {
+			dpuLayout.removeComponent(dpuDetailLayout);
+			dpuLayout.removeComponent(layoutInfo);
+			dpuLayout.addComponent(layoutInfo, 2, 0);
+			return;
+		}
+
+		selectNewDPU((DPUTemplateRecord) event.getItemId());
 	}
 	
 	
@@ -561,7 +564,7 @@ class DPU extends ViewComponent {
 		});
 
 
-		reloadFile.addSucceededListener(new SucceededListener() {
+		reloadFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new SucceededListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -572,9 +575,10 @@ class DPU extends ViewComponent {
 				} else {
 					errorExtension = false;
 				}
-
+				DPUTemplateRecord dpu = App.getDPUs().getTemplate(selectedDpu.getId());
+				selectNewDPU(dpu);
 			}
-		});
+		}));
 
 
 		reloadFile.addFailedListener(new FailedListener() {

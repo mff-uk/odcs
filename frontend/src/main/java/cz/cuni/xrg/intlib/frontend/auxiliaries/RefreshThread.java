@@ -2,10 +2,12 @@ package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 import cz.cuni.xrg.intlib.frontend.gui.views.ExecutionMonitor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Thread used to automatically refresh data in DebuggingView.
@@ -13,6 +15,8 @@ import java.util.logging.Logger;
  * @author Bogo
  */
 public class RefreshThread extends Thread {
+	
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RefreshThread.class);
 
 	private int interval;
 	private ExecutionMonitor executionMonitor;
@@ -20,9 +24,11 @@ public class RefreshThread extends Thread {
 	private boolean isRefreshingDebugView = false;
 	private PipelineExecution execution;
 	private DebuggingView debug;
+	private int debugLoadingCounter = 0;
 	boolean lastExecutionStatus = false;
 	//fields corresponding to Backend status refresh
 	private boolean lastBackendStatus = false;
+	private final Object lock = new Object();
 
 	/**
 	 * Default constructor with refresh interval in milliseconds.
@@ -40,12 +46,16 @@ public class RefreshThread extends Thread {
 	 * @param debugView DebuggingView in which data are refreshed.
 	 */
 	public void refreshExecution(PipelineExecution execution, DebuggingView debugView) {
-		this.isRefreshingDebugView = false;
-		this.execution = execution;
-		this.debug = debugView;
-		this.isRefreshingDebugView = true;
+		synchronized (lock) {
+			this.isRefreshingDebugView = false;
+			if(execution != null) {
+				this.execution = execution;
+				this.debug = debugView;
+				this.debugLoadingCounter = 0;
+				this.isRefreshingDebugView = true;
+			}
+		}
 
-		
 	}
 
 	@Override
@@ -56,21 +66,32 @@ public class RefreshThread extends Thread {
 			Logger.getLogger(RefreshThread.class.getName()).log(Level.SEVERE, null, ex);
 			return;
 		}
-
+		
 		while (true) {
+			LOG.debug("Iteration started.");
+			try {
 			if (isRefreshingDebugView) {
-				isRefreshingDebugView = refreshDebuggingView();
+				if(debugLoadingCounter >= 2) {
+					isRefreshingDebugView = refreshDebuggingView();
+					LOG.debug("DebuggingView refreshed.");
+				}
+				++debugLoadingCounter;
 			}
 			if (executionMonitor != null) {
 				refreshExecutionMonitor();
+				LOG.debug("ExecutionMonitor refreshed.");
 			}
-			
-			refreshBackendStatus();
 
-			try {
-				Thread.sleep(interval);
+			refreshBackendStatus();
+			LOG.debug("Backend status refreshed.");
+			
+			Thread.sleep(interval);
+			
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				return;
+			} catch (Exception ex) {
+				LOG.error("Uncaught exception", ex);
+				isRefreshingDebugView = false;
 			}
 
 		}
@@ -79,19 +100,23 @@ public class RefreshThread extends Thread {
 	private boolean refreshDebuggingView() {
 		execution = App.getPipelines().getExecution(execution.getId());
 		boolean isRunFinished = !(execution.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || execution.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
-
-		debug.getUI().access(new Runnable() {
-			@Override
-			public void run() {
-				if (debug.isRefreshingAutomatically()) {
-					lastExecutionStatus = true;
-					debug.refreshContent();
-					//Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
-				} else {
-					lastExecutionStatus = false;
-				}
+		synchronized (lock) {
+			if(debug == null) {
+				return false;
 			}
-		});
+			debug.getUI().access(new Runnable() {
+				@Override
+				public void run() {
+					if (debug.isRefreshingAutomatically()) {
+						lastExecutionStatus = true;
+						debug.refreshContent();
+						//Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
+					} else {
+						lastExecutionStatus = false;
+					}
+				}
+			});
+		}
 		isRunFinished &= lastExecutionStatus;
 		if (isRunFinished) {
 			execution = null;
@@ -102,7 +127,6 @@ public class RefreshThread extends Thread {
 
 	private void refreshExecutionMonitor() {
 		executionMonitor.getUI().access(new Runnable() {
-
 			@Override
 			public void run() {
 				executionMonitor.refresh();
@@ -125,7 +149,7 @@ public class RefreshThread extends Thread {
 
 	/**
 	 * Sets active ExecutionMonitor for refreshing or null.
-	 * 
+	 *
 	 * @param executionMonitor ExecutionMonitor to refresh.
 	 */
 	public void setExecutionMonitor(ExecutionMonitor executionMonitor) {

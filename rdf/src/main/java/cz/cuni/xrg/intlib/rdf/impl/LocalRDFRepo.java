@@ -169,9 +169,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		logger.debug("saving to directory:" + directory.getAbsolutePath());
 
 		try {
-			loadToFile(directory.getAbsolutePath(), file
-					.getName(),
-					formatType, true, false);
+			loadToFile(file.getAbsolutePath(), formatType, true, false);
 		} catch (CannotOverwriteFileException | RDFException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}

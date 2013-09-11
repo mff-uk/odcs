@@ -7,6 +7,9 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.shared.communication.PushMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -37,6 +40,7 @@ import org.springframework.context.ApplicationContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import virtuoso.jdbc4.VirtuosoException;
 
 /**
@@ -121,6 +125,29 @@ public class AppEntry extends com.vaadin.ui.UI {
 		// in panel, for possible vertical scrolling
 		main = new MenuLayout();
 		setContent(main);
+		
+		ConfirmDialog.Factory df = new DefaultConfirmDialogFactory() {
+			// We change the default order of the buttons
+			@Override
+			public ConfirmDialog create(String caption, String message,
+					String okCaption, String cancelCaption) {
+				ConfirmDialog d = super.create(caption, message,
+						okCaption,
+						cancelCaption);
+
+				// Change the order of buttons
+				d.setContentMode(ConfirmDialog.ContentMode.TEXT);
+				Button ok = d.getOkButton();
+				ok.setWidth(120, Unit.PIXELS);
+				HorizontalLayout buttons = (HorizontalLayout) ok.getParent();
+				buttons.removeComponent(ok);
+				buttons.addComponent(ok, 1);
+				buttons.setComponentAlignment(ok, Alignment.MIDDLE_RIGHT);
+
+				return d;
+			}
+		};
+		ConfirmDialog.setFactory(df);
 
 		// create a navigator to control the views
 		this.navigator = new IntlibNavigator(this, main.getViewLayout());
@@ -178,12 +205,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 				setActive();
 				if(refreshThread == null || !refreshThread.isAlive()) {
 					setupRefreshThread();
+					LOG.debug("Starting new refresh thread.");
 				}
 				
-				if(event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
-					refreshThread.setExecutionMonitor((ExecutionMonitor)event.getNewView());
-				} else {
+				if(!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
 					refreshThread.setExecutionMonitor(null);
+					refreshThread.refreshExecution(null, null);
 				}
 				return true;
 			}
@@ -217,7 +244,7 @@ public class AppEntry extends com.vaadin.ui.UI {
                     }
 
                     // Prompt the user to save or cancel if the name is changed
-					ConfirmDialog.show(getUI(), "Unsaved changes", "Please apply or cancel your changes", "Save", "Discard changes", new ConfirmDialog.Listener() {
+					ConfirmDialog.show(getUI(), "Unsaved changes", "There are unsaved changes.\nDo you wish to save them or discard?", "Save", "Discard changes", new ConfirmDialog.Listener() {
 
 						@Override
 						public void onClose(ConfirmDialog cd) {
@@ -394,7 +421,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	}
 
 	public void setupRefreshThread() {
-		refreshThread = new RefreshThread(3000);
+		refreshThread = new RefreshThread(5000);
 		refreshThread.start();
 	}
 

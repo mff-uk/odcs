@@ -51,11 +51,12 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final String password = config.Password;
 		final WriteGraphType graphType = config.graphOption;
 		final InsertType insertType = config.insertOption;
+		final long chunkSize = config.chunkSize;
 
 		try {
-			
+
 			rdfDataUnit.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
-					hostName, password, graphType,insertType);
+					hostName, password, graphType, insertType, chunkSize);
 		} catch (RDFDataUnitException ex) {
 			throw new DPUException(ex.getMessage(), ex);
 		}
@@ -67,6 +68,6 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	}
 
 	@Override
-	public void cleanUp() { }
-	
+	public void cleanUp() {
+	}
 }

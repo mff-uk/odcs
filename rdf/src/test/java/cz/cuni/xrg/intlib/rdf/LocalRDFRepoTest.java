@@ -3,10 +3,8 @@ package cz.cuni.xrg.intlib.rdf;
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
 import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
-import cz.cuni.xrg.intlib.rdf.enums.InsertType;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
-import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
@@ -23,7 +21,6 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import static org.junit.Assert.*;
-import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +119,11 @@ public class LocalRDFRepoTest {
 		testNewTriple(subject, predicate, object, rdfRepo);
 	}
 
+	private String getFilePath(String fileName) {
+		File file = new File(outDir.toString(), fileName);
+		return file.getAbsolutePath();
+	}
+
 	@Test
 	public void loadRDFtoXMLFile() {
 
@@ -132,7 +134,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {
@@ -151,7 +153,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {
@@ -169,7 +171,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {
@@ -187,7 +189,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {
@@ -202,9 +204,9 @@ public class LocalRDFRepoTest {
 		RDFFormatType format = RDFFormatType.RDFXML;
 
 		try {
-			rdfRepo.loadToFile(outDir.toString(), fileName,
+			rdfRepo.loadToFile(getFilePath(fileName),
 					format);
-			rdfRepo.loadToFile(outDir.toString(), fileName,
+			rdfRepo.loadToFile(getFilePath(fileName),
 					format);
 			fail();
 
@@ -414,7 +416,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {
@@ -487,7 +489,6 @@ public class LocalRDFRepoTest {
 //			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 //		}
 //	}
-
 	/**
 	 * This is not unit test, as it depends on remote server -> commented out
 	 * for build, use only when debugging
@@ -621,7 +622,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {
@@ -820,7 +821,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {
@@ -943,7 +944,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			repository.loadToFile(
-					outDir.toString(), fileName, format, canBeOverWriten,
+					getFilePath(fileName), format, canBeOverWriten,
 					isNameUnique);
 
 		} catch (CannotOverwriteFileException | RDFException ex) {

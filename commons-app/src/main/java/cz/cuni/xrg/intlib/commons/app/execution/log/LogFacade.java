@@ -143,6 +143,33 @@ public class LogFacade {
 
 		return resultList;
 	}
+	
+	/**
+	 * Fetches exception stacktraces for given log message logged by logback
+	 * into RDBMS.
+	 * 
+	 * @param message
+	 * @return 
+	 */
+	public LogException getLogException(LogMessage message) {
+		
+		@SuppressWarnings("unchecked")
+		List<LogExceptionLine> resultList = Collections.checkedList(
+			em.createQuery("SELECT l FROM LogExceptionLine l"
+				+ " LEFT JOIN l.message m"
+				+ " WHERE m = :msg"
+				+ " ORDER BY l.lineIndex ASC")
+				.setParameter("msg", message)
+				.getResultList(),
+			LogExceptionLine.class
+		);
+		
+		if (resultList.isEmpty()) {
+			return null;
+		}
+		
+		return new LogException(resultList);
+	}
     
 	/**
 	 * Return true if there exist logs with given level for given dpu instance

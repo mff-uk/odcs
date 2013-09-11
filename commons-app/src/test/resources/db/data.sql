@@ -131,3 +131,10 @@ INSERT INTO LOGGING_EVENT_PROPERTY(event_id,mapped_key,mapped_value) VALUES(11,'
 
 INSERT INTO LOGGING_EVENT_PROPERTY(event_id,mapped_key,mapped_value) VALUES(12,'dpuInstance','1');
 INSERT INTO LOGGING_EVENT_PROPERTY(event_id,mapped_key,mapped_value) VALUES(12,'execution','1');
+
+INSERT INTO LOGGING_EVENT_EXCEPTION(event_id, i, trace_line)
+ VALUES (1, 1, 'Exception in thread "pool-2-thread-2" org.springframework.orm.jpa.JpaSystemException: org.hibernate.exception.LockAcquisitionException: SR172: Transaction deadlocked.');
+INSERT INTO LOGGING_EVENT_EXCEPTION(event_id, i, trace_line)
+ VALUES (1, 2, '    at org.springframework.orm.jpa.EntityManagerFactoryUtils.convertJpaAccessExceptionIfPossible(EntityManagerFactoryUtils.java:326)');
+INSERT INTO LOGGING_EVENT_EXCEPTION(event_id, i, trace_line)
+ VALUES (1, 3, '    at org.springframework.orm.jpa.DefaultJpaDialect.translateExceptionIfPossible(DefaultJpaDialect.java:120)');

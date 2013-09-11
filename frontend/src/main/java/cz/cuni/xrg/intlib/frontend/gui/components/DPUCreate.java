@@ -35,6 +35,7 @@ import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.gui.AuthAwareButtonClickWrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,7 @@ public class DPUCreate extends Window {
 		dpuGeneralSettingsLayout.addComponent(nameLabel, 0, 0);
 
 		dpuName = new TextField();
-		dpuName.setImmediate(false);
+		dpuName.setImmediate(true);
 		dpuName.setWidth("310px");
 		dpuName.setHeight("-1px");
 		//settings of mandatory
@@ -119,19 +120,6 @@ public class DPUCreate extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("310px");
 		dpuDescription.setHeight("60px");
-		//settings of mandatory
-		dpuDescription.addValidator(new Validator() {
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class
-						&& !((String) value).isEmpty()) {
-					return;
-				}
-				throw new InvalidValueException("Description must be filled!");
-
-			}
-		});
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 		
 		//Visibility of DPU Template: label & OptionGroup
@@ -265,7 +253,8 @@ public class DPUCreate extends Window {
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
 		Button saveButton = new Button("Save");
-		saveButton.addClickListener(new ClickListener() {
+		
+		saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
 
 			/**
 			 * After pushing the button Save will be checked validation of the mandatory fields:
@@ -280,8 +269,7 @@ public class DPUCreate extends Window {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// checking validation of the mandatory fields
-				if ((!dpuName.isValid()) || (!dpuDescription.isValid())
-						|| (!uploadFile.isValid())) {
+				if (!dpuName.isValid() || (!uploadFile.isValid())) {
 					Notification.show("Failed to save DPURecord",
 							"Mandatory fields should be filled",
 							Notification.Type.ERROR_MESSAGE);
@@ -296,18 +284,12 @@ public class DPUCreate extends Window {
 
 					//checking if uploaded file already exist in the /target/dpu/ 
 					if (destFile.exists()) {
-						// uploaded file already exist in the /target/dpu/ 
-						List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();
-						String dpuName ="";
-						for (DPUTemplateRecord dpu : dpus){
-							//if find DPUTemplateRecord that used this file, get it name 
-							if(dpu.getJarPath().equals(FileUploadReceiver.fName)){
-								dpuName = dpu.getName();
-								break;
-							}			
-						}
 						
-						if (dpuName.isEmpty()){
+						// uploaded file already exist in the /target/dpu/ 
+						DPUTemplateRecord dpu = App.getApp().getDPUs()
+								.getTemplateByJarFile(srcFile);
+				
+						if (dpu == null) {
 							// copy file from template folder to the /target/dpu/
 							try {
 								Files.copy(srcFile, destFile);
@@ -315,13 +297,15 @@ public class DPUCreate extends Window {
 								throw new RuntimeException(ex);
 							}
 						} else {
-							// if we get the name of DPUTemplateRecord that used
-							// this file, show notification
-							Notification.show(
-									"File " + FileUploadReceiver.fName +" is already used in the DPU template " + dpuName,
-									Notification.Type.ERROR_MESSAGE);
+							// if we get the name of DPUTemplateRecord that used this
+							// file, show notification
+							Notification.show(String.format(
+								"File with name %s is already used in the DPU template %s.",
+								FileUploadReceiver.fName, dpuName
+							), Notification.Type.ERROR_MESSAGE);
 							return;
 						}
+						
 					} else {
 						// if uploaded file doesn't exist in the /target/dpu/
 						try {
@@ -388,11 +372,10 @@ public class DPUCreate extends Window {
 
 					App.getDPUs().save(dpuTemplate);
 					close();
-
 				}
 			}
 
-		});
+		}));
 		buttonBar.addComponent(saveButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {

@@ -92,7 +92,7 @@ public class DPUDetail extends Window {
 
 		dpuDescription = new TextArea();
 		dpuDescription.setImmediate(false);
-		dpuDescription.setWidth("400px");
+		dpuDescription.setWidth("500px");
 		dpuDescription.setHeight("60px");
 		if (dpu.useDPUDescription()) {
 			// leave dpuDescription blank
@@ -137,6 +137,8 @@ public class DPUDetail extends Window {
 			}
 			// add to layout
 			confDialog.setWidth("100%");
+			
+			setResizable(true);
 			mainLayout.addComponent(confDialog);
 		}
 

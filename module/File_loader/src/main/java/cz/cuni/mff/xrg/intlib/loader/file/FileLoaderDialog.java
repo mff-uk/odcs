@@ -10,7 +10,6 @@ import cz.cuni.xrg.intlib.commons.configuration.*;
 import cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -50,15 +49,10 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	private CheckBox checkBoxDiffName;
 
 	/**
-	 * TextField to set name of the file (without extension).
-	 */
-	private TextField textFieldFileName;
-
-	/**
-	 * TextField to set path to the local directory to which the file should be
+	 * TextField to set file path to the where the file should be
 	 * stored.
 	 */
-	private TextField textFieldDir;
+	private TextField textFieldFilePath;
 
 	private Validator.InvalidValueException ex;
 
@@ -156,47 +150,26 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 
 		//Directory TextField
-		textFieldDir = new TextField();
-		textFieldDir.setNullRepresentation("");
-		textFieldDir.setCaption("Directory:");
-		textFieldDir.setImmediate(true);
-		textFieldDir.setWidth("100%");
-		textFieldDir.setHeight("-1px");
-		textFieldDir.setInputPrompt("C:\\ted\\");
-		textFieldDir.addValidator(new Validator() {
+		textFieldFilePath = new TextField();
+		textFieldFilePath.setNullRepresentation("");
+		textFieldFilePath.setCaption("File path:");
+		textFieldFilePath.setImmediate(true);
+		textFieldFilePath.setWidth("100%");
+		textFieldFilePath.setHeight("-1px");
+		textFieldFilePath.setInputPrompt("C:\\ted\\result.ttl");
+		textFieldFilePath.addValidator(new Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class && !((String) value)
 						.isEmpty()) {
 					return;
 				}
-				ex = new InvalidValueException("Directory must be filled!");
+				ex = new InvalidValueException("File path must be filled!");
 				throw ex;
 			}
 		});
-		verticalLayoutCore.addComponent(textFieldDir);
+		verticalLayoutCore.addComponent(textFieldFilePath);
 
-		//File name TextField
-		textFieldFileName = new TextField();
-		textFieldFileName.setNullRepresentation("");
-		textFieldFileName.setCaption("File name:");
-		textFieldFileName.setImmediate(true);
-		textFieldFileName.setWidth("100%");
-		textFieldFileName.setHeight("-1px");
-		textFieldFileName.setInputPrompt("test-ted.ttl");
-		textFieldFileName.addValidator(new Validator() {
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class && !((String) value)
-						.isEmpty()) {
-					return;
-				}
-
-				ex = new InvalidValueException("File name must be filled!");
-				throw ex;
-			}
-		});
-		verticalLayoutCore.addComponent(textFieldFileName);
 
 		// CheckBox selected for each pipeline execution generates a different name
 		checkBoxDiffName = new CheckBox();
@@ -244,20 +217,19 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 *
 	 * @throws ConfigException Exception which might be thrown when fields
 	 *                         {@link #textFieldFileName} and
-	 *                         {@link #textFieldDir} contain null value.
+	 *                         {@link #textFieldFilePath} contain null value.
 	 * @return config Object holding configuration which is used in
 	 *         {@link #setConfiguration} to initialize fields in the
 	 *         configuration dialog.
 	 */
 	@Override
 	public FileLoaderConfig getConfiguration() throws ConfigException {
-		if ((!textFieldDir.isValid()) || (!textFieldFileName.isValid())) {
+		if (!textFieldFilePath.isValid())  {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			FileLoaderConfig config = new FileLoaderConfig();
 			config.DiffName = checkBoxDiffName.getValue();
-			config.DirectoryPath = textFieldDir.getValue().trim();
-			config.FileName = textFieldFileName.getValue().trim();
+			config.FilePath = textFieldFilePath.getValue().trim();
 			config.RDFFileFormat = (RDFFormatType) comboBoxFormat.getValue();
 			return config;
 		}
@@ -270,7 +242,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 * where the configuration object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
-	 *                         {@link #textFieldFileName}, {@link #textFieldDir}, {@link #checkBoxDiffName}, {@link #comboBoxFormat}
+	 *                         {@link #textFieldFileName}, {@link #textFieldFilePath}, {@link #checkBoxDiffName}, {@link #comboBoxFormat}
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted.
 	 * @param conf Object holding configuration which is used to initialize
@@ -280,8 +252,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
 		try {
 			checkBoxDiffName.setValue(conf.DiffName);
-			textFieldDir.setValue(conf.DirectoryPath.trim());
-			textFieldFileName.setValue(conf.FileName.trim());
+			textFieldFilePath.setValue(conf.FilePath.trim());
 			comboBoxFormat.setValue(conf.RDFFileFormat);
 		} catch (Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception
@@ -291,8 +262,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	
 	@Override
 	public String getDescription() {
-		String path = textFieldDir.getValue().trim() + 
-				textFieldFileName.getValue().trim();
+		String path = textFieldFilePath.getValue().trim();
 		// create description
 		StringBuilder description = new StringBuilder();
 		description.append("Load to: ");

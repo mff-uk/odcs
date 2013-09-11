@@ -12,8 +12,10 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogException;
 
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
 /**
  * Shows detail of selected log message.
@@ -71,8 +73,9 @@ public class LogMessageDetail extends Window {
 		mainLayout.addComponent(messageLabel, 0, 4);
 
 		fullMessageContent = new TextArea();
-                fullMessageContent.setValue(log.getMessage());
-                fullMessageContent.setReadOnly(true);
+		LogException le = App.getLogs().getLogException(log);
+        fullMessageContent.setValue(le == null ? log.getMessage() : le.toString());
+        fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
 		mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
                 mainLayout.setComponentAlignment(fullMessageContent, Alignment.TOP_LEFT);
@@ -115,7 +118,8 @@ public class LogMessageDetail extends Window {
 		levelContent.setValue(log.getLevel().toString());
 		sourceContent.setValue(log.getSource());
                 fullMessageContent.setReadOnly(false);
-		fullMessageContent.setValue(log.getMessage());
+				LogException le = App.getLogs().getLogException(log);
+                fullMessageContent.setValue(le == null ? log.getMessage() : le.toString());
                 fullMessageContent.setReadOnly(true);
                 setContentHeight(this.getHeight(), this.getHeightUnits());
 	}
