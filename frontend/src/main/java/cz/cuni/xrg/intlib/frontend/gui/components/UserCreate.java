@@ -187,7 +187,7 @@ public class UserCreate extends Window {
 						&& !((String) value).isEmpty()) {
 					String inputEmail = (String) value;
 					if (!inputEmail
-							.matches("[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})")) {
+							.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")) {
 						ex = new InvalidValueException("wrong mail format");
 						throw ex;
 					}

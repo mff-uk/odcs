@@ -136,7 +136,7 @@ public class EmailComponent {
 								if (value.getClass() == String.class
 										&& !((String) value).isEmpty()) {
 									String inputEmail = (String) value;
-									if(!inputEmail.matches("[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})")){
+									if(!inputEmail.matches("[0-9a-zA-Z._-]+@[0-9a-zA-Z]+\\.[a-zA-Z]{2,5}")){
 										mailEx = new InvalidValueException("wrong е-mail format");
 										throw mailEx;
 									}
