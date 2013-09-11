@@ -442,7 +442,7 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 		
-		if(pExec.getExecutionStatus() == RUNNING || pExec.getExecutionStatus() == SCHEDULED) {
+		if(pExec.getStatus() == RUNNING || pExec.getStatus() == SCHEDULED) {
 			App.getApp().getRefreshThread().refreshExecution(pExec, debug);
 		}
 		App.getApp().addWindow(debugWindow);

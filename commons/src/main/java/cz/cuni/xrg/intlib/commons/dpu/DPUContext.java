@@ -27,7 +27,9 @@ import cz.cuni.xrg.intlib.commons.message.MessageType;
 public interface DPUContext {
 
 	/**
-	 * Send message about execution. 
+	 * Send message about execution. If {@link MessageType#ERROR} message
+	 * is published then the execution is stopped after current DPU and the 
+	 * whole execution failed.
 	 * 
 	 * @param type Type of message.
 	 * @param shortMessage Short message, should not be more than 50 chars.
@@ -35,7 +37,9 @@ public interface DPUContext {
 	public void sendMessage(MessageType type, String shortMessage);
 
 	/**
-	 * Send message about execution.
+	 * Send message about execution. If {@link MessageType#ERROR} message
+	 * is published then the execution is stopped after current DPU and the 
+	 * whole execution failed.
 	 * 
 	 * @param type Type of message.
 	 * @param shortMessage Short message, should not be more than 50 chars.

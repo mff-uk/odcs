@@ -305,7 +305,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         logLayout.addComponent(buttonBar);
         logLayout.setExpandRatio(buttonBar, 0);
 		
-		if(pipelineExec.getExecutionStatus() == RUNNING || pipelineExec.getExecutionStatus() == SCHEDULED) {
+		if(pipelineExec.getStatus() == RUNNING || pipelineExec.getStatus() == SCHEDULED) {
 			App.getApp().getRefreshThread().refreshExecution(pipelineExec, debugView);
 		}
         return logLayout;

@@ -2,10 +2,12 @@ package cz.cuni.xrg.intlib.backend.execution.dpu;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,6 +20,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
+import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -84,6 +87,12 @@ public final class Executor implements Runnable {
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
+	/**
+	 * Log facade used to access logs.
+	 */
+	@Autowired
+	private LogFacade logFacade;
+	
 	/**
 	 * Node to execute.
 	 */
@@ -275,10 +284,6 @@ public final class Executor implements Runnable {
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
-		//} catch(InterruptedException e) {
-			// DPU interrupted on request, do not log just return false
-			// to stop the execution
-		//	return false;
 		} catch (Exception e) {
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
@@ -335,7 +340,7 @@ public final class Executor implements Runnable {
 		}
 		return dpuInstance;
 	}
-
+	
 	/**
 	 * Execute given {@link Node} from
 	 * {@link cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline}. Set
@@ -393,6 +398,13 @@ public final class Executor implements Runnable {
 		} else {
 			return false;
 		}
+		
+		// check for the error message in context or in logs
+		if (context.errorMessagePublished()) {
+			// cancel because of logged/published error record
+			return false;
+		}
+		
 		// call PostExecutors
 		if (!executePostExecutors(context)) {
 			return false;

@@ -87,12 +87,28 @@ public class Context implements DPUContext {
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;	
 	
+	/**
+	 * True if {@link #sendMessage(MessageType, String)} or 
+	 * {@link #sendMessage(MessageType, String, String)} has been used to 
+	 * publish {@link MessageType#WARNING} message.
+	 */
+	private boolean warningMessage;
+	
+	/**
+	 * True if {@link #sendMessage(MessageType, String)} or 
+	 * {@link #sendMessage(MessageType, String, String)} has been used to 
+	 * publish {@link MessageType#ERROR} message.
+	 */	
+	private boolean errorMessage;
+	
 	public Context() {
 		this.dpuInstance = null;
 		this.contextInfo = null;
 		this.lastSuccExec = null;
 		this.inputsManager = null;
 		this.outputsManager = null;
+		this.warningMessage = false;
+		this.errorMessage = false;
 	}
 	
 	/**
@@ -218,7 +234,22 @@ public class Context implements DPUContext {
 	public List<ManagableDataUnit> getOutputs() {
 		return outputsManager.getDataUnits();
 	}	
-		
+	
+	/**
+	 * 	Return true if the warning message has been publish using this context.
+	 */
+	public boolean warningMessagePublished() {
+		return this.warningMessage;
+	}
+	
+	/**
+	 * Return true if the error message has been publish using this context.
+	 * @return
+	 */
+	public boolean errorMessagePublished() {
+		return this.errorMessage;
+	}	
+	
 	/**
 	 * Return engine's general working directory.
 	 * 
@@ -290,6 +321,9 @@ public class Context implements DPUContext {
 			String fullMessage) {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
 				type, this, this));
+		// set warningMessage and errorMessage 
+		this.warningMessage = warningMessage || type == MessageType.WARNING;
+		this.errorMessage = errorMessage || type == MessageType.ERROR;
 	}
 	
 	@Override

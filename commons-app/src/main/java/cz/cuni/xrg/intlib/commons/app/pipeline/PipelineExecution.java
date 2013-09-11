@@ -123,16 +123,12 @@ public class PipelineExecution implements Serializable {
 	public Long getId() {
 		return id;
 	}
-
-	public PipelineExecutionStatus getExecutionStatus() {
-		return status;
-	}
-        
-        public PipelineExecutionStatus getStatus() {
+      
+    public PipelineExecutionStatus getStatus() {
 		return status;
 	}
 
-	public void setExecutionStatus(PipelineExecutionStatus newStatus) {
+	public void setStatus(PipelineExecutionStatus newStatus) {
 		status = newStatus;
 	}
 
