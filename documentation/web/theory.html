@@ -11,13 +11,42 @@
         
         <ul>
             <li>the main executive part, which contains the method <code>execute()</code> being called when the DPU is executed as part of the pipeline execution. See an example for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformer.java">SPARQL transformer</a> 
-            
             	</li>
             <li>the configuration object, which configures main executive part and is used to persist the configuration dialog settings. See an example for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformerConfig.java">SPARQL transformer</a></li>
             <li>the configuration dialog, which allows to configure the DPU in the graphical user interface of ODCleanStore. See an example for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformerDialog.java">SPARQL transformer</a></li>
-         </ul> 
+        </ul>
+        Every DPU must implement only the first part. The second and third parts are optional.
+        Based on the required features the DPU's programmer <a href="#whyUsePreImpl">should</a> use
+        appropriate preimplemented class from package <code>cz.cuni.xrg.intlib.commons.module.dpu</code>
+        <ul>
+        	<li><code>ConfigurableBase</code> for DPU's with configuration and optionali with configuration dialog.</li>
+        	<li><code>NonConfigurableBase</code> for DPU's without configuration and dialog.</li>
+        </ul>
+        In order to provide configuration dialog the DPU's main class also has to implements interface 
+			<div class="code"> <pre> <code>
+interface cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider &lt;C extends DPUConfigObject&gt; </code> </pre> </div>         
         
-        
+        <h3 id="DpuExecFailed">DPUs execution</h3>
+        DPU's main functionality is executed in - <code>execute(DPUContext context)</code> - method from interface
+        <div class="code"> <pre> <code>
+interface cz.cuni.xrg.intlib.commons.dpu.DPU </code> </pre> </div>    
+        Also not every execution has to ends well. For such reason every execution can failed. There are
+        two ways how to fail DPU's execution:
+        <ol>
+        	<li>Send ERROR message as via <a href="#context">context</a>. In such case the execution
+        		normally continue and it's finished when - <code>execute(DPUContext context)</code> - ends.
+        		But no mather how the execution continue it is consider to finished with failed. </li>
+        	<li>By throwing exception durring execution of - <code>execute(DPUContext context)</code> -. 
+        		Best is to use <code>DPUException</code> with reasonable message that describe the reason
+        		of execution's failure.</li>
+        </ol>
+        As the DPU's execution can be time consuming the ODCL provide user with possibility to 
+        stop the execution. Unfortunately this can not be done without DPU's cooperation. 
+        In order to cooperate every DPU should periodically call <code>DPUContext.canceled()</code> 
+        function. If this function return true the execution should stop as soon as possible. If the
+        execution is stopped on user request then after the ends of  - <code>execute(DPUContext context)</code> -
+        function  - <code>cleanUp()</code> - is called. The - <code>cleanUp()</code> -
+        method should take care about releasing all DPU's allocated resources.
         
         <h3>Types of DPUs</h3>
         <div>The application distinguished three logical types of DPUs: 
@@ -28,13 +57,10 @@
             	The logical difference between extractor and transformer is that extractor downloads and triplifies external data, whereas transformer works with data being already locally available for the ODCleanStore engine. </li>
             <li>Loader - DPU which save data into the target file, database, etc.
                 </li>
-         </ul> 
-            
-         The DPU, you will be creating, must be annotated with one of the annotations <code>@AsExtractor, @AsTransformer, @AsLoader</code> to denote that the DPU is of one of the types above.   
+         </ul>
+         The DPU, you will be creating, must be annotated with one of the annotations <code>@AsExtractor, @AsTransformer, @AsLoader</code> to denote that the DPU is of one of the types above.
         </div>
-        
-        
-		
+
           
           <h3 id="secConfigurationConcept">DPU Configuration</h3>
 		<div>Every DPU has a possibility to store configuration object that parametrizes its 
@@ -44,12 +70,17 @@
 			
 			The configuration object must implement interface
 			<div class="code"> <pre> <code>
-interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject {}  </code> </pre> </div> 
+interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject </code> </pre> </div> 
 			which is located in <code>commons</code> module. The interface requires implementation 
 			of one method - <code>isValid</code> - which checks whether the configuration is valid when the user's input is stored from the configuration dialog to the configuration object.			</div>
-                        
-                        Configuration object may be also used to hold default configuration of the DPU by introducing default values for the required attributes. 
-                        
+            Configuration object may be also used to hold default configuration of the DPU by introducing default values for the required attributes. 
+            <br/>Instead of implementing interface the configuration class can extend 
+            following preimplemented configuration class. 
+			<div class="code"> <pre> <code>
+class cz.cuni.xrg.intlib.commons.module.config.DPUConfigObject</code> </pre> </div> 
+			This class provide default 'always true' implementation of - <code>isValid</code> -, 
+			this implementation can be optionally override by programmer. 
+			See <a href="#whyUsePreImpl">reasons</a> why is usage of preimplementad classes prefered solution. 
                         
          <h3>DPU Template</h3>
           Every DPU is associated with a default (template) configuration (such configuration may contain, e.g., a file from which data should be by default extracted or the SILK linker rule, which should be by default applied). DPU together with its default (template) configuration is called DPU template. 
@@ -58,8 +89,6 @@ interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject {}  </code> <
             <h3>DPU Instance</h3>
           When DPU (e.g. RDF SPARQL Extractor, CSV Extractor, SILK Linker) is placed on the pipeline, such placement is called DPU instantiation and the result of such instantiation is called DPU instance. DPU instance has its own configuration being based on the template configuration of the DPU. DPU instance is always associated with the given pipeline. One pipeline may have more different DPU instances of the same DPU template. 
           
-                 
-		
           <h3>Data Units</h3> <div>
 		<p>Data between DPUs are passed in containers that are called 
 		DataUnits. Therefore, data units can be comprehanded as data flow units, which describe data being passed between  DPUs. DPUs distinguish input and output data units. Input data units are data units which flows into the processed DPU, output data units are those flowing from the processed DPU.          
@@ -117,32 +146,20 @@ public RDFDataUnit inputDataUnit;
                         <li> Methods for transforming RDF data via queries
                         <ul>
                             <li>transform(String updateQuery) - Transform RDF data in DataUnit using SPARQL (update) query </li>
-                            
-                            
-                        
-                            
                         </ul>
                         </li>
-                        
-                           
-                        
-                            
+
                         </ul>
                         </li>
                         
                         
 		</ul> For detailed information about the available methods please refer to the 
 		<span class="inCode">RDFDataUnit</span> class </div> </p>
-		  
-		  
-		    
 		                
         <h3 id="context">Pipeline execution - DPU Context</h3> <div>
         <p>Each DPU has its execution context. The main interface is 
 		<code>DPUContext</code>. 
             
-        
-        
         <p> Context provides access to the external environment of the DPU, such as to the working directories of DPUs. There are three places where DPU can store it's temporary files needed for its execution.
 		<ul>
 			<li><b>working directory</b> - This directory is unique for single DPU instance (DPU placement on the pipeline) and the particular run of the pipeline. Only currently running DPUs can see such directory, which is private for the given DPU instance and pipeline run. Working directory may be obtained by calling <code>context.getWorkingDir();</code> </li>
@@ -185,19 +202,12 @@ File filePath = fileManager.getGlobal().directory("myDir").file("myFile.txt");
 context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
 </code> </pre> </div> </p>
+		Please also keep in mind that if DPU sends ERROR message then the execution is considered to failed. 
+		The execution is stopped after current DPU and the whole pipeline failed. For more 
+		information please refer to <a href="DpuExecFailed">DPU's failure</a> note.
 		
 		
-		
-		
-		
-		
-    
-             
-             
-             
-             
-                        
-                        <h3>Logging the DPU's activity</h3>
+		<h3>Logging the DPU's activity</h3>
 		<div>Every DPU should log extensively during its execution. To log in your DPU, use <code>slf4j</code>. 
 			The log for each DPU is stored and accessible to the user by the 
 			graphical user interface of ODCleanStore.  
@@ -216,17 +226,11 @@ public class MyDPU  {
 			<pre> <code>log.debug("Some message .. ");</code> <br/> <code>log.info("Some message .. ");</code> <br/> <code>log.warn("Some message .. ");</code> <br/> <code>log.error("Some message .. ");</code></pre> </div>
 		</div>
 	
-	As you can see, there are various levels of logged messages. Basic log levels are DEBUG, INFO, WARNING, ERROR. If you run pipeline, by default WARNING+ logs are shown in the execution monitor. If you debug pipeline, all log levels are shown. 
-                        
-	
-		
-	
-	
-	
-	
-	
-	
-
+	As you can see, there are various levels of logged messages. Basic log levels are DEBUG, INFO, WARNING, ERROR. If you run pipeline, by default WARNING+ logs are shown in the execution monitor.
+	If you debug pipeline, all log levels are shown otherwise only INFO+ log are shown. If WARNING+ log is logged and
+	there is no error during whole pipeline execution the execution will finished with state FINISHED_WARNING. 
+	In difference to the DPU's messages the execution can never failed because of logged log.
+    
 	<h2 id="basicTechs">Basic Technologies</h2>
 
 	<h3 id="osgi">OSGi bundles</h3>
@@ -251,8 +255,6 @@ Import-Package: com.vaadin.data,com.vaadin.data.util,com.vaadin.server,c
 <p> The <code>Export-Package</code> configuration option specifies packages that the DPU bundle provides to the external environment (ODCleanStore). On the other hand 
 	<code>Import-Package</code> configuration option lists dependencies of the bundle -- the packages that are required by the bundle and MUST be provide by the external environment (ODCleanStore) before the DPU is used. Dependencies are specified as packages, not JAR archives or classes in the  <code>maninifest.mf</code> file. </p>
         
-        
-        
         Manifest file  <code>maninifest.mf</code> also contains lines with <code>DPU-MainClass</code> and
 	<code>DPU-Package</code> that are essential for bundle use. <code>DPU-MainClass</code> contains name of the main class of the DPU which is called when the DPU is executed on the pipeline. <code>DPU-Package</code> contains name of the package in which the main class is located.
         
@@ -267,6 +269,15 @@ Import-Package: com.vaadin.data,com.vaadin.data.util,com.vaadin.server,c
 	<p><code>Pom.xml</code> file is the basic configuration file needed when the maven project is being build. If you want to add dependency
 	to the project (DPU bundle),  <code>pom.xml</code>  is the right place. See the sample <code>pom.xml</code> for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/pom.xml">SPARQL transformer</a> </p>
         
+    <h3 id="whyUsePreImpl">Why use preimplemented classes?</h3>    
+    The preimplemented classes contains default implementation for optionally implemented methods. 
+    This is why their usage can made DPU's code simpler and also allows DPU's developer to focus
+    directly on implementation of DPU's executive functionality <br/>
+	The other great advantage is possibly easier switch to the newer ODCL version. If the new 
+	method will be introduced into base interface then if possible default implementation
+	will be provided in respective preimplements class. Thanks to this the DPU's 
+	code it self does not have to change. The DPU can be directly recompiled with 
+	latest ODCL version and it's readily to be used.  
 
 </body>
 </html>

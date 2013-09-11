@@ -1,7 +1,6 @@
 package com.example;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
-import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.*;
@@ -13,7 +12,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsTransformer
 public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
-		implements DPU, 
+		implements 
 		// If you do not want the dialog, delete the following line
 		// 	and getConfigurationDialog function
 		ConfigDialogProvider<DPUTemplateConfig> 

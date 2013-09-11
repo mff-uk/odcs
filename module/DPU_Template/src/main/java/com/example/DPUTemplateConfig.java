@@ -1,11 +1,14 @@
 package com.example;
 
-import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
+import cz.cuni.xrg.intlib.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Put your DPU's configuration here.
+ * 
+ * You can optionally implement {@link #isValid()} to provide possibility
+ * to validate the configuration.
  */
-public class DPUTemplateConfig implements DPUConfigObject {
+public class DPUTemplateConfig extends DPUConfigObjectBase {
 
     private int width;
     
@@ -29,11 +32,5 @@ public class DPUTemplateConfig implements DPUConfigObject {
      public int getHeight() {
         return height;    
     }
-
-	@Override
-	public boolean isValid() {
-		// TODO : Return true in case the current configuration is valid
-		return true;
-	}
 
 }

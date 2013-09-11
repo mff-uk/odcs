@@ -27,7 +27,7 @@
         	<li>A class which defines the configuration dialog, which may be used by users 
         		of your DPU to set up the configuration object of your DPU. See <a href="#filesDpuTemplateConfig">for details</a>
         	<li>A class which implements the main executive part of the DPU which contains the method <code>execute()</code> being called when the DPU is executed as part of the pipeline execution. It may be parametrized by the configuration object previously set in the 
-                coniguration dialog. See <a href="#filesDpuTemplateConfigDialog">for details</a></li>
+                configuration dialog. See <a href="#filesDpuTemplateConfigDialog">for details</a></li>
         </ul>
                 
                  For each file above, we explain in the 
@@ -91,14 +91,12 @@
 		
 		<h3 id="filesDpuTemplateConfig">DPUTemplateConfig.java</h3>	<div>
                                       
-		The file <code><a href="https://github.com/mff-uk/intlib/blob/master/module/DPU_Template/src/main/java/com/example/DPUTemplateConfig.java">DPUTemplateConfig.java</a></code> contains template for holding the DPU's configuration. The class must implement interface 
-<div class="code"> <pre> <code> 
-cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject
-</code> </pre> </div> 
- 
+		The file <code><a href="https://github.com/mff-uk/intlib/blob/master/module/DPU_Template/src/main/java/com/example/DPUTemplateConfig.java">DPUTemplateConfig.java</a></code>
+		 contains template for holding the DPU's configuration. The configuration class extends <div class="code"> <pre> <code>
+cz.cuni.xrg.intlib.commons.module.config.DPUConfigObjectBase.
+ </code> </pre>  </div> 
 		DPUTemplateConfig class may be accessed from <code>DPUTemplate</code> class via the attribute
-		<code>config</code>. <code>DPUTemplateConfig</code> class requires
-		implementation of the validation method <a href="theory.html#secConfigurationConcept">isValid.</a> </div>
+		<code>config</code>.
                 
                 <p>See the sample
 			implementation of the configuration object for a <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformerConfig.java">SPARQL transformer</a>.</p>
@@ -117,22 +115,6 @@ cz.cuni.xrg.intlib.commons.module.dialog.BaseConfigDialog&lt;Config&gt;
                 <p>See  the sample
 			implementation of the configuration dialog for a <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformerDialog.java">SPARQL transformer</a>.</p>
 			
-			
-			
-	
-			
-			
-				
-		
-        
-		
-		
-		
-		
-		
-		
-		
-		
 		<h3 id="createBundle">Creating the DPU Bundle</h3>
 	DPUs are packed in the form of <a href="#osgi">OSGi</a> bundles. OSGi bundle is a JAR archive with special metadata in the manifest file. 
 	DPU bundles are built using maven by running 
@@ -176,7 +158,7 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 	<p>In Eclipse:</p>
 	<ul>
 		<li>Select <i>File, New, Other</i>.	</li>
-		<li><Then in <i>New project</i> dialog,  select
+		<li>Then in <i>New project</i> dialog,  select
 			<i>Plugin from Existing JAR files</i> and click on <i>Next</i></li>
 		<li> Now you can select existing jar files.
 			These jar files will be used to create the OSGI bundle.</li>
