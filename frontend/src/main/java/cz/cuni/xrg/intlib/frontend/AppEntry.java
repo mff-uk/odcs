@@ -244,7 +244,7 @@ public class AppEntry extends com.vaadin.ui.UI {
                     }
 
                     // Prompt the user to save or cancel if the name is changed
-					ConfirmDialog.show(getUI(), "Unsaved changes", "There are unsaved changes. Do you wish to save them or discard?", "Save", "Discard changes", new ConfirmDialog.Listener() {
+					ConfirmDialog.show(getUI(), "Unsaved changes", "There are unsaved changes.\nDo you wish to save them or discard?", "Save", "Discard changes", new ConfirmDialog.Listener() {
 
 						@Override
 						public void onClose(ConfirmDialog cd) {
