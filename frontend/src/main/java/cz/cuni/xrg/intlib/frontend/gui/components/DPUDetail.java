@@ -92,7 +92,7 @@ public class DPUDetail extends Window {
 
 		dpuDescription = new TextArea();
 		dpuDescription.setImmediate(false);
-		dpuDescription.setWidth("400px");
+		dpuDescription.setWidth("500px");
 		dpuDescription.setHeight("60px");
 		if (dpu.useDPUDescription()) {
 			// leave dpuDescription blank
