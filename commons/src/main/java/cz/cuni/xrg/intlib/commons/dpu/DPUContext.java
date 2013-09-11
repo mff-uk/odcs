@@ -58,6 +58,14 @@ public interface DPUContext {
 	public boolean isDebugging();
 
 	/**
+	 * Return true if the execution of current DPU should be stopped
+	 * as soon as possible. After the {@link DPU#execute(DPUContext)} method
+	 * finished the {@link DPU#cleanUp()} will be called.
+	 * @return
+	 */
+	public boolean canceled();
+	
+	/**
 	 * Return path to the existing DPU working directory. The working directory
 	 * is unique for every DPU and execution.
 	 * 

@@ -100,7 +100,7 @@ public class EmailComunicator implements ApplicationListener<ApplicationEvent>{
 		body.append(execution.getEnd().toString());
 		body.append("<br/>");
 		body.append("Execution result: ");
-		body.append(execution.getExecutionStatus());
+		body.append(execution.getStatus());
 		body.append("<br/>");
 		
 		return body.toString();

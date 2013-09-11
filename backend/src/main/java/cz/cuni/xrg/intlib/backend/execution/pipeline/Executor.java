@@ -321,7 +321,8 @@ public class Executor implements Runnable {
 				}
 
 				if (stopExecution) {
-					stopExecution(executorThread);
+					// try to stop the DPU's execution thread
+					stopExecution(executorThread, dpuExecutor);
 					// jump out of waiting cycle
 					break;
 				}
@@ -389,10 +390,14 @@ public class Executor implements Runnable {
 	 * 
 	 * @param executorThread thread servicing execution which needs to be
 	 *            stopped
+	 * @param dpuExecutor Executor for given DPUs.
 	 */
-	private void stopExecution(Thread executorThread) {
+	private void stopExecution(Thread executorThread,
+			cz.cuni.xrg.intlib.backend.execution.dpu.Executor dpuExecutor) {
 		LOG.debug("Terminating the DPU thread ...");
-		// kill executorThread, and wait for it to die
+		// set cancel flag
+		dpuExecutor.cancel();
+		// interrupt executorThread, and wait for it ...
 		executorThread.interrupt();
 		try {
 			executorThread.join();
@@ -401,5 +406,5 @@ public class Executor implements Runnable {
 		}
 		LOG.debug("DPU thread terminated");
 	}
-	
+
 }

@@ -36,7 +36,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 
 	protected PipelineFailedEvent(
 			String shortMessage,
-			Exception exception,
+			Throwable exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
@@ -52,7 +52,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 	protected PipelineFailedEvent(
 			String shortMessage,
 			String longMessagePrefix,
-			Exception exception,
+			Throwable exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
@@ -95,6 +95,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			Object source) {
 		return new PipelineFailedEvent("Pipeline execution failed.",
 				"Execution failed due to error: " + error.getMessage(),
+				error, 
 				dpuInstance,
 				pipelineExec,
 				source);

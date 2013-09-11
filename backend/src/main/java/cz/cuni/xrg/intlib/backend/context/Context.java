@@ -101,6 +101,12 @@ public class Context implements DPUContext {
 	 */	
 	private boolean errorMessage;
 	
+	/**
+	 * Set to true if the current DPU execution should be stopped 
+	 * as soon as possible.
+	 */
+	private boolean canceled;
+	
 	public Context() {
 		this.dpuInstance = null;
 		this.contextInfo = null;
@@ -109,6 +115,7 @@ public class Context implements DPUContext {
 		this.outputsManager = null;
 		this.warningMessage = false;
 		this.errorMessage = false;
+		this.canceled = false;
 	}
 	
 	/**
@@ -201,6 +208,15 @@ public class Context implements DPUContext {
 	public ManagableDataUnit addOutputDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
 		return outputsManager.addDataUnit(type, name);
+	}
+	
+	/**
+	 * Set cancel flag for execution to true. This command DPU to stop
+	 * as soon as possible. Can be called from other then DPU's execution
+	 * thread.
+	 */
+	public void cancel() {
+		this.canceled = true;
 	}
 	
 	/**
@@ -331,6 +347,11 @@ public class Context implements DPUContext {
 		return contextInfo.getExecution().isDebugging();
 	}
 
+	@Override
+	public boolean canceled() {
+		return canceled;
+	}	
+	
 	@Override
 	public File getWorkingDir() {
 		File directory = new File(getGeneralWorkingDir(),
