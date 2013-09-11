@@ -1,13 +1,13 @@
 package cz.cuni.mff.xrg.intlib.transformer.SPARQL;
 
-import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
+import cz.cuni.xrg.intlib.commons.module.config.DPUConfigObjectBase;
 
 /**
  *
  * @author Jiri Tomes
  * @author tknap
  */
-public class SPARQLTransformerConfig implements DPUConfigObject {
+public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 
 	public String SPARQL_Update_Query = "";
 
