@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.intlib.transformer.SPARQL;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
-import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsTransformer;
@@ -22,7 +21,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 @AsTransformer
 public class SPARQLTransformer
 		extends ConfigurableBase<SPARQLTransformerConfig>
-		implements DPU, ConfigDialogProvider<SPARQLTransformerConfig> {
+		implements ConfigDialogProvider<SPARQLTransformerConfig> {
 
 	@InputDataUnit
 	public RDFDataUnit intputDataUnit;
@@ -52,8 +51,5 @@ public class SPARQLTransformer
 	public AbstractConfigDialog<SPARQLTransformerConfig> getConfigurationDialog() {
 		return new SPARQLTransformerDialog();
 	}
-
-	@Override
-	public void cleanUp() {	}
 	
 }

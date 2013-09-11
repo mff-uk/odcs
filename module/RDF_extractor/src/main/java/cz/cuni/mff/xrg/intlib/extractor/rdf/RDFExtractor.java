@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.intlib.extractor.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
-import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsExtractor;
@@ -25,7 +24,7 @@ import org.openrdf.rio.RDFFormat;
  */
 @AsExtractor
 public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
-		implements DPU, ConfigDialogProvider<RDFExtractorConfig> {
+		implements ConfigDialogProvider<RDFExtractorConfig> {
 
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -69,7 +68,4 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		return new RDFExtractorDialog();
 	}
 
-	@Override
-	public void cleanUp() {
-	}
 }

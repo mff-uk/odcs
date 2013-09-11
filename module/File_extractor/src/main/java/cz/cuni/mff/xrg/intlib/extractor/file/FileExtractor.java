@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.intlib.extractor.file;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
-import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsExtractor;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.OutputDataUnit;
@@ -18,7 +17,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
  */
 @AsExtractor
 public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
-		implements DPU, ConfigDialogProvider<FileExtractorConfig> {
+		implements ConfigDialogProvider<FileExtractorConfig> {
 
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -45,8 +44,5 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 	public AbstractConfigDialog<FileExtractorConfig> getConfigurationDialog() {
 		return new FileExtractorDialog();
 	}
-
-	@Override
-	public void cleanUp() {	}
 	
 }

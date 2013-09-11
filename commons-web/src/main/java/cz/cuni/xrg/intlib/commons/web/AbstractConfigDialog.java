@@ -37,6 +37,8 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	 * valid, or this functionality is not supported can return null.
 	 * 
 	 * @return Can be null.
+	 * <b>This functionality is not currently supported by ODCS, but the 
+	 * returned value may be user in further.</b>
 	 */	
 	public abstract String getToolTip();
 	
@@ -44,7 +46,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	 * Return configuration summary that can be used as DPU description. The
 	 * summary should be short and as much informative as possible. Return null
 	 * in case of invalid configuration or it this functionality is not
-	 * supported
+	 * supported. The returned string should be reasonably short.
 	 * 
 	 * @return Can be null.
 	 */	

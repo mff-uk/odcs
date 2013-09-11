@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.intlib.loader.rdf;
 
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
-import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.dpu.annotation.AsLoader;
@@ -23,7 +22,7 @@ import java.util.List;
  */
 @AsLoader
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
-		implements DPU, ConfigDialogProvider<RDFLoaderConfig> {
+		implements ConfigDialogProvider<RDFLoaderConfig> {
 
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -67,7 +66,4 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		return new RDFLoaderDialog();
 	}
 
-	@Override
-	public void cleanUp() {
-	}
 }

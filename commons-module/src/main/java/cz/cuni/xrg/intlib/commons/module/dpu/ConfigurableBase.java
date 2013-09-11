@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.module.dpu;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
+import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.module.config.ConfigWrap;
 
 /**
@@ -13,7 +14,7 @@ import cz.cuni.xrg.intlib.commons.module.config.ConfigWrap;
  * @author Tomas Knap
  */
 public abstract class ConfigurableBase<C extends DPUConfigObject>
-		implements Configurable<C> {
+		implements Configurable<C>, DPU  {
 
 	/**
 	 * Object configuration.
@@ -49,5 +50,8 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	public byte[] getConf() throws ConfigException {
 		return configWrap.serialize(config);
 	}
+	
+	@Override
+	public void cleanUp() { }	
 
 }
