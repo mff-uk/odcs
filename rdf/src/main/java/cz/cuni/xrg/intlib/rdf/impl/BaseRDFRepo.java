@@ -102,6 +102,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	protected boolean isReadOnly;
 
+	/**
+	 *
+	 * @return default size of statements for chunk to load to SPARQL endpoint.
+	 */
+	public static long getDefaultChunkSize() {
+		return DEFAULT_CHUNK_SIZE;
+	}
+
 	@Override
 	public void addFromFile(File file) throws RDFException {
 		extractFromFile(file, RDFFormat.RDFXML, "", false);
@@ -502,6 +510,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} else if (namedGraph.isEmpty()) {
 			final String message = "Named graph must be specifed";
 
+			logger.debug(message);
+			throw new RDFException(message);
+		}
+
+		if (chunkSize <= 0) {
+			final String message = "Chunk size must be number greater than 0";
 			logger.debug(message);
 			throw new RDFException(message);
 		}

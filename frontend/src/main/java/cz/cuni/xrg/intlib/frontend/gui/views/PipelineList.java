@@ -147,7 +147,10 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							IntlibHelper.runPipeline(pipeline, true);
+							PipelineExecution exec = IntlibHelper.runPipeline(pipeline, true);
+							if(exec != null) {
+								App.getApp().getNavigator().navigateTo(ViewNames.EXECUTION_MONITOR.getUrl() + "/" + exec.getId());
+							}
 						}
 					});
 			layout.addComponent(runDebugButton);
