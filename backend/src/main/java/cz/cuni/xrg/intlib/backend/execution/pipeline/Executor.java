@@ -270,7 +270,7 @@ public class Executor implements Runnable {
 		if (!execution.isDebugging()) {
 			// add minimal level to MDCExecutionLevelFilter
 			MdcExecutionLevelFilter.add(executionId,
-					ch.qos.logback.classic.Level.WARN);
+					ch.qos.logback.classic.Level.INFO);
 		}
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
 
