@@ -312,20 +312,8 @@ class DPU extends ViewComponent {
 		return dpuLayout;
 	}
 	
-	private void selectNewDPU(ItemClickEvent event){
-
-		//If the first level of the DPU tree (category Extractors, Transformer, Loaders)
-		//was selected then information layout will be shown.
-		if (event.getItemId().getClass() != DPUTemplateRecord.class) {
-			dpuLayout.removeComponent(dpuDetailLayout);
-			dpuLayout.removeComponent(layoutInfo);
-			dpuLayout.addComponent(layoutInfo, 2, 0);
-			return;
-		}
-
-		selectedDpu = (DPUTemplateRecord) event
-				.getItemId();
-		
+	private void selectNewDPU(DPUTemplateRecord dpu) {
+		selectedDpu = dpu;
 		saveAllow = permissions.hasPermission(selectedDpu, "save");
 
 
@@ -347,6 +335,20 @@ class DPU extends ViewComponent {
 			dpuLayout.addComponent(layoutInfo, 2, 0);
 
 		}
+	}
+	
+	private void selectNewDPU(ItemClickEvent event){
+
+		//If the first level of the DPU tree (category Extractors, Transformer, Loaders)
+		//was selected then information layout will be shown.
+		if (event.getItemId().getClass() != DPUTemplateRecord.class) {
+			dpuLayout.removeComponent(dpuDetailLayout);
+			dpuLayout.removeComponent(layoutInfo);
+			dpuLayout.addComponent(layoutInfo, 2, 0);
+			return;
+		}
+
+		selectNewDPU((DPUTemplateRecord) event.getItemId());
 	}
 	
 	
@@ -573,7 +575,8 @@ class DPU extends ViewComponent {
 				} else {
 					errorExtension = false;
 				}
-
+				DPUTemplateRecord dpu = App.getDPUs().getTemplate(selectedDpu.getId());
+				selectNewDPU(dpu);
 			}
 		}));
 

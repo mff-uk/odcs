@@ -57,7 +57,7 @@ public class DPUTree extends CustomComponent {
         if (isExpandable) {
             HorizontalLayout topLine = new HorizontalLayout();
             topLine.setWidth(100, Unit.PERCENTAGE);
-            Label lblTree = new Label("DPU Tree");
+            Label lblTree = new Label("DPU Templates Tree");
             lblTree.setWidth(160, Unit.PIXELS);
             topLine.addComponent(lblTree);
             btnMinimize = new Button();
@@ -126,7 +126,7 @@ public class DPUTree extends CustomComponent {
         layoutTree.setExpandRatio(filterBar, 0.05f);
 
         // DPURecord tree 
-        dpuTree = new Tree("DPU Templates");
+        dpuTree = new Tree();
         dpuTree.setImmediate(true);
         dpuTree.setHeight("100%");
         //	dpuTree.setHeight(600, Unit.PIXELS);
