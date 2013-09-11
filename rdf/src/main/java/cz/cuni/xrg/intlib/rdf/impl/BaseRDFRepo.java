@@ -102,6 +102,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	protected boolean isReadOnly;
 
+	/**
+	 *
+	 * @return default size of statements for chunk to load to SPARQL endpoint.
+	 */
+	public static long getDefaultChunkSize() {
+		return DEFAULT_CHUNK_SIZE;
+	}
+
 	@Override
 	public void addFromFile(File file) throws RDFException {
 		extractFromFile(file, RDFFormat.RDFXML, "", false);

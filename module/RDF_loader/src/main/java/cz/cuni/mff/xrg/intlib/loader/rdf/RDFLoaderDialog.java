@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
+import cz.cuni.xrg.intlib.rdf.impl.BaseRDFRepo;
 
 /**
  * Configuration dialog for DPU SPARQL Loader.
@@ -89,6 +90,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * For setting size of insert part to load.
 	 */
 	private TextField chunkParts;
+
+	/**
+	 * Button for set default chunk size.
+	 */
+	private Button chunkDefault;
 
 	private Button buttonGraphRem;
 
@@ -667,44 +673,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
 
-		// Create chunkparts
-		chunkParts = new TextField("Chunk size of triples which insert at once");
-		chunkParts.setValue("100");
-		chunkParts.setNullRepresentation("");
-		chunkParts.setImmediate(false);
-		chunkParts.setWidth("100%");
-		chunkParts.setHeight("-1px");
-		chunkParts.setInputPrompt(
-				"Chunk size of triples which insert at once");
-		chunkParts.addValidator(new Validator() {
-			@Override
-			public void validate(Object value) throws Validator.InvalidValueException {
-				if (value != null) {
-					String size = value.toString().trim();
-
-					try {
-						long result = Long.parseLong(size);
-
-						if (result <= 0) {
-							ex = new InvalidValueException(
-									"Chunk size must be number greater than 0");
-							throw ex;
-						}
-
-					} catch (NumberFormatException e) {
-						ex = new InvalidValueException(
-								"Chunk size must be a number");
-						throw ex;
-					}
-
-				} else {
-					throw new EmptyValueException("Chunk size is a null");
-				}
-			}
-		});
-
-		verticalLayoutDetails.addComponent(chunkParts);
-
 		// OptionGroup graphOption
 		optionGroupDetail = new OptionGroup("Graph options:");
 		optionGroupDetail.setImmediate(false);
@@ -719,6 +687,61 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		dataPartsOption.setHeight("-1px");
 		dataPartsOption.setMultiSelect(false);
 		verticalLayoutDetails.addComponent(dataPartsOption);
+
+		// Create chunkparts
+		chunkParts = new TextField(
+				"Chunk size of triples which inserted at once");
+		chunkParts.setValue("100");
+		chunkParts.setNullRepresentation("");
+		chunkParts.setImmediate(false);
+		chunkParts.setWidth("100px");
+		chunkParts.setHeight("-1px");
+		chunkParts.setInputPrompt(
+				"Chunk size of triples which inserted at once");
+		chunkParts.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+				if (value != null) {
+					String size = value.toString().trim();
+
+					try {
+						long result = Long.parseLong(size);
+
+						if (result <= 0) {
+							ex = new Validator.InvalidValueException(
+									"Chunk size must be number greater than 0");
+							throw ex;
+						}
+
+					} catch (NumberFormatException e) {
+						ex = new Validator.InvalidValueException(
+								"Chunk size must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new Validator.EmptyValueException(
+							"Chunk size is a null");
+				}
+			}
+		});
+
+		verticalLayoutDetails.addComponent(chunkParts);
+
+		//add button
+		chunkDefault = new Button("Default size");
+		chunkDefault.setImmediate(true);
+		chunkDefault.setWidth("90px");
+		chunkDefault.setHeight("-1px");
+		chunkDefault.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				String value = String.valueOf(BaseRDFRepo.getDefaultChunkSize());
+				chunkParts.setValue(value);
+			}
+		});
+		verticalLayoutDetails.addComponent(chunkDefault);
+
 
 		return verticalLayoutDetails;
 	}
@@ -771,7 +794,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 *                         null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
 	 *             {@link #passwordFieldPass}, {@link #optionGroupDetail},
 	 *             {@link #griddata} , in read-only mode or when requested operation is not
 	 *                         supported.
