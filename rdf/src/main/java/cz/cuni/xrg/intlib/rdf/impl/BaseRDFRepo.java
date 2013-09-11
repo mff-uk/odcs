@@ -506,6 +506,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throw new RDFException(message);
 		}
 
+		if (chunkSize <= 0) {
+			final String message = "Chunk size must be number greater than 0";
+			logger.debug(message);
+			throw new RDFException(message);
+		}
+
 
 		authenticate(userName, password);
 
