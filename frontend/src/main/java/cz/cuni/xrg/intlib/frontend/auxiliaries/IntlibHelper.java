@@ -110,9 +110,11 @@ public class IntlibHelper {
 	 *
 	 * @param pipeline {@link Pipeline} to run.
 	 * @param inDebugMode Run in debug/normal mode.
+	 * 
+	 * @return {@link PipelineExecution} of given {@link Pipeline}.
 	 */
-	public static void runPipeline(Pipeline pipeline, boolean inDebugMode) {
-		runPipeline(pipeline, inDebugMode, null);
+	public static PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
+		return runPipeline(pipeline, inDebugMode, null);
 	}
 
 	/**
