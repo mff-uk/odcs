@@ -18,8 +18,9 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * @param type {@link String} with type of dpu.
 	 * @param posX X coordinate of node.
 	 * @param posY Y coordinate of node.
+	 * @param isNew Is DPU new? Or only loaded?
 	 */
-	public void addNode(int dpuId, String name, String description, String type, int posX, int posY);
+	public void addNode(int dpuId, String name, String description, String type, int posX, int posY, boolean isNew);
 
 	/**
 	 * Adds new edge on graph canvas.

@@ -611,8 +611,10 @@ class PipelineEdit extends ViewComponent {
 		if (pipeIdstr.compareTo(ViewNames.PIPELINE_EDIT_NEW.getParametr()) == 0) {
 			// create empty, for new record
 			this.pipeline = App.getApp().getPipelines().createPipeline();
-			pipeline.setName("empty pipeline");
-			pipeline.setDescription("empty pipeline description");
+			pipeline.setName("");
+			pipeline.setDescription("");
+			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
+			pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 			pipelineName.setInputPrompt("Insert pipeline name");
 			pipelineDescription.setInputPrompt("Insert pipeline description");
 		} else if (isInteger(pipeIdstr)) {

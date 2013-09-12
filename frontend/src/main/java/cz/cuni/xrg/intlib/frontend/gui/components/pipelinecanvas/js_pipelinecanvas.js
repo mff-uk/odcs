@@ -72,8 +72,8 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		init: function() {
 			init();
 		},
-		addNode: function(dpuId, name, description, type, x, y) {
-			addDpu(dpuId, name, description, type, x, y);
+		addNode: function(dpuId, name, description, type, x, y, isNew) {
+			addDpu(dpuId, name, description, type, x, y, isNew);
 		},
 		addEdge: function(id, dpuFrom, dpuTo, dataUnitName) {
 			addConnection(id, dpuFrom, dpuTo, dataUnitName);
@@ -423,8 +423,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 *  @param type
 	 *  @param posX x coordinate of Dpu's position 
 	 *  @param posY y coordinate of Dpu's position
+	 *  @param isNew If the DPU is newly added or only loaded
 	 **/
-	function addDpu(id, name, description, type, posX, posY) {
+	function addDpu(id, name, description, type, posX, posY, isNew) {
 
 		var dpu = new Dpu(id, name, description);
 
@@ -829,7 +830,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		dpuLayer.add(group);
 		dpuLayer.draw();
 
-		rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale));
+		if(isNew) {
+			rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale));
+		}
 	}
 	
 	function checkMode() {
