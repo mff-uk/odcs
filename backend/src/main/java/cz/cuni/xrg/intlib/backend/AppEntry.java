@@ -18,6 +18,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
+import cz.cuni.xrg.intlib.backend.module.DirectoryWatcher;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -69,16 +70,16 @@ public class AppEntry {
 	 * Separate thread for network server.
 	 */
 	private Thread serverThread = null;
-	
-	/**
-	 * Heartbeat class instance.
-	 */
-	private Heartbeat heartbeat = null;	
-	
+		
 	/**
 	 * Thread for heartbeat.
 	 */
 	private Thread heartbeatThread = null;
+	
+	/**
+	 * Thread or 
+	 */
+	private Thread watcherThread = null;
 	
 	/**
 	 * Parse program arguments.
@@ -138,16 +139,24 @@ public class AppEntry {
 	}
 	
 	/**
-	 * Get and start Heartbeat in other thread.
+	 * Start Heartbeat in other thread.
 	 */
 	private void initHeartbeat() {
 		// start heartbeat
-		heartbeat = context.getBean(Heartbeat.class);
-		heartbeatThread = new Thread(heartbeat);
+		heartbeatThread = new Thread(context.getBean(Heartbeat.class));
 		heartbeatThread.start();
-		LOG.info("Heartbeat is running ... ");		
+		LOG.info("Heartbeat is running ... ");
 	}
-		
+	
+	/**
+	 * Starts directory watcher.
+	 */
+	private void initWatcher() {
+		// start watcher in it's own thread
+		watcherThread = new Thread(context.getBean(DirectoryWatcher.class));
+		watcherThread.start();
+	}
+	
 	/**
 	 * Main execution method.
 	 * @param args
@@ -175,6 +184,8 @@ public class AppEntry {
 		}
 		// start heartbeat
 		initHeartbeat();
+		// start watcher
+		initWatcher();
 		
 		// print some information ..
 		LOG.info("Module's directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));
@@ -207,6 +218,7 @@ public class AppEntry {
 		}
 		LOG.info("Closing spring context ...");
 		heartbeatThread.interrupt();
+		watcherThread.interrupt();
 		context.close();
 		LOG.info("Closing application ...");
 	}

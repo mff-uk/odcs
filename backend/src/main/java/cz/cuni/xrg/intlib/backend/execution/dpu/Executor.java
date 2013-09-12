@@ -167,6 +167,9 @@ public final class Executor implements Runnable {
 		try {
 			dpu.loadInstance(moduleFacade);
 		} catch (FileNotFoundException e) {
+			// publish event DPU not found
+			eventPublisher.publishEvent(
+					PipelineFailedEvent.createMissingFile(dpu, execution, this));
 			throw new ModuleException(
 					"Failed to load instance of DPU from file.", e);
 		}

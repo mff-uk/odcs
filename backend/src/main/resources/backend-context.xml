@@ -15,6 +15,11 @@
 		<constructor-arg value="BACKEND" />
 	</bean>
 
+	<!-- takes care about DPU's update -->
+	<bean id="refresher" class="cz.cuni.xrg.intlib.backend.module.ModuleRefresher" />
+	<!-- implementation of DPU's watcher -->
+	<bean id="watcher" class="cz.cuni.xrg.intlib.backend.module.DirectoryWatcher" />
+	
 	<!-- TCP/IP server, used to recieve request from frontend -->
 	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server" />
 

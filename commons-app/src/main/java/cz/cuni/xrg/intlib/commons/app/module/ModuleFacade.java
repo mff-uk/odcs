@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Dictionary;
 import java.util.List;
 
+import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,24 +126,25 @@ public class ModuleFacade {
 	}
 
 	/**
-	 * Return class loader for bundle.
+	 * Update file from it's original path. Relative path is used to identify
+	 * actual DPU. If the bundle has not been loaded yet then nothing happen.
+	 * If case of error throw exception.
 	 * 
-	 * @param relativePath RelativePath Relative path in DPU's directory.
-	 * @return Bundle's ClassLoader
-	 * @throws FileNotFoundException
-	 * @throws BundleInstallFailedException
+	 * @param relativePath
+	 * @throws BundleException 
 	 */
-	public ClassLoader getClassLoader(String relativePath)
-			throws BundleInstallFailedException,
-				FileNotFoundException {
-		checkExistance(relativePath); // throw FileNotFoundException
+	public void update(String relativePath) throws BundleException {
 		final String uri = createURI(relativePath);
-		// throw BundleInstallFailedException
-		BundleContainer container = framework.installBundle(uri);
-		// get class loader
-		return container.getClassLoader();
+		BundleContainer container = framework.getBundle(uri);
+		if (container == null) {
+			// do nothing
+		} else {
+			LOG.debug("Updating bundle: {}", relativePath);
+			// call reload
+			container.update();
+		}
 	}
-
+	
 	/**
 	 * Return content of manifest file (properties) for given jar-file that is
 	 * stored in DPU's directory. This method does load jar-file into system.

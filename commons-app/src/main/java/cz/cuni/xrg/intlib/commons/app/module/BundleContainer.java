@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * Represent a single bundle with some additional information.
@@ -21,7 +20,7 @@ class BundleContainer {
 	private Bundle bundle;
 	
 	/**
-	 * Bundle container's uri. From where
+	 * Bundle container's URI. From where
 	 * the bundle has been loaded.
 	 */
 	private String uri;
@@ -30,17 +29,16 @@ class BundleContainer {
 	 * List of loaded class<?> from this bundle.
 	 */
 	private java.util.Map<String, Class<?>> loadedClassCtors;
-	
+
 	/**
-	 * Bundle class loader. The variable is load on request in {@link #getClassLoader()}
+	 * Used to lock instance during non concurrent operations.
 	 */
-	private ClassLoader classLoader;
+	private Object lock = new Object();
 	
 	public BundleContainer(Bundle bundle, String uri) {
 		this.bundle = bundle;
 		this.uri = uri;
 		this.loadedClassCtors = new HashMap<>();
-		this.classLoader = null;
 	}
 	
 	/**
@@ -52,20 +50,21 @@ class BundleContainer {
 	public Object loadClass(String className) 
 			throws ClassLoadFailedException {
 		Class<?> loaderClass = null;
-		if (loadedClassCtors.containsKey(className)) {
-			// class already been loaded 
-			loaderClass = this.loadedClassCtors.get(className);
-		} else {
-			// try to load class -> throw: ClassNotFoundException
-            try {
-				loaderClass = bundle.loadClass(className);
-			} catch (ClassNotFoundException e) {
-				throw new ClassLoadFailedException(e);
+		synchronized(lock) {
+			if (loadedClassCtors.containsKey(className)) {
+				// class already been loaded 
+				loaderClass = this.loadedClassCtors.get(className);
+			} else {
+				// try to load class -> throw: ClassNotFoundException
+	            try {
+					loaderClass = bundle.loadClass(className);
+				} catch (ClassNotFoundException e) {
+					throw new ClassLoadFailedException(e);
+				}
+	            // store loaded class
+	            this.loadedClassCtors.put(className, loaderClass);
 			}
-            // store loaded class
-            this.loadedClassCtors.put(className, loaderClass);
 		}
-		
 		// we have loader, create instance ..		
 		Object result = null;
 		try {
@@ -88,14 +87,28 @@ class BundleContainer {
 	 * @throws BundleException 
 	 */
 	public void uninstall() throws BundleException {
-		// clear list
-		loadedClassCtors.clear();
-		classLoader = null;
-		// 
-		bundle.uninstall();
-		bundle = null;
+		synchronized(lock) {
+			// clear list
+			loadedClassCtors.clear();
+			// 
+			bundle.uninstall();
+			bundle = null;
+		}
 	}
 
+	/**
+	 * Try to reload bundle, also drop all loaded classes.
+	 * @throws BundleException 
+	 */
+	public void update() throws BundleException {
+		synchronized(lock) {
+			// clear list		
+			loadedClassCtors.clear();
+			// update
+			bundle.update();
+		}
+	}
+	
 	/**
 	 * Return content of manifest.mf file.
 	 * @return
@@ -111,12 +124,5 @@ class BundleContainer {
 	public String getUri() {
 		return uri;
 	}
-	
-	public ClassLoader getClassLoader() {
-		if (classLoader == null && bundle != null) {
-			classLoader = bundle.adapt(BundleWiring.class).getClassLoader();
-		}
-		return classLoader;
-	}
-	
+		
 }

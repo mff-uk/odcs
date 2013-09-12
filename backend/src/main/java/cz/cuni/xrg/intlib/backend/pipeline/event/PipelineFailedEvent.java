@@ -14,9 +14,9 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 /**
  * Event is published if the pipeline is terminated due the error. To create the
  * event use static methods.
- *
+ * 
  * @author Petyr
- *
+ * 
  */
 public final class PipelineFailedEvent extends PipelineEvent {
 
@@ -34,8 +34,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 		this.longMessage = longMessage;
 	}
 
-	protected PipelineFailedEvent(
-			String shortMessage,
+	protected PipelineFailedEvent(String shortMessage,
 			Throwable exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
@@ -49,8 +48,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 		this.longMessage = sw.toString();
 	}
 
-	protected PipelineFailedEvent(
-			String shortMessage,
+	protected PipelineFailedEvent(String shortMessage,
 			String longMessagePrefix,
 			Throwable exception,
 			DPUInstanceRecord dpuInstance,
@@ -70,11 +68,8 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
-		return new PipelineFailedEvent(shortMessage,
-				longMessage,
-				dpuInstance,
-				pipelineExec,
-				source);
+		return new PipelineFailedEvent(shortMessage, longMessage, dpuInstance,
+				pipelineExec, source);
 	}
 
 	public static PipelineFailedEvent create(Exception exception,
@@ -83,10 +78,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			Object source) {
 		return new PipelineFailedEvent("Pipeline execution failed.",
 				"Execution failed because: " + exception.getMessage(),
-				exception,
-				dpuInstance,
-				pipelineExec,
-				source);
+				exception, dpuInstance, pipelineExec, source);
 	}
 
 	public static PipelineFailedEvent create(Error error,
@@ -94,35 +86,28 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			PipelineExecution pipelineExec,
 			Object source) {
 		return new PipelineFailedEvent("Pipeline execution failed.",
-				"Execution failed due to error: " + error.getMessage(),
-				error, 
-				dpuInstance,
-				pipelineExec,
-				source);
+				"Execution failed due to error: " + error.getMessage(), error,
+				dpuInstance, pipelineExec, source);
 	}
 
 	public static PipelineFailedEvent create(ContextException exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
-		return new PipelineFailedEvent("Pipeline execution failed.",
+		return new PipelineFailedEvent(
+				"Pipeline execution failed.",
 				"Failed to prepare Context for DPURecord because of exception: ",
-				exception,
-				dpuInstance,
-				pipelineExec,
-				source);
+				exception, dpuInstance, pipelineExec, source);
 	}
 
 	public static PipelineFailedEvent create(ModuleException exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
-		return new PipelineFailedEvent("Pipeline execution failed.",
+		return new PipelineFailedEvent(
+				"Pipeline execution failed.",
 				"Loading of DPURecord implementation thrown fallowing exception: ",
-				exception,
-				dpuInstance,
-				pipelineExec,
-				source);
+				exception, dpuInstance, pipelineExec, source);
 	}
 
 	public static PipelineFailedEvent create(StructureException exception,
@@ -130,11 +115,26 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			PipelineExecution pipelineExec,
 			Object source) {
 		return new PipelineFailedEvent("Pipeline execution failed.",
-				"Root structure exception: ",
-				exception,
-				dpuInstance,
-				pipelineExec,
-				source);
+				"Root structure exception: ", exception, dpuInstance,
+				pipelineExec, source);
+	}
+
+	/**
+	 * Create event which indicate that there is no jar-file for DPU to execute.
+	 * 
+	 * @param context
+	 * @param source
+	 * @return
+	 */
+	public static PipelineFailedEvent createMissingFile(DPUInstanceRecord dpu,
+			PipelineExecution execution,
+			Object source) {
+		StringBuilder longMessage = new StringBuilder();
+		longMessage.append("Missing jar-file for DPU: '");
+		longMessage.append(dpu.getName());
+		longMessage.append("'");
+		return new PipelineFailedEvent("Missing DPU.",
+				longMessage.toString(), dpu, execution, source);
 	}
 
 	@Override

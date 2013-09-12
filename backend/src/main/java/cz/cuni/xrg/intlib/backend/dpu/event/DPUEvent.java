@@ -188,7 +188,7 @@ public class DPUEvent extends ApplicationEvent {
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
 				"DataUnit error.", e);
 	}
-
+	
 	/**
 	 * Record that describes event.
 	 *
