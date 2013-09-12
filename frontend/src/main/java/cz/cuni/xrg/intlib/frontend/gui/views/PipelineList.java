@@ -292,11 +292,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
 				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId), PipelineExecutionStatus.FINISHED_SUCCESS);
-				long duration = -1;
-				if (latestExec != null) {
-					duration = latestExec.getDuration();
-				}
-				return IntlibHelper.formatDuration(duration);
+				return IntlibHelper.getDuration(latestExec);
 			}
 		});
 		// set columns

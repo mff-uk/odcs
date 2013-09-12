@@ -21,9 +21,12 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibFilterDecorator;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
@@ -46,9 +49,9 @@ class Scheduler extends ViewComponent {
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
 	static String[] visibleCols = new String[]{"pipeline", "rule", "user",
-		"last", "next", "status", "commands"};
+		"last", "next", "duration", "status", "commands"};
 	static String[] headers = new String[]{"pipeline", "Rule", "User",
-		"Last", "Next", "Status", "Commands"};
+		"Last", "Next", "Last successful run time", "Status", "Commands"};
 	private DateFormat localDateFormat = null;
 	int style = DateFormat.MEDIUM;
 	private Long schId;
@@ -288,6 +291,9 @@ class Scheduler extends ViewComponent {
 			result.getContainerProperty(num, "user").setValue(" ");
 			result.getContainerProperty(num, "pipeline").setValue(
 					item.getPipeline().getName());
+			
+			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, PipelineExecutionStatus.FINISHED_SUCCESS);
+			result.getContainerProperty(num, "duration").setValue(IntlibHelper.getDuration(exec));
 
 
 		}

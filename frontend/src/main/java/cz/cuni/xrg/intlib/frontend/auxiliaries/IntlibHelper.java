@@ -108,7 +108,7 @@ public class IntlibHelper {
 	 *
 	 * @param pipeline {@link Pipeline} to run.
 	 * @param inDebugMode Run in debug/normal mode.
-	 * 
+	 *
 	 * @return {@link PipelineExecution} of given {@link Pipeline}.
 	 */
 	public static PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
@@ -117,7 +117,7 @@ public class IntlibHelper {
 
 	/**
 	 * Finds the final cause for given {@link Throwable}.
-	 * 
+	 *
 	 * @param t Throwable which cause should be found.
 	 * @return Final cause of Throwable.
 	 */
@@ -132,11 +132,12 @@ public class IntlibHelper {
 	}
 
 	/**
-	 * Formats duration in miliseconds to hh:mm:ss string. Returns empty string for duration lesser than zero.
-	 * 
+	 * Formats duration in miliseconds to hh:mm:ss string. Returns empty string
+	 * for duration lesser than zero.
+	 *
 	 */
 	public static String formatDuration(long duration) {
-		if(duration < 0) {
+		if (duration < 0) {
 			return "";
 		}
 		//to seconds
@@ -148,7 +149,15 @@ public class IntlibHelper {
 		short minutes = (short) (duration % 60);
 		duration -= minutes;
 		short hours = (short) (duration / 60);
-		
+
 		return String.format("%d:%02d:%02d", hours, minutes, seconds);
+	}
+
+	public static String getDuration(PipelineExecution exec) {
+		long duration = -1;
+		if (exec != null) {
+			duration = exec.getDuration();
+		}
+		return formatDuration(duration);
 	}
 }
