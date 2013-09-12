@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.pipeline;
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.util.Collections;
 import java.util.Date;
@@ -287,6 +288,32 @@ public class PipelineFacade {
 		}
         }
 	/**
+	 * Return latest execution of given status for given schedule.
+	 * Ignore null values.
+	 * @param schedule
+	 * @param status Execution status, used to filter pipelines.
+	 * @return
+	 */
+        public PipelineExecution getLastExec(Schedule schedule, PipelineExecutionStatus status) {
+            @SuppressWarnings("unchecked")
+            List<PipelineExecution> resultList = Collections.checkedList(
+                    em.createQuery(
+                    "SELECT e FROM PipelineExecution e"
+                    + " WHERE e.schedule = :schedule"
+                    + " AND e.status = :status"
+                    + " AND e.end IS NOT NULL"
+                    + " ORDER BY e.end DESC")
+                    .setParameter("schedule", schedule)
+                    .setParameter("status", status)
+                    .getResultList(),
+                    PipelineExecution.class);
+            if (resultList.isEmpty()) {
+                return null;
+            } else {
+                return resultList.get(0);
+            }
+        }
+        /**
 	 * Persists new {@link PipelineExecution} or updates it if it was already
 	 * persisted before.
 	 *
