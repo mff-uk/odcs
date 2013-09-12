@@ -1,6 +1,10 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import java.util.Map;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.atmosphere.util.FakeHttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,7 +51,16 @@ public class AuthenticationService {
 
 		Authentication authentication = authManager.authenticate(token);
 		
-		RequestHolder.getRequest().getSession().setAttribute(SESSION_KEY, authentication);
+		HttpSession session = RequestHolder.getRequest().getSession();
+		session.setAttribute(SESSION_KEY, authentication);
+		
+		if (session instanceof FakeHttpSession) {
+			// We are servicing a PUSH request in a websocket connection, so we
+			// also need to update the servlet session outside this connection.
+			getServletSession(session).setAttribute(SESSION_KEY, authentication);
+		}
+		
+		httpRequest.getSession().setAttribute(SESSION_KEY, authentication);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
@@ -65,5 +78,18 @@ public class AuthenticationService {
 
 		// clear session
 		RequestHolder.getRequest().getSession().removeAttribute(SESSION_KEY);
+	}
+
+	/**
+	 * Get the servlet session, which differs from the session on websocket
+	 * request object.
+	 * 
+	 * @param session fake session on PUSH request
+	 * @return session used in HTTP servlet requests
+	 */
+	private HttpSession getServletSession(HttpSession session) {
+		ServletContext ctx = session.getServletContext();
+		Map<String, HttpSession> sessionMap = (Map<String, HttpSession>) ctx.getAttribute(SessionHolder.ATTR_KEY);
+		return sessionMap.get(session.getId());
 	}
 }
