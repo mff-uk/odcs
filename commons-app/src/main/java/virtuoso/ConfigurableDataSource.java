@@ -36,10 +36,11 @@ public class ConfigurableDataSource extends DriverManagerDataSource {
 	 * @return 
 	 */
 	private static String buildUrl(AppConfig config) {
-		String url = "jdbc:virtuoso://%s:%s/";
+		String url = "jdbc:virtuoso://%s:%s/charset=%s";
 		String host = config.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
 		String port = config.getString(ConfigProperty.VIRTUOSO_PORT);
-		return String.format(url, host, port);
+		String charset = config.getString(ConfigProperty.VIRTUOSO_CHARSET);
+		return String.format(url, host, port, charset);
 	}
 
 }
