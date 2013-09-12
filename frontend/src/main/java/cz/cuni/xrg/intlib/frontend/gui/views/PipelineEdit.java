@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.views;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -355,8 +356,12 @@ class PipelineEdit extends ViewComponent {
 	}
 	
 	private void setupButtons() {
-		buttonSave.setEnabled(isModified());
-		buttonSaveAndClose.setEnabled(isModified());
+		setupButtons(isModified());
+	}
+	
+	private void setupButtons(boolean enabled) {
+		buttonSave.setEnabled(enabled);
+		buttonSaveAndClose.setEnabled(enabled);
 	}
 
 	/**
@@ -479,11 +484,11 @@ class PipelineEdit extends ViewComponent {
 				throw new InvalidValueException("Name must be filled!");
 			}
 		});
-		pipelineName.addValueChangeListener(new Property.ValueChangeListener() {
+		pipelineName.addTextChangeListener(new FieldEvents.TextChangeListener() {
 
 			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				setupButtons();
+			public void textChange(FieldEvents.TextChangeEvent event) {
+				setupButtons(true);
 			}
 		});
 		pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
@@ -498,11 +503,11 @@ class PipelineEdit extends ViewComponent {
 		pipelineDescription.setHeight("60px");
 		pipelineDescription.setBuffered(true);
 		pipelineDescription.addValidator(new MaxLengthValidator(255));
-		pipelineDescription.addValueChangeListener(new Property.ValueChangeListener() {
+		pipelineDescription.addTextChangeListener(new FieldEvents.TextChangeListener() {
 
 			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				setupButtons();
+			public void textChange(FieldEvents.TextChangeEvent event) {
+				setupButtons(true);
 			}
 		});
 		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
@@ -594,6 +599,7 @@ class PipelineEdit extends ViewComponent {
 		this.pipeline = App.getApp().getPipelines().getPipeline(Long.parseLong(id));
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
+		setupButtons(false);
 		return pipeline;
 	}
 
@@ -615,6 +621,7 @@ class PipelineEdit extends ViewComponent {
 			pipeline.setDescription("");
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 			pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
+			setupButtons(false);
 			pipelineName.setInputPrompt("Insert pipeline name");
 			pipelineDescription.setInputPrompt("Insert pipeline description");
 		} else if (isInteger(pipeIdstr)) {
