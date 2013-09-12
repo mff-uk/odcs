@@ -673,7 +673,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			final String processing = String.valueOf(counter) + "/" + String
 					.valueOf(partsCount);
-			authenticate("dba", "dba");
+
 			try {
 				InputStreamReader inputStreamReader = getEndpointStreamReader(
 						endpointURL, endpointGraph, query,
