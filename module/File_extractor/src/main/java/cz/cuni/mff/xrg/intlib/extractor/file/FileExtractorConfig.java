@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.intlib.extractor.file;
 
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
-import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
+import cz.cuni.xrg.intlib.commons.module.config.DPUConfigObjectBase;
 
 /**
  * File extractor configuration.
@@ -9,7 +9,7 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  * @author Petyr
  *
  */
-public class FileExtractorConfig implements DPUConfigObject {
+public class FileExtractorConfig extends DPUConfigObjectBase {
 
 	public String Path = "";
 

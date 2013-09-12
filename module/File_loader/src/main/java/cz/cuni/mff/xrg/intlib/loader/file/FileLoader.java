@@ -18,7 +18,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
  */
 @AsLoader
 public class FileLoader extends ConfigurableBase<FileLoaderConfig>
-		implements DPU, ConfigDialogProvider<FileLoaderConfig> {
+		implements ConfigDialogProvider<FileLoaderConfig> {
 
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -47,8 +47,5 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 	public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
 		return new FileLoaderDialog();
 	}
-
-	@Override
-	public void cleanUp() {	}
 	
 }

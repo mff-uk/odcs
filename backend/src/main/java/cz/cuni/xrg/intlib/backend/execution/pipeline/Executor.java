@@ -81,7 +81,7 @@ public class Executor implements Runnable {
 	 * PipelineExecution record, determine pipeline to run.
 	 */
 	private PipelineExecution execution;
-	
+
 	/**
 	 * Store context related to Nodes (DPUs).
 	 */
@@ -102,8 +102,8 @@ public class Executor implements Runnable {
 		this.execution = execution;
 		contexts = new HashMap<>();
 		// update state
-		this.execution.setExecutionStatus(PipelineExecutionStatus.RUNNING);
-		
+		this.execution.setStatus(PipelineExecutionStatus.RUNNING);
+
 		try {
 			pipelineFacade.save(this.execution);
 		} catch (EntityNotFoundException ex) {
@@ -127,7 +127,7 @@ public class Executor implements Runnable {
 			this.lastSuccessfulExTime = lastSucess.after(lastSucessWarn)
 					? lastSucess
 					: lastSucessWarn;
-		}		
+		}
 	}
 
 	/**
@@ -135,14 +135,15 @@ public class Executor implements Runnable {
 	 * {@link PipelineExecution} into database.
 	 */
 	private void executionFailed() {
-		execution.setExecutionStatus(PipelineExecutionStatus.FAILED);
+		execution.setStatus(PipelineExecutionStatus.FAILED);
 	}
-	
+
 	/**
-	 * Should be called in case that the execution was cancelled by user. Does not save the {@link PipelineExecution} into database.
+	 * Should be called in case that the execution was cancelled by user. Does
+	 * not save the {@link PipelineExecution} into database.
 	 */
 	private void executionCancelled() {
-		execution.setExecutionStatus(PipelineExecutionStatus.CANCELLED);
+		execution.setStatus(PipelineExecutionStatus.CANCELLED);
 	}
 
 	/**
@@ -150,17 +151,29 @@ public class Executor implements Runnable {
 	 * Does not save the {@link PipelineExecution} into database.
 	 */
 	private void executionSuccessful() {
-		// update state -> check logs
-		Set<org.apache.log4j.Level> levels = new HashSet<>(2);
-		levels.add(org.apache.log4j.Level.WARN);
-		levels.add(org.apache.log4j.Level.ERROR);
-		levels.add(org.apache.log4j.Level.FATAL);
-		if (logFacade.existLogs(execution, levels)) {
-			execution
-					.setExecutionStatus(PipelineExecutionStatus.FINISHED_WARNING);
+		boolean warnings = false;
+		// look if there is context that finished with warnings
+		for (Context item : contexts.values()) {
+			if (item.warningMessagePublished()) {
+				warnings = true;
+				break;
+			}
+		}
+
+		if (warnings) {
 		} else {
-			execution
-					.setExecutionStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+			// test logs
+			Set<org.apache.log4j.Level> levels = new HashSet<>(3);
+			levels.add(org.apache.log4j.Level.WARN);
+			levels.add(org.apache.log4j.Level.ERROR);
+			levels.add(org.apache.log4j.Level.FATAL);
+			warnings = logFacade.existLogs(execution, levels);
+		}
+
+		if (warnings) {
+			execution.setStatus(PipelineExecutionStatus.FINISHED_WARNING);
+		} else {
+			execution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
 		}
 	}
 
@@ -212,12 +225,13 @@ public class Executor implements Runnable {
 			deleteDebugDate();
 		}
 		// result directory is never deleted
-		
+
 		LOG.debug("Clean up finished");
 	}
 
 	/**
 	 * Prepare and return instance of {@link DependencyGraph}.
+	 * 
 	 * @return
 	 */
 	private DependencyGraph prepareDependencyGraph() {
@@ -232,7 +246,7 @@ public class Executor implements Runnable {
 		}
 		return dependencyGraph;
 	}
-	
+
 	/**
 	 * Run the execution.
 	 */
@@ -240,49 +254,50 @@ public class Executor implements Runnable {
 		// set start time
 		execution.setStart(new Date());
 		try {
-			// contextInfo is in pipeline so by saving pipeline we also save context
+			// contextInfo is in pipeline so by saving pipeline we also save
+			// context
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
 			LOG.warn("Seems like someone deleted our pipeline run.", ex);
 			// no work was done yet, we can finish without cleaning up
 			return;
 		}
-		
+
 		boolean executionFailed = false;
 		boolean executionCancelled = false;
 		// add marker to logs from this thread -> both must be specified !!
-		final String executionId = Long.toString(execution.getId());		
+		final String executionId = Long.toString(execution.getId());
 		if (!execution.isDebugging()) {
 			// add minimal level to MDCExecutionLevelFilter
-			MdcExecutionLevelFilter.add(executionId, 
-					ch.qos.logback.classic.Level.WARN);
+			MdcExecutionLevelFilter.add(executionId,
+					ch.qos.logback.classic.Level.INFO);
 		}
-		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME,
-				executionId);
-		
+		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
+
 		// log start of the pipeline
-		LOG.debug("Started");		
-		
+		LOG.debug("Started");
+
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
 		// execute each node
 		for (Node node : dependencyGraph) {
-						
+
 			// put dpuInstance id to MDC, so we can identify logs related to the
 			// dpuInstance
 			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME,
-					Long.toString(node.getDpuInstance().getId()));			
-			
-			cz.cuni.xrg.intlib.backend.execution.dpu.Executor dpuExecutor = 
-					beanFactory.getBean(cz.cuni.xrg.intlib.backend.execution.dpu.Executor.class);
-			dpuExecutor.bind(node, dependencyGraph, contexts, execution, lastSuccessfulExTime);
-			
+					Long.toString(node.getDpuInstance().getId()));
+
+			cz.cuni.xrg.intlib.backend.execution.dpu.Executor dpuExecutor = beanFactory
+					.getBean(cz.cuni.xrg.intlib.backend.execution.dpu.Executor.class);
+			dpuExecutor.bind(node, dependencyGraph, contexts, execution,
+					lastSuccessfulExTime);
+
 			Thread executorThread = new Thread(dpuExecutor);
 			executorThread.start();
-			
+
 			// repeat until the executorThread is running
 			boolean stopExecution = false;
-			while(executorThread.isAlive()) {
+			while (executorThread.isAlive()) {
 				try {
 					// sleep for two seconds
 					Thread.sleep(2000);
@@ -290,25 +305,29 @@ public class Executor implements Runnable {
 					// request stop
 					stopExecution = true;
 				}
-				
-				// check for user request to stop execution -> we need new instance
-				PipelineExecution uptodateExecution = pipelineFacade.getExecution(execution.getId());
+
+				// check for user request to stop execution -> we need new
+				// instance
+				PipelineExecution uptodateExecution = pipelineFacade
+						.getExecution(execution.getId());
 				if (uptodateExecution == null) {
 					LOG.warn("Seems like someone deleted our execution.");
 					stopExecution = true;
 				} else if (uptodateExecution.getStop()) {
 					stopExecution = true;
 					executionCancelled = true;
-					eventPublisher.publishEvent(new PipelineAbortedEvent(execution, this));	
+					eventPublisher.publishEvent(new PipelineAbortedEvent(
+							execution, this));
 				}
-				
+
 				if (stopExecution) {
-					stopExecution(executorThread);
+					// try to stop the DPU's execution thread
+					stopExecution(executorThread, dpuExecutor);
 					// jump out of waiting cycle
 					break;
 				}
-			} // end of single DPU thread execution 
-			
+			} // end of single DPU thread execution
+
 			if (stopExecution) {
 				// we should stop the execution
 				executionFailed = true;
@@ -324,11 +343,11 @@ public class Executor implements Runnable {
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
 		}
-		// ending ..		
+		// ending ..
 		// set time then the pipeline's execution finished
 		execution.setEnd(new Date());
 		if (executionFailed) {
-			if(executionCancelled) {
+			if (executionCancelled) {
 				LOG.debug("Execution cancelled");
 				executionCancelled();
 			} else {
@@ -348,19 +367,19 @@ public class Executor implements Runnable {
 		}
 
 		// publish information for the rest of the application
-		// that the execution finished .. 
-		eventPublisher.publishEvent(new PipelineFinished(execution, this));			
-		
+		// that the execution finished ..
+		eventPublisher.publishEvent(new PipelineFinished(execution, this));
+
 		// do clean/up
 		cleanup();
-		
+
 		// unregister MDC execution filter
 		MdcExecutionLevelFilter.remove(executionId);
-		
+
 		// clear all threads markers
 		MDC.clear();
 	}
-	
+
 	@Override
 	public void run() {
 		execute();
@@ -369,17 +388,23 @@ public class Executor implements Runnable {
 	/**
 	 * Stops pipeline execution. Usually invoke by user action.
 	 * 
-	 * @param executorThread thread servicing execution which needs to be stopped
+	 * @param executorThread thread servicing execution which needs to be
+	 *            stopped
+	 * @param dpuExecutor Executor for given DPUs.
 	 */
-	private void stopExecution(Thread executorThread) {
+	private void stopExecution(Thread executorThread,
+			cz.cuni.xrg.intlib.backend.execution.dpu.Executor dpuExecutor) {
 		LOG.debug("Terminating the DPU thread ...");
-		// kill executorThread, and wait for it to die
+		// set cancel flag
+		dpuExecutor.cancel();
+		// interrupt executorThread, and wait for it ...
 		executorThread.interrupt();
 		try {
 			executorThread.join();
 		} catch (InterruptedException e) {
-			// if we are interrupt stop waiting  
+			// if we are interrupt stop waiting
 		}
 		LOG.debug("DPU thread terminated");
 	}
+
 }

@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.intlib.extractor.rdf;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
+import cz.cuni.xrg.intlib.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Enum for naming setting values.
@@ -11,7 +11,7 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  * @author Petyr
  *
  */
-public class RDFExtractorConfig implements DPUConfigObject {
+public class RDFExtractorConfig extends DPUConfigObjectBase {
 
 	public String SPARQL_endpoint = "";
 

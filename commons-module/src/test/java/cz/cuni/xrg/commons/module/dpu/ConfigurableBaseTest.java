@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
+import cz.cuni.xrg.intlib.commons.data.DataUnitException;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
+import cz.cuni.xrg.intlib.commons.dpu.DPUException;
 import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
 
 import static org.junit.Assert.*;
@@ -25,6 +28,14 @@ public class ConfigurableBaseTest {
 	private class ConfigurableDummy extends ConfigurableBase<ConfigDummy> {
 		public ConfigurableDummy() {
 			super(ConfigDummy.class);
+		}
+
+		@Override
+		public void execute(DPUContext context)
+				throws DPUException,
+					DataUnitException,
+					InterruptedException {
+			
 		}		
 	}
 	

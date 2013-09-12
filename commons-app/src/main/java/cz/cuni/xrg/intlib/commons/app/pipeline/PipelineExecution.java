@@ -123,16 +123,12 @@ public class PipelineExecution implements Serializable {
 	public Long getId() {
 		return id;
 	}
-
-	public PipelineExecutionStatus getExecutionStatus() {
-		return status;
-	}
-        
-        public PipelineExecutionStatus getStatus() {
+      
+    public PipelineExecutionStatus getStatus() {
 		return status;
 	}
 
-	public void setExecutionStatus(PipelineExecutionStatus newStatus) {
+	public void setStatus(PipelineExecutionStatus newStatus) {
 		status = newStatus;
 	}
 
@@ -217,6 +213,17 @@ public class PipelineExecution implements Serializable {
 		stop = true;
 		status = PipelineExecutionStatus.CANCELLED;
 	}
+        
+        /**
+         * Returns duration of execution. Returns -1 for unfinished/not started executions.
+         * 
+         **/
+        public long getDuration() {
+            if(start == null || end == null) {
+                return -1;
+            }
+            return end.getTime() - start.getTime();
+        }
 	
 	/**
 	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.

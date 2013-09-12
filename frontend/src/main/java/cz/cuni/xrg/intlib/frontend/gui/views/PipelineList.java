@@ -34,7 +34,11 @@ class PipelineList extends ViewComponent {
 
 	private Button btnCreatePipeline;
 	
-	private PipelineFacade pipelineFacade = App.getApp().getPipelines();
+	private PipelineFacade pipelineFacade;
+
+	public PipelineList() {
+		this.pipelineFacade = App.getApp().getPipelines();
+	}
 
 	@Override
 	public boolean isModified() {
@@ -75,19 +79,18 @@ class PipelineList extends ViewComponent {
 			// get item
 			CompositeItem  item = (CompositeItem) source.getItem(itemId);
 			Long pipelineId = (Long)item.getItemProperty("id").getValue();
-                        final Pipeline pipeline = App.getPipelines().getPipeline(pipelineId);
+			final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
 			Button copyButton = new Button();
 			copyButton.setCaption("copy");
 			copyButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							PipelineFacade pplFacade = App.getApp().getPipelines();
-							Pipeline nPipeline = pplFacade.copyPipeline(pipeline);
+							Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
 							nPipeline.setName("Copy of " + pipeline.getName());
-							pplFacade.save(nPipeline);
+							pipelineFacade.save(nPipeline);
 							refreshData();
-							tablePipelines.setVisibleColumns("id", "name", "description","");
+							tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 						}
 					});
 			layout.addComponent(copyButton); 
@@ -115,11 +118,11 @@ class PipelineList extends ViewComponent {
 								@Override
 								public void onClose(ConfirmDialog cd) {
 									if(cd.isConfirmed()) {
-										App.getApp().getPipelines().delete(pipeline);
+										pipelineFacade.delete(pipeline);
 										// now we have to remove pipeline from table
 										source.removeItem(itemId);
 										refreshData();
-										tablePipelines.setVisibleColumns("id", "name", "description","");
+										tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 									}
 								}
 							});
@@ -147,7 +150,10 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							IntlibHelper.runPipeline(pipeline, true);
+							PipelineExecution exec = IntlibHelper.runPipeline(pipeline, true);
+							if(exec != null) {
+								App.getApp().getNavigator().navigateTo(ViewNames.EXECUTION_MONITOR.getUrl() + "/" + exec.getId());
+							}
 						}
 					});
 			layout.addComponent(runDebugButton);
@@ -177,7 +183,7 @@ class PipelineList extends ViewComponent {
 	}
 	
 	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
-		List<PipelineExecution> execs = App.getPipelines().getExecutions(pipeline, status);
+		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipeline, status);
 		if(execs.isEmpty()) {
 			return false;
 		} else {
@@ -194,12 +200,8 @@ class PipelineList extends ViewComponent {
 		Container container = ContainerFactory.createPipelines();
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.setFilterFieldVisible("", false);
+		tablePipelines.setFilterFieldVisible("duration", false);
 		tablePipelines.setCurrentPage(page);
-
-	}
-
-
-	public PipelineList() {
 
 	}
 
@@ -245,6 +247,7 @@ class PipelineList extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				tablePipelines.resetFilters();
 				tablePipelines.setFilterFieldVisible("", false);
+				tablePipelines.setFilterFieldVisible("duration", false);
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
@@ -262,8 +265,7 @@ class PipelineList extends ViewComponent {
 		Container container = ContainerFactory.createPipelines();
 		tablePipelines.setContainerDataSource(container);
 
-		// set columns
-		tablePipelines.setVisibleColumns("id", "name", "description");
+		
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(10);
@@ -284,6 +286,22 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
+		tablePipelines.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
+
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId), PipelineExecutionStatus.FINISHED_SUCCESS);
+				long duration = -1;
+				if (latestExec != null) {
+					duration = latestExec.getDuration();
+				}
+				return IntlibHelper.formatDuration(duration);
+			}
+		});
+		// set columns
+		tablePipelines.setVisibleColumns("id", "name", "duration", "description", "");
+		tablePipelines.setColumnHeader("duration", "Last successful run time");
 		tablePipelines.setFilterBarVisible(true);
                 tablePipelines.setFilterLayout();
 		tablePipelines.setSelectable(true);

@@ -27,6 +27,8 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * GUI for Execution Monitor page which opens from the main menu. Contains table
@@ -43,6 +45,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
     private VerticalLayout logLayout;
     private HorizontalSplitPanel hsplit;
     private Panel mainLayout;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ExecutionMonitor.class);
 
     /**
      * Table contains pipeline executions.
@@ -51,9 +55,9 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
     private Container tableData;
     private Long exeId;
     int style = DateFormat.MEDIUM;
-    static String[] visibleCols = new String[]{"start", "pipeline.name", "user",
+    static String[] visibleCols = new String[]{"start", "pipeline.name", "duration", "user",
         "status", "isDebugging", "obsolete", "actions", "report"};
-    static String[] headers = new String[]{"Date", "Name", "User", "Status",
+    static String[] headers = new String[]{"Date", "Name", "Run time", "User", "Status",
         "Debug", "Obsolete", "Actions", "Report"};
 
     /*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
@@ -119,6 +123,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
             public void buttonClick(ClickEvent event) {
                 monitorTable.resetFilters();
                 monitorTable.setFilterFieldVisible("actions", false);
+				monitorTable.setFilterFieldVisible("duration", false);
             }
         });
         topLine.addComponent(buttonDeleteFilters);
@@ -141,7 +146,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTable.setVisibleColumns(visibleCols); // Set visible columns
         monitorTable.setColumnHeaders(headers);
 		monitorTable.setColumnWidth("obsolete", 60);
-		monitorTable.setColumnWidth("actions", 180);
+		monitorTable.setColumnWidth("status", 50);
+		monitorTable.setColumnWidth("isDebugging", 50);
+		monitorTable.setColumnWidth("duration", 60);
+		monitorTable.setColumnWidth("actions", 200);
 
         //sorting by execution date
         Object property = "start";
@@ -184,6 +192,15 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 return emb;
             }
         });
+		
+		monitorTable.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
+
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
+				return IntlibHelper.formatDuration(duration);
+			}
+		});
 
         //Actions column. Contains actions buttons: Debug data, Show log, Cancel.
         monitorTable.addGeneratedColumn("actions",
@@ -195,17 +212,15 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTable.setFilterDecorator(new filterDecorator());
         monitorTable.setFilterBarVisible(true);
         monitorTable.setFilterFieldVisible("actions", false);
+		monitorTable.setFilterFieldVisible("duration", false);
         monitorTable.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
                 //debugging view open
                 if (!monitorTable.isSelected(event.getItemId())) {
-                    exeId = (long) event.getItem().getItemProperty("id").getValue();
-                    logLayout = buildlogLayout();
-                    hsplit.setSplitPosition(55, Unit.PERCENTAGE);
-                    hsplit.setSecondComponent(logLayout);
-                    hsplit.setLocked(false);
+                    Long executionId = (long) event.getItem().getItemProperty("id").getValue();
+                    showExecutionDetail(executionId);
                 } else {
                 }
             }
@@ -305,7 +320,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         logLayout.addComponent(buttonBar);
         logLayout.setExpandRatio(buttonBar, 0);
 		
-		if(pipelineExec.getExecutionStatus() == RUNNING || pipelineExec.getExecutionStatus() == SCHEDULED) {
+		if(pipelineExec.getStatus() == RUNNING || pipelineExec.getStatus() == SCHEDULED) {
 			App.getApp().getRefreshThread().refreshExecution(pipelineExec, debugView);
 		}
         return logLayout;
@@ -380,6 +395,17 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
     public void enter(ViewChangeEvent event) {
         buildMainLayout();
         setCompositionRoot(mainLayout);
+		
+		String strExecId = event.getParameters();
+		if(strExecId == null || strExecId.isEmpty()) {
+			return;
+		}
+		try {
+			Long execId = Long.parseLong(strExecId);
+			showExecutionDetail(execId);
+		} catch(NumberFormatException e) {
+			LOG.warn("Invalid parameter for execution monitor.", e);
+		}
     }
 
     /**
@@ -396,12 +422,12 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
             String caption = senderData.action;
             Object itemId = senderData.data;
 
-            exeId = (Long) tableData.getContainerProperty(itemId, "id")
+            Long execId = (Long) tableData.getContainerProperty(itemId, "id")
                     .getValue();
             switch (caption) {
                 case "cancel":
                 	PipelineExecution pipelineExec = 
-                		App.getApp().getPipelines().getExecution(exeId);
+                		App.getApp().getPipelines().getExecution(execId);
                 	pipelineExec.stop();
                 	App.getApp().getPipelines().save(pipelineExec);
                 	senderButton.setVisible(false);
@@ -409,17 +435,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
                     break;
                 case "showlog":
-                    logLayout = buildlogLayout();
-                    hsplit.setSplitPosition(55, Unit.PERCENTAGE);
-                    hsplit.setSecondComponent(logLayout);
-                    hsplit.setLocked(false);
-                    break;
-                case "debug":
-                    logLayout = buildlogLayout();
-                    hsplit.setSplitPosition(55, Unit.PERCENTAGE);
-                    hsplit.setSecondComponent(logLayout);
-                    hsplit.setLocked(false);
-                    break;
+					showExecutionDetail(execId);
+					break;
+				case "debug":
+					showExecutionDetail(execId);
+					break;
             }
 
         }
@@ -429,6 +449,14 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	public boolean isModified() {
 		//There are no editable fields.
 		return false;
+	}
+
+	private void showExecutionDetail(Long executionId) {
+		exeId = executionId;
+		logLayout = buildlogLayout();
+		hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+		hsplit.setSecondComponent(logLayout);
+		hsplit.setLocked(false);
 	}
 
     /**

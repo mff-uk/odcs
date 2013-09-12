@@ -78,7 +78,7 @@ public class DebuggingView extends CustomComponent {
      * @return Execution is finished.
      */
     public boolean isRunFinished() {
-        return !(pipelineExec.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
+        return !(pipelineExec.getStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getStatus() == PipelineExecutionStatus.RUNNING);
     }
     
     public boolean isRefreshingAutomatically() {
@@ -175,9 +175,9 @@ public class DebuggingView extends CustomComponent {
     public void fillContent(boolean isRefresh) {
 
         if (isFromCanvas) {
-            ThemeResource icon = IntlibHelper.getIconForExecutionStatus(pipelineExec.getExecutionStatus());
+            ThemeResource icon = IntlibHelper.getIconForExecutionStatus(pipelineExec.getStatus());
             iconStatus.setSource(icon);
-            iconStatus.setDescription(pipelineExec.getExecutionStatus().name());
+            iconStatus.setDescription(pipelineExec.getStatus().name());
         }
 
         boolean loadSuccessful = loadExecutionContextReader();

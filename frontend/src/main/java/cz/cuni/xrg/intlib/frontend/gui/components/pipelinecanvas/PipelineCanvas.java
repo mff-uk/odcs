@@ -82,8 +82,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onDpuMoved(int dpuId, int newX, int newY) {
+				storeHistoryGraph();
 				dpuMoved(dpuId, newX, newY);
-				//setModified();
 			}
 
 			@Override
@@ -160,7 +160,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		DPUInstanceRecord dpuInstance = App.getDPUs().createInstanceFromTemplate(dpu);
 		Node node = graph.addDpuInstance(dpuInstance);
 		getRpcProxy(PipelineCanvasClientRpc.class)
-				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), (int) (x / currentZoom), (int) (y / currentZoom));
+				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), (int) (x / currentZoom), (int) (y / currentZoom), true);
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 		for (Node node : graph.getNodes()) {
 			DPUInstanceRecord dpu = node.getDpuInstance();
-			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY());
+			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY(), false);
 		}
 		for (Edge edge : graph.getEdges()) {
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
@@ -387,7 +387,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		Node copyNode = graph.addDpuInstance(dpu);
 		graph.moveNode(copyNode.hashCode(), x, y);
 		getRpcProxy(PipelineCanvasClientRpc.class)
-				.addNode(copyNode.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), x, y);
+				.addNode(copyNode.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), x, y, true);
 	}
 
 	/**

@@ -129,7 +129,7 @@ public class Engine
 		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions();
 		// run pipeline executions ..
 		for (PipelineExecution item : toExecute) {
-			if (item.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED) {
+			if (item.getStatus() == PipelineExecutionStatus.SCHEDULED) {
 				// run scheduled pipeline
 				run(item);
 			}
@@ -150,11 +150,11 @@ public class Engine
 		// list executions
 		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions();
 		for (PipelineExecution execution : toExecute) {
-			if (execution.getExecutionStatus() == PipelineExecutionStatus.RUNNING) {
+			if (execution.getStatus() == PipelineExecutionStatus.RUNNING) {
 				// hanging pipeline ..
 
 				// schedule new pipeline start
-				execution.setExecutionStatus(PipelineExecutionStatus.SCHEDULED);
+				execution.setStatus(PipelineExecutionStatus.SCHEDULED);
 
 				// TODO Petyr: Run from last position
 
@@ -189,8 +189,7 @@ public class Engine
 											, null, execution, this));
 						}
 						// set pipeline execution to failed
-						execution
-								.setExecutionStatus(PipelineExecutionStatus.FAILED);
+						execution.setStatus(PipelineExecutionStatus.FAILED);
 						execution.setEnd(new Date());
 					}
 					// reset context

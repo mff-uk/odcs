@@ -99,7 +99,7 @@ public class RefreshThread extends Thread {
 
 	private boolean refreshDebuggingView() {
 		execution = App.getPipelines().getExecution(execution.getId());
-		boolean isRunFinished = !(execution.getExecutionStatus() == PipelineExecutionStatus.SCHEDULED || execution.getExecutionStatus() == PipelineExecutionStatus.RUNNING);
+		boolean isRunFinished = !(execution.getStatus() == PipelineExecutionStatus.SCHEDULED || execution.getStatus() == PipelineExecutionStatus.RUNNING);
 		synchronized (lock) {
 			if(debug == null) {
 				return false;
