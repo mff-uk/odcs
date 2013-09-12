@@ -213,6 +213,17 @@ public class PipelineExecution implements Serializable {
 		stop = true;
 		status = PipelineExecutionStatus.CANCELLED;
 	}
+        
+        /**
+         * Returns duration of execution. Returns -1 for unfinished/not started executions.
+         * 
+         **/
+        public long getDuration() {
+            if(start == null || end == null) {
+                return -1;
+            }
+            return end.getTime() - start.getTime();
+        }
 	
 	/**
 	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.

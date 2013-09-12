@@ -5,8 +5,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import cz.cuni.xrg.intlib.commons.app.communication.Client;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
-import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
@@ -131,5 +129,26 @@ public class IntlibHelper {
 			}
 		}
 		return t;
+	}
+
+	/**
+	 * Formats duration in miliseconds to hh:mm:ss string. Returns empty string for duration lesser than zero.
+	 * 
+	 */
+	public static String formatDuration(long duration) {
+		if(duration < 0) {
+			return "";
+		}
+		//to seconds
+		duration /= 1000;
+		short seconds = (short) (duration % 60);
+		duration -= seconds;
+		//to minutes
+		duration /= 60;
+		short minutes = (short) (duration % 60);
+		duration -= minutes;
+		short hours = (short) (duration / 60);
+		
+		return String.format("%d:%02d:%02d", hours, minutes, seconds);
 	}
 }

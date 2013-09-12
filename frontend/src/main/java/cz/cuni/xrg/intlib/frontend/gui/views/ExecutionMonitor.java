@@ -55,9 +55,9 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
     private Container tableData;
     private Long exeId;
     int style = DateFormat.MEDIUM;
-    static String[] visibleCols = new String[]{"start", "pipeline.name", "user",
+    static String[] visibleCols = new String[]{"start", "pipeline.name", "duration", "user",
         "status", "isDebugging", "obsolete", "actions", "report"};
-    static String[] headers = new String[]{"Date", "Name", "User", "Status",
+    static String[] headers = new String[]{"Date", "Name", "Run time", "User", "Status",
         "Debug", "Obsolete", "Actions", "Report"};
 
     /*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
@@ -123,6 +123,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
             public void buttonClick(ClickEvent event) {
                 monitorTable.resetFilters();
                 monitorTable.setFilterFieldVisible("actions", false);
+				monitorTable.setFilterFieldVisible("duration", false);
             }
         });
         topLine.addComponent(buttonDeleteFilters);
@@ -145,6 +146,9 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTable.setVisibleColumns(visibleCols); // Set visible columns
         monitorTable.setColumnHeaders(headers);
 		monitorTable.setColumnWidth("obsolete", 60);
+		monitorTable.setColumnWidth("status", 50);
+		monitorTable.setColumnWidth("isDebugging", 50);
+		monitorTable.setColumnWidth("duration", 60);
 		monitorTable.setColumnWidth("actions", 200);
 
         //sorting by execution date
@@ -188,6 +192,15 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 return emb;
             }
         });
+		
+		monitorTable.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
+
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
+				return IntlibHelper.formatDuration(duration);
+			}
+		});
 
         //Actions column. Contains actions buttons: Debug data, Show log, Cancel.
         monitorTable.addGeneratedColumn("actions",
@@ -199,6 +212,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTable.setFilterDecorator(new filterDecorator());
         monitorTable.setFilterBarVisible(true);
         monitorTable.setFilterFieldVisible("actions", false);
+		monitorTable.setFilterFieldVisible("duration", false);
         monitorTable.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
             @Override
