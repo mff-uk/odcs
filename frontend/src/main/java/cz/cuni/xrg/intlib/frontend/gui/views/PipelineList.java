@@ -102,7 +102,7 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							String message = "Would you like to really delete the pipeline and all associated records (DPU instances e.g.)?";
+							String message = "Would you really like to delete the " + pipeline.getName() + " pipeline and all associated records (DPU instances e.g.)?";
 							if(isExecInSystem(pipeline, PipelineExecutionStatus.RUNNING)) {
 								message += "\nPipeline is running currently, the current run will be cancelled!";
 							}
