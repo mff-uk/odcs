@@ -215,7 +215,6 @@ public final class Executor implements Runnable {
 	private boolean prepareContext(DPUInstanceRecord dpu) {
 		ExecutionContextInfo pipelineContext = execution.getContext();
 
-		Context context = beanFactory.getBean(Context.class);
 		context.bind(node.getDpuInstance(), pipelineContext, lastExecutionTime);
 		// add data from ancestors
 		Set<Node> ancestors = graph.getAncestors(node);
