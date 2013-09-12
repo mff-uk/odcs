@@ -34,7 +34,11 @@ class PipelineList extends ViewComponent {
 
 	private Button btnCreatePipeline;
 	
-	private PipelineFacade pipelineFacade = App.getApp().getPipelines();
+	private PipelineFacade pipelineFacade;
+
+	public PipelineList() {
+		this.pipelineFacade = App.getApp().getPipelines();
+	}
 
 	@Override
 	public boolean isModified() {
@@ -75,17 +79,16 @@ class PipelineList extends ViewComponent {
 			// get item
 			CompositeItem  item = (CompositeItem) source.getItem(itemId);
 			Long pipelineId = (Long)item.getItemProperty("id").getValue();
-                        final Pipeline pipeline = App.getPipelines().getPipeline(pipelineId);
+			final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
 			Button copyButton = new Button();
 			copyButton.setCaption("copy");
 			copyButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-							PipelineFacade pplFacade = App.getApp().getPipelines();
-							Pipeline nPipeline = pplFacade.copyPipeline(pipeline);
+							Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
 							nPipeline.setName("Copy of " + pipeline.getName());
-							pplFacade.save(nPipeline);
+							pipelineFacade.save(nPipeline);
 							refreshData();
 							tablePipelines.setVisibleColumns("id", "name", "description","");
 						}
@@ -115,7 +118,7 @@ class PipelineList extends ViewComponent {
 								@Override
 								public void onClose(ConfirmDialog cd) {
 									if(cd.isConfirmed()) {
-										App.getApp().getPipelines().delete(pipeline);
+										pipelineFacade.delete(pipeline);
 										// now we have to remove pipeline from table
 										source.removeItem(itemId);
 										refreshData();
@@ -180,7 +183,7 @@ class PipelineList extends ViewComponent {
 	}
 	
 	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
-		List<PipelineExecution> execs = App.getPipelines().getExecutions(pipeline, status);
+		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipeline, status);
 		if(execs.isEmpty()) {
 			return false;
 		} else {
@@ -198,11 +201,6 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.setFilterFieldVisible("", false);
 		tablePipelines.setCurrentPage(page);
-
-	}
-
-
-	public PipelineList() {
 
 	}
 
