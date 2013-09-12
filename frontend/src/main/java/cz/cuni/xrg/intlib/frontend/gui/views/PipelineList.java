@@ -90,7 +90,7 @@ class PipelineList extends ViewComponent {
 							nPipeline.setName("Copy of " + pipeline.getName());
 							pipelineFacade.save(nPipeline);
 							refreshData();
-							tablePipelines.setVisibleColumns("id", "name", "description","");
+							tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 						}
 					});
 			layout.addComponent(copyButton); 
@@ -122,7 +122,7 @@ class PipelineList extends ViewComponent {
 										// now we have to remove pipeline from table
 										source.removeItem(itemId);
 										refreshData();
-										tablePipelines.setVisibleColumns("id", "name", "description","");
+										tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 									}
 								}
 							});
@@ -200,6 +200,7 @@ class PipelineList extends ViewComponent {
 		Container container = ContainerFactory.createPipelines();
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.setFilterFieldVisible("", false);
+		tablePipelines.setFilterFieldVisible("duration", false);
 		tablePipelines.setCurrentPage(page);
 
 	}
@@ -246,6 +247,7 @@ class PipelineList extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				tablePipelines.resetFilters();
 				tablePipelines.setFilterFieldVisible("", false);
+				tablePipelines.setFilterFieldVisible("duration", false);
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
@@ -263,8 +265,7 @@ class PipelineList extends ViewComponent {
 		Container container = ContainerFactory.createPipelines();
 		tablePipelines.setContainerDataSource(container);
 
-		// set columns
-		tablePipelines.setVisibleColumns("id", "name", "description");
+		
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(10);
@@ -285,6 +286,22 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
+		tablePipelines.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
+
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId), PipelineExecutionStatus.FINISHED_SUCCESS);
+				long duration = -1;
+				if (latestExec != null) {
+					duration = latestExec.getDuration();
+				}
+				return IntlibHelper.formatDuration(duration);
+			}
+		});
+		// set columns
+		tablePipelines.setVisibleColumns("id", "name", "duration", "description", "");
+		tablePipelines.setColumnHeader("duration", "Last successful run time");
 		tablePipelines.setFilterBarVisible(true);
                 tablePipelines.setFilterLayout();
 		tablePipelines.setSelectable(true);
