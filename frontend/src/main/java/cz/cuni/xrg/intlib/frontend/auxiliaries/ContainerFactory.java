@@ -69,7 +69,7 @@ public class ContainerFactory {
 		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), MessageRecord.class, 16, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"time"}, new boolean[]{true});
-		container.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(2);
+		container.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(1);
 		container.addContainerProperty("id", Long.class, 0, true, true);
 		container.addContainerProperty("time", Date.class, null, true, true);
 		container.addContainerProperty("type", MessageRecordType.class, MessageRecordType.DPU_INFO, true, true);

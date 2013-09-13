@@ -346,10 +346,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
      */
     public static Container getTableData() {
 
-        IntlibLazyQueryContainer result = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), PipelineExecution.class, 16, "id", true, true, true);
+        IntlibLazyQueryContainer result = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), PipelineExecution.class, 20, "id", true, true, true);
         result.getQueryView().getQueryDefinition().setDefaultSortState(
                 new Object[]{"start"}, new boolean[]{true});
-        result.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(2);
+        result.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(1);
         for (String p : visibleCols) {
             // setting type of columns
             switch (p) {
