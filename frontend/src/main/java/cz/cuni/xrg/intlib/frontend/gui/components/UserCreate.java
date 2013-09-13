@@ -11,6 +11,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -47,13 +48,14 @@ public class UserCreate extends Window {
 	private TextField userEmail;
 	private VerticalLayout mainLayout;
 	private PasswordField password;
+	private PasswordField passwordConfim=null;
 	private TextField userName;
 	private User user = null;
 	private User selectUser = null;
 	private InvalidValueException ex;
 	private Set<Role> roles = null;
 	private List<User> users;
-	private TextField passText = null;
+//	private TextField passText = null;
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -109,10 +111,9 @@ public class UserCreate extends Window {
 
 		users = App.getApp().getUsers().getAllUsers();
 
-		userDetailsLayout = new GridLayout(2, 3);
+		userDetailsLayout = new GridLayout(2, 4);
 		userDetailsLayout.setImmediate(false);
 		userDetailsLayout.setSpacing(true);
-//		userDetailsLayout.setWidth("338px");
 
 
 		userName = new TextField();
@@ -153,21 +154,26 @@ public class UserCreate extends Window {
 		password.setImmediate(true);
 		password.setWidth("250px");
 		password.addFocusListener(new FocusListener() {
-			
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void focus(FocusEvent event) {
 				
-				passText = new TextField();
-				passText.setImmediate(true);
-				passText.setWidth("250px");
-				passText.focus();
-				userDetailsLayout.removeComponent( 1, 1);
-				userDetailsLayout.addComponent(passText, 1, 1);
-			}
-		});
-
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void focus(FocusEvent event) {
+					password.setValue("");
+					if(passwordConfim==null){
+						passwordConfim = new PasswordField();
+						passwordConfim.setImmediate(true);
+						passwordConfim.setWidth("250px");
+						Label confirmLabel = new Label("Password<br>confirmation:");
+						
+						confirmLabel.setContentMode(ContentMode.HTML);
+						
+						userDetailsLayout.addComponent(confirmLabel, 0, 2);
+						userDetailsLayout.addComponent(passwordConfim, 1, 2);
+					}
+				}
+			});
+		
 		Label passLabel = new Label("Password:");
 
 
@@ -199,8 +205,8 @@ public class UserCreate extends Window {
 			}
 		});
 
-		userDetailsLayout.addComponent(new Label("E-mail:"), 0, 2);
-		userDetailsLayout.addComponent(userEmail, 1, 2);
+		userDetailsLayout.addComponent(new Label("E-mail:"), 0, 3);
+		userDetailsLayout.addComponent(userEmail, 1, 3);
 
 		userDetailsLayout.setColumnExpandRatio(0, 0.3f);
 		userDetailsLayout.setColumnExpandRatio(1, 0.7f);
@@ -293,8 +299,19 @@ public class UserCreate extends Window {
 				if(newUser){
 					String userPassword="";
 					
-					if((passText!=null) && !passText.getValue().isEmpty())
-						userPassword = passText.getValue();
+					if(passwordConfim!=null){
+						if(passwordConfim.getValue().equals(password.getValue()) ){
+							if(!passwordConfim.getValue().isEmpty())
+								userPassword =  password.getValue();
+							else
+								userPassword = createPassword();
+						}
+						else{
+							Notification.show("Password confirmation is wrong", Notification.Type.ERROR_MESSAGE);
+							return;
+						}
+							
+					}
 					else
 						userPassword = createPassword();
 
@@ -305,11 +322,17 @@ public class UserCreate extends Window {
 					user = selectUser;
 					user.setUsername(userName.getValue().trim());
 					
-					if(passText!=null){
-						if(!passText.getValue().isEmpty())
-							user.setPassword(passText.getValue());
-						else
-							user.setPassword(createPassword());
+					if(passwordConfim!=null){
+						if(passwordConfim.getValue().equals(password.getValue())){
+							if(!passwordConfim.getValue().isEmpty())
+								user.setPassword(password.getValue());
+							else
+								user.setPassword(createPassword());
+						}
+						else{
+							Notification.show("Password confirmation is wrong", Notification.Type.ERROR_MESSAGE);
+							return;
+						}
 					}
 
 					EmailAddress email = new EmailAddress(userEmail.getValue().trim());
