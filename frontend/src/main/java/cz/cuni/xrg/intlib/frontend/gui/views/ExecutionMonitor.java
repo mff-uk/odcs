@@ -439,6 +439,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 case "cancel":
                 	PipelineExecution pipelineExec = 
                 		App.getApp().getPipelines().getExecution(execId);
+	               	 if(pipelineExec.getStatus().equals(PipelineExecutionStatus.RUNNING)){
+	                  	tableData.getContainerProperty(itemId, "status").setValue(PipelineExecutionStatus.CANCELLING);
+	                  	senderButton.setVisible(false);
+	             	 }
                 	pipelineExec.stop();
                 	App.getApp().getPipelines().save(pipelineExec);
                 	senderButton.setVisible(false);
@@ -509,6 +513,9 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                         break;
                     case CANCELLED:
                         img = new ThemeResource("icons/cancelled.png");
+                        break;
+                    case CANCELLING:
+                        img = new ThemeResource("icons/cancelling.png");
                         break;
                     default:
                         //no icon

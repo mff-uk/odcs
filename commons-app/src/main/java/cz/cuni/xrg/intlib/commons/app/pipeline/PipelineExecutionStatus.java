@@ -11,5 +11,6 @@ public enum PipelineExecutionStatus {
     FINISHED_SUCCESS,
     FINISHED_WARNING,
     RUNNING,
-    SCHEDULED
+    SCHEDULED, 
+    CANCELLING
 }
