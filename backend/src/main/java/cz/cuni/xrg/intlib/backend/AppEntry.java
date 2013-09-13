@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import cz.cuni.xrg.intlib.backend.auxiliaries.AppLock;
 import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
@@ -160,6 +161,19 @@ public class AppEntry {
 		// initialise
 		initSpring();		
 
+		// try to get application-lock 
+		// we construct lock key based on port		
+		final StringBuilder lockKey = new StringBuilder();
+		lockKey.append("INTLIB_");
+		lockKey.append(context.getBean(AppConfig.class).getInteger(ConfigProperty.BACKEND_PORT));
+		if (!AppLock.setLock(lockKey.toString())) {
+			// another application is already running
+			LOG.info("Another instance of Intlib is probably running.");
+			context.close();
+			LOG.info("Closing application ...");
+			return;
+		}		
+		
 		// publish event for engine about start of the execution,
 		// so backend can recover for unexpected shutdown 
 		context.publishEvent(new EngineEvent(EngineEventType.STARTUP, AppEntry.class));
@@ -171,6 +185,8 @@ public class AppEntry {
 			// terminate the execution			
 			context.close();
 			LOG.info("Closing application ...");
+			// release application log
+			AppLock.releaseLock();
 			return;
 		}
 		// start heartbeat
@@ -212,6 +228,8 @@ public class AppEntry {
 		watcherThread.interrupt();
 		context.close();
 		LOG.info("Closing application ...");
+		// release application log
+		AppLock.releaseLock();
 	}
 	
 	public static void main(String[] args) {
