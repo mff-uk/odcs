@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
+import com.github.wolfie.refresher.Refresher;
 import java.text.DateFormat;
 import java.sql.Timestamp;
 
@@ -24,6 +25,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
 import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.*;
@@ -234,7 +236,14 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 
         monitorTable.refreshRowCache();
 		
-		App.getApp().getRefreshThread().setExecutionMonitor(this);
+		App.getApp().getRefreshManager().addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
+
+			@Override
+			public void refresh(Refresher source) {
+				ExecutionMonitor.this.refresh();
+				LOG.debug("ExecutionMonitor refreshed.");
+			}
+		});
 
         return mainLayout;
     }
@@ -295,8 +304,9 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-				App.getApp().getRefreshThread().refreshExecution(null, null);
-
+				//App.getApp().getRefreshThread().refreshExecution(null, null);
+				App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
+				
                 hsplit.setSplitPosition(100, Unit.PERCENTAGE);
                 hsplit.setLocked(true);
             }
@@ -321,7 +331,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         logLayout.setExpandRatio(buttonBar, 0);
 		
 		if(pipelineExec.getStatus() == RUNNING || pipelineExec.getStatus() == SCHEDULED) {
-			App.getApp().getRefreshThread().refreshExecution(pipelineExec, debugView);
+			//App.getApp().getRefreshThread().refreshExecution(pipelineExec, debugView);
+			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debugView, pipelineExec));
 		}
         return logLayout;
 

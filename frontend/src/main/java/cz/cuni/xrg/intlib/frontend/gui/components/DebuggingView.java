@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.data.Property;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
@@ -14,6 +15,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
 import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
@@ -468,7 +470,8 @@ public class DebuggingView extends CustomComponent {
         this.debugDpu = instance;
         refreshContent();
         if(refreshAutomatically.getValue()) {
-            App.getApp().getRefreshThread().refreshExecution(this.pipelineExec, this);
-        }
+			//App.getApp().getRefreshThread().refreshExecution(this.pipelineExec, this);
+			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(this, execution));
+		}
     }
 }

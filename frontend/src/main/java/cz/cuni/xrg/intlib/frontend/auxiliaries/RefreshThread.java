@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import cz.cuni.xrg.intlib.frontend.AppEntry;
 import cz.cuni.xrg.intlib.frontend.gui.components.DebuggingView;
 import cz.cuni.xrg.intlib.frontend.gui.views.ExecutionMonitor;
 import java.util.logging.Level;
@@ -82,8 +81,8 @@ public class RefreshThread extends Thread {
 				LOG.debug("ExecutionMonitor refreshed.");
 			}
 
-			refreshBackendStatus();
-			LOG.debug("Backend status refreshed.");
+			//refreshBackendStatus();
+			//LOG.debug("Backend status refreshed.");
 			
 			Thread.sleep(interval);
 			

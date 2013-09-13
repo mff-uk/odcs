@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.frontend;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
@@ -26,6 +27,7 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
@@ -75,6 +77,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private RefreshThread refreshThread;
 	
 	private Client backendClient;
+	
+	private RefreshManager refreshManager;
 		
 	/**
 	 * Add a single view to {@link #navigator}.
@@ -209,8 +213,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 				}
 				
 				if(!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
-					refreshThread.setExecutionMonitor(null);
-					refreshThread.refreshExecution(null, null);
+					refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
+					refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
+					//refreshThread.refreshExecution(null, null);
 				}
 				return true;
 			}
@@ -277,6 +282,23 @@ public class AppEntry extends com.vaadin.ui.UI {
 				config.getString(ConfigProperty.BACKEND_HOST),
 				config.getInteger(ConfigProperty.BACKEND_PORT));
 
+		Refresher refresher = new Refresher();
+		refresher.setRefreshInterval(5000);
+		addExtension(refresher);
+		refreshManager = new RefreshManager(refresher);
+		refreshManager.addListener(RefreshManager.BACKEND_STATUS, new Refresher.RefreshListener() {
+			private boolean lastBackendStatus = false;
+
+			@Override
+			public void refresh(Refresher source) {
+				boolean isRunning = getBackendClient().checkStatus();
+				if (lastBackendStatus != isRunning) {
+					lastBackendStatus = isRunning;
+					main.refreshBackendStatus(lastBackendStatus);
+				}
+				LOG.debug("Backend status refreshed.");
+			}
+		});
 	}
 
 	/**
@@ -422,7 +444,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	public void setupRefreshThread() {
 		refreshThread = new RefreshThread(5000);
-		refreshThread.start();
+		//refreshThread.start();
 	}
 
 	public Client getBackendClient() {
@@ -431,5 +453,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	public RefreshThread getRefreshThread() {
 		return refreshThread;
+	}
+	
+	public RefreshManager getRefreshManager() {
+		return refreshManager;
 	}
 }

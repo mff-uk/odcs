@@ -32,6 +32,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.DPUTree;
@@ -437,7 +438,8 @@ class PipelineEdit extends ViewComponent {
 		debugWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {
-				App.getApp().getRefreshThread().refreshExecution(null, null);
+				//App.getApp().getRefreshThread().refreshExecution(null, null);
+				App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 			}
 		});
 		debugWindow.addResizeListener(new Window.ResizeListener() {
@@ -448,7 +450,8 @@ class PipelineEdit extends ViewComponent {
 		});
 		
 		if(pExec.getStatus() == RUNNING || pExec.getStatus() == SCHEDULED) {
-			App.getApp().getRefreshThread().refreshExecution(pExec, debug);
+			//App.getApp().getRefreshThread().refreshExecution(pExec, debug);
+			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debug, pExec));
 		}
 		App.getApp().addWindow(debugWindow);
 	}
