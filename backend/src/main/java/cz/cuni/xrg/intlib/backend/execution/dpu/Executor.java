@@ -2,12 +2,10 @@ package cz.cuni.xrg.intlib.backend.execution.dpu;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Level;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -194,6 +192,7 @@ public final class Executor implements Runnable {
 			if (item.getFrom() == source && item.getTo() == node) {
 				Context sourceContext = contexts.get(source);
 				if (sourceContext == null) {
+					LOG.error("Missing context for: {}", source.getDpuInstance().getName());
 					throw new StructureException("Missing context for '"
 							+ source.getDpuInstance().getName()
 							+ "' required by '"
@@ -204,6 +203,8 @@ public final class Executor implements Runnable {
 				return;
 			}
 		}
+		LOG.error("Missing context from {} to {}", 
+				source.getDpuInstance().getName(), node.getDpuInstance().getName());
 		throw new StructureException("Missing edge from "
 				+ source.getDpuInstance().getName() + " to "
 				+ node.getDpuInstance().getName());
@@ -228,10 +229,12 @@ public final class Executor implements Runnable {
 				try {
 					addContextData(item);
 				} catch (ContextException e) {
+					LOG.error("Failed to prepare context", e);
 					eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 							dpu, execution, this));
 					return false;
 				} catch (StructureException e) {
+					LOG.error("Failed to prepare context", e);
 					eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 							dpu, execution, this));
 					return false;
@@ -285,18 +288,22 @@ public final class Executor implements Runnable {
 				// can not be executed
 			}
 		} catch (DataUnitException e) {
+			LOG.error("Execution:DataUnitException", e);
 			eventPublisher.publishEvent(DPUEvent.createDataUnitFailed(context,
 					this, e));
 			return false;
 		} catch (DPUException e) {
+			LOG.error("Execution:DPUException", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Exception e) {
+			LOG.error("Execution:Exception", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Error e) {
+			LOG.error("Execution:Error", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
@@ -340,6 +347,7 @@ public final class Executor implements Runnable {
 		try {
 			dpuInstance = loadInstance();
 		} catch (ModuleException e) {
+			LOG.error("Failed to load required bundle", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e, dpu,
 					execution, this));
 			// cancel the execution

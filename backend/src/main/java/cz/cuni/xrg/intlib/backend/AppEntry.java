@@ -21,7 +21,6 @@ import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.backend.module.DirectoryWatcher;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
 /**
  * Backend entry point.
@@ -55,12 +54,7 @@ public class AppEntry {
 	 * Application configuration.
 	 */
 	private AppConfig appConfig = null;
-	
-	/**
-	 * Module facade.
-	 */
-	private ModuleFacade moduleFacade = null;
-			
+				
 	/**
 	 * Server for network communication.
 	 */
@@ -96,8 +90,7 @@ public class AppEntry {
 			// read args ..
 			configFileLocation = cmd.getOptionValue("config");
 		} catch (ParseException e) {
-			LOG.error("Failed to parse program's arguments.");
-			LOG.debug("Unexpected exception:" + e.getMessage());
+			LOG.error("Failed to parse program's arguments.", e);
 		}
 		
 		// override default configuration path if it has been provided
@@ -128,8 +121,7 @@ public class AppEntry {
 		try {
 			server.init();
 		} catch (CommunicationException e) {
-			LOG.error("Can't start TCP/IP server");
-			LOG.debug("", e);
+			LOG.error("Can't start TCP/IP server", e);
 			return false;
 		}
 		// start server in another thread
@@ -155,6 +147,7 @@ public class AppEntry {
 		// start watcher in it's own thread
 		watcherThread = new Thread(context.getBean(DirectoryWatcher.class));
 		watcherThread.start();
+		LOG.info("DPU's directory watcher is running ... ");
 	}
 	
 	/**
@@ -175,8 +168,6 @@ public class AppEntry {
 		if (initNetworkServer()) {
 			// continue
 		} else {
-			// this can be because of another instance is running
-			
 			// terminate the execution			
 			context.close();
 			LOG.info("Closing application ...");
