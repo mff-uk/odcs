@@ -51,7 +51,7 @@ class Scheduler extends ViewComponent {
 	static String[] visibleCols = new String[]{"pipeline", "rule", "user",
 		"last", "next", "duration", "status", "commands"};
 	static String[] headers = new String[]{"pipeline", "Rule", "User",
-		"Last", "Next", "Last successful run time", "Status", "Commands"};
+		"Last", "Next", "Last run time", "Status", "Commands"};
 	private DateFormat localDateFormat = null;
 	int style = DateFormat.MEDIUM;
 	private Long schId;
