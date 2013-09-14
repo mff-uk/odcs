@@ -110,6 +110,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
   "silent_mode" SMALLINT,
   "debugnode_id" INTEGER,
   "stop" SMALLINT,
+  "t_last_change" DATETIME,
   PRIMARY KEY ("id")
 );
 
@@ -450,6 +451,15 @@ CREATE TRIGGER delete_node_fix BEFORE DELETE ON "DB"."INTLIB"."PPL_NODE" REFEREN
 	DELETE FROM ppl_edge
 	 WHERE node_from_id = n.id
 	  OR node_to_id = n.id;
+};
+
+CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."INTLIB"."EXEC_PIPELINE" REFERENCING new AS n
+{
+  SET triggers OFF;
+  UPDATE "DB"."INTLIB"."EXEC_PIPELINE"
+    SET
+      t_last_change=now()
+    WHERE id = n.id;
 };
 
 -- TABLES FOR LOGBACK

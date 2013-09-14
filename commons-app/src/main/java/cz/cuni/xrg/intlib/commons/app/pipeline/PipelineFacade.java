@@ -313,6 +313,22 @@ public class PipelineFacade {
                 return resultList.get(0);
             }
         }
+        
+        public boolean hasModifiedExecutions(Date lastLoad) {
+            @SuppressWarnings("unchecked")
+            
+                    Object r = em.createQuery(
+                    "SELECT CASE\n" +
+                    "    WHEN MAX(e.lastChange) > :last THEN 1\n" +
+                    "    ELSE 0\n" +
+                    "END " +
+                    "FROM PipelineExecution e")
+                    .setParameter("last", lastLoad)
+                    .getSingleResult();
+            boolean result = (int)r > 0;
+            return result;
+        }
+        
         /**
 	 * Persists new {@link PipelineExecution} or updates it if it was already
 	 * persisted before.

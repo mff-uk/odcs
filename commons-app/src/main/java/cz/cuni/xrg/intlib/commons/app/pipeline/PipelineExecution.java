@@ -93,6 +93,13 @@ public class PipelineExecution implements Serializable {
 	 */
 	@Column(name = "stop")
 	private boolean stop;
+        
+        /**
+	 * Timestamp when this execution was last changed.
+	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "t_last_change")
+	private Date lastChange;
 	
 	/**
 	 * No-arg constructor for JPA
@@ -214,6 +221,10 @@ public class PipelineExecution implements Serializable {
 		status = PipelineExecutionStatus.CANCELLED;
 	}
         
+        public Date getLastChange() {
+            return lastChange;
+        }
+        
         /**
          * Returns duration of execution. Returns -1 for unfinished/not started executions.
          * 
@@ -260,5 +271,7 @@ public class PipelineExecution implements Serializable {
 		
 		return Objects.equals(this.id, other.id);
 	}
+
+    
 	
 }

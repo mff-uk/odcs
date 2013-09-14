@@ -29,6 +29,7 @@ import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
 import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.*;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         "status", "isDebugging", "obsolete", "actions", "report"};
     static String[] headers = new String[]{"Date", "Name", "Run time", "User", "Status",
         "Debug", "Obsolete", "Actions", "Report"};
+	
+	private Date lastLoad;
 
     /*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
     /**
@@ -137,6 +140,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTableLayout.addComponent(topLine);
 
         tableData = getTableData();
+		lastLoad = new Date();
 
         //table with pipeline execution records
         monitorTable = new IntlibPagedTable();
@@ -270,14 +274,17 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
      * Calls for refresh {@link #monitorTable}.
      */
     public void refresh() {
-        int page = monitorTable.getCurrentPage();
-		Object selectedRow = monitorTable.getValue();
-		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) monitorTable.getContainerDataSource().getContainer();
-		c.refresh();
-		monitorTable.setCurrentPage(page);
-		monitorTable.setValue(selectedRow);
-		//monitorTable.markAsDirty();
-		//monitorTable.setVisibleColumns(visibleCols);
+		Date now = new Date();
+		boolean hasModifiedExecutions = App.getApp().getPipelines().hasModifiedExecutions(lastLoad);
+		if(hasModifiedExecutions) {
+			int page = monitorTable.getCurrentPage();
+			Object selectedRow = monitorTable.getValue();
+			IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) monitorTable.getContainerDataSource().getContainer();
+			c.refresh();
+			monitorTable.setCurrentPage(page);
+			monitorTable.setValue(selectedRow);
+			lastLoad = now;
+		}
     }
 
     /**
@@ -364,7 +371,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
      */
     public static Container getTableData() {
 
-        IntlibLazyQueryContainer result = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), PipelineExecution.class, 20, "id", false, false, false);
+        IntlibLazyQueryContainer result = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), PipelineExecution.class, 20, "id", true, true, true);
         result.getQueryView().getQueryDefinition().setDefaultSortState(
                 new Object[]{"start"}, new boolean[]{true});
         result.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(1);
