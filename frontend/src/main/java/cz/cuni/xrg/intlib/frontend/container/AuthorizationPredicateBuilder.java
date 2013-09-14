@@ -64,14 +64,19 @@ public class AuthorizationPredicateBuilder<E> implements PredicateBuilder {
 		// which corresponds with restrictive policy of PermissionEvaluator.
 		Predicate predicate = builder.or();
 		
+		boolean predicateUsed = false;
 		for (Map.Entry<Class, PredicateBuilder> e : predicates.entrySet()) {
 			if (e.getKey().isAssignableFrom(entityClass)) {
 				// predicate is relevant for our entity
 				predicate = builder.or(predicate, e.getValue().build());
+				predicateUsed = true;
 			}
 		}
 		
-		return predicate;
+		// If no predicates are applicable to our entity, just allow all.
+		// This is just a temporary solution until all our entities have
+		// applicable predicates (rules for handling authorization).
+		return predicateUsed ? predicate : builder.and();
 	}
 	
 	/**
