@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.xrg.intlib.commons.app.Application;
 import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
@@ -17,6 +20,8 @@ import cz.cuni.xrg.intlib.commons.configuration.MissingConfigPropertyException;
  */
 public class ModuleFacadeConfig {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleFacadeConfig.class);
+	
 	/**
 	 * Name for directory where DPUs are stored.
 	 */
@@ -126,6 +131,8 @@ public class ModuleFacadeConfig {
 			// frontend is running -> we need to export Vaadin packages as well
 			appendPackages(packageList, com.vaadin.PackageList.PACKAGES);
 			appendPackages(packageList, FRONTEND_BASE);
+			// print message
+			LOG.info("com.vaadin version: {}", com.vaadin.PackageList.VERSION);
 		}
 
 		// in every case add org.seasame packages

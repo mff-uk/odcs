@@ -11,7 +11,7 @@ public final class PackageList {
 	/**
 	 * Used Vaadin version.
 	 */
-	protected static final String VERSION = "7.1.0";
+	public static final String VERSION = "7.1.5";
 	
 	/**
 	 * List of OSGI packages to export. Does not start nor 
