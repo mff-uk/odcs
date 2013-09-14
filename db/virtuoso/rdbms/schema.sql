@@ -181,9 +181,9 @@ CREATE TABLE "DB"."INTLIB"."PPL_EDGE"
   "data_unit_name" VARCHAR(45),
   PRIMARY KEY ("id")
 );
-CREATE INDEX "ix_PPL_EDGE_graph_id" ON "DB"."INTLIB"."PPL_MODEL" ("graph_id");
-CREATE INDEX "ix_PPL_EDGE_node_from_id" ON "DB"."INTLIB"."PPL_MODEL" ("node_from_id");
-CREATE INDEX "ix_PPL_EDGE_node_to_id" ON "DB"."INTLIB"."PPL_MODEL" ("node_to_id");
+CREATE INDEX "ix_PPL_EDGE_graph_id" ON "DB"."INTLIB"."PPL_EDGE" ("graph_id");
+CREATE INDEX "ix_PPL_EDGE_node_from_id" ON "DB"."INTLIB"."PPL_EDGE" ("node_from_id");
+CREATE INDEX "ix_PPL_EDGE_node_to_id" ON "DB"."INTLIB"."PPL_EDGE" ("node_to_id");
 
 CREATE TABLE "DB"."INTLIB"."PPL_NODE"
 (
