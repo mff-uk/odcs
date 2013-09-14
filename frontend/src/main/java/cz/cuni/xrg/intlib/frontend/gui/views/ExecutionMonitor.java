@@ -145,8 +145,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTable.setWidth("100%");
         monitorTable.setHeight("100%");
         monitorTable.setImmediate(true);
-        monitorTable.setVisibleColumns(visibleCols); // Set visible columns
-        monitorTable.setColumnHeaders(headers);
 		monitorTable.setColumnWidth("obsolete", 60);
 		monitorTable.setColumnWidth("status", 50);
 		monitorTable.setColumnWidth("isDebugging", 50);
@@ -207,7 +205,27 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         //Actions column. Contains actions buttons: Debug data, Show log, Cancel.
         monitorTable.addGeneratedColumn("actions",
                 new GenerateActionColumnMonitor(this));
-
+		monitorTable.addGeneratedColumn("user", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				return "";
+			}
+		});
+		monitorTable.addGeneratedColumn("obsolete", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				return "";
+			}
+		});
+		monitorTable.addGeneratedColumn("report", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				return "";
+			}
+		});
+		
+		monitorTable.setVisibleColumns(visibleCols); // Set visible columns
+		monitorTable.setColumnHeaders(headers);
         monitorTableLayout.addComponent(monitorTable);
         monitorTableLayout.addComponent(monitorTable.createControls());
         monitorTable.setPageLength(20);
@@ -346,7 +364,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
      */
     public static Container getTableData() {
 
-        IntlibLazyQueryContainer result = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), PipelineExecution.class, 20, "id", true, true, true);
+        IntlibLazyQueryContainer result = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), PipelineExecution.class, 20, "id", false, false, false);
         result.getQueryView().getQueryDefinition().setDefaultSortState(
                 new Object[]{"start"}, new boolean[]{true});
         result.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(1);
@@ -370,6 +388,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 //                case "name":
 //                    result.addContainerProperty("pipeline.name", String.class, "");
 //                    break;
+				case "actions":
+				case "user":
+				case "obsolete":
+				case "report":
+					break;
                 default:
                     result.addContainerProperty(p, String.class, "");
                     break;
