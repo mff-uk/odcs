@@ -30,7 +30,7 @@ public class Node implements Serializable {
 	@JoinColumn(name = "instance_id", unique = true, nullable = false)
 	private DPUInstanceRecord dpuInstance;
 
-	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToOne(optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "position_id", unique = true)
 	private Position position;
 

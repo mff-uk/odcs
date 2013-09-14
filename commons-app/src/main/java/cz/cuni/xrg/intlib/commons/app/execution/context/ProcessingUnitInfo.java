@@ -38,7 +38,7 @@ public class ProcessingUnitInfo implements Serializable {
 	/**
 	 * Storage for dataUnits descriptors.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "exec_context_dpu_id")
 	@OrderBy("index")
 	private List<DataUnitInfo> dataUnits = new LinkedList<>();

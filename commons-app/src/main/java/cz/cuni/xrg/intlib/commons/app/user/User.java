@@ -82,7 +82,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 	 * User notification settings used as a default for execution schedules.
 	 * Overridden by specific settings in {@link ScheduleNotificationRecord}.
 	 */
-	@OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private UserNotificationRecord notification;
 
 	/**

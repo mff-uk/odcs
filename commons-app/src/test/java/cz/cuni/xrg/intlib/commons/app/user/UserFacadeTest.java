@@ -28,6 +28,7 @@ public class UserFacadeTest {
 	 * Test of getAllUsers method, of class UserFacade.
 	 */
 	@Test
+	@Transactional
 	public void testGetAllUsers() {
 		List<User> users = facade.getAllUsers();
 		assertNotNull(users);
@@ -43,6 +44,7 @@ public class UserFacadeTest {
 	 * Test of getUser method, of class UserFacade.
 	 */
 	@Test
+	@Transactional
 	public void testGetUser() {
 		User user = facade.getUser(1L);
 		assertNotNull(user);

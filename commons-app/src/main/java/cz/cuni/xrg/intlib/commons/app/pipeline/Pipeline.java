@@ -65,7 +65,7 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	@Column
 	private String description;
 
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline")
 	private PipelineGraph graph;
 	
 	/**

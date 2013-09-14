@@ -70,7 +70,7 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Execution context, can be null.
 	 */
-	@OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
 	@JoinColumn(name = "context_id", nullable = true)
 	private ExecutionContextInfo context;
 
