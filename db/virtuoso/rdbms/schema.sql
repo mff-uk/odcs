@@ -38,6 +38,8 @@ CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
   "dpu_id" INTEGER,
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_DPU_INSTANCE_jar_path" ON "DB"."INTLIB"."DPU_INSTANCE" ("jar_path");
+CREATE INDEX "ix_DPU_INSTANCE_dpu_id" ON "DB"."INTLIB"."DPU_INSTANCE" ("dpu_id");
 
 CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
 (
@@ -56,6 +58,10 @@ CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
   "jar_description" VARCHAR(512),
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_DPU_TEMPLATE_jar_path" ON "DB"."INTLIB"."DPU_TEMPLATE" ("jar_path");
+CREATE INDEX "ix_DPU_TEMPLATE_parent_id" ON "DB"."INTLIB"."DPU_TEMPLATE" ("parent_id");
+CREATE INDEX "ix_DPU_TEMPLATE_user_id" ON "DB"."INTLIB"."DPU_TEMPLATE" ("user_id");
+CREATE INDEX "ix_DPU_TEMPLATE_visibility" ON "DB"."INTLIB"."DPU_TEMPLATE" ("visibility");
 
 CREATE TABLE "DB"."INTLIB"."EXEC_DATAUNIT_INFO"
 (
@@ -67,6 +73,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_DATAUNIT_INFO"
   "exec_context_dpu_id" INTEGER,
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id" ON "DB"."INTLIB"."EXEC_DATAUNIT_INFO" ("exec_context_dpu_id");
 
 CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_PIPELINE"
 (
@@ -84,6 +91,8 @@ CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_DPU"
   "state" SMALLINT,
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_EXEC_CONTEXT_DPU_exec_context_pipeline_id" ON "DB"."INTLIB"."EXEC_CONTEXT_DPU" ("exec_context_pipeline_id");
+CREATE INDEX "ix_EXEC_CONTEXT_DPU_dpu_instance_id" ON "DB"."INTLIB"."EXEC_CONTEXT_DPU" ("dpu_instance_id");
 
 CREATE TABLE "DB"."INTLIB"."EXEC_RECORD"
 (
@@ -96,6 +105,10 @@ CREATE TABLE "DB"."INTLIB"."EXEC_RECORD"
   "full_message" LONG VARCHAR,
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_EXEC_RECORD_r_time" ON "DB"."INTLIB"."EXEC_RECORD" ("r_time");
+CREATE INDEX "ix_EXEC_RECORD_r_type" ON "DB"."INTLIB"."EXEC_RECORD" ("r_type");
+CREATE INDEX "ix_EXEC_RECORD_dpu_id" ON "DB"."INTLIB"."EXEC_RECORD" ("dpu_id");
+CREATE INDEX "ix_EXEC_RECORD_execution_id" ON "DB"."INTLIB"."EXEC_RECORD" ("execution_id");
 
 CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
 (
@@ -113,6 +126,12 @@ CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
   "t_last_change" DATETIME,
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_EXEC_PIPELINE_status" ON "DB"."INTLIB"."EXEC_PIPELINE" ("status");
+CREATE INDEX "ix_EXEC_PIPELINE_pipeline_id" ON "DB"."INTLIB"."EXEC_PIPELINE" ("pipeline_id");
+CREATE INDEX "ix_EXEC_PIPELINE_debug_mode" ON "DB"."INTLIB"."EXEC_PIPELINE" ("debug_mode");
+CREATE INDEX "ix_EXEC_PIPELINE_t_start" ON "DB"."INTLIB"."EXEC_PIPELINE" ("t_start");
+CREATE INDEX "ix_EXEC_PIPELINE_context_id" ON "DB"."INTLIB"."EXEC_PIPELINE" ("context_id");
+CREATE INDEX "ix_EXEC_PIPELINE_schedule_id" ON "DB"."INTLIB"."EXEC_PIPELINE" ("schedule_id");
 
 CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE"
 (
@@ -130,6 +149,11 @@ CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE"
   "period_unit" SMALLINT,
   PRIMARY KEY ("id")
 );
+-- composite index to optimize fetching schedules following pipeline
+CREATE INDEX "ix_EXEC_SCHEDULE_pipeline_id_type" ON "DB"."INTLIB"."EXEC_SCHEDULE" ("pipeline_id", "type");
+CREATE INDEX "ix_EXEC_SCHEDULE_user_id" ON "DB"."INTLIB"."EXEC_SCHEDULE" ("user_id");
+CREATE INDEX "ix_EXEC_SCHEDULE_enabled" ON "DB"."INTLIB"."EXEC_SCHEDULE" ("enabled");
+CREATE INDEX "ix_EXEC_SCHEDULE_type" ON "DB"."INTLIB"."EXEC_SCHEDULE" ("type");
 
 CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE_AFTER"
 (
@@ -146,6 +170,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
   "user_id" INTEGER,
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_PPL_MODEL_user_id" ON "DB"."INTLIB"."PPL_MODEL" ("user_id");
 
 CREATE TABLE "DB"."INTLIB"."PPL_EDGE"
 (
@@ -156,6 +181,9 @@ CREATE TABLE "DB"."INTLIB"."PPL_EDGE"
   "data_unit_name" VARCHAR(45),
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_PPL_EDGE_graph_id" ON "DB"."INTLIB"."PPL_MODEL" ("graph_id");
+CREATE INDEX "ix_PPL_EDGE_node_from_id" ON "DB"."INTLIB"."PPL_MODEL" ("node_from_id");
+CREATE INDEX "ix_PPL_EDGE_node_to_id" ON "DB"."INTLIB"."PPL_MODEL" ("node_to_id");
 
 CREATE TABLE "DB"."INTLIB"."PPL_NODE"
 (
@@ -165,6 +193,8 @@ CREATE TABLE "DB"."INTLIB"."PPL_NODE"
   "position_id" INTEGER,
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_PPL_NODE_graph_id" ON "DB"."INTLIB"."PPL_NODE" ("graph_id");
+CREATE INDEX "ix_PPL_NODE_instance_id" ON "DB"."INTLIB"."PPL_NODE" ("instance_id");
 
 CREATE TABLE "DB"."INTLIB"."PPL_GRAPH"
 (
@@ -173,6 +203,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_GRAPH"
   PRIMARY KEY ("id"),
   UNIQUE (pipeline_id)
 );
+CREATE INDEX "ix_PPL_GRAPH_pipeline_id" ON "DB"."INTLIB"."PPL_GRAPH" ("pipeline_id");
 
 CREATE TABLE "DB"."INTLIB"."PPL_POSITION"
 (
@@ -201,6 +232,7 @@ CREATE TABLE "DB"."INTLIB"."SCH_USR_NOTIFICATION"
   PRIMARY KEY ("id"),
   UNIQUE (user_id)
 );
+CREATE INDEX "ix_SCH_USR_NOTIFICATION_user_id" ON "DB"."INTLIB"."SCH_USR_NOTIFICATION" ("user_id");
 
 CREATE TABLE "DB"."INTLIB"."SCH_EMAIL"
 (
@@ -209,6 +241,7 @@ CREATE TABLE "DB"."INTLIB"."SCH_EMAIL"
   "e_domain" VARCHAR(45),
   PRIMARY KEY ("id")
 );
+CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."INTLIB"."SCH_EMAIL" ("e_user", "e_domain");
 
 CREATE TABLE "DB"."INTLIB"."SCH_SCH_NOTIFICATION_EMAIL"
 (
@@ -223,6 +256,7 @@ CREATE TABLE "DB"."INTLIB"."SCH_USR_NOTIFICATION_EMAIL"
   "email_id" SMALLINT,
   PRIMARY KEY ("notification_id", "email_id")
 );
+CREATE INDEX "ix_SCH_USR_NOTIFICATION_EMAIL_email_id" ON "DB"."INTLIB"."SCH_USR_NOTIFICATION_EMAIL" ("email_id");
 
 CREATE TABLE "DB"."INTLIB"."USR_USER"
 (
@@ -234,6 +268,7 @@ CREATE TABLE "DB"."INTLIB"."USR_USER"
   PRIMARY KEY ("id"),
   UNIQUE ("username")
 );
+CREATE INDEX "ix_USR_USER_email_id" ON "DB"."INTLIB"."USR_USER" ("email_id");
 
 CREATE TABLE "DB"."INTLIB"."USR_USER_ROLE"
 (
@@ -487,6 +522,8 @@ CREATE TABLE "DB"."INTLIB"."LOGGING_EVENT"
   event_id BIGINT NOT NULL IDENTITY,
   PRIMARY KEY (event_id)
 );
+CREATE INDEX "ix_LOGGING_EVENT_timestmp" ON "DB"."INTLIB"."LOGGING_EVENT" ("timestmp");
+CREATE INDEX "ix_LOGGING_EVENT_level_string" ON "DB"."INTLIB"."LOGGING_EVENT" ("level_string");
 
 CREATE TABLE "DB"."INTLIB"."LOGGING_EVENT_PROPERTY"
 (
@@ -496,6 +533,7 @@ CREATE TABLE "DB"."INTLIB"."LOGGING_EVENT_PROPERTY"
   PRIMARY KEY (event_id, mapped_key),
   FOREIGN KEY (event_id) REFERENCES "DB"."INTLIB"."LOGGING_EVENT"(event_id)
 );
+CREATE INDEX "ix_LOGGING_EVENT_PROPERTY_mapped_key" ON "DB"."INTLIB"."LOGGING_EVENT_PROPERTY" ("mapped_key");
 
 CREATE TABLE "DB"."INTLIB"."LOGGING_EVENT_EXCEPTION"
 (
