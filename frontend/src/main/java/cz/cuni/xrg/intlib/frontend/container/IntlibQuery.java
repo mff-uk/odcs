@@ -12,7 +12,9 @@ import com.vaadin.data.util.filter.Like;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -20,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -65,7 +68,7 @@ public class IntlibQuery<E> implements Query, Serializable {
      * The size of the query.
      */
     private int querySize = -1;
-
+	
     /**
      * Constructor for configuring the query.
      *
@@ -121,9 +124,9 @@ public class IntlibQuery<E> implements Query, Serializable {
 
             //setOrderClause(cb, cq, root);
 
-            final javax.persistence.Query query = entityManager.createQuery(cq);
+            TypedQuery<Long> query = entityManager.createQuery(cq);
 
-            querySize = ((Number) query.getSingleResult()).intValue();
+            querySize = query.getSingleResult().intValue();
         }
         return querySize;
     }
@@ -144,17 +147,17 @@ public class IntlibQuery<E> implements Query, Serializable {
 
         cq.select(root);
 
-        setWhereCriteria(cb, cq, root);
-
+		setWhereCriteria(cb, cq, root);
+		
         setOrderClause(cb, cq, root);
 
-        final javax.persistence.TypedQuery<E> query = entityManager.createQuery(cq);
+        TypedQuery<E> query = entityManager.createQuery(cq);
 
         query.setFirstResult(startIndex);
         query.setMaxResults(count);
 
-        final List<?> entities = query.getResultList();
-        final List<Item> items = new ArrayList<Item>();
+        List<E> entities = query.getResultList();
+        List<Item> items = new ArrayList<>();
         for (final Object entity : entities) {
             if (queryDefinition.isDetachedEntities()) {
                 entityManager.detach(entity);
@@ -175,12 +178,10 @@ public class IntlibQuery<E> implements Query, Serializable {
      * @param <SE> the selected entity
      */
     private <SE> void setWhereCriteria(final CriteriaBuilder cb, final CriteriaQuery<SE> cq, final Root<E> root) {
-        final List<Container.Filter> filters = new ArrayList<Container.Filter>();
-        filters.addAll(queryDefinition.getDefaultFilters());
-        filters.addAll(queryDefinition.getFilters());
+        final List<Container.Filter> filters = new ArrayList<>();
 
-        final Object[] sortPropertyIds;
-        final boolean[] sortPropertyAscendingStates;
+		filters.addAll(queryDefinition.getDefaultFilters());
+        filters.addAll(queryDefinition.getFilters());
 
         Container.Filter rootFilter;
         if (filters.size() > 0) {
@@ -192,9 +193,16 @@ public class IntlibQuery<E> implements Query, Serializable {
             final Container.Filter filter = filters.remove(0);
             rootFilter = new And(rootFilter, filter);
         }
+		
+		// build authorization predicate
+		AuthenticationContext authCtx = App.getApp().getAuthCtx();
+		PredicateBuilder apb = new AuthorizationPredicateBuilder<>(authCtx, root, cq, cb, entityClass);
+		Predicate authPredicate = apb.build();
 
-        if (rootFilter != null) {
-            cq.where(setFilter(rootFilter, cb, cq, root));
+        if (rootFilter == null) {
+			cq.where(authPredicate);
+		} else {
+			cq.where(cb.and(authPredicate, setFilter(rootFilter, cb, cq, root)));
         }
     }
 
@@ -249,9 +257,10 @@ public class IntlibQuery<E> implements Query, Serializable {
      */
     private Predicate setFilter(final Container.Filter filter, final CriteriaBuilder cb,
             final CriteriaQuery<?> cq, final Root<?> root) {
+		
         if (filter instanceof And) {
             final And and = (And) filter;
-            final List<Container.Filter> filters = new ArrayList<Container.Filter>(and.getFilters());
+            final List<Container.Filter> filters = new ArrayList<>(and.getFilters());
 
             Predicate predicate = cb.and(setFilter(filters.remove(0), cb, cq, root),
                     setFilter(filters.remove(0), cb, cq, root));
@@ -265,7 +274,7 @@ public class IntlibQuery<E> implements Query, Serializable {
 
         if (filter instanceof Or) {
             final Or or = (Or) filter;
-            final List<Container.Filter> filters = new ArrayList<Container.Filter>(or.getFilters());
+            final List<Container.Filter> filters = new ArrayList<>(or.getFilters());
 
             Predicate predicate = cb.or(setFilter(filters.remove(0), cb, cq, root),
                     setFilter(filters.remove(0), cb, cq, root));
@@ -445,7 +454,7 @@ public class IntlibQuery<E> implements Query, Serializable {
 
             setOrderClause(cb, cq, root);
 
-            final javax.persistence.TypedQuery<E> query = entityManager.createQuery(cq);
+            final TypedQuery<E> query = entityManager.createQuery(cq);
 
             final List<?> entities = query.getResultList();
             for (final Object entity : entities) {
