@@ -497,6 +497,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	}
 
 	private void showExecutionDetail(Long executionId) {
+		App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 		exeId = executionId;
 		logLayout = buildlogLayout();
 		hsplit.setSplitPosition(55, Unit.PERCENTAGE);
