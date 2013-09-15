@@ -292,7 +292,7 @@ class Scheduler extends ViewComponent {
 			result.getContainerProperty(num, "pipeline").setValue(
 					item.getPipeline().getName());
 			
-			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, PipelineExecutionStatus.FINISHED_SUCCESS);
+			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, IntlibHelper.getFinishedStatuses());
 			result.getContainerProperty(num, "duration").setValue(IntlibHelper.getDuration(exec));
 
 

@@ -291,7 +291,7 @@ class PipelineList extends ViewComponent {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
-				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId), PipelineExecutionStatus.FINISHED_SUCCESS);
+				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId), IntlibHelper.getFinishedStatuses());
 				return IntlibHelper.getDuration(latestExec);
 			}
 		});

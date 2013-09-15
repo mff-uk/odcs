@@ -7,7 +7,9 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -252,32 +254,34 @@ public class PipelineFacade {
 	 * @return
 	 */
 	public Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status) {
-		PipelineExecution exec = getLastExec(pipeline, status);
-                if(exec == null) {
-                    return null;
-                } else {
-                    return exec.getEnd();
-                }
+            HashSet statuses = new HashSet(1);
+            statuses.add(status);
+            PipelineExecution exec = getLastExec(pipeline, statuses);
+            if (exec == null) {
+                return null;
+            } else {
+                return exec.getEnd();
+            }
 	}
 	
         /**
-	 * Return latest execution of given status for given pipeline.
+	 * Return latest execution of given statuses for given pipeline.
 	 * Ignore null values.
 	 * @param pipeline
-	 * @param status Execution status, used to filter pipelines.
+	 * @param statuses Set of execution statuses, used to filter pipelines.
 	 * @return
 	 */
-        public PipelineExecution getLastExec(Pipeline pipeline, PipelineExecutionStatus status) {
+        public PipelineExecution getLastExec(Pipeline pipeline, Set<PipelineExecutionStatus> statuses) {
             @SuppressWarnings("unchecked")
 		List<PipelineExecution> resultList = Collections.checkedList(
 				em.createQuery(
 				"SELECT e FROM PipelineExecution e" +
 				" WHERE e.pipeline = :pipe" +
-				" AND e.status = :status" +
+				" AND e.status in (:status)" +
 				" AND e.end IS NOT NULL" +
 				" ORDER BY e.end DESC")
 				.setParameter("pipe", pipeline)
-				.setParameter("status", status)
+				.setParameter("status", statuses)
 				.getResultList(),
 				PipelineExecution.class
 		);
@@ -288,23 +292,23 @@ public class PipelineFacade {
 		}
         }
 	/**
-	 * Return latest execution of given status for given schedule.
+	 * Return latest execution of given statuses for given schedule.
 	 * Ignore null values.
 	 * @param schedule
-	 * @param status Execution status, used to filter pipelines.
+	 * @param statuses Set of execution statuses, used to filter pipelines.
 	 * @return
 	 */
-        public PipelineExecution getLastExec(Schedule schedule, PipelineExecutionStatus status) {
+        public PipelineExecution getLastExec(Schedule schedule, Set<PipelineExecutionStatus> statuses) {
             @SuppressWarnings("unchecked")
             List<PipelineExecution> resultList = Collections.checkedList(
                     em.createQuery(
                     "SELECT e FROM PipelineExecution e"
                     + " WHERE e.schedule = :schedule"
-                    + " AND e.status = :status"
+                    + " AND e.status IN (:status)"
                     + " AND e.end IS NOT NULL"
                     + " ORDER BY e.end DESC")
                     .setParameter("schedule", schedule)
-                    .setParameter("status", status)
+                    .setParameter("status", statuses)
                     .getResultList(),
                     PipelineExecution.class);
             if (resultList.isEmpty()) {

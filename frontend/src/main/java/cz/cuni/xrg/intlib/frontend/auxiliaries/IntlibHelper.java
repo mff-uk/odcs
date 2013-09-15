@@ -9,6 +9,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
+import java.util.HashSet;
+import java.util.Set;
 import org.vaadin.dialogs.ConfirmDialog;
 
 /**
@@ -153,11 +155,30 @@ public class IntlibHelper {
 		return String.format("%d:%02d:%02d", hours, minutes, seconds);
 	}
 
+	/**
+	 * Gets duration of given {@link PipelineExecution}.
+	 * 
+	 * @param exec Pipeline execution.
+	 * @return Duration of {@link PipelineExecution} or -1 if execution wasn't finished.
+	 */
 	public static String getDuration(PipelineExecution exec) {
 		long duration = -1;
 		if (exec != null) {
 			duration = exec.getDuration();
 		}
 		return formatDuration(duration);
+	}
+	
+	/**
+	 * Gets set of {@link PipelineExecutionStatus} which are finished and therefore has valid duration.
+	 * 
+	 * @return Set of {@link PipelineExecutionStatus} which are finished.
+	 */
+	public static Set<PipelineExecutionStatus> getFinishedStatuses() {
+		HashSet<PipelineExecutionStatus> statuses = new HashSet<>(3);
+		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
+		statuses.add(PipelineExecutionStatus.FINISHED_WARNING);
+		statuses.add(PipelineExecutionStatus.FAILED);
+		return statuses;
 	}
 }
