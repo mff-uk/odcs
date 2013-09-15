@@ -319,7 +319,7 @@ public class UserCreate extends Window {
 							userPassword = createPassword();
 					}
 					else{
-						Notification.show("The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
+						Notification.show("Password confirmation is wrong", "The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
 						return;
 					}
 							
@@ -338,7 +338,7 @@ public class UserCreate extends Window {
 								user.setPassword(createPassword());
 						}
 						else{
-							Notification.show("The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
+							Notification.show("Password confirmation is wrong","The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
 							return;
 						}
 					}
