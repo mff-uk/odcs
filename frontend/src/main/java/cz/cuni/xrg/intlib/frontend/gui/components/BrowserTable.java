@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import com.vaadin.data.Container;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 
@@ -42,7 +43,7 @@ public class BrowserTable extends CustomComponent {
 	 */
 	private void loadBrowserTable(List<RDFTriple> data) {
 		dataTable = new IntlibPagedTable();
-		Container container = ContainerFactory.createRDFData(data);
+		Container container = App.getApp().getBean(ContainerFactory.class).createRDFData(data);
 		dataTable.setContainerDataSource(container);
 
 		dataTable.setVisibleColumns("subject", "predicate", "object");

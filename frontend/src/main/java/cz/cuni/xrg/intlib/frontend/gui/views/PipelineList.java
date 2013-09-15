@@ -23,6 +23,7 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -197,7 +198,7 @@ class PipelineList extends ViewComponent {
 	 */
 	private void refreshData() {
 		int page = tablePipelines.getCurrentPage();
-		Container container = ContainerFactory.createPipelines();
+		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines();
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.setFilterFieldVisible("", false);
 		tablePipelines.setFilterFieldVisible("duration", false);
@@ -262,7 +263,7 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setWidth("99%");
 		tablePipelines.setPageLength(10);
 		// assign data source
-		Container container = ContainerFactory.createPipelines();
+		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines();
 		tablePipelines.setContainerDataSource(container);
 
 		

@@ -129,7 +129,7 @@ public class LogMessagesTable extends CustomComponent {
 	 */
 	private void loadMessageTable() {
 
-		container = ContainerFactory.createLogMessages();
+		container = App.getApp().getBean(ContainerFactory.class).createLogMessages();
 		messageTable.setFilterGenerator(new FilterGenerator() {
 			@Override
 			public Container.Filter generateFilter(Object propertyId, Object value) {

@@ -78,7 +78,7 @@ public class RecordsTable extends CustomComponent {
 	 *
 	 */
 	private void loadMessageTable() {
-		Container container = ContainerFactory.createExecutionMessages();
+		Container container = App.getApp().getBean(ContainerFactory.class).createExecutionMessages();
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
 			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {

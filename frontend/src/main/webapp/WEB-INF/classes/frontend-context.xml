@@ -13,4 +13,7 @@
 		<constructor-arg value="FRONTEND" />
 	</bean>
 	
+	<!-- Factory for constructing data containers for Vaadin tables. -->
+	<bean id="containerFactory" class="cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory" />
+	
 </beans>
