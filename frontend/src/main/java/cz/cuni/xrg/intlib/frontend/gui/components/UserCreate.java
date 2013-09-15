@@ -48,7 +48,7 @@ public class UserCreate extends Window {
 	private TextField userEmail;
 	private VerticalLayout mainLayout;
 	private PasswordField password;
-	private PasswordField passwordConfim=null;
+	private PasswordField passwordConfim;
 	private TextField userName;
 	private User user = null;
 	private User selectUser = null;
@@ -88,6 +88,7 @@ public class UserCreate extends Window {
 	public void setSelectedUser(User selectedUser) {
 		userName.setValue(selectedUser.getUsername());
 		password.setValue("*****");
+		passwordConfim.setValue("*****");
 		userEmail.setValue(selectedUser.getEmail().toString());
 		roleSelector.setValue(selectedUser.getRoles());
 
@@ -160,17 +161,6 @@ public class UserCreate extends Window {
 				@Override
 				public void focus(FocusEvent event) {
 					password.setValue("");
-					if(passwordConfim==null){
-						passwordConfim = new PasswordField();
-						passwordConfim.setImmediate(true);
-						passwordConfim.setWidth("250px");
-						Label confirmLabel = new Label("Password<br>confirmation:");
-						
-						confirmLabel.setContentMode(ContentMode.HTML);
-						
-						userDetailsLayout.addComponent(confirmLabel, 0, 2);
-						userDetailsLayout.addComponent(passwordConfim, 1, 2);
-					}
 				}
 			});
 		
@@ -179,6 +169,26 @@ public class UserCreate extends Window {
 
 		userDetailsLayout.addComponent(passLabel, 0, 1);
 		userDetailsLayout.addComponent(password, 1, 1);
+		
+		passwordConfim = new PasswordField();
+		passwordConfim.setImmediate(true);
+		passwordConfim.setWidth("250px");
+		Label confirmLabel = new Label("Password<br>confirmation:");
+		passwordConfim.addFocusListener(new FocusListener() {
+			
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				passwordConfim.setValue("");
+
+			}
+		});
+		
+		confirmLabel.setContentMode(ContentMode.HTML);
+		
+		userDetailsLayout.addComponent(confirmLabel, 0, 2);
+		userDetailsLayout.addComponent(passwordConfim, 1, 2);
 
 		userEmail = new TextField();
 		userEmail.setImmediate(true);
@@ -299,21 +309,17 @@ public class UserCreate extends Window {
 				if(newUser){
 					String userPassword="";
 					
-					if(passwordConfim!=null){
-						if(passwordConfim.getValue().equals(password.getValue()) ){
-							if(!passwordConfim.getValue().isEmpty())
-								userPassword =  password.getValue();
-							else
-								userPassword = createPassword();
-						}
-						else{
-							Notification.show("Password confirmation is wrong", Notification.Type.ERROR_MESSAGE);
-							return;
-						}
-							
+					if(passwordConfim.getValue().equals(password.getValue()) ){
+						if(!passwordConfim.getValue().isEmpty())
+							userPassword =  password.getValue();
+						else
+							userPassword = createPassword();
 					}
-					else
-						userPassword = createPassword();
+					else{
+						Notification.show("The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+							
 
 					EmailAddress email = new EmailAddress(userEmail.getValue().trim());	
 					user = App.getApp().getUsers().createUser(userName.getValue().trim(), userPassword, email);
@@ -322,18 +328,17 @@ public class UserCreate extends Window {
 					user = selectUser;
 					user.setUsername(userName.getValue().trim());
 					
-					if(passwordConfim!=null){
-						if(passwordConfim.getValue().equals(password.getValue())){
-							if(!passwordConfim.getValue().isEmpty())
-								user.setPassword(password.getValue());
-							else
-								user.setPassword(createPassword());
-						}
-						else{
-							Notification.show("Password confirmation is wrong", Notification.Type.ERROR_MESSAGE);
-							return;
-						}
+					if(passwordConfim.getValue().equals(password.getValue())){
+						if(!passwordConfim.getValue().isEmpty())
+							user.setPassword(password.getValue());
+						else
+							user.setPassword(createPassword());
 					}
+					else{
+						Notification.show("The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
 
 					EmailAddress email = new EmailAddress(userEmail.getValue().trim());
 					user.setEmail(email);
