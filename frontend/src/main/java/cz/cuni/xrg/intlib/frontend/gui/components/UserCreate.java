@@ -56,6 +56,7 @@ public class UserCreate extends Window {
 	private Set<Role> roles = null;
 	private List<User> users;
 //	private TextField passText = null;
+	private boolean passChanged=false;
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -161,6 +162,8 @@ public class UserCreate extends Window {
 				@Override
 				public void focus(FocusEvent event) {
 					password.setValue("");
+					passwordConfim.setValue("");
+					passChanged=true;
 				}
 			});
 		
@@ -181,7 +184,7 @@ public class UserCreate extends Window {
 			@Override
 			public void focus(FocusEvent event) {
 				passwordConfim.setValue("");
-
+				passChanged=true;
 			}
 		});
 		
@@ -327,18 +330,18 @@ public class UserCreate extends Window {
 				else{
 					user = selectUser;
 					user.setUsername(userName.getValue().trim());
-					
-					if(passwordConfim.getValue().equals(password.getValue())){
-						if(!passwordConfim.getValue().isEmpty())
-							user.setPassword(password.getValue());
-						else
-							user.setPassword(createPassword());
+					if(passChanged){
+						if(passwordConfim.getValue().equals(password.getValue())){
+							if(!passwordConfim.getValue().isEmpty())
+								user.setPassword(password.getValue());
+							else
+								user.setPassword(createPassword());
+						}
+						else{
+							Notification.show("The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
+							return;
+						}
 					}
-					else{
-						Notification.show("The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
-						return;
-					}
-
 
 					EmailAddress email = new EmailAddress(userEmail.getValue().trim());
 					user.setEmail(email);
