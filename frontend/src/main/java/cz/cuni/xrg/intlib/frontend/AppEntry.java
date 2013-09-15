@@ -28,7 +28,7 @@ import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
+//import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -74,7 +74,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	private Date lastAction = null;
 	
-	private RefreshThread refreshThread;
+	//private RefreshThread refreshThread;
 	
 	private Client backendClient;
 	
@@ -159,9 +159,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
-				if (refreshThread != null) {
-					refreshThread.interrupt();
-				}
+//				if (refreshThread != null) {
+//					refreshThread.interrupt();
+//				}
 				if (backendClient != null) {
 					backendClient.close();
 				}
@@ -207,10 +207,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 					return false;
 				}
 				setActive();
-				if(refreshThread == null || !refreshThread.isAlive()) {
-					setupRefreshThread();
-					LOG.debug("Starting new refresh thread.");
-				}
+//				if(refreshThread == null || !refreshThread.isAlive()) {
+//					setupRefreshThread();
+//					LOG.debug("Starting new refresh thread.");
+//				}
 				
 				if(!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
 					refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
@@ -442,18 +442,18 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return lastAction;
 	}
 
-	public void setupRefreshThread() {
-		refreshThread = new RefreshThread(5000);
-		//refreshThread.start();
-	}
+//	public void setupRefreshThread() {
+//		refreshThread = new RefreshThread(5000);
+//		//refreshThread.start();
+//	}
 
 	public Client getBackendClient() {
 		return backendClient;
 	}
 	
-	public RefreshThread getRefreshThread() {
-		return refreshThread;
-	}
+//	public RefreshThread getRefreshThread() {
+//		return refreshThread;
+//	}
 	
 	public RefreshManager getRefreshManager() {
 		return refreshManager;
