@@ -1,5 +1,5 @@
 # Local configurations
-frontend/src/main/webapp/WEB-INF/classes/config.properties
+frontend/src/main/webapp/WEB-INF/config.properties
 *.local.xml
 
 *.class

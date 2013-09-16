@@ -9,7 +9,7 @@
 
 	<!-- Application configuration is taken from war file, so we override it. -->
 	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig">
-		<constructor-arg value="classpath:config.properties" />
+		<constructor-arg value="/WEB-INF/config.properties" />
 	</bean>
 	
 	<!-- Module configuration needs to be defined here,
