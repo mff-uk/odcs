@@ -155,6 +155,10 @@ public class DPURecord {
         return type;
     }
 
+    public void setType(DPUType type) {
+        this.type = type;
+    }    
+    
     public void setJarPath(String path) {
         jarPath = path;
     }
