@@ -66,7 +66,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
+import ru.xpoft.vaadin.VaadinView;
 
 /**
  * GUI for DPU Templates page which opens from the main menu. Contains DPU
@@ -75,7 +77,13 @@ import org.vaadin.dialogs.ConfirmDialog;
  *
  * @author Maria Kukhar
  */
+@org.springframework.stereotype.Component
+@Scope("prototype")
+@VaadinView(DPU.NAME)
 class DPU extends ViewComponent {
+	
+	/** View name. */
+	public static final String NAME = "DPURecord";
 
 	private static final long serialVersionUID = 1L;
 	private VerticalLayout mainLayout;

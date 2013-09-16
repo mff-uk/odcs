@@ -28,6 +28,8 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.EmailComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.EmailNotifications;
 import cz.cuni.xrg.intlib.frontend.gui.components.UsersList;
+import org.springframework.context.annotation.Scope;
+import ru.xpoft.vaadin.VaadinView;
 
 /**
  * GUI for Settings page which opens from the main menu. For User role it
@@ -38,7 +40,13 @@ import cz.cuni.xrg.intlib.frontend.gui.components.UsersList;
  * @author Maria Kukhar
  *
  */
+@org.springframework.stereotype.Component
+@Scope("prototype")
+@VaadinView(Settings.NAME)
 public class Settings extends ViewComponent {
+	
+	/** View name. */
+	public static final String NAME = "Administrator";
 
 	private static final long serialVersionUID = 1L;
 	private GridLayout mainLayout;

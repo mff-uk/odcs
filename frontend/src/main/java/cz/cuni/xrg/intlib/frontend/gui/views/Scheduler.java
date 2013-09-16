@@ -31,6 +31,8 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibFilterDecorator;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
+import org.springframework.context.annotation.Scope;
+import ru.xpoft.vaadin.VaadinView;
 
 /**
  * GUI for Scheduler page which opens from the main menu. Contains table with
@@ -39,7 +41,13 @@ import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
  *
  * @author Maria Kukhar
  */
+@org.springframework.stereotype.Component
+@Scope("prototype")
+@VaadinView(Scheduler.NAME)
 class Scheduler extends ViewComponent {
+	
+	/** View name. */
+	public static final String NAME = "Scheduler";
 
 	private VerticalLayout mainLayout;
 	private Label label;

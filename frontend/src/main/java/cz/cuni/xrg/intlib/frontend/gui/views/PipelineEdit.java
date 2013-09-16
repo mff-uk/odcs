@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.frontend.gui.views;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.FieldEvents;
@@ -41,14 +40,22 @@ import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.DetailClosedLis
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.ShowDebugListener;
 import cz.cuni.xrg.intlib.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import java.util.EventObject;
+import org.springframework.context.annotation.Scope;
+import ru.xpoft.vaadin.VaadinView;
 
 /**
  * Page for creating new pipeline or editing existing pipeline.
  *
  * @author Bogo
  */
+@org.springframework.stereotype.Component
+@Scope("prototype")
+@VaadinView(PipelineEdit.NAME)
 class PipelineEdit extends ViewComponent {
 
+	/** View name. */
+	public static final String NAME = "PipelineEdit";
+	
 	private View incomingView = null;
 	private VerticalLayout mainLayout;
 	private Label label;
