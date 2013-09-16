@@ -220,14 +220,25 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * Saves graph from graph canvas.
 	 *
 	 * @param pipeline {@link Pipeline} where graph should be saved.
+	 * @return If after save clean up is needed.
 	 */
-	public void saveGraph(Pipeline pipeline) {
+	public boolean saveGraph(Pipeline pipeline) {
 		historyStack.clear();
+		
+		pipeline.setGraph(graph);
+		isModified = false;
+		return !dpusToDelete.isEmpty();
+	}
+	
+	/**
+	 * Cleans up removed DPU Instances, as Nodes dependency doesn't take care of this. 
+	 * Always call after saving pipeline if saveGraph return True.
+	 * 
+	 */
+	public void afterSaveCleanUp() {
 		for (DPUInstanceRecord instance : dpusToDelete) {
 			App.getDPUs().delete(instance);
 		}
-		pipeline.setGraph(graph);
-		isModified = false;
 	}
 
 	@Override
