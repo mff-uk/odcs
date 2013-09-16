@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.configuration;
+package cz.cuni.xrg.intlib.commons.app.conf;
 
 /**
  * Recognized configuration properties.

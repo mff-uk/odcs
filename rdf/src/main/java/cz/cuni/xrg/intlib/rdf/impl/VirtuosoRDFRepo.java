@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.rdf.impl;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
+import java.util.Properties;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -47,7 +48,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 *                      empty String.
 	 */
 	public VirtuosoRDFRepo(String URL_Host_List, String user, String password,
-			String defaultGraph, String dataUnitName) {
+			String defaultGraph, String dataUnitName, Properties config) {
 
 		this.URL_Host_List = URL_Host_List;
 		this.user = user;
@@ -60,7 +61,8 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		setDataGraph(defaultGraph);
 
 		repository = new FailureTolerantRepositoryWrapper(
-			new VirtuosoRepository(URL_Host_List, user, password, defaultGraph)
+				new VirtuosoRepository(URL_Host_List, user, password, defaultGraph),
+				config
 		);
 
 		try {

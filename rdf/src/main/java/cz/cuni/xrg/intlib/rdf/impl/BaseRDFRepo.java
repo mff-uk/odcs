@@ -578,8 +578,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					try {
 						loadDataParts(endpointURL, tempGraph, insertType,
 								chunkSize);
-						loadDataParts(endpointURL, endpointGraph, insertType,
-								chunkSize);
+						moveDataToTarget(endpointURL, tempGraph, endpointGraph);
 
 					} catch (InsertPartException e) {
 						throw new RDFException(e.getMessage(), e);
@@ -1774,6 +1773,37 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				endpointURL,
 				endpointGraph, deleteQuery, RDFFormat.RDFXML);
 
+	}
+
+	private void moveDataToTarget(URL endpointURL, String tempGraph,
+			String targetGraph) throws RDFException {
+
+		String moveQuery = String.format("DEFINE sql:log-enable 2 \n"
+				+ "ADD <%s> TO <%s>", tempGraph, targetGraph);
+
+		String start = String.format(
+				"Query for moving data from temp GRAPH <%s> to target GRAPH <%s> prepared.",
+				tempGraph, targetGraph);
+
+		logger.debug(start);
+
+		try {
+			InputStreamReader result = getEndpointStreamReader(endpointURL,
+					"", moveQuery, RDFFormat.RDFXML);
+		} catch (RDFException e) {
+			String exception = String.format(
+					"Moving from temp GRAPH <%s> to target GRAPH <%s> FAILED.",
+					tempGraph, targetGraph);
+
+			logger.error(exception);
+			throw new RDFException(e.getMessage(), e);
+		}
+
+		String finish = String.format(
+				"All data from temp GRAPH <%s> to GRAPH <%s> were moved sucessfully",
+				tempGraph, targetGraph);
+
+		logger.debug(finish);
 	}
 
 	private InputStreamReader getEndpointStreamReader(URL endpointURL,

@@ -202,6 +202,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
+//				if(duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
+//					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
+//					duration = (new Date()).getTime() - start.getTime();
+//				}
 				return IntlibHelper.formatDuration(duration);
 			}
 		});
@@ -497,6 +501,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	}
 
 	private void showExecutionDetail(Long executionId) {
+		App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 		exeId = executionId;
 		logLayout = buildlogLayout();
 		hsplit.setSplitPosition(55, Unit.PERCENTAGE);

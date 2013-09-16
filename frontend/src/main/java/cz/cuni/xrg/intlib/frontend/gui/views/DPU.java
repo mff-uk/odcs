@@ -34,7 +34,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;

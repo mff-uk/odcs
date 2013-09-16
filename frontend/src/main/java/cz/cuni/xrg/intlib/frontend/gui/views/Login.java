@@ -11,7 +11,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.frontend.AuthenticationService;
 import cz.cuni.xrg.intlib.frontend.RequestHolder;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
@@ -68,7 +68,7 @@ public class Login extends ViewComponent {
         layout.setMargin(true);
         layout.setSpacing(true);
         Label logo = new Label();
-        logo.setValue("<h1>Intlib</h1>");
+        logo.setValue("<h1>ODCleanStore</h1>");
         logo.setContentMode(ContentMode.HTML);
         layout.addComponent(logo);
 
