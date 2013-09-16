@@ -1,6 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -13,10 +14,10 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
+
 import cz.cuni.xrg.intlib.commons.app.auth.AuthenticationContext;
 import cz.cuni.xrg.intlib.frontend.AuthenticationService;
 import cz.cuni.xrg.intlib.frontend.RequestHolder;
-
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 
 /**
@@ -125,16 +126,19 @@ public class MenuLayout extends CustomComponent {
 		this.menuBar = new MenuBar();
 		this.menuBar.setImmediate(false);
 		this.menuBar.setWidth("100.0%");
-		this.menuBar.setHeight("35px");
+		this.menuBar.setHeight("45px");
 		this.menuBar.setHtmlContentAllowed(true);
 		//this.mainLayout.addComponent(menuBar);
 		
 		backendStatus = new Embedded();
 		backendStatus.setWidth(16, Unit.PIXELS);
 		backendStatus.setHeight(16, Unit.PIXELS);
+		backendStatus.setStyleName("backendStatus");
 		
 		userName = new Label(authCtx.getUsername());
 		userName.setWidth(100, Unit.PIXELS);
+		userName.addStyleName("username");
+		
 		logOutButton = new Button();
 		logOutButton.setWidth(16, Unit.PIXELS);
 		logOutButton.setVisible(authCtx.isAuthenticated());
@@ -149,10 +153,12 @@ public class MenuLayout extends CustomComponent {
 				App.getApp().getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
 			}
 		});
-		HorizontalLayout menuLine = new HorizontalLayout(menuBar, backendStatus, userName, logOutButton);
+		HorizontalLayout menuLine = new HorizontalLayout(menuBar, userName, logOutButton, backendStatus);
 		menuLine.setSpacing(true);
 		menuLine.setWidth(100, Unit.PERCENTAGE);
-		menuLine.setHeight(35, Unit.PIXELS);
+		menuLine.setHeight(45, Unit.PIXELS);
+		menuLine.addStyleName("loginPanel");
+		menuLine.setComponentAlignment(menuBar, Alignment.MIDDLE_CENTER);
 		menuLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_CENTER);
 		menuLine.setComponentAlignment(userName, Alignment.MIDDLE_CENTER);
 		menuLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_CENTER);
