@@ -42,6 +42,8 @@ import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
@@ -64,6 +66,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -618,107 +621,139 @@ class DPU extends ViewComponent {
 		return verticalLayoutData;
 	}
 
-	//reload jar
+	/**
+	 * Reload DPU. The new DPU's jar file is accessible through the 
+	 * {@link FileUploadReceiver#path}. The current DPU, which is being replaced
+	 * , is stored in {@link selectedDpu}.
+	 */
 	private void copyToTarget() {
-
-		if (FileUploadReceiver.path != null) {
-			String pojPath = App.getApp().getAppConfiguration()
-					.getString(ConfigProperty.MODULE_PATH);
-			File srcFile = new File(FileUploadReceiver.file.toString());
-			File destFile = new File(pojPath + File.separator + "dpu" + File.separator + FileUploadReceiver.fName);
-
-			// checking if uploaded file already exist in the /target/dpu/ 
-			if (destFile.exists()) {
-				
-				// uploaded file already exist in the /target/dpu/ 
-				DPUTemplateRecord dpu = App.getApp().getDPUs()
-						.getTemplateByJarFile(srcFile);
-				
-				if (dpu == null) {
-					// copy file from template folder to the /target/dpu/
-					try {
-						Files.copy(srcFile, destFile);
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
-				} else {
-					// if we get the name of DPUTemplateRecord that used this
-					// file, show notification
-					Notification.show(String.format(
-						"File with name %s is already used in the DPU template %s.",
-						FileUploadReceiver.fName, dpuName
-					), Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-
-			} else {
-				try {
-					//copy file from template folder to the /target/dpu/
-					Files.copy(srcFile, destFile);
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-				
-			}
-
-			String relativePath = FileUploadReceiver.fName;
-			// we try to load new JAR .. to find out more about it,
-			// start by obtaining ModuleFacade
-			Object dpuObject = null;
-			try {
-				App.getApp().getModules().uninstall(relativePath);
-				dpuObject = App.getApp().getModules()
-						.getObject(relativePath);
-			} catch (BundleInstallFailedException | ClassLoadFailedException | FileNotFoundException e) {
-				// for some reason we can't load bundle .. delete dpu
-				// and show message to the user
-				destFile.delete();
-				Notification.show("Can't load bundle because of exception:",
-						e.getMessage(), Notification.Type.ERROR_MESSAGE);
-				return;
-
-			}
-
-			DPUExplorer dpuExplorer = App.getApp().getDPUExplorere();
-
-			String jarDescription = dpuExplorer.getJarDescription(relativePath);
-			if (jarDescription == null) {
-				// failed to read description .. use empty string ?
-				jarDescription = "";
-			}
-
-			// check type ..
-			DPUType dpuType = dpuExplorer.getType(dpuObject, relativePath);
-			if (dpuType == null) {
-				// TODO Petyr, Maria: uninstall the DPU from Intlib as well
-
-				// unknown type .. delete dpu and throw error
-				destFile.delete();
-				Notification.show("Unknown DPURecord type.",
-						"Upload another file",
-						Notification.Type.ERROR_MESSAGE);
-				return;
-
-			} else {
-				if (dpuType.equals(selectedDpu.getType())) {
-					// now we know all what we need add new JAR to DPU template
-					selectedDpu.setJarPath(FileUploadReceiver.fName);
-					selectedDpu.setJarDescription(jarDescription);
-					App.getDPUs().save(selectedDpu);
-				} else {
-
-					// wrong type .. delete dpu and throw error
-					destFile.delete();
-					Notification.show("Wrong DPURecord type.",
-							"Upload another file",
-							Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-			}
-
-			//refresh data in dialog 
-			setGeneralTabValues();
+		if (FileUploadReceiver.path == null) {
+			// we have no file, end 
+			return;
 		}
+		ModuleFacadeConfig moduleConfig = 
+				App.getApp().getBean(ModuleFacadeConfig.class);
+		// get file to the source and to the originalDPU
+		String relativePath = selectedDpu.getJarPath(); // jarPath == relativePath
+		File newDpu = new File(FileUploadReceiver.file.toString());
+		File originalDpu = new File(moduleConfig.getDpuFolder(), relativePath);
+		// we need a backup of the original file here
+		// we just rename the original file
+		File originalDpuBackUp = 
+				new File(moduleConfig.getDpuFolder(), relativePath + ".backup");
+		// check if backup is not already used
+		if (originalDpuBackUp.exists()) {
+			// try to delete it
+			if (originalDpuBackUp.delete()) {
+				// 	if we fail .. we can do nothing ..
+				LOG.warn("Failed to delete previous DPU backUp file: {}", 
+						originalDpuBackUp.getPath());
+			}
+		}
+		// we use this to indicate that the backup exist ...
+		if (originalDpu.renameTo(originalDpuBackUp)) {
+			// we have backup .. we can continue
+		} else {
+			// no backup no continue .. we do can lose the only 
+			// functional version we have
+			LOG.error("Failed to create backUp file: {}", 
+					originalDpuBackUp.getPath());
+			Notification.show("Replace failed",
+					"Failed to create original DPU backup.",
+					Notification.Type.ERROR_MESSAGE);			
+			return;
+		}
+		// we replace the current DPU
+		// OSGI keep data in cache, so we can first try to replace file 
+		try {
+			Files.copy(newDpu, originalDpu);
+		} catch (IOException e) {
+			// failed to copy DPU 
+			LOG.error("Failed to copy new DPU jar file {}",
+					originalDpu.getPath(), e);
+			// show user notification
+			Notification.show("Replace failed",
+					"Can't copy new DPU jar file.", 
+					Notification.Type.ERROR_MESSAGE);
+			// remove new file
+			originalDpu.delete();
+			// and rename the backUp back to it's original name
+			originalDpuBackUp.renameTo(originalDpu);
+			
+			// DPU has not been uninstalled from OSGI so we don't have to
+			// release it
+		}
+		// now we try to load new instance of DPU
+		ModuleFacade moduleFacade = App.getApp().getModules();
+		Object newDpuInstance = null;
+		// we can use update, but the uninstall do not throw bundle exception
+		moduleFacade.uninstall(relativePath);
+		try {
+			newDpuInstance = App.getApp().getModules()
+					.getObject(relativePath);
+		} catch(BundleInstallFailedException | ClassLoadFailedException | FileNotFoundException e) {
+			LOG.error("Failed to load bunle during replace.", e);
+			Notification.show("Replace failed",
+					"Can't load instance from new bundle. Exception: " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+			// remove new file
+			originalDpu.delete();
+			// rename the backUp back to origin
+			originalDpuBackUp.renameTo(originalDpu);
+			// uninstall the new bundle
+			moduleFacade.uninstall(relativePath);
+			// the old bundle will be loaded with first user request
+			
+			// we have to to this in this order as if we uninstall first,
+			// other user may rise request and upload the nonfunctional 
+			// bundle before we recover
+			return;
+		}
+		// if we are here we have backUp bundle which has been uninstalled
+		// we have new bundle which is functional 
+		
+		// now we can examine the DPU
+		DPUExplorer dpuExplorer = App.getApp().getDPUExplorere();
+		DPUType dpuType = dpuExplorer.getType(newDpuInstance, relativePath);
+		if (dpuType == selectedDpu.getType()) {
+			// type match .. we can continue
+		} else {
+			// we store message about type here
+			String typeMessage = "";
+			if (dpuType == null) {
+				typeMessage = "New DPU has unspecified type. Check the DPU's annotations"; 
+			} else {
+				typeMessage = "New DPU has different type then the old one.";
+			}
+			// DPU type changed .. 
+			Notification.show("Replace failed",
+					"New DPU has different type then the old one." + typeMessage,
+					Notification.Type.ERROR_MESSAGE);
+			// remove new file
+			originalDpu.delete();
+			// rename the backUp back to origin
+			originalDpuBackUp.renameTo(originalDpu);
+			// uninstall the new bundle
+			moduleFacade.uninstall(relativePath);
+			return;
+		}
+		
+		// type match, DPU is functional update DPU' records
+		
+		// get new data from manifest.mf and save this changes
+		final String jarDescription = dpuExplorer.getJarDescription(relativePath);
+		selectedDpu.setJarDescription(jarDescription);
+		App.getDPUs().save(selectedDpu);
+		// we delete the backup
+		originalDpuBackUp.delete();
+	
+		// at the end we notify backend about new DPU's version
+		// TODO Petyr: Notify backend
+		
+		// we are ending .. refresh data in dialog 
+		setGeneralTabValues();
+		// and show message to the user that the replace has been successful
+		Notification.show("Replace finished", Notification.Type.HUMANIZED_MESSAGE);		
 	}
 
 	/**
