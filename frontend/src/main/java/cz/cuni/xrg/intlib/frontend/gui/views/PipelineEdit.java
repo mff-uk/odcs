@@ -656,8 +656,10 @@ class PipelineEdit extends ViewComponent {
 		pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
+		
 		Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
 		setupButtons();
+		pc.showPipeline(pipeline);
 		return true;
 	}
 
