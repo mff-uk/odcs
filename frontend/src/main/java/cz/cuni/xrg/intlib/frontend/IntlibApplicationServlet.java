@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.frontend;
 
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -12,6 +11,7 @@ import org.atmosphere.cpr.AtmosphereFramework;
 import org.atmosphere.cpr.DefaultBroadcasterFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import ru.xpoft.vaadin.SpringVaadinServlet;
 
 /**
  * Customized servlet implementation to provide access to original
@@ -20,7 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @see {@link RequestHolder}
  * @author Jan Vojt
  */
-public class IntlibApplicationServlet extends VaadinServlet {
+public class IntlibApplicationServlet extends SpringVaadinServlet {
 	
 	
 	/**

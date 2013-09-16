@@ -38,6 +38,7 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -55,7 +56,6 @@ import virtuoso.jdbc4.VirtuosoException;
  */
 @Push(PushMode.AUTOMATIC)
 @Theme("IntLibTheme")
-@PreserveOnRefresh
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
@@ -68,6 +68,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	/**
 	 * Spring application context.
 	 */
+	@Autowired
 	private ApplicationContext context;
 	
 	private MenuLayout main;
@@ -119,11 +120,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-		
-		// Initialize Spring Context.
-		context = WebApplicationContextUtils.getRequiredWebApplicationContext(
-			RequestHolder.getRequest().getSession().getServletContext()
-		);
 
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
