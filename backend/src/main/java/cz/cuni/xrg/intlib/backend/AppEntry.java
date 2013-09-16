@@ -22,6 +22,7 @@ import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.backend.module.DirectoryWatcher;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
+import java.util.logging.Level;
 
 /**
  * Backend entry point.
@@ -205,15 +206,20 @@ public class AppEntry {
 		BufferedReader in = new BufferedReader(converter);		
 		while (true) {
 			String line = "";
-			try {
-				line = in.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-				continue;
-			}
+//			try {
+//				line = in.readLine();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				continue;
+//			}
 			if (line.compareToIgnoreCase("exit") == 0) {
 				break;
 			}
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                       continue;
+                    }
 		}
 		
 		LOG.info("Closing TCP/IP server ...");
