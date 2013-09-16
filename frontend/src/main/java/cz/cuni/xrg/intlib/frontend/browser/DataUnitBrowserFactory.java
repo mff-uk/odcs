@@ -1,7 +1,7 @@
 package cz.cuni.xrg.intlib.frontend.browser;
 
-import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import java.io.File;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -136,8 +136,15 @@ public class DataUnitBrowserFactory {
 						appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
 
 				VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
-						.createVirtuosoRDFRepo(hostName, port, user, password,
-						GraphUrl.translateDataUnitId(dataUnitId), "");
+					.createVirtuosoRDFRepo(
+						hostName,
+						port,
+						user,
+						password,
+						GraphUrl.translateDataUnitId(dataUnitId),
+						"",
+						App.getApp().getBean(AppConfig.class).getProperties()
+					);
 
 				return virtuosoRepository;
 

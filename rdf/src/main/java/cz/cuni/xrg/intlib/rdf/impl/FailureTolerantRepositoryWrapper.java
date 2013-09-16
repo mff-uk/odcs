@@ -1,12 +1,8 @@
 package cz.cuni.xrg.intlib.rdf.impl;
 
-import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigFileNotFoundException;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
-import cz.cuni.xrg.intlib.commons.configuration.MalformedConfigFileException;
-import cz.cuni.xrg.intlib.commons.configuration.MissingConfigPropertyException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFRepositoryException;
 import java.io.File;
+import java.util.Properties;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
@@ -21,6 +17,9 @@ import org.slf4j.LoggerFactory;
 public class FailureTolerantRepositoryWrapper implements Repository {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(FailureTolerantRepositoryWrapper.class);
+	
+	private static final String RETRIES_KEY = "virtuoso.retries";
+	private static final String WAIT_KEY = "virtuoso.wait";
 	
 	/**
 	 * Wrapped RDF repository.
@@ -39,12 +38,22 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 	private int wait = 2000;
 
 	/**
-	 * Wrapper constructor.
+	 * Wrapper constructor with configuration.
+	 * 
+	 * @param repository to wrap
+	 */
+	public FailureTolerantRepositoryWrapper(Repository repository, Properties properties) {
+		this(repository);
+		configure(properties);
+	}
+
+	/**
+	 * Wrapper constructor using default configuration.
+	 * Does not log a notice.
 	 * 
 	 * @param repository to wrap
 	 */
 	public FailureTolerantRepositoryWrapper(Repository repository) {
-		configure();
 		this.repository = repository;
 	}
 	
@@ -110,26 +119,24 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 	
 	/**
 	 * Configures reconnection trials.
+	 * 
+	 * @throws NumberFormatException if configuration values are specified, but
+	 *								 invalid
 	 */
-	private void configure() {
-		try {
-			AppConfig config = new AppConfig();
-			try {
-				retries = config.getInteger(ConfigProperty.VIRTUOSO_RETRIES);
-			} catch (MissingConfigPropertyException ex) {
-				LOG.info(String.format("Missing config property %s, using default value ?.", ex.getProperty(), retries));
-			}
-			try {
-				wait = config.getInteger(ConfigProperty.VIRTUOSO_WAIT);
-			} catch (MissingConfigPropertyException ex) {
-				LOG.info(String.format("Missing config property %s, using default value ?.", ex.getProperty(), wait));
-			}
-		} catch (MalformedConfigFileException ex) {
-			LOG.info("Configuration file has malformed syntax, using defaults.");
-		} catch (ConfigFileNotFoundException ex) {
-			LOG.info("Configuration file could not be read, using defaults.");
+	private void configure(Properties properties) {
+		String sRetries = properties.getProperty(RETRIES_KEY);
+		if (sRetries == null) {
+			LOG.info("Missing config property {}, using default value {}.", RETRIES_KEY, retries);
+		} else {
+			retries = Integer.parseInt(sRetries);
 		}
-		
+
+		String sWait = properties.getProperty(WAIT_KEY);
+		if (sWait == null) {
+			LOG.info("Missing config property {}, using default value {}.", WAIT_KEY, wait);
+		} else {
+			wait = Integer.parseInt(sWait);
+		}
 	}
 	
 	/**

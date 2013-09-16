@@ -1,10 +1,12 @@
 package cz.cuni.xrg.intlib.rdf.data;
 
+import cz.cuni.xrg.intlib.rdf.impl.FailureTolerantRepositoryWrapper;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 
 /**
  * Class provides factory methods for creating conrete instance of RDFDataUnit
@@ -102,19 +104,26 @@ public class RDFDataUnitFactory {
 	 *                     hasStatement, getStatements methods.
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
-	 * @return
+	 * @param config	   configuration for {@link FailureTolerantRepositoryWrapper}
+	 * @return			   Virtuoso RDF Repository
 	 */
-	public static VirtuosoRDFRepo createVirtuosoRDFRepo(String hostName,
+	public static VirtuosoRDFRepo createVirtuosoRDFRepo(
+			String hostName,
 			String port,
-			String user, String password, String namedGraph, String dataUnitName) {
+			String user,
+			String password,
+			String namedGraph,
+			String dataUnitName,
+			Properties config) {
 
 		//log_enable=2 -> disables logging, enables row-by-row autocommit, see
 		//http://docs.openlinksw.com/virtuoso/fn_log_enable.html
 		final String JDBC = "jdbc:virtuoso://" + hostName + ":"
 				+ port + "/charset=UTF-8/log_enable=2";
 
-		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(JDBC, user, password,
-				namedGraph, dataUnitName);
+		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(
+				JDBC, user, password, namedGraph, dataUnitName, config
+		);
 
 		return virtuosoRepo;
 	}

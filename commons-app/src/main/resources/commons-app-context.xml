@@ -8,7 +8,7 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 	
 	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.configuration.AppConfig" />
+	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig" />
 	
 	<!-- data source with db login properties loaded from application configuration -->
 	<bean id="dataSource" class="virtuoso.ConfigurableDataSource">

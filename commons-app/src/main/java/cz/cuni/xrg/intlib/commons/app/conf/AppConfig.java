@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.configuration;
+package cz.cuni.xrg.intlib.commons.app.conf;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -82,5 +82,12 @@ public class AppConfig {
 	 */
 	public boolean getBoolean(ConfigProperty key) {
 		return Boolean.parseBoolean(getString(key));
+	}
+	
+	/**
+	 * @return defensive copy of wrapped properties.
+	 */
+	public Properties getProperties() {
+		return new Properties(prop);
 	}
 }
