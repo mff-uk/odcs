@@ -866,7 +866,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		writeMessage(messageLayer, 'canceling multiselect');
 		for (var dpuId in dpus) {
 			var dpu = dpus[dpuId];
-			if (dpu.isInMultiselect) {
+			if (dpu !== null && dpu.isInMultiselect) {
 				dpu.isInMultiselect = false;
 				dpu.group.get('Rect')[0].setStrokeWidth(2);
 			}
@@ -903,6 +903,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		cmdLeft.on('click', function(evt) {
+			actionBar.setVisible(false);
 			multiselectAlign('left');
 			evt.cancelBubble = true;
 		});
@@ -928,6 +929,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		cmdRight.on('click', function(evt) {
+			actionBar.setVisible(false);
 			multiselectAlign('right');
 			evt.cancelBubble = true;
 		});
@@ -953,6 +955,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		cmdTop.on('click', function(evt) {
+			actionBar.setVisible(false);
 			multiselectAlign('top');
 			evt.cancelBubble = true;
 		});
@@ -978,6 +981,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		cmdBottom.on('click', function(evt) {
+			actionBar.setVisible(false);
 			multiselectAlign('bottom');
 			evt.cancelBubble = true;
 		});
@@ -1003,6 +1007,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		cmdHorizontal.on('click', function(evt) {
+			actionBar.setVisible(false);
 			multiselectDistribute('horizontal');
 			evt.cancelBubble = true;
 		});
@@ -1028,6 +1033,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		});
 
 		cmdVertical.on('click', function(evt) {
+			actionBar.setVisible(false);
 			multiselectDistribute('vertical');
 			evt.cancelBubble = true;
 		});
@@ -1067,7 +1073,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		//Get the extreme value for needed coordinate
 		for (var dpuId in dpus) {
 			var dpu = dpus[dpuId];
-			if (dpu.isInMultiselect) {
+			if (dpu !== null && dpu.isInMultiselect) {
 				var group = dpu.group;
 				var y;
 				//Get the right component of position
@@ -1091,7 +1097,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		//Set new value to the right coordinate
 		for (var dpuId in dpus) {
 			var dpu = dpus[dpuId];
-			if (dpu.isInMultiselect) {
+			if (dpu !== null && dpu.isInMultiselect) {
 				var group = dpu.group;
 				if (type === 'left' || type === 'right') {
 					group.setX(x);
@@ -1118,7 +1124,7 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		var fill = 0;
 		for (var dpuId in dpus) {
 			var dpu = dpus[dpuId];
-			if (dpu.isInMultiselect) {
+			if (dpu !== null && dpu.isInMultiselect) {
 				var group = dpu.group;
 				var x;
 				if (type === "horizontal") {

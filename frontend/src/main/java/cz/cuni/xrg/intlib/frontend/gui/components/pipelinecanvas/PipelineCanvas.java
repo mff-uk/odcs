@@ -82,7 +82,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 			@Override
 			public void onDpuMoved(int dpuId, int newX, int newY) {
-				storeHistoryGraph();
+				//storeHistoryGraph();
+				isModified = true;
+				fireDetailClosed(Edge.class);
 				dpuMoved(dpuId, newX, newY);
 			}
 
