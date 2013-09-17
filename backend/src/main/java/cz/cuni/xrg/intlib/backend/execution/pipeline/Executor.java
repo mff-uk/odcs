@@ -190,7 +190,7 @@ public class Executor implements Runnable {
 		try {
 			FileUtils.deleteDirectory(directory);
 		} catch (IOException e) {
-			LOG.error("Can't delete directory after execution", e);
+			LOG.warn("Can't delete directory after execution", e);
 		}
 	}
 
@@ -289,7 +289,7 @@ public class Executor implements Runnable {
 
 			cz.cuni.xrg.intlib.backend.execution.dpu.Executor dpuExecutor = beanFactory
 					.getBean(cz.cuni.xrg.intlib.backend.execution.dpu.Executor.class);
-			dpuExecutor.bind(node, dependencyGraph, contexts, execution,
+			dpuExecutor.bind(node, contexts, execution,
 					lastSuccessfulExTime);
 
 			Thread executorThread = new Thread(dpuExecutor);

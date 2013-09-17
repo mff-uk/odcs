@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.backend.execution.dpu.impl;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +15,10 @@ import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.data.DataUnitFactory;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.backend.execution.dpu.PreExecutor;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.xrg.intlib.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -37,21 +38,27 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
  */
 @Component
 public class AnnotationProcessor implements PreExecutor {
-
+	
+	/**
+	 * Pre-executor order. Will be executed after ContextPreparator.
+	 */
+	public static final int ORDER = ContextPreparator.ORDER + 20;	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(AnnotationProcessor.class);
+	
 	/**
 	 * DataUnit factory used to create new {@link DataUnit}s.
 	 */
 	@Autowired
-	DataUnitFactory dataUnitFactory;
+	private DataUnitFactory dataUnitFactory;
 
 	/**
 	 * Event publisher used to publish error event.
 	 */
 	@Autowired
-	ApplicationEventPublisher eventPublish;
+	private ApplicationEventPublisher eventPublish;
 
-	private static final Logger LOG = LoggerFactory.getLogger(AnnotationProcessor.class);
-	
 	/**
 	 * Set value to given field for given instance. In case of error publish
 	 * event and return false.
@@ -85,7 +92,8 @@ public class AnnotationProcessor implements PreExecutor {
 	 * 
 	 * @param candidates
 	 * @param type
-	 * @return List with {@link ManagableDataUnit} can be empty, can not be null.
+	 * @return List with {@link ManagableDataUnit} can be empty, can not be
+	 *         null.
 	 */
 	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates,
 			Class<?> type) {
@@ -99,14 +107,16 @@ public class AnnotationProcessor implements PreExecutor {
 	}
 
 	/**
-	 * Filter given list of {@link ManagableDataUnit}s according to their URI. Is case
-	 * insensitive.
+	 * Filter given list of {@link ManagableDataUnit}s according to their URI.
+	 * Is case insensitive.
 	 * 
 	 * @param candidates
 	 * @param type
-	 * @return List with {@link ManagableDataUnit} can be empty, can not be null.
+	 * @return List with {@link ManagableDataUnit} can be empty, can not be
+	 *         null.
 	 */
-	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates, String name) {
+	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates,
+			String name) {
 		LinkedList<ManagableDataUnit> result = new LinkedList<ManagableDataUnit>();
 		for (ManagableDataUnit item : candidates) {
 			if (item.getURI().compareToIgnoreCase(name) == 0) {
@@ -118,9 +128,9 @@ public class AnnotationProcessor implements PreExecutor {
 
 	/**
 	 * Execute the input annotation ie. get input {@link DataUnit} from
-	 * {@link Context} and assign it to annotated field. If annotationContainer is null
-	 * then instantly return true. If error appear then publish event and return
-	 * false.
+	 * {@link Context} and assign it to annotated field. If annotationContainer
+	 * is null then instantly return true. If error appear then publish event
+	 * and return false.
 	 * 
 	 * @param annotationContainer Annotation container.
 	 * @param dpuInstance
@@ -135,15 +145,16 @@ public class AnnotationProcessor implements PreExecutor {
 		}
 		final Field field = annotationContainer.getField();
 		final InputDataUnit annotation = annotationContainer.getAnnotation();
-		
+
 		LinkedList<ManagableDataUnit> typeMatch = filter(context.getInputs(),
 				field.getType());
 		if (typeMatch.isEmpty()) {
-			// check if not optional 
+			// check if not optional
 			if (annotation.optional()) {
 				return true;
-			}			
-			LOG.error("No input of required type  for field '{}'.", field.getName());
+			}
+			LOG.error("No input of required type  for field '{}'.",
+					field.getName());
 			final String message = "No input for field: " + field.getName()
 					+ " All inputs have different type.";
 			eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
@@ -151,20 +162,22 @@ public class AnnotationProcessor implements PreExecutor {
 			return false;
 		}
 		// now we filter by name
-		LinkedList<ManagableDataUnit> nameMatch = filter(typeMatch, annotation.name());
+		LinkedList<ManagableDataUnit> nameMatch = filter(typeMatch,
+				annotation.name());
 		if (nameMatch.isEmpty()) {
 			if (annotation.relaxed()) {
-				LOG.info("Assign DataUnit names: {} for field: {}",
+				LOG.debug("Assign DataUnit names: {} for field: {}",
 						annotation.name(), field.getName());
 				// just use first with good type
 				return setDataUnit(field, dpuInstance, typeMatch.getFirst(),
 						context);
 			} else {
-				// check if not optional 
+				// check if not optional
 				if (annotation.optional()) {
 					return true;
 				}
-				LOG.error("Missing required DataUnit for field: '{}'", field.getName());
+				LOG.error("Missing required DataUnit for field: '{}'",
+						field.getName());
 				// error
 				final String message = "Can't find DataUnit with required name for field:"
 						+ field.getName();
@@ -173,8 +186,8 @@ public class AnnotationProcessor implements PreExecutor {
 				return false;
 			}
 		} else {
-			LOG.info("Assign DataUnit URI: {} for field: {}",
-					nameMatch.getFirst().getURI(), field.getName());			
+			LOG.debug("Assign DataUnit URI: {} for field: {}", nameMatch
+					.getFirst().getURI(), field.getName());
 			// use first with required name
 			return setDataUnit(field, dpuInstance, nameMatch.getFirst(),
 					context);
@@ -215,8 +228,8 @@ public class AnnotationProcessor implements PreExecutor {
 			return true;
 		}
 		final Field field = annotationContainer.getField();
-		final OutputDataUnit annotation = annotationContainer.getAnnotation();		
-		
+		final OutputDataUnit annotation = annotationContainer.getAnnotation();
+
 		// get type
 		final DataUnitType type = classToDataUnitType(field.getType());
 		if (type == null) {
@@ -239,16 +252,19 @@ public class AnnotationProcessor implements PreExecutor {
 					this, message));
 			return false;
 		}
-		LOG.info("Create output DataUnit for field: {}", field.getName());			
+		LOG.debug("Create output DataUnit for field: {}", field.getName());
 		// and set it
 		return setDataUnit(field, dpuInstance, dataUnit, context);
 	}
 
 	@Override
-	public boolean preAction(DPUInstanceRecord dpu,
+	public boolean preAction(Node node,
+			Map<Node, Context> contexts,
 			Object dpuInstance,
-			PipelineExecution execution,
-			Context context) {
+			PipelineExecution execution) {
+		// get current context and DPUInstanceRecord
+		Context context = contexts.get(node);
+
 		// InputDataUnit annotation
 		List<AnnotationContainer<InputDataUnit>> inputAnnotations = AnnotationGetter
 				.getAnnotations(dpuInstance, InputDataUnit.class);
@@ -270,6 +286,12 @@ public class AnnotationProcessor implements PreExecutor {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public int getOrder() {
+		// execute after ContextPreparator
+		return ORDER;
 	}
 
 }

@@ -86,11 +86,11 @@ class DataUnitMerger {
 					// renaming .. we need second arg
 					if (cmdSplit.length == 2) {
 						leftDataUnitName = cmdSplit[1];
-						LOG.info("renaming: {} -> {}", rightDataUnitName, leftDataUnitName);
+						LOG.debug("renaming: {} -> {}", rightDataUnitName, leftDataUnitName);
 					} else {
 						// not enough parameters .. use right name
 						leftDataUnitName = rightDataUnitName;
-						LOG.info("passing: {}", rightDataUnitName);
+						LOG.debug("passing: {}", rightDataUnitName);
 					}
 				} else {
 					// unknown command
@@ -105,7 +105,7 @@ class DataUnitMerger {
 			for(ManagableDataUnit item : left.getDataUnits()) {
 				if (item.getURI().compareTo(leftDataUnitName) == 0 && 
 						item.getType() == rightDataUnit.getType()) {
-					LOG.info("merge into existing dataUnit: {}", rightDataUnitName);
+					LOG.debug("merge into existing dataUnit: {}", rightDataUnitName);
 					// DataUnit with same name and type already exist, use it
 					leftDataUnit = item;
 					break;
@@ -115,7 +115,7 @@ class DataUnitMerger {
 			// create new data unit (in context into which we merge)			
 			if (leftDataUnit == null) {
 				try {
-					LOG.info("creating new dataUnit: {}", rightDataUnitName);
+					LOG.debug("creating new dataUnit: {}", rightDataUnitName);
 					leftDataUnit = left.addDataUnit(rightDataUnit.getType(), leftDataUnitName);
 				} catch (DataUnitCreateException e) {
 					throw new ContextException("Failed to create input object.", e);

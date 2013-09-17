@@ -1,16 +1,23 @@
 package cz.cuni.xrg.intlib.backend.execution.dpu;
 
+import java.util.Map;
+
+import org.springframework.core.Ordered;
+
 import cz.cuni.xrg.intlib.backend.context.Context;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 /**
  * Provide action that should be perform after every DPU execution.
  * 
+ * The PreExecutors are executed in order that is defined by
+ * {@link Ordered#getOrder()}
+ * 
  * @author Petyr
  *
  */
-public interface PostExecutor {
+public interface PostExecutor extends Ordered {
 
 	/**
 	 * Should perform post-execution actions. If return false then the execution
@@ -21,8 +28,9 @@ public interface PostExecutor {
 	 * @param context DPU's context.
 	 * @return
 	 */
-	public boolean postAction(DPUInstanceRecord dpu,
-			PipelineExecution execution,
-			Context context);
+	public boolean postAction(Node node,
+			Map<Node, Context> contexts,
+			Object dpuInstance,
+			PipelineExecution execution);
 
 }
