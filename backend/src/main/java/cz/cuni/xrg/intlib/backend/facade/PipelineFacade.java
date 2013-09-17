@@ -1,9 +1,9 @@
 package cz.cuni.xrg.intlib.backend.facade;
 
 import cz.cuni.xrg.intlib.commons.app.communication.EmailSender;
-import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
-import cz.cuni.xrg.intlib.commons.configuration.MissingConfigPropertyException;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;

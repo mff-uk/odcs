@@ -2,7 +2,7 @@ package cz.cuni.xrg.intlib.frontend.auxiliaries;
 
 import com.vaadin.ui.UI;
 
-import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;

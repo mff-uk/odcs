@@ -15,8 +15,8 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 
 public class EmailSender {
 

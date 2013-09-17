@@ -315,6 +315,8 @@ class PipelineEdit extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
 				savePipeline();
+				pipeline = App.getApp().getPipelines().getPipeline(pipeline.getId());
+				pc.showPipeline(pipeline);
 			}
 		});
 		buttonBar.addComponent(buttonSave);
@@ -653,9 +655,13 @@ class PipelineEdit extends ViewComponent {
 		pipelineName.commit();
 		this.pipeline.setDescription(pipelineDescription.getValue());
 		pipelineDescription.commit();
-		pc.saveGraph(pipeline);
+		boolean doCleanup = pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
+		if(doCleanup) {
+			pc.afterSaveCleanUp();
+		}
+		
 		Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
 		setupButtons();
 		return true;

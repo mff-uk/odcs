@@ -176,7 +176,7 @@
     </dependencies>
 
     <build>
-        <finalName>intlib</finalName>
+        <finalName>odcleanstore</finalName>
         <plugins>
 
             <plugin>

@@ -11,11 +11,17 @@
 /* Menubar */
 .v-menubar {
 	background-image: none !important;
-	font-size: 15px;
+	font-size: 13pt;
 	background-color: black !important;
-	line-height: 35px; 
+	line-height: 50px; 
 	text-align: left;
+	margin-top: -5px;
 	/*color: red;*/
+}
+
+.backendStatus {
+	padding-right: 5.5em;
+	padding-left: 1em;
 }
 
 .v-app {
@@ -37,6 +43,15 @@
 
 .viewLayout {
 	background-color: #eeeeee;
+}
+
+.loginPanel {
+	background-color: #000000;
+}
+
+.username {
+	color: #dddddd;
+	text-align: right;
 }
 
 .dpuTree {

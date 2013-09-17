@@ -1,11 +1,12 @@
 package cz.cuni.xrg.intlib.backend.data;
 
+import cz.cuni.xrg.intlib.backend.AppEntry;
 import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cz.cuni.xrg.intlib.commons.configuration.AppConfig;
-import cz.cuni.xrg.intlib.commons.configuration.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
+import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
@@ -83,8 +84,15 @@ public class DataUnitFactory {
 
 				// create repository
 				RDFDataUnit virtosoRepository = RDFDataUnitFactory
-						.createVirtuosoRDFRepo(hostName, port, user, password,
-						GraphUrl.translateDataUnitId(id), name);
+					.createVirtuosoRDFRepo(
+						hostName,
+						port,
+						user,
+						password,
+						GraphUrl.translateDataUnitId(id),
+						name,
+						appConfig.getProperties()
+					);
 				return virtosoRepository;
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");

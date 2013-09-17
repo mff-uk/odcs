@@ -1,10 +1,13 @@
-package cz.cuni.xrg.intlib.commons.configuration;
+package cz.cuni.xrg.intlib.commons.app.conf;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.core.io.Resource;
 
 /**
  * Class with global application configuration.
@@ -34,9 +37,35 @@ public class AppConfig {
 	 * Constructor reads configuration file.
 	 */
 	public AppConfig() {
-		LOG.log(Level.INFO, "Loading configuration from: " + confPath);
+		LOG.log(Level.INFO, "Loading configuration from: {0}", confPath);
 		try {
-			FileInputStream stream = new FileInputStream(confPath);
+			loadFromStream(new FileInputStream(confPath));
+		} catch (FileNotFoundException ex) {
+			throw new ConfigFileNotFoundException(ex);
+		}
+	}
+	
+	/**
+	 * Constructor building from Spring resource.
+	 * 
+	 * @param resource configuration
+	 */
+	public AppConfig(Resource resource) {
+		LOG.log(Level.INFO, "Loading configuration from classpath resource.");
+		try {
+			loadFromStream(resource.getInputStream());
+		} catch (IOException ex) {
+			throw new ConfigFileNotFoundException(ex);
+		}
+	}
+	
+	/**
+	 * Loads configuration from input stream.
+	 * 
+	 * @param stream 
+	 */
+	private void loadFromStream(InputStream stream) {
+		try {
 			prop.load(stream);
 		} catch (IOException ex) {
 			throw new ConfigFileNotFoundException(ex);
@@ -82,5 +111,12 @@ public class AppConfig {
 	 */
 	public boolean getBoolean(ConfigProperty key) {
 		return Boolean.parseBoolean(getString(key));
+	}
+	
+	/**
+	 * @return defensive copy of wrapped properties.
+	 */
+	public Properties getProperties() {
+		return new Properties(prop);
 	}
 }

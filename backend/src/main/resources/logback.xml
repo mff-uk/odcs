@@ -1,7 +1,11 @@
 <configuration>
 	
-	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">
-	    
+    <!-- load properties from file
+    <property file="config.properties" />
+    	then we can use ${VAR_NAME} in <file> for file appender     
+     -->
+    
+	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">	    
 	    <!-- requiredKey must by in MDC to pass this filter, 
 	    	so only messages related to executions will pass-->	    
 		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcFilter">
@@ -13,23 +17,38 @@
 		<connectionSource class="ch.qos.logback.classic.db.ConfigurableConnectionSource" />
 	</appender>
 
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>backend.log</file>
+		<!-- allow access from multiple JWM -->
+		<prudent>true</prudent>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	    	<!-- daily rollover -->
+	    	<fileNamePattern>backend.%d{yyyy-MM-dd}.log</fileNamePattern>
+	    	<!-- keep 3 days' worth of history -->
+	   		<maxHistory>3</maxHistory>
+    	</rollingPolicy>		
+
+		<encoder>
+			<pattern>%d [%thread] %-5level Execution:%X{execution} %logger{0} - %msg%n</pattern>
+		</encoder>	
+	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>
-			<pattern>%d{HH:mm:ss} [%thread] %-5level %logger{26} - %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{26} - %msg%n</pattern>
 		</encoder>
 	</appender>
-
 
 	<logger name="org.hibernate.type" level="WARN" />
 	<logger name="org.hibernate" level="WARN" />
 	<logger name="org.springframework" level="WARN" />
 	
 	<root level="ALL">
-		<appender-ref ref="STDOUT" />
 		<appender-ref ref="DB" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />				
 	</root>
 
 </configuration>

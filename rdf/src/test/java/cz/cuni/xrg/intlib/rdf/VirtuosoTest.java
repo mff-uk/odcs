@@ -9,6 +9,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Properties;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 
@@ -34,8 +35,9 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@BeforeClass
 	public static void setUpLogger() {
 
-		rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(hostName, port, user,
-				password, defaultGraph, "");
+		rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(
+			hostName, port, user, password, defaultGraph, "", new Properties()
+		);
 		rdfRepo.cleanAllData();
 	}
 
@@ -84,8 +86,9 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 	@Test
 	public void repositoryCopy() {
-		RDFDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(hostName,
-				port, user, password, "http://goal", "");
+		RDFDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(
+			hostName, port, user, password, "http://goal", "", new Properties()
+		);
 		try {
 			goal.merge(rdfRepo);
 		} catch (IllegalArgumentException e) {
@@ -128,8 +131,15 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 				public void run() {
 
 					VirtuosoRDFRepo virtuosoRepo = RDFDataUnitFactory
-							.createVirtuosoRDFRepo(hostName, port, user,
-							password, "http://myDefault", "");
+							.createVirtuosoRDFRepo(
+								hostName,
+								port,
+								user,
+								password,
+								"http://myDefault",
+								"",
+								new Properties()
+							);
 
 					addParalelTripleToRepository(virtuosoRepo);
 					extractFromFileToRepository(virtuosoRepo);
