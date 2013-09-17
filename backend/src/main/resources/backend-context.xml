@@ -5,8 +5,8 @@
 		http://www.springframework.org/schema/beans/spring-beans.xsd
  		http://www.springframework.org/schema/context 
  		http://www.springframework.org/schema/context/spring-context.xsd"
-	xmlns:context="http://www.springframework.org/schema/context">
-
+	xmlns:context="http://www.springframework.org/schema/context" >
+    
 	<import resource="classpath:commons-app-context.xml" />
 
 	<!-- module configuration needs to be defined here, because it differs from 
@@ -17,8 +17,10 @@
 
 	<!-- takes care about DPU's update -->
 	<bean id="refresher" class="cz.cuni.xrg.intlib.backend.module.ModuleRefresher" />
+	
 	<!-- implementation of DPU's watcher -->
-	<bean id="watcher" class="cz.cuni.xrg.intlib.backend.module.DirectoryWatcher" />
+	<bean id="watcher" class="cz.cuni.xrg.intlib.commons.app.module.impl.FileNotifierServer" 
+	    init-method="start" destroy-method="stop"/>
 	
 	<!-- TCP/IP server, used to recieve request from frontend -->
 	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server" />
@@ -58,5 +60,5 @@
 	
 	<!-- autodiscovery for DPU's pre/post executors -->
 	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
-	
+ 	
 </beans>

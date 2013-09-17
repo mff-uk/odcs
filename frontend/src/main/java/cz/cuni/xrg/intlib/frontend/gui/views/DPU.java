@@ -40,6 +40,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleChangeNotifier;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
@@ -746,7 +747,7 @@ class DPU extends ViewComponent {
 		originalDpuBackUp.delete();
 	
 		// at the end we notify backend about new DPU's version
-		// TODO Petyr: Notify backend
+		App.getApp().getBean(ModuleChangeNotifier.class).updated(selectedDpu);
 		
 		// we are ending .. refresh data in dialog 
 		setGeneralTabValues();
@@ -1075,6 +1076,9 @@ class DPU extends ViewComponent {
 			String fileName = selectedDpuWrap.getDPUTemplateRecord().getJarPath();
 			File delFile = new File(pojPath + File.separator + "dpu" + File.separator + fileName);
 
+			// we have to uninstall DPU as a bundle
+			App.getApp().getModules().uninstall(fileName);
+			
 			//delete record from the database
 			App.getApp().getDPUs()
 					.delete(selectedDpuWrap.getDPUTemplateRecord());

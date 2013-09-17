@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.backend;
 
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.apache.commons.cli.CommandLine;
@@ -19,7 +18,7 @@ import cz.cuni.xrg.intlib.backend.auxiliaries.AppLock;
 import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
-import cz.cuni.xrg.intlib.backend.module.DirectoryWatcher;
+//import cz.cuni.xrg.intlib.backend.module.DirectoryWatcher;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
@@ -142,17 +141,7 @@ public class AppEntry {
 		heartbeatThread.start();
 		LOG.info("Heartbeat is running ... ");
 	}
-	
-	/**
-	 * Starts directory watcher.
-	 */
-	private void initWatcher() {
-		// start watcher in it's own thread
-		watcherThread = new Thread(context.getBean(DirectoryWatcher.class));
-		watcherThread.start();
-		LOG.info("DPU's directory watcher is running ... ");
-	}
-	
+		
 	/**
 	 * Main execution method.
 	 * @param args
@@ -193,8 +182,6 @@ public class AppEntry {
 		}
 		// start heartbeat
 		initHeartbeat();
-		// start watcher
-		initWatcher();
 		
 		// print some information ..
 		LOG.info("Module's directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));
@@ -202,27 +189,14 @@ public class AppEntry {
 		LOG.info("Running ...");
 		
 		// infinite loop
-		
-		InputStreamReader converter = new InputStreamReader(System.in);
-		BufferedReader in = new BufferedReader(converter);		
 		while (true) {
-			String line = "";
-//			try {
-//				line = in.readLine();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				continue;
-//			}
-			if (line.compareToIgnoreCase("exit") == 0) {
-				break;
-			}
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {
-                       continue;
-                    }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+               continue;
+            }
 		}
-		
+		/*
 		LOG.info("Closing TCP/IP server ...");
 		server.stop();
 		// give TCP/IP server time to close
@@ -237,6 +211,7 @@ public class AppEntry {
 		LOG.info("Closing application ...");
 		// release application log
 		AppLock.releaseLock();
+		*/
 	}
 	
 	public static void main(String[] args) {
