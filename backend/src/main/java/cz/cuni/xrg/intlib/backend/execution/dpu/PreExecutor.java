@@ -1,34 +1,40 @@
 package cz.cuni.xrg.intlib.backend.execution.dpu;
 
+import java.util.Map;
+
+import org.springframework.core.Ordered;
+
 import cz.cuni.xrg.intlib.backend.context.Context;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 /**
- * Provide action that should be perform before every DPU execution. Must not 
- * execute the DPU. The PreExecutors can be called in random order, but
- * they all will be called before the call of {@link Executor}.
+ * Provide action that should be perform before every DPU execution. Must not
+ * execute the DPU. The PreExecutors can be called in random order, but they all
+ * will be called before the call of {@link Executor}.
  * 
+ * The PreExecutors are executed in order that is defined by
+ * {@link Ordered#getOrder()}
  * 
  * @author Petyr
- *
+ * 
  */
-public interface PreExecutor {
+public interface PreExecutor extends Ordered {
 
 	/**
 	 * Should perform pre-execution actions. If return false then the execution
-	 * is cancelled. In such case it should publish event 
+	 * is cancelled. In such case it should publish event
 	 * {@link DPUPreExecutorFailed} with problem description.
 	 * 
-	 * @param dpu Respective DPU.
+	 * @param node Node that will be executed.
+	 * @param contexts List of context, also contain context for current node.
 	 * @param dpuInstace DPU instance.
 	 * @param execution Respective execution.
-	 * @param context DPU's context.
 	 * @return
 	 */
-	public boolean preAction(DPUInstanceRecord dpu,
+	public boolean preAction(Node node,
+			Map<Node, Context> contexts,
 			Object dpuInstance,
-			PipelineExecution execution,
-			Context context);	
-	
+			PipelineExecution execution);
+
 }

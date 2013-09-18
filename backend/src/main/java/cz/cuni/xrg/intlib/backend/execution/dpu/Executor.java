@@ -1,34 +1,33 @@
 package cz.cuni.xrg.intlib.backend.execution.dpu;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
-import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.DPUExecutionState;
-import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Edge;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.data.DataUnitException;
 import cz.cuni.xrg.intlib.commons.dpu.DPU;
 import cz.cuni.xrg.intlib.commons.dpu.DPUException;
+
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +46,8 @@ import org.slf4j.LoggerFactory;
  */
 public final class Executor implements Runnable {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
+	
 	/**
 	 * Pipeline facade.
 	 */
@@ -90,16 +91,11 @@ public final class Executor implements Runnable {
 	 */
 	@Autowired
 	private LogFacade logFacade;
-	
+
 	/**
 	 * Node to execute.
 	 */
 	private Node node;
-
-	/**
-	 * Current dependency graph that is used during this execution.
-	 */
-	private DependencyGraph graph;
 
 	/**
 	 * Contexts.
@@ -117,17 +113,25 @@ public final class Executor implements Runnable {
 	private PipelineExecution execution;
 
 	/**
-	 * Time of last successful execution. Can be null.
-	 */
-	private Date lastExecutionTime;
-	
-	/**
 	 * Context for current execution.
 	 */
 	private Context context;
-	
-	/** Logger */
-	private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
+
+	/**
+	 * Sort pre/post executors.
+	 */
+	@PostConstruct
+	public void init() {
+		if (preExecutors != null) {
+			Collections.sort(preExecutors,
+					AnnotationAwareOrderComparator.INSTANCE);
+		}
+		if (postExecutors != null) {
+			Collections.sort(postExecutors,
+					AnnotationAwareOrderComparator.INSTANCE);
+		}
+
+	}
 
 	/**
 	 * Bind executor to the given {@link PipelineExecution} and
@@ -139,17 +143,17 @@ public final class Executor implements Runnable {
 	 * @param lastExecutionTime Time of last successful execution. Can be null.
 	 */
 	public void bind(Node node,
-			DependencyGraph graph,
 			Map<Node, Context> contexts,
 			PipelineExecution execution,
 			Date lastExecutionTime) {
 		this.node = node;
-		this.graph = graph;
 		this.contexts = contexts;
 		this.execution = execution;
-		this.lastExecutionTime = lastExecutionTime;
-		// prepare empty context
+		// create context, bind it to this execution and add it to the contexts
 		this.context = beanFactory.getBean(Context.class);
+		this.context.bind(node.getDpuInstance(), execution.getContext(),
+				lastExecutionTime);
+		this.contexts.put(node, context);
 	}
 
 	/**
@@ -165,85 +169,15 @@ public final class Executor implements Runnable {
 		try {
 			dpu.loadInstance(moduleFacade);
 		} catch (FileNotFoundException e) {
-			LOG.error("Missing DPU jar file: '{}' for DPU: {}", 
+			LOG.error("Missing DPU jar file: '{}' for DPU: {}",
 					dpu.getJarPath(), dpu.getName());
 			// publish event DPU not found
-			eventPublisher.publishEvent(
-					PipelineFailedEvent.createMissingFile(dpu, execution, this));
+			eventPublisher.publishEvent(PipelineFailedEvent.createMissingFile(
+					dpu, execution, this));
 			throw new ModuleException(
 					"Failed to load instance of DPU from file.", e);
 		}
 		return dpu.getInstance();
-	}
-
-	/**
-	 * Add data from {@link Context} of given Node's DPU to the current
-	 * {@link #context}.
-	 * 
-	 * @param source Node that represent source DPU.
-	 * @throws StructureException It the edge for given connection can be found.
-	 * @throws ContextException
-	 */
-	private void addContextData(Node source)
-			throws StructureException,
-				ContextException {
-		Set<Edge> edges = execution.getPipeline().getGraph().getEdges();
-		for (Edge item : edges) {
-			if (item.getFrom() == source && item.getTo() == node) {
-				Context sourceContext = contexts.get(source);
-				if (sourceContext == null) {
-					LOG.error("Missing context for: {}", source.getDpuInstance().getName());
-					throw new StructureException("Missing context for '"
-							+ source.getDpuInstance().getName()
-							+ "' required by '"
-							+ node.getDpuInstance().getName() + "'");
-				}
-				// add data
-				context.addContext(sourceContext, item.getScript());
-				return;
-			}
-		}
-		LOG.error("Missing context from {} to {}", 
-				source.getDpuInstance().getName(), node.getDpuInstance().getName());
-		throw new StructureException("Missing edge from "
-				+ source.getDpuInstance().getName() + " to "
-				+ node.getDpuInstance().getName());
-	}
-
-	/**
-	 * Fill context for given {@link Node}. Also add data from all the
-	 * ancestor's {@link Context}s. In case of error publish error event
-	 * message.
-	 * 
-	 * @param dpu DPU for which we create context.
-	 * @return False in case of error.
-	 */
-	private boolean prepareContext(DPUInstanceRecord dpu) {
-		ExecutionContextInfo pipelineContext = execution.getContext();
-
-		context.bind(node.getDpuInstance(), pipelineContext, lastExecutionTime);
-		// add data from ancestors
-		Set<Node> ancestors = graph.getAncestors(node);
-		if (ancestors != null) {
-			for (Node item : ancestors) {
-				try {
-					addContextData(item);
-				} catch (ContextException e) {
-					LOG.error("Failed to prepare context", e);
-					eventPublisher.publishEvent(PipelineFailedEvent.create(e,
-							dpu, execution, this));
-					return false;
-				} catch (StructureException e) {
-					LOG.error("Failed to prepare context", e);
-					eventPublisher.publishEvent(PipelineFailedEvent.create(e,
-							dpu, execution, this));
-					return false;
-				}
-			}
-			// seal inputs
-			context.sealInputs();
-		}
-		return true;
 	}
 
 	/**
@@ -260,9 +194,8 @@ public final class Executor implements Runnable {
 			return true;
 		}
 
-		DPUInstanceRecord dpu = node.getDpuInstance();
 		for (PreExecutor item : preExecutors) {
-			if (item.preAction(dpu, dpuInstance, execution, context)) {
+			if (item.preAction(node, contexts, dpuInstance, execution)) {
 				// continue execution
 			} else {
 				return false;
@@ -283,9 +216,10 @@ public final class Executor implements Runnable {
 		// execute
 		try {
 			if (dpuInstance instanceof DPU) {
-				((DPU)dpuInstance).execute(context);
+				((DPU) dpuInstance).execute(context);
 			} else {
 				// can not be executed
+				LOG.error("DPU do not implement execution interface.");
 			}
 		} catch (DataUnitException e) {
 			LOG.error("Execution:DataUnitException", e);
@@ -317,16 +251,16 @@ public final class Executor implements Runnable {
 	 * {@link PostExecutor} ({@link Executor#postExecutors} == null) then
 	 * instantly return true.
 	 * 
-	 * @param dpuInstance Instance of DPU to execute.
+	 * @param dpuInstance Instance of DPU that has been executed.
 	 * @return
 	 */
-	private boolean executePostExecutors() {
+	private boolean executePostExecutors(Object dpuInstance) {
 		if (postExecutors == null) {
 			return true;
 		}
-		DPUInstanceRecord dpu = node.getDpuInstance();
+
 		for (PostExecutor item : postExecutors) {
-			if (item.postAction(dpu, execution, context)) {
+			if (item.postAction(node, contexts, dpuInstance, execution)) {
 				// continue execution
 			} else {
 				return false;
@@ -355,7 +289,7 @@ public final class Executor implements Runnable {
 		}
 		return dpuInstance;
 	}
-	
+
 	/**
 	 * Execute given {@link Node} from
 	 * {@link cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline}. Set
@@ -367,28 +301,22 @@ public final class Executor implements Runnable {
 	 * @return False if execution failed.
 	 */
 	private boolean execute(DPUInstanceRecord dpu, ProcessingUnitInfo unitInfo) {
+		if (unitInfo.getState() == DPUExecutionState.FINISHED) {
+			// DPU has been executed already ..
+			return true;
+		}
 		// get instance
 		Object dpuInstance = loadInstance(dpu);
 		if (dpuInstance == null) {
 			return false;
 		}
-		// prepare context
-		if (prepareContext(dpu)) {
-			// save to contexts
-			contexts.put(node, context);
-		} else {
-			return false;
-		}
-		if (unitInfo.getState() == DPUExecutionState.FINISHED) {
-			// no further execution needed
-			return true;
-		}
+
 		// call PreExecutors
 		if (!executePreExecutors(dpuInstance)) {
 			return false;
 		}
 		if (unitInfo.getState() == DPUExecutionState.RUNNING) {
-			// we can continue with this state
+			// we can not continue with this state
 			eventPublisher.publishEvent(DPUEvent
 					.createWrongState(context, this));
 			return false;
@@ -396,14 +324,14 @@ public final class Executor implements Runnable {
 		// set state to RUNNING and save this, by this we announce
 		// that we have started the execution of this DPU
 		unitInfo.setState(DPUExecutionState.RUNNING);
-		
+
 		try {
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
 			LOG.warn("Seems like someone deleted our pipeline run.", ex);
 			return false;
 		}
-		
+
 		// execute the given instance - also catch all exception
 		eventPublisher.publishEvent(DPUEvent.createStart(context, this));
 		if (executeInstance(dpuInstance)) {
@@ -412,15 +340,15 @@ public final class Executor implements Runnable {
 		} else {
 			return false;
 		}
-		
+
 		// check for the error message in context or in logs
 		if (context.errorMessagePublished()) {
 			// cancel because of logged/published error record
 			return false;
 		}
-		
+
 		// call PostExecutors
-		if (!executePostExecutors()) {
+		if (!executePostExecutors(dpuInstance)) {
 			return false;
 		}
 		return true;
@@ -446,7 +374,7 @@ public final class Executor implements Runnable {
 		executionSuccessful = execute(dpu, unitInfo);
 		// set finished state
 		unitInfo.setState(DPUExecutionState.FINISHED);
-		
+
 		try {
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
@@ -456,13 +384,12 @@ public final class Executor implements Runnable {
 	}
 
 	/**
-	 * Call {@link Context#cancel()}, can be called from 
-	 * other thread.
+	 * Call {@link Context#cancel()}, can be called from other thread.
 	 */
 	public void cancel() {
 		context.cancel();
 	}
-	
+
 	/**
 	 * Return true if execution should be cancelled because of error during DPU
 	 * execution.

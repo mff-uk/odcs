@@ -3,7 +3,8 @@ package cz.cuni.xrg.intlib.frontend.gui.components;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.gwt.thirdparty.guava.common.io.Files;
 
@@ -27,13 +28,13 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
 import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareButtonClickWrapper;
 
@@ -176,17 +177,12 @@ public class DPUCreate extends Window {
 					fl=1;
 					Notification.show(
 							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
-
 					return;
-					
 				}
-				
 				if (uploadInfoWindow.getParent() == null) {
 					UI.getCurrent().addWindow(uploadInfoWindow);
 				}
 				uploadInfoWindow.setClosable(false);
-				
-
 			}
 		});
 
@@ -276,103 +272,118 @@ public class DPUCreate extends Window {
 					return;
 				}
 
-				if (FileUploadReceiver.path != null) {
-					String pojPath = App.getApp().getAppConfiguration()
-							.getString(ConfigProperty.MODULE_PATH);
-					File srcFile = new File(FileUploadReceiver.file.toString());
-					File destFile = new File(pojPath + File.separator + "dpu" + File.separator + FileUploadReceiver.fName);
-
-					//checking if uploaded file already exist in the /target/dpu/ 
-					if (destFile.exists()) {
-						
-						// uploaded file already exist in the /target/dpu/ 
-						DPUTemplateRecord dpu = App.getApp().getDPUs()
-								.getTemplateByJarFile(srcFile);
-				
-						if (dpu == null) {
-							// copy file from template folder to the /target/dpu/
-							try {
-								Files.copy(srcFile, destFile);
-							} catch (IOException ex) {
-								throw new RuntimeException(ex);
-							}
-						} else {
-							// if we get the name of DPUTemplateRecord that used this
-							// file, show notification
-							Notification.show(String.format(
-								"File with name %s is already used in the DPU template %s.",
-								FileUploadReceiver.fName, dpuName
-							), Notification.Type.ERROR_MESSAGE);
-							return;
-						}
-						
-					} else {
-						// if uploaded file doesn't exist in the /target/dpu/
-						try {
-							Files.copy(srcFile, destFile);
-						} catch (IOException ex) {
-							throw new RuntimeException(ex);
-						}
-					}
-
-					String relativePath = FileUploadReceiver.fName;
-					// we try to load new DPU .. to find out more about it,
-					// start by obtaining ModuleFacade
-					Object dpuObject;
-					try {
-						dpuObject = App.getApp().getModules()
-								.getObject(relativePath);
-					} catch (BundleInstallFailedException
-							| ClassLoadFailedException | FileNotFoundException e) {
-						// for some reason we can't load bundle .. delete dpu
-						// and show message to the user
-						destFile.delete();
-						uploadFile.setReadOnly(false);
-						uploadFile.setValue("");
-						uploadFile.setReadOnly(true);
-						Notification.show(
-								"Can't load bundle because of exception:",
-								e.getMessage(), Notification.Type.ERROR_MESSAGE);
-						return;
-
-					}
-					
-					DPUExplorer dpuExplorer = App.getApp().getDPUExplorere();
-					
-					String jarDescription = dpuExplorer.getJarDescription(relativePath);
-					if (jarDescription == null) {
-						// failed to read description .. use empty string ?
-						jarDescription = "";
-					}
-
-					// check type ..
-					DPUType dpuType = dpuExplorer.getType(dpuObject, relativePath);
-					if (dpuType == null) {
-						App.getApp().getModules().uninstall(relativePath);
-						// unknown type .. delete dpu and throw error
-						destFile.delete();
-						uploadFile.setReadOnly(false);
-						uploadFile.setValue("");
-						uploadFile.setReadOnly(true);
-						Notification.show("Unknown DPURecord type.",
-								"Upload another file",
-								Notification.Type.ERROR_MESSAGE);
-						return;
-
-					}
-
-					// now we know all what we need create record in Database
-					dpuTemplate = App.getDPUs().createTemplate(dpuName.getValue(), dpuType);
-					dpuTemplate.setDescription(dpuDescription.getValue());
-					dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
-					dpuTemplate.setJarPath(FileUploadReceiver.fName);
-					dpuTemplate.setJarDescription(jarDescription);
-
-					// TODO Petyr, Maria: Load the "default" configuration
-
-					App.getDPUs().save(dpuTemplate);
-					close();
+				// here we do the real DPU upload stuff
+				if (FileUploadReceiver.path == null) {
+					// failed to load file
+					Notification.show("Failed to create DPU",
+							"The DPU's file has not been loaded properly.",
+							Notification.Type.ERROR_MESSAGE);
+					return;
 				}
+				// prepare jar file name
+				final StringBuilder dpuFileNameBuilder = new StringBuilder();
+				// we need template id in order to create name for jar-file
+				dpuTemplate = App.getDPUs().createTemplate("new dpu", null);
+				App.getDPUs().save(dpuTemplate);
+				// append id to the name
+				dpuFileNameBuilder.append(dpuTemplate.getId());
+				dpuFileNameBuilder.append("-");
+				// we need the name for the jar file, 
+				// if the name is in format: NAME-?.?.?.jar
+				// then we use NAME.jar
+				// otherwise we use full name
+				final Pattern pattern = 
+						Pattern.compile("(.+)-(\\d+\\.\\d+\\.\\d+)\\.jar");
+				final Matcher matcher = 
+						pattern.matcher(FileUploadReceiver.fName);
+				if (matcher.matches()) {
+					// 0 - original, 1 - name, 2 - version
+					dpuFileNameBuilder.append(matcher.group(1));
+					dpuFileNameBuilder.append(".jar");
+				} else {
+					// does not match, use full name
+					dpuFileNameBuilder.append(FileUploadReceiver.fName);
+				}
+				final String dpuFileName = dpuFileNameBuilder.toString();				
+				// check if the file name is not already used
+				final ModuleFacadeConfig moduleConfig = 
+						App.getApp().getBean(ModuleFacadeConfig.class);				
+				final File newDPUFile = new File(
+						moduleConfig.getDpuFolder(), dpuFileName);
+				if (newDPUFile.exists()) {
+					// file name already used
+					Notification.show("Failed to create DPU", String.format(
+							"File with name '%s' already exist.", dpuFileName),
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+				// we can copy the file
+				try {
+					Files.copy(FileUploadReceiver.file, newDPUFile);
+				} catch (IOException e) {
+					// failed to copy file
+					LOG.error("Failed to copy file, when creating new DPU.", e);
+					Notification.show("Failed to create DPU",
+							"Failed to create DPU file.", 
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}				
+				// now we can try to load the DPU jar-file
+				Object dpuObject = null;
+				try {
+					dpuObject = App.getApp().getModules()
+							.getObject(dpuFileName);
+				} catch (BundleInstallFailedException
+						| ClassLoadFailedException | FileNotFoundException e) {
+					// failed to load bundle
+					newDPUFile.delete();
+					App.getDPUs().delete(dpuTemplate);
+					dpuTemplate = null;
+					uploadFile.setReadOnly(false);
+					uploadFile.setValue("");
+					uploadFile.setReadOnly(true);
+					LOG.error("Failed to load new DPU bundle.", e);
+					Notification.show("Failed to create DPU",
+							"Failed to load DPU bacuse of exception:" +
+							e.getMessage(), 
+							Notification.Type.ERROR_MESSAGE);
+					// and close .. 
+					return;
+				}
+
+				final DPUExplorer dpuExplorer = App.getApp().getDPUExplorere();
+				String jarDescription = dpuExplorer.getJarDescription(dpuFileName);
+				if (jarDescription == null) {
+					// failed to read description .. use empty string
+					jarDescription = "";
+				}
+				// check type ..
+				final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuFileName);
+				if (dpuType == null) {
+					App.getApp().getModules().uninstall(dpuFileName);
+					// unknown type .. delete dpu, delete template and throw error
+					newDPUFile.delete();
+					App.getDPUs().delete(dpuTemplate);
+					dpuTemplate = null;
+					uploadFile.setReadOnly(false);
+					uploadFile.setValue("");
+					uploadFile.setReadOnly(true);
+					Notification.show("Failed to create DPU",
+							"DPU has unspecified type.",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+
+				}				
+				// now we know all, we can update the DPU template
+				dpuTemplate.setName(dpuName.getValue());
+				dpuTemplate.setType(dpuType);
+				dpuTemplate.setDescription(dpuDescription.getValue());
+				dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
+				dpuTemplate.setJarPath(dpuFileName);
+				dpuTemplate.setJarDescription(jarDescription);
+				App.getDPUs().save(dpuTemplate);
+				// and at the end we can close the dialog .. 
+				close();				
 			}
 
 		}));

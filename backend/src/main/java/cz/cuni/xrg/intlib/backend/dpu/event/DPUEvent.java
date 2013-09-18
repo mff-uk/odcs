@@ -53,16 +53,16 @@ public class DPUEvent extends ApplicationEvent {
 			Object source,
 			MessageRecordType type,
 			String shortMessage,
-			Exception ex) {
+			Throwable throwable) {
 		super(source);
 		this.time = new Date();
 		this.context = context;
 		this.type = type;
-		this.shortMessage = shortMessage + ex.getMessage();
+		this.shortMessage = shortMessage + throwable.getMessage();
 		// transform stack trace into string
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		ex.printStackTrace(pw);
+		throwable.printStackTrace(pw);
 		this.longMessage = sw.toString();
 	}
 
@@ -79,6 +79,25 @@ public class DPUEvent extends ApplicationEvent {
 		this.longMessage = longMessage;
 	}
 
+	protected DPUEvent(Context context,
+			Object source,
+			MessageRecordType type,
+			String shortMessage,
+			String longMessage,
+			Throwable throwable) {
+		super(source);
+		this.time = new Date();
+		this.context = context;
+		this.type = type;
+		this.shortMessage = shortMessage;
+		// transform stack trace into string
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		throwable.printStackTrace(pw);
+		// prepare long message		
+		this.longMessage = longMessage + "<br/> stack trace:" + pw.toString();
+	}	
+	
 	/**
 	 * Create event which announce that DPU execution started.
 	 *
@@ -143,6 +162,24 @@ public class DPUEvent extends ApplicationEvent {
 				"DPU's pre-executor failed.", longMessage);
 	}
 
+	/**
+	 * Create event which indicate that there has been an error in executing
+	 * single DPU's preprocessor.
+	 *
+	 * @param context
+	 * @param source
+	 * @param longMessage Description of the error.
+	 * @param throwable
+	 * @return
+	 */
+	public static DPUEvent createPreExecutorFailed(Context context,
+			PreExecutor source,
+			String longMessage,
+			Throwable throwable) {
+		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
+				"DPU's pre-executor failed.", longMessage, throwable);
+	}	
+	
 	/**
 	 * Create event which indicate that there has been an error in executing
 	 * single DPU's post-processor.
