@@ -484,9 +484,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
                     break;
                 case "showlog":
+					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
 				case "debug":
+					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
             }

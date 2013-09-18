@@ -25,7 +25,6 @@ import org.apache.log4j.Level;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
 
 /**
  * Component for viewing and filtering of log messages.
