@@ -23,13 +23,12 @@
 		<prudent>true</prudent>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 	    	<!-- daily rollover -->
-	    	<fileNamePattern>backend.%d{yyyy-MM-dd}.log</fileNamePattern>
+	    	<fileNamePattern>backend.%d.log</fileNamePattern>
 	    	<!-- keep 3 days' worth of history -->
 	   		<maxHistory>3</maxHistory>
-    	</rollingPolicy>		
-
+    	</rollingPolicy>
 		<encoder>
-			<pattern>%d [%thread] %-5level Execution:%X{execution} %logger{0} - %msg%n</pattern>
+			<pattern>%d [%thread] %-5level Execution:%X{execution} %logger{50} - %msg%n</pattern>
 		</encoder>	
 	</appender>
 
