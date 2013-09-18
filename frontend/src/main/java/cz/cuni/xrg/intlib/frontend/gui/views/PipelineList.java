@@ -160,7 +160,7 @@ class PipelineList extends ViewComponent {
 			
 			
 			Button schedulerButton = new Button();
-			schedulerButton.setCaption("scheduler");
+			schedulerButton.setCaption("schedule");
 			schedulerButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -168,11 +168,7 @@ class PipelineList extends ViewComponent {
 							// open scheduler dialog
 							SchedulePipeline  sch = new SchedulePipeline();
 							sch.setSelectePipeline(pipeline);
-							//sch.selectedPipeline=pipeline;
-							//openScheduler(sch);
-							App.getApp().addWindow(sch);
-							
-
+							App.getApp().addWindow(sch);	
 						}
 					});
 			layout.addComponent(schedulerButton);
