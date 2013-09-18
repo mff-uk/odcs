@@ -32,6 +32,9 @@
 	    <constructor-arg ref="moduleFacadeConfiguration" />
 	</bean>
 
+	<!-- takes care about DPU's update -->
+	<bean id="refresher" class="cz.cuni.xrg.intlib.commons.app.module.ModuleRefresher" />
+	
 	<!-- Facade for managing users -->
 	<bean id="userFacade" class="cz.cuni.xrg.intlib.commons.app.user.UserFacade" />
 
