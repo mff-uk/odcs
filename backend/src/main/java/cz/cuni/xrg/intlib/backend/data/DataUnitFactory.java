@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.backend.data;
 
-import cz.cuni.xrg.intlib.backend.AppEntry;
 import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,6 @@ public class DataUnitFactory {
 	 */
 	@Autowired
 	private AppConfig appConfig;
-
-	public DataUnitFactory() {
-	}
 
 	/**
 	 * Constructor for spring.

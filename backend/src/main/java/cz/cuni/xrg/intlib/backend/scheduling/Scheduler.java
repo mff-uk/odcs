@@ -20,7 +20,7 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
  * @author Petyr
  * 
  */
-public class Scheduler implements ApplicationListener<ApplicationEvent> {
+class Scheduler implements ApplicationListener<ApplicationEvent> {
 
 	/**
 	 * Pipeline facade.

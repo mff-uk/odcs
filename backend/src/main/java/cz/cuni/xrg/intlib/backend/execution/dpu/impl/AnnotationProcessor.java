@@ -37,7 +37,7 @@ import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
  * 
  */
 @Component
-public class AnnotationProcessor implements PreExecutor {
+class AnnotationProcessor implements PreExecutor {
 	
 	/**
 	 * Pre-executor order. Will be executed after ContextPreparator.

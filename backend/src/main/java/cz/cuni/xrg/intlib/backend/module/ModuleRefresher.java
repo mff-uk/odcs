@@ -11,17 +11,19 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.module.event.DPURefreshEvent;
 
 /**
+ * Class react on {@link DPURefreshEvent} and secure update of the 
+ * given DPUs.
  *
  * @author Petyr
  *
  */
-public class ModuleRefresher implements ApplicationListener<DPURefreshEvent> {
+class ModuleRefresher implements ApplicationListener<DPURefreshEvent> {
 
+	private final static Logger LOG = LoggerFactory.getLogger(ModuleRefresher.class);
+	
 	@Autowired
 	private ModuleFacade moduleFacade;
-		
-	private final static Logger LOG = LoggerFactory.getLogger(ModuleRefresher.class);
-
+	
 	@Override
 	public void onApplicationEvent(DPURefreshEvent event) {
 		final String relativePath = event.getRelativePath();

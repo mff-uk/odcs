@@ -27,7 +27,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
  * 
  */
 @Component
-public class ContextPreparator implements PreExecutor {
+class ContextPreparator implements PreExecutor {
 
 	/**
 	 * Pre-executor order.

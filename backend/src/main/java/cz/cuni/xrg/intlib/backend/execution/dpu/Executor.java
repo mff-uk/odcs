@@ -219,6 +219,7 @@ public final class Executor implements Runnable {
 				((DPU) dpuInstance).execute(context);
 			} else {
 				// can not be executed
+				LOG.error("DPU do not implement execution interface.");
 			}
 		} catch (DataUnitException e) {
 			LOG.error("Execution:DataUnitException", e);
