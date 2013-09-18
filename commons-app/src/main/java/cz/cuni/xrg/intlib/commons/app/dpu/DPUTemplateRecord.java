@@ -1,5 +1,7 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import java.io.File;
+
 import cz.cuni.xrg.intlib.commons.app.auth.SharedEntity;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.user.OwnedEntity;
@@ -35,6 +37,28 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	@Column(name="jar_description")
 	private String jarDescription;
 	
+    /**
+     * DPURecord type, determined by associated jar file.
+     */
+	@Enumerated(EnumType.ORDINAL)
+    private DPUType type;	
+	
+    /**
+     * Name of directory where {@link #jarName} is located.
+	 * 
+     * @see AppConfig
+     */
+	@Column(name="jar_directory")
+    private String jarDirectory;	
+	
+    /**
+     * DPU's jar file name.
+	 * 
+     * @see AppConfig
+     */
+	@Column(name="jar_name")
+    private String jarName;		
+	
 	/**
 	 * Parent {@link DPUTemplateRecord}. If parent is set, this DPURecord is
 	 * rendered under its parent in DPU tree.
@@ -59,7 +83,8 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	 * @param type {@link DPUType} of the template. 
 	 */
 	public DPUTemplateRecord(String name, DPUType type) {
-		super(name, type);
+		super(name);
+		this.type = type;
 	}
 
 	/**
@@ -72,6 +97,9 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 		super(dpu);
 		visibility = VisibilityType.PRIVATE;
 		jarDescription = dpu.jarDescription;
+		type = dpu.type;
+		jarDescription = dpu.jarDirectory;
+		jarName = dpu.jarName;
 	}
 	
 	/**
@@ -121,4 +149,53 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 		this.parent = parent;
 	}
 
+	@Override
+	public DPUType getType() {
+		return this.type;
+	}
+
+	@Override
+	public String getJarPath() {
+		if (parent == null) {
+			// to level DPU
+			return jarDirectory + File.separator + jarName;
+		} else {
+			return parent.getJarPath();
+		}
+	}
+
+	/**
+	 * Return name of jar-sub directory.
+	 * @return
+	 */
+	public String getJarDirectory() {
+		if (parent == null) {
+			// to level DPU
+			return jarDirectory;
+		} else {
+			return parent.getJarDirectory();
+		}		
+	}
+	
+	/**
+	 * Return name of given jar file.
+	 * @return
+	 */
+	public String getJarName() {
+		if (parent == null) {
+			// to level DPU
+			return jarName;
+		} else {
+			return parent.getJarName();
+		}
+	}
+	
+	/**
+	 * Return true if DPU jar can be replaced.
+	 * @return
+	 */
+	public boolean jarFileReplacable() {
+		return parent == null;
+	}
+	
 }

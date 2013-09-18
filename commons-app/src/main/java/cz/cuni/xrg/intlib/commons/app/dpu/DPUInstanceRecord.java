@@ -53,8 +53,8 @@ public class DPUInstanceRecord extends DPURecord {
 	 * @param name
 	 * @param type
 	 */
-	public DPUInstanceRecord(String name, DPUType type) {
-		super(name, type);
+	public DPUInstanceRecord(String name) {
+		super(name);
 		toolTip = null;
 	}
 	
@@ -85,4 +85,15 @@ public class DPUInstanceRecord extends DPURecord {
 	public void setToolTip(String toolTip) {
 		this.toolTip = toolTip;
 	}
+
+	@Override
+	public DPUType getType() {
+		return template.getType();
+	}
+
+	@Override
+	public String getJarPath() {
+		return template.getJarPath();
+	}
+	
 }
