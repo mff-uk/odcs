@@ -33,15 +33,6 @@ public class DataUnitFactory {
 	private AppConfig appConfig;
 
 	/**
-	 * Constructor for spring.
-	 *
-	 * @param appConfig
-	 */
-	public DataUnitFactory(AppConfig appConfig) {
-		this.appConfig = appConfig;
-	}
-
-	/**
 	 * Create {@link DataUnit} and store information about it into the context.
 	 *
 	 * @param type      Requested type of data unit.

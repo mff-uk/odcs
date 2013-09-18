@@ -6,10 +6,9 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
+
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
-
-import static cz.cuni.xrg.intlib.commons.app.dpu.DPUType.*;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.views.SimpleTreeFilter;
@@ -177,11 +176,11 @@ public class DPUTree extends CustomComponent {
 
         tree.removeAllItems();
 
-        DPURecord rootExtractor = new DPURecord("Extractors", null);
+        DPURecord rootExtractor = new DPURecord("Extractors");
         tree.addItem(rootExtractor);
-        DPURecord rootTransformer = new DPURecord("Transformers", null);
+        DPURecord rootTransformer = new DPURecord("Transformers");
         tree.addItem(rootTransformer);
-        DPURecord rootLoader = new DPURecord("Loaders", null);
+        DPURecord rootLoader = new DPURecord("Loaders");
         tree.addItem(rootLoader);
 
         List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();

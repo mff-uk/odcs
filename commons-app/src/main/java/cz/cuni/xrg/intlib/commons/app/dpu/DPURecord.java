@@ -43,24 +43,7 @@ public class DPURecord {
      */
 	@Column(name="description")
     private String description;
-    	
-    /**
-     * DPURecord type, determined by associated jar file.
-	 * TODO move to {@link DPUTemplateRecord}?
-     */
-	@Enumerated(EnumType.ORDINAL)
-    private DPUType type;
-        
-    /**
-     * Path to the jar file. The path is relative to the 
-     * AppConfig.dpuDirectory.
-	 * TODO move to {@link DPUTemplateRecord}?
-	 * 
-     * @see AppConfig
-     */
-	@Column(name="jar_path")
-    private String jarPath;	
-	
+    		
 	/**
 	 * DPU's configuration in serialized version.
 	 */
@@ -84,9 +67,8 @@ public class DPURecord {
      * @param name
      * @param type
      */
-    public DPURecord(String name, DPUType type) {
+    public DPURecord(String name) {
         this.name = name;
-        this.type = type;
         this.useDPUDescription = false;
     }
 
@@ -98,8 +80,6 @@ public class DPURecord {
     	this.name = dpuRecord.name;
     	this.useDPUDescription = dpuRecord.useDPUDescription;
     	this.description = dpuRecord.description;
-    	this.type = dpuRecord.type;
-    	this.jarPath = dpuRecord.jarPath;
     	if (dpuRecord.serializedConfiguration == null) {
     		this.serializedConfiguration = null;
     	} else {
@@ -116,7 +96,7 @@ public class DPURecord {
      * @throws FileNotFoundException 
      */
     public void loadInstance(ModuleFacade moduleFacade) throws ModuleException, FileNotFoundException {
-    	instance = moduleFacade.getObject(jarPath);
+    	instance = moduleFacade.getObject(getJarPath());
     }
     
     public String getName() {
@@ -152,19 +132,15 @@ public class DPURecord {
 	}
 	
     public DPUType getType() {
-        return type;
+    	return null;
     }
-
-    public void setType(DPUType type) {
-        this.type = type;
-    }    
     
-    public void setJarPath(String path) {
-        jarPath = path;
-    }
-
+    /**
+     * Return full path from the DPU's jar file from DPU's directory.
+     * @return
+     */
     public String getJarPath() {
-        return jarPath;
+    	return null;
     }
 
     /**
@@ -191,7 +167,6 @@ public class DPURecord {
 		serializedConfiguration = conf;
 	}
 	
-	
 	/**
 	 * Generates hash code from primary key if it is available, otherwise
 	 * from the rest of the attributes.
@@ -204,8 +179,7 @@ public class DPURecord {
 		if (this.id == null) {
 			hash = 83 * hash + Objects.hashCode(this.name);
 			hash = 83 * hash + Objects.hashCode(this.description);
-			hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
-			hash = 83 * hash + Objects.hashCode(this.jarPath);
+			hash = 83 * hash + Objects.hashCode(getJarPath());
 			hash = 83 * hash + Objects.hashCode(this.serializedConfiguration);
 		} else {
 			hash = 83 * hash + Objects.hashCode(this.id);
@@ -251,10 +225,10 @@ public class DPURecord {
 		if (!Objects.equals(this.description, other.description)) {
 			return false;
 		}
-		if (this.type != other.type) {
+		if (this.getType() != other.getType()) {
 			return false;
 		}
-		if (!Objects.equals(this.jarPath, other.jarPath)) {
+		if (!Objects.equals(getJarPath(), other.getJarPath())) {
 			return false;
 		}
 		if (!Objects.equals(this.serializedConfiguration, other.serializedConfiguration)) {

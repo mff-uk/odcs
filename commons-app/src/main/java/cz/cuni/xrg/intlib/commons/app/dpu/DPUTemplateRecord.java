@@ -158,7 +158,11 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	public String getJarPath() {
 		if (parent == null) {
 			// to level DPU
-			return jarDirectory + File.separator + jarName;
+			if (jarDirectory.isEmpty()) {
+				return jarName;
+			} else {				
+				return jarDirectory + File.separator + jarName;
+			}
 		} else {
 			return parent.getJarPath();
 		}
@@ -170,7 +174,7 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	 */
 	public String getJarDirectory() {
 		if (parent == null) {
-			// to level DPU
+			// top level DPU
 			return jarDirectory;
 		} else {
 			return parent.getJarDirectory();
@@ -178,16 +182,44 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	}
 	
 	/**
+	 * Set jar directory for given DPU template. If the DPU has parent then
+	 * nothing happened.
+	 * @param jarDirectory
+	 */
+	public void setJarDirectory(String jarDirectory) {
+		if (parent == null) {
+			// top level DPU
+			this.jarDirectory = jarDirectory;
+		} else {
+			// ignore .. 
+		}		
+	}	
+	
+	/**
 	 * Return name of given jar file.
 	 * @return
 	 */
 	public String getJarName() {
 		if (parent == null) {
-			// to level DPU
+			// top level DPU
 			return jarName;
 		} else {
 			return parent.getJarName();
 		}
+	}
+	
+	/**
+	 * Set jar name for given DPU template. If the DPU has parent then
+	 * nothing happened.
+	 * @param jarName
+	 */
+	public void setJarName(String jarName) {
+		if (parent == null) {
+			// top level DPU
+			this.jarName = jarName;
+		} else {
+			// ignore .. 
+		}		
 	}
 	
 	/**

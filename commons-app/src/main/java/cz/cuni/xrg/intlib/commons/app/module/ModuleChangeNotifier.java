@@ -1,6 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 
 /**
  * Enables mark given DPU as updated. Such DPU will be updated
@@ -15,6 +15,6 @@ public interface ModuleChangeNotifier {
 	 * Mark given DPU as updated.
 	 * @param dpu
 	 */
-	public void updated(DPURecord dpu);
+	public void updated(DPUTemplateRecord dpu);
 	
 }

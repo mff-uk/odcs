@@ -1,6 +1,8 @@
 package cz.cuni.xrg.intlib.commons.app.module;
 
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -29,7 +31,7 @@ class OSGIFramework {
 	/**
 	 * Store loaded bundles. Bundles are store under their name.
 	 */
-	private java.util.Map<String, BundleContainer> loadedBundles = new java.util.HashMap<>();
+	private ConcurrentHashMap<String, BundleContainer> loadedBundles = new ConcurrentHashMap <>();
 	
 	/**
 	 * Logger class.
@@ -194,6 +196,22 @@ class OSGIFramework {
 		return true;
 	}
 
+	/**
+	 * Update all bundles from given directory.
+	 * @param subDirName
+	 */
+	public void uninstallDir(String subDirName) {
+		LinkedList<Object> keys = new LinkedList(loadedBundles.keySet());
+		
+		for (Object key : keys) {
+			BundleContainer bundle = loadedBundles.get(key); 
+			if (bundle.getUri().contains(subDirName)) {
+				// is located in sub-directory, uninstall
+				uninstallBundle(bundle);
+			}
+		}
+	}		
+	
 	/**
 	 * Load class "module.${Bundle-Name}" from bundle on given uri.
 	 * 

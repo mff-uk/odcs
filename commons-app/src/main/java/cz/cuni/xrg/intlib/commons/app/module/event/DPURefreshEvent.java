@@ -10,17 +10,17 @@ import org.springframework.context.ApplicationEvent;
 public class DPURefreshEvent extends ApplicationEvent {
 
 	/**
-	 * DPU's relative path.
+	 * DPU's relative directory name.
 	 */
-	private String relativePath;
+	private String directoryName;
 
-	public DPURefreshEvent(Object source, String relativePath) {
+	public DPURefreshEvent(Object source, String directoryName) {
 		super(source);
-		this.relativePath = relativePath;
+		this.directoryName = directoryName;
 	}
 
-	public String getRelativePath() {
-		return relativePath;
+	public String getDirectoryName() {
+		return directoryName;
 	}
 	
 }

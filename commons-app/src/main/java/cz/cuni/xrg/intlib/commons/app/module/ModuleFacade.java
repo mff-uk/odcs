@@ -3,9 +3,10 @@ package cz.cuni.xrg.intlib.commons.app.module;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,12 @@ import org.slf4j.LoggerFactory;
 public class ModuleFacade {
 
 	/**
+	 * Logger instance.
+	 */
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ModuleFacade.class);	
+	
+	/**
 	 * Used framework.
 	 */
 	private OSGIFramework framework;
@@ -28,11 +35,10 @@ public class ModuleFacade {
 	private ModuleFacadeConfig configuration;
 
 	/**
-	 * Logger instance.
+	 * Contains DPU's locks.
 	 */
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ModuleFacade.class);
-
+	private Set<String> locks;
+	
 	/**
 	 * Base ctor. The configuration is not used until some other method is
 	 * called. So is not necessary to have all configuration fully set when
@@ -43,6 +49,7 @@ public class ModuleFacade {
 	public ModuleFacade(ModuleFacadeConfig configuration) {
 		this.framework = new OSGIFramework();
 		this.configuration = configuration;
+		this.locks = new HashSet();
 	}
 
 	/**
@@ -76,20 +83,6 @@ public class ModuleFacade {
 	}
 
 	/**
-	 * Create URL to the file in DPU's directory.
-	 * @param relativePath
-	 * @return
-	 */
-	private String createURI(String relativePath) {
-		StringBuilder strBuilder = new StringBuilder();
-		strBuilder.append("file:///");
-		strBuilder.append(configuration.getDpuFolder());
-		strBuilder.append(File.separator);
-		strBuilder.append(relativePath);
-		return strBuilder.toString();
-	}
-
-	/**
 	 * Load main class from bundle and return it as object.
 	 * 
 	 * @param relativePath Relative path in DPU's directory.
@@ -101,7 +94,12 @@ public class ModuleFacade {
 	public Object getObject(String relativePath)
 			throws BundleInstallFailedException,
 				ClassLoadFailedException,
-				FileNotFoundException {
+				FileNotFoundException
+				{
+//		if (isLocked(relativePath)) {
+			// already used
+//			throw new DpuLockedException();
+//		}		
 		checkExistance(relativePath); // throw FileNotFoundException
 		final String uri = createURI(relativePath);
 		// throw BundleInstallFailedException
@@ -109,8 +107,7 @@ public class ModuleFacade {
 	}
 
 	/**
-	 * Uninstall bundle from system, use with caution. No instance of any class
-	 * from bundle should exist.
+	 * Uninstall bundle from system. Ignore potential lock on bundle.
 	 * 
 	 * @param relativePath
 	 */
@@ -124,26 +121,14 @@ public class ModuleFacade {
 			// bundle has not been installed
 		}
 	}
-
+	
 	/**
-	 * Update file from it's original path. Relative path is used to identify
-	 * actual DPU. If the bundle has not been loaded yet then nothing happen.
-	 * If case of error throw exception.
-	 * 
-	 * @param relativePath
-	 * @throws BundleException 
+	 * Update all bundles from given directory.
+	 * @param subDirName
 	 */
-	public void update(String relativePath) throws BundleException {
-		final String uri = createURI(relativePath);
-		BundleContainer container = framework.getBundle(uri);
-		if (container == null) {
-			// do nothing
-		} else {
-			LOG.debug("Updating bundle: {}", relativePath);
-			// call reload
-			container.update();
-		}
-	}
+	public void uninstallDir(String subDirName) {
+		framework.uninstallDir(subDirName);
+	}	
 	
 	/**
 	 * Return content of manifest file (properties) for given jar-file that is
@@ -151,9 +136,14 @@ public class ModuleFacade {
 	 * To unload jar-file use {@link #uninstall(String)} 
 	 * 
 	 * @param relativePath Relative path in DPU's directory.
-	 * @return Jar attributes or null in case of error.
+	 * @return Jar attributes or null in case of error or if DPU is locked.
 	 */
 	public Dictionary<String, String> getJarProperties(String relativePath) {
+		if (isLocked(relativePath)) {
+			// currently unavailable
+			return null;
+		}
+		
 		try {
 			checkExistance(relativePath);
 		} catch (FileNotFoundException e) {
@@ -169,7 +159,63 @@ public class ModuleFacade {
 		}
 		return container.getHeaders();
 	}
-
+		
+	/**
+	 * Create URL to the file in DPU's directory.
+	 * @param relativePath
+	 * @return
+	 */
+	private String createURI(String relativePath) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("file:///");
+		strBuilder.append(configuration.getDpuFolder());
+		strBuilder.append(File.separator);
+		strBuilder.append(relativePath);
+		return strBuilder.toString();
+	}
+	
+	/**
+	 * Try to get lock on given DPU.
+	 * @param relativePath
+	 * @return False if the lock is alredy in use.
+	 */
+	public boolean lock(String relativePath) {
+		synchronized(locks) {
+			if (locks.contains(relativePath)) {
+				return false;
+			} else {
+				locks.add(relativePath);
+				return true;
+			}
+		}
+	}
+	
+	/**
+	 * Release lock on given DPU.
+	 * @param relativePath
+	 */
+	public void unlock(String relativePath) {
+		synchronized(locks) {
+			locks.remove(relativePath);
+		}		
+	}
+	
+	/**
+	 * Return true if given instance is locked. In such case the DPU
+	 * is inaccessible.
+	 * @param relativePath
+	 * @return
+	 */
+	private boolean isLocked(String relativePath) {
+		synchronized(locks) {
+			if (locks.contains(relativePath)) {
+				return true;
+			} else {
+				return false;
+			}
+		}		
+	}
+	
 	/**
 	 * Check if the bundle exist.
 	 * 

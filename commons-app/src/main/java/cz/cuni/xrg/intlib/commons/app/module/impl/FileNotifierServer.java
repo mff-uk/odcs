@@ -11,7 +11,9 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,7 @@ import cz.cuni.xrg.intlib.commons.app.module.event.DPURefreshEvent;
  */
 public class FileNotifierServer implements Runnable {
 
-	public static final String NOTIFICATION_EXT = ".notifi";
+	public static final String NOTIFICATION_FILE = "notifi";
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(FileNotifierClient.class);
@@ -60,10 +62,17 @@ public class FileNotifierServer implements Runnable {
 
 	private Thread watcherThread;
 	
+	/**
+	 * Contains names of directories 
+	 * in which first notification will be ignored.
+	 */
+	private Set<String> toIgnore;
+	
 	public FileNotifierServer() {
 		this.watcher = null;
 		this.keys = new HashMap();
 		this.watcherThread = null;
+		this.toIgnore = new HashSet();
 	}
 
 	/**
@@ -97,9 +106,17 @@ public class FileNotifierServer implements Runnable {
 	public void stop() {
 		watcherThread.interrupt();
 	}
+
+	/**
+	 * Ignore first change in given directory.
+	 * @param directory
+	 */
+	public void ignore(String directory) {
+		toIgnore.add(directory);
+	}
 	
 	/**
-	 * Register given directory for watching.
+	 * Register given directory and all sub-directories for watching.
 	 * 
 	 * @param dir
 	 * @throws IOException
@@ -113,10 +130,66 @@ public class FileNotifierServer implements Runnable {
 					dir.toString(), e);
 			return;
 		}
-		LOG.debug("Watcher registred for directory: '{}'", dir.toString());
+		LOG.debug("File watcher registered for: {}", dir.toString());
 		keys.put(key, dir);
+		// now sub directories
+		File []files = (new File(dir.toString())).listFiles();
+		if (files == null) {
+			// empty directory
+		} else {
+			// call for sub-directories
+			for (File item : files) {
+				if (item.isDirectory()) {
+					register(Paths.get(item.toString()));
+				}
+			}
+		}
 	}
 
+	/**
+	 * React on create event in given directory.
+	 * @param dir
+	 * @param eventPath
+	 */
+	private void onCreate(Path dir, Path eventPath) {
+		if (eventPath.getFileName().toString()
+				.compareToIgnoreCase(NOTIFICATION_FILE) == 0) {
+			// DPU change notification
+			
+			// delete the notification file
+			File notifyFile = new File(dir.toFile(), eventPath.toString());			
+			try {
+				if(!notifyFile.delete()) {
+					LOG.debug("Failed to delete notification file.");
+				}
+				// we use Exception as it can throw IOException as
+				// well
+			} catch (Exception e) {
+				LOG.debug("Failed to delete notification file.", e);
+			}
+			
+			// get the directory
+			String directoryName = dir.getFileName().toString();
+			
+			if (toIgnore.contains(directoryName)) {
+				// we have orders to ignore this
+				toIgnore.remove(directoryName);
+				LOG.debug("Ignoring notification in: {}", directoryName);
+				return;
+			}
+			
+			LOG.debug("Notification in: {}", directoryName);
+			// publish event about notification
+			eventPublisher.publishEvent(
+					new DPURefreshEvent(this, directoryName));
+		} else {
+			if (eventPath.toFile().isDirectory()) {
+				// new directory .. register !
+				register(dir.toAbsolutePath());
+			}
+		}
+	}
+	
 	/**
 	 * The main function here we watch for changes.
 	 */
@@ -157,50 +230,18 @@ public class FileNotifierServer implements Runnable {
 				// in our case DPU's relative path
 				final Path eventPath = pathEvent.context();
 				if (kind == ENTRY_CREATE) {
-					// new file .. check for
-					if (eventPath.getFileName().toString()
-							.endsWith(NOTIFICATION_EXT)) {
-						// get path to the notification file and delete it
-						File notifyFile = new File(dir.toFile(), eventPath.toString());
-
-						boolean fileDeleted = true;
-						try {
-							fileDeleted = notifyFile.delete();
-							// we use Exception as it can throw IOException as
-							// well
-						} catch (Exception e) {
-							LOG.debug("Failed to delete notification file.", e);
-						}
-
-						if (fileDeleted) {
-							// ok done
-						} else {
-							// log exception
-							LOG.debug("Failed to delete notification file");
-						}
-
-						// we need name of the file
-						final int notifiExtLen = NOTIFICATION_EXT.length();
-						String dpuJarFile = eventPath.getFileName().toString();
-						dpuJarFile = dpuJarFile.substring(0,
-								dpuJarFile.length() - notifiExtLen);
-
-						LOG.debug("Detected change on: {}", dpuJarFile);
-						// publish the message
-						eventPublisher.publishEvent(new DPURefreshEvent(this,
-								dpuJarFile));
-					}
+					onCreate(dir, eventPath);					
 				}
 			}
-
 			boolean valid = key.reset();
 			if (valid) {
 				// everything is all right
 			} else {
 				// it is broken ... the directory may be deleted
 				keys.remove(key);
-				LOG.warn("Key for: '{}' is no longer valid.", dir.toString());
+				LOG.debug("Key for: '{}' is no longer valid.", dir.toString());
 			}
 		}
 	}
+
 }

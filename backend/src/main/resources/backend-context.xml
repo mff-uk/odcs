@@ -14,10 +14,6 @@
 	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
 		<constructor-arg value="BACKEND" />
 	</bean>
-
-	<!-- implementation of DPU's watcher -->
-	<bean id="watcher" class="cz.cuni.xrg.intlib.commons.app.module.impl.FileNotifierServer" 
-	    init-method="start" destroy-method="stop"/>
 	
 	<!-- TCP/IP server, used to recieve request from frontend -->
 	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server" />
