@@ -40,7 +40,7 @@ class FileNotifierClient implements ModuleChangeNotifier {
 				File.separator + dpuSubDir;
 		
 		File notificationFile = new File(dpuDir, 
-				FileNotifierServer.NOTIFICATION_FILE);
+				dpu.getJarName() + 	FileNotifierServer.NOTIFICATION_EXT);
 		
 		if (notificationFile.exists()) {
 			// server listen on create .. so we need to delete

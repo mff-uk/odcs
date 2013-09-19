@@ -15,14 +15,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.event.DPURefreshEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
-import cz.cuni.xrg.intlib.commons.app.module.event.DPURefreshEvent;
 
 /**
  * Should be used with cooperation with {@link FileNotifierClient}. Use
@@ -36,7 +37,7 @@ import cz.cuni.xrg.intlib.commons.app.module.event.DPURefreshEvent;
  */
 public class FileNotifierServer implements Runnable {
 
-	public static final String NOTIFICATION_FILE = "notifi";
+	public static final String NOTIFICATION_EXT = "notifi";
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(FileNotifierClient.class);
@@ -56,25 +57,18 @@ public class FileNotifierServer implements Runnable {
 	@Autowired
 	private ModuleFacade moduleFacade;
 
-	private WatchService watcher;
+	private WatchService watcher = null;
 
-	private Map<WatchKey, Path> keys;
+	private Map<WatchKey, Path> keys = new HashMap<>();
 
-	private Thread watcherThread;
+	private Thread watcherThread = null;
 	
 	/**
 	 * Contains names of directories 
 	 * in which first notification will be ignored.
 	 */
-	private Set<String> toIgnore;
+	private Set<String> toIgnore = new HashSet<>();
 	
-	public FileNotifierServer() {
-		this.watcher = null;
-		this.keys = new HashMap();
-		this.watcherThread = null;
-		this.toIgnore = new HashSet();
-	}
-
 	/**
 	 * Start watching for DPUs changes.
 	 */
@@ -152,8 +146,7 @@ public class FileNotifierServer implements Runnable {
 	 * @param eventPath
 	 */
 	private void onCreate(Path dir, Path eventPath) {
-		if (eventPath.getFileName().toString()
-				.compareToIgnoreCase(NOTIFICATION_FILE) == 0) {
+		if (eventPath.getFileName().toString().endsWith(NOTIFICATION_EXT)) {
 			// DPU change notification
 			
 			// delete the notification file
@@ -170,6 +163,8 @@ public class FileNotifierServer implements Runnable {
 			
 			// get the directory
 			String directoryName = dir.getFileName().toString();
+			// get new DPUs file
+			String jarName = FilenameUtils.removeExtension(eventPath.getFileName().toString());
 			
 			if (toIgnore.contains(directoryName)) {
 				// we have orders to ignore this
@@ -178,10 +173,10 @@ public class FileNotifierServer implements Runnable {
 				return;
 			}
 			
-			LOG.debug("Notification in: {}", directoryName);
+			LOG.debug("Notification in: {} new DPU: {}", directoryName, jarName);
 			// publish event about notification
 			eventPublisher.publishEvent(
-					new DPURefreshEvent(this, directoryName));
+					new DPURefreshEvent(this, directoryName, jarName));
 		} else {
 			if (eventPath.toFile().isDirectory()) {
 				// new directory .. register !

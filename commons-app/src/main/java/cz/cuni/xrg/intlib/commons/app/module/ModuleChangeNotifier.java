@@ -12,7 +12,8 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 public interface ModuleChangeNotifier {
 
 	/**
-	 * Mark given DPU as updated.
+	 * Mark given DPU as updated. The given {@link DPUTemplateRecord}
+	 * should contains new jar-file name.
 	 * @param dpu
 	 */
 	public void updated(DPUTemplateRecord dpu);
