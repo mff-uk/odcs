@@ -296,7 +296,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
 			conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
 			if (conn.dataUnitNameText !== null) {
-				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+				var newWidth = computeTextWidth(newPoints, conn.dataUnitNameText.getText(), conn.dataUnitNameText.getContext('2d'));
+				conn.dataUnitNameText.setWidth(newWidth);
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, newWidth));
 			}
 		}
 		for (lineId in dpu.connectionTo) {
@@ -308,7 +310,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
 			conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
 			if (conn.dataUnitNameText !== null) {
-				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+				var newWidth = computeTextWidth(newPoints, conn.dataUnitNameText.getText(), conn.dataUnitNameText.getContext('2d'));
+				conn.dataUnitNameText.setWidth(newWidth);
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, newWidth));
 			}
 		}
 	}
