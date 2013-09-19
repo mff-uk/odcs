@@ -1,14 +1,22 @@
 package cz.cuni.xrg.intlib.backend.execution.dpu.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
+import cz.cuni.xrg.intlib.backend.spring.InMemoryEventListener;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.configuration.Configurable;
-import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -32,12 +40,16 @@ public class ConfiguratorTest {
 	//@Test
 	public void nonConfigurableTest() {				
 		DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
+		Node node = new Node(dpu);				
 		Object dpuInstance = new Object();
 		PipelineExecution execution = mock(PipelineExecution.class);
+		
 		Context context = mock(Context.class);
+		Map<Node, Context> contexts = new HashMap();
+		contexts.put(node, context);
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		//assertTrue(config.preAction(dpu, dpuInstance, execution, context));
+		assertTrue(config.preAction(node, contexts, dpuInstance, execution));
 	}
 	
 	/**
@@ -50,14 +62,17 @@ public class ConfiguratorTest {
 		byte[] rawConfig = "<a/>".getBytes();
 		
 		DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
-		when(dpu.getRawConf()).thenReturn(rawConfig);
+		when(dpu.getRawConf()).thenReturn(rawConfig);		
+		Node node = new Node(dpu);
 		Configurable dpuInstance = mock(Configurable.class);
-				
 		PipelineExecution execution = mock(PipelineExecution.class);
+		
 		Context context = mock(Context.class);
-
+		Map<Node, Context> contexts = new HashMap();
+		contexts.put(node, context);
+		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		//assertTrue(config.preAction(dpu, dpuInstance, execution, context));
+		assertTrue(config.preAction(node, contexts, dpuInstance, execution));
 		// verify that the configure function has been called 
 		verify(dpuInstance, times(1)).configure(rawConfig);
 	}
@@ -70,15 +85,23 @@ public class ConfiguratorTest {
 	//@Test
 	public void throwTest() throws ConfigException {
 		DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
+		Node node = new Node(dpu);				
 		Configurable dpuInstance = mock(Configurable.class);
-		doThrow(new ConfigException()).when(dpuInstance).configure(null);		
+		doThrow(new ConfigException()).when(dpuInstance).configure(null);
 		PipelineExecution execution = mock(PipelineExecution.class);
-		Context context = mock(Context.class);			
+		
+		Context context = mock(Context.class);
+		Map<Node, Context> contexts = new HashMap();
+		contexts.put(node, context);		
+		
+		// we also check if the proper event has been published
+		InMemoryEventListener listener = beanFactory.getBean(InMemoryEventListener.class);
+		listener.getEventList().clear();
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		//assertFalse(config.preAction(dpu, dpuInstance, execution, context));
-		
-		// TODO Petyr: check if the event has been published		
-	}	
+		assertFalse(config.preAction(node, contexts, dpuInstance, execution));
+		// something has been published
+		assertTrue(listener.getEventList().size() > 1);		
+	}
 	
 }
