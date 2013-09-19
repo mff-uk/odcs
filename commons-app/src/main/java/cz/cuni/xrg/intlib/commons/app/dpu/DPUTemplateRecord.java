@@ -181,9 +181,9 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	public String getJarPath() {
 		if (parent == null) {
 			// to level DPU
-			if (jarDirectory.isEmpty()) {
+			if (jarDirectory == null || jarDirectory.isEmpty()) {
 				return jarName;
-			} else {				
+			} else {
 				return jarDirectory + File.separator + jarName;
 			}
 		} else {

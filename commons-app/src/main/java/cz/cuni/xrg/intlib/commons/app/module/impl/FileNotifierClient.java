@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleChangeNotifier;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
 /**
  * Implement {@link ModuleChangeNotifier} by using shared file system. To notify
@@ -28,7 +28,7 @@ class FileNotifierClient implements ModuleChangeNotifier {
 	 * Used to get information about modules.
 	 */
 	@Autowired
-	private ModuleFacadeConfig moduleConfig;
+	private ModuleFacade moduleFacade;
 
 	@Autowired(required=false)
 	private FileNotifierServer server;
@@ -36,7 +36,7 @@ class FileNotifierClient implements ModuleChangeNotifier {
 	public void updated(DPUTemplateRecord dpu) {
 		// notification file name
 		final String dpuSubDir = dpu.getJarDirectory();
-		final String dpuDir = moduleConfig.getDpuFolder() + 
+		final String dpuDir = moduleFacade.getDPUDirectory() + 
 				File.separator + dpuSubDir;
 		
 		File notificationFile = new File(dpuDir, 

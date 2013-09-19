@@ -148,7 +148,7 @@ class OSGIModuleFacadeConfig {
 	 * 
 	 * @return
 	 */
-	public String getDpuFolder() {
+	public String getDPUDirectory() {
 		return rootDirectory + File.separator + DPU_DIRECTORY;
 	}
 

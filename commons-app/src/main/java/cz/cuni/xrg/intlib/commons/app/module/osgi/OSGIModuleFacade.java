@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
 
 /**
  * OSGI based implementation of {@link ModuleFacade}.
@@ -48,8 +47,8 @@ class OSGIModuleFacade implements ModuleFacade {
 	private ConcurrentHashMap<String, BundleContainer> loadedBundles = new ConcurrentHashMap<>();
 
 	@Autowired
-	private ModuleFacadeConfig configuration;
-
+	private OSGIModuleFacadeConfig configuration;
+	
 	/**
 	 * Start the OSGI framework.
 	 */
@@ -198,6 +197,11 @@ class OSGIModuleFacade implements ModuleFacade {
 		}
 	}
 
+	@Override
+	public String getDPUDirectory() {
+		return configuration.getDPUDirectory();
+	}
+	
 	/**
 	 * Load jar files from given directory as libraries.
 	 * @param directoryPath
@@ -271,7 +275,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		} // else we load .. we need uri
 		StringBuilder uri = new StringBuilder();
 		uri.append("file:///");
-		uri.append(configuration.getDpuFolder());
+		uri.append(configuration.getDPUDirectory());
 		uri.append(File.separator);
 		uri.append(fileName);
 

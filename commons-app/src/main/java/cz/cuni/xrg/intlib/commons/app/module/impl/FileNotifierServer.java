@@ -23,7 +23,6 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.event.DPURefreshEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
 
 /**
  * Should be used with cooperation with {@link FileNotifierClient}. Use
@@ -35,7 +34,7 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
  * @author Petyr
  * 
  */
-public class FileNotifierServer implements Runnable {
+class FileNotifierServer implements Runnable {
 
 	public static final String NOTIFICATION_EXT = "notifi";
 
@@ -47,12 +46,6 @@ public class FileNotifierServer implements Runnable {
 
 	/**
 	 * Used to get information about modules.
-	 */
-	@Autowired
-	private ModuleFacadeConfig moduleConfig;
-
-	/**
-	 * Module facade to notify about changes.
 	 */
 	@Autowired
 	private ModuleFacade moduleFacade;
@@ -88,7 +81,7 @@ public class FileNotifierServer implements Runnable {
 			return;
 		}
 		// register directories to watch
-		register(Paths.get(moduleConfig.getDpuFolder()));
+		register(Paths.get(moduleFacade.getDPUDirectory()));
 		// start watching .. the function run asynchronously
 		watcherThread = new Thread(this);
 		watcherThread.start();

@@ -75,4 +75,9 @@ public interface ModuleFacade {
 	 */
 	void loadLibs(List<String> directoryPaths);
 	
+	/**
+	 * Return path to the DPU directory.
+	 */
+	String getDPUDirectory();
+	
 }
