@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.module;
+package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -13,14 +13,14 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.conf.MissingConfigPropertyException;
 
 /**
- * Contains settings for ModuleFacade;
+ * Contains settings for OSGIModuleFacade;
  * 
  * @author Petyr
  * 
  */
-public class ModuleFacadeConfig {
+class OSGIModuleFacadeConfig {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ModuleFacadeConfig.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OSGIModuleFacadeConfig.class);
 	
 	/**
 	 * Name for directory where DPUs are stored.
@@ -106,7 +106,7 @@ public class ModuleFacadeConfig {
 	 * 
 	 * @param conf
 	 */
-	public ModuleFacadeConfig(AppConfig conf, Application app) {
+	public OSGIModuleFacadeConfig(AppConfig conf, Application app) {
 		this.rootDirectory = conf.getString(ConfigProperty.MODULE_PATH);
 		// check ending for trailing
 		if (this.rootDirectory.endsWith("\\")
