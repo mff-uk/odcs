@@ -1,10 +1,15 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
+import java.io.FileNotFoundException;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
 /**
  * Represent the DPU instance pipeline placement in DB.
@@ -69,6 +74,15 @@ public class DPUInstanceRecord extends DPURecord {
 		this.template = template;
 		this.toolTip = null;
 	}
+	
+    /**
+     * Load DPU's instance from associated jar file.
+     * @param moduleFacade ModuleFacade used to load DPU.
+     * @throws ModuleException
+     */
+    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException {
+    	instance = moduleFacade.getInstance(template);
+    }
 	
 	public DPUTemplateRecord getTemplate() {
 		return template;

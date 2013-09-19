@@ -4,6 +4,8 @@ import java.io.File;
 
 import cz.cuni.xrg.intlib.commons.app.auth.SharedEntity;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.OwnedEntity;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import javax.persistence.*;
@@ -115,6 +117,15 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 				? null : dpuInstance.getTemplate().getJarDescription();
 	}
 
+    /**
+     * Load DPU's instance from associated jar file.
+     * @param moduleFacade ModuleFacade used to load DPU.
+     * @throws ModuleException
+     */
+    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException {
+    	instance = moduleFacade.getInstance(this);
+    }
+	
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
@@ -146,6 +157,18 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	}
 	
 	public void setParent(DPUTemplateRecord parent) {
+		if (parent == null) {
+			// we are going under someone .. we use it's name and directory 
+			jarDirectory = null;
+			jarName = null;
+		} else {
+			// we will be the top one .. if we are not now, 
+			// store jar name and directory
+			if (this.parent != null) {
+				jarDirectory = parent.jarDirectory;
+				jarName = parent.jarName;
+			}
+		}
 		this.parent = parent;
 	}
 

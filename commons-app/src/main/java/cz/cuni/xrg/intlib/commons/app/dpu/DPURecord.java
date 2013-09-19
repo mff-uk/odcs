@@ -54,7 +54,7 @@ public class DPURecord {
 	 * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
 	 */
 	@Transient
-	private Object instance;
+	protected Object instance;
 	
     /**
      * Allow empty constructor for JPA.
@@ -88,17 +88,7 @@ public class DPURecord {
     				dpuRecord.serializedConfiguration.clone();
     	}
     }
-    
-    /**
-     * Load DPU's instance from associated jar file.
-     * @param moduleFacade ModuleFacade used to load DPU.
-     * @throws ModuleException
-     * @throws FileNotFoundException 
-     */
-    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException, FileNotFoundException {
-    	instance = moduleFacade.getObject(getJarPath());
-    }
-    
+        
     public String getName() {
         return name;
     }
