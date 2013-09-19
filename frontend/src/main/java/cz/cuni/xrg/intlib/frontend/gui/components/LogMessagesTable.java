@@ -175,7 +175,6 @@ public class LogMessagesTable extends CustomComponent {
 		});
 		messageTable.setContainerDataSource(container);
 		messageTable.setVisibleColumns("date", "level", "message", "source");
-		messageTable.setFilterFieldVisible("message", false);
 		messageTable.setSortEnabled(false);
 		messageTable.setFilterBarVisible(true);
 		levelSelector.setValue(Level.INFO);
