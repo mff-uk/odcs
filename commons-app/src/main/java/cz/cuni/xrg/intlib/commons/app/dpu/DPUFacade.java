@@ -89,6 +89,26 @@ public class DPUFacade {
 	}
 
 	/**
+	 * Return list of all DPUTemplateRecords currently persisted in database.
+	 * 
+	 * Is used by OSGIModuleFacade, so no permissions are applied here.
+	 * 
+	 * TODO Honza from Petyr: Please check this
+	 * 
+	 * @return
+	 */
+	public List<DPUTemplateRecord> getAllTemplatesNonFilter() {
+
+		@SuppressWarnings("unchecked")
+		List<DPUTemplateRecord> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM DPUTemplateRecord e").getResultList(),
+				DPUTemplateRecord.class
+		);
+
+		return resultList;
+	}	
+	
+	/**
 	 * Find DPUTemplateRecord in database by ID and return it.
 	 * @param id
 	 * @return

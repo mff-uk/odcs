@@ -166,16 +166,7 @@ public class AppEntry {
 			LOG.info("Closing application ...");
 			return;
 		}
-		
-		// TODO Petyr: load automatically new DPUs
-		// pre-load all DPUs
-		// so frontend can modify the DPUs without letting us know 
-		// to load the old instance ..
-		// but we still have to check for new DPUs
-		ModuleFacade moduleFacade = context.getBean(ModuleFacade.class);
-		DPUFacade dpuFacade = context.getBean(DPUFacade.class);
-		moduleFacade.preLoadDPUs(dpuFacade.getAllTemplates());
-		
+				
 		// publish event for engine about start of the execution,
 		// so backend can recover for unexpected shutdown 
 		context.publishEvent(new EngineEvent(EngineEventType.STARTUP, AppEntry.class));

@@ -107,7 +107,7 @@ public class DPUModuleManipulator {
 					"Failed to load DPU bacuse of exception:" + e.getMessage());
 		}
 
-		String jarDescription = dpuExplorer.getJarDescription(dpuRelativePath);
+		String jarDescription = dpuExplorer.getJarDescription(newTemplate);
 		if (jarDescription == null) {
 			// failed to read description .. use empty string
 			jarDescription = "";
@@ -176,6 +176,16 @@ public class DPUModuleManipulator {
 		final String newRelativePath = directoryName + File.separator
 				+ sourceDpuFile.getName();
 
+		// check that the DPU directory exist
+		final File newDPUDir = new File(moduleFacade.getDPUDirectory(),
+				directoryName);
+		if (newDPUDir.exists()) {
+			// ok exist
+		} else {
+			// no directory .. create it
+			newDPUDir.mkdir();
+		}
+		
 		// we have to lock bundle here ..
 		// this prevent every other user .. from working with DPUs in give
 		// directory, so we are the only one here .. we can do what we want :)
@@ -245,7 +255,7 @@ public class DPUModuleManipulator {
 		}
 
 		// get new data from manifest.mf and save this changes
-		final String jarDescription = dpuExplorer.getJarDescription(newRelativePath);
+		final String jarDescription = dpuExplorer.getJarDescription(dpu);
 		dpu.setJarDescription(jarDescription);
 		dpu.setJarName(newDpuName);
 		dpuFacade.save(dpu);

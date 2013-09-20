@@ -168,7 +168,7 @@ public final class Executor implements Runnable {
 		// load instance
 		try {
 			dpu.loadInstance(moduleFacade);
-		} catch (FileNotFoundException e) {
+		} catch (ModuleException e) {
 			LOG.error("Missing DPU jar file: '{}' for DPU: {}",
 					dpu.getJarPath(), dpu.getName());
 			// publish event DPU not found

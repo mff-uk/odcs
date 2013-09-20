@@ -29,8 +29,8 @@ public interface ModuleFacade {
 	void unLoad(DPUTemplateRecord dpu);
 	
 	/**
-	 * Start update on given DPU. Such DPU will block every attempt 
-	 * to load class from it until {@link #endUpdate(String)} is called.
+	 * Start update on given DPU. This will block access the given
+	 * {@link DPUTemplateRecord} from any other thread.
 	 * 
 	 * Should be called on valid instance.
 	 * 
@@ -41,9 +41,6 @@ public interface ModuleFacade {
 	/**
 	 * Update bundle. The bundle is determined by it's directory. If
 	 * such bundle is not loaded into application than nothing happened.
-	 * 
-	 * Is the only nonblocking function can be called between 
-	 * {@link #beginUpdate(String)} and {@link #endUpdate(String)}.
 	 * 
 	 * After the bundle is updated then try to load main class from it. The
 	 * load process can throw exception like {@link #getInstance(DPUTemplateRecord)}
@@ -59,7 +56,7 @@ public interface ModuleFacade {
 	Object update(String directory, String newName) throws ModuleException;
 		
 	/**
-	 * Stop update on given DPU.  If updataFailed is true, then 
+	 * Stop update on given DPU. If updataFailed is true, then 
 	 * possibly loaded bundle for given DPU is uninstalled.
 	 * @param dpu
 	 * @param updataFailed

@@ -96,6 +96,11 @@ class FileNotifierClient implements ModuleChangeNotifier {
 		}		
 		
 		try {
+			if (file.exists()) {
+				// we react only on create, so the file must not exist
+				file.delete();
+			}
+			
 			file.createNewFile();
 		} catch(IOException | SecurityException e) {
 			LOG.warn("Failed to create notificaiton file.", e);

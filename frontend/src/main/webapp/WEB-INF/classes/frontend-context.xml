@@ -21,4 +21,12 @@
 	<!-- bean for notification -->
 	<bean class="cz.cuni.xrg.intlib.commons.app.module.impl.FileNotifierClient" />
 	
+	<!-- watcher for DPU changes -->
+	<bean class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIChangeManager" >
+	    <constructor-arg name="refreshDatabase" value="true"/>
+	</bean>
+	
+	<!-- bean that provide functionality for manipulating with DPUs -->
+	<bean class="cz.cuni.xrg.intlib.commons.app.module.DPUModuleManipulator" />
+		
 </beans>

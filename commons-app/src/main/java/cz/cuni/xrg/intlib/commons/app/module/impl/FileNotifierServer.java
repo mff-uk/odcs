@@ -1,10 +1,12 @@
 package cz.cuni.xrg.intlib.commons.app.module.impl;
 
 import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.LinkOption.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
@@ -45,11 +47,11 @@ import cz.cuni.xrg.intlib.commons.app.module.event.ModuleUpdateEvent;
  */
 class FileNotifierServer implements Runnable {
 
-	public static final String NEW_EXT = "new";
+	public static final String NEW_EXT = ".new";
 
-	public static final String UPDATE_EXT = "update";
+	public static final String UPDATE_EXT = ".update";
 
-	public static final String DELETE_EXT = "delete";
+	public static final String DELETE_EXT = ".delete";
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(FileNotifierClient.class);
@@ -246,7 +248,14 @@ class FileNotifierServer implements Runnable {
 		} else if (eventPath.getFileName().toString().endsWith(DELETE_EXT)) {
 			onExtDelete(dir, eventPath);
 		} else {
-			// unknown notification
+			// unknown notification -> but the new one may be the directory
+			if (Files.isDirectory(eventPath, NOFOLLOW_LINKS)) {
+				// register listener for this .. 
+				register(eventPath);
+			}
+			// return, we do not wan't to delete this file 
+			// as it is not our notification file
+			return;
 		}
 		// in every case delete the notification file at the end
 
@@ -301,7 +310,7 @@ class FileNotifierServer implements Runnable {
 				final WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
 				// here we get path relative to the registered
 				// in our case DPU's relative path
-				final Path eventPath = pathEvent.context();
+				final Path eventPath = dir.resolve(pathEvent.context());
 				if (kind == ENTRY_CREATE) {
 					onCreate(dir, eventPath);
 				}

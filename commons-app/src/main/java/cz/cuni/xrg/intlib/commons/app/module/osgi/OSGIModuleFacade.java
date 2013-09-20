@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
@@ -53,11 +56,21 @@ class OSGIModuleFacade implements ModuleFacade {
 
 	@Autowired
 	private OSGIModuleFacadeConfig configuration;
-
+	
+	/**
+	 * DPU facade to get all DPU's templates.
+	 */
+	@Autowired
+	private DPUFacade dpuFacade;
+	
 	/**
 	 * Store directories for bundle which are currently being updated. 
+	 * Also for each directory store Thread, so Thread which has lock can
+	 * access all methods.
+	 * 
+	 * The structure must be accessed only inside synchronised block.
 	 */
-	private Set<String> updatingBundles = Collections.synchronizedSet(new HashSet<String>());
+	private Map<String, Thread> updatingBundles = new HashMap<String, Thread>();
 	
 	/**
 	 * Start the OSGI framework.
@@ -97,6 +110,8 @@ class OSGIModuleFacade implements ModuleFacade {
 					"Failed to get OSGi context.", ex);
 		}
 		
+		// load resources
+		starUpLoad();
 	}
 
 	/**
@@ -467,20 +482,26 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * @param directory
 	 */
 	private void lockUpdate(String directory) {
+		// wait till the required directory is not in directory 
 		while(true) {
 			synchronized(updatingBundles) {
-				if (updatingBundles.contains(directory)) {
-					
+				if (updatingBundles.containsKey(directory)) {
+					// already contains .. check thread
+					if (updatingBundles.get(directory) == Thread.currentThread()) {
+						// we are owners of the lock, we shall pass
+						return;
+					}
 				} else {
-					updatingBundles.add(directory);
+					// not present, add -> lock 
+					updatingBundles.put(directory, Thread.currentThread());
 					return;
 				}
+				// wait .. this will release lock from synchronised block
+				try {
+					updatingBundles.wait();
+				} catch (InterruptedException e) { }
 			}
-			// wait for change
-			try {
-				updatingBundles.wait();
-			} catch (InterruptedException e) { }			
-		}
+		}		
 	}
 	
 	/**
@@ -488,8 +509,32 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * @param directory
 	 */
 	private void releaseUpdate(String directory) {
-		updatingBundles.remove(directory);
-		updatingBundles.notifyAll();
+		synchronized(updatingBundles) {
+			// check that we are the owner
+			if (updatingBundles.containsKey(directory)) {
+				if (updatingBundles.get(directory) == Thread.currentThread()) {
+					// we have the rights to do this					
+				} else {
+					LOG.error("Unlocking DPU from no-owner thread!");
+				}
+				// in every case .. unlock as we rely on programmers
+				// that they use the lock properly
+				updatingBundles.remove(directory);
+			} else {
+				// no record at all
+			}// in every case notify everyone
+			updatingBundles.notifyAll();
+		}
+	}
+	
+	/**
+	 * Load libraries and DPU's jar files.
+	 */
+	private void starUpLoad() {
+		// first load libraries
+		loadLibs(configuration.getDpuLibFolder());
+		// load DPU's jar files
+		preLoadDPUs(dpuFacade.getAllTemplatesNonFilter());		
 	}
 	
 }

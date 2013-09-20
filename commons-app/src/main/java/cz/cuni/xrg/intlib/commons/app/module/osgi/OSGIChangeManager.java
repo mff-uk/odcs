@@ -60,8 +60,10 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 	public void onApplicationEvent(ModuleEvent event) {
 		final String directory = event.getDirectoryName();
 		if (event instanceof ModuleDeleteEvent) {
-			osgiModule.unLoad(directory);
+			LOG.debug("Unloading bubdle from: {}", directory);
+			osgiModule.unLoad(directory);			
 		} else if (event instanceof ModuleNewEvent) {
+			LOG.debug("Loading jar-file for new DPU in: {}", directory);
 			// get record for DPU from database
 			final DPUTemplateRecord dpu = dpuFacade
 					.getTemplateByDirectory(directory);
@@ -74,6 +76,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 				osgiModule.preLoadDPUs(dpuList);
 			}
 		} else if (event instanceof ModuleUpdateEvent) {
+			LOG.debug("Udating DPU in: {}", directory);
 			final DPUTemplateRecord dpu = dpuFacade
 					.getTemplateByDirectory(directory);
 			final ModuleUpdateEvent updateEvent = (ModuleUpdateEvent) event;

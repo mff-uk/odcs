@@ -53,7 +53,7 @@ public final class EdgeCompiler {
 		try {
 			// TODO Petyr: Work with exception ..
 			dpu.loadInstance(moduleFacade);
-		} catch (ModuleException | FileNotFoundException e) {
+		} catch (ModuleException e) {
 			throw new RuntimeException(e);
 		}
 		return dpu.getInstance();
