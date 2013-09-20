@@ -57,9 +57,9 @@ public class DPUExplorer {
 	 * @param relativePath Relative path in DPU's directory.
 	 * @return Description stored in manifest file or null in case of error.
 	 */	
-	public String getJarDescription(String relativePath) {
+	public String getJarDescription(DPUTemplateRecord dpu) {
 		// we try to use pom.xml information
-		Dictionary<String,String> attributes = moduleFacade.getJarProperties(relativePath);
+		Dictionary<String,String> attributes = moduleFacade.getJarProperties(dpu);
 		if (attributes == null) {
 			// can't load information .. we run out of options
 			return null;

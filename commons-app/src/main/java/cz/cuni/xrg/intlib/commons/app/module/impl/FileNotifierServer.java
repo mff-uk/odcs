@@ -203,7 +203,7 @@ class FileNotifierServer implements Runnable {
 		if (ignore(directory)) {
 			return;
 		}
-		eventPublisher.publishEvent(new ModuleUpdateEvent(this, directory,	fileName));
+		eventPublisher.publishEvent(new ModuleUpdateEvent(this, directory, fileName));
 	}
 
 	/**

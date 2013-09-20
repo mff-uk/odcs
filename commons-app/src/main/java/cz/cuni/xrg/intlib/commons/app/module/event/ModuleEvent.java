@@ -9,8 +9,18 @@ import org.springframework.context.ApplicationEvent;
  */
 public abstract class ModuleEvent extends ApplicationEvent {
 
-	public ModuleEvent(Object source) {
+	/**
+	 * DPU's relative directory name.
+	 */
+	private String directoryName;	
+	
+	public ModuleEvent(Object source, String directoryName) {
 		super(source);
+		this.directoryName = directoryName;
 	}
 
+	public String getDirectoryName() {
+		return directoryName;
+	}	
+	
 }

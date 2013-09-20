@@ -136,14 +136,18 @@ class OSGIModuleFacade implements ModuleFacade {
 	@Override
 	public void unLoad(DPUTemplateRecord dpu) {
 		final String directory = dpu.getJarDirectory();
+		unLoad(directory);
+	}
+	
+	public void unLoad(String directory) {
 		// we need DPUs lock as 'uninstall' do not care about locking 
 		lockUpdate(directory);
 		// uninstall
 		uninstall(directory);
 		
 		releaseUpdate(directory);
-	}
-
+	}	
+	
 	@Override
 	public void beginUpdate(DPUTemplateRecord dpu) {
 		final String directory = dpu.getJarDirectory();
@@ -194,6 +198,27 @@ class OSGIModuleFacade implements ModuleFacade {
 		}
 	}
 
+	/**
+	 * This method should be called between {@link #beginUpdate(DPUTemplateRecord)} 
+	 * and {@link #endUpdate(DPUTemplateRecord, boolean)}. It will 
+	 * just unload old DPU (if loaded) and load new one. <b>There is no check.</b>
+	 * 
+	 * Should be used only if we can take that risk that new DPU's jar 
+	 * file is working. 
+	 * 
+	 * In case of error throw.
+	 * 
+	 * @param directory
+	 * @param newName
+	 * @throws ModuleException 
+	 */
+	public void nonCheckUpdate(String directory, String fileName) throws ModuleException {
+		// uninstall
+		uninstall(directory);
+		// install new directory
+		install(directory, fileName);
+	}
+	
 	@Override
 	public void endUpdate(DPUTemplateRecord dpu, boolean updataFailed) {
 		final String directory = dpu.getJarDirectory();
@@ -247,6 +272,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		return null;
 	}
 
+	@Override
 	public void preLoadDPUs(List<DPUTemplateRecord> dpus) {
 		for (DPUTemplateRecord dpu:dpus) {
 			try {
@@ -256,7 +282,7 @@ class OSGIModuleFacade implements ModuleFacade {
 			}
 		}
 	}
-	
+		
 	@Override
 	public void loadLibs(List<String> directoryPaths) {
 		for (String directory : directoryPaths) {
@@ -276,8 +302,7 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * for given DPU, and the bundle is uninstalled.
 	 * @param directory
 	 */
-	private void uninstall(String directory) {
-		
+	private void uninstall(String directory) {		
 		BundleContainer container = bundles.get(directory);
 		if (container == null) {
 			// nothing to uninstall
@@ -288,8 +313,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		} catch (BundleException e) {
 			LOG.error("Failed to uninstall bundle in: {}", directory, e);
 		}
-		bundles.remove(directory);
-		
+		bundles.remove(directory);		
 	}
 	
 	/**

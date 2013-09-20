@@ -110,7 +110,10 @@ public class DPUFacade {
 	 * 
 	 * @param jarFile
 	 * @return DPU using given JAR file, or <code>null</code>
+	 * 
+	 * @deprecated Use {@link getTemplateByDirectory} instead.
 	 */
+	@Deprecated
 	public DPUTemplateRecord getTemplateByJarFile(File jarFile) {
 		
 		DPUTemplateRecord result = null;
@@ -126,6 +129,30 @@ public class DPUFacade {
 		return result;
 	}
 
+	/**
+	 * Fetch DPU template using given DPU directory.
+	 * 
+	 * TODO This method do not use security filters. As it is used
+	 * 		in OSGIChangeManager which use it to identify DPU to update. 
+	 * 
+	 * @param directory
+	 * @return
+	 */
+	public DPUTemplateRecord getTemplateByDirectory(String directory) {
+		
+		DPUTemplateRecord result = null;
+		try {
+			result = em.createQuery(
+				"SELECT e FROM DPUTemplateRecord e"
+				+ " WHERE e.jarDirectory = :directory", DPUTemplateRecord.class
+			).setParameter("directory", directory).getSingleResult();
+		} catch (NoResultException ex) {
+			// just return null if nothing is found
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Saves any modifications made to the DPUTemplateRecord into the database.
 	 * @param dpu

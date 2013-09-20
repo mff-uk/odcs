@@ -9,19 +9,9 @@ package cz.cuni.xrg.intlib.commons.app.module.event;
  */
 public class ModuleDeleteEvent extends ModuleEvent {
 
-	/**
-	 * DPU's relative directory name.
-	 */
-	private String directoryName;
-
 	public ModuleDeleteEvent(Object source,
 			String directoryName) {
-		super(source);
-		this.directoryName = directoryName;
-	}
-
-	public String getDirectoryName() {
-		return directoryName;
+		super(source, directoryName);
 	}
 	
 }
