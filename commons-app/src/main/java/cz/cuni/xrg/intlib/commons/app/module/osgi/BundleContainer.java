@@ -15,25 +15,8 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
  * Represent a single bundle. Enable loading class from bundle. Also
  * contains cache for loaded classes.
  * 
- * <b>Synchronisation notes:</b>
- * {@link #loadedClassCtors}, {@link #uninstall()} and {@link #beginUpdate()}
- * methods are synchronised on {@link #lock}, so only one of this method can be 
- * running.
- * 
- * When {@link #beginUpdate()} is called it set flag that block calling
- * {@link #loadedClassCtors}, {@link #uninstall()}. The block is done after 
- * they acquire the {@link #lock}. So there can be only one method waiting
- * during update.
- * 
- * The update phase is checked by calling {@link #isBeingUpdated} which should
- * be called inside the block synchronised on {@link #lock}. This 
- * function return immediately if no update is done and wait if it is.
- * 
- * It is not possible that the update begin after {@link #isBeingUpdated} return 
- * true as the {@link #isBeingUpdated} is called inside synchronisation of 
- * {@link #lock}. This ensure that the bundle can move into update phase 
- * (ie. {@link #beginUpdate()} return) until function which call  
- * {@link #isBeingUpdated ends.
+ * The used {@link OSGIModuleFacade} muse secure that bundle is installed 
+ * before further use.
  * 
  * @author Petyr
  *
@@ -43,10 +26,15 @@ class BundleContainer {
 	private static final Logger LOG = LoggerFactory.getLogger(BundleContainer.class);
 	
 	/**
-	 * The OSGI bundle it self.
+	 * Bundle context for loading bundles.
+	 */
+	private BundleContext context;	
+	
+	/**
+	 * The OSGI bundle it self. Can be null if bundle is not loaded.
 	 */
 	private Bundle bundle;	
-
+	
 	/**
 	 * Uri from where the bundle has been load.
 	 */
@@ -66,13 +54,6 @@ class BundleContainer {
 	 * Used to lock instance during non concurrent operations.
 	 */
 	private Object lock = new Object();	
-		
-	/**
-	 * True if bundle is being updated in such case no other method then
-	 * {@link #endUpdate()} or {@link #update(BundleContext, String)}
-	 * can't be called. 
-	 */
-	private Boolean isBeingUpdated = false;
 	
 	/**
 	 * True if container encapsulate library.
@@ -85,43 +66,43 @@ class BundleContainer {
 	private String mainClassNameCache = null;
 	
 	/**
-	 * Create container for library.
-	 * @param uri
-	 * @param bundle
+	 * Create container for unloaded DPU's bundle.
+	 * @param context
+	 * @param dpuDirectory
 	 */
-	public BundleContainer(Bundle bundle, String uri) {
-		this.bundle = bundle;
-		this.uri = uri;
-		this.isLib = true;
-		this.mainClassNameCache = null;
+	public BundleContainer(BundleContext context,String dpuDirectory) {
+		this.context = context;
+		this.bundle = null;
+		this.uri = "";
+		this.dpuDirectory = dpuDirectory;
+		this.isLib = false;
 	}
 	
 	/**
-	 * Create container for DPU.
+	 * Create container for library.
+	 * @param context
+	 * @param uri
 	 * @param bundle
-	 * @param uri
-	 * @param uri
 	 */
-	public BundleContainer(Bundle bundle, String uri, String dpuDirectory) {
+	public BundleContainer(BundleContext context, String uri, Bundle bundle) {
+		this.context = context;
 		this.bundle = bundle;
 		this.uri = uri;
-		this.dpuDirectory = dpuDirectory;
-		this.isLib = false;
-	}	
-	
+		this.isLib = true;
+	}
+
 	/**
-	 * Load class with given name from the bundle.
+	 * Load class with given name from the bundle. Automatically install 
+	 * bundle if needed.
 	 * @param className Class name prefixed with packages.
 	 * @return Loaded class.
 	 * @throws ModuleException
 	 */
 	public Object loadClass(String className) 
 			throws ModuleException {
+		
 		Class<?> loaderClass = null;
 		synchronized(lock) {
-			
-			checkUpdating();
-			
 			if (loadedClassCtors.containsKey(className)) {
 				// class already been loaded 
 				loaderClass = this.loadedClassCtors.get(className);
@@ -154,32 +135,33 @@ class BundleContainer {
 	}	
 	
 	/**
+	 * If bundle is not installed then install it from given 
+	 * given uri.
+	 * @throws BundleException
+	 */
+	public void install(String uri) throws BundleException {
+		if (bundle == null) {
+			// install			
+			bundle = context.installBundle(uri);
+			// set uri
+			this.uri = uri;
+		}
+	}
+	
+	/**
 	 * Uninstall bundle.
 	 * @throws BundleException 
 	 */
 	public void uninstall() throws BundleException {
 		synchronized(lock) {
-			
-			checkUpdating();
-			
 			// clear list
 			loadedClassCtors.clear();
-			// 
-			bundle.uninstall();
+			//
+			if (bundle != null) {
+				bundle.uninstall();
+			}
 			bundle = null;
 			mainClassNameCache = null;
-		}
-	}
-	
-	/**
-	 * Lock this bundle for all operations but 
-	 * {@link #update(BundleContext, String)} and {@link #endUpdate()}. 
-	 * Every other operation must wait until {@link #endUpdate()} is called.
-	 */
-	public void beginUpdate() {
-		synchronized(lock) {
-			// by this we block all the operations
-			isBeingUpdated = true;
 		}
 	}
 	
@@ -199,7 +181,9 @@ class BundleContainer {
 		loadedClassCtors.clear();
 		// uninstall old bundle
 		try {
-			bundle.uninstall();
+			if (bundle != null) {
+				bundle.uninstall();
+			}
 		} catch (BundleException e) {
 			LOG.error("Failed to unistall bundle", e);
 		} finally {
@@ -211,42 +195,17 @@ class BundleContainer {
 		// update uri
 		this.uri = uri; 
 	}
-	
-	/**
-	 * Release bundle for all function call.
-	 */
-	void endUpdate() {
-		// change to false and notify possibly waiting thread 
-		isBeingUpdated = false;
-		isBeingUpdated.notifyAll();
-	}
-	
-	/**
-	 * Blocking function, return immediately if and only if the current bundle is
-	 * not updating ie. @{link #isBeingUpdated} == false. Otherwise put 
-	 * the current thread into sleep.
-	 * 
-	 * Should be called inside block which is synchronised on {@link #lock}.
-	 */
-	private void checkUpdating() {
-		while (isBeingUpdated) {
-			try {
-				isBeingUpdated.wait();
-			} catch (InterruptedException e) {
-				// check the isBeingUpdated variable
-			}
-		}
-	}	
-	
+
 	/**
 	 * Return content of manifest.mf file.
 	 * @return
+	 * @throws ModuleException 
 	 */
-	public Dictionary<String, String> getHeaders() {
+	public Dictionary<String, String> getHeaders() throws ModuleException {
 		return bundle.getHeaders();
 	}
 	
-	public String dpuDirectory() {
+	public String getDirectory() {
 		return dpuDirectory;
 	}
 	
@@ -256,6 +215,10 @@ class BundleContainer {
 	
 	public String getUri() {
 		return uri;
+	}
+	
+	public boolean isInstalled() {
+		return bundle == null;
 	}
 	
 	/**

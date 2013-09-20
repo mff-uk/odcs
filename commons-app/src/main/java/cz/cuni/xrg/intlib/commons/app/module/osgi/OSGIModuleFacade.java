@@ -1,10 +1,15 @@
 package cz.cuni.xrg.intlib.commons.app.module.osgi;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.FrameworkFactory;
@@ -20,7 +25,7 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
  * OSGI based implementation of {@link ModuleFacade}.
  * 
  * @author Petyr
- *
+ * 
  */
 class OSGIModuleFacade implements ModuleFacade {
 
@@ -44,10 +49,15 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * Store loaded bundles. DPU's bundles are stored under their directory
 	 * name. Libraries under their uri.
 	 */
-	private ConcurrentHashMap<String, BundleContainer> loadedBundles = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, BundleContainer> bundles = new ConcurrentHashMap<>();
 
 	@Autowired
 	private OSGIModuleFacadeConfig configuration;
+
+	/**
+	 * Store directories for bundle which are currently being updated. 
+	 */
+	private Set<String> updatingBundles = Collections.synchronizedSet(new HashSet<String>());
 	
 	/**
 	 * Start the OSGI framework.
@@ -86,20 +96,21 @@ class OSGIModuleFacade implements ModuleFacade {
 			throw new FrameworkStartFailedException(
 					"Failed to get OSGi context.", ex);
 		}
+		
 	}
 
 	/**
 	 * Stop OSGI and uninstall all bundles.
 	 */
 	public void stop() {
-		for (BundleContainer bundle : loadedBundles.values()) {
+		for (BundleContainer bundle : bundles.values()) {
 			try {
 				bundle.uninstall();
 			} catch (BundleException e) {
 				LOG.error("Failed to uninstall bundle {}", bundle.getUri(), e);
 			}
 		}
-		loadedBundles.clear();
+		bundles.clear();
 		try {
 			if (framework != null) {
 				// stop equinox
@@ -115,6 +126,7 @@ class OSGIModuleFacade implements ModuleFacade {
 
 	@Override
 	public Object getInstance(DPUTemplateRecord dpu) throws ModuleException {
+		// get installed bundle
 		BundleContainer container = install(dpu);
 		String fullMainClassName = container.getMainClassName();
 		// load and return
@@ -123,64 +135,109 @@ class OSGIModuleFacade implements ModuleFacade {
 
 	@Override
 	public void unLoad(DPUTemplateRecord dpu) {
-		final String jarDirectory = dpu.getJarDirectory();
-		BundleContainer container = loadedBundles.get(jarDirectory);
+		final String directory = dpu.getJarDirectory();
+		// we need DPUs lock as 'uninstall' do not care about locking 
+		lockUpdate(directory);
+		// uninstall
+		uninstall(directory);
+		
+		releaseUpdate(directory);
+	}
+
+	@Override
+	public void beginUpdate(DPUTemplateRecord dpu) {
+		final String directory = dpu.getJarDirectory();
+		// first we need lock on this directory
+		lockUpdate(directory);
+		// now we are the only one running .. we can work
+		
+		BundleContainer container = bundles.get(directory);
 		if (container == null) {
-			// nothing to uninstall
-			return;
+			// bundle is not loaded .. create one, so we can lock it
+			container = new BundleContainer(context, directory);
+			bundles.put(directory, container);
 		}
+		
+		// we secure that there exist record for DPU we wan't to load
+	}
+
+	@Override
+	public Object update(String directory, String newName)
+			throws ModuleException {
+		BundleContainer container = bundles.get(directory);
+		if (container == null) {
+			LOG.error("Missing bundle durign update.");
+			// bundle is not loaded yet .. this should not happen
+			throw new ModuleException("No record about bundle.");
+		}
+
 		try {
-			container.uninstall();
+			container.update(context, createUri(directory, newName));
 		} catch (BundleException e) {
-			LOG.error("Failed to uninstall bundle in: {}", jarDirectory, e);
+			throw new ModuleException("Failed to update bundle.", e);
 		}
-		loadedBundles.remove(jarDirectory);
-	}
 
-	@Override
-	public boolean beginUpdate(String directory) {
-		BundleContainer container = loadedBundles.get(directory);
-		if (container == null) {
-			// bundle is not loaded yet ..
-			return false;
-		}		
-		container.beginUpdate();
-		return true;
-	}
-
-	@Override
-	public void update(String directory, String newName) throws ModuleException {
-		BundleContainer container = loadedBundles.get(directory);
-		if (container == null) {
-			// bundle is not loaded yet ..
-		} else {
-			// we need to construct new uri
-			StringBuilder uri = new StringBuilder();
-			uri.append("file:///");
-			uri.append(directory);
-			uri.append(File.separator);
-			uri.append(newName);			
-			
+		// try to load main class
+		final String mainClassName = container.getMainClassName();
+		try {
+			return container.loadClass(mainClassName);
+		} catch (ModuleException e) {
+			// unload DPU
 			try {
-				container.update(context, uri.toString());
-			} catch (BundleException e) {
-				throw new ModuleException("Failed to update bundle.", e);
+				container.uninstall();
+			} catch (BundleException uninstallEx) {
+				LOG.error("Failed to uninstall bundle in: {}", directory,
+						uninstallEx);
+			}
+			// re-throw
+			throw e;
+		}
+	}
+
+	@Override
+	public void endUpdate(DPUTemplateRecord dpu, boolean updataFailed) {
+		final String directory = dpu.getJarDirectory();
+		BundleContainer container = bundles.get(directory);
+		if (container == null) {
+			// bundle does not exist			
+		} else {
+			// bundle exist
+			if (updataFailed) {
+				// we have to remove and uninstall the bundle
+				try {
+					container.uninstall();
+				} catch(BundleException e) {
+					LOG.error("Can't unistall bundle after update failure.",e);
+				}
+				// in every case remove from bundles
+				bundles.remove(directory);
 			}
 		}
+		
+		// release lock for given directory
+		releaseUpdate(directory);
 	}
 
 	@Override
-	public void endUpdate(String directory) {
-		BundleContainer container = loadedBundles.get(directory);
-		if (container == null) {
-			// bundle is not loaded yet ..
-		} else {
-			container.endUpdate();
+	public void delete(DPUTemplateRecord dpu) {
+		final String directory = dpu.getJarDirectory();
+		lockUpdate(directory);
+		// delete directory
+		final File directoryFile = new File(getDPUDirectory(), directory);
+		LOG.debug("Deleting {}", directory.toString());
+		try {
+			FileUtils.deleteDirectory(directoryFile);
+		} catch (IOException e) {
+			LOG.error("Failed to delete directory.", e);
 		}
+		// uninstall
+		uninstall(directory);
+		
+		releaseUpdate(directory);
 	}
-
+	
 	@Override
-	public Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu) {
+	public Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu) {		
 		try {
 			BundleContainer container = install(dpu);
 			return container.getHeaders();
@@ -190,6 +247,16 @@ class OSGIModuleFacade implements ModuleFacade {
 		return null;
 	}
 
+	public void preLoadDPUs(List<DPUTemplateRecord> dpus) {
+		for (DPUTemplateRecord dpu:dpus) {
+			try {
+				install(dpu);
+			} catch(ModuleException e) {
+				LOG.warn("Failed to pre-load dpu: {}", dpu.getJarPath(), e);
+			}
+		}
+	}
+	
 	@Override
 	public void loadLibs(List<String> directoryPaths) {
 		for (String directory : directoryPaths) {
@@ -203,7 +270,31 @@ class OSGIModuleFacade implements ModuleFacade {
 	}
 	
 	/**
+	 * Uninstall the DPU from given directory. <b>This function does not lock 
+	 * the DPU, so the caller must have the lock for the DPUs.</b> After 
+	 * end of this function the {@link #bundles} does not contains record
+	 * for given DPU, and the bundle is uninstalled.
+	 * @param directory
+	 */
+	private void uninstall(String directory) {
+		
+		BundleContainer container = bundles.get(directory);
+		if (container == null) {
+			// nothing to uninstall
+			return;
+		}
+		try {
+			container.uninstall();
+		} catch (BundleException e) {
+			LOG.error("Failed to uninstall bundle in: {}", directory, e);
+		}
+		bundles.remove(directory);
+		
+	}
+	
+	/**
 	 * Load jar files from given directory as libraries.
+	 * 
 	 * @param directoryPath
 	 */
 	private void loadLibs(String directoryPath) {
@@ -227,7 +318,7 @@ class OSGIModuleFacade implements ModuleFacade {
 			}
 		}
 	}
-	
+
 	/**
 	 * Return configuration used to start up OSGi implementation.
 	 * 
@@ -246,22 +337,39 @@ class OSGIModuleFacade implements ModuleFacade {
 
 	/**
 	 * If container is not installed yet then install it. In every case return
-	 * the installed instance of {@link BundleContainer} for given
-	 * directory. The container is installed as DPU container.
+	 * the installed instance of {@link BundleContainer} for given directory.
+	 * The container is installed as DPU container.
 	 * 
 	 * @param dpu
 	 * @return
 	 * @throw ModuleException
-	 */	
-	private BundleContainer install(DPUTemplateRecord dpu) 
-			throws ModuleException{
+	 */
+	private BundleContainer install(DPUTemplateRecord dpu)
+			throws ModuleException {
 		return install(dpu.getJarDirectory(), dpu.getJarName());
+	}
+
+	/**
+	 * Create uri to given file in given directory in DPU's directory.
+	 * @param directory
+	 * @param fileName
+	 * @return
+	 */
+	private String createUri(String directory, String fileName) {
+		StringBuilder uri = new StringBuilder();
+		uri.append("file:///");
+		uri.append(configuration.getDPUDirectory());
+		uri.append(File.separator);
+		uri.append(directory);
+		uri.append(File.separator);
+		uri.append(fileName);
+		return uri.toString();
 	}
 	
 	/**
 	 * If container is not installed yet then install it. In every case return
-	 * the installed instance of {@link BundleContainer} for given
-	 * directory. The container is installed as DPU container.
+	 * the installed instance of {@link BundleContainer} for given directory.
+	 * The container is installed as DPU container.
 	 * 
 	 * @param directory DPU's directory.
 	 * @param fileName
@@ -270,34 +378,45 @@ class OSGIModuleFacade implements ModuleFacade {
 	 */
 	private BundleContainer install(String directory, String fileName)
 			throws ModuleException {
-		if (loadedBundles.contains(directory)) {
-			return loadedBundles.get(directory);
-		} // else we load .. we need uri
-		StringBuilder uri = new StringBuilder();
-		uri.append("file:///");
-		uri.append(configuration.getDPUDirectory());
-		uri.append(File.separator);
-		uri.append(fileName);
-
-		Bundle bundle = null;
+		// prepare uri
+		final String uri = createUri(directory, fileName);
+		// we lock the directory for updates
+		lockUpdate(directory);
+	
+		// prepare bundle
+		BundleContainer bundleContainer = bundles.get(directory);
+		
+		if (bundleContainer != null) {
+			if(bundleContainer.isInstalled()) {
+				if (bundleContainer.getUri() == uri) {				
+					releaseUpdate(directory);
+					return bundleContainer;
+				} else {
+					// new uri -> reload
+				}
+			} else {
+				// not loaded yet -> reload
+			}				
+		} else {
+			// create instance
+			bundleContainer = new BundleContainer(context, directory);
+			bundles.put(directory, bundleContainer);
+		}
+		// try to load bundle from given uri			
 		try {
-			bundle = context.installBundle(uri.toString());
+			bundleContainer.install(uri);
 		} catch (org.osgi.framework.BundleException e) {
+			releaseUpdate(directory);
 			throw new ModuleException(e);
 		}
-
-		BundleContainer bundleContainer = null;
-		bundleContainer = new BundleContainer(bundle, uri.toString(),
-				directory);
-		// add bundle to the loaded bundle list and reverse list
-		loadedBundles.put(directory, bundleContainer);
-
+		releaseUpdate(directory);
 		return bundleContainer;
 	}
 
 	/**
-	 * Try to load library. In case of error log but do not throw. If succed
-	 * the newly loaded library is stored in {@link #loadedBundles} and returned.
+	 * Try to load library. In case of error log but do not throw. If succeed
+	 * the newly loaded library is stored in {@link #bundles} and
+	 * returned.
 	 * 
 	 * @param uri Bundles uri.
 	 * @return Null in case of error.
@@ -312,10 +431,41 @@ class OSGIModuleFacade implements ModuleFacade {
 		}
 
 		BundleContainer bundleContainer = null;
-		bundleContainer = new BundleContainer(bundle, uri.toString());
-		loadedBundles.put(uri, bundleContainer);
-		
+		bundleContainer = new BundleContainer(context, uri.toString(), bundle);
+		bundles.put(uri, bundleContainer);
+
 		return bundleContainer;
 	}
 
+	/**
+	 * Lock given bundle for update. After this only {@link #update(String, String)}
+	 * and {@link #endUpdate(DPUTemplateRecord, boolean)} can be called.
+	 * @param directory
+	 */
+	private void lockUpdate(String directory) {
+		while(true) {
+			synchronized(updatingBundles) {
+				if (updatingBundles.contains(directory)) {
+					
+				} else {
+					updatingBundles.add(directory);
+					return;
+				}
+			}
+			// wait for change
+			try {
+				updatingBundles.wait();
+			} catch (InterruptedException e) { }			
+		}
+	}
+	
+	/**
+	 * Release lock for given directory.
+	 * @param directory
+	 */
+	private void releaseUpdate(String directory) {
+		updatingBundles.remove(directory);
+		updatingBundles.notifyAll();
+	}
+	
 }

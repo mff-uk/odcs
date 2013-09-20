@@ -116,15 +116,6 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 		this.jarDescription = dpuInstance.getTemplate() == null
 				? null : dpuInstance.getTemplate().getJarDescription();
 	}
-
-    /**
-     * Load DPU's instance from associated jar file.
-     * @param moduleFacade ModuleFacade used to load DPU.
-     * @throws ModuleException
-     */
-    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException {
-    	instance = moduleFacade.getInstance(this);
-    }
 	
 	public void setOwner(User owner) {
 		this.owner = owner;
@@ -172,11 +163,25 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 		this.parent = parent;
 	}
 
+	public void setType(DPUType type) {
+		this.type = type;
+	}
+	
 	@Override
 	public DPUType getType() {
 		return this.type;
 	}
 
+    /**
+     * Load DPU's instance from associated jar file.
+     * @param moduleFacade ModuleFacade used to load DPU.
+     * @throws ModuleException
+     */
+	@Override
+    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException {
+    	instance = moduleFacade.getInstance(this);
+    }	
+	
 	@Override
 	public String getJarPath() {
 		if (parent == null) {

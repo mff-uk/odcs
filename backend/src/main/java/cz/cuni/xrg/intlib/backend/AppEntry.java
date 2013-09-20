@@ -22,6 +22,8 @@ import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 
 
 /**
@@ -163,7 +165,16 @@ public class AppEntry {
 			context.close();
 			LOG.info("Closing application ...");
 			return;
-		}		
+		}
+		
+		// TODO Petyr: load automatically new DPUs
+		// pre-load all DPUs
+		// so frontend can modify the DPUs without letting us know 
+		// to load the old instance ..
+		// but we still have to check for new DPUs
+		ModuleFacade moduleFacade = context.getBean(ModuleFacade.class);
+		DPUFacade dpuFacade = context.getBean(DPUFacade.class);
+		moduleFacade.preLoadDPUs(dpuFacade.getAllTemplates());
 		
 		// publish event for engine about start of the execution,
 		// so backend can recover for unexpected shutdown 

@@ -1,12 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.google.gwt.thirdparty.guava.common.io.Files;
 
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
@@ -28,20 +22,12 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
+import cz.cuni.xrg.intlib.commons.app.module.DPUCreateException;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
-import cz.cuni.xrg.intlib.commons.app.module.BundleInstallFailedException;
-import cz.cuni.xrg.intlib.commons.app.module.ClassLoadFailedException;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUCreateException;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareButtonClickWrapper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Dialog for the DPU template creation. Called from the {@link #DPU}.  Allows to upload a JAR file
@@ -51,8 +37,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DPUCreate extends Window {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DPUCreate.class);
 
 	private TextField dpuName;
 
@@ -278,8 +262,8 @@ public class DPUCreate extends Window {
 				// create new representation
 				DPUTemplateWrap dpuWrap = null;				
 				try {
-					dpuWrap = DPUTemplateWrap.create(sourceFile, 
-						dpuName.getValue());
+					dpuWrap = new DPUTemplateWrap(
+							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue()));
 				} catch(DPUCreateException e) {
 					uploadFile.setReadOnly(false);
 					uploadFile.setValue("");

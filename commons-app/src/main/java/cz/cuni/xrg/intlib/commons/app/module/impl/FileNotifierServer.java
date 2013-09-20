@@ -21,22 +21,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.xrg.intlib.commons.app.dpu.event.DPURefreshEvent;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+import cz.cuni.xrg.intlib.commons.app.module.event.ModuleDeleteEvent;
+import cz.cuni.xrg.intlib.commons.app.module.event.ModuleNewEvent;
+import cz.cuni.xrg.intlib.commons.app.module.event.ModuleUpdateEvent;
 
 /**
  * Should be used with cooperation with {@link FileNotifierClient}. Use
  * separated thread in order to watch directory for notification files.
  * 
- * Require Spring @Scheduled and @Async annotations support in Spring's
- * context.xml file.
+ * Notifications:
+ * <ul>
+ * <li><b>DPU update</b> create file in given DPU's directory in format
+ * {new_dpu_name}.UPDATE_EXT</li>
+ * <li><b>new DPU</b> create file in DPU's root directory in format
+ * {new_dpu_directory_name}.NEW_EXT</li>
+ * <li><b>delete DPU</> create file in DPU's root directory in format
+ * {dpu_directory_name}.DELETE_EXT</li>
+ * </ul>
  * 
  * @author Petyr
  * 
  */
 class FileNotifierServer implements Runnable {
 
-	public static final String NOTIFICATION_EXT = "notifi";
+	public static final String NEW_EXT = "new";
+
+	public static final String UPDATE_EXT = "update";
+
+	public static final String DELETE_EXT = "delete";
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(FileNotifierClient.class);
@@ -54,14 +67,19 @@ class FileNotifierServer implements Runnable {
 
 	private Map<WatchKey, Path> keys = new HashMap<>();
 
-	private Thread watcherThread = null;
-	
 	/**
-	 * Contains names of directories 
-	 * in which first notification will be ignored.
+	 * Inverse mapping for {@link #keys}.
+	 */
+	private Map<Path, WatchKey> keysInverse = new HashMap<>();
+
+	private Thread watcherThread = null;
+
+	/**
+	 * Contains names of directories in which first notification will be
+	 * ignored.
 	 */
 	private Set<String> toIgnore = new HashSet<>();
-	
+
 	/**
 	 * Start watching for DPUs changes.
 	 */
@@ -73,7 +91,7 @@ class FileNotifierServer implements Runnable {
 			LOG.warn("Duplicit start. Second start ignored.");
 			return;
 		}
-		
+
 		try {
 			watcher = FileSystems.getDefault().newWatchService();
 		} catch (IOException e) {
@@ -96,12 +114,13 @@ class FileNotifierServer implements Runnable {
 
 	/**
 	 * Ignore first change in given directory.
+	 * 
 	 * @param directory
 	 */
-	public void ignore(String directory) {
+	public void addToIgnore(String directory) {
 		toIgnore.add(directory);
 	}
-	
+
 	/**
 	 * Register given directory and all sub-directories for watching.
 	 * 
@@ -119,8 +138,9 @@ class FileNotifierServer implements Runnable {
 		}
 		LOG.debug("File watcher registered for: {}", dir.toString());
 		keys.put(key, dir);
+		keysInverse.put(dir, key);
 		// now sub directories
-		File []files = (new File(dir.toString())).listFiles();
+		File[] files = (new File(dir.toString())).listFiles();
 		if (files == null) {
 			// empty directory
 		} else {
@@ -134,50 +154,115 @@ class FileNotifierServer implements Runnable {
 	}
 
 	/**
+	 * Return true if given notification should be ignored.
+	 * 
+	 * @param directoryName
+	 * @return
+	 */
+	private boolean ignore(String directoryName) {
+		if (toIgnore.contains(directoryName)) {
+			// we have orders to ignore this
+			toIgnore.remove(directoryName);
+			LOG.debug("Ignoring notification: {}", directoryName);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * React on {@link #NEW_EXT} event. Register new listener for given
+	 * directory and publish {@link ModuleNewEvent}.
+	 * 
+	 * @param dir
+	 * @param eventPath
+	 */
+	private void onExtNew(Path dir, Path eventPath) {
+		String directory = FilenameUtils.removeExtension(eventPath.getFileName().toString());
+		// new directory, register
+		if (eventPath.toFile().isDirectory()) {
+			register(dir.toAbsolutePath());
+		}
+
+		if (ignore(directory)) {
+			return;
+		}
+		eventPublisher.publishEvent(new ModuleNewEvent(this, directory));
+	}
+
+	/**
+	 * Publish {@link ModuleUpdateEvent} for given directory and jar file.
+	 * {@link ModuleNewEvent}.
+	 * 
+	 * @param dir
+	 * @param eventPath
+	 */
+	private void onExtUpdate(Path dir, Path eventPath) {
+		String directory = dir.getFileName().toString();
+		String fileName = FilenameUtils.removeExtension(eventPath.getFileName()	.toString());
+
+		if (ignore(directory)) {
+			return;
+		}
+		eventPublisher.publishEvent(new ModuleUpdateEvent(this, directory,	fileName));
+	}
+
+	/**
+	 * React on {@link #DEL_EXT} event. Unregister listener for given directory
+	 * and publish {@link ModuleDeleteEvent}.
+	 * 
+	 * @param dir
+	 * @param eventPath
+	 */
+	private void onExtDelete(Path dir, Path eventPath) {
+		String directory = FilenameUtils.removeExtension(eventPath
+				.getFileName().toString());
+		// unregister listener
+		Path directoryPath = Paths.get(dir.toString(), directory);
+		if (keys.containsKey(directoryPath)) {
+			// unregister
+			keysInverse.get(directoryPath).cancel();
+			// remove from collections
+			keysInverse.remove(directoryPath);
+			keys.remove(directoryPath);
+		}
+
+		if (ignore(directory)) {
+			return;
+		}
+		eventPublisher.publishEvent(new ModuleDeleteEvent(this, directory));
+	}
+
+	/**
 	 * React on create event in given directory.
+	 * 
 	 * @param dir
 	 * @param eventPath
 	 */
 	private void onCreate(Path dir, Path eventPath) {
-		if (eventPath.getFileName().toString().endsWith(NOTIFICATION_EXT)) {
-			// DPU change notification
-			
-			// delete the notification file
-			File notifyFile = new File(dir.toFile(), eventPath.toString());			
-			try {
-				if(!notifyFile.delete()) {
-					LOG.debug("Failed to delete notification file.");
-				}
-				// we use Exception as it can throw IOException as
-				// well
-			} catch (Exception e) {
-				LOG.debug("Failed to delete notification file.", e);
-			}
-			
-			// get the directory
-			String directoryName = dir.getFileName().toString();
-			// get new DPUs file
-			String jarName = FilenameUtils.removeExtension(eventPath.getFileName().toString());
-			
-			if (toIgnore.contains(directoryName)) {
-				// we have orders to ignore this
-				toIgnore.remove(directoryName);
-				LOG.debug("Ignoring notification in: {}", directoryName);
-				return;
-			}
-			
-			LOG.debug("Notification in: {} new DPU: {}", directoryName, jarName);
-			// publish event about notification
-			eventPublisher.publishEvent(
-					new DPURefreshEvent(this, directoryName, jarName));
+		if (eventPath.getFileName().toString().endsWith(NEW_EXT)) {
+			onExtNew(dir, eventPath);
+		} else if (eventPath.getFileName().toString().endsWith(UPDATE_EXT)) {
+			onExtUpdate(dir, eventPath);
+		} else if (eventPath.getFileName().toString().endsWith(DELETE_EXT)) {
+			onExtDelete(dir, eventPath);
 		} else {
-			if (eventPath.toFile().isDirectory()) {
-				// new directory .. register !
-				register(dir.toAbsolutePath());
+			// unknown notification
+		}
+		// in every case delete the notification file at the end
+
+		// delete the notification file
+		File notifyFile = new File(dir.toFile(), eventPath.toString());
+		try {
+			if (!notifyFile.delete()) {
+				LOG.debug("Failed to delete notification file.");
 			}
+			// we use Exception as it can throw IOException as
+			// well
+		} catch (Exception e) {
+			LOG.debug("Failed to delete notification file.", e);
 		}
 	}
-	
+
 	/**
 	 * The main function here we watch for changes.
 	 */
@@ -218,7 +303,7 @@ class FileNotifierServer implements Runnable {
 				// in our case DPU's relative path
 				final Path eventPath = pathEvent.context();
 				if (kind == ENTRY_CREATE) {
-					onCreate(dir, eventPath);					
+					onCreate(dir, eventPath);
 				}
 			}
 			boolean valid = key.reset();
@@ -227,6 +312,7 @@ class FileNotifierServer implements Runnable {
 			} else {
 				// it is broken ... the directory may be deleted
 				keys.remove(key);
+				keysInverse.remove(dir);
 				LOG.debug("Key for: '{}' is no longer valid.", dir.toString());
 			}
 		}

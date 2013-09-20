@@ -34,13 +34,13 @@ import com.vaadin.ui.Notification.Type;
 import cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
+import cz.cuni.xrg.intlib.commons.app.module.DPUReplaceException;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUReplaceException;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
@@ -624,7 +624,9 @@ class DPU extends ViewComponent {
 		}
 		
 		try {
-			selectedDpuWrap.replace(fileUploadReceiver.file);
+			App.getApp().getDPUManipulator().replace(
+					selectedDpuWrap.getDPUTemplateRecord(), 
+					fileUploadReceiver.file);
 		} catch (DPUReplaceException e) {
 			Notification.show("Failed to replace DPU",
 					e.getMessage(), Notification.Type.ERROR_MESSAGE);
@@ -861,7 +863,7 @@ class DPU extends ViewComponent {
 			}
 
 			// store into DB
-			selectedDpuWrap.save();
+			App.getDPUs().save(selectedDpuWrap.getDPUTemplateRecord());
 			Notification.show("DPURecord was saved",
 					Notification.Type.HUMANIZED_MESSAGE);
 
@@ -954,7 +956,7 @@ class DPU extends ViewComponent {
 			//if DPU Template hasn't child elements then delete it.
 			if (selectedDpu.getParent() == null) {
 				// first level DPU .. delete it completely
-				selectedDpuWrap.delete();
+				App.getApp().getDPUManipulator().delete(selectedDpuWrap.getDPUTemplateRecord());
 			} else {
 				// 2+ level DPU .. just delete the database record
 				App.getApp().getDPUs()

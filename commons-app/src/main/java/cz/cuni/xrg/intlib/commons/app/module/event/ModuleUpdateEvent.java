@@ -1,6 +1,4 @@
-package cz.cuni.xrg.intlib.commons.app.dpu.event;
-
-import org.springframework.context.ApplicationEvent;
+package cz.cuni.xrg.intlib.commons.app.module.event;
 
 /**
  * Event indicate that certain DPU needs to be reloaded due it's changes.
@@ -8,7 +6,7 @@ import org.springframework.context.ApplicationEvent;
  * @author Petyr
  * 
  */
-public class DPURefreshEvent extends ApplicationEvent {
+public class ModuleUpdateEvent extends ModuleEvent {
 
 	/**
 	 * DPU's relative directory name.
@@ -20,7 +18,7 @@ public class DPURefreshEvent extends ApplicationEvent {
 	 */
 	private String jarName;
 
-	public DPURefreshEvent(Object source,
+	public ModuleUpdateEvent(Object source,
 			String directoryName,
 			String jarName) {
 		super(source);

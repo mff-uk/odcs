@@ -176,11 +176,11 @@ public class DPUTree extends CustomComponent {
 
         tree.removeAllItems();
 
-        DPURecord rootExtractor = new DPURecord("Extractors");
+        DPURecord rootExtractor = new DPUTemplateRecord("Extractors", null);
         tree.addItem(rootExtractor);
-        DPURecord rootTransformer = new DPURecord("Transformers");
+        DPURecord rootTransformer = new DPUTemplateRecord("Transformers", null);
         tree.addItem(rootTransformer);
-        DPURecord rootLoader = new DPURecord("Loaders");
+        DPURecord rootLoader = new DPUTemplateRecord("Loaders", null);
         tree.addItem(rootLoader);
 
         List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();

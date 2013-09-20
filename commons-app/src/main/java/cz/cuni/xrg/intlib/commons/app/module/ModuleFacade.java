@@ -13,7 +13,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
  *
  */
 public interface ModuleFacade {
-
+	
 	/**
 	 * Return instance for given {@link DPUTemplateRecord}.
 	 * @param dpu
@@ -32,13 +32,11 @@ public interface ModuleFacade {
 	 * Start update on given DPU. Such DPU will block every attempt 
 	 * to load class from it until {@link #endUpdate(String)} is called.
 	 * 
-	 * If return false there is no point to continue by calling update. Instead
-	 * the {@link #getInstance(DPUTemplateRecord)}.
+	 * Should be called on valid instance.
 	 * 
-	 * @param directory Directory which determine DPU.
-	 * @return False if such bundle is not loaded.
+	 * @param dpu
 	 */
-	boolean beginUpdate(String directory);	
+	void beginUpdate(DPUTemplateRecord dpu);	
 	
 	/**
 	 * Update bundle. The bundle is determined by it's directory. If
@@ -50,24 +48,43 @@ public interface ModuleFacade {
 	 * After the bundle is updated then try to load main class from it. The
 	 * load process can throw exception like {@link #getInstance(DPUTemplateRecord)}
 	 * 
+	 * In case of error (exception) the bundle is automatically uninstalled. So
+	 * there is no reason to call {@link #unLoad(DPUTemplateRecord)}.
+	 * 
 	 * @param directory Bundle's directory.
 	 * @param newName Name of jar-file that should be reloaded.
 	 * @throws ModuleException
+	 * @return New DPU's main class.
 	 */
-	void update(String directory, String newName) throws ModuleException;
+	Object update(String directory, String newName) throws ModuleException;
 		
 	/**
-	 * Stop update on given DPU.
-	 * @param directory Directory which determine DPU.
+	 * Stop update on given DPU.  If updataFailed is true, then 
+	 * possibly loaded bundle for given DPU is uninstalled.
+	 * @param dpu
+	 * @param updataFailed
 	 */
-	void endUpdate(String directory);
+	void endUpdate(DPUTemplateRecord dpu, boolean updataFailed);
+	
+	/**
+	 * Uninstall and delete the DPU's jar file.
+	 * @param dpu
+	 */
+	void delete(DPUTemplateRecord dpu);
 	
 	/**
 	 * Return jar-properties for given {@link DPURecord}'s bundle 
 	 * @param relativePath
 	 * @return
 	 */
-	public Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu);
+	Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu);
+	
+	/**
+	 * Pre-load bundles for given DPUs into memory. Do not create instance
+	 * from them, so their functionality is not validated.
+	 * @param dpus
+	 */
+	void preLoadDPUs(List<DPUTemplateRecord> dpus);
 	
 	/**
 	 * Install all jar files from given folders as libraries.

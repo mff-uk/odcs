@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import java.io.FileNotFoundException;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -16,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
  *
  */
 @MappedSuperclass
-public class DPURecord {
+public abstract class DPURecord {
 
     /**
      * Primary key of graph stored in db
@@ -121,17 +120,25 @@ public class DPURecord {
 		this.id = id;
 	}
 	
-    public DPUType getType() {
-    	return null;
-    }
+	/**
+	 * Return DPU's type.
+	 * @return
+	 */
+    public abstract DPUType getType();
+    
+    /**
+     * Load appropriate DPU instance info {@link #instance}. The instance
+     * is then accessible through the {@link #getInstance()} method.
+     * @param moduleFacade
+     * @throws ModuleException
+     */
+    public abstract void loadInstance(ModuleFacade moduleFacade) throws ModuleException;
     
     /**
      * Return full path from the DPU's jar file from DPU's directory.
      * @return
      */
-    public String getJarPath() {
-    	return null;
-    }
+    public abstract String getJarPath();
 
     /**
      * Get stored instance if loaded. To load instance use {@link #loadInstance}.
