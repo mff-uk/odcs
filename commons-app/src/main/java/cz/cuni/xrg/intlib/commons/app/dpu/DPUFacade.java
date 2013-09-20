@@ -97,7 +97,7 @@ public class DPUFacade {
 	 * 
 	 * @return
 	 */
-	public List<DPUTemplateRecord> getAllTemplatesNonFilter() {
+	public List<DPUTemplateRecord> getAllTemplatesNoPermission() {
 
 		@SuppressWarnings("unchecked")
 		List<DPUTemplateRecord> resultList = Collections.checkedList(
@@ -187,6 +187,18 @@ public class DPUFacade {
 		}
 	}
 
+	/**
+	 * Save DPU template without using permissions.
+	 * @param dpu
+	 */
+	public void saveNoPermission(DPUTemplateRecord dpu) {
+		if (dpu.getId() == null) {
+			em.persist(dpu);
+		} else {
+			em.merge(dpu);
+		}
+	}	
+	
 	/**
 	 * Deletes DPUTemplateRecord from the database.
 	 * @param dpu

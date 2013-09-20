@@ -121,7 +121,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 		// update information loaded from DPU
 		dpu.setJarDescription(dpuExplorer.getJarDescription(dpu));
 		// save DPU
-		dpuFacade.save(dpu);
+		dpuFacade.saveNoPermission(dpu);
 	}
 	
 }

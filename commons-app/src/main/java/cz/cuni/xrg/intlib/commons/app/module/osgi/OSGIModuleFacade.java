@@ -534,7 +534,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		// first load libraries
 		loadLibs(configuration.getDpuLibFolder());
 		// load DPU's jar files
-		preLoadDPUs(dpuFacade.getAllTemplatesNonFilter());		
+		preLoadDPUs(dpuFacade.getAllTemplatesNoPermission());		
 	}
 	
 }

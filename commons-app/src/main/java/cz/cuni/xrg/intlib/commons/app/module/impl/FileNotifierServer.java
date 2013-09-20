@@ -259,7 +259,12 @@ class FileNotifierServer implements Runnable {
 		}
 		// in every case delete the notification file at the end
 
-		// delete the notification file
+		// delete the notification file - wait for some time
+		// so it is not locked by OS
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) { }
+		
 		File notifyFile = new File(dir.toFile(), eventPath.toString());
 		try {
 			if (!notifyFile.delete()) {
