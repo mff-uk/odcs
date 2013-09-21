@@ -263,7 +263,7 @@ public class PipelineFacade {
                 return exec.getEnd();
             }
 	}
-	
+        
         /**
 	 * Return latest execution of given statuses for given pipeline.
 	 * Ignore null values.
@@ -282,6 +282,31 @@ public class PipelineFacade {
 				" ORDER BY e.end DESC")
 				.setParameter("pipe", pipeline)
 				.setParameter("status", statuses)
+				.getResultList(),
+				PipelineExecution.class
+		);
+		if (resultList.isEmpty()) {
+			return null;
+		} else {
+			return resultList.get(0);
+		}
+        }
+	
+        /**
+	 * Return latest execution of given pipeline.
+	 * Ignore null values.
+	 * @param pipeline
+	 * @return
+	 */
+        public PipelineExecution getLastExec(Pipeline pipeline) {
+            @SuppressWarnings("unchecked")
+		List<PipelineExecution> resultList = Collections.checkedList(
+				em.createQuery(
+				"SELECT e FROM PipelineExecution e" +
+				" WHERE e.pipeline = :pipe" +
+				" AND e.start IS NOT NULL" +
+				" ORDER BY e.start DESC")
+				.setParameter("pipe", pipeline)
 				.getResultList(),
 				PipelineExecution.class
 		);
