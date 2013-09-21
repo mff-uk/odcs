@@ -202,6 +202,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
+				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
 //				if(duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
 //					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
 //					duration = (new Date()).getTime() - start.getTime();
@@ -288,6 +289,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			monitorTable.setCurrentPage(page);
 			monitorTable.setValue(selectedRow);
 			lastLoad = now;
+		} else {
+			//monitorTable.refreshRowCache();
 		}
     }
 
@@ -484,9 +487,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
                     break;
                 case "showlog":
+					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
 				case "debug":
+					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
             }

@@ -18,6 +18,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
@@ -90,7 +91,7 @@ class PipelineList extends ViewComponent {
 							nPipeline.setName("Copy of " + pipeline.getName());
 							pipelineFacade.save(nPipeline);
 							refreshData();
-							tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
+							//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 						}
 					});
 			layout.addComponent(copyButton); 
@@ -122,7 +123,7 @@ class PipelineList extends ViewComponent {
 										// now we have to remove pipeline from table
 										source.removeItem(itemId);
 										refreshData();
-										tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
+										//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 									}
 								}
 							});
@@ -160,7 +161,7 @@ class PipelineList extends ViewComponent {
 			
 			
 			Button schedulerButton = new Button();
-			schedulerButton.setCaption("scheduler");
+			schedulerButton.setCaption("schedule");
 			schedulerButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -168,11 +169,7 @@ class PipelineList extends ViewComponent {
 							// open scheduler dialog
 							SchedulePipeline  sch = new SchedulePipeline();
 							sch.setSelectePipeline(pipeline);
-							//sch.selectedPipeline=pipeline;
-							//openScheduler(sch);
-							App.getApp().addWindow(sch);
-							
-
+							App.getApp().addWindow(sch);	
 						}
 					});
 			layout.addComponent(schedulerButton);
@@ -197,12 +194,9 @@ class PipelineList extends ViewComponent {
 	 */
 	private void refreshData() {
 		int page = tablePipelines.getCurrentPage();
-		Container container = ContainerFactory.createPipelines();
-		tablePipelines.setContainerDataSource(container);
-		tablePipelines.setFilterFieldVisible("", false);
-		tablePipelines.setFilterFieldVisible("duration", false);
+		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) tablePipelines.getContainerDataSource().getContainer();
+		c.refresh();
 		tablePipelines.setCurrentPage(page);
-
 	}
 
 	private VerticalLayout buildMainLayout() {
@@ -295,9 +289,39 @@ class PipelineList extends ViewComponent {
 				return IntlibHelper.getDuration(latestExec);
 			}
 		});
+		// High performance loss in current version.
+//		tablePipelines.addGeneratedColumn("lastExecTime", new CustomTable.ColumnGenerator() {
+//
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+//				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
+//				if(latestExec != null) {
+//					return latestExec.getStart();
+//				} else {
+//					return null;
+//				}
+//			}
+//		});
+//		tablePipelines.addGeneratedColumn("lastExecStatus", new CustomTable.ColumnGenerator() {
+//
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+//				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
+//				if(latestExec != null) {
+//					return latestExec.getStatus();
+//				} else {
+//					return null;
+//				}
+//			}
+//		});
 		// set columns
 		tablePipelines.setVisibleColumns("id", "name", "duration", "description", "");
+		//tablePipelines.setVisibleColumns("id", "name", "duration", "lastExecTime", "lastExecStatus", "description", "");
 		tablePipelines.setColumnHeader("duration", "Last run time");
+		//tablePipelines.setColumnHeader("lastExecTime", "Last execution time");
+		//tablePipelines.setColumnHeader("lastExecStatus", "Last status");
 		tablePipelines.setFilterBarVisible(true);
                 tablePipelines.setFilterLayout();
 		tablePipelines.setSelectable(true);

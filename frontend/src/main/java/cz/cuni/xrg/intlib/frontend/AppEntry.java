@@ -79,6 +79,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private Client backendClient;
 	
 	private RefreshManager refreshManager;
+	
+	private String storedNavigation = null;
 		
 	/**
 	 * Add a single view to {@link #navigator}.
@@ -202,6 +204,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 			@Override
 			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
 				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+					storedNavigation = event.getViewName();
+					String parameters = event.getParameters();
+					if(parameters != null) {
+						storedNavigation += "/" + parameters;
+					}
 					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
 					getMain().refreshUserBar();
 					return false;
@@ -457,5 +464,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	public RefreshManager getRefreshManager() {
 		return refreshManager;
+	}
+	
+	public void navigateAfterLogin() {
+		if(storedNavigation == null) {
+			getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
+		} else {
+			String navigationTarget = storedNavigation;
+			storedNavigation = null;
+			getNavigator().navigateTo(navigationTarget);
+		}
 	}
 }

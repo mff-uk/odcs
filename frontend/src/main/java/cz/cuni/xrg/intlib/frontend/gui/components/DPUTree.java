@@ -27,6 +27,7 @@ public class DPUTree extends CustomComponent {
     Tree dpuTree;
     Button btnMinimize;
     Button btnExpand;
+	Button buttonCreateDPU;
     GridLayout filterBar;
     boolean isExpandable = false;
 
@@ -86,6 +87,33 @@ public class DPUTree extends CustomComponent {
             topLine.setExpandRatio(btnExpand, 1.0f);
             topLine.setComponentAlignment(btnExpand, Alignment.TOP_RIGHT);
             mainLayout.addComponent(topLine);
+			
+			buttonCreateDPU = new Button();
+			buttonCreateDPU.setCaption("Create DPU template");
+			buttonCreateDPU.setHeight("25px");
+			buttonCreateDPU.setWidth("150px");
+			buttonCreateDPU
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(Button.ClickEvent event) {
+					//Open the dialog for DPU Template creation
+					DPUCreate createDPU = new DPUCreate();
+					App.getApp().addWindow(createDPU);
+					createDPU.addCloseListener(new Window.CloseListener() {
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void windowClose(Window.CloseEvent e) {
+							//refresh DPU tree after closing DPU Template creation dialog 
+							refresh();
+						}
+					});
+
+				}
+			});
+			mainLayout.addComponent(buttonCreateDPU);
         }
 
         // DPURecord tree filters
@@ -144,6 +172,7 @@ public class DPUTree extends CustomComponent {
     private void setTreeState(boolean isStateExpanded) {
         btnMinimize.setVisible(isExpandable && isStateExpanded);
         btnExpand.setVisible(isExpandable && !isStateExpanded);
+		buttonCreateDPU.setVisible(isExpandable && isStateExpanded);
         layoutTree.setVisible(isStateExpanded);
         mainLayout.setSizeUndefined();
     }
