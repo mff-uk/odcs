@@ -112,8 +112,8 @@
 	</build>
 
 	<profiles>
-		<profile>
-			<id>publish</id>
+		<profile> <!-- copy the DPU file into ODCL directory and notify running application -->
+			<id>publish-to-odcl</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -161,7 +161,38 @@
 				</plugins>
 			</build>
 		</profile>
-
+		<profile> <!-- copy the DPU file into ODCL directory -->
+			<id>copy-to-odcl</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${dpu.odcl.dir}\${project.artifactId}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${project.build.directory}</directory>
+											<includes>
+												<!-- copy just output jar file -->
+												<include>${project.artifactId}-${project.version}.jar</include>
+											</includes>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 </project>
