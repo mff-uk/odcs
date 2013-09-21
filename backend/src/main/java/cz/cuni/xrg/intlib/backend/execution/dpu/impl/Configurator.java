@@ -34,10 +34,10 @@ class Configurator implements PreExecutor {
 	 * Pre-executor order. Will be executed after ContextPreparator.
 	 */
 	public static final int ORDER = ContextPreparator.ORDER + 10;
-	
+
 	private static final Logger LOG = LoggerFactory
 			.getLogger(Configurator.class);
-	
+
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
@@ -54,6 +54,7 @@ class Configurator implements PreExecutor {
 			// can be configured
 		} else {
 			// do not configure
+			LOG.debug("DPU {} is not configurable.", node.getDpuInstance().getName());
 			return true;
 		}
 		@SuppressWarnings("unchecked")
@@ -61,7 +62,6 @@ class Configurator implements PreExecutor {
 		try {
 			configurable.configure(dpu.getRawConf());
 		} catch (ConfigException e) {
-			LOG.error("Failed to configure DPU", e);
 			eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
 					context, this, "Failed to configure DPU."));
 			// stop the execution

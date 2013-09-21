@@ -76,7 +76,6 @@ class AnnotationProcessor implements PreExecutor {
 		try {
 			field.set(instance, value);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			LOG.error("Failed to set value for DataUnit", e);
 			// create message
 			final String message = "Failed to set value for '"
 					+ field.getName() + "' exception: " + e.getMessage();
@@ -153,8 +152,6 @@ class AnnotationProcessor implements PreExecutor {
 			if (annotation.optional()) {
 				return true;
 			}
-			LOG.error("No input of required type  for field '{}'.",
-					field.getName());
 			final String message = "No input for field: " + field.getName()
 					+ " All inputs have different type.";
 			eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
@@ -176,8 +173,6 @@ class AnnotationProcessor implements PreExecutor {
 				if (annotation.optional()) {
 					return true;
 				}
-				LOG.error("Missing required DataUnit for field: '{}'",
-						field.getName());
 				// error
 				final String message = "Can't find DataUnit with required name for field:"
 						+ field.getName();
@@ -244,7 +239,6 @@ class AnnotationProcessor implements PreExecutor {
 		try {
 			dataUnit = context.addOutputDataUnit(type, annotation.name());
 		} catch (DataUnitCreateException e) {
-			LOG.error("Failed to create DataUnit for: '{}'", field.getName(), e);
 			// create message
 			final String message = "Failed to create DataUnit for '"
 					+ field.getName() + "' exception: " + e.getMessage();

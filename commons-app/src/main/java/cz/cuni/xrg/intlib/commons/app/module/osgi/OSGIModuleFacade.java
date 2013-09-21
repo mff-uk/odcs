@@ -348,7 +348,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		for (File file : fList) {
 			if (file.isFile()) {
 				if (file.getName().contains("jar")) {
-					LOG.debug("Loading lirbary: {}", file.toString());
+					LOG.debug("Loading library: {}", file.toString());
 					// now we need uri
 					String uri = "file:///"
 							+ file.getAbsolutePath().replace('\\', '/');

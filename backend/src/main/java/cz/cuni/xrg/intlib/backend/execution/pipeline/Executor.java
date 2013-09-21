@@ -275,7 +275,7 @@ public class Executor implements Runnable {
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
 
 		// log start of the pipeline
-		LOG.debug("Started");
+		LOG.debug("Pipeline execuiton started");
 
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
@@ -348,14 +348,11 @@ public class Executor implements Runnable {
 		execution.setEnd(new Date());
 		if (executionFailed) {
 			if (executionCancelled) {
-				LOG.debug("Execution cancelled");
 				executionCancelled();
 			} else {
-				LOG.debug("Execution failed");
 				executionFailed();
 			}
 		} else {
-			LOG.debug("Execution finished");
 			executionSuccessful();
 		}
 
@@ -398,7 +395,8 @@ public class Executor implements Runnable {
 		// set cancel flag
 		dpuExecutor.cancel();
 		// interrupt executorThread, and wait for it ...
-		executorThread.interrupt();
+		// we do not interrupt !!! as there may 
+		// be running pre-post executors
 		try {
 			executorThread.join();
 		} catch (InterruptedException e) {

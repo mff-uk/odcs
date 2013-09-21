@@ -169,8 +169,6 @@ public final class Executor implements Runnable {
 		try {
 			dpu.loadInstance(moduleFacade);
 		} catch (ModuleException e) {
-			LOG.error("Missing DPU jar file: '{}' for DPU: {}",
-					dpu.getJarPath(), dpu.getName());
 			// publish event DPU not found
 			eventPublisher.publishEvent(PipelineFailedEvent.createMissingFile(
 					dpu, execution, this));
@@ -222,22 +220,18 @@ public final class Executor implements Runnable {
 				LOG.error("DPU do not implement execution interface.");
 			}
 		} catch (DataUnitException e) {
-			LOG.error("Execution:DataUnitException", e);
 			eventPublisher.publishEvent(DPUEvent.createDataUnitFailed(context,
 					this, e));
 			return false;
 		} catch (DPUException e) {
-			LOG.error("Execution:DPUException", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Exception e) {
-			LOG.error("Execution:Exception", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Error e) {
-			LOG.error("Execution:Error", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
@@ -281,7 +275,6 @@ public final class Executor implements Runnable {
 		try {
 			dpuInstance = loadInstance();
 		} catch (ModuleException e) {
-			LOG.error("Failed to load required bundle", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e, dpu,
 					execution, this));
 			// cancel the execution

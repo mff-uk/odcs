@@ -61,8 +61,6 @@ class ContextPreparator implements PreExecutor {
 				Node sourceNode = edge.getFrom();
 				Context sourceContext = contexts.get(sourceNode);
 				if (sourceContext == null) {
-					LOG.error("Missing context for: {}", sourceNode
-							.getDpuInstance().getName());
 					// prepare message
 					StringBuilder message = new StringBuilder(); 
 					message.append("Missing context for '");
@@ -79,7 +77,6 @@ class ContextPreparator implements PreExecutor {
 				try {
 					context.addContext(sourceContext, edge.getScript());
 				} catch (ContextException e) {
-					LOG.error("Failed to add data from one context to another", e);
 					eventPublish.publishEvent(
 							DPUEvent.createPreExecutorFailed(context, this,
 									"Failed to merge contexts.", e));
