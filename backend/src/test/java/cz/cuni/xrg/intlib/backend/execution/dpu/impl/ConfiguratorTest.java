@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
+import cz.cuni.xrg.intlib.backend.spring.InMemoryEventListener;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
@@ -26,8 +27,8 @@ import static org.mockito.Mockito.*;
  * @author Petyr
  *
  */
-//@ContextConfiguration(locations = {"classpath:backend-test-context.xml"})
-//@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/test/resource/backend-test-context.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class ConfiguratorTest {
 
 	@Autowired
@@ -36,7 +37,7 @@ public class ConfiguratorTest {
 	/**
 	 * Try to pass non-configurable object. Nothing should happened.
 	 */
-	//@Test
+	@Test
 	public void nonConfigurableTest() {				
 		DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
 		Node node = new Node(dpu);				
@@ -56,7 +57,7 @@ public class ConfiguratorTest {
 	 * be called with configuration from dpuInstance.
 	 * @throws ConfigException
 	 */
-	//@Test
+	@Test
 	public void configurableTest() throws ConfigException {	
 		byte[] rawConfig = "<a/>".getBytes();
 		
@@ -81,7 +82,7 @@ public class ConfiguratorTest {
 	 * should not be propagate instead call should return 
 	 * @throws ConfigException
 	 */
-	//@Test
+	@Test
 	public void throwTest() throws ConfigException {
 		DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
 		Node node = new Node(dpu);				
@@ -89,18 +90,25 @@ public class ConfiguratorTest {
 		doThrow(new ConfigException()).when(dpuInstance).configure(null);
 		PipelineExecution execution = mock(PipelineExecution.class);
 		
+		// create Context with given DPUInstanceRecord
 		Context context = mock(Context.class);
+		DPUInstanceRecord dpuRecord = mock(DPUInstanceRecord.class);
+		when(context.getDpuInstance()).thenReturn(dpuRecord);
+		when(dpuRecord.getName()).thenReturn("dpuName");
+		
 		Map<Node, Context> contexts = new HashMap<>();
 		contexts.put(node, context);		
 		
 		// we also check if the proper event has been published
-		//InMemoryEventListener listener = beanFactory.getBean(InMemoryEventListener.class);
-		//listener.getEventList().clear();
+		InMemoryEventListener listener = beanFactory.getBean(InMemoryEventListener.class);
+		listener.getEventList().clear();
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
+		
 		assertFalse(config.preAction(node, contexts, dpuInstance, execution, null));
+		
 		// something has been published
-		//assertTrue(listener.getEventList().size() > 1);		
+		assertTrue(listener.getEventList().size() >= 1);		
 	}
 	
 }

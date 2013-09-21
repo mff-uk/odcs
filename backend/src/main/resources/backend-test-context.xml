@@ -9,17 +9,14 @@
 
 	<!-- listener for watching events -->
 	<bean class="cz.cuni.xrg.intlib.backend.spring.InMemoryEventListener" />
-	
 	<!-- dummy DataUnit factory -->
 	<bean class="cz.cuni.xrg.intlib.backend.spring.DummyDataUnitFactory" />
-		
-	<!-- we use configuration that load from our resource -->	
+	<!-- we use configuration that load from our resource -->
 	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig" />
-	
-	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
-	<bean id="moduleFacadeConfiguration" class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIModuleFacadeConfig">
-		<constructor-arg ref="configuration" />
+	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig">
+	    <constructor-arg></constructor-arg>
+	</bean>
+	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
 		<constructor-arg value="BACKEND" />
 	</bean>
 	
