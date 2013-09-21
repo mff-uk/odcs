@@ -32,6 +32,9 @@ public class DataUnitFactory {
 	@Autowired
 	private AppConfig appConfig;
 
+	public DataUnitFactory() {
+	}
+
 	/**
 	 * Constructor for spring.
 	 *
@@ -80,15 +83,14 @@ public class DataUnitFactory {
 
 				// create repository
 				RDFDataUnit virtosoRepository = RDFDataUnitFactory
-					.createVirtuosoRDFRepo(
+						.createVirtuosoRDFRepo(
 						hostName,
 						port,
 						user,
 						password,
 						GraphUrl.translateDataUnitId(id),
 						name,
-						appConfig.getProperties()
-					);
+						appConfig.getProperties());
 				return virtosoRepository;
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
