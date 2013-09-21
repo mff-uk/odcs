@@ -31,17 +31,26 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 			// null -> try to use default configuration
 			config = configWrap.createInstance();
 		}
-		if (config != null && config.isValid()) {
-			setConfiguration(config);
-		} else {
-			// invalid configuration
-			throw new ConfigException("Invalid configuration.");
+		if (config == null) {
+			throw new ConfigException("Missing configuration. No configuration loaded into dialog.");
+		}
+		// in every case set the configuration
+		setConfiguration(config);		
+		if (!config.isValid()) {
+			// notify for invalid configuration
+			throw new ConfigException("Invalid configuration loaded into dialog.");
 		}
 	}
 	
 	@Override
 	public byte[] getConfig() throws ConfigException {
-		return configWrap.serialize(getConfiguration());
+		C configuration = getConfiguration();
+		// check for validity before saving		
+		if (configuration == null || !configuration.isValid()) {
+			throw new ConfigException("Invalid configuration.");
+		} else {
+			return configWrap.serialize(getConfiguration());
+		}
 	}
 	
 	@Override
