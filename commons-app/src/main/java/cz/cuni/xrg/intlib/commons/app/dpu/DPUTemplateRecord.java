@@ -102,6 +102,7 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 		type = dpu.type;
 		jarDescription = dpu.jarDirectory;
 		jarName = dpu.jarName;
+		parent = dpu.parent;
 	}
 	
 	/**
@@ -111,6 +112,7 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	public DPUTemplateRecord(DPUInstanceRecord dpuInstance) {
 		super(dpuInstance);
 		this.visibility = VisibilityType.PRIVATE;
+		this.type = dpuInstance.getType();
 	
 		// copy jarDescription from template of previous one ..
 		this.jarDescription = dpuInstance.getTemplate() == null
@@ -152,24 +154,34 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 			// we are going under someone .. we use it's name and directory 
 			jarDirectory = null;
 			jarName = null;
+			type = null;
 		} else {
 			// we will be the top one .. if we are not now, 
 			// store jar name and directory
 			if (this.parent != null) {
 				jarDirectory = parent.jarDirectory;
 				jarName = parent.jarName;
+				type = parent.type;
 			}
 		}
 		this.parent = parent;
 	}
 
 	public void setType(DPUType type) {
-		this.type = type;
+		if (parent == null) {
+			this.type = type;
+		} else {
+			parent.setType(type);
+		}
 	}
 	
 	@Override
 	public DPUType getType() {
-		return this.type;
+		if (parent == null) {
+			return this.type;
+		} else {
+			return parent.getType();
+		}
 	}
 
     /**
