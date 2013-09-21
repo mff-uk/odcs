@@ -132,7 +132,7 @@ class FileNotifierServer implements Runnable {
 	private void register(Path dir) {
 		WatchKey key = null;
 		try {
-			key = dir.register(watcher, ENTRY_CREATE);
+			key = dir.register(watcher, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
 		} catch (IOException e) {
 			LOG.error("Failed to register watcher for directory: {}",
 					dir.toString(), e);
@@ -235,12 +235,12 @@ class FileNotifierServer implements Runnable {
 	}
 
 	/**
-	 * React on create event in given directory.
+	 * React on file notification.
 	 * 
 	 * @param dir
 	 * @param eventPath
 	 */
-	private void onCreate(Path dir, Path eventPath) {
+	private void onNotification(Path dir, Path eventPath) {
 		if (eventPath.getFileName().toString().endsWith(NEW_EXT)) {
 			onExtNew(dir, eventPath);
 		} else if (eventPath.getFileName().toString().endsWith(UPDATE_EXT)) {
@@ -257,19 +257,17 @@ class FileNotifierServer implements Runnable {
 			// as it is not our notification file
 			return;
 		}
+
 		// in every case delete the notification file at the end
 
 		// delete the notification file - wait for some time
 		// so it is not locked by OS
 		try {
-			Thread.sleep(200);
+			Thread.sleep(100);
 		} catch (InterruptedException e) { }
 		
-		File notifyFile = new File(dir.toFile(), eventPath.toString());
 		try {
-			if (!notifyFile.delete()) {
-				LOG.debug("Failed to delete notification file.");
-			}
+			Files.delete(eventPath);
 			// we use Exception as it can throw IOException as
 			// well
 		} catch (Exception e) {
@@ -317,7 +315,11 @@ class FileNotifierServer implements Runnable {
 				// in our case DPU's relative path
 				final Path eventPath = dir.resolve(pathEvent.context());
 				if (kind == ENTRY_CREATE) {
-					onCreate(dir, eventPath);
+					onNotification(dir, eventPath);
+				} else if (kind == ENTRY_DELETE) {
+					
+				} else if (kind == ENTRY_MODIFY) {
+					
 				}
 			}
 			boolean valid = key.reset();
