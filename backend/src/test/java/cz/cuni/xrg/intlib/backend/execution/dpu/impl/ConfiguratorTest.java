@@ -45,11 +45,11 @@ public class ConfiguratorTest {
 		PipelineExecution execution = mock(PipelineExecution.class);
 		
 		Context context = mock(Context.class);
-		Map<Node, Context> contexts = new HashMap();
+		Map<Node, Context> contexts = new HashMap<>();
 		contexts.put(node, context);
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		assertTrue(config.preAction(node, contexts, dpuInstance, execution));
+		assertTrue(config.preAction(node, contexts, dpuInstance, execution, null));
 	}
 	
 	/**
@@ -68,11 +68,11 @@ public class ConfiguratorTest {
 		PipelineExecution execution = mock(PipelineExecution.class);
 		
 		Context context = mock(Context.class);
-		Map<Node, Context> contexts = new HashMap();
+		Map<Node, Context> contexts = new HashMap<>();
 		contexts.put(node, context);
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		assertTrue(config.preAction(node, contexts, dpuInstance, execution));
+		assertTrue(config.preAction(node, contexts, dpuInstance, execution, null));
 		// verify that the configure function has been called 
 		verify(dpuInstance, times(1)).configure(rawConfig);
 	}
@@ -91,7 +91,7 @@ public class ConfiguratorTest {
 		PipelineExecution execution = mock(PipelineExecution.class);
 		
 		Context context = mock(Context.class);
-		Map<Node, Context> contexts = new HashMap();
+		Map<Node, Context> contexts = new HashMap<>();
 		contexts.put(node, context);		
 		
 		// we also check if the proper event has been published
@@ -99,7 +99,7 @@ public class ConfiguratorTest {
 		listener.getEventList().clear();
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		assertFalse(config.preAction(node, contexts, dpuInstance, execution));
+		assertFalse(config.preAction(node, contexts, dpuInstance, execution, null));
 		// something has been published
 		assertTrue(listener.getEventList().size() > 1);		
 	}

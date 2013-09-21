@@ -8,7 +8,6 @@ import java.util.Map;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
@@ -123,11 +122,11 @@ public final class Executor implements Runnable {
 	public void init() {
 		if (preExecutors != null) {
 			Collections.sort(preExecutors,
-					AnnotationAwareOrderComparator.INSTANCE);
+					PreExecutorOrderComparator.INSTANCE);
 		}
 		if (postExecutors != null) {
 			Collections.sort(postExecutors,
-					AnnotationAwareOrderComparator.INSTANCE);
+					PostExecutorOrderComparator.INSTANCE);
 		}
 
 	}

@@ -58,7 +58,7 @@ public class AnnotationsOutput implements PreExecutor {
 	private ApplicationEventPublisher eventPublish;
 	
 	@Override
-	public int getOrder() {
+	public int getPreExecutorOrder() {
 		return ORDER;
 	}
 

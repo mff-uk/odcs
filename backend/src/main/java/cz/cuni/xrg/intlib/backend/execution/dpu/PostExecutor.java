@@ -18,8 +18,17 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
  * @author Petyr
  *
  */
-public interface PostExecutor extends Ordered {
+public interface PostExecutor {
 
+	/**
+	 * Return the order value of this object, with a
+	 * higher value meaning greater in terms of sorting in post executors
+	 * chain.
+	 * 
+	 * @return
+	 */
+	public int getPostExecutorOrder();
+	
 	/**
 	 * Should perform post-execution actions. If return false then the execution
 	 * is cancelled.

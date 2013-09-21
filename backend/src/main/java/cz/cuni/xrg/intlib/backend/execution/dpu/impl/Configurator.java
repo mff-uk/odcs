@@ -42,7 +42,7 @@ class Configurator implements PreExecutor {
 	private ApplicationEventPublisher eventPublisher;
 
 	@Override
-	public int getOrder() {
+	public int getPreExecutorOrder() {
 		// execute after ContextPreparator
 		return ContextPreparator.ORDER + 10;
 	}	

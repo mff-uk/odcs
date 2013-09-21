@@ -2,8 +2,6 @@ package cz.cuni.xrg.intlib.backend.execution.dpu;
 
 import java.util.Map;
 
-import org.springframework.core.Ordered;
-
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -20,8 +18,17 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
  * @author Petyr
  * 
  */
-public interface PreExecutor extends Ordered {
+public interface PreExecutor {
 
+	/**
+	 * Return the order value of this object, with a
+	 * higher value meaning greater in terms of sorting in pre executors
+	 * chain.
+	 * 
+	 * @return
+	 */
+	public int getPreExecutorOrder();	
+	
 	/**
 	 * Should perform pre-execution actions. If return false then the execution
 	 * is cancelled. In such case it should publish event
