@@ -32,6 +32,9 @@ public class DataUnitFactory {
 	@Autowired
 	private AppConfig appConfig;
 
+	public DataUnitFactory() {
+	}
+
 	/**
 	 * Create {@link DataUnit} and store information about it into the context.
 	 *
@@ -71,15 +74,14 @@ public class DataUnitFactory {
 
 				// create repository
 				RDFDataUnit virtosoRepository = RDFDataUnitFactory
-					.createVirtuosoRDFRepo(
+						.createVirtuosoRDFRepo(
 						hostName,
 						port,
 						user,
 						password,
 						GraphUrl.translateDataUnitId(id),
 						name,
-						appConfig.getProperties()
-					);
+						appConfig.getProperties());
 				return virtosoRepository;
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
