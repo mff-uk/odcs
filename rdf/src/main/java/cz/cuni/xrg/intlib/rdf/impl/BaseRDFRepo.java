@@ -1596,10 +1596,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			for (Binding next : bindingNextSet) {
 
 				String name = next.getName();
-				String value = next.getValue().stringValue();
+				Value value = next.getValue();
+
+				String stringValue;
+
+				if (value != null) {
+					stringValue = value.stringValue();
+				} else {
+					stringValue = "";
+				}
 
 				if (map.containsKey(name)) {
-					map.get(name).add(value);
+					map.get(name).add(stringValue);
 				}
 
 			}
