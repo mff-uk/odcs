@@ -56,7 +56,10 @@
 				<span class="module_name">mainClass</span>: </b> 
 				Fill the DPU's main class name. The main class must be placed in 
 				the package specified in the previous step. Main class is the class which is called when DPU should be executed by ODCleanStore.  </li>
-			<li> <b>TODO 6. Dependencies</b> Add your 
+			<li id="odcl_dpu_path"> <b>TODO 6: Put path to the ODCleanStore data processing unit's directory here:</b> 
+				If you want use <a href="#auto_copy">copy-to-odcl</a> or <a href="#auto_reload">publish-to-odcl</a> maven profile put here path to the ODCL DPU's folder.
+				In default it is something like <i>{path_to_odcl_projet}\target\dpu</i> </li>
+			<li> <b>TODO 7. Dependencies</b> Add your 
 				project dependencies here. See the included examples 
 				for inspiration. You can either set up a dependency pointing to certain remote Maven artifact or you may set up a local repository residing on your local disc if you do not have access to any remote maven repository to which you may upload the dependencies you requires and are not available on public maven repositories. <span class="warn"> Do not add dependencies elsewhere as they may not 
 		be visible to the Maven.</span> </div></li>
@@ -180,27 +183,36 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 		<li> Then select project end finish the	export.</li>
 	</ul>	
 		
-		
-		
-
-
-<h3>Deploying the DPU bundle to ODCleanStore web application</h3>
-		The created bundle (DPU jar file) can be loaded to the ODCleanStore web application on the menu item "DPU Templates", button "Create DPU Template".
-
-
-
-
-
-
-
-
-
-
 	
-    
-		
-		
-		
+	<h2>Deploying the DPU bundle to ODCleanStore web application</h2>
+	The created bundle (DPU jar file) can be loaded to the ODCleanStore web application on 
+	the menu item "DPU Templates", button "Create DPU Template". <br/> <br/>	
+	ODCleanStore provide Maven <a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html">profiles</a> that should make your life easier. The following sections
+	assume that you have properly <a href="#odcl_dpu_path">set path</a> to the ODCleanStore data processing unit's directory.
+	<br/> <br/>
+	Use following mechanism only for development purpose as it workaround ODCleanStore standart protection mechanism.
+	
+	
+	<h3 id="auto_copy">Automatic copy</h3>
+	If you run Maven with profile <i>copy-to-odcl</i> then the output jar file
+	is automatically copied into ODCleanStore data processing unit's directory.
+	The jar is reloaded when the application starts. This is good if you want 
+	to have up to date data processing unit loaded into ODCleanStore that is not 
+	currently running. This do not update the jar-file on runtime. To update
+	the jar file you have to turn ODCleanStore off and on again.
+	
+	<h3 id="auto_reload">Automatic reload</h3>
+	<b>Use this only if you have not changed your bundle version or name!</b>
+	If your run Maven with profile <i>publish-to-odcl</i> then the output jar file
+	is automatically copied into ODCleanStore data processing unit's directory.
+	If backend is running it automatically reload the jar-file. So you to 
+	not have to restart backend anymore. 
+	Frontend also automatically reload new jar-file but also update
+	jar-file description. Just open dialog for another data processing unit
+	and then return back and if there has been no error then you see the changes. <br/>
+	With this we believe you do not have to reload yout new data processing unit 
+	implementation manualy anymore.
+	
 	</body>
 </html>
  
