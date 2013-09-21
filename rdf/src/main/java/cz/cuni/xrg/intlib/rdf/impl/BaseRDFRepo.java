@@ -1318,15 +1318,23 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private String prepareLiteral(Literal literal) {
-		String label = "\"\"\"" + literal.getLabel() + "\"\"\"";
+
+		String label = literal.getLabel().replace("\\", "\\\\")
+				.replace(">", "\\>");
+
+		if (label.endsWith("\"")) {
+			label = label.substring(0, label.length() - 1) + "\\\"";
+		}
+
+		String result = "\"\"\"" + label + "\"\"\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
-			return label + "@" + literal.getLanguage();
+			return result + "@" + literal.getLanguage();
 		} else if (literal.getDatatype() != null) {
-			return label + "^^" + prepareURIresource(literal.getDatatype());
+			return result + "^^" + prepareURIresource(literal.getDatatype());
 		}
 		//plain literal (return in """)
-		return label;
+		return result;
 
 	}
 
@@ -1588,10 +1596,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			for (Binding next : bindingNextSet) {
 
 				String name = next.getName();
-				String value = next.getValue().stringValue();
+				Value value = next.getValue();
+
+				String stringValue;
+
+				if (value != null) {
+					stringValue = value.stringValue();
+				} else {
+					stringValue = "";
+				}
 
 				if (map.containsKey(name)) {
-					map.get(name).add(value);
+					map.get(name).add(stringValue);
 				}
 
 			}
