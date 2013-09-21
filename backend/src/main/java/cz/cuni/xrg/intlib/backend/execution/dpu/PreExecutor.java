@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.core.Ordered;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
+import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
@@ -30,11 +31,13 @@ public interface PreExecutor extends Ordered {
 	 * @param contexts List of context, also contain context for current node.
 	 * @param dpuInstace DPU instance.
 	 * @param execution Respective execution.
+	 * @param unitInfo DPU's ProcessingUnitInfo.
 	 * @return
 	 */
 	public boolean preAction(Node node,
 			Map<Node, Context> contexts,
 			Object dpuInstance,
-			PipelineExecution execution);
-
+			PipelineExecution execution,
+			ProcessingUnitInfo unitInfo);
+	
 }
