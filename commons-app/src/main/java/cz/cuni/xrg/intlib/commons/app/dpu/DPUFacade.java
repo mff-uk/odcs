@@ -64,6 +64,9 @@ public class DPUFacade {
 	 */
 	public DPUTemplateRecord creatTemplateFromInstance(DPUInstanceRecord instance) {
 		DPUTemplateRecord template = new DPUTemplateRecord(instance);
+                if(authCtx != null) {
+                    template.setOwner(authCtx.getUser());
+                }
 		if(instance.getTemplate().getParent() == null) {
 			template.setParent(instance.getTemplate());
 		} else {
