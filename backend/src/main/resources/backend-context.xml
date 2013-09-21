@@ -40,7 +40,8 @@
 	<bean class="cz.cuni.xrg.intlib.backend.EventListenerDatabase" />
 
 	<!-- periodically send message to event to check DB for new tasks -->
-	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" />
+	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" 
+	    init-method="start" destroy-method="stop" />
 
 	<!-- scheduler -->
 	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" />

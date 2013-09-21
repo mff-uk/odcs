@@ -1,8 +1,6 @@
 package cz.cuni.xrg.intlib.backend;
 
 import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -18,13 +16,9 @@ import cz.cuni.xrg.intlib.backend.auxiliaries.AppLock;
 import cz.cuni.xrg.intlib.backend.communication.Server;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEvent;
 import cz.cuni.xrg.intlib.backend.execution.event.EngineEventType;
-//import cz.cuni.xrg.intlib.backend.module.DirectoryWatcher;
 import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
-
 
 /**
  * Backend entry point.
@@ -69,16 +63,6 @@ public class AppEntry {
 	 */
 	private Thread serverThread = null;
 		
-	/**
-	 * Thread for heartbeat.
-	 */
-	private Thread heartbeatThread = null;
-	
-	/**
-	 * Thread or 
-	 */
-	private Thread watcherThread = null;
-	
 	/**
 	 * Parse program arguments.
 	 * @param args
@@ -133,17 +117,7 @@ public class AppEntry {
 		serverThread.start();	
 		return true;
 	}
-	
-	/**
-	 * Start Heartbeat in other thread.
-	 */
-	private void initHeartbeat() {
-		// start heartbeat
-		heartbeatThread = new Thread(context.getBean(Heartbeat.class));
-		heartbeatThread.start();
-		LOG.info("Heartbeat is running ... ");
-	}
-		
+			
 	/**
 	 * Main execution method.
 	 * @param args
@@ -162,8 +136,7 @@ public class AppEntry {
 		if (!AppLock.setLock(lockKey.toString())) {
 			// another application is already running
 			LOG.info("Another instance of Intlib is probably running.");
-			context.close();
-			LOG.info("Closing application ...");
+			context.close();			
 			return;
 		}
 				
@@ -182,12 +155,9 @@ public class AppEntry {
 			AppLock.releaseLock();
 			return;
 		}
-		// start heartbeat
-		initHeartbeat();
 		
 		// print some information ..
-		LOG.info("Module's directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));
-		LOG.info("Listening on port: " + appConfig.getInteger(ConfigProperty.BACKEND_PORT));
+		LOG.info("Module directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));		
 		LOG.info("Running ...");
 		
 		// infinite loop
@@ -198,27 +168,13 @@ public class AppEntry {
                continue;
             }
 		}
-		/*
-		LOG.info("Closing TCP/IP server ...");
-		server.stop();
-		// give TCP/IP server time to close
-		try {
-			Thread.sleep(2 * Server.TCPIP_TIMEOUT);
-		} catch (InterruptedException e) {
-		}
-		LOG.info("Closing spring context ...");
-		heartbeatThread.interrupt();
-		watcherThread.interrupt();
-		context.close();
-		LOG.info("Closing application ...");
-		// release application log
-		AppLock.releaseLock();
-		*/
 	}
 	
 	public static void main(String[] args) {
 		AppEntry app = new AppEntry();
-		app.run(args);				
+		app.run(args);
+		
+		LOG.info("Closing application ...");
 	}
 	
 }
