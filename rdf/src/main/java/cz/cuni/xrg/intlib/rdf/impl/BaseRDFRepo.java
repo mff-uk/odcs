@@ -1318,15 +1318,23 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private String prepareLiteral(Literal literal) {
-		String label = "\"\"\"" + literal.getLabel() + "\"\"\"";
+
+		String label = literal.getLabel().replace("\\", "\\\\")
+				.replace(">", "\\>");
+
+		if (label.endsWith("\"")) {
+			label = label.substring(0, label.length() - 1) + "\\\"";
+		}
+
+		String result = "\"\"\"" + label + "\"\"\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
-			return label + "@" + literal.getLanguage();
+			return result + "@" + literal.getLanguage();
 		} else if (literal.getDatatype() != null) {
-			return label + "^^" + prepareURIresource(literal.getDatatype());
+			return result + "^^" + prepareURIresource(literal.getDatatype());
 		}
 		//plain literal (return in """)
-		return label;
+		return result;
 
 	}
 
