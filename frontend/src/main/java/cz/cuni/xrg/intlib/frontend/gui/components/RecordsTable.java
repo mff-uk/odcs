@@ -18,6 +18,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
 /**
@@ -37,7 +39,19 @@ public class RecordsTable extends CustomComponent {
 	 */
 	public RecordsTable() {
 		mainLayout = new VerticalLayout();
-		messageTable = new IntlibPagedTable();
+		messageTable = new IntlibPagedTable() {
+
+			@Override
+			public Collection<?> getSortableContainerPropertyIds() {
+				ArrayList<String> sortableIds = new ArrayList<>(3);
+				sortableIds.add("time");
+				sortableIds.add("type");
+				sortableIds.add("dpuInstance.name");
+				return sortableIds;
+			}
+			
+			
+		};
 		messageTable.setSelectable(true);
 		messageTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
@@ -121,7 +135,7 @@ public class RecordsTable extends CustomComponent {
 		}
 		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage");
 		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message");
-		messageTable.setSortEnabled(false);
+		messageTable.setSortEnabled(true);
         messageTable.setFilterBarVisible(true);
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
