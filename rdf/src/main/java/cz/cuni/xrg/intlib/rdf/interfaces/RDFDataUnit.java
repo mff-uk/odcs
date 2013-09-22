@@ -8,10 +8,12 @@ import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 
 import cz.cuni.xrg.intlib.rdf.exceptions.CannotOverwriteFileException;
+import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;
@@ -209,6 +211,20 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, WriteGraphType graphType,
 			InsertType insertType) throws RDFException;
+
+	/**
+	 * Make select query over repository data and return tables as result.
+	 *
+	 * @param selectQuery String representation of SPARQL query.
+	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
+	 *         map key is column name and <code>List&lt;String&gt;</code> are
+	 *         string values in this column. When query is invalid, return *
+	 *         empty <code>Map</code>.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public Map<String, List<String>> executeSelectQuery(
+			String selectQuery)
+			throws InvalidQueryException;
 
 	/**
 	 * Removes all RDF data from repository.
