@@ -23,7 +23,7 @@
 
 	<properties>
 		<!-- path to the ODCL DPU's directory -->
-		<dpu.odcl.dir>${project.build.directory}\..\..\..\${project.output.dpu}</dpu.odcl.dir>
+		<dpu.odcs.dir>${project.build.directory}\..\..\..\${project.output.dpu}</dpu.odcs.dir>
 	</properties>
 
 	<profiles>
