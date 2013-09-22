@@ -19,9 +19,14 @@ public enum FileExtractType {
 	 */
 	PATH_TO_FILE,
 	/**
-	 * Data extraction from each file in given directory.
+	 * Data extraction from each file in given directory. Extraction stop when
+	 * some file cause error.
 	 */
 	PATH_TO_DIRECTORY,
+	/**
+	 * Data extraction only from files in given directory, which has no errors.
+	 */
+	PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES,
 	/**
 	 * Data extraction from file stored on the web.
 	 */
@@ -38,7 +43,9 @@ public enum FileExtractType {
 		map.put(UPLOAD_FILE, "Extract uploaded file");
 		map.put(PATH_TO_FILE, "Extract file based on the path to file");
 		map.put(PATH_TO_DIRECTORY,
-				"Extract file based on the path to the directory");
+				"Extract files based on the path to the directory - stop if some file cause error");
+		map.put(PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES,
+				"Extract only files based on the path to the directory, which cause no errors");
 		map.put(HTTP_URL, "Extract file from the given HTTP URL");
 
 	}
