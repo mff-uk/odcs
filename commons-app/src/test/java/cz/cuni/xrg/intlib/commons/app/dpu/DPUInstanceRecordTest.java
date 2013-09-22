@@ -30,7 +30,6 @@ public class DPUInstanceRecordTest {
 		
 		instance.setName("testname");
 		instance.setDescription("testdescription");
-		instance.setJarPath("testjarpath");
 		instance.setRawConf(rawConfig);
 		instance.setTemplate(dpu);
 		

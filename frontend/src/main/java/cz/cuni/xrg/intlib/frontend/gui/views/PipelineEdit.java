@@ -334,7 +334,7 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonSaveAndClose);
-		buttonCancel = new Button("Cancel");
+		buttonCancel = new Button("Close");
 		buttonCancel.setHeight("25px");
 		buttonCancel.setWidth("150px");
 		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {

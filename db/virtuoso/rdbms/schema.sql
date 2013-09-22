@@ -31,14 +31,11 @@ CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
   "use_dpu_description" SMALLINT,
   "description" VARCHAR(255),
   "tool_tip" VARCHAR(255),
-  "type" SMALLINT,
-  "jar_path" VARCHAR(255),
   "configuration" LONG VARBINARY,
 -- DPUInstaceRecord
   "dpu_id" INTEGER,
   PRIMARY KEY ("id")
 );
-CREATE INDEX "ix_DPU_INSTANCE_jar_path" ON "DB"."INTLIB"."DPU_INSTANCE" ("jar_path");
 CREATE INDEX "ix_DPU_INSTANCE_dpu_id" ON "DB"."INTLIB"."DPU_INSTANCE" ("dpu_id");
 
 CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
@@ -48,17 +45,18 @@ CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
   "name" VARCHAR(45),
   "use_dpu_description" SMALLINT,
   "description" VARCHAR(255),  
-  "type" SMALLINT,
-  "jar_path" VARCHAR(255),
   "configuration" LONG VARBINARY,
   "parent_id" INTEGER,
 -- DPUTemplateRecord
   "user_id" INTEGER,
   "visibility" SMALLINT,
+  "type" SMALLINT,
+  "jar_directory" VARCHAR(255),
+  "jar_name" VARCHAR(255),  
   "jar_description" VARCHAR(512),
   PRIMARY KEY ("id")
 );
-CREATE INDEX "ix_DPU_TEMPLATE_jar_path" ON "DB"."INTLIB"."DPU_TEMPLATE" ("jar_path");
+CREATE INDEX "ix_DPU_TEMPLATE_jar_directory" ON "DB"."INTLIB"."DPU_TEMPLATE" ("jar_directory");
 CREATE INDEX "ix_DPU_TEMPLATE_parent_id" ON "DB"."INTLIB"."DPU_TEMPLATE" ("parent_id");
 CREATE INDEX "ix_DPU_TEMPLATE_user_id" ON "DB"."INTLIB"."DPU_TEMPLATE" ("user_id");
 CREATE INDEX "ix_DPU_TEMPLATE_visibility" ON "DB"."INTLIB"."DPU_TEMPLATE" ("visibility");

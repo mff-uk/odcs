@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.dpu;
 
-import java.io.FileNotFoundException;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -16,7 +15,7 @@ import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
  *
  */
 @MappedSuperclass
-public class DPURecord {
+public abstract class DPURecord {
 
     /**
      * Primary key of graph stored in db
@@ -43,24 +42,7 @@ public class DPURecord {
      */
 	@Column(name="description")
     private String description;
-    	
-    /**
-     * DPURecord type, determined by associated jar file.
-	 * TODO move to {@link DPUTemplateRecord}?
-     */
-	@Enumerated(EnumType.ORDINAL)
-    private DPUType type;
-        
-    /**
-     * Path to the jar file. The path is relative to the 
-     * AppConfig.dpuDirectory.
-	 * TODO move to {@link DPUTemplateRecord}?
-	 * 
-     * @see AppConfig
-     */
-	@Column(name="jar_path")
-    private String jarPath;	
-	
+    		
 	/**
 	 * DPU's configuration in serialized version.
 	 */
@@ -71,7 +53,7 @@ public class DPURecord {
 	 * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
 	 */
 	@Transient
-	private Object instance;
+	protected Object instance;
 	
     /**
      * Allow empty constructor for JPA.
@@ -84,9 +66,8 @@ public class DPURecord {
      * @param name
      * @param type
      */
-    public DPURecord(String name, DPUType type) {
+    public DPURecord(String name) {
         this.name = name;
-        this.type = type;
         this.useDPUDescription = false;
     }
 
@@ -98,8 +79,6 @@ public class DPURecord {
     	this.name = dpuRecord.name;
     	this.useDPUDescription = dpuRecord.useDPUDescription;
     	this.description = dpuRecord.description;
-    	this.type = dpuRecord.type;
-    	this.jarPath = dpuRecord.jarPath;
     	if (dpuRecord.serializedConfiguration == null) {
     		this.serializedConfiguration = null;
     	} else {
@@ -108,17 +87,7 @@ public class DPURecord {
     				dpuRecord.serializedConfiguration.clone();
     	}
     }
-    
-    /**
-     * Load DPU's instance from associated jar file.
-     * @param moduleFacade ModuleFacade used to load DPU.
-     * @throws ModuleException
-     * @throws FileNotFoundException 
-     */
-    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException, FileNotFoundException {
-    	instance = moduleFacade.getObject(jarPath);
-    }
-    
+        
     public String getName() {
         return name;
     }
@@ -151,21 +120,25 @@ public class DPURecord {
 		this.id = id;
 	}
 	
-    public DPUType getType() {
-        return type;
-    }
-
-    public void setType(DPUType type) {
-        this.type = type;
-    }    
+	/**
+	 * Return DPU's type.
+	 * @return
+	 */
+    public abstract DPUType getType();
     
-    public void setJarPath(String path) {
-        jarPath = path;
-    }
-
-    public String getJarPath() {
-        return jarPath;
-    }
+    /**
+     * Load appropriate DPU instance info {@link #instance}. The instance
+     * is then accessible through the {@link #getInstance()} method.
+     * @param moduleFacade
+     * @throws ModuleException
+     */
+    public abstract void loadInstance(ModuleFacade moduleFacade) throws ModuleException;
+    
+    /**
+     * Return full path from the DPU's jar file from DPU's directory.
+     * @return
+     */
+    public abstract String getJarPath();
 
     /**
      * Get stored instance if loaded. To load instance use {@link #loadInstance}.
@@ -191,7 +164,6 @@ public class DPURecord {
 		serializedConfiguration = conf;
 	}
 	
-	
 	/**
 	 * Generates hash code from primary key if it is available, otherwise
 	 * from the rest of the attributes.
@@ -204,8 +176,7 @@ public class DPURecord {
 		if (this.id == null) {
 			hash = 83 * hash + Objects.hashCode(this.name);
 			hash = 83 * hash + Objects.hashCode(this.description);
-			hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
-			hash = 83 * hash + Objects.hashCode(this.jarPath);
+			hash = 83 * hash + Objects.hashCode(getJarPath());
 			hash = 83 * hash + Objects.hashCode(this.serializedConfiguration);
 		} else {
 			hash = 83 * hash + Objects.hashCode(this.id);
@@ -251,10 +222,10 @@ public class DPURecord {
 		if (!Objects.equals(this.description, other.description)) {
 			return false;
 		}
-		if (this.type != other.type) {
+		if (this.getType() != other.getType()) {
 			return false;
 		}
-		if (!Objects.equals(this.jarPath, other.jarPath)) {
+		if (!Objects.equals(getJarPath(), other.getJarPath())) {
 			return false;
 		}
 		if (!Objects.equals(this.serializedConfiguration, other.serializedConfiguration)) {

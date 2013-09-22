@@ -130,9 +130,9 @@ public class DPUDetail extends Window {
 				dpuInstance.configuredDialog();
 			} catch (ConfigException e) {
 				Notification.show(
-						"Failed to load configuration. The dialog default configuration is used.",
+						"Configuration problem",
 						e.getMessage(), Type.WARNING_MESSAGE);
-				LOG.error("Failed to load configuration for {}", dpuInstance
+				LOG.error("Problem with configuration for {}", dpuInstance
 						.getDPUInstanceRecord().getId(), e);
 			}
 			// add to layout

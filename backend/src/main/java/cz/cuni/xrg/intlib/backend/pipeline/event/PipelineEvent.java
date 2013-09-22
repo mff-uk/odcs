@@ -11,6 +11,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 /**
  * Base class for Pipeline events.
  * 
+ * Every class that inherit from this class should LOG the creation.
+ * 
  * @author Petyr
  */
 public abstract class PipelineEvent extends ApplicationEvent {
@@ -30,7 +32,7 @@ public abstract class PipelineEvent extends ApplicationEvent {
 	 */
 	protected PipelineExecution execution;
 
-	public PipelineEvent(DPUInstanceRecord dpuInstance,
+	protected PipelineEvent(DPUInstanceRecord dpuInstance,
 			PipelineExecution execution,
 			Object source) {
 		super(source);

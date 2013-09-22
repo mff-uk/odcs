@@ -17,7 +17,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
 import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.data.DataUnit;
 import cz.cuni.xrg.intlib.commons.data.DataUnitCreateException;
@@ -85,7 +85,13 @@ public class Context implements DPUContext {
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
 	@Autowired
-	private ApplicationEventPublisher eventPublisher;	
+	private ApplicationEventPublisher eventPublisher;
+	
+	/**
+	 * Used to get DPU's directory.
+	 */
+	@Autowired
+	private ModuleFacade moduleFacade;
 	
 	/**
 	 * True if {@link #sendMessage(MessageType, String)} or 
@@ -370,8 +376,7 @@ public class Context implements DPUContext {
 
 	@Override
 	public File getJarPath() {
-        File path = new File(appConfig.getString(ConfigProperty.MODULE_PATH) + 
-        		File.separator + ModuleFacadeConfig.DPU_DIRECTORY + 
+        File path = new File(moduleFacade.getDPUDirectory() + 
         		File.separator + dpuInstance.getJarPath());
 		return path;
 	}

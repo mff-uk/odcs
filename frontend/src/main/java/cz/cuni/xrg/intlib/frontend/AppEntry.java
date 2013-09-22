@@ -21,6 +21,7 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
+import cz.cuni.xrg.intlib.commons.app.module.DPUModuleManipulator;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
@@ -433,6 +434,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return getBean(AuthenticationContext.class);
 	}
 
+	public DPUModuleManipulator getDPUManipulator() {
+		return getBean(DPUModuleManipulator.class);
+	}
+	
 	/**
 	 * Sets last action date to current time.
 	 */

@@ -92,6 +92,26 @@ public class DPUFacade {
 	}
 
 	/**
+	 * Return list of all DPUTemplateRecords currently persisted in database.
+	 * 
+	 * Is used by OSGIModuleFacade, so no permissions are applied here.
+	 * 
+	 * TODO Honza from Petyr: Please check this
+	 * 
+	 * @return
+	 */
+	public List<DPUTemplateRecord> getAllTemplatesNoPermission() {
+
+		@SuppressWarnings("unchecked")
+		List<DPUTemplateRecord> resultList = Collections.checkedList(
+				em.createQuery("SELECT e FROM DPUTemplateRecord e").getResultList(),
+				DPUTemplateRecord.class
+		);
+
+		return resultList;
+	}	
+	
+	/**
 	 * Find DPUTemplateRecord in database by ID and return it.
 	 * @param id
 	 * @return
@@ -113,7 +133,10 @@ public class DPUFacade {
 	 * 
 	 * @param jarFile
 	 * @return DPU using given JAR file, or <code>null</code>
+	 * 
+	 * @deprecated Use {@link getTemplateByDirectory} instead.
 	 */
+	@Deprecated
 	public DPUTemplateRecord getTemplateByJarFile(File jarFile) {
 		
 		DPUTemplateRecord result = null;
@@ -130,6 +153,30 @@ public class DPUFacade {
 	}
 
 	/**
+	 * Fetch DPU template using given DPU directory.
+	 * 
+	 * TODO This method do not use security filters. As it is used
+	 * 		in OSGIChangeManager which use it to identify DPU to update. 
+	 * 
+	 * @param directory
+	 * @return
+	 */
+	public DPUTemplateRecord getTemplateByDirectory(String directory) {
+		
+		DPUTemplateRecord result = null;
+		try {
+			result = em.createQuery(
+				"SELECT e FROM DPUTemplateRecord e"
+				+ " WHERE e.jarDirectory = :directory", DPUTemplateRecord.class
+			).setParameter("directory", directory).getSingleResult();
+		} catch (NoResultException ex) {
+			// just return null if nothing is found
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Saves any modifications made to the DPUTemplateRecord into the database.
 	 * @param dpu
 	 */
@@ -143,6 +190,18 @@ public class DPUFacade {
 		}
 	}
 
+	/**
+	 * Save DPU template without using permissions.
+	 * @param dpu
+	 */
+	public void saveNoPermission(DPUTemplateRecord dpu) {
+		if (dpu.getId() == null) {
+			em.persist(dpu);
+		} else {
+			em.merge(dpu);
+		}
+	}	
+	
 	/**
 	 * Deletes DPUTemplateRecord from the database.
 	 * @param dpu
