@@ -17,10 +17,10 @@
 
 	<repositories>
 		<repository> <!-- hibernate -->
-			<id>JBoss</id>
-			<name>JBoss Repsitory</name>
+			<id>jboss-public</id>
+			<name>JBoss Public Nexus Repository</name>
 			<layout>default</layout>
-			<url>http://repository.jboss.org/maven2</url>
+			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
 		</repository>
 
 		<repository>
