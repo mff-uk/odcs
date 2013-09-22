@@ -19,8 +19,8 @@
 		<dpu.package></dpu.package>
 		<!-- use to automatically embed transitive dependencies -->
 		<embed.transitive>false</embed.transitive>
-		<!-- path to the ODCL DPU's directory -->
-		<dpu.odcl.dir></dpu.odcl.dir>
+		<!-- path to the ODCS DPU's directory -->
+		<dpu.odcs.dir></dpu.odcs.dir>
 	</properties>
 
 	<repositories>
@@ -112,8 +112,8 @@
 	</build>
 
 	<profiles>
-		<profile> <!-- copy the DPU file into ODCL directory and notify running application -->
-			<id>publish-to-odcl</id>
+		<profile> <!-- copy the DPU file into ODCS directory and notify running application -->
+			<id>publish-to-odcs</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -127,7 +127,7 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>${dpu.odcl.dir}\${project.artifactId}</outputDirectory>
+									<outputDirectory>${dpu.odcs.dir}\${project.artifactId}</outputDirectory>
 									<resources>
 										<resource>
 											<directory>${project.build.directory}</directory>
@@ -142,7 +142,7 @@
 						</executions>
 					</plugin>
 					<plugin>
-						<groupId>cz.cuni.mff.xrg.odcl</groupId>
+						<groupId>cz.cuni.mff.xrg.odcs</groupId>
 						<artifactId>file-create-maven-plugin</artifactId>
 						<version>1.0.0</version>
 						<executions>
@@ -152,7 +152,7 @@
 									<goal>createFile</goal>
 								</goals>
 								<configuration>
-									<directory>${dpu.odcl.dir}\${project.artifactId}</directory>
+									<directory>${dpu.odcs.dir}\${project.artifactId}</directory>
 									<fileName>${project.artifactId}-${project.version}.jar.update</fileName>
 								</configuration>
 							</execution>
@@ -161,8 +161,8 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile> <!-- copy the DPU file into ODCL directory -->
-			<id>copy-to-odcl</id>
+		<profile> <!-- copy the DPU file into ODCS directory -->
+			<id>copy-to-odcs</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -176,7 +176,7 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>${dpu.odcl.dir}\${project.artifactId}</outputDirectory>
+									<outputDirectory>${dpu.odcs.dir}\${project.artifactId}</outputDirectory>
 									<resources>
 										<resource>
 											<directory>${project.build.directory}</directory>
