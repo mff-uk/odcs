@@ -102,6 +102,26 @@ public class Executor implements Runnable {
 	public void bind(PipelineExecution execution) {
 		this.execution = execution;
 		contexts = new HashMap<>();
+		
+		
+		// for newly scheduled pipelines delete the execution directory
+		File coreExecutionFile = new File(
+				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR), 
+				execution.getContext().getRootPath());
+		if (execution.getStatus() == PipelineExecutionStatus.SCHEDULED) {
+			// new run, check for directory
+			if (coreExecutionFile.exists() && coreExecutionFile.isDirectory()) {
+				// delete
+				LOG.debug("Deleting existing execution's directory. ");
+				
+				try {
+					FileUtils.deleteDirectory(coreExecutionFile);
+				} catch (IOException e) {
+					LOG.error("Failed to delete execution directory.");
+				}
+			}
+		}
+		
 		// update state
 		this.execution.setStatus(PipelineExecutionStatus.RUNNING);
 
@@ -290,9 +310,9 @@ public class Executor implements Runnable {
 					ch.qos.logback.classic.Level.INFO);
 		}
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
-
+		
 		// log start of the pipeline
-		LOG.debug("Pipeline execuiton started");
+		LOG.debug("Pipeline execution started");
 
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
