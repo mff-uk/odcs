@@ -417,6 +417,8 @@ class OSGIModuleFacade implements ModuleFacade {
 	 */
 	private BundleContainer install(String directory, String fileName)
 			throws ModuleException {
+		LOG.debug("Installing bundle from '{}'/'{}'", directory, fileName);
+		
 		// prepare uri
 		final String uri = createUri(directory, fileName);
 		// we lock the directory for updates
