@@ -301,7 +301,7 @@ public class DPUModuleManipulator {
 		if (newDPUDir.exists()) {
 			// directory name already used
 			throw new DPUCreateException(String.format(
-					"DPU's directory with name '%s' already exist.",
+					"DPU's directory with name '%s' already exists.",
 					newDpuDirName));
 		}
 		// create directory
@@ -370,7 +370,7 @@ public class DPUModuleManipulator {
 			// try to delete it
 			if (originalDpuBackUp.delete()) {
 				// if we fail .. we can do nothing ..
-				LOG.warn("Failed to delete previous DPU backUp file: {}",
+				LOG.warn("Failed to delete previous DPU backup file: {}",
 						originalDpuBackUp.getPath());
 			}
 		}
@@ -379,7 +379,7 @@ public class DPUModuleManipulator {
 		} else {
 			// no backup no continue .. if we continue then we can lose the only
 			// functional version we have
-			LOG.error("Failed to create backUp file: {}",
+			LOG.error("Failed to create backup file: {}",
 					originalDpuBackUp.getPath());
 			throw new DPUReplaceException(
 					"Failed to create original DPU backup.");
