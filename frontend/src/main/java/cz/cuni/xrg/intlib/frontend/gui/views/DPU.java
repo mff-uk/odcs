@@ -41,6 +41,7 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
@@ -268,9 +269,9 @@ class DPU extends ViewComponent {
 						&&(isChanged()) &&(saveAllow)) {
 						
 					//open confirmation dialog
-					ConfirmDialog.show(UI.getCurrent(), "Please Confirm:",
-							"Do you want to save the changes in the DPU Template?",
-							"Yes", "No",
+					ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
+							"There are unsaved changes.\nDo you wish to save them or discard?",
+							"Save", "Discard changes",
 							new ConfirmDialog.Listener() {
 						private static final long serialVersionUID = 1L;
 
@@ -482,6 +483,7 @@ class DPU extends ViewComponent {
 				throw new InvalidValueException("Name must be filled!");
 			}
 		});
+		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
 		dpuSettingsLayout.addComponent(dpuName, 1, 0);
 
 		//Description of DPU Template: label & TextArea
@@ -491,6 +493,7 @@ class DPU extends ViewComponent {
 		descriptionLabel.setHeight("-1px");
 		dpuSettingsLayout.addComponent(descriptionLabel, 0, 1);
 		dpuDescription = new TextArea();
+		dpuDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		dpuDescription.setImmediate(true);
 		dpuDescription.setWidth("100%");
 		dpuDescription.setHeight("60px");
@@ -618,7 +621,7 @@ class DPU extends ViewComponent {
 	 * , is assumed to be stored in {@link selectedDpu}.
 	 */
 	private void copyToTarget() {
-		if (FileUploadReceiver.path == null) {
+		if (fileUploadReceiver.path == null) {
 			// we have no file, end 
 			return;
 		}
@@ -755,8 +758,8 @@ class DPU extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//open confirmation dialog
-				ConfirmDialog.show(UI.getCurrent(),
-						"Delete this DPU template?",
+				ConfirmDialog.show(UI.getCurrent(),"Confirmation of deleting DPU template",
+						"Delete " + selectedDpu.getName().toString() + " DPU template?","Delete", "Cancel",
 						new ConfirmDialog.Listener() {
 					private static final long serialVersionUID = 1L;
 
@@ -835,14 +838,25 @@ class DPU extends ViewComponent {
 		return buttonDpuBar;
 	}
 	
+	private boolean validate() {
+		try {
+			dpuName.validate();
+			dpuDescription.validate();
+		} catch (Validator.InvalidValueException e) {
+			Notification.show("Error validating DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Store DPU Template record to DB
 	 */
 	private void saveDPUTemplate(){
 
 		//control of the validity of Name field.
-		if (!dpuName.isValid()) {
-			Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
+		if (!validate()) {
+			//Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
 			return;
 		}
 		//saving Name, Description and Visibility
@@ -998,8 +1012,8 @@ class DPU extends ViewComponent {
 	@Override
 	public boolean saveChanges() {		
 		//control of the validity of Name field.
-		if (!dpuName.isValid()) {
-			Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
+		if (!validate()) {
+			//Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
 		saveDPUTemplate();

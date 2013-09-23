@@ -17,15 +17,16 @@
 
 	<repositories>
 		<repository> <!-- hibernate -->
-			<id>JBoss</id>
-			<name>JBoss Repsitory</name>
+			<id>jboss-public</id>
+			<name>JBoss Public Nexus Repository</name>
 			<layout>default</layout>
-			<url>http://repository.jboss.org/maven2</url>
+			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
 		</repository>
 
 		<repository>
-			<id>maven-eclipse</id> <!-- repository for org.eclipse.tycho -->
-			<url>http://maven.eclipse.org/nexus/content/repositories/testing</url>
+			<id>repo.eclipse.org</id> <!-- repository for org.eclipse.tycho -->
+			<name>Project Repository - Snapshots</name>
+			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
 		</repository>
 
 		<repository> <!-- Virtuoso JDBC -->

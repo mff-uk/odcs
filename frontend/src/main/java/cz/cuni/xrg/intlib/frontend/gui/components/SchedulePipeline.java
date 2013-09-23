@@ -328,7 +328,7 @@ public class SchedulePipeline extends Window {
 		
 		//Save button
 		Button createRule = new Button();
-		createRule.setCaption("Save scheduler rule");
+		createRule.setCaption("Save");
 		createRule.setImmediate(true);
 		createRule.addClickListener(new ClickListener() {
 
@@ -545,7 +545,7 @@ public class SchedulePipeline extends Window {
 			
 		mainLayout.addComponent(tabSheet);
 		mainLayout.addComponent(buttonBar);
-		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
+//		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
 
 		return mainLayout;
 	}

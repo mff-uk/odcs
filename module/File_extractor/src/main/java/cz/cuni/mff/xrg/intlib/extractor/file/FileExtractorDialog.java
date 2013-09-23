@@ -43,16 +43,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	private CheckBox useHandler;  //Statistical handler
 
-	private Label labelFormat;
-
 	/**
 	 * TextField for set file extension that will be processed in some
 	 * directory. Uses in case of FileExtractType.PATH_TO_DIRECTORY of
 	 * {@link #pathType}
 	 */
 	private TextField textFieldOnly;
-
-	private Label labelOnly;
 
 	/**
 	 * TextField to set destination of the file
@@ -129,6 +125,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.PATH_TO_DIRECTORY));
 		pathType.addItem(FileExtractType.getDescriptionByType(
+				FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
+		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.HTTP_URL));
 
 		pathType.setValue(FileExtractType.getDescriptionByType(
@@ -165,7 +163,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			}
 
 
-			if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
+			if (extractType == FileExtractType.PATH_TO_DIRECTORY
+					|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
+
 				conf.FileSuffix = textFieldOnly.getValue().trim();
 
 				if (textFieldOnly.getValue().trim().isEmpty()) {
@@ -173,6 +173,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				} else {
 					conf.OnlyThisSuffix = true;
 				}
+
 			} else {
 				conf.FileSuffix = "";
 				conf.OnlyThisSuffix = false;
@@ -219,7 +220,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			textFieldPath.setValue(conf.Path.trim());
 		}
 
-		if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
+		if (extractType == FileExtractType.PATH_TO_DIRECTORY
+				|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
+
 			textFieldOnly.setValue(conf.FileSuffix.trim());
 		}
 
@@ -230,7 +233,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	@Override
 	public String getDescription() {
-		String path = null;
+		String path;
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 			path = FileUploadReceiver.path + "/" + textFieldPath
 					.getValue().trim();
@@ -243,7 +246,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		description.append(path);
 		return description.toString();
 	}
-	
+
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
 	 *
@@ -300,6 +303,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				message = "URL path must start with prefix http://";
 				break;
 			case PATH_TO_DIRECTORY:
+			case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
 				message = "Path to directory must be filled, not empty.";
 				break;
 			case PATH_TO_FILE:
@@ -472,33 +476,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 						.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
 
 					extractType = FileExtractType.PATH_TO_DIRECTORY;
+					prepareDirectoryForm();
 
-					textFieldPath.setInputPrompt("C:\\ted\\");
+				} else if (event.getProperty().getValue().equals(FileExtractType
+						.getDescriptionByType(
+						FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
 
-					//Adding component for specify path to directory
-					gridLayoutCore.addComponent(textFieldPath, 0, 1);
-
-					// layoutOnly
-
-					horizontalLayoutOnly = new HorizontalLayout();
-					horizontalLayoutOnly.setImmediate(false);
-					horizontalLayoutOnly.setSpacing(true);
-
-					// labelOnly
-					horizontalLayoutOnly.addComponent(new Label(
-							"If directory, process only files with extension:"));
-
-					// textFieldOnly
-					textFieldOnly = new TextField("");
-					textFieldOnly.setImmediate(false);
-					textFieldOnly.setWidth("50px");
-					textFieldOnly.setInputPrompt(".ttl");
-					horizontalLayoutOnly.addComponent(textFieldOnly);
-					horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
-							Alignment.TOP_RIGHT);
-
-					//Adding component for specify file extension
-					gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
+					extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+					prepareDirectoryForm();
 
 					//If selected "Extract file from the given HTTP URL" option
 				} else if (event.getProperty().getValue().equals(
@@ -522,7 +507,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		horizontalLayoutFormat.setImmediate(false);
 		horizontalLayoutFormat.setSpacing(true);
 
-		// labelFormat
 		horizontalLayoutFormat.addComponent(new Label("RDF Format:"));
 
 		// comboBoxFormat
@@ -537,6 +521,35 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 
 		return gridLayoutCore;
+	}
+
+	private void prepareDirectoryForm() {
+		textFieldPath.setInputPrompt("C:\\ted\\");
+
+		//Adding component for specify path to directory
+		gridLayoutCore.addComponent(textFieldPath, 0, 1);
+
+		// layoutOnly
+
+		horizontalLayoutOnly = new HorizontalLayout();
+		horizontalLayoutOnly.setImmediate(false);
+		horizontalLayoutOnly.setSpacing(true);
+
+		horizontalLayoutOnly.addComponent(new Label(
+				"If directory, process only files with extension:"));
+
+		// textFieldOnly
+		textFieldOnly = new TextField("");
+		textFieldOnly.setImmediate(false);
+		textFieldOnly.setWidth("50px");
+		textFieldOnly.setInputPrompt(".ttl");
+		horizontalLayoutOnly.addComponent(textFieldOnly);
+		horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
+				Alignment.TOP_RIGHT);
+
+		//Adding component for specify file extension
+		gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
+
 	}
 
 	/**

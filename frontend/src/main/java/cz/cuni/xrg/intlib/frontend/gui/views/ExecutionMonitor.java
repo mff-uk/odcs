@@ -160,6 +160,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTable.setSortContainerPropertyId(property);
         monitorTable.setSortAscending(false);
         monitorTable.sort();
+		//monitorTable.setSortEnabled(true);
 
         //Status column. Contains status icons.
         monitorTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {

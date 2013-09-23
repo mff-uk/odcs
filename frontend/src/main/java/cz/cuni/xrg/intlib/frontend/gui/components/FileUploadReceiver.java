@@ -23,10 +23,10 @@ public class FileUploadReceiver implements Receiver {
 	private static final long serialVersionUID = 5099459605355200117L;
 	private int total;
 	private boolean sleep;
-	public static File file;
+	public  File file;
 	private FileOutputStream fstream = null;
-	public static Path path;
-	public static String fName;
+	public  Path path;
+	public  String fName;
 
 	/**
 	 * return an OutputStream 

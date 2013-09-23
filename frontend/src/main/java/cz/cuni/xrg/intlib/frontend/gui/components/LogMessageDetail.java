@@ -41,6 +41,7 @@ public class LogMessageDetail extends Window {
 		GridLayout mainLayout = new GridLayout(2, 7);
 		mainLayout.setImmediate(true);
 		mainLayout.setSpacing(true);
+		mainLayout.setMargin(true);
 		mainLayout.setSizeFull();
 		
 
@@ -104,7 +105,7 @@ public class LogMessageDetail extends Window {
 	 * @{link Unit} of height.
 	 */
 	void setContentHeight(float height, Sizeable.Unit unit) {
-		fullMessageContent.setHeight(height - 210, unit);
+		fullMessageContent.setHeight(height - 230, unit);
 	}
 
 	/**

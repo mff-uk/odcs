@@ -70,7 +70,7 @@ public class UserCreate extends Window {
 	public UserCreate(boolean newUser) {
 		this.setResizable(false);
 		this.setModal(true);
-		this.setCaption("Create new user");
+		this.setCaption("User's details");
 
 		buildMainLayout(newUser);
 		this.setContent(mainLayout);
@@ -254,12 +254,12 @@ public class UserCreate extends Window {
 
 		// Layout with buttons Save and Cancel
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setMargin(true);
+//		buttonBar.setMargin(true);
 		
 
 		// Save button
 		Button createRule = new Button();
-		createRule.setCaption("Save user");
+		createRule.setCaption("Save");
 		createRule.setImmediate(true);
 		createRule.addClickListener(new ClickListener() {
 
@@ -390,7 +390,7 @@ public class UserCreate extends Window {
 		mainLayout.addComponent(userDetailsLayout);
 		mainLayout.addComponent(roleSelector);
 		mainLayout.addComponent(buttonBar);
-		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
+//		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
 
 		return mainLayout;
 	}

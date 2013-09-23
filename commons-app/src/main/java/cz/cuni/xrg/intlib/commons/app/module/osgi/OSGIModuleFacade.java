@@ -429,7 +429,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		
 		if (bundleContainer != null) {
 			if(bundleContainer.isInstalled()) {
-				if (bundleContainer.getUri() == uri) {				
+				if (bundleContainer.getUri().equals(uri)) {				
 					releaseUpdate(directory);
 					return bundleContainer;
 				} else {

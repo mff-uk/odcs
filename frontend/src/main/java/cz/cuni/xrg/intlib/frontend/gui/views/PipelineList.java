@@ -9,6 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
@@ -18,6 +19,7 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -88,7 +90,12 @@ class PipelineList extends ViewComponent {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
-							nPipeline.setName("Copy of " + pipeline.getName());
+							String copiedPipelineName = "Copy of " + pipeline.getName();
+							if(copiedPipelineName.length() > MaxLengthValidator.NAME_LENGTH) {
+								Notification.show(String.format("Name of copied pipeline would exceed limit of %d characters, new pipeline has same name as original.", MaxLengthValidator.NAME_LENGTH), Notification.Type.WARNING_MESSAGE);
+							} else {
+								nPipeline.setName(copiedPipelineName);
+							}
 							pipelineFacade.save(nPipeline);
 							refreshData();
 							//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");

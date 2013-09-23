@@ -179,7 +179,7 @@ public interface RDFDataUnitHelper {
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
 			String password, WriteGraphType graphType, InsertType insertType,
-			long chnnkSize)
+			long chunkSize)
 			throws RDFException;
 
 	/**

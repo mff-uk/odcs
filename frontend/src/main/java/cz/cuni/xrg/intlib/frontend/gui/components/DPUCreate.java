@@ -258,7 +258,7 @@ public class DPUCreate extends Window {
 					return;
 				}
 				
-				final File sourceFile = FileUploadReceiver.file;
+				final File sourceFile = fileUploadReceiver.file;
 				// create new representation
 				DPUTemplateWrap dpuWrap = null;				
 				try {

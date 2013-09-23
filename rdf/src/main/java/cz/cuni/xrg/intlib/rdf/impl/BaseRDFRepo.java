@@ -239,10 +239,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
 				break;
 			case PATH_TO_DIRECTORY:
+			case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
 				if (dirFile.isDirectory()) {
 					File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
+
+					boolean skipFiles = false;
+
+					if (extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
+						skipFiles = true;
+					}
+
 					addFilesInDirectoryToRepository(format, files, baseURI,
-							useStatisticHandler,
+							useStatisticHandler, skipFiles,
 							graph);
 				} else {
 					throw new RDFException(
@@ -2057,7 +2065,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files,
 			String baseURI,
-			boolean useStatisticHandler, Resource... graphs) throws RDFException {
+			boolean useStatisticHandler, boolean skipFiles, Resource... graphs)
+			throws RDFException {
 
 		if (files == null) {
 			return; // nothing to add
@@ -2065,8 +2074,24 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		for (int i = 0; i < files.length; i++) {
 			File nextFile = files[i];
-			addFileToRepository(format, nextFile, baseURI, useStatisticHandler,
-					graphs);
+
+			try {
+				addFileToRepository(format, nextFile, baseURI,
+						useStatisticHandler,
+						graphs);
+			} catch (RDFException e) {
+
+				if (skipFiles) {
+					final String message = String.format(
+							"RDF data from file <%s> was skiped", nextFile
+							.getAbsolutePath());
+					logger.error(message);
+
+				} else {
+					throw new RDFException(e.getMessage(), e);
+				}
+
+			}
 		}
 	}
 
