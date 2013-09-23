@@ -28,7 +28,7 @@
 	   		<maxHistory>3</maxHistory>
     	</rollingPolicy>
 		<encoder>
-			<pattern>%d [%thread] %-5level Execution:%X{execution} %logger{50} - %msg%n</pattern>
+			<pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{50} - %msg%n</pattern>
 		</encoder>	
 	</appender>
 
