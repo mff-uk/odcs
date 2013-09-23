@@ -29,7 +29,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
   "id" INTEGER IDENTITY,
   "name" VARCHAR(45),
   "use_dpu_description" SMALLINT,
-  "description" VARCHAR(255),
+  "description" VARCHAR(512),
   "tool_tip" VARCHAR(255),
   "configuration" LONG VARBINARY,
 -- DPUInstaceRecord
@@ -44,7 +44,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
   "id" INTEGER IDENTITY,
   "name" VARCHAR(45),
   "use_dpu_description" SMALLINT,
-  "description" VARCHAR(255),  
+  "description" VARCHAR(512),  
   "configuration" LONG VARBINARY,
   "parent_id" INTEGER,
 -- DPUTemplateRecord
@@ -163,8 +163,8 @@ CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE_AFTER"
 CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(45),
-  "description" VARCHAR(255),
+  "name" VARCHAR(255),
+  "description" VARCHAR(512),
   "user_id" INTEGER,
   PRIMARY KEY ("id")
 );

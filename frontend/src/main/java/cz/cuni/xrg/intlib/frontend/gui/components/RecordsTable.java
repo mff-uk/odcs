@@ -69,7 +69,7 @@ public class RecordsTable extends CustomComponent {
 		messageTable.setSizeFull();
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(5);
+		messageTable.setPageLength(20);
 		loadMessageTable();
 		setCompositionRoot(mainLayout);
 	}

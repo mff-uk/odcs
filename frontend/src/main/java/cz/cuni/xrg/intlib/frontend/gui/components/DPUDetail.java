@@ -82,6 +82,7 @@ public class DPUDetail extends Window {
 				setCaption(dpuName.getValue().trim());
 			}
 		});
+		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
 
 		Label descriptionLabel = new Label("Description");
@@ -99,7 +100,7 @@ public class DPUDetail extends Window {
 		} else {		
 			dpuDescription.setValue(dpu.getDescription().trim());
 		}
-		dpuDescription.addValidator(new MaxLengthValidator(255));
+		dpuDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,

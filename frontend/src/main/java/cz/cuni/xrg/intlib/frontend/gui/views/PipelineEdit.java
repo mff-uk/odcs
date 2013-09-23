@@ -489,6 +489,7 @@ class PipelineEdit extends ViewComponent {
 				throw new InvalidValueException("Name must be filled!");
 			}
 		});
+		pipelineName.addValidator(new MaxLengthValidator(MaxLengthValidator.NAME_LENGTH));
 		pipelineName.addTextChangeListener(new FieldEvents.TextChangeListener() {
 
 			@Override
@@ -507,7 +508,7 @@ class PipelineEdit extends ViewComponent {
 		pipelineDescription.setWidth("400px");
 		pipelineDescription.setHeight("60px");
 		pipelineDescription.setBuffered(true);
-		pipelineDescription.addValidator(new MaxLengthValidator(255));
+		pipelineDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		pipelineDescription.addTextChangeListener(new FieldEvents.TextChangeListener() {
 
 			@Override
