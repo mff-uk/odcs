@@ -618,7 +618,7 @@ class DPU extends ViewComponent {
 	 * , is assumed to be stored in {@link selectedDpu}.
 	 */
 	private void copyToTarget() {
-		if (FileUploadReceiver.path == null) {
+		if (fileUploadReceiver.path == null) {
 			// we have no file, end 
 			return;
 		}
