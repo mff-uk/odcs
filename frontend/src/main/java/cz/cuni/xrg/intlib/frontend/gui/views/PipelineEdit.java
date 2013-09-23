@@ -243,6 +243,7 @@ class PipelineEdit extends ViewComponent {
 				calculateCanvasDimensions(bounds);
 			}
 		});
+		zoomIn.setWidth("110px");
 		Button zoomOut = new Button("Zoom Out", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -250,6 +251,7 @@ class PipelineEdit extends ViewComponent {
 				calculateCanvasDimensions(bounds);
 			}
 		});
+		zoomOut.setWidth("110px");
 		undo = new Button("Undo", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -260,6 +262,7 @@ class PipelineEdit extends ViewComponent {
 		});
 		undo.setEnabled(false);
 		undo.setImmediate(true);
+		undo.setWidth("110px");
 		left.addComponent(zoomIn);
 		left.addComponent(zoomOut);
 		left.addComponent(undo);

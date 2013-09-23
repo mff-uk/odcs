@@ -1056,6 +1056,7 @@ class DPU extends ViewComponent {
 			//Detail button
 			Button detailButton = new Button();
 			detailButton.setCaption("Detail");
+			detailButton.setWidth("70px");
 			detailButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				private static final long serialVersionUID = 1L;
@@ -1081,6 +1082,7 @@ class DPU extends ViewComponent {
 			//Delete button. Delete pipeline.
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
+			deleteButton.setWidth("70px");
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 
@@ -1108,6 +1110,7 @@ class DPU extends ViewComponent {
 			//Status button
 			Button statusButton = new Button();
 			statusButton.setCaption("Status");
+			statusButton.setWidth("70px");
 			statusButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 

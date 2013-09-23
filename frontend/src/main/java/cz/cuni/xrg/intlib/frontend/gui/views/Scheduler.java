@@ -344,6 +344,7 @@ class Scheduler extends ViewComponent {
 				//Enable button
 				if (!testStatus) {
 					Button enableButton = new Button("Enable");
+					enableButton.setWidth("80px");
 					enableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
@@ -368,6 +369,7 @@ class Scheduler extends ViewComponent {
 				else {
 					Button disableButton = new Button();
 					disableButton.setCaption("Disable");
+					disableButton.setWidth("80px");
 					disableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
@@ -392,6 +394,7 @@ class Scheduler extends ViewComponent {
 			//Edit button. Opens the window for editing given scheduling rule.
 			Button editButton = new Button();
 			editButton.setCaption("Edit");
+			editButton.setWidth("80px");
 			editButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
@@ -406,6 +409,7 @@ class Scheduler extends ViewComponent {
 			//Edit button. Delete scheduling rule from the table.
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
+			deleteButton.setWidth("80px");
 			deleteButton.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {

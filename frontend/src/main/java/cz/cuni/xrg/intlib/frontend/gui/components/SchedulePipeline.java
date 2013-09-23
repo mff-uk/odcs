@@ -329,6 +329,7 @@ public class SchedulePipeline extends Window {
 		//Save button
 		Button createRule = new Button();
 		createRule.setCaption("Save");
+		createRule.setWidth("90px");
 		createRule.setImmediate(true);
 		createRule.addClickListener(new ClickListener() {
 
@@ -536,6 +537,7 @@ public class SchedulePipeline extends Window {
 
 			}
 		});
+		cancelButton.setWidth("90px");
 		buttonBar.addComponent(cancelButton);
 		
 		VerticalLayout notificationsLayout = buildnotificationsLayout();

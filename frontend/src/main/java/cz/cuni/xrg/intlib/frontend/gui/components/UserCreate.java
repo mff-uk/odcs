@@ -258,10 +258,11 @@ public class UserCreate extends Window {
 		
 
 		// Save button
-		Button createRule = new Button();
-		createRule.setCaption("Save");
-		createRule.setImmediate(true);
-		createRule.addClickListener(new ClickListener() {
+		Button createUser = new Button();
+		createUser.setCaption("Save");
+		createUser.setWidth("90px");
+		createUser.setImmediate(true);
+		createUser.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -370,7 +371,7 @@ public class UserCreate extends Window {
 			}
 		});
 
-		buttonBar.addComponent(createRule);
+		buttonBar.addComponent(createUser);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
 
@@ -385,6 +386,7 @@ public class UserCreate extends Window {
 
 			}
 		});
+		cancelButton.setWidth("90px");
 		buttonBar.addComponent(cancelButton);
 
 		mainLayout.addComponent(userDetailsLayout);

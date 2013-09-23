@@ -63,6 +63,7 @@ class PipelineList extends ViewComponent {
 
 			Button updateButton = new Button();
 			updateButton.setCaption("edit");
+			updateButton.setWidth("80px");
 			updateButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -85,6 +86,7 @@ class PipelineList extends ViewComponent {
 			final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
 			Button copyButton = new Button();
 			copyButton.setCaption("copy");
+			copyButton.setWidth("80px");
 			copyButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -106,6 +108,7 @@ class PipelineList extends ViewComponent {
 
 			Button deleteButton = new Button();
 			deleteButton.setCaption("delete");
+			deleteButton.setWidth("80px");
 			deleteButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -143,6 +146,7 @@ class PipelineList extends ViewComponent {
 
 			Button runButton = new Button();
 			runButton.setCaption("run");
+			runButton.setWidth("80px");
 			runButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -154,6 +158,7 @@ class PipelineList extends ViewComponent {
 
 			Button runDebugButton = new Button();
 			runDebugButton.setCaption("debug");
+			runDebugButton.setWidth("80px");
 			runDebugButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -169,6 +174,7 @@ class PipelineList extends ViewComponent {
 			
 			Button schedulerButton = new Button();
 			schedulerButton.setCaption("schedule");
+			schedulerButton.setWidth("80px");
 			schedulerButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -224,7 +230,7 @@ class PipelineList extends ViewComponent {
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("Create pipeline");
 		btnCreatePipeline.setHeight("25px");
-		btnCreatePipeline.setWidth("150px");
+		btnCreatePipeline.setWidth("120px");
 		btnCreatePipeline
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 					@Override
@@ -241,7 +247,7 @@ class PipelineList extends ViewComponent {
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
-		buttonDeleteFilters.setWidth("110px");
+		buttonDeleteFilters.setWidth("120px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override

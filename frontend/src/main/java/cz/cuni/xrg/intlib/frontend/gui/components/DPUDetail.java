@@ -156,6 +156,7 @@ public class DPUDetail extends Window {
 				}
 			}
 		});
+		saveAndCommitButton.setWidth("90px");
 		buttonBar.addComponent(saveAndCommitButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
@@ -164,6 +165,7 @@ public class DPUDetail extends Window {
 				close();
 			}
 		});
+		cancelButton.setWidth("90px");
 		buttonBar.addComponent(cancelButton);
 
 		Label placeFiller = new Label(" ");

@@ -63,6 +63,7 @@ public class UsersList {
 
 		Button addUserButton = new Button();
 		addUserButton.setCaption("Create new user");
+		addUserButton.setWidth("120px");
 		addUserButton
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -91,7 +92,7 @@ public class UsersList {
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
-		buttonDeleteFilters.setWidth("110px");
+		buttonDeleteFilters.setWidth("120px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -235,10 +236,30 @@ public class UsersList {
 
 			HorizontalLayout layout = new HorizontalLayout();
 
+			//Edit button. Open dialog for edit user's details.
+			Button changeButton = new Button();
+			changeButton.setCaption("Edit");
+			changeButton.setWidth("80px");
+			changeButton.addClickListener(new ClickListener() {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					
+					userId = (Long) tableData.getContainerProperty(itemId, "id")
+							.getValue();
+					showUserSettings(userId);
+					
+				}
+			});
+			
+			layout.addComponent(changeButton);
 		
 			//Delete button. Delete user's record from Database.
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
+			deleteButton.setWidth("80px");
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 
@@ -271,28 +292,6 @@ public class UsersList {
 			});
 			layout.addComponent(deleteButton);
 			
-			//Delete button. Delete user's record from Database.
-			Button changeButton = new Button();
-			changeButton.setCaption("Change settings");
-			changeButton.addClickListener(new ClickListener() {
-				
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					
-					userId = (Long) tableData.getContainerProperty(itemId, "id")
-							.getValue();
-					showUserSettings(userId);
-					
-
-				
-					
-				}
-			});
-			
-			layout.addComponent(changeButton);
-
 			return layout;
 		}
 	}

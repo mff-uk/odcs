@@ -235,6 +235,7 @@ public class DPUCreate extends Window {
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
 		Button saveButton = new Button("Save");
+		saveButton.setWidth("90px");
 		
 		saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
 
@@ -299,6 +300,7 @@ public class DPUCreate extends Window {
 
 			}
 		});
+		cancelButton.setWidth("90px");
 		buttonBar.addComponent(cancelButton);
 
 		mainLayout.addComponent(buttonBar);

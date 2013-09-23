@@ -115,13 +115,14 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 //monitorTable.setVisibleColumns(visibleCols);
             }
         });
+        refreshButton.setWidth("120px");
         topLine.addComponent(refreshButton);
         //topLine.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
         //Clear Filters button. Clearing filters on the table with executions.
         Button buttonDeleteFilters = new Button();
         buttonDeleteFilters.setCaption("Clear Filters");
         buttonDeleteFilters.setHeight("25px");
-        buttonDeleteFilters.setWidth("110px");
+        buttonDeleteFilters.setWidth("120px");
         buttonDeleteFilters
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
