@@ -54,7 +54,7 @@ public class LogFacade {
 		@SuppressWarnings("unchecked")
 		List<LogMessage> resultList = Collections.checkedList(
 				em.createQuery("SELECT e FROM LogMessage e"
-				+ " WHERE e.levelString IN (:lvl)")
+				+ " WHERE e.levelString IN :lvl")
 				.setParameter("lvl", lvls)
 				.getResultList(),
 				LogMessage.class);
@@ -73,7 +73,8 @@ public class LogFacade {
 		@SuppressWarnings("unchecked")
 		List<LogMessage> resultList = Collections.checkedList(
 				em.createQuery("SELECT e FROM LogMessage e"
-				+ " WHERE e.properties[:propKey] = :propVal")
+				+ " LEFT JOIN e.properties p"
+				+ " WHERE KEY(p) = :propKey AND p = :propVal")
 				.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
 				.setParameter("propVal", Long.toString(exec.getId()))
 				.getResultList(),
@@ -100,8 +101,9 @@ public class LogFacade {
 		@SuppressWarnings("unchecked")
 		List<LogMessage> resultList = Collections.checkedList(
 				em.createQuery("SELECT e FROM LogMessage e"
-				+ " WHERE e.levelString IN (:lvl)"
-				+ "	AND e.properties[:propKey] = :propVal")
+				+ " LEFT JOIN e.properties p"
+				+ " WHERE e.levelString IN :lvl"
+				+ "	AND KEY(p) = :propKey AND p = :propVal")
 				.setParameter("lvl", lvls)
 				.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
 				.setParameter("propVal", Long.toString(exec.getId()))
@@ -130,9 +132,10 @@ public class LogFacade {
 		@SuppressWarnings("unchecked")
 		List<LogMessage> resultList = Collections.checkedList(
 				em.createQuery("SELECT e FROM LogMessage e"
-				+ " WHERE e.levelString IN (:lvl)"
-				+ " AND e.properties[:propKey] = :propVal"
-				+ "	AND e.properties[:propKeyDpu] = :propValDpu")
+				+ " LEFT JOIN e.properties p"
+				+ " WHERE e.levelString IN :lvl"
+				+ " AND ((KEY(p) = :propKey AND p = :propVal)"
+				+ "			OR (KEY(p) = :propKeyDpu AND p = :propValDpu))")
 				.setParameter("lvl", lvls)
 				.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
 				.setParameter("propVal", Long.toString(exec.getId()))
@@ -187,9 +190,10 @@ public class LogFacade {
 		}	
 		
 		Long count = (Long) em .createQuery(
-						"SELECT Count(*) FROM LogMessage e"
-								+ " WHERE e.levelString IN (:lvl)"
-								+ " AND e.properties[:propKey] = :propVal")
+						"SELECT COUNT(e) FROM LogMessage e"
+								+ " LEFT JOIN e.properties p"
+								+ " WHERE e.levelString IN :lvl"
+								+ " AND KEY(p) = :propKey AND p = :propVal")
 				.setParameter("lvl", lvls)
 				.setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
 				.setParameter("propVal", Long.toString(exec.getId()))
