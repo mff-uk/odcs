@@ -28,8 +28,7 @@ public class DataUnitInfo implements Serializable {
 	/**
 	 * Primary key.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	/**

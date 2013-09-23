@@ -36,8 +36,7 @@ public class LogMessage implements Serializable {
 	/**
 	 * Primary key of message stored in database.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "event_id")
 	private Long id;
 

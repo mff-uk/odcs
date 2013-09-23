@@ -17,8 +17,7 @@ public class Edge implements Serializable {
 	/**
 	 * Primary key of graph stored in db
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(optional = false)

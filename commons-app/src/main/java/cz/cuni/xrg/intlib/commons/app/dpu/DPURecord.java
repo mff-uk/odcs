@@ -21,8 +21,7 @@ public class DPURecord {
     /**
      * Primary key of graph stored in db
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**

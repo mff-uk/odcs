@@ -41,7 +41,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 	/**
 	 * Primary key for entity.
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
 	/**
