@@ -44,7 +44,7 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>${dpu.odcl.dir}\${project.artifactId}</outputDirectory>
+									<outputDirectory>${dpu.odcs.dir}\${project.artifactId}</outputDirectory>
 									<resources>
 										<resource>
 											<directory>${project.build.directory}</directory>
