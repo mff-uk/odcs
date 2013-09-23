@@ -242,6 +242,9 @@ public class PipelineExecution implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
+		if (this.id == null) {
+			return super.hashCode();
+		}
 		int hash = 3;
 		hash = 23 * hash + (int) (this.id ^ (this.id >>> 32));
 		return hash;
