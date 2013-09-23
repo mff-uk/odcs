@@ -118,6 +118,8 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 	 * @param dpu
 	 */
 	private void refreshDatabase(DPUTemplateRecord dpu) {
+		LOG.debug("Updating database record for template id: {} name: {} ",
+				dpu.getId(), dpu.getName());
 		// update information loaded from DPU
 		dpu.setJarDescription(dpuExplorer.getJarDescription(dpu));
 		// save DPU

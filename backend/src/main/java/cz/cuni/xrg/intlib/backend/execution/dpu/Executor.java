@@ -121,8 +121,7 @@ public final class Executor implements Runnable {
 	@PostConstruct
 	public void init() {
 		if (preExecutors != null) {
-			Collections.sort(preExecutors,
-					PreExecutorOrderComparator.INSTANCE);
+			Collections.sort(preExecutors, PreExecutorOrderComparator.INSTANCE);
 		}
 		if (postExecutors != null) {
 			Collections.sort(postExecutors,
@@ -343,8 +342,8 @@ public final class Executor implements Runnable {
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
 			LOG.error("Seems like someone deleted our pipeline run.", ex);
-		}		
-		
+		}
+
 		// return execution result .. this can't be changed to positive by post
 		// executors but they may change the state in unitInfo
 		return executionResult;
@@ -360,7 +359,7 @@ public final class Executor implements Runnable {
 		// assume that execution failed, if the execution thread terminates
 		// or something bad happen
 		executionSuccessful = false;
-		
+
 		// get DPU instance record, the DPU to execute
 		DPUInstanceRecord dpu = node.getDpuInstance();
 		// get processing context info
@@ -387,10 +386,15 @@ public final class Executor implements Runnable {
 			}
 		}
 
-		// run dpu, also set executionSuccessful according to 
+		// run dpu, also set executionSuccessful according to
 		// the execution result
-		executionSuccessful = execute(unitInfo);
-
+		executionSuccessful = execute(unitInfo)
+				// also check for DPU messages
+				&& !context.errorMessagePublished();
+		
+		// publish message
+		eventPublisher.publishEvent(
+				DPUEvent.createComplete(context, this));
 	}
 
 	/**
