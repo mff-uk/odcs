@@ -268,9 +268,9 @@ class DPU extends ViewComponent {
 						&&(isChanged()) &&(saveAllow)) {
 						
 					//open confirmation dialog
-					ConfirmDialog.show(UI.getCurrent(), "Please Confirm:",
-							"Do you want to save the changes in the DPU Template?",
-							"Yes", "No",
+					ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
+							"There are unsaved changes.\nDo you wish to save them or discard?",
+							"Save", "Discard changes",
 							new ConfirmDialog.Listener() {
 						private static final long serialVersionUID = 1L;
 
@@ -755,8 +755,8 @@ class DPU extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//open confirmation dialog
-				ConfirmDialog.show(UI.getCurrent(),
-						"Delete this DPU template?",
+				ConfirmDialog.show(UI.getCurrent(),"Confirmation of deleting DPU template",
+						"Delete " + selectedDpu.getName().toString() + " DPU template?","Delete", "Cancel",
 						new ConfirmDialog.Listener() {
 					private static final long serialVersionUID = 1L;
 

@@ -515,9 +515,9 @@ public class Settings extends ViewComponent {
 		if (isMyAccountModified()) {
 
 			//open confirmation dialog
-			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:",
-					"Do you want to save the changes on My account tab?",
-					"Yes", "No",
+			ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
+					"There are unsaved changes.\nDo you wish to save them or discard?",
+					"Save", "Discard changes",
 					new ConfirmDialog.Listener() {
 				private static final long serialVersionUID = 1L;
 
@@ -553,9 +553,9 @@ public class Settings extends ViewComponent {
 			final VerticalLayout layoutShow) {
 		if (areNotificationsModified()) {
 			//open confirmation dialog
-			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:",
-					"Do you want to save the changes on Scheduler notifications tab?",
-					"Yes", "No",
+			ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
+					"There are unsaved changes.\nDo you wish to save them or discard?",
+					"Save", "Discard changes",
 					new ConfirmDialog.Listener() {
 				private static final long serialVersionUID = 1L;
 

@@ -43,6 +43,7 @@ public class UsersList {
 	        "Total Pipelines", "Actions"};
 	 private IndexedContainer tableData;
 	 private Long userId;
+	 private User userDel;
 
 
 	public VerticalLayout buildUsersListLayout(){
@@ -243,9 +244,12 @@ public class UsersList {
 
 				@Override
 				public void buttonClick(ClickEvent event) {
+					userId = (Long) tableData.getContainerProperty(itemId, "id")
+							.getValue();
+					userDel = App.getApp().getUsers().getUser(userId);
 					//open confirmation dialog
-					ConfirmDialog.show(UI.getCurrent(),
-							"Delete this user?",
+					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting user",
+							"Delete the  " + userDel.getUsername() + " user?","Delete", "Cancel",
 							new ConfirmDialog.Listener() {
 
 								private static final long serialVersionUID = 1L;
@@ -253,10 +257,8 @@ public class UsersList {
 						@Override
 						public void onClose(ConfirmDialog cd) {
 							if (cd.isConfirmed()) {
-								userId = (Long) tableData.getContainerProperty(itemId, "id")
-										.getValue();
-								User user = App.getApp().getUsers().getUser(userId);
-								App.getApp().getUsers().delete(user);
+
+								App.getApp().getUsers().delete(userDel);
 								refreshData();
 								
 							}

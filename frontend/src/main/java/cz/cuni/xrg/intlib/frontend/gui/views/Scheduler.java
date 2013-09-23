@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -13,6 +15,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -56,6 +59,7 @@ class Scheduler extends ViewComponent {
 	int style = DateFormat.MEDIUM;
 	private Long schId;
 	static String filter;
+	private Schedule scheduleDel;
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -408,9 +412,24 @@ class Scheduler extends ViewComponent {
 
 					schId = (Long) tableData.getContainerProperty(itemId, "schid")
 							.getValue();
-					Schedule schedule = App.getApp().getSchedules().getSchedule(schId);
-					App.getApp().getSchedules().delete(schedule);
-					refreshData();
+					scheduleDel = App.getApp().getSchedules().getSchedule(schId);
+					
+					//open confirmation dialog
+					ConfirmDialog.show(UI.getCurrent(),"Confirmation of deleting scheduling rule",
+							"Delete " + scheduleDel.getPipeline().getName().toString() + " pipeline scheduling rule?","Delete", "Cancel",
+							new ConfirmDialog.Listener() {
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(ConfirmDialog cd) {
+							if (cd.isConfirmed()) {
+								App.getApp().getSchedules().delete(scheduleDel);
+								refreshData();
+
+							}
+						}
+					});
+					
 				}
 			});
 			layout.addComponent(deleteButton);
