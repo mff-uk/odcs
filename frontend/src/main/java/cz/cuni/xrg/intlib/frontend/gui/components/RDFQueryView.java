@@ -5,15 +5,20 @@ import com.vaadin.server.FileResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
+import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.DownloadStreamResource;
+import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
 import cz.cuni.xrg.intlib.rdf.enums.RDFFormatType;
 import cz.cuni.xrg.intlib.rdf.exceptions.InvalidQueryException;
 import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,47 +26,82 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple query view for querying debug data. User can query data for given DPU.
+ * Simple query view for browsing and querying debug data. User can query data for given DPU.
  * If DPU is TRANSFORMER, user can select if input or output graph should be
  * queried. If SELECT query is used, data are shown in table. If CONSTRUCT query
  * is used, data are provided as file for download. User can select format of
  * data.
  *
+ * TODO: Refresh description
  * @author Bogo
  */
-public class QueryView extends CustomComponent {
-
+public class RDFQueryView extends CustomComponent {
+	private PipelineExecution execution;
+	
 	private DebuggingView parent;
+	private DataUnitSelector selector;
 	private TextArea queryText;
 	private IntlibPagedTable resultTable;
 	private HorizontalLayout resultTableControls;
-	private NativeSelect graphSelect;
 	private NativeSelect formatSelect;
+	private NativeSelect downloadFormatSelect;
 	private Link export;
 	private final static String IN_GRAPH = "Input Graph";
 	private final static String OUT_GRAPH = "Output Graph";
-	private final static Logger LOG = LoggerFactory.getLogger(QueryView.class);
+	private final static Logger LOG = LoggerFactory.getLogger(RDFQueryView.class);
 
 	/**
 	 * Constructor with parent view.
 	 *
 	 * @param parent {@link DebuggingView} which is parent to this
-	 * {@link QueryView}.
+	 * {@link RDFQueryView}.
 	 */
-	public QueryView(DebuggingView parent) {
+	public RDFQueryView(DebuggingView parent, PipelineExecution execution) {
 		this.parent = parent;
+		this.execution = execution;
 		VerticalLayout mainLayout = new VerticalLayout();
+		
+		selector = new DataUnitSelector(execution);
 
-		HorizontalLayout topLine = new HorizontalLayout();
-		topLine.setWidth(100, Unit.PERCENTAGE);
+		HorizontalLayout queryLine = new HorizontalLayout();
+		queryLine.setWidth(100, Unit.PERCENTAGE);
+		
+		queryText = new TextArea("SPARQL Query:");
+		queryText.setWidth("100%");
+		queryText.setHeight("30%");
+		queryLine.addComponent(queryText);
+		
+		VerticalLayout queryControls = new VerticalLayout();
+		
+		//Export options
+		formatSelect = new NativeSelect();
+		for (RDFFormatType type : RDFFormatType.values()) {
+			if (type != RDFFormatType.AUTO) {
+				formatSelect.addItem(type);
+			}
+		}
+		formatSelect.setImmediate(true);
+		formatSelect.setNullSelectionAllowed(false);
+		queryControls.addComponent(formatSelect);
 
-		graphSelect = new NativeSelect("Graph:");
-		graphSelect.setImmediate(true);
-		graphSelect.setNullSelectionAllowed(false);
-		topLine.addComponent(graphSelect);
+		Button queryDownloadButton = new Button("Run Query and Download");
+		queryDownloadButton.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					//TODO: Download.
+					doQuery();
+				} catch (InvalidQueryException e) {
+					Notification.show("Query Validator",
+							"Query is not valid: "
+							+ e.getCause().getMessage(),
+							Notification.Type.ERROR_MESSAGE);
+				}
+			}
+		});
+		queryControls.addComponent(queryDownloadButton);
 
-
-		Button queryButton = new Button("Query");
+		Button queryButton = new Button("Run Query");
 		queryButton.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -75,29 +115,14 @@ public class QueryView extends CustomComponent {
 				}
 			}
 		});
-		topLine.addComponent(queryButton);
-		topLine.setComponentAlignment(queryButton, Alignment.BOTTOM_RIGHT);
-		topLine.setSpacing(true);
+		queryControls.addComponent(queryButton);
+		queryControls.setSpacing(true);
+		
+		queryLine.addComponent(queryControls);
 
-		//Export options
-		formatSelect = new NativeSelect("Format for construct queries:");
-		for (RDFFormatType type : RDFFormatType.values()) {
-			if (type != RDFFormatType.AUTO) {
-				formatSelect.addItem(type);
-			}
-		}
-		formatSelect.setImmediate(true);
-		formatSelect.setNullSelectionAllowed(false);
-		topLine.addComponent(formatSelect);
-		topLine.setExpandRatio(formatSelect, 1.0f);
-		topLine.setComponentAlignment(formatSelect, Alignment.MIDDLE_RIGHT);
-		//topLine.addComponent(export);
-		mainLayout.addComponent(topLine);
+		mainLayout.addComponent(queryLine);
 
-		queryText = new TextArea("SPARQL Query:");
-		queryText.setWidth("100%");
-		queryText.setHeight("30%");
-		mainLayout.addComponent(queryText);
+		
 
 		resultTable = new IntlibPagedTable();
 		resultTable.setWidth("100%");
@@ -107,7 +132,13 @@ public class QueryView extends CustomComponent {
 		resultTableControls = resultTable.createControls();
 		resultTableControls.setImmediate(true);
 		mainLayout.addComponent(resultTableControls);
-		export = new Link("Download data", null);
+		
+		HorizontalLayout bottomLine = new HorizontalLayout();
+		
+		downloadFormatSelect = new NativeSelect();
+		bottomLine.addComponent(downloadFormatSelect);
+		
+		export = new Link("Download", null);
 		export.setIcon(new ThemeResource("icons/download.png"));
 		export.setVisible(false);
 		export.setImmediate(true);
@@ -118,8 +149,8 @@ public class QueryView extends CustomComponent {
 				export.setEnabled(false);
 			}
 		});
-		mainLayout.addComponent(export);
-		mainLayout.setComponentAlignment(export, Alignment.MIDDLE_CENTER);
+		bottomLine.addComponent(export);
+		
 
 		mainLayout.setSizeFull();
 		setCompositionRoot(mainLayout);
@@ -188,7 +219,6 @@ public class QueryView extends CustomComponent {
 	 */
 	private void doQuery() throws InvalidQueryException {
 
-		boolean onInputGraph = graphSelect.getValue().equals("Input Graph");
 		String query = queryText.getValue();
 		
 		if(query.length() < 9) {
@@ -203,7 +233,8 @@ public class QueryView extends CustomComponent {
 	
 		
 			try {
-				RDFDataUnit repository = parent.getRepository(onInputGraph);
+				
+				RDFDataUnit repository = getRepository(selector.getSelectedDataUnit());
 				if(repository == null) {
 					return;
 				}
@@ -228,6 +259,18 @@ public class QueryView extends CustomComponent {
 		resultTableControls.setVisible(visibility);
 
 	}
+	
+	/**
+     * Gets repository path from context.
+     *
+     * @return {@link ExecutionContextInfo} containing current execution
+     * information.
+	 * 
+	 * //TODO: Change getRepository method and arguments
+     */
+    RDFDataUnit getRepository(DataUnitInfo dataUnit) {
+		return DataUnitBrowserFactory.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
+    }
 
 	/**
 	 * Initializes table with data from SELECT query.
@@ -261,25 +304,5 @@ public class QueryView extends CustomComponent {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Populates select box for RDF graph to query.
-	 *
-	 * @param type DPU type to query
-	 */
-	public void setGraphs(DPUType type) {
-		graphSelect.removeAllItems();
-		if (DPUType.EXTRACTOR.equals(type)) {
-			graphSelect.addItem(IN_GRAPH);
-			graphSelect.select(IN_GRAPH);
-		} else if (DPUType.TRANSFORMER.equals(type)) {
-			graphSelect.addItem(IN_GRAPH);
-			graphSelect.addItem(OUT_GRAPH);
-			graphSelect.select(OUT_GRAPH);
-		} else if (DPUType.LOADER.equals(type)) {
-			graphSelect.addItem(OUT_GRAPH);
-			graphSelect.select(OUT_GRAPH);
-		}
 	}
 }

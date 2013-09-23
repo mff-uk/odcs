@@ -83,7 +83,6 @@ public class DataUnitBrowserFactory {
 	 * Return repository for specified DataUnit.
 	 *
 	 * @param context       The pipelineExecution context.
-	 * @param execution     Respective PipelineExecution.
 	 * @param dpuInstance   Owner of DataUnit.
 	 * @param dataUnitIndex Index of data unit.
 	 * @return Repository or null if there is no browser for given type.
@@ -91,7 +90,6 @@ public class DataUnitBrowserFactory {
 	 */
 	@Deprecated
 	public static RDFDataUnit getRepository(ExecutionContextInfo context,
-			PipelineExecution execution,
 			DPUInstanceRecord dpuInstance, DataUnitInfo info) {
 
 		// get type and directory

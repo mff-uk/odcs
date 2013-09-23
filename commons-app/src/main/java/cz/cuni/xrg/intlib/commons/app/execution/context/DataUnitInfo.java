@@ -109,5 +109,10 @@ public class DataUnitInfo implements Serializable {
 	public boolean isInput() {
 		return isInput;
 	}
+        
+        @Override
+        public String toString() {
+            return name;
+        }
 
 }

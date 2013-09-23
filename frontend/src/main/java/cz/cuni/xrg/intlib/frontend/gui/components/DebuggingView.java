@@ -1,29 +1,16 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
-import com.github.wolfie.refresher.Refresher;
-import com.vaadin.data.Property;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
-import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
-import cz.cuni.xrg.intlib.frontend.browser.BrowserInitFailedException;
-import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowser;
-import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
-import cz.cuni.xrg.intlib.frontend.browser.DataUnitNotFoundException;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Shows complex debug information about current pipeline execution. Shows
@@ -41,19 +28,16 @@ public class DebuggingView extends CustomComponent {
 
     private VerticalLayout mainLayout;
     private PipelineExecution pipelineExec;
-    private ExecutionContextInfo ctxReader;
     private DPUInstanceRecord debugDpu;
     private boolean isInDebugMode;
     private RecordsTable executionRecordsTable;
-    private Tab browseTab;
-    private Tab logTab;
+    private Tab eventsTab;
+	private Tab logTab;
     private Tab queryTab;
-    private Tab infoTab;
     private TabSheet tabs;
-    private QueryView queryView;
+    private RDFQueryView queryView;
     //private HorizontalLayout refreshComponent;
     private LogMessagesTable logMessagesTable;
-    private ComboBox dpuSelector;
     private boolean isFromCanvas;
     private Embedded iconStatus;
     private CheckBox refreshAutomatically = null;
@@ -117,18 +101,18 @@ public class DebuggingView extends CustomComponent {
             topLine.addComponent(iconStatus);
             mainLayout.addComponent(topLine);
         }
+		
+		tabs = new TabSheet();
+        tabs.setSizeFull();
 
         executionRecordsTable = new RecordsTable();
         executionRecordsTable.setWidth("100%");
 
-        mainLayout.addComponent(executionRecordsTable);
+		eventsTab = tabs.addTab(executionRecordsTable, "Events");
 
         HorizontalLayout optionLine = new HorizontalLayout();
         optionLine.setWidth(100, Unit.PERCENTAGE);
-        // DPU selector is shown in debug mode only
-        if (isInDebugMode) {
-            optionLine.addComponent(buildDpuSelector());
-        }
+		
         if(!isRunFinished()) {
             refreshAutomatically = new CheckBox("Refresh automatically", true);
             refreshAutomatically.setImmediate(true);
@@ -137,32 +121,18 @@ public class DebuggingView extends CustomComponent {
         }
         mainLayout.addComponent(optionLine);
 
-        tabs = new TabSheet();
-        tabs.setSizeFull();
-
-        browseTab = tabs.addTab(new Label("Browser"), "Browse");
-
-        //refreshComponent = buildRefreshComponent();
-
-        //logTextArea = new TextArea();
-        //logTextArea.setValue("Log file content");
         VerticalLayout logLayout = new VerticalLayout();
-        //logLayout.addComponent(refreshComponent);
 
         logMessagesTable = new LogMessagesTable();
         logLayout.addComponent(logMessagesTable);
-        //logLayout.addComponent(logTextArea);
         logLayout.setSizeFull();
-        //logTextArea.setSizeFull();
-        //logTextArea.setReadOnly(true);
-        //logTextArea.setHeight(460, Unit.PIXELS);
         logTab = tabs.addTab(logLayout, "Log");
 
-        queryView = new QueryView(this);
-        if (debugDpu != null) {
-            queryView.setGraphs(debugDpu.getType());
-        }
-        queryTab = tabs.addTab(queryView, "Query");
+        queryView = new RDFQueryView(this, pipelineExec);
+//        if (debugDpu != null) {
+//            queryView.setGraphs(debugDpu.getType());
+//        }
+        queryTab = tabs.addTab(queryView, "Browse/Query");
 
         mainLayout.setSizeFull();
         mainLayout.addComponent(tabs);
@@ -182,44 +152,16 @@ public class DebuggingView extends CustomComponent {
             iconStatus.setDescription(pipelineExec.getStatus().name());
         }
 
-        boolean loadSuccessful = loadExecutionContextReader();
-
         executionRecordsTable.setPipelineExecution(pipelineExec);
 
-        if (loadSuccessful && isInDebugMode) {
-            refreshDpuSelector();
-        }
-
-        //Table with data
-        if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished()) {
-            DataUnitBrowser browser = loadBrowser(false);
-            if (browser != null) {
-                tabs.removeTab(browseTab);
-                browseTab = tabs.addTab(browser, "Browse");
-                browseTab.setEnabled(true);
-                //tabs.setSelectedTab(browseTab);
-            } else {
-                browseTab.setEnabled(false);
-                loadSuccessful = false;
-            }
-        } else {
-            browseTab.setEnabled(false);
-        }
-
         //Content of text log file
-        logMessagesTable.setDpu(pipelineExec, isInDebugMode ? (DPUInstanceRecord) dpuSelector.getValue() : null, isRefresh);
+        logMessagesTable.setDpu(pipelineExec, null, isRefresh);
 
         //Query View
-        if (loadSuccessful && isInDebugMode && debugDpu != null && isRunFinished()) {
+        if (isInDebugMode && debugDpu != null && isRunFinished()) {
             queryTab.setEnabled(true);
         } else {
             queryTab.setEnabled(false);
-        }
-
-        //Create tab with information about running pipeline and refresh button
-        if (infoTab != null) {
-            tabs.removeTab(infoTab);
-
         }
         
         if(isRunFinished() && refreshAutomatically != null) {
@@ -234,178 +176,10 @@ public class DebuggingView extends CustomComponent {
         pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
         fillContent(true);
         fireRefreshRequest();
-        if (debugDpu != null) {
-            queryView.setGraphs(debugDpu.getType());
-        }
+//        if (debugDpu != null) {
+//            queryView.setGraphs(debugDpu.getType());
+//        }
         setCompositionRoot(mainLayout);
-    }
-
-    /**
-     * Tries to load context for given pipeline execution.
-     *
-     * @return Load was successful.
-     */
-    private boolean loadExecutionContextReader() {
-        ctxReader = pipelineExec.getContextReadOnly();
-        return ctxReader != null;
-    }
-
-    /**
-     * Loads Browser tab content.
-     *
-     * @param showInput Input/Output graph should be showed.
-     * @return {@link DataUnitBrowser} for actual {@link DPUInstanceRecord}.
-     */
-    private DataUnitBrowser loadBrowser(boolean showInput) {
-        if (debugDpu == null) {
-            return null;
-        }
-        List<DataUnitInfo> indexes = ctxReader.getDPUInfo(debugDpu).getDataUnits();
-        
-        
-        if (indexes == null) {
-            return null;
-        }
-
-        Iterator<DataUnitInfo> iter = indexes.iterator();
-        while (iter.hasNext()) {
-
-            DataUnitInfo dataUnitInfo = iter.next();
-            //If I Have only one data unit, I use it, otherwise select the right input/output data unit.
-            if (indexes.size() == 1 || showInput == dataUnitInfo.isInput()) {
-                DataUnitBrowser duBrowser;
-                try {
-                    //File dumpDir = ctxReader.getDataUnitStorage(debugDpu, dataUnitInfo.getIndex());
-                    duBrowser =
-                            DataUnitBrowserFactory.getBrowser(ctxReader, pipelineExec, debugDpu, dataUnitInfo);
-
-
-                } catch (DataUnitNotFoundException | BrowserInitFailedException ex) {
-                    Logger.getLogger(DebuggingView.class
-                            .getName()).log(Level.SEVERE, null, ex);
-
-                    return null;
-                }
-                if (duBrowser != null) {
-                    duBrowser.enter();
-                }
-                return duBrowser;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Gets repository path from context.
-     *
-     * @return {@link ExecutionContextInfo} containing current execution
-     * information.
-     */
-    RDFDataUnit getRepository(boolean onInputGraph) {
-        if (debugDpu == null) {
-            return null;
-        }
-        List<DataUnitInfo> infos = 
-        		ctxReader.getDPUInfo(debugDpu).getDataUnits();
-
-        if (infos == null) {
-            return null;
-        }
-
-        Iterator<DataUnitInfo> iter = infos.iterator();
-        while (iter.hasNext()) {
-            DataUnitInfo duInfo = iter.next();
-
-            if (debugDpu.getType() != DPUType.TRANSFORMER || duInfo.isInput() == onInputGraph) {
-                return DataUnitBrowserFactory.getRepository(ctxReader, pipelineExec, debugDpu, duInfo);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Gets repository directory from context.
-     *
-     * @param onInputGraph Repository path of Input/Output graph.
-     * @return {@link File} representing directory of repository.
-     */
-    /*File getRepositoryDirectory(boolean onInputGraph) {
-     * 
-     * if (debugDpu == null) {
-     * return null;
-     * }
-     * List<DataUnitInfo> infos = ctxReader.getDataUnitsInfo(debugDpu);
-     * 
-     * if (infos == null) {
-     * return null;
-     * }
-     * 
-     * Iterator<DataUnitInfo> iter = infos.iterator();
-     * while (iter.hasNext()) {
-     * DataUnitInfo duInfo = iter.next();
-     * 
-     * if (debugDpu.getType() != DPUType.TRANSFORMER || duInfo.isInput() == onInputGraph) {
-     * duInfo.getDirectory();
-     * }
-     * }
-     * return null;
-     * }*/
-    /**
-     * Refresh component factory. Is to be displayed while pipeline is still
-     * running. Contains refresh button, which updates the content of debugging
-     * view and shows the most current data of given pipeline run.
-     *
-     * @return Layout with label and refresh button.
-     */
-    private HorizontalLayout buildRefreshComponent() {
-
-        Button refreshButton = new Button("Refresh",
-                new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                refreshContent();
-            }
-        });
-
-        Label label = new Label("Pipeline is still running. Please click refresh to update status.");
-        label.setStyleName("warning");
-        label.setWidth(450, Unit.PIXELS);
-
-        HorizontalLayout refreshLayout = new HorizontalLayout();
-        refreshLayout.setWidth(100, Unit.PERCENTAGE);
-        refreshLayout.addComponent(label);
-        refreshLayout.addComponent(refreshButton);
-        refreshLayout.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
-
-        refreshLayout.setVisible(false);
-
-        return refreshLayout;
-    }
-
-    /**
-     * DPU select box factory.
-     */
-    private ComboBox buildDpuSelector() {
-        dpuSelector = new ComboBox("Select DPU:");
-        dpuSelector.setImmediate(true);
-        if (ctxReader != null) {
-            refreshDpuSelector();
-        }
-        dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                Object value = event.getProperty().getValue();
-
-
-                if (value != null && value.getClass() == DPUInstanceRecord.class) {
-                    debugDpu = (DPUInstanceRecord) value;
-                } else {
-                    debugDpu = null;
-                }
-                refreshContent();
-            }
-        });
-        return dpuSelector;
     }
 
     /**
@@ -421,32 +195,7 @@ public class DebuggingView extends CustomComponent {
         //logTextArea.setHeight(newLogHeight, Unit.PIXELS);
     }
 
-    /**
-     * Fills dpu selector with dpus for which there are debug information
-     * available.
-     */
-    private void refreshDpuSelector() {
-
-//		 Collection<?> o = dpuSelector.getVisibleItemIds();
-//		if(o != null && !o.isEmpty()) {
-//			return;
-//		}
-        //dpuSelector.removeAllItems();
-        Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
-        for (DPUInstanceRecord dpu : contextDpuIndexes) {
-            if (!dpuSelector.containsId(dpu)) {
-                dpuSelector.addItem(dpu);
-                if (dpu.equals(debugDpu)) {
-                    dpuSelector.select(debugDpu);
-
-
-                }
-            }
-        }
-//		if (debugDpu != null) {
-//			dpuSelector.select(debugDpu);
-//		}
-    }
+    
 
     /**
      * Fires refresh request event.
@@ -459,7 +208,7 @@ public class DebuggingView extends CustomComponent {
     }
 
     /**
-     * Sets execution and debug node about which debug ingo should be shown.
+     * Sets execution and debug node about which debug info should be shown.
      * 
      * @param execution New execution.
      * @param instance New debug node.

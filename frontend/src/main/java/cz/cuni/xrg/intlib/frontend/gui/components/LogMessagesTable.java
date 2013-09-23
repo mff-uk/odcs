@@ -52,7 +52,7 @@ public class LogMessagesTable extends CustomComponent {
 		messageTable.setSizeFull();
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(16);
+		messageTable.setPageLength(28);
 		messageTable.setSelectable(true);
 		messageTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
