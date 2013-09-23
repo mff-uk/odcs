@@ -48,6 +48,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final long DEFAULT_CHUNK_SIZE = 10;
 
 	/**
+	 * Count of attempts to reconnect if the connection fails
+	 */
+	protected static final int RETRY_CONNECTION_SIZE = 20;
+
+	/**
 	 * Represent successfully connection using HTTP.
 	 */
 	protected static final int HTTP_OK_RESPONSE = 200;
@@ -1852,7 +1857,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		HttpURLConnection httpConnection = null;
 		try {
-			httpConnection = (HttpURLConnection) call.openConnection();
+			httpConnection = getHttpURLConnection(call);
 			httpConnection.setRequestMethod("POST");
 			httpConnection.setRequestProperty("Content-Type",
 					"application/x-www-form-urlencoded");
@@ -1932,6 +1937,39 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			throw new RDFException(message + e.getMessage(), e);
 
+		}
+	}
+
+	private HttpURLConnection getHttpURLConnection(URL call) throws IOException {
+
+		int retryCount = 0;
+
+		HttpURLConnection httpConnection;
+
+		while (true) {
+			try {
+				httpConnection = (HttpURLConnection) call.openConnection();
+				return httpConnection;
+			} catch (IOException e) {
+				retryCount++;
+
+				final String message = String.format(
+						"%s/%s attempt to reconnect %s FAILED", retryCount,
+						RETRY_CONNECTION_SIZE, call.toString());
+
+				logger.debug(message);
+
+				if (retryCount >= RETRY_CONNECTION_SIZE) {
+					throw new IOException(e.getMessage(), e);
+				} else {
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(1000);
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage());
+					}
+				}
+			}
 		}
 	}
 
