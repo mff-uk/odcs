@@ -24,6 +24,7 @@ import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
 import cz.cuni.xrg.intlib.commons.app.module.DPUModuleManipulator;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
+import cz.cuni.xrg.intlib.commons.app.rdf.namespace.NamespacePrefixFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -371,6 +372,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 */
 	public UserFacade getUsers() {
 		return (UserFacade) context.getBean("userFacade");
+	}
+	
+	/**
+	 * Return facade, which provide services for manipulating with Namespace Prefix.
+	 *
+	 * @return NamespascePrefix facade
+	 */
+	public NamespacePrefixFacade getNamespacePrefixes() {
+		return (NamespacePrefixFacade) context.getBean("prefixFacade");
 	}
 
 	/**
