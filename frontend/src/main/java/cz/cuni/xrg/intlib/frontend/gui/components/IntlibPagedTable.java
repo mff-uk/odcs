@@ -19,6 +19,8 @@ import org.tepi.filtertable.paged.PagedTableChangeEvent;
 /**
  * Intlib extension of FilterTable add-on. PagedFilterTable provides paging for
  * custom Vaadin Table.
+ * 
+ * TODO: Why we need to extend the PagedFilterTable?
  *
  * @author Bogo
  */

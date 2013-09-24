@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.intlib.extractor.silklinker;
 
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
+import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
 
 /**
  *
@@ -8,16 +9,16 @@ import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
  *
  */
 public class SilkLinkerConfig implements DPUConfigObject {
-    
+
     /**
      * Path to the config file driving the execution of Silk.
      */
-    private String confFile;
+    private String confFile = null;
 
     public SilkLinkerConfig() {
-    	confFile = null;
+        confFile = null;
     }
-    
+
     public SilkLinkerConfig(String confFile) {
         this.confFile = confFile;
     }
@@ -26,10 +27,8 @@ public class SilkLinkerConfig implements DPUConfigObject {
         return confFile;
     }
 
-	@Override
-	public boolean isValid() {
-		return confFile != null;
-	}
-    
-
+    @Override
+    public boolean isValid() {
+        return confFile != null;
+    }
 }

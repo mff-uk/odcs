@@ -205,7 +205,8 @@ public class QueryView extends CustomComponent {
 			try {
 				RDFDataUnit repository = parent.getRepository(onInputGraph);
 				if(repository == null) {
-					return;
+				    //TODO is this an error?	
+                                    return;
 				}
 				
 				if (isSelectQuery) {

@@ -47,6 +47,7 @@ public class IntlibApplicationServlet extends VaadinServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+        //Spring needs HTTP request access
 		// Store current HTTP request in thread-local, so we can access it later.
 		RequestHolder.setRequest(request);
 		
