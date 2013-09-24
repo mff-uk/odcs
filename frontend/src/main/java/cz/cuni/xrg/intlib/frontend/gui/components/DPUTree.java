@@ -6,10 +6,9 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
+
 import cz.cuni.xrg.intlib.commons.app.dpu.DPURecord;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
-
-import static cz.cuni.xrg.intlib.commons.app.dpu.DPUType.*;
 
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.gui.views.SimpleTreeFilter;
@@ -28,6 +27,7 @@ public class DPUTree extends CustomComponent {
     Tree dpuTree;
     Button btnMinimize;
     Button btnExpand;
+	Button buttonCreateDPU;
     GridLayout filterBar;
     boolean isExpandable = false;
 
@@ -87,6 +87,33 @@ public class DPUTree extends CustomComponent {
             topLine.setExpandRatio(btnExpand, 1.0f);
             topLine.setComponentAlignment(btnExpand, Alignment.TOP_RIGHT);
             mainLayout.addComponent(topLine);
+			
+			buttonCreateDPU = new Button();
+			buttonCreateDPU.setCaption("Create DPU template");
+			buttonCreateDPU.setHeight("25px");
+			buttonCreateDPU.setWidth("150px");
+			buttonCreateDPU
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(Button.ClickEvent event) {
+					//Open the dialog for DPU Template creation
+					DPUCreate createDPU = new DPUCreate();
+					App.getApp().addWindow(createDPU);
+					createDPU.addCloseListener(new Window.CloseListener() {
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void windowClose(Window.CloseEvent e) {
+							//refresh DPU tree after closing DPU Template creation dialog 
+							refresh();
+						}
+					});
+
+				}
+			});
+			mainLayout.addComponent(buttonCreateDPU);
         }
 
         // DPURecord tree filters
@@ -145,6 +172,7 @@ public class DPUTree extends CustomComponent {
     private void setTreeState(boolean isStateExpanded) {
         btnMinimize.setVisible(isExpandable && isStateExpanded);
         btnExpand.setVisible(isExpandable && !isStateExpanded);
+		buttonCreateDPU.setVisible(isExpandable && isStateExpanded);
         layoutTree.setVisible(isStateExpanded);
         mainLayout.setSizeUndefined();
     }
@@ -177,11 +205,11 @@ public class DPUTree extends CustomComponent {
 
         tree.removeAllItems();
 
-        DPURecord rootExtractor = new DPURecord("Extractors", null);
+        DPURecord rootExtractor = new DPUTemplateRecord("Extractors", null);
         tree.addItem(rootExtractor);
-        DPURecord rootTransformer = new DPURecord("Transformers", null);
+        DPURecord rootTransformer = new DPUTemplateRecord("Transformers", null);
         tree.addItem(rootTransformer);
-        DPURecord rootLoader = new DPURecord("Loaders", null);
+        DPURecord rootLoader = new DPUTemplateRecord("Loaders", null);
         tree.addItem(rootLoader);
 
         List<DPUTemplateRecord> dpus = App.getApp().getDPUs().getAllTemplates();

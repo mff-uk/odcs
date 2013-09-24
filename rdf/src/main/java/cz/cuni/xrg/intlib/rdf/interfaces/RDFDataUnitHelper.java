@@ -9,7 +9,6 @@ import cz.cuni.xrg.intlib.rdf.impl.MyTupleQueryResult;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import org.openrdf.model.*;
 import org.openrdf.rio.RDFFormat;
 
@@ -180,7 +179,7 @@ public interface RDFDataUnitHelper {
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI, String userName,
 			String password, WriteGraphType graphType, InsertType insertType,
-			long chnnkSize)
+			long chunkSize)
 			throws RDFException;
 
 	/**
@@ -291,20 +290,6 @@ public interface RDFDataUnitHelper {
 	 */
 	public File makeSelectQueryOverRepository(String selectQuery,
 			String filePath)
-			throws InvalidQueryException;
-
-	/**
-	 * Make select query over repository data and return tables as result.
-	 *
-	 * @param selectQuery String representation of SPARQL query.
-	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
-	 *         map key is column name and <code>List&lt;String&gt;</code> are
-	 *         string values in this column. When query is invalid, return *
-	 *         empty <code>Map</code>.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	public Map<String, List<String>> executeSelectQuery(
-			String selectQuery)
 			throws InvalidQueryException;
 
 	/**

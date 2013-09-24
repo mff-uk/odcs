@@ -1,5 +1,6 @@
 package cz.cuni.xrg.intlib.commons.app.execution.log;
 
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -173,4 +174,21 @@ public class LogMessage implements Serializable {
 	public Map<String, String> getProperties() {
 		return properties;
 	}
+        
+        /**
+         * TODO: Retrieve DPUInstance.
+         * 
+         * @return Id of related DPUInstance
+         * 
+         */
+        public Long getDpuInstanceId() {
+            if(properties == null) {
+                return null;
+            }
+            String dpuId = properties.get(MDC_DPU_INSTANCE_KEY_NAME);
+            if(dpuId == null) {
+                return null;
+            }
+            return Long.parseLong(dpuId);
+        }
 }

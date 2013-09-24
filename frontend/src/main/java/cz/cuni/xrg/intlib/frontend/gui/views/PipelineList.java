@@ -9,6 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
@@ -18,6 +19,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
@@ -60,6 +63,7 @@ class PipelineList extends ViewComponent {
 
 			Button updateButton = new Button();
 			updateButton.setCaption("edit");
+			updateButton.setWidth("80px");
 			updateButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -82,15 +86,21 @@ class PipelineList extends ViewComponent {
 			final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
 			Button copyButton = new Button();
 			copyButton.setCaption("copy");
+			copyButton.setWidth("80px");
 			copyButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
-							nPipeline.setName("Copy of " + pipeline.getName());
+							String copiedPipelineName = "Copy of " + pipeline.getName();
+							if(copiedPipelineName.length() > MaxLengthValidator.NAME_LENGTH) {
+								Notification.show(String.format("Name of copied pipeline would exceed limit of %d characters, new pipeline has same name as original.", MaxLengthValidator.NAME_LENGTH), Notification.Type.WARNING_MESSAGE);
+							} else {
+								nPipeline.setName(copiedPipelineName);
+							}
 							pipelineFacade.save(nPipeline);
 							refreshData();
-							tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
+							//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 						}
 					});
 			layout.addComponent(copyButton); 
@@ -98,6 +108,7 @@ class PipelineList extends ViewComponent {
 
 			Button deleteButton = new Button();
 			deleteButton.setCaption("delete");
+			deleteButton.setWidth("80px");
 			deleteButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -122,7 +133,7 @@ class PipelineList extends ViewComponent {
 										// now we have to remove pipeline from table
 										source.removeItem(itemId);
 										refreshData();
-										tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
+										//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 									}
 								}
 							});
@@ -135,6 +146,7 @@ class PipelineList extends ViewComponent {
 
 			Button runButton = new Button();
 			runButton.setCaption("run");
+			runButton.setWidth("80px");
 			runButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -146,6 +158,7 @@ class PipelineList extends ViewComponent {
 
 			Button runDebugButton = new Button();
 			runDebugButton.setCaption("debug");
+			runDebugButton.setWidth("80px");
 			runDebugButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -160,7 +173,8 @@ class PipelineList extends ViewComponent {
 			
 			
 			Button schedulerButton = new Button();
-			schedulerButton.setCaption("scheduler");
+			schedulerButton.setCaption("schedule");
+			schedulerButton.setWidth("80px");
 			schedulerButton
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 						@Override
@@ -168,11 +182,7 @@ class PipelineList extends ViewComponent {
 							// open scheduler dialog
 							SchedulePipeline  sch = new SchedulePipeline();
 							sch.setSelectePipeline(pipeline);
-							//sch.selectedPipeline=pipeline;
-							//openScheduler(sch);
-							App.getApp().addWindow(sch);
-							
-
+							App.getApp().addWindow(sch);	
 						}
 					});
 			layout.addComponent(schedulerButton);
@@ -197,12 +207,9 @@ class PipelineList extends ViewComponent {
 	 */
 	private void refreshData() {
 		int page = tablePipelines.getCurrentPage();
-		Container container = ContainerFactory.createPipelines();
-		tablePipelines.setContainerDataSource(container);
-		tablePipelines.setFilterFieldVisible("", false);
-		tablePipelines.setFilterFieldVisible("duration", false);
+		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) tablePipelines.getContainerDataSource().getContainer();
+		c.refresh();
 		tablePipelines.setCurrentPage(page);
-
 	}
 
 	private VerticalLayout buildMainLayout() {
@@ -223,7 +230,7 @@ class PipelineList extends ViewComponent {
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("Create pipeline");
 		btnCreatePipeline.setHeight("25px");
-		btnCreatePipeline.setWidth("150px");
+		btnCreatePipeline.setWidth("120px");
 		btnCreatePipeline
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 					@Override
@@ -240,7 +247,7 @@ class PipelineList extends ViewComponent {
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
-		buttonDeleteFilters.setWidth("110px");
+		buttonDeleteFilters.setWidth("120px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
@@ -295,9 +302,39 @@ class PipelineList extends ViewComponent {
 				return IntlibHelper.getDuration(latestExec);
 			}
 		});
+		// High performance loss in current version.
+//		tablePipelines.addGeneratedColumn("lastExecTime", new CustomTable.ColumnGenerator() {
+//
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+//				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
+//				if(latestExec != null) {
+//					return latestExec.getStart();
+//				} else {
+//					return null;
+//				}
+//			}
+//		});
+//		tablePipelines.addGeneratedColumn("lastExecStatus", new CustomTable.ColumnGenerator() {
+//
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+//				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
+//				if(latestExec != null) {
+//					return latestExec.getStatus();
+//				} else {
+//					return null;
+//				}
+//			}
+//		});
 		// set columns
 		tablePipelines.setVisibleColumns("id", "name", "duration", "description", "");
+		//tablePipelines.setVisibleColumns("id", "name", "duration", "lastExecTime", "lastExecStatus", "description", "");
 		tablePipelines.setColumnHeader("duration", "Last run time");
+		//tablePipelines.setColumnHeader("lastExecTime", "Last execution time");
+		//tablePipelines.setColumnHeader("lastExecStatus", "Last status");
 		tablePipelines.setFilterBarVisible(true);
                 tablePipelines.setFilterLayout();
 		tablePipelines.setSelectable(true);

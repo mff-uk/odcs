@@ -36,6 +36,7 @@ public class RecordDetail extends Window {
 		GridLayout mainLayout = new GridLayout(2, 7);
 		mainLayout.setImmediate(true);
 		mainLayout.setSpacing(true);
+		mainLayout.setMargin(true);
 		mainLayout.setSizeFull();
 		
 		Label pipelineExecutionLabel = new Label("Pipeline execution:");

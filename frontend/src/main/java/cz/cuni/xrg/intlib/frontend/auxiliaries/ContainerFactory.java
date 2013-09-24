@@ -66,7 +66,7 @@ public class ContainerFactory {
 	}
 
 	public static Container createExecutionMessages() {
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), MessageRecord.class, 16, "id", true, true, true);
+		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), MessageRecord.class, 20, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"time"}, new boolean[]{true});
 		container.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(1);
@@ -89,7 +89,7 @@ public class ContainerFactory {
 	}
 
 	public static IntlibLazyQueryContainer createLogMessages() {
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), LogMessage.class, 16, "id", true, true, true);
+		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), LogMessage.class, 28, "id", true, true, true);
 		container.addContainerProperty("id", Long.class, 0, true, true);
 		container.addContainerProperty("thread", String.class, "", true, true);
 		container.addContainerProperty("level", Level.class, Level.ALL, true, true);

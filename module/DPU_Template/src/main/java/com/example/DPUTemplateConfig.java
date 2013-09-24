@@ -7,6 +7,8 @@ import cz.cuni.xrg.intlib.commons.module.config.DPUConfigObjectBase;
  * 
  * You can optionally implement {@link #isValid()} to provide possibility
  * to validate the configuration.
+ * 
+ * <b>This class must have default (parameter less) constructor!</b>
  */
 public class DPUTemplateConfig extends DPUConfigObjectBase {
 

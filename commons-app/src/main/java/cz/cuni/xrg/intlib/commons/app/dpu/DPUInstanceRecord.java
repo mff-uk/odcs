@@ -6,6 +6,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
+import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
+
 /**
  * Represent the DPU instance pipeline placement in DB.
  * 
@@ -53,8 +56,8 @@ public class DPUInstanceRecord extends DPURecord {
 	 * @param name
 	 * @param type
 	 */
-	public DPUInstanceRecord(String name, DPUType type) {
-		super(name, type);
+	public DPUInstanceRecord(String name) {
+		super(name);
 		toolTip = null;
 	}
 	
@@ -69,7 +72,7 @@ public class DPUInstanceRecord extends DPURecord {
 		this.template = template;
 		this.toolTip = null;
 	}
-	
+
 	public DPUTemplateRecord getTemplate() {
 		return template;
 	}
@@ -85,4 +88,26 @@ public class DPUInstanceRecord extends DPURecord {
 	public void setToolTip(String toolTip) {
 		this.toolTip = toolTip;
 	}
+
+	@Override
+	public DPUType getType() {
+		return template.getType();
+	}
+
+    /**
+     * Load DPU's instance from associated jar file.
+     * @param moduleFacade ModuleFacade used to load DPU.
+     * @throws ModuleException
+     */
+	@Override
+    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException {
+    	instance = moduleFacade.getInstance(template);
+    }
+	
+	
+	@Override
+	public String getJarPath() {
+		return template.getJarPath();
+	}
+	
 }

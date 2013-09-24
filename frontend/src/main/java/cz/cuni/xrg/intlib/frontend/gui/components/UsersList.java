@@ -43,6 +43,7 @@ public class UsersList {
 	        "Total Pipelines", "Actions"};
 	 private IndexedContainer tableData;
 	 private Long userId;
+	 private User userDel;
 
 
 	public VerticalLayout buildUsersListLayout(){
@@ -62,6 +63,7 @@ public class UsersList {
 
 		Button addUserButton = new Button();
 		addUserButton.setCaption("Create new user");
+		addUserButton.setWidth("120px");
 		addUserButton
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -90,7 +92,7 @@ public class UsersList {
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
-		buttonDeleteFilters.setWidth("110px");
+		buttonDeleteFilters.setWidth("120px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 
@@ -234,18 +236,41 @@ public class UsersList {
 
 			HorizontalLayout layout = new HorizontalLayout();
 
+			//Edit button. Open dialog for edit user's details.
+			Button changeButton = new Button();
+			changeButton.setCaption("Edit");
+			changeButton.setWidth("80px");
+			changeButton.addClickListener(new ClickListener() {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					
+					userId = (Long) tableData.getContainerProperty(itemId, "id")
+							.getValue();
+					showUserSettings(userId);
+					
+				}
+			});
+			
+			layout.addComponent(changeButton);
 		
 			//Delete button. Delete user's record from Database.
 			Button deleteButton = new Button();
 			deleteButton.setCaption("Delete");
+			deleteButton.setWidth("80px");
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void buttonClick(ClickEvent event) {
+					userId = (Long) tableData.getContainerProperty(itemId, "id")
+							.getValue();
+					userDel = App.getApp().getUsers().getUser(userId);
 					//open confirmation dialog
-					ConfirmDialog.show(UI.getCurrent(),
-							"Delete this user?",
+					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting user",
+							"Delete the  " + userDel.getUsername() + " user?","Delete", "Cancel",
 							new ConfirmDialog.Listener() {
 
 								private static final long serialVersionUID = 1L;
@@ -253,10 +278,8 @@ public class UsersList {
 						@Override
 						public void onClose(ConfirmDialog cd) {
 							if (cd.isConfirmed()) {
-								userId = (Long) tableData.getContainerProperty(itemId, "id")
-										.getValue();
-								User user = App.getApp().getUsers().getUser(userId);
-								App.getApp().getUsers().delete(user);
+
+								App.getApp().getUsers().delete(userDel);
 								refreshData();
 								
 							}
@@ -269,28 +292,6 @@ public class UsersList {
 			});
 			layout.addComponent(deleteButton);
 			
-			//Delete button. Delete user's record from Database.
-			Button changeButton = new Button();
-			changeButton.setCaption("Change settings");
-			changeButton.addClickListener(new ClickListener() {
-				
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					
-					userId = (Long) tableData.getContainerProperty(itemId, "id")
-							.getValue();
-					showUserSettings(userId);
-					
-
-				
-					
-				}
-			});
-			
-			layout.addComponent(changeButton);
-
 			return layout;
 		}
 	}

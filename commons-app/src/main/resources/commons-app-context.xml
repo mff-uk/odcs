@@ -27,11 +27,13 @@
 	</bean>
 
 	<!-- support for loading DPUs -->
-	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacade"
-	    init-method="start" destroy-method="stop">
-	    <constructor-arg ref="moduleFacadeConfiguration" />
-	</bean>
+	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIModuleFacade"
+	    init-method="start" destroy-method="stop" />
 
+	<!-- implementation of DPU's watcher -->
+	<bean id="watcher" class="cz.cuni.xrg.intlib.commons.app.module.impl.FileNotifierServer" 
+	    init-method="start" destroy-method="stop"/>	
+		
 	<!-- Facade for managing users -->
 	<bean id="userFacade" class="cz.cuni.xrg.intlib.commons.app.user.UserFacade" />
 
@@ -56,7 +58,7 @@
 	</bean>
 	
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
-	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.ModuleFacadeConfig">
+	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIModuleFacadeConfig">
 		<constructor-arg ref="configuration" />
 	</bean>
 

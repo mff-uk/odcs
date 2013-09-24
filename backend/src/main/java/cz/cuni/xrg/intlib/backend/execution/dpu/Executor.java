@@ -1,6 +1,5 @@
 package cz.cuni.xrg.intlib.backend.execution.dpu;
 
-import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Map;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
@@ -47,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public final class Executor implements Runnable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
-	
+
 	/**
 	 * Pipeline facade.
 	 */
@@ -123,12 +121,11 @@ public final class Executor implements Runnable {
 	@PostConstruct
 	public void init() {
 		if (preExecutors != null) {
-			Collections.sort(preExecutors,
-					AnnotationAwareOrderComparator.INSTANCE);
+			Collections.sort(preExecutors, PreExecutorOrderComparator.INSTANCE);
 		}
 		if (postExecutors != null) {
 			Collections.sort(postExecutors,
-					AnnotationAwareOrderComparator.INSTANCE);
+					PostExecutorOrderComparator.INSTANCE);
 		}
 
 	}
@@ -157,25 +154,22 @@ public final class Executor implements Runnable {
 	}
 
 	/**
-	 * Load and return the instance for DPU given by {@link #node}.
+	 * Load instance of node to execute. In case of error return null and
+	 * publish error event message.
 	 * 
-	 * @param dpu DPU's instance record for which load instance.
-	 * @return DPU's instance.
-	 * @throws ModuleException
+	 * @return DPU's instance or null.
 	 */
-	private Object loadInstance() throws ModuleException {
-		DPUInstanceRecord dpu = node.getDpuInstance();
+	private Object loadInstance() {
+		final DPUInstanceRecord dpu = node.getDpuInstance();
 		// load instance
 		try {
 			dpu.loadInstance(moduleFacade);
-		} catch (FileNotFoundException e) {
-			LOG.error("Missing DPU jar file: '{}' for DPU: {}",
-					dpu.getJarPath(), dpu.getName());
-			// publish event DPU not found
-			eventPublisher.publishEvent(PipelineFailedEvent.createMissingFile(
-					dpu, execution, this));
-			throw new ModuleException(
-					"Failed to load instance of DPU from file.", e);
+		} catch (ModuleException e) {
+			// eventPublisher.publishEvent(PipelineFailedEvent.createMissingFile(
+			// dpu, execution, this));
+			eventPublisher.publishEvent(PipelineFailedEvent.create(e, dpu,
+					execution, this));
+			return null;
 		}
 		return dpu.getInstance();
 	}
@@ -187,15 +181,17 @@ public final class Executor implements Runnable {
 	 * instantly return true.
 	 * 
 	 * @param dpuInstance Instance of DPU to execute.
+	 * @param unitInfo
 	 * @return
 	 */
-	private boolean executePreExecutors(Object dpuInstance) {
+	private boolean executePreExecutors(Object dpuInstance,
+			ProcessingUnitInfo unitInfo) {
 		if (preExecutors == null) {
 			return true;
 		}
 
 		for (PreExecutor item : preExecutors) {
-			if (item.preAction(node, contexts, dpuInstance, execution)) {
+			if (item.preAction(node, contexts, dpuInstance, execution, unitInfo)) {
 				// continue execution
 			} else {
 				return false;
@@ -222,22 +218,18 @@ public final class Executor implements Runnable {
 				LOG.error("DPU do not implement execution interface.");
 			}
 		} catch (DataUnitException e) {
-			LOG.error("Execution:DataUnitException", e);
 			eventPublisher.publishEvent(DPUEvent.createDataUnitFailed(context,
 					this, e));
 			return false;
 		} catch (DPUException e) {
-			LOG.error("Execution:DPUException", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Exception e) {
-			LOG.error("Execution:Exception", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
 		} catch (Error e) {
-			LOG.error("Execution:Error", e);
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			return false;
@@ -252,15 +244,18 @@ public final class Executor implements Runnable {
 	 * instantly return true.
 	 * 
 	 * @param dpuInstance Instance of DPU that has been executed.
+	 * @param unitInfo
 	 * @return
 	 */
-	private boolean executePostExecutors(Object dpuInstance) {
+	private boolean executePostExecutors(Object dpuInstance,
+			ProcessingUnitInfo unitInfo) {
 		if (postExecutors == null) {
 			return true;
 		}
 
 		for (PostExecutor item : postExecutors) {
-			if (item.postAction(node, contexts, dpuInstance, execution)) {
+			if (item.postAction(node, contexts, dpuInstance, execution,
+					unitInfo)) {
 				// continue execution
 			} else {
 				return false;
@@ -270,57 +265,46 @@ public final class Executor implements Runnable {
 	}
 
 	/**
-	 * Load instance of node to execute. In case of error return null and
-	 * publish error event message.
+	 * Execute binded {@link Node} from
+	 * {@link cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline}. Assume that the
+	 * given {@link Node} has not been executed yet.
 	 * 
-	 * @param dpu DPU for which create instance.
-	 * @return Null in case of error.
-	 */
-	private Object loadInstance(DPUInstanceRecord dpu) {
-		Object dpuInstance = null;
-		try {
-			dpuInstance = loadInstance();
-		} catch (ModuleException e) {
-			LOG.error("Failed to load required bundle", e);
-			eventPublisher.publishEvent(PipelineFailedEvent.create(e, dpu,
-					execution, this));
-			// cancel the execution
-			return null;
-		}
-		return dpuInstance;
-	}
-
-	/**
-	 * Execute given {@link Node} from
-	 * {@link cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline}. Set
-	 * {@link #executionSuccessful}. Does not set DPUExecutionState.FINISHED
-	 * state for {@link ProcessingUnitInfo}.
-	 * 
-	 * @param dpu
 	 * @param unitInfo
 	 * @return False if execution failed.
 	 */
-	private boolean execute(DPUInstanceRecord dpu, ProcessingUnitInfo unitInfo) {
-		if (unitInfo.getState() == DPUExecutionState.FINISHED) {
-			// DPU has been executed already ..
-			return true;
-		}
-		// get instance
-		Object dpuInstance = loadInstance(dpu);
+	private boolean execute(ProcessingUnitInfo unitInfo) {
+
+		// get dpu's instance
+		Object dpuInstance = loadInstance();
 		if (dpuInstance == null) {
 			return false;
 		}
 
 		// call PreExecutors
-		if (!executePreExecutors(dpuInstance)) {
+		if (!executePreExecutors(dpuInstance, unitInfo)) {
 			return false;
 		}
-		if (unitInfo.getState() == DPUExecutionState.RUNNING) {
-			// we can not continue with this state
+
+		switch (unitInfo.getState()) {
+		case PREPROCESSING:
+			// ok continue with execution
+			break;
+		case ABORTED:
+		case FAILED:
+			// we ignore this, they should return false when they fail
+			LOG.info("Some pre-processor set ABORTED/FAILED state before start of the execution. Ignoring state change.");
+			break;
+		case FINISHED:
+			// dpu finished .. yes this can be
+			// we also do not prevent DPU with such state to get here
+			return true;
+		case RUNNING:
+			// wrong state, probably from last interrupted execution
 			eventPublisher.publishEvent(DPUEvent
 					.createWrongState(context, this));
 			return false;
 		}
+
 		// set state to RUNNING and save this, by this we announce
 		// that we have started the execution of this DPU
 		unitInfo.setState(DPUExecutionState.RUNNING);
@@ -328,30 +312,41 @@ public final class Executor implements Runnable {
 		try {
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
-			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+			LOG.error("Seems like someone deleted our pipeline run.", ex);
 			return false;
 		}
 
 		// execute the given instance - also catch all exception
 		eventPublisher.publishEvent(DPUEvent.createStart(context, this));
-		if (executeInstance(dpuInstance)) {
-			// execute finished successfully
-			eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
+		boolean executionResult = executeInstance(dpuInstance);
+
+		// set state
+		if (context.canceled()) {
+			// dpu has been aborted
+			unitInfo.setState(DPUExecutionState.ABORTED);
 		} else {
-			return false;
+			if (!executionResult && context.errorMessagePublished()) {
+				// dpu publish error or ends with exception
+				unitInfo.setState(DPUExecutionState.FAILED);
+				executionResult = false;
+			} else {
+				unitInfo.setState(DPUExecutionState.FINISHED);
+			}
 		}
 
-		// check for the error message in context or in logs
-		if (context.errorMessagePublished()) {
-			// cancel because of logged/published error record
-			return false;
+		// call PostExecutors if they fail then the execution fail
+		executionResult &= executePostExecutors(dpuInstance, unitInfo);
+
+		// we save the state into database
+		try {
+			pipelineFacade.save(execution);
+		} catch (EntityNotFoundException ex) {
+			LOG.error("Seems like someone deleted our pipeline run.", ex);
 		}
 
-		// call PostExecutors
-		if (!executePostExecutors(dpuInstance)) {
-			return false;
-		}
-		return true;
+		// return execution result .. this can't be changed to positive by post
+		// executors but they may change the state in unitInfo
+		return executionResult;
 	}
 
 	/**
@@ -361,6 +356,10 @@ public final class Executor implements Runnable {
 	 */
 	@Override
 	public void run() {
+		// assume that execution failed, if the execution thread terminates
+		// or something bad happen
+		executionSuccessful = false;
+
 		// get DPU instance record, the DPU to execute
 		DPUInstanceRecord dpu = node.getDpuInstance();
 		// get processing context info
@@ -369,22 +368,39 @@ public final class Executor implements Runnable {
 			// no previous information about execution, create it
 			unitInfo = execution.getContext().createDPUInfo(dpu);
 			// DPUExecutionState.PREPROCESSING
+		} else {
+			// check if not finished yet
+			switch (unitInfo.getState()) {
+			case ABORTED:
+			case FAILED:
+				// dpu has been already executed and it failed
+				executionSuccessful = false;
+				return;
+			case FINISHED:
+				// we will continue as we need to run pre/post
+				// Processors as the create DataUnits
+			case PREPROCESSING:
+			case RUNNING:
+				// for these state we continue in execution
+				break;
+			}
 		}
-		// run DPU
-		executionSuccessful = execute(dpu, unitInfo);
-		// set finished state
-		unitInfo.setState(DPUExecutionState.FINISHED);
 
-		try {
-			pipelineFacade.save(execution);
-		} catch (EntityNotFoundException ex) {
-			// Pipeline execution was probably deleted by user
-			LOG.warn("Seems like someone deleted our pipeline run.", ex);
-		}
+		// run dpu, also set executionSuccessful according to
+		// the execution result
+		executionSuccessful = execute(unitInfo)
+				// also check for DPU messages
+				&& !context.errorMessagePublished();
+		
+		// publish message
+		eventPublisher.publishEvent(
+				DPUEvent.createComplete(context, this));
 	}
 
 	/**
-	 * Call {@link Context#cancel()}, can be called from other thread.
+	 * Call {@link Context#cancel()}, can be called from other thread. Use this
+	 * to order DPU to stop it's execution. The pre/post processors are executed
+	 * normally.
 	 */
 	public void cancel() {
 		context.cancel();

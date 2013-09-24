@@ -96,17 +96,12 @@ public class Login extends ViewComponent {
     }
 
     private void login() {
-		
-		final Authentication authToken = new UsernamePasswordAuthenticationToken(
-			login.getValue(), password.getValue()
-		);
-
         try {
 			authService.login(login.getValue(), password.getValue(), RequestHolder.getRequest());
 
 			// login is successful
 			App.getApp().getMain().refreshUserBar();
-			App.getApp().getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
+			App.getApp().navigateAfterLogin();
 
 		} catch (AuthenticationException ex) {
 			password.setValue("");

@@ -21,8 +21,10 @@ import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
 import cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade;
+import cz.cuni.xrg.intlib.commons.app.module.DPUModuleManipulator;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
+import cz.cuni.xrg.intlib.commons.app.rdf.namespace.NamespacePrefixFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
@@ -79,6 +81,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private Client backendClient;
 	
 	private RefreshManager refreshManager;
+	
+	private String storedNavigation = null;
 		
 	/**
 	 * Add a single view to {@link #navigator}.
@@ -177,10 +181,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void error(com.vaadin.server.ErrorEvent event) {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
-					if(cause.getClass() == VirtuosoException.class && ((VirtuosoException)cause).getErrorCode() == VirtuosoException.IOERROR) {
-						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
-						return;
-					}
+//					if(cause.getClass() == VirtuosoException.class && ((VirtuosoException)cause).getErrorCode() == VirtuosoException.IOERROR) {
+//						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
+//						return;
+//					}
 					
 					// Display the error message in a custom fashion
 					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
@@ -202,6 +206,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 			@Override
 			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
 				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+					storedNavigation = event.getViewName();
+					String parameters = event.getParameters();
+					if(parameters != null) {
+						storedNavigation += "/" + parameters;
+					}
 					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
 					getMain().refreshUserBar();
 					return false;
@@ -364,6 +373,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 	public UserFacade getUsers() {
 		return (UserFacade) context.getBean("userFacade");
 	}
+	
+	/**
+	 * Return facade, which provide services for manipulating with Namespace Prefix.
+	 *
+	 * @return NamespascePrefix facade
+	 */
+	public NamespacePrefixFacade getNamespacePrefixes() {
+		return (NamespacePrefixFacade) context.getBean("prefixFacade");
+	}
 
 	/**
 	 * Return facade, which provide services for manipulating with Logs.
@@ -426,6 +444,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return getBean(AuthenticationContext.class);
 	}
 
+	public DPUModuleManipulator getDPUManipulator() {
+		return getBean(DPUModuleManipulator.class);
+	}
+	
 	/**
 	 * Sets last action date to current time.
 	 */
@@ -457,5 +479,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	public RefreshManager getRefreshManager() {
 		return refreshManager;
+	}
+	
+	public void navigateAfterLogin() {
+		if(storedNavigation == null) {
+			getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
+		} else {
+			String navigationTarget = storedNavigation;
+			storedNavigation = null;
+			getNavigator().navigateTo(navigationTarget);
+		}
 	}
 }

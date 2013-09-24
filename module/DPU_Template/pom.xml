@@ -1,3 +1,4 @@
+
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -16,19 +17,21 @@
     
     <packaging>bundle</packaging>
     
+    <!-- TODO 3: fill module description, the description will be visible to the user -->
+    <description>My first DPU implementation.</description>
     
-    <properties>    
-    
-        <!-- TODO 3: fill module description, the description will be visible to the user -->
-        <dpu.description>My first DPU implementation.</dpu.description>
+    <properties>
         <!-- TODO 4: fill the name of root package -->
         <dpu.package>com.example</dpu.package>
         <!-- TODO 5: fill DPU main class name here -->
-        <dpu.mainClass>DPUTemplate</dpu.mainClass>    
+        <dpu.mainClass>DPUTemplate</dpu.mainClass>
+        <!-- TODO 6: Put path to the ODCL DPUs directory here -->
+        <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->    
+        <dpu.odcl.dir></dpu.odcl.dir>
     </properties>
  	
  	<dependencies>
- 		<!-- TODO 6: add dependencies here -->
+ 		<!-- TODO 7: add dependencies here -->
        
                 <!-- Sample dependency defining a maven artifact - Saxon JAR - available on Maven repositories. If you have configured on your machine access to any maven repository, the following lines should work for you and should automatically make SAXON HE 9.2.1.5 available. The dependency (jar file) will be automaticaly
  			added to the resulting OSGi bundle  

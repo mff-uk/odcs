@@ -18,37 +18,49 @@
 		<module>File_loader</module>
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>
-		<module>SPARQL_transformer</module>		
+		<module>SPARQL_transformer</module>
 	</modules>
 
-	<build>
-		<plugins>
-			<plugin> <!-- copy result bundle to outputDirectory -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<!-- here the phase you need -->
-						<phase>install</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}\..\..\..\${project.output.dpu}</outputDirectory>
-							<resources> <!-- copy just output jar file -->
-								<resource>
-									<directory>${project.build.directory}</directory>
-									<includes>
-										<include>*.jar</include>
-									</includes>							
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+	<properties>
+		<!-- path to the ODCL DPU's directory -->
+		<dpu.odcs.dir>${project.build.directory}\..\..\..\${project.output.dpu}</dpu.odcs.dir>
+	</properties>
+
+	<profiles>
+		<profile> <!-- copy the plugin to the DPU's directory by default -->
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${dpu.odcs.dir}\${project.artifactId}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${project.build.directory}</directory>
+											<includes>
+												<!-- copy just output jar file -->
+												<include>${project.artifactId}-${project.version}.jar</include>
+											</includes>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

@@ -25,7 +25,6 @@ import org.apache.log4j.Level;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
 
 /**
  * Component for viewing and filtering of log messages.
@@ -53,7 +52,7 @@ public class LogMessagesTable extends CustomComponent {
 		messageTable.setSizeFull();
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(16);
+		messageTable.setPageLength(28);
 		messageTable.setSelectable(true);
 		messageTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
@@ -176,7 +175,6 @@ public class LogMessagesTable extends CustomComponent {
 		});
 		messageTable.setContainerDataSource(container);
 		messageTable.setVisibleColumns("date", "level", "message", "source");
-		messageTable.setFilterFieldVisible("message", false);
 		messageTable.setSortEnabled(false);
 		messageTable.setFilterBarVisible(true);
 		levelSelector.setValue(Level.INFO);

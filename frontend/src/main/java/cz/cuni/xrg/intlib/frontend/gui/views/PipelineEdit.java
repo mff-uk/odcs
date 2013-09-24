@@ -243,6 +243,7 @@ class PipelineEdit extends ViewComponent {
 				calculateCanvasDimensions(bounds);
 			}
 		});
+		zoomIn.setWidth("110px");
 		Button zoomOut = new Button("Zoom Out", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -250,6 +251,7 @@ class PipelineEdit extends ViewComponent {
 				calculateCanvasDimensions(bounds);
 			}
 		});
+		zoomOut.setWidth("110px");
 		undo = new Button("Undo", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -260,6 +262,7 @@ class PipelineEdit extends ViewComponent {
 		});
 		undo.setEnabled(false);
 		undo.setImmediate(true);
+		undo.setWidth("110px");
 		left.addComponent(zoomIn);
 		left.addComponent(zoomOut);
 		left.addComponent(undo);
@@ -334,7 +337,7 @@ class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonSaveAndClose);
-		buttonCancel = new Button("Cancel");
+		buttonCancel = new Button("Close");
 		buttonCancel.setHeight("25px");
 		buttonCancel.setWidth("150px");
 		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -489,6 +492,7 @@ class PipelineEdit extends ViewComponent {
 				throw new InvalidValueException("Name must be filled!");
 			}
 		});
+		pipelineName.addValidator(new MaxLengthValidator(MaxLengthValidator.NAME_LENGTH));
 		pipelineName.addTextChangeListener(new FieldEvents.TextChangeListener() {
 
 			@Override
@@ -507,7 +511,7 @@ class PipelineEdit extends ViewComponent {
 		pipelineDescription.setWidth("400px");
 		pipelineDescription.setHeight("60px");
 		pipelineDescription.setBuffered(true);
-		pipelineDescription.addValidator(new MaxLengthValidator(255));
+		pipelineDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		pipelineDescription.addTextChangeListener(new FieldEvents.TextChangeListener() {
 
 			@Override

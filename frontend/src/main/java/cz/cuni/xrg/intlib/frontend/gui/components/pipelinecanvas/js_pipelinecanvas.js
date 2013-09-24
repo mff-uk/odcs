@@ -296,7 +296,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
 			conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
 			if (conn.dataUnitNameText !== null) {
-				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+				var newWidth = computeTextWidth(newPoints, conn.dataUnitNameText.getText(), conn.dataUnitNameText.getContext('2d'));
+				conn.dataUnitNameText.setWidth(newWidth);
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, newWidth));
 			}
 		}
 		for (lineId in dpu.connectionTo) {
@@ -308,7 +310,9 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 			conn.arrowLeft.setPoints(computeLeftArrowPoints(newPoints));
 			conn.arrowRight.setPoints(computeRightArrowPoints(newPoints));
 			if (conn.dataUnitNameText !== null) {
-				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, 100));
+				var newWidth = computeTextWidth(newPoints, conn.dataUnitNameText.getText(), conn.dataUnitNameText.getContext('2d'));
+				conn.dataUnitNameText.setWidth(newWidth);
+				conn.dataUnitNameText.setPosition(computeTextPosition(newPoints, newWidth));
 			}
 		}
 	}
@@ -1509,25 +1513,27 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 	 * @returns {undefined} Text
 	 */
 	function createDataUnitNameText(id, dataUnitName, points) {
-		var width = 100;
-		var textPosition = computeTextPosition(points, width);
+		
+		
 		var text = new Kinetic.Text({
-			x: textPosition[0],
-			y: textPosition[1],
-			text: dataUnitName,
 			fontSize: 10,
 			fontFamily: 'Calibri',
 			fill: '#555',
-			width: width,
 			padding: 6,
 			align: 'center'
 		});
+		lineLayer.add(text);
+		var width = computeTextWidth(points, dataUnitName, text.getContext('2d'));
+		var textPosition = computeTextPosition(points, width);
+		text.setX(textPosition[0]);
+		text.setY(textPosition[1]);
+		text.setWidth(width);
+		text.setText(dataUnitName);
 
 		text.on('click', function(evt) {
 			rpcProxy.onDataUnitNameEditRequested(id);
 			evt.cancelBubble = true;
 		});
-		lineLayer.add(text);
 		lineLayer.draw();
 
 		return text;
@@ -1543,6 +1549,14 @@ cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = funct
 		var x = linePoints[0] + ((linePoints[2] - linePoints[0]) / 2);
 		var y = linePoints[1] + ((linePoints[3] - linePoints[1]) / 2);
 		return [x - (width / 2), y];
+	}
+	
+	function computeTextWidth(linePoints, dataUnitName, context) {
+		var minWidth = 200;
+		//60 is padding
+		var dpuBetween = linePoints[2] - linePoints[0] - 30;
+		var textWidth = context.measureText(dataUnitName).width;
+		return Math.max(minWidth, Math.min(dpuBetween, textWidth));
 	}
 
 	function createTooltip(text) {

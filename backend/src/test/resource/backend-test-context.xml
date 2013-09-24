@@ -7,14 +7,25 @@
  		http://www.springframework.org/schema/context/spring-context.xsd"
 	xmlns:context="http://www.springframework.org/schema/context">
 
-	<!-- special inMemory ApplicationEventPuiblisher -->
-	<!--
-		<bean class="cz.cuni.xrg.intlib.backend.spring.InMemoryAppEventPublisher" />
-	-->
-
+	<!-- listener for watching events -->
+	<bean class="cz.cuni.xrg.intlib.backend.spring.InMemoryEventListener" />
+	
+	<!-- dummy DataUnit factory -->
+	<bean class="cz.cuni.xrg.intlib.backend.spring.DummyDataUnitFactory" />
+		
+	<!-- we use configuration that load from our resource -->	
+	<!-- application configuration -->
+	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig" />
+	
+	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
+	<bean id="moduleFacadeConfiguration" class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIModuleFacadeConfig">
+		<constructor-arg ref="configuration" />
+		<constructor-arg value="BACKEND" />
+	</bean>
+	
 	<!-- scan for pre/post executors -->
 	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
 
 	<context:annotation-config />
-
+	
 </beans>

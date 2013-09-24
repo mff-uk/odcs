@@ -14,13 +14,6 @@
 	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
 		<constructor-arg value="BACKEND" />
 	</bean>
-
-	<!-- takes care about DPU's update -->
-	<bean id="refresher" class="cz.cuni.xrg.intlib.backend.module.ModuleRefresher" />
-	
-	<!-- implementation of DPU's watcher -->
-	<bean id="watcher" class="cz.cuni.xrg.intlib.commons.app.module.impl.FileNotifierServer" 
-	    init-method="start" destroy-method="stop"/>
 	
 	<!-- TCP/IP server, used to recieve request from frontend -->
 	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server" />
@@ -47,7 +40,8 @@
 	<bean class="cz.cuni.xrg.intlib.backend.EventListenerDatabase" />
 
 	<!-- periodically send message to event to check DB for new tasks -->
-	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" />
+	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" 
+	    init-method="start" destroy-method="stop" />
 
 	<!-- scheduler -->
 	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" />
@@ -57,6 +51,11 @@
 
 	<!-- component for sending email based on events -->
 	<bean id="emailComunicator" class="cz.cuni.xrg.intlib.backend.communication.EmailComunicator" />
+	
+	<!-- watcher for DPU changes -->
+	<bean class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIChangeManager" >
+	    <constructor-arg name="refreshDatabase" value="false"/>
+	</bean>
 	
 	<!-- autodiscovery for DPU's pre/post executors -->
 	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />

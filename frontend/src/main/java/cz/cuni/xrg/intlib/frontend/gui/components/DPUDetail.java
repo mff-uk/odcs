@@ -82,6 +82,7 @@ public class DPUDetail extends Window {
 				setCaption(dpuName.getValue().trim());
 			}
 		});
+		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
 
 		Label descriptionLabel = new Label("Description");
@@ -99,7 +100,7 @@ public class DPUDetail extends Window {
 		} else {		
 			dpuDescription.setValue(dpu.getDescription().trim());
 		}
-		dpuDescription.addValidator(new MaxLengthValidator(255));
+		dpuDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
@@ -130,9 +131,9 @@ public class DPUDetail extends Window {
 				dpuInstance.configuredDialog();
 			} catch (ConfigException e) {
 				Notification.show(
-						"Failed to load configuration. The dialog default configuration is used.",
+						"Configuration problem",
 						e.getMessage(), Type.WARNING_MESSAGE);
-				LOG.error("Failed to load configuration for {}", dpuInstance
+				LOG.error("Problem with configuration for {}", dpuInstance
 						.getDPUInstanceRecord().getId(), e);
 			}
 			// add to layout
@@ -155,6 +156,7 @@ public class DPUDetail extends Window {
 				}
 			}
 		});
+		saveAndCommitButton.setWidth("90px");
 		buttonBar.addComponent(saveAndCommitButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
@@ -163,6 +165,7 @@ public class DPUDetail extends Window {
 				close();
 			}
 		});
+		cancelButton.setWidth("90px");
 		buttonBar.addComponent(cancelButton);
 
 		Label placeFiller = new Label(" ");

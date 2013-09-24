@@ -3,6 +3,9 @@ package cz.cuni.xrg.intlib.backend.pipeline.event;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.xrg.intlib.backend.context.ContextException;
 import cz.cuni.xrg.intlib.backend.execution.dpu.StructureException;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
@@ -20,6 +23,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
  */
 public final class PipelineFailedEvent extends PipelineEvent {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineFailedEvent.class);
+	
 	private String shortMessage;
 
 	private String longMessage;
@@ -68,6 +73,14 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
+		
+		String dpuName = "unknown";
+		if (dpuInstance != null) {			
+			dpuName = dpuInstance.getName();
+		}		
+		LOG.error("Pipeline failed on DPU '{}', ShortMsg: {} LongMsg: {}",
+				dpuName, shortMessage, longMessage);
+		
 		return new PipelineFailedEvent(shortMessage, longMessage, dpuInstance,
 				pipelineExec, source);
 	}
@@ -76,6 +89,14 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
+		
+		String dpuName = "unknown";
+		if (dpuInstance != null) {			
+			dpuName = dpuInstance.getName();
+		}		
+		LOG.error("Pipeline failed on DPU '{}' because of the exception",
+				dpuName, exception);
+		
 		return new PipelineFailedEvent("Pipeline execution failed.",
 				"Execution failed because: " + exception.getMessage(),
 				exception, dpuInstance, pipelineExec, source);
@@ -85,6 +106,13 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
+		String dpuName = "unknown";
+		if (dpuInstance != null) {			
+			dpuName = dpuInstance.getName();
+		}		
+		LOG.error("Pipeline failed on DPU: '{}' because of the error",
+				dpuName, error);		
+		
 		return new PipelineFailedEvent("Pipeline execution failed.",
 				"Execution failed due to error: " + error.getMessage(), error,
 				dpuInstance, pipelineExec, source);
@@ -94,6 +122,14 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
+		
+		String dpuName = "unknown";
+		if (dpuInstance != null) {			
+			dpuName = dpuInstance.getName();
+		}		
+		LOG.error("Pipeline failed on DPU '{}' because of the context exception",
+				dpuName, exception);	
+		
 		return new PipelineFailedEvent(
 				"Pipeline execution failed.",
 				"Failed to prepare Context for DPURecord because of exception: ",
@@ -104,6 +140,14 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
+		
+		String dpuName = "unknown";
+		if (dpuInstance != null) {			
+			dpuName = dpuInstance.getName();
+		}		
+		LOG.error("Pipeline failed on DPU '{}' because of the module exception",
+				dpuName, exception);		
+		
 		return new PipelineFailedEvent(
 				"Pipeline execution failed.",
 				"Loading of DPURecord implementation thrown fallowing exception: ",
@@ -114,6 +158,14 @@ public final class PipelineFailedEvent extends PipelineEvent {
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {
+		
+		String dpuName = "unknown";
+		if (dpuInstance != null) {			
+			dpuName = dpuInstance.getName();
+		}		
+		LOG.error("Pipeline failed on DPU '{}' because of the structure exception",
+				dpuName, exception);
+		
 		return new PipelineFailedEvent("Pipeline execution failed.",
 				"Root structure exception: ", exception, dpuInstance,
 				pipelineExec, source);
@@ -126,15 +178,25 @@ public final class PipelineFailedEvent extends PipelineEvent {
 	 * @param source
 	 * @return
 	 */
-	public static PipelineFailedEvent createMissingFile(DPUInstanceRecord dpu,
+	public static PipelineFailedEvent createMissingFile(DPUInstanceRecord dpuInstance,
 			PipelineExecution execution,
 			Object source) {
+		
+		String dpuName = "unknown";
+		String jarFile = "unknown";
+		if (dpuInstance != null) {			
+			dpuName = dpuInstance.getName();
+			jarFile = dpuInstance.getJarPath();
+		}		
+		LOG.error("Pipeline failed as there is not jar-file for DPU '{}' ({})",
+				dpuName, jarFile);		
+		
 		StringBuilder longMessage = new StringBuilder();
 		longMessage.append("Missing jar-file for DPU: '");
-		longMessage.append(dpu.getName());
+		longMessage.append(dpuName);
 		longMessage.append("'");
 		return new PipelineFailedEvent("Missing DPU.",
-				longMessage.toString(), dpu, execution, source);
+				longMessage.toString(), dpuInstance, execution, source);
 	}
 
 	@Override

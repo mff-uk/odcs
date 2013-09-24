@@ -115,13 +115,14 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 //monitorTable.setVisibleColumns(visibleCols);
             }
         });
+        refreshButton.setWidth("120px");
         topLine.addComponent(refreshButton);
         //topLine.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
         //Clear Filters button. Clearing filters on the table with executions.
         Button buttonDeleteFilters = new Button();
         buttonDeleteFilters.setCaption("Clear Filters");
         buttonDeleteFilters.setHeight("25px");
-        buttonDeleteFilters.setWidth("110px");
+        buttonDeleteFilters.setWidth("120px");
         buttonDeleteFilters
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
@@ -160,6 +161,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
         monitorTable.setSortContainerPropertyId(property);
         monitorTable.setSortAscending(false);
         monitorTable.sort();
+		//monitorTable.setSortEnabled(true);
 
         //Status column. Contains status icons.
         monitorTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
@@ -202,6 +204,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
+				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
 //				if(duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
 //					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
 //					duration = (new Date()).getTime() - start.getTime();
@@ -288,6 +291,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			monitorTable.setCurrentPage(page);
 			monitorTable.setValue(selectedRow);
 			lastLoad = now;
+		} else {
+			//monitorTable.refreshRowCache();
 		}
     }
 
@@ -484,9 +489,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
                     break;
                 case "showlog":
+					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
 				case "debug":
+					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
             }

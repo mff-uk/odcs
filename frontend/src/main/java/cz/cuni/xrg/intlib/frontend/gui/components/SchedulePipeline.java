@@ -21,7 +21,6 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.InlineDateField;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -30,6 +29,7 @@ import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.Window;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
@@ -328,7 +328,8 @@ public class SchedulePipeline extends Window {
 		
 		//Save button
 		Button createRule = new Button();
-		createRule.setCaption("Save scheduler rule");
+		createRule.setCaption("Save");
+		createRule.setWidth("90px");
 		createRule.setImmediate(true);
 		createRule.addClickListener(new ClickListener() {
 
@@ -513,6 +514,8 @@ public class SchedulePipeline extends Window {
 				}
 				// store scheduling rule record to DB
 				App.getApp().getSchedules().save(schedule);
+				
+				Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 			
 				close();
 
@@ -534,6 +537,7 @@ public class SchedulePipeline extends Window {
 
 			}
 		});
+		cancelButton.setWidth("90px");
 		buttonBar.addComponent(cancelButton);
 		
 		VerticalLayout notificationsLayout = buildnotificationsLayout();
@@ -543,7 +547,7 @@ public class SchedulePipeline extends Window {
 			
 		mainLayout.addComponent(tabSheet);
 		mainLayout.addComponent(buttonBar);
-		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
+//		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
 
 		return mainLayout;
 	}

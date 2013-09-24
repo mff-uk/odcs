@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.backend.execution.pipeline;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,6 +102,26 @@ public class Executor implements Runnable {
 	public void bind(PipelineExecution execution) {
 		this.execution = execution;
 		contexts = new HashMap<>();
+		
+		
+		// for newly scheduled pipelines delete the execution directory
+		File coreExecutionFile = new File(
+				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR), 
+				execution.getContext().getRootPath());
+		if (execution.getStatus() == PipelineExecutionStatus.SCHEDULED) {
+			// new run, check for directory
+			if (coreExecutionFile.exists() && coreExecutionFile.isDirectory()) {
+				// delete
+				LOG.debug("Deleting existing execution's directory. ");
+				
+				try {
+					FileUtils.deleteDirectory(coreExecutionFile);
+				} catch (IOException e) {
+					LOG.error("Failed to delete execution directory.");
+				}
+			}
+		}
+		
 		// update state
 		this.execution.setStatus(PipelineExecutionStatus.RUNNING);
 
@@ -220,11 +241,27 @@ public class Executor implements Runnable {
 			}
 		}
 		if (execution.isDebugging()) {
-			return;
+			// do not delete debug data
 		} else {
 			deleteDebugDate();
 		}
-		// result directory is never deleted
+		
+		// we delete the execution directory if it is empty
+		File rootDirectory = new File(
+				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
+				execution.getContext().getRootPath());
+		if (rootDirectory.isDirectory()) {
+			if (rootDirectory.list().length == 0) {
+				// empty
+				try {
+					Files.delete(rootDirectory.toPath());
+				} catch (IOException e) {
+					LOG.warn("Failed to delete execution root directory", e);
+				}
+			}
+		} else {
+			LOG.warn("Execution directory is not directory.");
+		}
 
 		LOG.debug("Clean up finished");
 	}
@@ -273,9 +310,9 @@ public class Executor implements Runnable {
 					ch.qos.logback.classic.Level.INFO);
 		}
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
-
+		
 		// log start of the pipeline
-		LOG.debug("Started");
+		LOG.debug("Pipeline execution started");
 
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
@@ -289,8 +326,7 @@ public class Executor implements Runnable {
 
 			cz.cuni.xrg.intlib.backend.execution.dpu.Executor dpuExecutor = beanFactory
 					.getBean(cz.cuni.xrg.intlib.backend.execution.dpu.Executor.class);
-			dpuExecutor.bind(node, contexts, execution,
-					lastSuccessfulExTime);
+			dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime);
 
 			Thread executorThread = new Thread(dpuExecutor);
 			executorThread.start();
@@ -348,14 +384,11 @@ public class Executor implements Runnable {
 		execution.setEnd(new Date());
 		if (executionFailed) {
 			if (executionCancelled) {
-				LOG.debug("Execution cancelled");
 				executionCancelled();
 			} else {
-				LOG.debug("Execution failed");
 				executionFailed();
 			}
 		} else {
-			LOG.debug("Execution finished");
 			executionSuccessful();
 		}
 
@@ -398,7 +431,8 @@ public class Executor implements Runnable {
 		// set cancel flag
 		dpuExecutor.cancel();
 		// interrupt executorThread, and wait for it ...
-		executorThread.interrupt();
+		// we do not interrupt !!! as there may
+		// be running pre-post executors
 		try {
 			executorThread.join();
 		} catch (InterruptedException e) {

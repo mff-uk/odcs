@@ -97,6 +97,7 @@ public class Server implements Runnable {
         } catch (IOException e) {
             throw new CommunicationException(e);
         }
+        LOG.info("Listen on TCP/IP port: {}", port);
     }
 
     @Override

@@ -70,7 +70,7 @@ public class UserCreate extends Window {
 	public UserCreate(boolean newUser) {
 		this.setResizable(false);
 		this.setModal(true);
-		this.setCaption("Create new user");
+		this.setCaption("User's details");
 
 		buildMainLayout(newUser);
 		this.setContent(mainLayout);
@@ -254,14 +254,15 @@ public class UserCreate extends Window {
 
 		// Layout with buttons Save and Cancel
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setMargin(true);
+//		buttonBar.setMargin(true);
 		
 
 		// Save button
-		Button createRule = new Button();
-		createRule.setCaption("Save user");
-		createRule.setImmediate(true);
-		createRule.addClickListener(new ClickListener() {
+		Button createUser = new Button();
+		createUser.setCaption("Save");
+		createUser.setWidth("90px");
+		createUser.setImmediate(true);
+		createUser.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -370,7 +371,7 @@ public class UserCreate extends Window {
 			}
 		});
 
-		buttonBar.addComponent(createRule);
+		buttonBar.addComponent(createUser);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
 
@@ -385,12 +386,13 @@ public class UserCreate extends Window {
 
 			}
 		});
+		cancelButton.setWidth("90px");
 		buttonBar.addComponent(cancelButton);
 
 		mainLayout.addComponent(userDetailsLayout);
 		mainLayout.addComponent(roleSelector);
 		mainLayout.addComponent(buttonBar);
-		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
+//		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
 
 		return mainLayout;
 	}

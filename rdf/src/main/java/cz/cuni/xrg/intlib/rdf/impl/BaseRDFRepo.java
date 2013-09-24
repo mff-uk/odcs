@@ -48,6 +48,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final long DEFAULT_CHUNK_SIZE = 10;
 
 	/**
+	 * Count of attempts to reconnect if the connection fails
+	 */
+	protected static final int RETRY_CONNECTION_SIZE = 20;
+
+	/**
 	 * Represent successfully connection using HTTP.
 	 */
 	protected static final int HTTP_OK_RESPONSE = 200;
@@ -239,10 +244,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
 				break;
 			case PATH_TO_DIRECTORY:
+			case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
 				if (dirFile.isDirectory()) {
 					File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
+
+					boolean skipFiles = false;
+
+					if (extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
+						skipFiles = true;
+					}
+
 					addFilesInDirectoryToRepository(format, files, baseURI,
-							useStatisticHandler,
+							useStatisticHandler, skipFiles,
 							graph);
 				} else {
 					throw new RDFException(
@@ -1318,15 +1331,23 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private String prepareLiteral(Literal literal) {
-		String label = "\"\"\"" + literal.getLabel() + "\"\"\"";
+
+		String label = literal.getLabel().replace("\\", "\\\\")
+				.replace(">", "\\>");
+
+		if (label.endsWith("\"")) {
+			label = label.substring(0, label.length() - 1) + "\\\"";
+		}
+
+		String result = "\"\"\"" + label + "\"\"\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
-			return label + "@" + literal.getLanguage();
+			return result + "@" + literal.getLanguage();
 		} else if (literal.getDatatype() != null) {
-			return label + "^^" + prepareURIresource(literal.getDatatype());
+			return result + "^^" + prepareURIresource(literal.getDatatype());
 		}
 		//plain literal (return in """)
-		return label;
+		return result;
 
 	}
 
@@ -1588,10 +1609,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			for (Binding next : bindingNextSet) {
 
 				String name = next.getName();
-				String value = next.getValue().stringValue();
+				Value value = next.getValue();
+
+				String stringValue;
+
+				if (value != null) {
+					stringValue = value.stringValue();
+				} else {
+					stringValue = "";
+				}
 
 				if (map.containsKey(name)) {
-					map.get(name).add(value);
+					map.get(name).add(stringValue);
 				}
 
 			}
@@ -1828,7 +1857,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		HttpURLConnection httpConnection = null;
 		try {
-			httpConnection = (HttpURLConnection) call.openConnection();
+			httpConnection = getHttpURLConnection(call);
 			httpConnection.setRequestMethod("POST");
 			httpConnection.setRequestProperty("Content-Type",
 					"application/x-www-form-urlencoded");
@@ -1908,6 +1937,39 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			throw new RDFException(message + e.getMessage(), e);
 
+		}
+	}
+
+	private HttpURLConnection getHttpURLConnection(URL call) throws IOException {
+
+		int retryCount = 0;
+
+		HttpURLConnection httpConnection;
+
+		while (true) {
+			try {
+				httpConnection = (HttpURLConnection) call.openConnection();
+				return httpConnection;
+			} catch (IOException e) {
+				retryCount++;
+
+				final String message = String.format(
+						"%s/%s attempt to reconnect %s FAILED", retryCount,
+						RETRY_CONNECTION_SIZE, call.toString());
+
+				logger.debug(message);
+
+				if (retryCount >= RETRY_CONNECTION_SIZE) {
+					throw new IOException(e.getMessage(), e);
+				} else {
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(1000);
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage());
+					}
+				}
+			}
 		}
 	}
 
@@ -2041,7 +2103,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files,
 			String baseURI,
-			boolean useStatisticHandler, Resource... graphs) throws RDFException {
+			boolean useStatisticHandler, boolean skipFiles, Resource... graphs)
+			throws RDFException {
 
 		if (files == null) {
 			return; // nothing to add
@@ -2049,8 +2112,24 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		for (int i = 0; i < files.length; i++) {
 			File nextFile = files[i];
-			addFileToRepository(format, nextFile, baseURI, useStatisticHandler,
-					graphs);
+
+			try {
+				addFileToRepository(format, nextFile, baseURI,
+						useStatisticHandler,
+						graphs);
+			} catch (RDFException e) {
+
+				if (skipFiles) {
+					final String message = String.format(
+							"RDF data from file <%s> was skiped", nextFile
+							.getAbsolutePath());
+					logger.error(message);
+
+				} else {
+					throw new RDFException(e.getMessage(), e);
+				}
+
+			}
 		}
 	}
 
