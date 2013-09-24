@@ -1332,8 +1332,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private String prepareLiteral(Literal literal) {
 
-		String label = literal.getLabel().replace("\\", "\\\\")
-				.replace(">", "\\>");
+		String label = literal.getLabel().replace("\\", "\\\\");
 
 		if (label.endsWith("\"")) {
 			label = label.substring(0, label.length() - 1) + "\\\"";
