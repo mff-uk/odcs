@@ -59,5 +59,7 @@
 	
 	<!-- autodiscovery for DPU's pre/post executors -->
 	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
- 	
+	<!-- autodiscovery for pipeline's pre/post executors -->
+	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.pipeline.impl" />
+			
 </beans>
