@@ -271,7 +271,9 @@ class FileNotifierServer implements Runnable {
 			// we use Exception as it can throw IOException as
 			// well
 		} catch (Exception e) {
-			LOG.debug("Failed to delete notification file.", e);
+			LOG.debug("Failed to delete notification file '{}', " +
+					"but it is ok as it was probably delete by other " +
+					"notification server.", eventPath.toString());
 		}
 	}
 
