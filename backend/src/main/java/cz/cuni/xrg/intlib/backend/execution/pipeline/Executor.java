@@ -357,6 +357,8 @@ public class Executor implements Runnable {
 				}
 
 				if (stopExecution) {
+					// update flag, so we do not override the value in database
+					execution.setStatus(PipelineExecutionStatus.CANCELLING);
 					// try to stop the DPU's execution thread
 					stopExecution(executorThread, dpuExecutor);
 					// jump out of waiting cycle
