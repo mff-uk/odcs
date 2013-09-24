@@ -210,8 +210,8 @@ public class ExecutionContextInfo implements Serializable {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		// ..
-		return getWorkingPath() + File.separatorChar + DPU_ID_PREFIX
-				+ dpuInstance.getId().toString() + File.separatorChar
+		return getWorkingPath() + File.separatorChar
+				+ getDpuDirectoryName(dpuInstance) + File.separatorChar
 				+ WORKING_TMP_DIR;
 	}
 
@@ -224,12 +224,12 @@ public class ExecutionContextInfo implements Serializable {
 	 * @param index DataUnitInfo index.
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
-	public String getDataUnitRootStoragePath(DPUInstanceRecord dpuInstance) {
+	public String getDataUnitRootTmpPath(DPUInstanceRecord dpuInstance) {
 		// secure DPU record existence
-		getContext(dpuInstance);		
+		getContext(dpuInstance);
 		// ..
-		return getWorkingPath() + File.separatorChar + DPU_ID_PREFIX
-				+ dpuInstance.getId().toString();
+		return getWorkingPath() + File.separatorChar
+				+ getDpuDirectoryName(dpuInstance);
 	}
 
 	/**
@@ -257,12 +257,12 @@ public class ExecutionContextInfo implements Serializable {
 	 * @param index DataUnitInfo index.
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
-	public String getDataUnitRootTmpPath(DPUInstanceRecord dpuInstance) {
+	public String getDataUnitRootStoragePath(DPUInstanceRecord dpuInstance) {
 		// secure DPU record existence
 		getContext(dpuInstance);
 		// ..
-		return getStoragePath() + File.separatorChar + DPU_ID_PREFIX
-				+ dpuInstance.getId().toString();
+		return getStoragePath() + File.separatorChar
+				+ getDpuDirectoryName(dpuInstance);
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class ExecutionContextInfo implements Serializable {
 	 */
 	public String getDataUnitStoragePath(DPUInstanceRecord dpuInstance,
 			Integer index) {
-		return getDataUnitRootTmpPath(dpuInstance) + File.separatorChar
+		return getDataUnitRootStoragePath(dpuInstance) + File.separatorChar
 				+ index.toString();
 	}
 
@@ -309,22 +309,22 @@ public class ExecutionContextInfo implements Serializable {
 
 	/**
 	 * Return relative path from execution directory to the execution result
-	 * directory.
+	 * directory. This directory can be used to store result data.
 	 * 
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
 	public String getResultPath() {
-		return File.separatorChar + RESULT_DIR;
+		return getRootPath() + File.separatorChar + RESULT_DIR;
 	}
 
 	/**
-	 * Return relative path from execution directory to the execution data unit
-	 * storage directory.
+	 * Return relative path from execution directory to the execution storage
+	 * directory or data units.
 	 * 
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
 	public String getStoragePath() {
-		return File.separatorChar + STORAGE_DIR;
+		return getRootPath() + File.separatorChar + STORAGE_DIR;
 	}
 
 	/**
@@ -339,10 +339,24 @@ public class ExecutionContextInfo implements Serializable {
 
 	/**
 	 * Return respective pipeline execution.
+	 * 
 	 * @return
 	 */
 	public PipelineExecution getExecution() {
 		return this.execution;
 	}
-	
+
+	/**
+	 * Return string that should be used as a name for DPU's directory.
+	 */
+	private String getDpuDirectoryName(DPUInstanceRecord dpuInstance) {
+		final String dpuName = dpuInstance.getName();
+		
+		StringBuilder dirName = new StringBuilder();
+		dirName.append(DPU_ID_PREFIX);
+		dirName.append(dpuInstance.getId().toString());
+		dirName.append('_');
+		dirName.append(dpuName.replaceAll("\\s+", "_"));
+		return dirName.toString();
+	}
 }
