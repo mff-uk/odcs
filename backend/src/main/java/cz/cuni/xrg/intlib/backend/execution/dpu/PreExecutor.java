@@ -2,6 +2,8 @@ package cz.cuni.xrg.intlib.backend.execution.dpu;
 
 import java.util.Map;
 
+import org.springframework.core.Ordered;
+
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
@@ -9,25 +11,15 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 /**
  * Provide action that should be perform before every DPU execution. Must not
- * execute the DPU. The PreExecutors can be called in random order, but they all
- * will be called before the call of {@link Executor}.
+ * execute the DPU. T
  * 
  * The PreExecutors are executed in order that is defined by
- * {@link Ordered#getOrder()}
+ * {@link Ordered}
  * 
  * @author Petyr
  * 
  */
-public interface PreExecutor {
-
-	/**
-	 * Return the order value of this object, with a
-	 * higher value meaning greater in terms of sorting in pre executors
-	 * chain.
-	 * 
-	 * @return
-	 */
-	public int getPreExecutorOrder();	
+public interface PreExecutor extends Ordered {
 	
 	/**
 	 * Should perform pre-execution actions. If return false then the execution
