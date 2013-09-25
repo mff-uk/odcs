@@ -31,7 +31,7 @@ public enum ConfigProperty {
 	EMAIL_ENABLED("email.enabled"),
 	EMAIL_SMTP_HOST("email.smtp.host"),
 	EMAIL_SMTP_PORT("email.smtp.port"),
-	EMAIL_SMTP_TTL("email.smtp.ttl"),
+	EMAIL_SMTP_TLS("email.smtp.tls"),
 	EMAIL_FROM_EMAIL("email.from"),	
 	EMAIL_AUTHORIZATION("email.authorization"),
 	EMAIL_USERNAME("email.username"),
