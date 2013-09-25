@@ -44,6 +44,7 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.xrg.intlib.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -630,6 +631,7 @@ class DPU extends ViewComponent {
 		
 		// prepare dpu validators
 		List<DPUValidator> validators = new LinkedList<>();
+		validators.add(new DPUDialogValidator());
 		
 		try {
 			App.getApp().getDPUManipulator().replace(

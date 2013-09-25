@@ -30,6 +30,7 @@ import cz.cuni.xrg.intlib.commons.app.module.DPUValidator;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.xrg.intlib.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareButtonClickWrapper;
 
 /**
@@ -264,6 +265,7 @@ public class DPUCreate extends Window {
 				
 				// prepare dpu validators
 				List<DPUValidator> validators = new LinkedList<>();
+				validators.add(new DPUDialogValidator());
 				
 				final File sourceFile = fileUploadReceiver.file;
 				// create new representation

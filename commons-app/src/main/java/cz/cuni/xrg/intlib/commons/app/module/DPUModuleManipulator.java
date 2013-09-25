@@ -128,26 +128,28 @@ public class DPUModuleManipulator {
 			moduleFacade.unLoad(newTemplate);
 			throw new DPUCreateException("DPU has unspecified type.");
 		}
-		
+
 		// set other DPUs variables
 		newTemplate.setType(dpuType);
 		newTemplate.setDescription("");
 		newTemplate.setJarDescription(jarDescription);
-		newTemplate.setVisibility(VisibilityType.PRIVATE);		
-		
+		newTemplate.setVisibility(VisibilityType.PRIVATE);
+
 		// validate
 		if (validators != null) {
-			for (DPUValidator item : validators) {
-				if (!item.validate(newTemplate, dpuObject)) {
-					// release
-					newDPUDir.delete();
-					newDPUFile.delete();
-					moduleFacade.unLoad(newTemplate);
-					throw new DPUCreateException(item.getMessage());
+			try {
+				for (DPUValidator item : validators) {
+					item.validate(newTemplate, dpuObject);
 				}
+			} catch (DPUValidatorException e) {
+				// release
+				newDPUDir.delete();
+				newDPUFile.delete();
+				moduleFacade.unLoad(newTemplate);
+				throw new DPUCreateException(e.getMessage());
 			}
 		}
-		
+
 		// and save it into DB
 		try {
 			dpuFacade.save(newTemplate);
@@ -286,20 +288,22 @@ public class DPUModuleManipulator {
 		final String jarDescription = dpuExplorer.getJarDescription(dpu);
 		dpu.setJarDescription(jarDescription);
 		dpu.setJarName(newDpuName);
-		
+
 		// validate
 		if (validators != null) {
-			for (DPUValidator item : validators) {
-				if (!item.validate(dpu, newDpuInstance)) {
-					// recover
-					recoverFromBackUp(originalDpuFile);
-					// finish update and unload remove DPU record
-					moduleFacade.endUpdate(dpu, true);
-					throw new DPUReplaceException(item.getMessage());
+			try {
+				for (DPUValidator item : validators) {
+					item.validate(dpu, newDpuInstance);
 				}
+			} catch (DPUValidatorException e) {
+				// recover
+				recoverFromBackUp(originalDpuFile);
+				// finish update and unload remove DPU record
+				moduleFacade.endUpdate(dpu, true);
+				throw new DPUReplaceException(e.getMessage());
 			}
-		}		
-		
+		}
+
 		dpuFacade.save(dpu);
 
 		// we delete the backup
