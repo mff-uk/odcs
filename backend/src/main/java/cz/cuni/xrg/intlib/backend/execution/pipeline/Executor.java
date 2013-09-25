@@ -199,7 +199,7 @@ public class Executor implements Runnable {
 		}
 
 		for (PreExecutor item : preExecutors) {
-			if (item.preAction(execution, graph)) {
+			if (item.preAction(execution, contexts, graph)) {
 				// continue execution
 			} else {
 				return false;
@@ -223,7 +223,7 @@ public class Executor implements Runnable {
 		}
 
 		for (PostExecutor item : postExecutors) {
-			if (item.postAction(execution, graph)) {
+			if (item.postAction(execution, contexts, graph)) {
 				// continue execution
 			} else {
 				return false;
@@ -277,74 +277,6 @@ public class Executor implements Runnable {
 		} else {
 			execution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
 		}
-	}
-
-	/**
-	 * Try to delete directory in execution directory. If error occur then is
-	 * logged but otherwise ignored.
-	 * 
-	 * @param directory Relative path from execution directory.
-	 */
-	private void deleteDirectory(String directoryPath) {
-		final String generalWorking = appConfig
-				.getString(ConfigProperty.GENERAL_WORKINGDIR);
-		File directory = new File(generalWorking, directoryPath);
-		try {
-			FileUtils.deleteDirectory(directory);
-		} catch (IOException e) {
-			LOG.warn("Can't delete directory after execution", e);
-		}
-	}
-
-	/**
-	 * Delete debug data that has been created during pipeline execution.
-	 */
-	private void deleteDebugDate() {
-		// delete working directory
-		// the sub directories should be already deleted by DPU's
-		deleteDirectory(execution.getContext().getWorkingPath());
-	}
-
-	/**
-	 * Do cleanup work after pipeline execution. Also delete the execution
-	 * directory if the pipeline does not run in debug mode.
-	 */
-	private void cleanup() {
-		LOG.debug("Clean up ...");
-		// release/delete all contexts
-		for (Context item : contexts.values()) {
-			if (execution.isDebugging()) {
-				// just release leave
-				item.release();
-			} else {
-				// delete data ..
-				item.delete();
-			}
-		}
-		if (execution.isDebugging()) {
-			// do not delete debug data
-		} else {
-			deleteDebugDate();
-		}
-
-		// we delete the execution directory if it is empty
-		File rootDirectory = new File(
-				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
-				execution.getContext().getRootPath());
-		if (rootDirectory.isDirectory()) {
-			if (rootDirectory.list().length == 0) {
-				// empty
-				try {
-					Files.delete(rootDirectory.toPath());
-				} catch (IOException e) {
-					LOG.warn("Failed to delete execution root directory", e);
-				}
-			}
-		} else {
-			LOG.warn("Execution directory is not directory.");
-		}
-
-		LOG.debug("Clean up finished");
 	}
 
 	/**
@@ -466,9 +398,6 @@ public class Executor implements Runnable {
 			// failed .. 
 			executionFailed();
 		}
-		
-		// do clean/up
-		cleanup();
 	}
 
 	@Override
@@ -497,12 +426,12 @@ public class Executor implements Runnable {
 		// log start of the pipeline
 		LOG.debug("Pipeline execution started");
 		
+		// execute the pipeline it self
 		execute();
 		
 		// set end time
-		execution.setEnd(new Date());
-		
-		// save the execution for the last time
+		execution.setEnd(new Date());		
+		// save the execution
 		try {
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
