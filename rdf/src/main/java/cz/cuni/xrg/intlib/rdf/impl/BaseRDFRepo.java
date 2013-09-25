@@ -1793,7 +1793,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	private void clearEndpointGraph(URL endpointURL, String endpointGraph)
+	/**
+	 * Removes all RDF data in defined graph using connecion to SPARQL endpoint
+	 * address. For data deleting is necessarry to have endpoint with update
+	 * rights.
+	 *
+	 * @param endpointURL   URL address of endpoint connect to.
+	 * @param endpointGraph Graph name in URI format.
+	 * @throws RDFException When you dont have update right for this action, or
+	 *                      connection is lost before succesfully ending.
+	 */
+	@Override
+	public void clearEndpointGraph(URL endpointURL, String endpointGraph)
 			throws RDFException {
 
 		String deleteQuery = "delete {?x ?y ?z} where {?x ?y ?z}";
