@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.backend.execution.pipeline;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -202,6 +201,7 @@ public class Executor implements Runnable {
 			if (item.preAction(execution, contexts, graph)) {
 				// continue execution
 			} else {
+				LOG.error("PreProcessor: {} failed", item.getClass().getName());
 				return false;
 			}
 		}
@@ -226,6 +226,7 @@ public class Executor implements Runnable {
 			if (item.postAction(execution, contexts, graph)) {
 				// continue execution
 			} else {
+				LOG.error("PostProcessor: {} failed", item.getClass().getName());
 				return false;
 			}
 		}
@@ -394,7 +395,7 @@ public class Executor implements Runnable {
 		}
 
 		// all set 
-		if (executePostExecutors(dependencyGraph)) {
+		if (!executePostExecutors(dependencyGraph)) {
 			// failed .. 
 			executionFailed();
 		}

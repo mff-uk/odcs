@@ -390,9 +390,9 @@ public final class Executor implements Runnable {
 
 		// run dpu, also set executionSuccessful according to
 		// the execution result
-		executionSuccessful = execute(unitInfo)
+		executionSuccessful = execute(unitInfo);
 		// also check for DPU messages
-				&& !context.errorMessagePublished();
+		executionSuccessful &= !context.errorMessagePublished();
 
 		// publish message
 		eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
