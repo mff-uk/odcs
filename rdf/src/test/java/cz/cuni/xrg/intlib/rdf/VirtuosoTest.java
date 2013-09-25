@@ -3,17 +3,25 @@ package cz.cuni.xrg.intlib.rdf;
 import cz.cuni.xrg.intlib.commons.IntegrationTest;
 import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
 import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
+import cz.cuni.xrg.intlib.rdf.enums.InsertType;
+import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
 import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
 import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.Properties;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 
-import static org.junit.Assert.fail;
+import static cz.cuni.xrg.intlib.rdf.LocalRDFRepoTest.rdfRepo;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -32,12 +40,14 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 	private static final String defaultGraph = "http://default";
 
+	private static final String updateEndpoint = "http://localhost:8890/sparql-auth";
+
 	@BeforeClass
 	public static void setUpLogger() {
 
 		rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(
-			hostName, port, user, password, defaultGraph, "", new Properties()
-		);
+				hostName, port, user, password, defaultGraph, "",
+				new Properties());
 		rdfRepo.cleanAllData();
 	}
 
@@ -87,8 +97,8 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@Test
 	public void repositoryCopy() {
 		RDFDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(
-			hostName, port, user, password, "http://goal", "", new Properties()
-		);
+				hostName, port, user, password, "http://goal", "",
+				new Properties());
 		try {
 			goal.merge(rdfRepo);
 		} catch (IllegalArgumentException e) {
@@ -132,14 +142,13 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 					VirtuosoRDFRepo virtuosoRepo = RDFDataUnitFactory
 							.createVirtuosoRDFRepo(
-								hostName,
-								port,
-								user,
-								password,
-								"http://myDefault",
-								"",
-								new Properties()
-							);
+							hostName,
+							port,
+							user,
+							password,
+							"http://myDefault",
+							"",
+							new Properties());
 
 					addParalelTripleToRepository(virtuosoRepo);
 					extractFromFileToRepository(virtuosoRepo);
@@ -154,5 +163,91 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 			task.start();
 		}
+	}
+
+	@Test
+	public void InsertingToEndpointTest1() {
+		rdfRepo.cleanAllData();
+
+		Resource subject = rdfRepo.createURI("http://my.subject");
+		URI predicate = rdfRepo.createURI("http://my.predicate");
+		Value object = rdfRepo.createLiteral("My company s.r.o. \"HOME\"");
+
+		tryInsertToSPARQLEndpoint(subject, predicate, object);
+	}
+
+	//t
+	@Test
+	public void InsertingToEndpointTest2() {
+		rdfRepo.cleanAllData();
+
+		Resource subject = rdfRepo.createURI("http://my.subject");
+		URI predicate = rdfRepo.createURI("http://my.predicate");
+		Value object = rdfRepo.createLiteral(
+				"This \"firma has 'firma' company\" Prague");
+
+		tryInsertToSPARQLEndpoint(subject, predicate, object);
+	}
+
+	@Test
+	public void InsertingToEndpointTest3() {
+		rdfRepo.cleanAllData();
+
+		Resource subject = rdfRepo.createURI("http://my.subject");
+		URI predicate = rdfRepo.createURI("http://my.predicate");
+		Value object = rdfRepo.createLiteral(
+				"Test char <and > in <my text1> as example.");
+
+		tryInsertToSPARQLEndpoint(subject, predicate, object);
+	}
+
+	private void tryInsertToSPARQLEndpoint(Resource subject, URI predicate,
+			Value object) {
+
+		rdfRepo.addTriple(subject, predicate, object);
+
+		String goalGraphName = "http://temp";
+		URL endpoint = getUpdateEndpoint();
+
+		boolean isLoaded = false;
+
+		try {
+			rdfRepo.loadToSPARQLEndpoint(endpoint, goalGraphName, user,
+					password,
+					WriteGraphType.OVERRIDE, InsertType.SKIP_BAD_PARTS);
+			isLoaded = true;
+
+		} catch (RDFException e) {
+			LOG.error(String.format(
+					"INSERT triple: %s %s %s to SPARQL endpoint failed", subject
+					.stringValue(), predicate.stringValue(), object
+					.stringValue()));
+
+		} finally {
+			try {
+				rdfRepo.clearEndpointGraph(endpoint, goalGraphName);
+			} catch (RDFException e) {
+				LOG.error("TEMP graph <" + goalGraphName + "> was not delete");
+			}
+		}
+
+		assertTrue(isLoaded);
+	}
+
+	private URL getUpdateEndpoint() {
+
+		URL endpoint = null;
+
+		try {
+			endpoint = new URL(updateEndpoint);
+
+		} catch (MalformedURLException e) {
+			LOG.debug("Malformed URL to SPARQL update endpoint " + e
+					.getMessage());
+
+		} finally {
+			return endpoint;
+		}
+
 	}
 }
