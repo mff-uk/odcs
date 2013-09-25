@@ -15,6 +15,9 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
  * execution. Must not execute the DPU. The PreExecutors can be called in random
  * order, but they all will be called before the call of {@link Executor}.
  * 
+ * The {@link PreExecutor}s are used as a singletons, so they
+ * must be able to run concurrently on multiple instances.
+ * 
  * The PreExecutors are executed in order that is defined by {@link Ordered}
  * 
  * @author Petyr

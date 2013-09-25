@@ -10,8 +10,10 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 /**
- * Provide action that should be perform after pipeline execution.
- * 
+ * Provide action that should be perform after pipeline execution. 
+ * The {@link PostExecutor}s are used as a singletons, so they
+ * must be able to run concurrently on multiple instances. 
+ *  
  * The PreExecutors are executed in order that is defined by {@link Ordered}
  * 
  * @author Petyr

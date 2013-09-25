@@ -13,6 +13,9 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
  * Provide action that should be perform before every DPU execution. Must not
  * execute the DPU. T
  * 
+ * The {@link PreExecutor}s are used as a singletons, so they
+ * must be able to run concurrently on multiple instances.
+ * 
  * The PreExecutors are executed in order that is defined by
  * {@link Ordered}
  * 
