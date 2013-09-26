@@ -50,7 +50,7 @@
 	<bean id="pipelineFacade" class="cz.cuni.xrg.intlib.backend.facade.PipelineFacade" />
 
 	<!-- component for sending email based on events -->
-	<bean id="emailComunicator" class="cz.cuni.xrg.intlib.backend.communication.EmailComunicator" />
+	<bean id="emailCommunicator" class="cz.cuni.xrg.intlib.backend.communication.EmailCommunicator" />
 	
 	<!-- watcher for DPU changes -->
 	<bean class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIChangeManager" >

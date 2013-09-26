@@ -26,9 +26,9 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
  * @author Petyr
  *
  */
-public class EmailComunicator implements ApplicationListener<ApplicationEvent>{
+public class EmailCommunicator implements ApplicationListener<ApplicationEvent>{
 
-	private static final Logger LOG = LoggerFactory.getLogger(EmailComunicator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EmailCommunicator.class);
 	
 	/**
 	 * Provide functionality to send email.
