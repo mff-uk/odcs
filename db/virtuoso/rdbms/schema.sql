@@ -145,6 +145,8 @@ CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE"
   "last_exec" DATETIME,
   "time_period" INTEGER,
   "period_unit" SMALLINT,
+  "strict_timing" SMALLINT,
+  "strict_tolerance" INTEGER,
   PRIMARY KEY ("id")
 );
 -- composite index to optimize fetching schedules following pipeline

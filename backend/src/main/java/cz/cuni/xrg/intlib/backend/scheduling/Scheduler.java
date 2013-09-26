@@ -95,7 +95,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 				// we use information about next execution
 				Date nextExecution = schedule.getNextExecutionTimeInfo();
 				if (nextExecution == null) {
-					// runs after another pipeline .. 
+					// do not run .. is disabled, missed it's time  
 				} else if (nextExecution.before(now)) {					
 					execute(schedule);
 				}

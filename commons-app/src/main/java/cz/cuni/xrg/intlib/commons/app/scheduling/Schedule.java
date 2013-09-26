@@ -8,7 +8,6 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.io.Serializable;
 
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -120,6 +119,19 @@ public class Schedule implements Serializable {
 	@JoinColumn(name = "user_id")
 	private User owner;
 
+	/**
+	 * If true then pipeline can be run only at most +10 minutes from 
+	 * scheduled time.
+	 */
+	@Column(name = "strict_timing")
+	private boolean strictlyTimed;
+	
+	/**
+	 * If {@link strictTiming} is true then say how strict we are in minutes.
+	 */
+	@Column(name = "strict_tolerance")
+	private Integer strictToleranceMinutes;
+	
 	/**
 	 * Empty constructor. Used by JPA. Do not use otherwise.
 	 */
@@ -244,6 +256,29 @@ public class Schedule implements Serializable {
 		this.owner = owner;
 	}
 	
+	public boolean isStrictlyTimed() {
+		return strictlyTimed;
+	}
+	
+	public void setStrictlyTimed(boolean strictTiming) {
+		this.strictlyTimed = strictTiming;
+	}
+	
+	/**
+	 * Set tolerance. If negative then enable pipeline to run sooner but 
+	 * any delay will be ignored. If positive then enable delay, but prevent
+	 * from running earlier.  
+	 * @return
+	 */
+	public Integer getStrictToleranceMinutes() {
+		return strictToleranceMinutes;
+	}
+	
+	public void setStrictToleranceMinutes(Integer strictToleranceMinutes) {
+		this.strictToleranceMinutes = strictToleranceMinutes;
+	}	
+	
+	
 	/**
 	 * Return time of the next execution. It the schedule is not time
 	 * dependent return null. 
@@ -251,61 +286,6 @@ public class Schedule implements Serializable {
 	 * @return Estimate of time for next execution or null.
 	 */
 	public Date getNextExecutionTimeInfo() {
-		
-		if (enabled) {			
-		} else {
-			// pipeline disabled 
-			return null;
-		}
-		
-		if (type == ScheduleType.AFTER_PIPELINE) {
-			return null;
-		} else { // ScheduleType.PERIODICALLY
-			if (lastExecution == null || justOnce) {
-				// no execution so far .. so we run in time of first execution
-				// or we use run once, in this case only first run is set
-				return firstExecution;
-			} else {
-				// unknown period
-				if (periodUnit == null) {
-					return null;
-				}
-				
-				Calendar calendarNextExec = Calendar.getInstance();
-				Calendar calendarLastExec = Calendar.getInstance();				
-				// start on the first execution
-				calendarNextExec.setTime(firstExecution);
-				calendarLastExec.setTime(lastExecution);
-				// now add period until we are after the lastExecution
-				while (calendarNextExec.before(calendarLastExec)) {
-					// add value based on period
-					switch (periodUnit) {
-						case YEAR:
-							calendarNextExec.add(Calendar.YEAR, period);
-							break;
-						case WEEK:
-							calendarNextExec.add(Calendar.WEEK_OF_YEAR, period);
-							break;						
-						case DAY:
-							calendarNextExec.add(Calendar.DAY_OF_YEAR, period);
-							break;
-						case HOUR:
-							calendarNextExec.add(Calendar.HOUR_OF_DAY, period);
-							break;
-						case MINUTE:
-							calendarNextExec.add(Calendar.MINUTE, period);
-							break;
-						case MONTH:
-							calendarNextExec.add(Calendar.MONTH, period);
-							break;
-						case SECOND:
-							calendarNextExec.add(Calendar.SECOND, period);
-							break;
-					}
-				}
-				return calendarNextExec.getTime();
-			}
-		}
-
+		return ScheduleNextRun.calculateNextRun(this);
 	}
 }
