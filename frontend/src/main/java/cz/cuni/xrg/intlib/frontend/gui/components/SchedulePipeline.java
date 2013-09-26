@@ -12,7 +12,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
@@ -37,8 +36,6 @@ import cz.cuni.xrg.intlib.commons.app.scheduling.PeriodUnit;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleType;
-import cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord;
-import cz.cuni.xrg.intlib.commons.app.user.User;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.gui.views.SimpleTreeFilter;
@@ -67,17 +64,22 @@ public class SchedulePipeline extends Window {
 	private TwinColSelect selectPipe;
 	private TextField tfEvery;
 	private ComboBox comboEvery;
+	private HorizontalLayout  toleranceLayout;
+	private TextField tfTolerance;
+	private VerticalLayout strictlyTimedLayout;
 	
 	/**
 	 * OptionGroup to set type of pipeline scheduling
 	 */
 	private OptionGroup scheduleType;
 	private CheckBox justOnce;
+	private CheckBox strictlyTimed;
 	private OptionGroup intervalOption;
 
 	private InlineDateField date;
 	private Schedule schedule = null;
-	private ObjectProperty<Integer> value;
+	private ObjectProperty<Integer> valueInt;
+	private ObjectProperty<Integer> valueTol;
 
 	private List<Pipeline> pipelines;
 	private Set<Pipeline> afterPipelines = null;
@@ -157,11 +159,22 @@ public class SchedulePipeline extends Window {
 				else{
 					intervalOption.setValue("every");
 					comboEvery.setValue(selectedSchedule.getPeriodUnit());
-					value.setValue(selectedSchedule.getPeriod());
+					valueInt.setValue(selectedSchedule.getPeriod());
 				}
 				
 			}
 			
+			//TODO Petyr: set Strictly Timed and Tolerance to the dialog
+/*			if (selectedSchedule.isStrictlyTimed()){
+				strictlyTimed.setValue(true);
+				valueTol.setValue(selectedSchedule.getTolerance());
+			}
+			else{
+				strictlyTimed.setValue(false);
+				
+			}*/
+			
+
 		}
 		//AFTER_PIPELINE type
 		else{
@@ -199,10 +212,6 @@ public class SchedulePipeline extends Window {
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(false);
 
-//		mainLayout.setWidth(880, Unit.PIXELS);
-//		mainLayout.setHeight("560px");
-
-		
 		tabSheet = new TabSheet();
 		tabSheet.setImmediate(true);
 		
@@ -362,6 +371,15 @@ public class SchedulePipeline extends Window {
 							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
+				
+				//Interval of PERIODICALLY type should be positive number
+				if ((scheduleType.getValue().equals(ScheduleType.PERIODICALLY))
+						&& (!tfTolerance.isValid())) {
+					Notification.show("Failed to create scheduler rule.",
+							"Tolerance value error",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
 				//selected pipeline in the AFTER_PIPELINE case should be filled.
 				if ((scheduleType.getValue()
 						.equals(ScheduleType.AFTER_PIPELINE))
@@ -416,10 +434,16 @@ public class SchedulePipeline extends Window {
 						} else {
 							schedule.setPeriodUnit((PeriodUnit) comboEvery
 									.getValue());
-							schedule.setPeriod(value.getValue());
+							schedule.setPeriod(valueInt.getValue());
 						}
 					}
+					//TODO Petyr: get Strictly Timed and Tolerance from dialog
+/*					schedule.setStrictlyTimed(strictlyTimed.getValue());
+					if (strictlyTimed.getValue().equals(true)) 
+						schedule.setTolerance(valueTol.getValue());*/
 					
+				
+										
 				}
 				// After pipeline Schedule type selected Setting parameters.
 				else {
@@ -705,12 +729,13 @@ public class SchedulePipeline extends Window {
 	 * @return autoLayout GridLayout with components that designed 
 	 * for setting schedule the pipeline to run automatically in fixed interval.
 	 */
+	@SuppressWarnings({ "static-access", "deprecation" })
 	private GridLayout buildAutoLayout() {
 
-		autoLayout = new GridLayout(2, 3);
+		autoLayout = new GridLayout(2, 4);
 		autoLayout.setImmediate(false);
 		autoLayout.setSpacing(true);
-		autoLayout.setHeight("400px");
+		autoLayout.setHeight("450px");
 		autoLayout.setColumnExpandRatio(0, 0.6f);
 		autoLayout.setColumnExpandRatio(1, 0.4f);
 		autoLayout.setStyleName("scheduling");
@@ -800,8 +825,8 @@ public class SchedulePipeline extends Window {
 		inervalEveryLayout.setSpacing(true);
 		inervalEveryLayout.setMargin(true);
 
-		value = new ObjectProperty<Integer>(1);
-		tfEvery = new TextField(value);
+		valueInt = new ObjectProperty<Integer>(1);
+		tfEvery = new TextField(valueInt);
 		tfEvery.setConverter(Integer.class);
 		tfEvery.setWidth("50px");
 		tfEvery.setImmediate(true);
@@ -840,6 +865,71 @@ public class SchedulePipeline extends Window {
 		inervalEveryLayout.addComponent(comboEvery);
 		inervalLayout.addComponent(inervalEveryLayout);
 		autoLayout.addComponent(inervalLayout, 1, 2);
+		
+		//strictly timed component
+		
+		strictlyTimedLayout = new VerticalLayout();
+		strictlyTimedLayout.setSpacing(true);
+		
+		strictlyTimed = new CheckBox();
+		strictlyTimed.setCaption("Strictly Timed");
+		strictlyTimed.setValue(false);
+		strictlyTimed.setImmediate(true);
+		strictlyTimed.addValueChangeListener(new ValueChangeListener() {
+
+			/**
+			 * If strictlytimed isn't selected then the tolerance cpmponent is disabled.
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (event.getProperty().getValue().equals(false)) {
+					toleranceLayout.setEnabled(false);
+					
+				} else {
+					
+					toleranceLayout.setEnabled(true);
+
+				}
+
+			}
+		});
+
+		strictlyTimedLayout.addComponent(strictlyTimed);
+
+		toleranceLayout = new HorizontalLayout();
+		toleranceLayout.setSpacing(true);
+		toleranceLayout.setEnabled(false);
+		toleranceLayout.addComponent(new Label("Tolerance: "));
+		
+		
+		valueTol = new ObjectProperty<Integer>(1);
+		tfTolerance = new TextField(valueTol);
+		tfTolerance.setConverter(Integer.class);
+		tfTolerance.setWidth("50px");
+		tfTolerance.setImmediate(true);
+		tfTolerance.addValidator(new Validator() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void validate(Object val) throws InvalidValueException {
+				if (((Integer) val != null) && ((Integer) val > 0)) {
+					return;
+				}
+				throw new InvalidValueException("Value must be positive");
+
+			}
+		});
+
+		toleranceLayout.addComponent(tfTolerance);
+		
+		toleranceLayout.addComponent(new Label("minutes"));
+
+		strictlyTimedLayout.addComponent(toleranceLayout);
+		autoLayout.addComponent(strictlyTimedLayout, 1, 3);
+	
 
 		return autoLayout;
 
