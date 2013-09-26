@@ -164,15 +164,14 @@ public class SchedulePipeline extends Window {
 				
 			}
 			
-			//TODO Petyr: set Strictly Timed and Tolerance to the dialog
-/*			if (selectedSchedule.isStrictlyTimed()){
+			if (selectedSchedule.isStrictlyTimed()){
 				strictlyTimed.setValue(true);
-				valueTol.setValue(selectedSchedule.getTolerance());
+				valueTol.setValue(selectedSchedule.getStrictToleranceMinutes());
 			}
 			else{
 				strictlyTimed.setValue(false);
 				
-			}*/
+			}
 			
 
 		}
@@ -437,12 +436,10 @@ public class SchedulePipeline extends Window {
 							schedule.setPeriod(valueInt.getValue());
 						}
 					}
-					//TODO Petyr: get Strictly Timed and Tolerance from dialog
-/*					schedule.setStrictlyTimed(strictlyTimed.getValue());
-					if (strictlyTimed.getValue().equals(true)) 
-						schedule.setTolerance(valueTol.getValue());*/
-					
-				
+					schedule.setStrictlyTimed(strictlyTimed.getValue());
+					if (strictlyTimed.getValue().equals(true))  {
+						schedule.setStrictToleranceMinutes(valueTol.getValue());
+					}				
 										
 				}
 				// After pipeline Schedule type selected Setting parameters.
