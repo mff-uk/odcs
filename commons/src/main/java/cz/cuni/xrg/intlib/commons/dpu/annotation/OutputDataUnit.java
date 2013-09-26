@@ -28,4 +28,10 @@ public @interface OutputDataUnit {
 	 */
 	public String name() default "output";
 	
+	/**
+	 * {@link DataUnit}'s description will be visible to the user.
+	 * @return
+	 */
+	public String description() default "";
+	
 }

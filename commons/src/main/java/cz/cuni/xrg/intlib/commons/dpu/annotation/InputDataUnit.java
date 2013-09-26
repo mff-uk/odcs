@@ -42,4 +42,11 @@ public @interface InputDataUnit {
 	 * @return
 	 */
 	public boolean optional() default false;
+	
+	/**
+	 * {@link DataUnit}'s description will be visible to the user.
+	 * @return
+	 */
+	public String description() default "";
+	
 }
