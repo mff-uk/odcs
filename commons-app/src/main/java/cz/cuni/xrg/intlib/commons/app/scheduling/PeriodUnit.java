@@ -8,8 +8,7 @@ package cz.cuni.xrg.intlib.commons.app.scheduling;
  *
  */
 public enum PeriodUnit {
-	SECOND
-	,MINUTE 
+	MINUTE 
 	,HOUR
 	,DAY
 	,WEEK
