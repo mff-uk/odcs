@@ -35,7 +35,7 @@ public class Restarter extends PreExecutorBase {
 	}
 
 	@Override
-	public int getPreExecutorOrder() {
+	public int getOrder() {
 		return ORDER;
 	}
 

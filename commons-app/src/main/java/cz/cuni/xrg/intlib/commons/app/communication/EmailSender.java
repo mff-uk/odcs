@@ -40,7 +40,7 @@ public class EmailSender {
 	/**
 	 * True if use TTL.
 	 */
-	private boolean useTTL;
+	private boolean useTLS;
 
 	/**
 	 * From email address.
@@ -74,7 +74,7 @@ public class EmailSender {
 		if (this.enabled) {
 			this.smtpHost = appConfig.getString(ConfigProperty.EMAIL_SMTP_HOST);
 			this.smtpPort = appConfig.getString(ConfigProperty.EMAIL_SMTP_PORT);
-			this.useTTL = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TTL);
+			this.useTLS = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TLS);
 			this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
 			this.authentication = appConfig.getBoolean(ConfigProperty.EMAIL_AUTHORIZATION);
 
@@ -87,24 +87,25 @@ public class EmailSender {
 	}
 
 	/**
-	 * Send email with html content
+	 * Send email with html content. If the list of recipients
+	 * is empty then immediately return false.
 	 * 
 	 * @param fromEmail
 	 * @param fromName
 	 * @param subject
 	 * @param body
 	 * @param emails
-	 * @return
+	 * @return True if and only if email has been send. 
 	 */
 	public boolean send(String subject, String body, List<String> recipients) {
 		
-		if (!enabled) {
+		if (!enabled || recipients.isEmpty()) {
 			return false;
 		}
-		
+				
 		// prepare properties
 		Properties props = new Properties();
-		if (useTTL) {
+		if (useTLS) {
 			props.put("mail.smtp.starttls.enable", "true");
 		}
 		props.put("mail.smtp.host", smtpHost);
@@ -137,6 +138,7 @@ public class EmailSender {
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
 						email));
 			}
+						
 			msg.setSubject(subject);
 			msg.setContent(body, "text/html");
 			// send message
@@ -154,7 +156,7 @@ public class EmailSender {
 	 * @param subject
 	 * @param body
 	 * @param recipient
-	 * @return 
+	 * @return True if and only if email has been send.
 	 */
 	public boolean send(String subject, String body, String recipient) {
 		return send(subject, body, Arrays.asList(recipient));

@@ -1,7 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.execution.context;
 
-import java.io.File;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -80,16 +78,6 @@ public class DataUnitInfo implements Serializable {
 		this.isInput = isInput;
 	}
 
-	/**
-	 * Return relative path to the DataUnit info directory.
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public File getDirectory() {
-		return new File(index.toString());
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -110,9 +98,9 @@ public class DataUnitInfo implements Serializable {
 		return isInput;
 	}
         
-        @Override
-        public String toString() {
-            return name;
-        }
+    @Override
+    public String toString() {
+        return name;
+    }
 
 }

@@ -45,6 +45,10 @@ public class EmailComunicator implements ApplicationListener<ApplicationEvent>{
 	private void add(Set<String> emails, PipelineExecution execution, Schedule schedule) {
 		ScheduleNotificationRecord notification = schedule.getNotification();
 		
+		if (notification == null) {
+			return;
+		}
+		
 		if (execution.getStatus() == PipelineExecutionStatus.FAILED) {
 			if (notification.getTypeError() == NotificationRecordType.INSTANT) {
 				// continue -> send 

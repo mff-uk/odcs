@@ -35,6 +35,7 @@ import cz.cuni.xrg.intlib.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.commons.app.module.DPUReplaceException;
+import cz.cuni.xrg.intlib.commons.app.module.DPUValidator;
 import cz.cuni.xrg.intlib.commons.app.module.ModuleException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject;
@@ -43,6 +44,7 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.xrg.intlib.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
@@ -55,6 +57,7 @@ import cz.cuni.xrg.intlib.frontend.gui.components.UploadInfoWindow;
 
 import java.io.FileNotFoundException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -626,10 +629,15 @@ class DPU extends ViewComponent {
 			return;
 		}
 		
+		// prepare dpu validators
+		List<DPUValidator> validators = new LinkedList<>();
+		validators.add(new DPUDialogValidator());
+		
 		try {
 			App.getApp().getDPUManipulator().replace(
 					selectedDpuWrap.getDPUTemplateRecord(), 
-					fileUploadReceiver.file);
+					fileUploadReceiver.file,
+					validators);
 		} catch (DPUReplaceException e) {
 			Notification.show("Failed to replace DPU",
 					e.getMessage(), Notification.Type.ERROR_MESSAGE);

@@ -10,28 +10,21 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 
 /**
- * Provide action that should be perform after every DPU execution.
+ * Provide action that should be perform pipeline execution.
+ * The {@link PostExecutor}s are used as a singletons, so they
+ * must be able to run concurrently on multiple instances.
  * 
  * The PreExecutors are executed in order that is defined by
- * {@link Ordered#getOrder()}
+ * {@link Ordered}
  * 
  * @author Petyr
  *
  */
-public interface PostExecutor {
-
-	/**
-	 * Return the order value of this object, with a
-	 * higher value meaning greater in terms of sorting in post executors
-	 * chain.
-	 * 
-	 * @return
-	 */
-	public int getPostExecutorOrder();
+public interface PostExecutor extends Ordered {
 	
 	/**
 	 * Should perform post-execution actions. If return false then the execution
-	 * is cancelled.
+	 * is cancelled and marked failed.
 	 * 
 	 * @param dpu Respective DPU.
 	 * @param execution Respective execution.

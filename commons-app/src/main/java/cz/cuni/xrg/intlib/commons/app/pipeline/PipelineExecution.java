@@ -11,7 +11,7 @@ import java.util.Objects;
 
 /**
  * Information about executed pipeline and its states.
- *
+ * 
  * @author Jiri Tomes
  * @author Jan Vojt
  * @author Petyr
@@ -93,14 +93,14 @@ public class PipelineExecution implements Serializable {
 	 */
 	@Column(name = "stop")
 	private boolean stop;
-        
-        /**
+
+	/**
 	 * Timestamp when this execution was last changed.
 	 */
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "t_last_change")
 	private Date lastChange;
-	
+
 	/**
 	 * No-arg constructor for JPA
 	 */
@@ -111,7 +111,7 @@ public class PipelineExecution implements Serializable {
 	 * Constructor. Create pipeline which will be run as soon as possible in
 	 * non-debug mode. The pipeline execution will not run other pipelines based
 	 * on scheduling rules.
-	 *
+	 * 
 	 * @param pipeline
 	 */
 	public PipelineExecution(Pipeline pipeline) {
@@ -121,7 +121,7 @@ public class PipelineExecution implements Serializable {
 		this.schedule = null;
 		this.silentMode = true;
 		this.stop = false;
-		
+
 		// Execution context is obligatory, so that we do not need to check for
 		// nulls everywhere. A new execution has an empty context.
 		this.context = new ExecutionContextInfo(this);
@@ -130,8 +130,8 @@ public class PipelineExecution implements Serializable {
 	public Long getId() {
 		return id;
 	}
-      
-    public PipelineExecutionStatus getStatus() {
+
+	public PipelineExecutionStatus getStatus() {
 		return status;
 	}
 
@@ -150,8 +150,8 @@ public class PipelineExecution implements Serializable {
 	public boolean isDebugging() {
 		return isDebugging;
 	}
-        
-        public boolean getIsDebugging() {
+
+	public boolean getIsDebugging() {
 		return isDebugging;
 	}
 
@@ -177,7 +177,7 @@ public class PipelineExecution implements Serializable {
 
 	/**
 	 * Use to gain read only access to the context.
-	 *
+	 * 
 	 * @return Context or null.
 	 */
 	public ExecutionContextInfo getContextReadOnly() {
@@ -187,7 +187,7 @@ public class PipelineExecution implements Serializable {
 	public ExecutionContextInfo getContext() {
 		return context;
 	}
-	
+
 	public Schedule getSchedule() {
 		return schedule;
 	}
@@ -215,27 +215,28 @@ public class PipelineExecution implements Serializable {
 	public boolean getStop() {
 		return stop;
 	}
-	
+
 	public void stop() {
+		status = PipelineExecutionStatus.CANCELLING;
 		stop = true;
-		status = PipelineExecutionStatus.CANCELLED;
 	}
-        
-        public Date getLastChange() {
-            return lastChange;
-        }
-        
-        /**
-         * Returns duration of execution. Returns -1 for unfinished/not started executions.
-         * 
-         **/
-        public long getDuration() {
-            if(start == null || end == null) {
-                return -1;
-            }
-            return end.getTime() - start.getTime();
-        }
-	
+
+	public Date getLastChange() {
+		return lastChange;
+	}
+
+	/**
+	 * Returns duration of execution. Returns -1 for unfinished/not started
+	 * executions.
+	 * 
+	 **/
+	public long getDuration() {
+		if (start == null || end == null) {
+			return -1;
+		}
+		return end.getTime() - start.getTime();
+	}
+
 	/**
 	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
 	 * 
@@ -250,7 +251,8 @@ public class PipelineExecution implements Serializable {
 
 	/**
 	 * Returns true if two objects represent the same pipeline execution. This
-	 * holds if and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 * holds if and only if
+	 * <code>this.id == null ? this == obj : this.id == o.id</code>.
 	 * 
 	 * @param o
 	 * @return true if both objects represent the same pipeline execution
@@ -263,15 +265,13 @@ public class PipelineExecution implements Serializable {
 		if (getClass() != o.getClass()) {
 			return false;
 		}
-		
+
 		final PipelineExecution other = (PipelineExecution) o;
 		if (this.id == null) {
 			return super.equals(other);
 		}
-		
+
 		return Objects.equals(this.id, other.id);
 	}
 
-    
-	
 }

@@ -478,13 +478,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
                 case "cancel":
                 	PipelineExecution pipelineExec = 
                 		App.getApp().getPipelines().getExecution(execId);
-	               	 if(pipelineExec.getStatus().equals(PipelineExecutionStatus.RUNNING)){
-	                  	tableData.getContainerProperty(itemId, "status").setValue(PipelineExecutionStatus.CANCELLING);
-	                  	senderButton.setVisible(false);
-	             	 }
                 	pipelineExec.stop();
                 	App.getApp().getPipelines().save(pipelineExec);
                 	senderButton.setVisible(false);
+                	// this load new data from database
 					refresh();
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
                     break;

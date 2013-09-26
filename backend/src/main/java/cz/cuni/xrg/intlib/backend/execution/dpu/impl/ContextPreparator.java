@@ -42,7 +42,7 @@ class ContextPreparator implements PreExecutor {
 	private ApplicationEventPublisher eventPublish;	
 	
 	@Override
-	public int getPreExecutorOrder() {
+	public int getOrder() {
 		return ORDER;
 	}
 	

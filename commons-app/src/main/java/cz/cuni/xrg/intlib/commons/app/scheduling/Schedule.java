@@ -261,8 +261,9 @@ public class Schedule implements Serializable {
 		if (type == ScheduleType.AFTER_PIPELINE) {
 			return null;
 		} else { // ScheduleType.PERIODICALLY
-			if (lastExecution == null) {
+			if (lastExecution == null || justOnce) {
 				// no execution so far .. so we run in time of first execution
+				// or we use run once, in this case only first run is set
 				return firstExecution;
 			} else {
 				// unknown period

@@ -1,6 +1,8 @@
 package cz.cuni.xrg.intlib.frontend.gui.components;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
@@ -24,9 +26,11 @@ import com.vaadin.ui.Upload.StartedEvent;
 
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.xrg.intlib.commons.app.module.DPUCreateException;
+import cz.cuni.xrg.intlib.commons.app.module.DPUValidator;
 import cz.cuni.xrg.intlib.commons.app.auth.VisibilityType;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.xrg.intlib.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.xrg.intlib.frontend.gui.AuthAwareButtonClickWrapper;
 
 /**
@@ -259,12 +263,16 @@ public class DPUCreate extends Window {
 					return;
 				}
 				
+				// prepare dpu validators
+				List<DPUValidator> validators = new LinkedList<>();
+				validators.add(new DPUDialogValidator());
+				
 				final File sourceFile = fileUploadReceiver.file;
 				// create new representation
 				DPUTemplateWrap dpuWrap = null;				
 				try {
 					dpuWrap = new DPUTemplateWrap(
-							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue()));
+							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
 				} catch(DPUCreateException e) {
 					uploadFile.setReadOnly(false);
 					uploadFile.setValue("");

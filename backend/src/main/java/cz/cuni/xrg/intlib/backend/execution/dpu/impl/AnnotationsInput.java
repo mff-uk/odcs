@@ -62,7 +62,7 @@ public class AnnotationsInput extends PreExecutorBase {
 	}
 
 	@Override
-	public int getPreExecutorOrder() {
+	public int getOrder() {
 		return ORDER;
 	}
 

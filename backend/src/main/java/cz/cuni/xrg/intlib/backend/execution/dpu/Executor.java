@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.dpu.event.DPUEvent;
@@ -121,11 +122,12 @@ public final class Executor implements Runnable {
 	@PostConstruct
 	public void init() {
 		if (preExecutors != null) {
-			Collections.sort(preExecutors, PreExecutorOrderComparator.INSTANCE);
+			Collections.sort(preExecutors,
+					AnnotationAwareOrderComparator.INSTANCE);
 		}
 		if (postExecutors != null) {
 			Collections.sort(postExecutors,
-					PostExecutorOrderComparator.INSTANCE);
+					AnnotationAwareOrderComparator.INSTANCE);
 		}
 
 	}
@@ -388,13 +390,12 @@ public final class Executor implements Runnable {
 
 		// run dpu, also set executionSuccessful according to
 		// the execution result
-		executionSuccessful = execute(unitInfo)
-				// also check for DPU messages
-				&& !context.errorMessagePublished();
-		
+		executionSuccessful = execute(unitInfo);
+		// also check for DPU messages
+		executionSuccessful &= !context.errorMessagePublished();
+
 		// publish message
-		eventPublisher.publishEvent(
-				DPUEvent.createComplete(context, this));
+		eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
 	}
 
 	/**

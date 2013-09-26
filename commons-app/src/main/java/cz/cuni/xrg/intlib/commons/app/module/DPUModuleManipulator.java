@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.module;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,13 +57,19 @@ public class DPUModuleManipulator {
 	 * {@link DPUCreateException#getMessage()} to get description that can be
 	 * shown to the user.
 	 * 
+	 * When {@link DPUTemplateRecord} is loaded and instances is created then
+	 * execute validators to validate new DPU. If one of them failed the create
+	 * method failed and the DPU is not created.
+	 * 
 	 * @param sourceFile
 	 * @param name
+	 * @param validators Validators for DPU checking, can be null.
 	 * @return
 	 * @throws DPUCreateException
 	 */
-	public DPUTemplateRecord create(File sourceFile, String name)
-			throws DPUCreateException {
+	public DPUTemplateRecord create(File sourceFile,
+			String name,
+			List<DPUValidator> validators) throws DPUCreateException {
 		if (sourceFile == null) {
 			// failed to load file
 			throw new DPUCreateException(
@@ -121,11 +128,28 @@ public class DPUModuleManipulator {
 			moduleFacade.unLoad(newTemplate);
 			throw new DPUCreateException("DPU has unspecified type.");
 		}
+
 		// set other DPUs variables
 		newTemplate.setType(dpuType);
 		newTemplate.setDescription("");
 		newTemplate.setJarDescription(jarDescription);
 		newTemplate.setVisibility(VisibilityType.PRIVATE);
+
+		// validate
+		if (validators != null) {
+			try {
+				for (DPUValidator item : validators) {
+					item.validate(newTemplate, dpuObject);
+				}
+			} catch (DPUValidatorException e) {
+				// release
+				newDPUDir.delete();
+				newDPUFile.delete();
+				moduleFacade.unLoad(newTemplate);
+				throw new DPUCreateException(e.getMessage());
+			}
+		}
+
 		// and save it into DB
 		try {
 			dpuFacade.save(newTemplate);
@@ -139,10 +163,10 @@ public class DPUModuleManipulator {
 			throw new DPUCreateException("Failed to save new DPU: "
 					+ e.getMessage());
 		}
-		
+
 		// notify the rest of the application
-		notifier.created(newTemplate);		
-		
+		notifier.created(newTemplate);
+
 		// return new DPUTempateRecord
 		return newTemplate;
 	}
@@ -153,12 +177,18 @@ public class DPUModuleManipulator {
 	 * new jar file can not be used, the old jar file is preserved and the
 	 * {@link DPUReplaceException} is thrown.
 	 * 
+	 * When {@link DPUTemplateRecord} is loaded and instances is created then
+	 * execute validators to validate new DPU. If one of them failed the create
+	 * method failed and the DPU is not created.
+	 * 
 	 * @param dpu
 	 * @param sourceDpuFile
+	 * @param validators Validators for DPU checking, can be null.
 	 * @throws DPUReplaceException
 	 */
-	public void replace(DPUTemplateRecord dpu, File sourceDpuFile)
-			throws DPUReplaceException {
+	public void replace(DPUTemplateRecord dpu,
+			File sourceDpuFile,
+			List<DPUValidator> validators) throws DPUReplaceException {
 		// get file to the source and to the originalDPU
 		final File originalDpuFile = new File(moduleFacade.getDPUDirectory(),
 				dpu.getJarPath());
@@ -185,7 +215,7 @@ public class DPUModuleManipulator {
 			// no directory .. create it
 			newDPUDir.mkdir();
 		}
-		
+
 		// we have to lock bundle here ..
 		// this prevent every other user .. from working with DPUs in give
 		// directory, so we are the only one here .. we can do what we want :)
@@ -258,16 +288,32 @@ public class DPUModuleManipulator {
 		final String jarDescription = dpuExplorer.getJarDescription(dpu);
 		dpu.setJarDescription(jarDescription);
 		dpu.setJarName(newDpuName);
+
+		// validate
+		if (validators != null) {
+			try {
+				for (DPUValidator item : validators) {
+					item.validate(dpu, newDpuInstance);
+				}
+			} catch (DPUValidatorException e) {
+				// recover
+				recoverFromBackUp(originalDpuFile);
+				// finish update and unload remove DPU record
+				moduleFacade.endUpdate(dpu, true);
+				throw new DPUReplaceException(e.getMessage());
+			}
+		}
+
 		dpuFacade.save(dpu);
-		
+
 		// we delete the backup
-		deleteBackUp(originalDpuFile);		
-		
+		deleteBackUp(originalDpuFile);
+
 		// here we can unlock the bundle
 		// we else say mofuleFacade to not drop the current module
 		// as the replace has been successful
 		moduleFacade.endUpdate(dpu, false);
-		
+
 		// notify the rest of the application
 		notifier.updated(dpu);
 	}
@@ -281,7 +327,7 @@ public class DPUModuleManipulator {
 	public void delete(DPUTemplateRecord dpu) {
 		dpuFacade.delete(dpu);
 		moduleFacade.delete(dpu);
-		
+
 		// notify the rest of the application
 		notifier.deleted(dpu);
 	}

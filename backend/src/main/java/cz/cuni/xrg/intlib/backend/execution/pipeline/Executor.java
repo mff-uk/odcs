@@ -2,10 +2,11 @@ package cz.cuni.xrg.intlib.backend.execution.pipeline;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.xrg.intlib.backend.context.Context;
 import cz.cuni.xrg.intlib.backend.logback.MdcExecutionLevelFilter;
@@ -31,6 +33,8 @@ import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
+
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 
 /**
@@ -79,6 +83,20 @@ public class Executor implements Runnable {
 	private AppConfig appConfig;
 
 	/**
+	 * List of all {@link PreExecutor}s to execute before executing pipeline.
+	 * Can be null.
+	 */
+	@Autowired(required = false)
+	private List<PreExecutor> preExecutors;
+
+	/**
+	 * List of all {@link PostExecutor}s to execute after pipeline execution has
+	 * finished. Can be null.
+	 */
+	@Autowired(required = false)
+	private List<PostExecutor> postExecutors;
+
+	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
 	private PipelineExecution execution;
@@ -94,6 +112,21 @@ public class Executor implements Runnable {
 	private Date lastSuccessfulExTime;
 
 	/**
+	 * Sort pre/post executors.
+	 */
+	@PostConstruct
+	public void init() {
+		if (preExecutors != null) {
+			Collections.sort(preExecutors,
+					AnnotationAwareOrderComparator.INSTANCE);
+		}
+		if (postExecutors != null) {
+			Collections.sort(postExecutors,
+					AnnotationAwareOrderComparator.INSTANCE);
+		}
+	}
+
+	/**
 	 * Bind {@link Executor} to the given {@link PipelineExecution}. Also update
 	 * the {@link PipelineExecution}'s state.
 	 * 
@@ -102,18 +135,17 @@ public class Executor implements Runnable {
 	public void bind(PipelineExecution execution) {
 		this.execution = execution;
 		contexts = new HashMap<>();
-		
-		
+
 		// for newly scheduled pipelines delete the execution directory
 		File coreExecutionFile = new File(
-				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR), 
+				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
 				execution.getContext().getRootPath());
 		if (execution.getStatus() == PipelineExecutionStatus.SCHEDULED) {
 			// new run, check for directory
 			if (coreExecutionFile.exists() && coreExecutionFile.isDirectory()) {
 				// delete
 				LOG.debug("Deleting existing execution's directory. ");
-				
+
 				try {
 					FileUtils.deleteDirectory(coreExecutionFile);
 				} catch (IOException e) {
@@ -121,7 +153,7 @@ public class Executor implements Runnable {
 				}
 			}
 		}
-		
+
 		// update state
 		this.execution.setStatus(PipelineExecutionStatus.RUNNING);
 
@@ -151,6 +183,56 @@ public class Executor implements Runnable {
 		}
 	}
 
+	/**
+	 * Execute {@link PreExecutor} from {@link Executor#preExecutors}. If any
+	 * {@link PreExecutor} return false then return false. If there are no
+	 * {@link PreExecutor} ({@link Executor#preExecutors} == null) then
+	 * instantly return true.
+	 * 
+	 * @param graph Dependency graph used for execution.
+	 * @return
+	 */
+	private boolean executePreExecutors(DependencyGraph graph) {
+		if (preExecutors == null) {
+			return true;
+		}
+
+		for (PreExecutor item : preExecutors) {
+			if (item.preAction(execution, contexts, graph)) {
+				// continue execution
+			} else {
+				LOG.error("PreProcessor: {} failed", item.getClass().getName());
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Execute {@link PostExecutor} from {@link Executor#postExecutors}. If any
+	 * {@link PostExecutor} return false then return false. If there are no
+	 * {@link PostExecutor} ({@link Executor#postExecutors} == null) then
+	 * instantly return true.
+	 * 
+	 * @param graph Dependency graph that has been used for execution.
+	 * @return
+	 */
+	private boolean executePostExecutors(DependencyGraph graph) {
+		if (postExecutors == null) {
+			return true;
+		}
+
+		for (PostExecutor item : postExecutors) {
+			if (item.postAction(execution, contexts, graph)) {
+				// continue execution
+			} else {
+				LOG.error("PostProcessor: {} failed", item.getClass().getName());
+				return false;
+			}
+		}
+		return true;
+	}	
+	
 	/**
 	 * Should be called in case that the execution failed. Does not save the
 	 * {@link PipelineExecution} into database.
@@ -199,74 +281,6 @@ public class Executor implements Runnable {
 	}
 
 	/**
-	 * Try to delete directory in execution directory. If error occur then is
-	 * logged but otherwise ignored.
-	 * 
-	 * @param directory Relative path from execution directory.
-	 */
-	private void deleteDirectory(String directoryPath) {
-		final String generalWorking = appConfig
-				.getString(ConfigProperty.GENERAL_WORKINGDIR);
-		File directory = new File(generalWorking, directoryPath);
-		try {
-			FileUtils.deleteDirectory(directory);
-		} catch (IOException e) {
-			LOG.warn("Can't delete directory after execution", e);
-		}
-	}
-
-	/**
-	 * Delete debug data that has been created during pipeline execution.
-	 */
-	private void deleteDebugDate() {
-		// delete working directory
-		// the sub directories should be already deleted by DPU's
-		deleteDirectory(execution.getContext().getWorkingPath());
-	}
-
-	/**
-	 * Do cleanup work after pipeline execution. Also delete the execution
-	 * directory if the pipeline does not run in debug mode.
-	 */
-	private void cleanup() {
-		LOG.debug("Clean up ...");
-		// release/delete all contexts
-		for (Context item : contexts.values()) {
-			if (execution.isDebugging()) {
-				// just release leave
-				item.release();
-			} else {
-				// delete data ..
-				item.delete();
-			}
-		}
-		if (execution.isDebugging()) {
-			// do not delete debug data
-		} else {
-			deleteDebugDate();
-		}
-		
-		// we delete the execution directory if it is empty
-		File rootDirectory = new File(
-				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
-				execution.getContext().getRootPath());
-		if (rootDirectory.isDirectory()) {
-			if (rootDirectory.list().length == 0) {
-				// empty
-				try {
-					Files.delete(rootDirectory.toPath());
-				} catch (IOException e) {
-					LOG.warn("Failed to delete execution root directory", e);
-				}
-			}
-		} else {
-			LOG.warn("Execution directory is not directory.");
-		}
-
-		LOG.debug("Clean up finished");
-	}
-
-	/**
 	 * Prepare and return instance of {@link DependencyGraph}.
 	 * 
 	 * @return
@@ -288,34 +302,19 @@ public class Executor implements Runnable {
 	 * Run the execution.
 	 */
 	private void execute() {
-		// set start time
-		execution.setStart(new Date());
-		try {
-			// contextInfo is in pipeline so by saving pipeline we also save
-			// context
-			pipelineFacade.save(execution);
-		} catch (EntityNotFoundException ex) {
-			LOG.warn("Seems like someone deleted our pipeline run.", ex);
-			// no work was done yet, we can finish without cleaning up
-			return;
-		}
-
-		boolean executionFailed = false;
-		boolean executionCancelled = false;
-		// add marker to logs from this thread -> both must be specified !!
-		final String executionId = Long.toString(execution.getId());
-		if (!execution.isDebugging()) {
-			// add minimal level to MDCExecutionLevelFilter
-			MdcExecutionLevelFilter.add(executionId,
-					ch.qos.logback.classic.Level.INFO);
-		}
-		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
-		
-		// log start of the pipeline
-		LOG.debug("Pipeline execution started");
-
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
+		
+		// execute pre-executors
+		if (!executePreExecutors(dependencyGraph)) {
+			// cancel the execution
+			executionFailed();
+			return;
+		}
+		
+		boolean executionFailed = false;
+		boolean executionCancelled = false;
+		
 		// execute each node
 		for (Node node : dependencyGraph) {
 
@@ -357,6 +356,8 @@ public class Executor implements Runnable {
 				}
 
 				if (stopExecution) {
+					// update flag, so we do not override the value in database
+					execution.setStatus(PipelineExecutionStatus.CANCELLING);
 					// try to stop the DPU's execution thread
 					stopExecution(executorThread, dpuExecutor);
 					// jump out of waiting cycle
@@ -379,9 +380,10 @@ public class Executor implements Runnable {
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
 		}
+		
 		// ending ..
 		// set time then the pipeline's execution finished
-		execution.setEnd(new Date());
+		
 		if (executionFailed) {
 			if (executionCancelled) {
 				executionCancelled();
@@ -392,30 +394,59 @@ public class Executor implements Runnable {
 			executionSuccessful();
 		}
 
-		// save the execution for the last time
+		// all set 
+		if (!executePostExecutors(dependencyGraph)) {
+			// failed .. 
+			executionFailed();
+		}
+	}
+
+	@Override
+	public void run() {
+		// set start time
+		execution.setStart(new Date());
+		try {
+			// contextInfo is in pipeline so by saving pipeline we also save
+			// context
+			pipelineFacade.save(execution);
+		} catch (EntityNotFoundException ex) {
+			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+			// no work was done yet, we can finish without cleaning up
+			return;
+		}
+
+		// add marker to logs from this thread -> both must be specified !!
+		final String executionId = Long.toString(execution.getId());
+		if (!execution.isDebugging()) {
+			// add minimal level to MDCExecutionLevelFilter
+			MdcExecutionLevelFilter.add(executionId,
+					ch.qos.logback.classic.Level.INFO);
+		}
+		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
+
+		// log start of the pipeline
+		LOG.debug("Pipeline execution started");
+		
+		// execute the pipeline it self
+		execute();
+		
+		// set end time
+		execution.setEnd(new Date());		
+		// save the execution
 		try {
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
 			LOG.warn("Seems like someone deleted our pipeline run.", ex);
 		}
-
+		
 		// publish information for the rest of the application
 		// that the execution finished ..
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
-
-		// do clean/up
-		cleanup();
-
+		
 		// unregister MDC execution filter
 		MdcExecutionLevelFilter.remove(executionId);
-
 		// clear all threads markers
 		MDC.clear();
-	}
-
-	@Override
-	public void run() {
-		execute();
 	}
 
 	/**
