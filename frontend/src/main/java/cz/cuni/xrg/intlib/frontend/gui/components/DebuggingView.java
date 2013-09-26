@@ -75,21 +75,7 @@ public class DebuggingView extends CustomComponent {
      * Builds main layout.
      */
     public final void buildMainLayout() {
-//        leavePageListener = new ViewChangeListener() {
-//            @Override
-//            public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-//                 App.getApp().getNavigator().removeViewChangeListener(leavePageListener);
-////                 if(refreshThread != null && refreshThread.isAlive()) {
-////                     refreshThread.interrupt();
-////                 }
-//                return true;
-//            }
-//
-//            @Override
-//            public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
-//            }
-//        };
-//        App.getApp().getNavigator().addViewChangeListener(leavePageListener);
+
         mainLayout = new VerticalLayout();
 
         if (isFromCanvas) {
@@ -128,10 +114,10 @@ public class DebuggingView extends CustomComponent {
         logLayout.setSizeFull();
         logTab = tabs.addTab(logLayout, "Log");
 
-        queryView = new RDFQueryView(this, pipelineExec);
-//        if (debugDpu != null) {
-//            queryView.setGraphs(debugDpu.getType());
-//        }
+        queryView = new RDFQueryView(pipelineExec);
+        if (debugDpu != null) {
+            queryView.setDpu(debugDpu);
+        }
         queryTab = tabs.addTab(queryView, "Browse/Query");
 
         mainLayout.setSizeFull();
@@ -158,7 +144,7 @@ public class DebuggingView extends CustomComponent {
         logMessagesTable.setDpu(pipelineExec, null, isRefresh);
 
         //Query View
-        if (isInDebugMode && debugDpu != null && isRunFinished()) {
+        if (isInDebugMode && isRunFinished()) {
             queryTab.setEnabled(true);
         } else {
             queryTab.setEnabled(false);

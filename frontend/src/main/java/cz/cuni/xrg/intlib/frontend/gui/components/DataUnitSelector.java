@@ -4,13 +4,17 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUType;
 import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -19,163 +23,245 @@ import java.util.Set;
  *
  * @author Bogo
  */
-public class DataUnitSelector {
-	
+public class DataUnitSelector extends CustomComponent {
+
 	private PipelineExecution pipelineExec;
-	
 	GridLayout mainLayout;
-	
 	ComboBox dpuSelector;
 	private DPUInstanceRecord debugDpu;
 	private ExecutionContextInfo ctxReader;
-	
 	private CheckBox inputDataUnits;
 	private CheckBox outputDataUnits;
 	private ComboBox dataUnitSelector;
-	
+	private Button browse;
+
 	public DataUnitSelector(PipelineExecution execution) {
 		pipelineExec = execution;
 		buildMainLayout();
 	}
-	
+
 	private void buildMainLayout() {
 		loadExecutionContextReader();
-		
-		mainLayout = new GridLayout(5, 2);
+
+		mainLayout = new GridLayout(6, 2);
+		mainLayout.setSpacing(true);
+		mainLayout.setWidth(100, Unit.PERCENTAGE);
 		dpuSelector = buildDpuSelector();
-		mainLayout.addComponent(dpuSelector, 0, 0, 0, 1);
-		
+		mainLayout.addComponent(dpuSelector, 0, 1);
+
+		Label dpuSelectorLabel = new Label("Select DPU:");
+		mainLayout.addComponent(dpuSelectorLabel, 0, 0);
+
 		Label dataUnitLabel = new Label("Select Data Unit:");
-		mainLayout.addComponent(dataUnitLabel, 1, 0);
-		
+
 		inputDataUnits = new CheckBox("Input");
 		inputDataUnits.addValueChangeListener(new Property.ValueChangeListener() {
-
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				refreshDataUnitSelector();
 			}
 		});
-		mainLayout.addComponent(inputDataUnits, 2, 0);
-		
+		inputDataUnits.setEnabled(false);
+
 		outputDataUnits = new CheckBox("Output");
 		outputDataUnits.addValueChangeListener(new Property.ValueChangeListener() {
-
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				refreshDataUnitSelector();
 			}
 		});
-		mainLayout.addComponent(outputDataUnits, 3, 0);
-		
-		dataUnitSelector = new ComboBox();
-		mainLayout.addComponent(dataUnitSelector, 1, 1, 3, 1);
-		
-		Button browse = new Button("Browse");
-		browse.addClickListener(new Button.ClickListener() {
+		outputDataUnits.setEnabled(false);
 
+		HorizontalLayout dataUnitTopLine = new HorizontalLayout(dataUnitLabel, inputDataUnits, outputDataUnits);
+		dataUnitTopLine.setSpacing(true);
+		mainLayout.addComponent(dataUnitTopLine, 1, 0, 5, 0);
+
+		dataUnitSelector = new ComboBox();
+		dataUnitSelector.setWidth(100, Unit.PERCENTAGE);
+		dataUnitSelector.setEnabled(false);
+		mainLayout.addComponent(dataUnitSelector, 1, 1, 4, 1);
+
+		browse = new Button("Browse");
+		browse.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				fireEvent(new BrowseRequestedEvent(DataUnitSelector.this));
 			}
 		});
-		mainLayout.addComponent(browse, 4, 1);
-		
-		
+		browse.setEnabled(false);
+		mainLayout.addComponent(browse, 5, 1);
+
+		setCompositionRoot(mainLayout);
 	}
-	
-	    /**
-     * Tries to load context for given pipeline execution.
-     *
-     * @return Load was successful.
-     */
-    private boolean loadExecutionContextReader() {
-        ctxReader = pipelineExec.getContextReadOnly();
-        return ctxReader != null;
-    }
-	
+
+	private void fireEvent(Event event) {
+		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
+		for (Listener l : ls) {
+			l.componentEvent(event);
+		}
+	}
+
+	/**
+	 * Tries to load context for given pipeline execution.
+	 *
+	 * @return Load was successful.
+	 */
+	private boolean loadExecutionContextReader() {
+		ctxReader = pipelineExec.getContextReadOnly();
+		return ctxReader != null;
+	}
+
 	public void refresh(PipelineExecution exec) {
 		pipelineExec = exec;
-		if(loadExecutionContextReader()) {
+		if (loadExecutionContextReader()) {
 			refreshDpuSelector();
 		}
 	}
-	
-	
+
 	/**
-     * DPU select box factory.
-     */
-    private ComboBox buildDpuSelector() {
-        dpuSelector = new ComboBox("Select DPU:");
-        dpuSelector.setImmediate(true);
-        if (ctxReader != null) {
-            refreshDpuSelector();
-        }
-        dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                Object value = event.getProperty().getValue();
-				
-                if (value != null && value.getClass() == DPUInstanceRecord.class) {
-                    debugDpu = (DPUInstanceRecord) value;
-                } else {
-                    debugDpu = null;
-                }
-                refreshDataUnitSelector();
-            }
-        });
-        return dpuSelector;
-    }
-	
+	 * DPU select box factory.
+	 */
+	private ComboBox buildDpuSelector() {
+		dpuSelector = new ComboBox();
+		dpuSelector.setImmediate(true);
+		if (ctxReader != null) {
+			refreshDpuSelector();
+		}
+		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				Object value = event.getProperty().getValue();
+
+				if (value != null && value.getClass() == DPUInstanceRecord.class) {
+					debugDpu = (DPUInstanceRecord) value;
+					dataUnitSelector.removeAllItems();
+					setDataUnitCheckBoxes(debugDpu.getType());
+					fireEvent(new EnableEvent(DataUnitSelector.this));
+				} else {
+					debugDpu = null;
+					fireEvent(new DisableEvent(DataUnitSelector.this));
+				}
+				refreshDataUnitSelector();
+				refreshEnabled();
+			}
+		});
+		return dpuSelector;
+	}
+
+	private void setDataUnitCheckBoxes(DPUType type) {
+		switch (type) {
+			case LOADER:
+				inputDataUnits.setEnabled(true);
+				inputDataUnits.setValue(true);
+				outputDataUnits.setEnabled(false);
+				break;
+			default:
+				inputDataUnits.setEnabled(true);
+				inputDataUnits.setValue(true);
+				outputDataUnits.setEnabled(true);
+				outputDataUnits.setValue(true);
+				break;
+		}
+	}
+
 	/**
-     * Fills DPU selector with DPUs for which there are debug information
-     * available.
-     */
-    private void refreshDpuSelector() {
-        Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
-        for (DPUInstanceRecord dpu : contextDpuIndexes) {
-            if (!dpuSelector.containsId(dpu)) {
-                dpuSelector.addItem(dpu);
-                if (dpu.equals(debugDpu)) {
-                    dpuSelector.select(debugDpu);
-                }
-            }
-        }
-    }
-	
+	 * Fills DPU selector with DPUs for which there are debug information
+	 * available.
+	 */
+	private void refreshDpuSelector() {
+		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
+		for (DPUInstanceRecord dpu : contextDpuIndexes) {
+			if (!dpuSelector.containsId(dpu)) {
+				dpuSelector.addItem(dpu);
+				if (dpu.equals(debugDpu)) {
+					dpuSelector.select(debugDpu);
+				}
+			}
+		}
+	}
+
 	private void refreshDataUnitSelector() {
-		if(debugDpu == null) {
+		if (debugDpu == null) {
 			dataUnitSelector.removeAllItems();
+			return;
 		}
 		List<DataUnitInfo> dataUnits = ctxReader.getDPUInfo(debugDpu).getDataUnits();
 		Object selected = dataUnitSelector.getValue();
-		for(DataUnitInfo dataUnit : dataUnits) {
+		Object first = null;
+		for (DataUnitInfo dataUnit : dataUnits) {
 			boolean isInput = dataUnit.isInput();
-			if((isInput && inputDataUnits.getValue()) || (!isInput && outputDataUnits.getValue())) {
-				if(!dataUnitSelector.containsId(dataUnit)) {
+			if ((isInput && inputDataUnits.getValue()) || (!isInput && outputDataUnits.getValue())) {
+				if (!dataUnitSelector.containsId(dataUnit)) {
 					dataUnitSelector.addItem(dataUnit);
+					if(first == null) {
+						first = dataUnit;
+					}
 				}
 			} else {
-				if(dataUnitSelector.containsId(dataUnit)) {
+				if (dataUnitSelector.containsId(dataUnit)) {
 					dataUnitSelector.removeItem(dataUnit);
 				}
 			}
 		}
-		if(selected != null) {
+		if (selected != null) {
 			dataUnitSelector.setValue(selected);
+		} else if (first != null) {
+			dataUnitSelector.setValue(first);
 		}
+		refreshEnabled();
 	}
-	
+
 	public DPUInstanceRecord getSelectedDPU() {
 		return debugDpu;
 	}
-	
-	public DataUnitInfo getSelectedDataUnit() {
-		return (DataUnitInfo)dataUnitSelector.getValue();
+
+	private void refreshEnabled() {
+		inputDataUnits.setEnabled(debugDpu != null);
+		outputDataUnits.setEnabled(debugDpu != null);
+		dataUnitSelector.setEnabled(debugDpu != null);
+		browse.setEnabled(dataUnitSelector.isEnabled() && !dataUnitSelector.getItemIds().isEmpty());
 	}
-	
+
+	public DataUnitInfo getSelectedDataUnit() {
+		return (DataUnitInfo) dataUnitSelector.getValue();
+	}
+
 	public ExecutionContextInfo getContext() {
 		return ctxReader;
 	}
 
+	void setSelectedDPU(DPUInstanceRecord dpu) {
+		debugDpu = dpu;
+		refreshDpuSelector();
+	}
+
+	/**
+	 * Event sent to Listeners when browse is requested from this component.
+	 */
+	public class BrowseRequestedEvent extends Component.Event {
+
+		public BrowseRequestedEvent(Component cmp) {
+			super(cmp);
+		}
+	}
+
+	/**
+	 * Event sent to Listeners when this component requests disable.
+	 */
+	public class DisableEvent extends Component.Event {
+
+		public DisableEvent(Component cmp) {
+			super(cmp);
+		}
+	}
+
+	/**
+	 * Event sent to Listeners when this component requests enable.
+	 */
+	public class EnableEvent extends Component.Event {
+
+		public EnableEvent(Component cmp) {
+			super(cmp);
+		}
+	}
 }
