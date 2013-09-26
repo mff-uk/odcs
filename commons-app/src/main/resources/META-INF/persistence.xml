@@ -5,7 +5,7 @@
 			 version="2.0">
 
 	<persistence-unit name="intlib">
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord</class>
 		<class>cz.cuni.xrg.intlib.commons.app.dpu.DPUTemplateRecord</class>
 		<class>cz.cuni.xrg.intlib.commons.app.execution.log.LogMessage</class>
@@ -20,24 +20,27 @@
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.PipelineGraph</class>
 		<class>cz.cuni.xrg.intlib.commons.app.pipeline.graph.Position</class>
+		<class>cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress</class>
 		<class>cz.cuni.xrg.intlib.commons.app.scheduling.Schedule</class>
+		<class>cz.cuni.xrg.intlib.commons.app.scheduling.UserNotificationRecord</class>
+		<class>cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleNotificationRecord</class>
+		<class>cz.cuni.xrg.intlib.commons.app.user.User</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 
 			<!-- Database connection parameters are loaded at runtime from AppConfiguration -->
 
-			<!-- Determine which element is auto discovered
-			by Hibernate Entity Manager while parsing the .par archive. -->
-			<property name="hibernate.archive.autodetection" value="class"/>
-			<!-- SQL dialect -->
-			<property name="hibernate.dialect" value="virtuoso.hibernate.VirtuosoDialect"/>
-			<!-- Echo and format all executed SQL to stdout -->
-			<property name="hibernate.show_sql" value="false"/>
-			<property name="hibernate.format_sql" value="true"/>
-			<!-- Scan for annotated classes automatically -->
-			<!-- works only for classes in the same namespace
-			as persistence.xml ends up after build -->
-			<!--<property name="hibernate.archive.autodetection" value="class"/>-->
+			<!-- Dummy database platform needs to be specified to disable autodetection, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=383200 -->
+			<property name="eclipselink.target-database" value="HSQL" />
+			
+			<!-- Session customizer overrides selected DB platform and sets up Virtuoso platform. -->
+			<property name="eclipselink.session.customizer" value="virtuoso.eclipselink.VirtuosoSessionCustomizer" />
+			
+			<!-- We want weaving (e.g. for lazyloading). Dynamic (=runtime) weaving needs Java agent, static (=compile-time) should suffice for our needs. -->
+			<property name="eclipselink.weaving" value="static"/>
+			
+			<property name="eclipselink.logging.level" value="WARNING"/>
+			
 		</properties>
 	</persistence-unit>
 </persistence>

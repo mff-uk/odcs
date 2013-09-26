@@ -23,8 +23,8 @@
 	</appender>
 
 
-	<logger name="org.hibernate.type" level="WARN" />
-	<logger name="org.hibernate" level="WARN" />
+	<!-- TODO define logger for EclipseLink -->
+	
 	<logger name="org.springframework" level="WARN" />
 	
 	<root level="ALL">
