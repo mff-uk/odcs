@@ -325,8 +325,8 @@ public class PipelineFacade {
                     "FROM PipelineExecution e")
                     .setParameter("last", lastLoad)
                     .getSingleResult();
-            boolean result = (int)r > 0;
-            return result;
+
+			return r.equals("1");
         }
         
         /**
