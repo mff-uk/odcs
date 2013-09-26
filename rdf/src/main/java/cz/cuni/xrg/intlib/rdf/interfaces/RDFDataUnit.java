@@ -232,6 +232,19 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	public void cleanAllData();
 
 	/**
+	 * Removes all RDF data in defined graph using connecion to SPARQL endpoint
+	 * address. For data deleting is necessarry to have endpoint with update
+	 * rights.
+	 *
+	 * @param endpointURL   URL address of endpoint connect to.
+	 * @param endpointGraph Graph name in URI format.
+	 * @throws RDFException When you dont have update right for this action, or
+	 *                      connection is lost before succesfully ending.
+	 */
+	public void clearEndpointGraph(URL endpointURL, String endpointGraph)
+			throws RDFException;
+
+	/**
 	 * Make RDF data merge over repository - data in repository merge with data
 	 * in second defined repository.
 	 *
