@@ -25,8 +25,8 @@ public class ProcessingUnitInfo implements Serializable {
 	/**
 	 * Unique id of pipeline execution.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_dpu")
+	@SequenceGenerator(name = "seq_exec_context_dpu", allocationSize = 1)
 	private Long id;
 
 	/**
@@ -38,7 +38,7 @@ public class ProcessingUnitInfo implements Serializable {
 	/**
 	 * Storage for dataUnits descriptors.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "exec_context_dpu_id")
 	@OrderBy("index")
 	private List<DataUnitInfo> dataUnits = new LinkedList<>();

@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.frontend.browser;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.VerticalLayout;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import java.io.File;
 import java.util.List;
 
@@ -59,7 +60,7 @@ class LocalRdfBrowser extends DataUnitBrowser {
 
 	private void loadBrowserTable(List<RDFTriple> data) {
 		dataTable = new IntlibPagedTable();
-		Container container = ContainerFactory.createRDFData(data);
+		Container container = App.getApp().getBean(ContainerFactory.class).createRDFData(data);
 		dataTable.setContainerDataSource(container);
 		
 

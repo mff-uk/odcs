@@ -25,8 +25,8 @@ public class Schedule implements Serializable {
 	/**
 	 * Unique ID for each plan.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_schedule")
+	@SequenceGenerator(name = "seq_exec_schedule", allocationSize = 1)
 	private Long id;
 
 	/**
@@ -102,7 +102,7 @@ public class Schedule implements Serializable {
 	 * Pipeline after which this job is supposed to run. Applicable only if
 	 * {@link #type} is {@link ScheduleType#AFTER_PIPELINE}.
 	 */
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(name = "exec_schedule_after",
 			joinColumns =
 			@JoinColumn(name = "schedule_id", referencedColumnName = "id"),
@@ -113,10 +113,10 @@ public class Schedule implements Serializable {
 	/**
 	 * Notification settings for this schedule.
 	 */
-	@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
 	private ScheduleNotificationRecord notification;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User owner;
 

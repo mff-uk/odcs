@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
@@ -28,23 +27,22 @@ import cz.cuni.xrg.intlib.commons.app.rdf.namespace.NamespacePrefixFacade;
 import cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.xrg.intlib.commons.app.user.UserFacade;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibHelper;
-import cz.cuni.xrg.intlib.frontend.auxiliaries.IntlibNavigator;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshManager;
 //import cz.cuni.xrg.intlib.frontend.auxiliaries.RefreshThread;
 import cz.cuni.xrg.intlib.frontend.gui.MenuLayout;
-import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
+import cz.cuni.xrg.intlib.frontend.gui.ModifiableComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
-import cz.cuni.xrg.intlib.frontend.gui.views.*;
 
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.DefaultConfirmDialogFactory;
+import ru.xpoft.vaadin.DiscoveryNavigator;
 import virtuoso.jdbc4.VirtuosoException;
 
 /**
@@ -57,19 +55,19 @@ import virtuoso.jdbc4.VirtuosoException;
  */
 @Push(PushMode.AUTOMATIC)
 @Theme("IntLibTheme")
-@PreserveOnRefresh
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
 	
 	/**
-	 * Used to resolve url request and select active view.
+	 * Used to resolve URL request and select active view.
 	 */
 	private com.vaadin.navigator.Navigator navigator;
 	
 	/**
 	 * Spring application context.
 	 */
+	@Autowired
 	private ApplicationContext context;
 	
 	private MenuLayout main;
@@ -83,51 +81,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private RefreshManager refreshManager;
 	
 	private String storedNavigation = null;
-		
-	/**
-	 * Add a single view to {@link #navigator}.
-	 *
-	 * @param view Name of the view.
-	 */
-	private void initNavigatorAddSingle(ViewNames view) {
-		this.navigator.addView(view.getUrl(), ViewsFactory.create(view));
-	}
-	
-	/**
-	 * Add url-view association into navigator.
-	 */
-	private void initNavigator() {
-		initNavigatorAddSingle(ViewNames.INITIAL);
-		// TODO: check rights !!
-		initNavigatorAddSingle(ViewNames.ADMINISTRATOR);
-		initNavigatorAddSingle(ViewNames.DATA_BROWSER);
-		initNavigatorAddSingle(ViewNames.DPU);
-		initNavigatorAddSingle(ViewNames.EXECUTION_MONITOR);
-		initNavigatorAddSingle(ViewNames.PIPELINE_LIST);
-		initNavigatorAddSingle(ViewNames.PIPELINE_EDIT);
-		initNavigatorAddSingle(ViewNames.SCHEDULER);
-		initNavigatorAddSingle(ViewNames.LOGIN);
-
-		/* You can create new views dynamically using a view provider
-		 * that implements the  ViewProvider interface.
-		 * A provider is registered in Navigator with  addProvider().
-		 */
-
-		/* View Change Listeners
-		 * You can handle view changes also by implementing a  ViewChangeListener
-		 * and adding it to a Navigator. When a view change occurs, a listener receives
-		 * a ViewChangeEvent object, which has references to the old and the activated view,
-		 * the name of the activated view, as well as the fragment parameters.
-		 */
-	}
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-		
-		// Initialize Spring Context.
-		context = WebApplicationContextUtils.getRequiredWebApplicationContext(
-			RequestHolder.getRequest().getSession().getServletContext()
-		);
 
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
@@ -158,7 +114,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		ConfirmDialog.setFactory(df);
 
 		// create a navigator to control the views
-		this.navigator = new IntlibNavigator(this, main.getViewLayout());
+		this.navigator = new DiscoveryNavigator(this, main.getViewLayout());
 
 		this.addDetachListener(new DetachListener() {
 			@Override
@@ -172,8 +128,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 			}
 		});
-
-		initNavigator();
 
 		// Configure the error handler for the UI
 		this.setErrorHandler(new DefaultErrorHandler() {
@@ -237,7 +191,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		 // attach a listener so that we'll get asked isViewChangeAllowed?
         this.getNavigator().addViewChangeListener(new ViewChangeListener() {
 			private String pendingViewAndParameters;
-			private ViewComponent lastView;
+			private ModifiableComponent lastView;
 			boolean forceViewChange = false;
 			@Override
             public boolean beforeViewChange(ViewChangeEvent event) {
@@ -246,10 +200,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 					pendingViewAndParameters = null;
 					return true;
 				}
-                if (event.getOldView() != null && ((ViewComponent)event.getOldView()).isModified()) {
+
+				if (event.getOldView() instanceof ModifiableComponent
+						&& ((ModifiableComponent)event.getOldView()).isModified()) {
 
                     // save the View where the user intended to go
-					lastView = (ViewComponent)event.getOldView();
+					lastView = (ModifiableComponent)event.getOldView();
                     pendingViewAndParameters = event.getViewName();
                     if (event.getParameters() != null) {
                         pendingViewAndParameters += "/";

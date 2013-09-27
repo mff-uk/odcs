@@ -1,7 +1,6 @@
 package cz.cuni.xrg.intlib.frontend.gui;
 
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.CustomComponent;
 
 /**
@@ -9,25 +8,27 @@ import com.vaadin.ui.CustomComponent;
  * but also include support for {@link com.vaadin.navigator.Navigator} class.
  * 
  * @author Petyr
+ * @author Jan Vojt
  *
  */
-public abstract class ViewComponent extends CustomComponent implements View{
-
-	/**
-	 * The parameter event can be null.
-	 */
-	@Override
-	public abstract void enter(ViewChangeEvent event);
+public abstract class ViewComponent extends CustomComponent implements View, ModifiableComponent {
 	
 	/**
-	 * Method for testing if ViewCoponent was modified since last save.
+	 * Default dummy implementation of modification status.
 	 * 
-	 * @return Is component modified?
+	 * @return always not modified
 	 */
+	@Override
 	public boolean isModified() {
 		return false;
 	}
 
+	/**
+	 * Default dummy implementation of save handler.
+	 * 
+	 * @return always success
+	 */
+	@Override
 	public boolean saveChanges() {
 		return true;
 	}
