@@ -100,6 +100,18 @@ class BundleContainer {
 	 */
 	public Object loadClass(String className) 
 			throws ModuleException {
+
+		try {
+			if(bundle.getState() == Bundle.INSTALLED) {
+				// just installed
+				
+				// try to start bundle ... give us 
+				// exception with missing bundles
+				bundle.start();
+			}
+		} catch (BundleException e) {
+			throw new ModuleException(e);
+		}
 		
 		Class<?> loaderClass = null;
 		synchronized(lock) {
@@ -158,6 +170,11 @@ class BundleContainer {
 			loadedClassCtors.clear();
 			//
 			if (bundle != null) {
+				try {
+					bundle.stop();
+				} catch (BundleException e) {
+					LOG.error("Failed to stop bundle. But it will be uninstalled anyway.", e);
+				}
 				bundle.uninstall();
 			}
 			bundle = null;
