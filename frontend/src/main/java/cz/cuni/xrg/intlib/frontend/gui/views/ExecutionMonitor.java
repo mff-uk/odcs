@@ -342,6 +342,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 				App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 				
                 hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+				hsplit.setHeight("100%");
                 hsplit.setLocked(true);
             }
         });
@@ -510,6 +511,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		logLayout = buildlogLayout();
 		hsplit.setSplitPosition(55, Unit.PERCENTAGE);
 		hsplit.setSecondComponent(logLayout);
+		hsplit.setHeight("-1px");
 		hsplit.setLocked(false);
 	}
 

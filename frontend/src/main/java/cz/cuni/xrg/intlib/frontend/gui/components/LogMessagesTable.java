@@ -91,7 +91,7 @@ public class LogMessagesTable extends CustomComponent {
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, boolean isRefresh) {
 		this.dpu = dpu;
 		if (pipelineExecution != exec && !isRefresh) {
-			levelSelector.setValue(exec.isDebugging() ? Level.DEBUG : Level.INFO);
+			levelSelector.setValue(exec.isDebugging() ? Level.ALL : Level.INFO);
 		}
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
 		if (!isRefresh) {

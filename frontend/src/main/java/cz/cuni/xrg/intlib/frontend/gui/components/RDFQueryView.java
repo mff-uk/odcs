@@ -228,7 +228,7 @@ public class RDFQueryView extends CustomComponent {
 		});
 		queryControls.addComponent(queryButton);
 		queryControls.setSpacing(true);
-		queryControls.setWidth(165, Unit.PIXELS);
+		queryControls.setWidth(170, Unit.PIXELS);
 		queryLine.setExpandRatio(queryText, 1.0f);
 		queryLine.addComponent(queryControls);
 
@@ -239,6 +239,7 @@ public class RDFQueryView extends CustomComponent {
 		resultTable = new IntlibPagedTable();
 		resultTable.setWidth("100%");
 		resultTable.setImmediate(true);
+		resultTable.setPageLength(20);
 		mainLayout.addComponent(resultTable);
 		resultTableControls = resultTable.createControls();
 		resultTableControls.setImmediate(true);
