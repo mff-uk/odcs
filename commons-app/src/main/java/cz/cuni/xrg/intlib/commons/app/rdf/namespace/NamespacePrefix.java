@@ -15,6 +15,7 @@ public class NamespacePrefix {
 	 * Primary key of entity.
 	 */
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_prefix")
+	@SequenceGenerator(name = "seq_rdf_prefix", allocationSize = 1)
 	private Long id;
 	
 	/**

@@ -26,6 +26,7 @@ public class ProcessingUnitInfo implements Serializable {
 	 * Unique id of pipeline execution.
 	 */
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_dpu")
+	@SequenceGenerator(name = "seq_exec_context_dpu", allocationSize = 1)
 	private Long id;
 
 	/**

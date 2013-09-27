@@ -22,6 +22,7 @@ public class DPURecord {
      * Primary key of graph stored in db
      */
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
+	@SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
     private Long id;
     
     /**

@@ -30,6 +30,7 @@ public class PipelineGraph implements Serializable {
      * Primary key of graph stored in db
      */
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_graph")
+	@SequenceGenerator(name = "seq_ppl_graph", allocationSize = 1)
 	@SuppressWarnings("unused")
     private Long id;
 

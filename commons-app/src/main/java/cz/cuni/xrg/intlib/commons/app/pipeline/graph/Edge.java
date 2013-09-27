@@ -18,6 +18,7 @@ public class Edge implements Serializable {
 	 * Primary key of graph stored in db
 	 */
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_edge")
+	@SequenceGenerator(name = "seq_ppl_edge", allocationSize = 1)
 	private Long id;
 
 	@ManyToOne(optional = false)

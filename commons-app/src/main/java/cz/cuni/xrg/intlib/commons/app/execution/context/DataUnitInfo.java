@@ -23,6 +23,7 @@ public class DataUnitInfo implements Serializable {
 	 * Primary key.
 	 */
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_dataunit_info")
+	@SequenceGenerator(name = "seq_exec_dataunit_info", allocationSize = 1)
 	private Long id;
 
 	/**

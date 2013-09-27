@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class EmailAddress implements Serializable, Comparable {
 	
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
+	@SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
 	private Long id;
 
 	/**

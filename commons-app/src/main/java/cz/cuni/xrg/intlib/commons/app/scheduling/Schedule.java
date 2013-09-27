@@ -26,6 +26,7 @@ public class Schedule implements Serializable {
 	 * Unique ID for each plan.
 	 */
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_schedule")
+	@SequenceGenerator(name = "seq_exec_schedule", allocationSize = 1)
 	private Long id;
 
 	/**
