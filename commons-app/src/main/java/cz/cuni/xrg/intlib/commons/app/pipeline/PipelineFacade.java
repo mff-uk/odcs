@@ -277,7 +277,7 @@ public class PipelineFacade {
 				em.createQuery(
 				"SELECT e FROM PipelineExecution e" +
 				" WHERE e.pipeline = :pipe" +
-				" AND e.status in (:status)" +
+				" AND e.status IN :status" +
 				" AND e.end IS NOT NULL" +
 				" ORDER BY e.end DESC")
 				.setParameter("pipe", pipeline)
