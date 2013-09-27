@@ -68,7 +68,7 @@ public class RecordsTable extends CustomComponent {
 	public void setPipelineExecution(PipelineExecution execution) {
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer)messageTable.getContainerDataSource().getContainer();
 		c.removeDefaultFilters();
-		c.addDefaultFilter(new Compare.Equal("execution", execution.getId()));
+		c.addDefaultFilter(new Compare.Equal("execution.id", execution.getId()));
 		c.refresh();
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
