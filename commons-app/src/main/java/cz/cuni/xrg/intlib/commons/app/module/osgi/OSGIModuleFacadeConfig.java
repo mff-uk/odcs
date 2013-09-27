@@ -137,6 +137,8 @@ class OSGIModuleFacadeConfig {
 
 		// in every case add org.seasame packages
 		appendPackages(packageList, org.openrdf.PackageList.PACKAGES);
+		// and system packages
+		appendPackages(packageList, OSGISystemPackages.PACKAGES);
 
 		this.additionalPackages = packageList.toString();
 		// check if load data from backend's library directory
