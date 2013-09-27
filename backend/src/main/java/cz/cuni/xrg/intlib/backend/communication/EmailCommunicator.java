@@ -2,6 +2,7 @@ package cz.cuni.xrg.intlib.backend.communication;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -10,9 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
+import cz.cuni.xrg.intlib.backend.facade.PipelineFacade;
 import cz.cuni.xrg.intlib.backend.pipeline.event.PipelineFinished;
 import cz.cuni.xrg.intlib.commons.app.communication.EmailSender;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade;
+import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.xrg.intlib.commons.app.execution.message.MessageRecord;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import cz.cuni.xrg.intlib.commons.app.scheduling.EmailAddress;
 import cz.cuni.xrg.intlib.commons.app.scheduling.NotificationRecord;
 import cz.cuni.xrg.intlib.commons.app.scheduling.Schedule;
@@ -35,7 +41,10 @@ public class EmailCommunicator implements ApplicationListener<ApplicationEvent> 
 	 */
 	@Autowired
 	private EmailSender emailSender;
-
+	
+	@Autowired
+	private DPUFacade dpuFacade;
+	
 	/**
 	 * Add email based on {@link ScheduleNotificationRecord}.
 	 * 
@@ -93,19 +102,67 @@ public class EmailCommunicator implements ApplicationListener<ApplicationEvent> 
 	private String bodyInstant(PipelineExecution execution, Schedule schedule) {
 		StringBuilder body = new StringBuilder();
 
-		body.append("Report for pipeline: ");
+		body.append("<b>Report for pipeline: </b>");
 		body.append(execution.getPipeline().getName());
 		body.append("<br/>");
-		body.append("Execution starts at: ");
+		body.append("<b>Execution starts at: </b>");
 		body.append(execution.getStart().toString());
 		body.append("<br/>");
-		body.append("Execution ends at: ");
+		body.append("<b>Execution ends at: </b>");
 		body.append(execution.getEnd().toString());
 		body.append("<br/>");
-		body.append("Execution result: ");
+		body.append("<b>Execution result: </b>");
 		body.append(execution.getStatus());
-		body.append("<br/>");
-
+		body.append("<br/><br/>");
+		// append messages
+		final List<MessageRecord> messages = dpuFacade.getAllDPURecords(execution);
+		body.append("<b>Published messages:</b> <br/>");
+		body.append("<table border=2 cellpadding=2 >");
+		body.append("<tr bgcolor=\"#C0C0C0\">");
+		body.append("<th>dpu</th><th>time</th><th>type</th><th>short message</th>");
+		body.append("</tr>");
+		
+		for (MessageRecord message : messages) {
+			// set color based on type
+			switch (message.getType()) {
+			case DPU_LOG:
+			case DPU_DEBUG:
+				body.append("<tr>");
+				break;
+			case DPU_ERROR:
+			case PIPELINE_ERROR:
+				body.append("<tr bgcolor=\"#FFE0E0\">");
+				break;
+			case DPU_INFO:
+			case PIPELINE_INFO:
+				body.append("<tr bgcolor=\"#E0E0FF\">");
+				break;			
+			case DPU_WARNING:
+				body.append("<tr bgcolor=\"#FFFFA0\">");
+				break;
+			}
+			// name
+			body.append("<td>");
+			body.append(message.getDpuInstance().getName());
+			body.append("</td>");
+			// time
+			body.append("<td>");
+			body.append(message.getTime());
+			body.append("</td>");
+			// type
+			body.append("<td>");
+			body.append(message.getType().toString());
+			body.append("</td>");
+			// short message			
+			body.append("<td>");
+			body.append(message.getShortMessage());
+			body.append("</td>");
+			// ...
+			body.append("</tr>");
+		}
+		
+		body.append("</table>");
+		
 		return body.toString();
 	}
 
@@ -139,10 +196,26 @@ public class EmailCommunicator implements ApplicationListener<ApplicationEvent> 
 			} else {
 				// create list with recipients
 				Set<String> emails = new HashSet<>();
-
+								
 				// use Schedule notification if available
 				// otherwise use setting from user
 				if (schedule.getNotification() == null) {
+					if (schedule.getOwner() == null) {
+						// there is no owner to use to send email .. 
+						LOG.warn("Missing owner for schedule id: {} name: {}",
+								schedule.getId(),
+								schedule.getName());
+						return;
+					}
+					
+					if (schedule.getOwner().getNotification() == null) {
+						// there is no rule to use to send email .. 
+						LOG.warn("Missing notificaiton rule for schedule id: {} name: {}",
+								schedule.getId(),
+								schedule.getName());
+						return;
+					}
+					
 					add(emails, execution, schedule.getOwner()
 							.getNotification(), schedule.getOwner()
 							.getNotification().getEmails());
