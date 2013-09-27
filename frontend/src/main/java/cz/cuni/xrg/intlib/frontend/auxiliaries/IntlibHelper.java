@@ -8,6 +8,7 @@ import cz.cuni.xrg.intlib.commons.app.communication.CommunicationException;
 import cz.cuni.xrg.intlib.commons.app.pipeline.Pipeline;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus;
+import static cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecutionStatus.CANCELLING;
 import cz.cuni.xrg.intlib.commons.app.pipeline.graph.Node;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +47,9 @@ public class IntlibHelper {
 				break;
 			case CANCELLED:
 				img = new ThemeResource("icons/cancelled.png");
+				break;
+			case CANCELLING:
+				img = new ThemeResource("icons/cancelling.png");
 				break;
 			default:
 				//no icon
