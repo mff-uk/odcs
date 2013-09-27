@@ -650,5 +650,23 @@ public class VirtuosoPlatform extends DatabasePlatform {
     @Override
     public void printStoredFunctionReturnKeyWord(Writer writer) throws IOException {
         writer.write("\n\t RETURNS ");
-    }    
+    }
+	
+	@Override
+    public boolean supportsSequenceObjects() {
+        return true;
+    }
+
+    @Override
+    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
+		
+		StringBuilder builder = new StringBuilder(24 + seqName.length());
+		builder.append("select sequence_next('")
+				.append(seqName)
+				.append("')");
+				
+        return new ValueReadQuery(builder.toString());
+    }
+	
+	
 }

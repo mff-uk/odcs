@@ -98,7 +98,7 @@ public class PipelineFacadeTest {
 		em.flush();
 
 		assertEquals(pipes[0], facade.getPipeline(pipes[0].getId()));
-		assertNull(pipes[1].getId());
+		assertNull(facade.getPipeline(pipes[1].getId()));
 		assertEquals(pipes[2], facade.getPipeline(pipes[2].getId()));
 	}
 	

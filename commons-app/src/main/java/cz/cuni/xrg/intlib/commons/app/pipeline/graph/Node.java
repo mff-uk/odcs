@@ -21,7 +21,7 @@ public class Node implements Serializable {
 	/**
 	 * Primary key of graph stored in db
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_node")
 	@SuppressWarnings("unused")
 	private Long id;
 

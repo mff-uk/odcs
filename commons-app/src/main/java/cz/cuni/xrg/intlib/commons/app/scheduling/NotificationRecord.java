@@ -18,7 +18,7 @@ public abstract class NotificationRecord implements Serializable {
 	/**
 	 * Unique ID for each scheduler notification.
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
 	private Long id;
 	
 	/**

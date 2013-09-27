@@ -60,7 +60,7 @@ public class ExecutionContextInfo implements Serializable {
 	/**
 	 * Unique id of pipeline execution.
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_pipeline")
 	private Long id;
 
 	/**

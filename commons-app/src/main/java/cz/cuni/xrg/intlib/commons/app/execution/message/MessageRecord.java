@@ -24,7 +24,7 @@ public class MessageRecord implements Serializable {
 	/**
 	 * Unique id.
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_record")
 	private Long id;
 
 	/**

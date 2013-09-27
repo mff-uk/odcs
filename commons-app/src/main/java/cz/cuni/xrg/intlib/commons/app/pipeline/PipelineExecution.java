@@ -23,7 +23,7 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Unique id of pipeline execution.
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
 	private Long id;
 
 	/**

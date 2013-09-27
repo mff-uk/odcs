@@ -20,7 +20,7 @@ public class Position implements Serializable {
 	/**
 	 * Primary key of graph stored in db
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_position")
 	private Long id;
 
 	/**

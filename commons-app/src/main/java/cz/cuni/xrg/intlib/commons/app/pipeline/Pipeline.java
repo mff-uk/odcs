@@ -49,7 +49,7 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	/**
 	 * Unique ID for each pipeline
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
 	private Long id;
 
 	/**
