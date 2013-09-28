@@ -161,6 +161,14 @@ CREATE TABLE `PPL_MODEL`
 );
 CREATE INDEX `ix_PPL_MODEL_user_id` ON `PPL_MODEL` (`user_id`);
 
+CREATE TABLE `PPL_PPL_CONFLICTS`
+(
+  `pipeline_id` INTEGER,
+  `pipeline_conflict_id` INTEGER,
+  PRIMARY KEY (`pipeline_id`, `pipeline_conflict_id`)
+);
+CREATE INDEX `ix_PPL_PPL_CONFLICTS_pipeline_id` ON `PPL_PPL_CONFLICTS` (`pipeline_id`);
+
 CREATE SEQUENCE `seq_ppl_edge` START WITH 100;
 CREATE TABLE `PPL_EDGE`
 (

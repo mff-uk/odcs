@@ -179,6 +179,14 @@ CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
 );
 CREATE INDEX "ix_PPL_MODEL_user_id" ON "DB"."INTLIB"."PPL_MODEL" ("user_id");
 
+CREATE TABLE "DB"."INTLIB"."PPL_PPL_CONFLICTS"
+(
+  "pipeline_id" INTEGER IDENTITY
+  "pipeline_conflict_id" SMALLINT,
+  PRIMARY KEY ("pipeline_id", "pipeline_conflict_id")
+);
+CREATE INDEX "ix_PPL_PPL_CONFLICTS_pipeline_id" ON "DB"."INTLIB"."PPL_PPL_CONFLICTS" ("pipeline_id");
+
 sequence_set('seq_ppl_edge', 100, 1);
 CREATE TABLE "DB"."INTLIB"."PPL_EDGE"
 (

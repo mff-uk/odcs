@@ -7,7 +7,9 @@ import cz.cuni.xrg.intlib.commons.app.user.OwnedEntity;
 import cz.cuni.xrg.intlib.commons.app.user.Resource;
 import cz.cuni.xrg.intlib.commons.app.user.User;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a fixed workflow composed of one or several {@link Extract}s,
@@ -75,6 +77,15 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	@JoinColumn(name = "user_id")
 	private User owner;
 
+	/**
+	 * List pipelines that must not run in order to run this pipeline.
+	 */
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "ppl_ppl_conflicts",
+			joinColumns = @JoinColumn(name = "pipeline_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "pipeline_conflict_id", referencedColumnName = "id"))
+	private Set<Pipeline> conflicts = new HashSet<>();
+	
 	/**
 	 * Default constructor for JPA
 	 */
