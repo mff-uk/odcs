@@ -14,7 +14,7 @@ import cz.cuni.xrg.intlib.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.xrg.intlib.rdf.impl.RDFTriple;
 import java.util.Date;
 import org.apache.log4j.Level;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Class support creating Vaadin container from List<?>.
@@ -22,13 +22,8 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
  * @author Petyr
  *
  */
+@Transactional(readOnly = true)
 public class ContainerFactory {
-
-	/**
-	 * Prevent from creating instance.
-	 */
-	private ContainerFactory() {
-	}
 
 	/**
 	 * Create container for Pipelines and fill it with given data.
@@ -36,7 +31,7 @@ public class ContainerFactory {
 	 * @param data data for container
 	 * @return
 	 */
-	public static Container createPipelines() {
+	public Container createPipelines() {
 		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(App.getApp().getLogs().getEntityManager(), Pipeline.class, 10, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"id"}, new boolean[]{true});
@@ -53,7 +48,7 @@ public class ContainerFactory {
 	 * @param data data for container
 	 * @return
 	 */
-	public static Container createDPUTemplates(List<DPUTemplateRecord> data) {
+	public Container createDPUTemplates(List<DPUTemplateRecord> data) {
 		BeanContainer<Long, DPUTemplateRecord> container = new BeanContainer<>(DPUTemplateRecord.class);
 
 		// set container id
@@ -65,7 +60,7 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static Container createExecutionMessages() {
+	public Container createExecutionMessages() {
 		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), MessageRecord.class, 20, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"time"}, new boolean[]{true});
@@ -79,7 +74,8 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static Container createRDFData(List<RDFTriple> data) {
+	@Transactional
+	public Container createRDFData(List<RDFTriple> data) {
 		BeanContainer<Long, RDFTriple> container = new BeanContainer<>(RDFTriple.class);
 
 		container.setBeanIdProperty("id");
@@ -88,7 +84,7 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public static IntlibLazyQueryContainer createLogMessages() {
+	public IntlibLazyQueryContainer createLogMessages() {
 		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(App.getApp().getLogs().getEntityManager(), LogMessage.class, 28, "id", true, true, true);
 		container.addContainerProperty("id", Long.class, 0, true, true);
 		container.addContainerProperty("thread", String.class, "", true, true);

@@ -5,8 +5,10 @@ package cz.cuni.xrg.intlib.frontend.gui;
  * of view.
  * 
  * @author Petyr
+ * @deprecated use names defined in Views themselves (improves code locality)
  *
  */
+@Deprecated
 public enum ViewNames {
 	
 	INITIAL(""),

@@ -26,10 +26,21 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import cz.cuni.xrg.intlib.frontend.gui.components.IntlibPagedTable;
 import cz.cuni.xrg.intlib.frontend.gui.components.SchedulePipeline;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 import org.vaadin.dialogs.ConfirmDialog;
+import ru.xpoft.vaadin.VaadinView;
 
+@Component
+@Scope("prototype")
+@VaadinView(PipelineList.NAME)
 class PipelineList extends ViewComponent {
+	
+	/** View name. */
+	public static final String NAME = "PipelineList";
 
 	private VerticalLayout mainLayout;
 
@@ -37,11 +48,8 @@ class PipelineList extends ViewComponent {
 
 	private Button btnCreatePipeline;
 	
+	@Autowired
 	private PipelineFacade pipelineFacade;
-
-	public PipelineList() {
-		this.pipelineFacade = App.getApp().getPipelines();
-	}
 
 	@Override
 	public boolean isModified() {
@@ -205,6 +213,7 @@ class PipelineList extends ViewComponent {
 	/**
 	 * Refresh data on the pipeline list table
 	 */
+	@Transactional
 	private void refreshData() {
 		int page = tablePipelines.getCurrentPage();
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) tablePipelines.getContainerDataSource().getContainer();
@@ -212,6 +221,7 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setCurrentPage(page);
 	}
 
+	@Transactional
 	private VerticalLayout buildMainLayout() {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
@@ -269,7 +279,7 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setWidth("99%");
 		tablePipelines.setPageLength(10);
 		// assign data source
-		Container container = ContainerFactory.createPipelines();
+		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines();
 		tablePipelines.setContainerDataSource(container);
 
 		
@@ -356,6 +366,7 @@ class PipelineList extends ViewComponent {
 	}
 
 	@Override
+	@Transactional
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);

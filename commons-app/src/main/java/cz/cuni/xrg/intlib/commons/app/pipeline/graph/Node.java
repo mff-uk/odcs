@@ -21,8 +21,8 @@ public class Node implements Serializable {
 	/**
 	 * Primary key of graph stored in db
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_node")
+	@SequenceGenerator(name = "seq_ppl_node", allocationSize = 1)
 	@SuppressWarnings("unused")
 	private Long id;
 
@@ -30,7 +30,7 @@ public class Node implements Serializable {
 	@JoinColumn(name = "instance_id", unique = true, nullable = false)
 	private DPUInstanceRecord dpuInstance;
 
-	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToOne(optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "position_id", unique = true)
 	private Position position;
 

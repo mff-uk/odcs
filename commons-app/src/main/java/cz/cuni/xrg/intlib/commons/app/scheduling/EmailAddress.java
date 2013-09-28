@@ -3,11 +3,7 @@ package cz.cuni.xrg.intlib.commons.app.scheduling;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * An abstract representation of an email address.
@@ -18,7 +14,8 @@ import javax.persistence.Table;
 @Table(name = "sch_email")
 public class EmailAddress implements Serializable, Comparable {
 	
-	@Id @GeneratedValue
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
+	@SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
 	private Long id;
 
 	/**

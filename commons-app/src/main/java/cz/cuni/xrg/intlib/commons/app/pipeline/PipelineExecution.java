@@ -23,8 +23,8 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Unique id of pipeline execution.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
+	@SequenceGenerator(name = "seq_exec_pipeline", allocationSize = 1)
 	private Long id;
 
 	/**
@@ -70,7 +70,7 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Execution context, can be null.
 	 */
-	@OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
 	@JoinColumn(name = "context_id", nullable = true)
 	private ExecutionContextInfo context;
 
@@ -244,6 +244,9 @@ public class PipelineExecution implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
+		if (this.id == null) {
+			return super.hashCode();
+		}
 		int hash = 3;
 		hash = 23 * hash + (int) (this.id ^ (this.id >>> 32));
 		return hash;

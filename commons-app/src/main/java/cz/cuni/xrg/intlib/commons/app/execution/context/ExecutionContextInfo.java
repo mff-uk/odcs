@@ -60,8 +60,8 @@ public class ExecutionContextInfo implements Serializable {
 	/**
 	 * Unique id of pipeline execution.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_pipeline")
+	@SequenceGenerator(name = "seq_exec_context_pipeline", allocationSize = 1)
 	private Long id;
 
 	/**
@@ -81,7 +81,7 @@ public class ExecutionContextInfo implements Serializable {
 	/**
 	 * Contexts for DPU's. Indexed by {@link DPUInstanceRecord}.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL)
 	@MapKeyJoinColumn(name = "dpu_instance_id", referencedColumnName = "id")
 	@JoinColumn(name = "exec_context_pipeline_id")
 	private Map<DPUInstanceRecord, ProcessingUnitInfo> contexts;

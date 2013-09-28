@@ -277,7 +277,7 @@ public class PipelineFacade {
 				em.createQuery(
 				"SELECT e FROM PipelineExecution e" +
 				" WHERE e.pipeline = :pipe" +
-				" AND e.status in (:status)" +
+				" AND e.status IN :status" +
 				" AND e.end IS NOT NULL" +
 				" ORDER BY e.end DESC")
 				.setParameter("pipe", pipeline)
@@ -354,8 +354,8 @@ public class PipelineFacade {
                     "FROM PipelineExecution e")
                     .setParameter("last", lastLoad)
                     .getSingleResult();
-            boolean result = (int)r > 0;
-            return result;
+
+			return r.equals("1");
         }
         
         /**

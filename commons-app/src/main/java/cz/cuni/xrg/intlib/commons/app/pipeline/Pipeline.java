@@ -49,8 +49,8 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	/**
 	 * Unique ID for each pipeline
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
+	@SequenceGenerator(name = "seq_ppl_model", allocationSize = 1)
 	private Long id;
 
 	/**
@@ -65,7 +65,7 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	@Column
 	private String description;
 
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline")
 	private PipelineGraph graph;
 	
 	/**

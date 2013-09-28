@@ -1,13 +1,5 @@
 package cz.cuni.xrg.intlib.commons.app.execution.context;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
-
 import cz.cuni.xrg.intlib.commons.data.DataUnitType;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -26,8 +18,8 @@ public class DataUnitInfo implements Serializable {
 	/**
 	 * Primary key.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_dataunit_info")
+	@SequenceGenerator(name = "seq_exec_dataunit_info", allocationSize = 1)
 	private Long id;
 
 	/**

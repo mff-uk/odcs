@@ -14,6 +14,7 @@ import cz.cuni.xrg.intlib.commons.app.dpu.DPUInstanceRecord;
 
 import cz.cuni.xrg.intlib.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.xrg.intlib.commons.app.pipeline.PipelineExecution;
+import cz.cuni.xrg.intlib.frontend.auxiliaries.App;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.xrg.intlib.frontend.auxiliaries.DownloadStreamResource;
 import cz.cuni.xrg.intlib.frontend.browser.DataUnitBrowserFactory;
@@ -315,7 +316,8 @@ public class RDFQueryView extends CustomComponent {
 		if (isSelectQuery) {
 			container = buildDataSource((Map<String, List<String>>) data);
 		} else {
-			container = ContainerFactory.createRDFData((List<RDFTriple>) data);
+			container = App.getApp().getBean(ContainerFactory.class)
+							.createRDFData((List<RDFTriple>) data);
 		}
 		resultTable.setContainerDataSource(container);
 	}

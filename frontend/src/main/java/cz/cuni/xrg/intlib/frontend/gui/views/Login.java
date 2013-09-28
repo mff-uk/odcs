@@ -19,17 +19,25 @@ import cz.cuni.xrg.intlib.frontend.gui.ViewComponent;
 import cz.cuni.xrg.intlib.frontend.gui.ViewNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import ru.xpoft.vaadin.VaadinView;
 
 /**
  * LOGIN screen of application.
  *
  * @author Bogo
  */
+@org.springframework.stereotype.Component
+@Scope("prototype")
+@VaadinView(Login.NAME)
 public class Login extends ViewComponent {
 
+	/** View name. */
+	public static final String NAME = "Login";
+	
 	private static final Logger LOG = LoggerFactory.getLogger(Login.class);
 	
     private CssLayout mainLayout;
