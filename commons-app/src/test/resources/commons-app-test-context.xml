@@ -41,7 +41,7 @@
 	</bean>
 
 	<!-- Override moduleFacade, do NOT start the OSGI automatically  -->
-	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIModuleFacade" />
+	<bean id="moduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacade" />
 	
 	<!-- Creates an in-memory database populated with test data for fast testing -->
 	<jdbc:embedded-database id="dataSource" type="H2">

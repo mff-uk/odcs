@@ -8,12 +8,12 @@
 	xmlns:context="http://www.springframework.org/schema/context">
 
 	<!-- listener for watching events -->
-	<bean class="cz.cuni.xrg.intlib.backend.spring.InMemoryEventListener" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener" />
 	<!-- dummy DataUnit factory -->
-	<bean class="cz.cuni.xrg.intlib.backend.spring.DummyDataUnitFactory" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.spring.DummyDataUnitFactory" />
 	<!-- we use configuration that load from our resource -->
 	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig">
+	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
 	    <constructor-arg></constructor-arg>
 	</bean>
 	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
@@ -21,7 +21,7 @@
 	</bean>
 	
 	<!-- scan for pre/post executors -->
-	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
+	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl" />
 
 	<context:annotation-config />
 	

@@ -1,13 +1,13 @@
 package com.example;
 
-import cz.cuni.xrg.intlib.commons.data.DataUnitException;
-import cz.cuni.xrg.intlib.commons.dpu.DPUContext;
-import cz.cuni.xrg.intlib.commons.dpu.DPUException;
-import cz.cuni.xrg.intlib.commons.dpu.annotation.*;
-import cz.cuni.xrg.intlib.commons.module.dpu.ConfigurableBase;
-import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
-import cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.*;
+import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
+import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
+import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsTransformer

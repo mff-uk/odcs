@@ -1,8 +1,9 @@
 
 package virtuoso;
 
-import cz.cuni.xrg.intlib.commons.app.conf.AppConfig;
-import cz.cuni.xrg.intlib.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**

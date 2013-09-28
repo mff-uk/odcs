@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>cz.cuni.xrg.intlib</groupId>
-		<artifactId>intlib</artifactId>
-		<version>0.0.1</version>
+		<groupId>cz.cuni.mff.xrg.odcs</groupId>
+		<artifactId>odcs</artifactId>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>commons-app</artifactId>
 	<name>commons-app</name>
@@ -29,7 +29,7 @@
 		</repository>
 
 		<repository> <!-- Virtuoso JDBC -->
-			<id>intlib-thirdparty</id>
+			<id>odcs-thirdparty</id>
 			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty</url>
 		</repository>
 

@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>cz.cuni.xrg.intlib</groupId>
-        <artifactId>intlib</artifactId>
-        <version>0.0.1</version>
+        <groupId>cz.cuni.mff.xrg.odcs</groupId>
+        <artifactId>odcs</artifactId>
+        <version>1.0.0</version>
     </parent>
     <artifactId>commons-web</artifactId>
     <name>commons-web</name>
@@ -16,7 +16,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>commons</artifactId>
             <!-- the version has to be specify -->
-            <version>${project.version}</version>
+            <version>${odcs.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -64,10 +64,10 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <!-- export just packages under cz.cuni.xrg.intlib.commons.web -->
-                        <Export-Package>cz.cuni.xrg.intlib.commons.web.*;version="${intlib.version}"</Export-Package>
+                        <!-- export just packages under cz.cuni.mff.xrg.odcs.commons.web -->
+                        <Export-Package>cz.cuni.mff.xrg.odcs.commons.web.*;version="${odcs.version}"</Export-Package>
                         <!-- import commons and vaadin -->
-                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.xrg.intlib.commons.*;version="${intlib.version}"</Import-Package>
+                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.mff.xrg.odcs.commons.*;version="${odcs.version}"</Import-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>						
                     </instructions>
                 </configuration>

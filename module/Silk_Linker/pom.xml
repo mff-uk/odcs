@@ -4,9 +4,9 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>cz.cuni.xrg.intlib</groupId>
+		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>module-core</artifactId>
-		<version>0.0.1</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>Silk_Linker_Extractor</artifactId>
 	<name>Silk_Linker_Extractor</name>
@@ -40,7 +40,7 @@
 		<dpu.description>Module which is able to create links between two data
 			sources. Input is the configuration file for silk. The output of the
 			XSLT must be RDF data. </dpu.description>
-		<dpu.package>cz.cuni.mff.xrg.intlib.extractor.silklinker</dpu.package>
+		<dpu.package>cz.cuni.mff.xrg.odcs.extractor.silklinker</dpu.package>
 		<dpu.mainClass>SilkLinker</dpu.mainClass>
 	</properties>
 

@@ -16,50 +16,50 @@
 	</bean>
 	
 	<!-- TCP/IP server, used to recieve request from frontend -->
-	<bean id="server" class="cz.cuni.xrg.intlib.backend.communication.Server" />
+	<bean id="server" class="cz.cuni.mff.xrg.odcs.backend.communication.Server" />
 
 	<!-- engine itself, take care about executing of PipelineExecution -->
-	<bean id="engine" class="cz.cuni.xrg.intlib.backend.execution.Engine" />
+	<bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine" />
 
 	<!-- prototypes for contexts -->
-	<bean id="dpuContext" class="cz.cuni.xrg.intlib.backend.context.Context"
+	<bean id="dpuContext" class="cz.cuni.mff.xrg.odcs.backend.context.Context"
 		scope="prototype" lazy-init="true" />
 
 	<!-- pipeline executor -->
-	<bean id="pipelineExecutor" class="cz.cuni.xrg.intlib.backend.execution.pipeline.Executor"
+	<bean id="pipelineExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor"
 		scope="prototype" lazy-init="true" />
 	
 	<!-- DPU executor -->
-	<bean id="dpuExecutor" class="cz.cuni.xrg.intlib.backend.execution.dpu.Executor"
+	<bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor"
 		scope="prototype" lazy-init="true" />
 
 	<!-- data unit factory class -->
-	<bean id="dataUnitFactory" class="cz.cuni.xrg.intlib.backend.data.DataUnitFactory" />
+	<bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory" />
 
 	<!-- store events into database -->
-	<bean class="cz.cuni.xrg.intlib.backend.EventListenerDatabase" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase" />
 
 	<!-- periodically send message to event to check DB for new tasks -->
-	<bean id="heartbeat" class="cz.cuni.xrg.intlib.backend.Heartbeat" 
+	<bean id="heartbeat" class="cz.cuni.mff.xrg.odcs.backend.Heartbeat" 
 	    init-method="start" destroy-method="stop" />
 
 	<!-- scheduler -->
-	<bean id="scheduler" class="cz.cuni.xrg.intlib.backend.scheduling.Scheduler" />
+	<bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler" />
 	
 	<!-- replace facades from commons -->
-	<bean id="pipelineFacade" class="cz.cuni.xrg.intlib.backend.facade.PipelineFacade" />
+	<bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.PipelineFacade" />
 
 	<!-- component for sending email based on events -->
-	<bean id="emailCommunicator" class="cz.cuni.xrg.intlib.backend.communication.EmailCommunicator" />
+	<bean id="emailCommunicator" class="cz.cuni.mff.xrg.odcs.backend.communication.EmailCommunicator" />
 	
 	<!-- watcher for DPU changes -->
-	<bean class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIChangeManager" >
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager" >
 	    <constructor-arg name="refreshDatabase" value="false"/>
 	</bean>
 	
 	<!-- autodiscovery for DPU's pre/post executors -->
-	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.dpu.impl" />
+	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl" />
 	<!-- autodiscovery for pipeline's pre/post executors -->
-	<context:component-scan base-package="cz.cuni.xrg.intlib.backend.execution.pipeline.impl" />
+	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl" />
 			
 </beans>

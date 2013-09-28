@@ -28,9 +28,9 @@
 		<br/>
 		<div>Access to the repository can be acquired by <b>opening a connection</b> to it. This connection can then be used to query and/or update the contents of the repository. Depending on the implementation of the repository, it may or may not support multiple concurrent connections.</div>
 		<br/>
-		<div>RDF repository is alwayes needs to be <b>initialized</b> and after then can be used. At the end of all it´s using should be <b>shut down - destroy</b> and discarded/garbage collected. Forgetting the latter can result in loss of data (depending on the Repository implementation)</div>
+		<div>RDF repository is always needs to be <b>initialized</b> and after then can be used. At the end of all it´s using should be <b>shut down - destroy</b> and discarded/garbage collected. Forgetting the latter can result in loss of data (depending on the Repository implementation)</div>
 		<br/>
-		<div>INTLIB project use <b><u>2 implemented basic types of repositories:</u></b></div>
+		<div>ODCleanStore project use <b><u>2 implemented basic types of repositories:</u></b></div>
 		<ul>
 			<li>Local repository</li>
 			<li>Virtuoso repository</li>
@@ -59,8 +59,8 @@
 		<div class="code">
 			<pre>
 				<code>
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 ....
 RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo();
 
@@ -72,8 +72,8 @@ RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo();
 		<div class="code">
 			<pre>
 				<code>
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 
 ....
 String dirName = "name of temp dir";
@@ -89,8 +89,8 @@ RDFDataRepository localRepository = LocalRDFRepo.createLocalRepoInTempDirectory(
 		<div class="code">
 			<pre>
 				<code>
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import cz.cuni.xrg.intlib.rdf.impl.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 
 ....
 String repoPath = "path to repository as string";
@@ -115,8 +115,8 @@ RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(repoPath,fileNa
 		<div class="code">
 			<pre>
 				<code>
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
 
 ....
 RDFDataRepository localRepository = VirtuosoRDFRepo.createVirtuosoRDFRepo();
@@ -129,14 +129,14 @@ RDFDataRepository localRepository = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 		<div class="code">
 			<pre>
 				<code>
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataRepository;
-import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
 
 ....
 String hostName = "host.web.org"; 		// name of remote host
 String port = "1111";				// string value of number of port to connect to.
-String user = "dba";				// username needed for connection, empty if not required
-String password = "dba";			// password to connection, empty if not required 
+String user = "user_name";				// username needed for connection, empty if not required
+String password = "password";			// password to connection, empty if not required 
 String defautGraph = "http://default";		// name of graph for storage RDF data
 
 RDFDataRepository virtuosoRepository = VirtuosoRDFRepocreateVirtuosoRDFRepo(hostName, port, user, password,  defaultGraph);
@@ -148,15 +148,15 @@ RDFDataRepository virtuosoRepository = VirtuosoRDFRepocreateVirtuosoRDFRepo(host
 		<h2>
 			<a name="own">C) HOW to CREATE OWN RDF REPOSITORY</a>
 		</h2>
-		<h3>Posibilities:</h3>
+		<h3>Possibilities:</h3>
 		<ul>
 			<li>Own class using implementation of <b>RDFDataRepository interface</b></li>
-			<li>Implementation using based on <b>INTLIB</b> supported <b>openRDF libraries</b></li>
+			<li>Implementation using based on <b>ODCleanStore</b> supported <b>openRDF libraries</b></li>
 			<li>Implementation based on <b>others/own libraries</b> for working with <b>RDF data</b></li>
 		</ul>
 		<h3>Implementation of RDFDataRepository</h3>
 		<ul>
-		<li>Create new class implemets interface <b>RDFDataRepository</b> and implement all his methods. </li></ul>
+		<li>Create new class implements interface <b>RDFDataRepository</b> and implement all his methods. </li></ul>
 		<div><b><u>Example 1:</u></b> - Creation new class <b>"MyOwnRepository"</b>:</div>
 		<div class="code">
 			<pre>

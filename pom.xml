@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>cz.cuni.xrg.intlib</groupId>
-	<artifactId>intlib</artifactId>
-	<version>0.0.1</version>
+	<groupId>cz.cuni.mff.xrg.odcs</groupId>
+	<artifactId>odcs</artifactId>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
-	<name>intlib</name>
+	<name>ODCleanStore</name>
 	<description />
 
 	<properties>
@@ -20,10 +20,10 @@
 		<project.output.lib>target\lib\</project.output.lib>
 		<project.output.lib.backend>target\lib\backend\</project.output.lib.backend>
 		<project.output.dpu>target\dpu\</project.output.dpu>
-		<!-- intlib version, used to create OSGI import/export package list used 
+		<!-- odcs version, used to create OSGI import/export package list used 
 			to enable custom user versions of DPUs by using <version> for this reason 
-			<version> can't be used to specify osgi packages -->
-		<intlib.version>0.0.1</intlib.version>
+			<version> can't be used to specify OSGI packages -->
+		<odcs.version>1.0.0</odcs.version>
 		<skipTests>false</skipTests>
 		<!-- spring version -->
 		<org.springframework.version>3.1.2.RELEASE</org.springframework.version>
@@ -35,7 +35,7 @@
 	<modules>
 		<!-- commons -->
 		<module>commons</module>
-		<!-- intlib libraries -->
+		<!-- odcs libraries -->
 		<module>commons-app</module>
 		<module>rdf</module>
 		<module>commons-module</module>
@@ -128,7 +128,7 @@
 						<includes>
 							<include>**/*.java</include>
 						</includes>
-						<excludedGroups>cz.cuni.xrg.intlib.commons.IntegrationTest</excludedGroups>
+						<excludedGroups>cz.cuni.mff.xrg.odcs.commons.IntegrationTest</excludedGroups>
 					</configuration>
 				</plugin>
 
@@ -143,7 +143,7 @@
 						</dependency>
 					</dependencies>
 					<configuration>
-						<groups>cz.cuni.xrg.intlib.commons.IntegrationTest</groups>
+						<groups>cz.cuni.mff.xrg.odcs.commons.IntegrationTest</groups>
 					</configuration>
 					<executions>
 						<execution>

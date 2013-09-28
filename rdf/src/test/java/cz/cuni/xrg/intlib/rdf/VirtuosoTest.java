@@ -1,13 +1,13 @@
 package cz.cuni.xrg.intlib.rdf;
 
-import cz.cuni.xrg.intlib.commons.IntegrationTest;
-import cz.cuni.xrg.intlib.rdf.data.RDFDataUnitFactory;
-import cz.cuni.xrg.intlib.rdf.enums.FileExtractType;
-import cz.cuni.xrg.intlib.rdf.enums.InsertType;
-import cz.cuni.xrg.intlib.rdf.enums.WriteGraphType;
-import cz.cuni.xrg.intlib.rdf.exceptions.RDFException;
-import cz.cuni.xrg.intlib.rdf.impl.VirtuosoRDFRepo;
-import cz.cuni.xrg.intlib.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;

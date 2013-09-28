@@ -1,4 +1,4 @@
-Intlib
+ODCS
 ======
 
 The tool uses data processing pipelines for obtaining, processing, and storing
@@ -12,7 +12,7 @@ Configuration steps
 2. Set connection string, user name and password in `main/webapp/WEB-INF/classes/META-INF/persistence.xml`.
 3. Create configuration file.
   - Sample configuration file is located in `/conf/config.properties` in the root
-    of the project. Configuration is to be stored in `$HOME/.intlib/config.properties`.
+    of the project. Configuration is to be stored in `$HOME/.odcs/config.properties`.
 
 Installation steps
 ------------------

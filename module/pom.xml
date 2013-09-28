@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>cz.cuni.xrg.intlib</groupId>
+		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>module-base</artifactId>
-		<version>0.0.1</version>
+		<version>1.0.0</version>
 		<relativePath>../module-base/pom.xml</relativePath>
 	</parent>
 	<artifactId>module-core</artifactId>
@@ -19,6 +19,7 @@
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>
 		<module>SPARQL_transformer</module>
+		<module>Silk_Linker</module>
 	</modules>
 
 	<properties>
