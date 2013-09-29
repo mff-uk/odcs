@@ -330,7 +330,7 @@ public class PipelineFacade {
                     em.createQuery(
                     "SELECT e FROM PipelineExecution e"
                     + " WHERE e.schedule = :schedule"
-                    + " AND e.status IN (:status)"
+                    + " AND e.status IN :status"
                     + " AND e.end IS NOT NULL"
                     + " ORDER BY e.end DESC")
                     .setParameter("schedule", schedule)
