@@ -4,7 +4,7 @@
  *
  * @author Bogo
  * **/
-cz_cuni_xrg_intlib_frontend_gui_components_pipelinecanvas_PipelineCanvas = function() {
+cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = function() {
 
 	//provisional placement of DPU and connection "classes"
 	/** 
