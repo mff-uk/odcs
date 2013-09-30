@@ -180,9 +180,9 @@ public class RDFQueryView extends CustomComponent {
 					File constructData;
 					String fn = File.createTempFile("data", "dt").getAbsolutePath();
 					if (isSelectQuery) {
-						constructData = repository.makeSelectQueryOverRepository(query, fn);
+						constructData = repository.executeSelectQuery(query, fn);
 					} else {
-						constructData = repository.makeConstructQueryOverRepository(query, format, fn);
+						constructData = repository.executeConstructQuery(query, format, fn);
 					}
 
 					FileInputStream fis = new FileInputStream(constructData);

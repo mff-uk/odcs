@@ -11,7 +11,7 @@ CREATE TABLE `DPU_INSTANCE`
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(45),
   `use_dpu_description` SMALLINT,
-  `description` VARCHAR(255),
+  `description` VARCHAR(512),
   `tool_tip` VARCHAR(255),
   `configuration` BLOB,
 -- DPUInstaceRecord
@@ -26,7 +26,7 @@ CREATE TABLE `DPU_TEMPLATE`
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(45),
   `use_dpu_description` SMALLINT,
-  `description` VARCHAR(255),  
+  `description` VARCHAR(512),  
   `configuration` BLOB,
   `parent_id` INTEGER,
 -- DPUTemplateRecord
@@ -154,8 +154,8 @@ CREATE SEQUENCE `seq_ppl_model` START WITH 100;
 CREATE TABLE `PPL_MODEL`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(45),
-  `description` VARCHAR(255),
+  `name` VARCHAR(255),
+  `description` VARCHAR(512),
   `user_id` INTEGER,
   PRIMARY KEY (`id`)
 );
@@ -163,8 +163,8 @@ CREATE INDEX `ix_PPL_MODEL_user_id` ON `PPL_MODEL` (`user_id`);
 
 CREATE TABLE `PPL_PPL_CONFLICTS`
 (
-  `pipeline_id` INTEGER,
-  `pipeline_conflict_id` INTEGER,
+  `pipeline_id` INTEGER AUTO_INCREMENT,
+  `pipeline_conflict_id` SMALLINT,
   PRIMARY KEY (`pipeline_id`, `pipeline_conflict_id`)
 );
 CREATE INDEX `ix_PPL_PPL_CONFLICTS_pipeline_id` ON `PPL_PPL_CONFLICTS` (`pipeline_id`);

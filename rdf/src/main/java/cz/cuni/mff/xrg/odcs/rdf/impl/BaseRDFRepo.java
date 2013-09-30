@@ -1364,7 +1364,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                               fail.
 	 */
 	@Override
-	public File makeConstructQueryOverRepository(String constructQuery,
+	public File executeConstructQuery(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException {
 
 		RepositoryConnection connection = null;
@@ -1503,7 +1503,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public File makeSelectQueryOverRepository(String selectQuery,
+	public File executeSelectQuery(String selectQuery,
 			String filePath)
 			throws InvalidQueryException {
 
@@ -1904,18 +1904,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 								new InputStreamReader(
 								errorStream, Charset.forName(encode)))) {
 
-                                                    StringBuilder inputStringBuilder = new StringBuilder();
-                                                    String line = reader.readLine();
-                                                    while(line != null){
-                                                        inputStringBuilder.append(line);
-                                                        inputStringBuilder.append('\n');
-                                                        line = reader.readLine();
-                                                    }
-        //System.out.println(inputStringBuilder.toString());
+							StringBuilder inputStringBuilder = new StringBuilder();
+							String line = reader.readLine();
+							while (line != null) {
+								inputStringBuilder.append(line);
+								inputStringBuilder.append('\n');
+								line = reader.readLine();
+							}
 
-                                                    
-                                                    
-							String cause = ". Caused by " + inputStringBuilder.toString();
+							String cause = ". Caused by " + inputStringBuilder
+									.toString();
 
 							message.append(cause);
 

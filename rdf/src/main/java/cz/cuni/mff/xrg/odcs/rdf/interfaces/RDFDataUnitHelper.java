@@ -289,7 +289,7 @@ public interface RDFDataUnitHelper {
 	 * @return File contains result of given SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public File makeSelectQueryOverRepository(String selectQuery,
+	public File executeSelectQuery(String selectQuery,
 			String filePath)
 			throws InvalidQueryException;
 
@@ -317,8 +317,7 @@ public interface RDFDataUnitHelper {
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
-	@Deprecated
-	public File makeConstructQueryOverRepository(String constructQuery,
+	public File executeConstructQuery(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException;
 
 	/**
