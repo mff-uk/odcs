@@ -23,6 +23,7 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 
 
 /**
@@ -111,13 +112,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	private void mapData() {
 
-		comboBoxFormat.addItem("AUTO");
-		comboBoxFormat.addItem("TTL");
-		comboBoxFormat.addItem("RDF/XML");
-		comboBoxFormat.addItem("N3");
-		comboBoxFormat.addItem("TriG");
+		for (RDFFormatType next : RDFFormatType.getListOfRDFType()) {
+			comboBoxFormat.addItem(next);
+		}
 
-		comboBoxFormat.setValue("AUTO");
+		comboBoxFormat.setValue(RDFFormatType.AUTO);
 
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.UPLOAD_FILE));
@@ -180,7 +179,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				conf.OnlyThisSuffix = false;
 			}
 
-			conf.RDFFormatValue = (String) comboBoxFormat.getValue();
+			conf.RDFFormatValue = (RDFFormatType) comboBoxFormat.getValue();
 			conf.UseStatisticalHandler = useHandler.getValue();
 
 			conf.fileExtractType = extractType;
