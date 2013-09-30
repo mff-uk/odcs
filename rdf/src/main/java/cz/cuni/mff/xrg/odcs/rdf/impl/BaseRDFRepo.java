@@ -180,6 +180,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *
 	 * @param extractType         One of defined enum type for extraction data
 	 *                            from file.
+	 * @param format              One of RDFFormat value for parsing triples, if
+	 *                            value is null RDFFormat is selected by
+	 *                            filename.
 	 * @param path                String path to file/directory
 	 * @param suffix              String suffix of fileName (example: ".ttl",
 	 *                            ".xml", etc)
@@ -192,10 +195,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public void extractFromFile(FileExtractType extractType,
+			RDFFormat format,
 			String path, String suffix,
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws RDFException {
-		extractFromFile(RDFFormat.RDFXML, extractType, path, suffix, baseURI,
+
+
+		extractFromFile(format, extractType, path, suffix, baseURI,
 				useSuffix, useStatisticHandler);
 	}
 
@@ -2190,13 +2196,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	private void addFileToRepository(RDFFormat rdfFormat, File dataFile,
+	private void addFileToRepository(RDFFormat fileFormat, File dataFile,
 			String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
 
-		RDFFormat fileFormat = RDFFormat.forFileName(
-				dataFile.getAbsolutePath(),
-				rdfFormat);
+		//in case that RDF format is AUTO or not fixed.
+		if (fileFormat == null) {
+			fileFormat = RDFFormat.forFileName(dataFile.getAbsolutePath(),
+					RDFFormat.RDFXML);
+		}
 
 		RepositoryConnection connection = null;
 
