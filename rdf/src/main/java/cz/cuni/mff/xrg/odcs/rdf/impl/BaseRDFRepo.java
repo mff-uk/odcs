@@ -1503,7 +1503,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public File makeSelectQueryOverRepository(String selectQuery,
+	public File executeSelectQuery(String selectQuery,
 			String filePath)
 			throws InvalidQueryException {
 
