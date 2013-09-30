@@ -1364,7 +1364,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                               fail.
 	 */
 	@Override
-	public File makeConstructQueryOverRepository(String constructQuery,
+	public File executeConstructQuery(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException {
 
 		RepositoryConnection connection = null;

@@ -193,7 +193,7 @@ public class RDFQueryView extends CustomComponent {
 					if (isSelectQuery) {
 						constructData = repository.makeSelectQueryOverRepository(query, fn);
 					} else {
-						constructData = repository.makeConstructQueryOverRepository(query, format, fn);
+						constructData = repository.executeConstructQuery(query, format, fn);
 					}
 
 					FileInputStream fis = new FileInputStream(constructData);

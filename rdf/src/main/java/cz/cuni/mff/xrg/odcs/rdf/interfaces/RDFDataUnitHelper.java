@@ -317,8 +317,7 @@ public interface RDFDataUnitHelper {
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
-	@Deprecated
-	public File makeConstructQueryOverRepository(String constructQuery,
+	public File executeConstructQuery(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException;
 
 	/**
