@@ -14,6 +14,18 @@ class DataBrowser extends ViewComponent {
 	private Label label;
 
 	public DataBrowser() { }
+	
+		@Override
+	public void enter(ViewChangeEvent event) {
+		buildMainLayout();
+		setCompositionRoot(mainLayout);		
+	}
+
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
 
 	private AbsoluteLayout buildMainLayout() {
 		// common part: create layout
@@ -38,16 +50,6 @@ class DataBrowser extends ViewComponent {
 		return mainLayout;
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		buildMainLayout();
-		setCompositionRoot(mainLayout);		
-	}
 
-	@Override
-	public boolean isModified() {
-		//There are no editable fields.
-		return false;
-	}
 
 }

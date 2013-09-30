@@ -46,10 +46,11 @@ import ru.xpoft.vaadin.VaadinView;
 @Scope("prototype")
 @VaadinView(Settings.NAME)
 public class Settings extends ViewComponent {
-	
-	/** View name. */
-	public static final String NAME = "Administrator";
 
+	/**
+	 * View name.
+	 */
+	public static final String NAME = "Administrator";
 	private static final long serialVersionUID = 1L;
 	private GridLayout mainLayout;
 	private VerticalLayout accountLayout;
@@ -71,7 +72,6 @@ public class Settings extends ViewComponent {
 	private EmailComponent email;
 	private EmailNotifications emailNotifications;
 	private GridLayout emailLayout;
-	private boolean errors = false;
 	/**
 	 * Currently logged in user.
 	 */
@@ -86,6 +86,32 @@ public class Settings extends ViewComponent {
 	 * editor.
 	 */
 	public Settings() {
+	}
+
+	@Override
+	public boolean isModified() {
+
+		if (shownTab.equals(notificationsButton)) {
+			return areNotificationsModified();
+		} else if (shownTab.equals(accountButton)) {
+			return isMyAccountModified();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean saveChanges() {
+		if (shownTab.equals(notificationsButton) || shownTab.equals(accountButton)) {
+			return saveEmailNotifications();
+		}
+		return true;
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		loggedUser = App.getApp().getAuthCtx().getUser();
+		buildMainLayout();
+		setCompositionRoot(mainLayout);
 	}
 
 	private GridLayout buildMainLayout() {
@@ -404,54 +430,6 @@ public class Settings extends ViewComponent {
 
 	}
 
-	private String emailValidationText() {
-		String errorText = "";
-		String wrongFormat = "";
-		boolean notEmpty = false;
-		int errorNumber = 0;
-		int fieldNumber = 0;
-		errors = false;
-		for (TextField emailField : email.listedEditText) {
-			if (!emailField.getValue().trim().isEmpty()) {
-				notEmpty = true;
-				break;
-			}
-		}
-
-		if (notEmpty) {
-			for (TextField emailField : email.listedEditText) {
-				fieldNumber++;
-				try {
-					emailField.validate();
-
-				} catch (Validator.InvalidValueException e) {
-
-					if (e.getMessage().equals("wrong е-mail format")) {
-						if (fieldNumber == 1) {
-							wrongFormat = "\"" + emailField.getValue() + "\"";
-						} else {
-							wrongFormat = wrongFormat + ", " + "\"" + emailField
-									.getValue() + "\"";
-						}
-						errorNumber++;
-					}
-				}
-			}
-			if (errorNumber == 1) {
-				errorText = "Email " + wrongFormat + " has wrong format.";
-			}
-			if (errorNumber > 1) {
-				errorText = "Emails " + wrongFormat + ", have wrong format.";
-			}
-		} else {
-			errorText = "At least one mail has to be filled, so that the notification can be send.";
-		}
-
-
-		return errorText;
-
-	}
-
 	/**
 	 * Showing active tab.
 	 *
@@ -475,13 +453,12 @@ public class Settings extends ViewComponent {
 	}
 
 	/**
-	 * Savig changes that relating to Schedule Notification.
+	 * Saving changes that relating to Schedule Notification.
 	 */
 	private boolean saveEmailNotifications() {
 
 
 		if (!emailValidationText().equals("")) {
-			errors = true;
 			Notification.show("Failed to save settings, reason:",
 					emailValidationText(), Notification.Type.ERROR_MESSAGE);
 			return false;
@@ -586,34 +563,8 @@ public class Settings extends ViewComponent {
 
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		loggedUser = App.getApp().getAuthCtx().getUser();
-		buildMainLayout();
-		setCompositionRoot(mainLayout);
-	}
-
-	@Override
-	public boolean isModified() {
-
-		if (shownTab.equals(notificationsButton)) {
-			return areNotificationsModified();
-		} else if (shownTab.equals(accountButton)) {
-			return isMyAccountModified();
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean saveChanges() {
-		if (shownTab.equals(notificationsButton) || shownTab.equals(accountButton)) {
-			return saveEmailNotifications();
-		} 
-		return true;
-	}
-
 	private boolean areNotificationsModified() {
-		if(loggedUser.getNotification() == null) {
+		if (loggedUser.getNotification() == null) {
 			return true;
 		}
 		NotificationRecordType aldSuccessEx = loggedUser.getNotification()
@@ -631,7 +582,6 @@ public class Settings extends ViewComponent {
 		email.saveEditedTexts();
 
 		if (!emailValidationText().equals("")) {
-			errors = true;
 			Notification.show("", emailValidationText(),
 					Notification.Type.ERROR_MESSAGE);
 			return true;
@@ -646,5 +596,52 @@ public class Settings extends ViewComponent {
 		email.setUserEmailNotification(newNotification);
 		Set<EmailAddress> newEmails = newNotification.getEmails();
 		return !aldEmails.equals(newEmails);
+	}
+
+	private String emailValidationText() {
+		String errorText = "";
+		String wrongFormat = "";
+		boolean notEmpty = false;
+		int errorNumber = 0;
+		int fieldNumber = 0;
+		for (TextField emailField : email.listedEditText) {
+			if (!emailField.getValue().trim().isEmpty()) {
+				notEmpty = true;
+				break;
+			}
+		}
+
+		if (notEmpty) {
+			for (TextField emailField : email.listedEditText) {
+				fieldNumber++;
+				try {
+					emailField.validate();
+
+				} catch (Validator.InvalidValueException e) {
+
+					if (e.getMessage().equals("wrong е-mail format")) {
+						if (fieldNumber == 1) {
+							wrongFormat = "\"" + emailField.getValue() + "\"";
+						} else {
+							wrongFormat = wrongFormat + ", " + "\"" + emailField
+									.getValue() + "\"";
+						}
+						errorNumber++;
+					}
+				}
+			}
+			if (errorNumber == 1) {
+				errorText = "Email " + wrongFormat + " has wrong format.";
+			}
+			if (errorNumber > 1) {
+				errorText = "Emails " + wrongFormat + ", have wrong format.";
+			}
+		} else {
+			errorText = "At least one mail has to be filled, so that the notification can be send.";
+		}
+
+
+		return errorText;
+
 	}
 }

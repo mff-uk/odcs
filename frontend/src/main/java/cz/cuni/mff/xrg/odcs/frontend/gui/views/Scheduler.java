@@ -14,7 +14,6 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -25,7 +24,6 @@ import com.vaadin.ui.Window.CloseListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
@@ -49,12 +47,12 @@ import ru.xpoft.vaadin.VaadinView;
 @Scope("prototype")
 @VaadinView(Scheduler.NAME)
 class Scheduler extends ViewComponent {
-	
-	/** View name. */
-	public static final String NAME = "Scheduler";
 
+	/**
+	 * View name.
+	 */
+	public static final String NAME = "Scheduler";
 	private VerticalLayout mainLayout;
-	private Label label;
 	/**
 	 * Table contains rules of pipeline scheduling.
 	 */
@@ -64,7 +62,6 @@ class Scheduler extends ViewComponent {
 		"last", "next", "duration", "status", "commands"};
 	static String[] headers = new String[]{"pipeline", "Rule", "User",
 		"Last", "Next", "Last run time", "Status", "Commands"};
-	private DateFormat localDateFormat = null;
 	int style = DateFormat.MEDIUM;
 	private Long schId;
 	static String filter;
@@ -80,11 +77,23 @@ class Scheduler extends ViewComponent {
 	public Scheduler() {
 	}
 
-    /**
-     * Builds main layout contains table with created scheduling pipeline rules.
-     * 
- 	 * @return mainLayout VerticalLayout with all components of Scheduler page.
- 	 */
+	@Override
+	public boolean isModified() {
+		//There are no editable fields.
+		return false;
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		buildMainLayout();
+		setCompositionRoot(mainLayout);
+	}
+
+	/**
+	 * Builds main layout contains table with created scheduling pipeline rules.
+	 *
+	 * @return mainLayout VerticalLayout with all components of Scheduler page.
+	 */
 	private VerticalLayout buildMainLayout() {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
@@ -190,19 +199,6 @@ class Scheduler extends ViewComponent {
 	}
 
 	/**
-	 * Calls for refresh table {@link #schedulerTable}.
-	 */
-	private void refreshData() {
-		int page = schedulerTable.getCurrentPage();
-		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());
-		schedulerTable.setContainerDataSource(tableData);
-		schedulerTable.setCurrentPage(page);
-		schedulerTable.setVisibleColumns(visibleCols);
-		schedulerTable.setFilterFieldVisible("commands", false);
-
-	}
-
-	/**
 	 * Container with data for table {@link #schedulerTable}.
 	 *
 	 * @param data List of {@link Schedule}.
@@ -249,12 +245,12 @@ class Scheduler extends ViewComponent {
 						item.getLastExecution());
 			}
 
-			
+
 			result.getContainerProperty(num, "status").setValue(item.isEnabled());
-			
+
 
 			if (item.getType().equals(ScheduleType.PERIODICALLY)) {
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,  Locale.getDefault());
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
 				if (item.isJustOnce()) {
 					result.getContainerProperty(num, "rule").setValue(
 							"Run on " + df.format(item.getFirstExecution()));
@@ -301,14 +297,14 @@ class Scheduler extends ViewComponent {
 			}
 
 			result.getContainerProperty(num, "schid").setValue(item.getId());
-			if(item.getOwner() == null) {
+			if (item.getOwner() == null) {
 				result.getContainerProperty(num, "user").setValue(" ");
 			} else {
 				result.getContainerProperty(num, "user").setValue(item.getOwner().getUsername());
 			}
 			result.getContainerProperty(num, "pipeline").setValue(
 					item.getPipeline().getName());
-			
+
 			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, IntlibHelper.getFinishedStatuses());
 			result.getContainerProperty(num, "duration").setValue(IntlibHelper.getDuration(exec));
 
@@ -319,16 +315,40 @@ class Scheduler extends ViewComponent {
 
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		buildMainLayout();
-		setCompositionRoot(mainLayout);
+	/**
+	 * Calls for refresh table {@link #schedulerTable}.
+	 */
+	private void refreshData() {
+		int page = schedulerTable.getCurrentPage();
+		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());
+		schedulerTable.setContainerDataSource(tableData);
+		schedulerTable.setCurrentPage(page);
+		schedulerTable.setVisibleColumns(visibleCols);
+		schedulerTable.setFilterFieldVisible("commands", false);
+
 	}
 
-	@Override
-	public boolean isModified() {
-		//There are no editable fields.
-		return false;
+	/**
+	 * Shows dialog for scheduling pipeline with given scheduling rule.
+	 *
+	 * @param id Id of schedule to show.
+	 */
+	private void showSchedulePipeline(Long id) {
+
+		// open scheduler dialog
+		SchedulePipeline sch = new SchedulePipeline();
+
+		//openScheduler(schedule);
+		Schedule schedule = App.getApp().getSchedules().getSchedule(id);
+		sch.setSelectedSchedule(schedule);
+
+		App.getApp().addWindow(sch);
+		sch.addCloseListener(new CloseListener() {
+			@Override
+			public void windowClose(CloseEvent e) {
+				refreshData();
+			}
+		});
 	}
 
 	/**
@@ -430,10 +450,10 @@ class Scheduler extends ViewComponent {
 					schId = (Long) tableData.getContainerProperty(itemId, "schid")
 							.getValue();
 					scheduleDel = App.getApp().getSchedules().getSchedule(schId);
-					
+
 					//open confirmation dialog
-					ConfirmDialog.show(UI.getCurrent(),"Confirmation of deleting scheduling rule",
-							"Delete " + scheduleDel.getPipeline().getName().toString() + " pipeline scheduling rule?","Delete", "Cancel",
+					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting scheduling rule",
+							"Delete " + scheduleDel.getPipeline().getName().toString() + " pipeline scheduling rule?", "Delete", "Cancel",
 							new ConfirmDialog.Listener() {
 						private static final long serialVersionUID = 1L;
 
@@ -446,36 +466,13 @@ class Scheduler extends ViewComponent {
 							}
 						}
 					});
-					
+
 				}
 			});
 			layout.addComponent(deleteButton);
 
 			return layout;
 		}
-	}
-
-	/**
-	 * Shows dialog for scheduling pipeline with given scheduling rule.
-	 *
-	 * @param id Id of schedule to show.
-	 */
-	private void showSchedulePipeline(Long id) {
-
-		// open scheduler dialog
-		SchedulePipeline sch = new SchedulePipeline();
-
-		//openScheduler(schedule);
-		Schedule schedule = App.getApp().getSchedules().getSchedule(id);
-		sch.setSelectedSchedule(schedule);
-
-		App.getApp().addWindow(sch);
-		sch.addCloseListener(new CloseListener() {
-			@Override
-			public void windowClose(CloseEvent e) {
-				refreshData();
-			}
-		});
 	}
 
 	private class filterDecorator extends IntlibFilterDecorator {

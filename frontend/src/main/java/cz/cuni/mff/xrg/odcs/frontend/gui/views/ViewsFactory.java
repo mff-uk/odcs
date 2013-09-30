@@ -46,13 +46,13 @@ public class ViewsFactory {
 		
 	}
 	
-	public static ViewNames getViewName(View view) {
+	public static String getViewName(View view) {
 		if(view.getClass() == PipelineList.class) {
-			return ViewNames.PIPELINE_LIST;
+			return PipelineList.NAME;
 		} else if(view.getClass() == DPU.class) {
-			return ViewNames.DPU;
+			return DPU.NAME;
 		} else {
-			return ViewNames.INITIAL;
+			return Initial.NAME;
 		}
 	}
 	

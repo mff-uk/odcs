@@ -39,16 +39,14 @@ import ru.xpoft.vaadin.VaadinView;
 @Scope("prototype")
 @VaadinView(PipelineList.NAME)
 class PipelineList extends ViewComponent {
-	
-	/** View name. */
+
+	/**
+	 * View name.
+	 */
 	public static final String NAME = "PipelineList";
-
 	private VerticalLayout mainLayout;
-
 	private IntlibPagedTable tablePipelines;
-
 	private Button btnCreatePipeline;
-	
 	@Autowired
 	private PipelineFacade pipelineFacade;
 
@@ -58,168 +56,11 @@ class PipelineList extends ViewComponent {
 		return false;
 	}
 
-	/**
-	 * Generate column in table with buttons.
-	 * @author Petyr
-	 *
-	 */
-	class actionColumnGenerator implements CustomTable.ColumnGenerator {
-
-		@Override
-		public Object generateCell(final CustomTable source, final Object itemId,
-				Object columnId) {
-			HorizontalLayout layout = new HorizontalLayout();
-
-			Button updateButton = new Button();
-			updateButton.setCaption("edit");
-			updateButton.setWidth("80px");
-			updateButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							// navigate to PIPELINE_EDIT/New
-							App.getApp()
-									.getNavigator()
-									.navigateTo(
-											ViewNames.PIPELINE_EDIT.getUrl()
-													+ "/" + itemId.toString());
-						}
-					});
-			layout.addComponent(updateButton);
-			
-
-			
-			// get item
-			CompositeItem  item = (CompositeItem) source.getItem(itemId);
-			Long pipelineId = (Long)item.getItemProperty("id").getValue();
-			final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
-			Button copyButton = new Button();
-			copyButton.setCaption("copy");
-			copyButton.setWidth("80px");
-			copyButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
-							String copiedPipelineName = "Copy of " + pipeline.getName();
-							if(copiedPipelineName.length() > MaxLengthValidator.NAME_LENGTH) {
-								Notification.show(String.format("Name of copied pipeline would exceed limit of %d characters, new pipeline has same name as original.", MaxLengthValidator.NAME_LENGTH), Notification.Type.WARNING_MESSAGE);
-							} else {
-								nPipeline.setName(copiedPipelineName);
-							}
-							pipelineFacade.save(nPipeline);
-							refreshData();
-							//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
-						}
-					});
-			layout.addComponent(copyButton); 
-
-
-			Button deleteButton = new Button();
-			deleteButton.setCaption("delete");
-			deleteButton.setWidth("80px");
-			deleteButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							String message = "Would you really like to delete the " + pipeline.getName() + " pipeline and all associated records (DPU instances e.g.)?";
-							if(isExecInSystem(pipeline, PipelineExecutionStatus.RUNNING)) {
-								message += "\nPipeline is running currently, the current run will be cancelled!";
-							}
-							if(isExecInSystem(pipeline, PipelineExecutionStatus.SCHEDULED)) {
-								message += "\nPipeline is scheduled currently, the scheduled execution will be deleted!";
-							}
-							if(!App.getSchedules().getSchedulesFor(pipeline).isEmpty()) {
-								message += "\nThere is/are scheduler rules with the pipeline, it/they will be deleted!";
-							}
-							
-							ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
-
-								@Override
-								public void onClose(ConfirmDialog cd) {
-									if(cd.isConfirmed()) {
-										pipelineFacade.delete(pipeline);
-										// now we have to remove pipeline from table
-										source.removeItem(itemId);
-										refreshData();
-										//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
-									}
-								}
-							});
-							
-							
-							
-						}
-					});
-			layout.addComponent(deleteButton);
-
-			Button runButton = new Button();
-			runButton.setCaption("run");
-			runButton.setWidth("80px");
-			runButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							IntlibHelper.runPipeline(pipeline, false);
-						}
-					});
-			layout.addComponent(runButton);
-
-			Button runDebugButton = new Button();
-			runDebugButton.setCaption("debug");
-			runDebugButton.setWidth("80px");
-			runDebugButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							PipelineExecution exec = IntlibHelper.runPipeline(pipeline, true);
-							if(exec != null) {
-								App.getApp().getNavigator().navigateTo(ViewNames.EXECUTION_MONITOR.getUrl() + "/" + exec.getId());
-							}
-						}
-					});
-			layout.addComponent(runDebugButton);
-			
-			
-			Button schedulerButton = new Button();
-			schedulerButton.setCaption("schedule");
-			schedulerButton.setWidth("80px");
-			schedulerButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-						@Override
-						public void buttonClick(ClickEvent event) {
-							// open scheduler dialog
-							SchedulePipeline  sch = new SchedulePipeline();
-							sch.setSelectePipeline(pipeline);
-							App.getApp().addWindow(sch);	
-						}
-					});
-			layout.addComponent(schedulerButton);
-
-			return layout;
-		}
-
-	}
-	
-	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
-		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipeline, status);
-		if(execs.isEmpty()) {
-			return false;
-		} else {
-			//TODO: Differentiate by user maybe ?!
-			return true;
-		}
-	}
-	
-	/**
-	 * Refresh data on the pipeline list table
-	 */
+	@Override
 	@Transactional
-	private void refreshData() {
-		int page = tablePipelines.getCurrentPage();
-		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) tablePipelines.getContainerDataSource().getContainer();
-		c.refresh();
-		tablePipelines.setCurrentPage(page);
+	public void enter(ViewChangeEvent event) {
+		buildMainLayout();
+		setCompositionRoot(mainLayout);
 	}
 
 	@Transactional
@@ -233,25 +74,25 @@ class PipelineList extends ViewComponent {
 		// top-level component properties
 		setWidth("100%");
 		setHeight("100%");
-		
+
 		HorizontalLayout topLine = new HorizontalLayout();
 		topLine.setSpacing(true);
 		//topLine.setWidth(100, Unit.PERCENTAGE);
-		
+
 		btnCreatePipeline = new Button();
 		btnCreatePipeline.setCaption("Create pipeline");
 		btnCreatePipeline.setHeight("25px");
 		btnCreatePipeline.setWidth("120px");
 		btnCreatePipeline
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						// navigate to PIPELINE_EDIT/New
-						App.getApp()
-								.getNavigator()
-								.navigateTo(ViewNames.PIPELINE_EDIT_NEW.getUrl());
-					}
-				});
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// navigate to PIPELINE_EDIT/New
+				App.getApp()
+						.getNavigator()
+						.navigateTo(ViewNames.PIPELINE_EDIT_NEW.getUrl());
+			}
+		});
 		topLine.addComponent(btnCreatePipeline);
 		//topLine.setComponentAlignment(btnCreatePipeline, Alignment.MIDDLE_RIGHT);
 
@@ -270,7 +111,7 @@ class PipelineList extends ViewComponent {
 		});
 		topLine.addComponent(buttonDeleteFilters);
 		//topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
-		
+
 //		Label topLineFiller = new Label();
 //		topLine.addComponentAsFirst(topLineFiller);
 //		topLine.setExpandRatio(topLineFiller, 1.0f);
@@ -283,7 +124,7 @@ class PipelineList extends ViewComponent {
 		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines();
 		tablePipelines.setContainerDataSource(container);
 
-		
+
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(10);
@@ -291,11 +132,10 @@ class PipelineList extends ViewComponent {
 		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 		tablePipelines.setImmediate(true);
 		tablePipelines.addGeneratedColumn("description", new CustomTable.ColumnGenerator() {
-
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				String description = (String) source.getItem(itemId).getItemProperty(columnId).getValue();
-				if(description.length() > App.MAX_TABLE_COLUMN_LENGTH) {
+				if (description.length() > App.MAX_TABLE_COLUMN_LENGTH) {
 					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH - 3) + "...");
 					descriptionLabel.setDescription(description);
 					return descriptionLabel;
@@ -305,7 +145,6 @@ class PipelineList extends ViewComponent {
 			}
 		});
 		tablePipelines.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
-
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
@@ -347,7 +186,7 @@ class PipelineList extends ViewComponent {
 		//tablePipelines.setColumnHeader("lastExecTime", "Last execution time");
 		//tablePipelines.setColumnHeader("lastExecStatus", "Last status");
 		tablePipelines.setFilterBarVisible(true);
-                tablePipelines.setFilterLayout();
+		tablePipelines.setFilterLayout();
 		tablePipelines.setSelectable(true);
 		tablePipelines.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
@@ -358,19 +197,174 @@ class PipelineList extends ViewComponent {
 					CompositeItem item = (CompositeItem) event.getItem();
 					long pipelineId = (long) item.getItemProperty("id")
 							.getValue();
-					App.getApp().getNavigator().navigateTo(ViewNames.PIPELINE_EDIT.getUrl()+ "/" + pipelineId);
+					App.getApp().getNavigator().navigateTo(ViewNames.PIPELINE_EDIT.getUrl() + "/" + pipelineId);
 				}
 			}
 		});
-		
+
 		return mainLayout;
 	}
 
-	@Override
+	/**
+	 * Refresh data on the pipeline list table
+	 */
 	@Transactional
-	public void enter(ViewChangeEvent event) {
-		buildMainLayout();
-		setCompositionRoot(mainLayout);
+	private void refreshData() {
+		int page = tablePipelines.getCurrentPage();
+		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) tablePipelines.getContainerDataSource().getContainer();
+		c.refresh();
+		tablePipelines.setCurrentPage(page);
 	}
 
+	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
+		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipeline, status);
+		if (execs.isEmpty()) {
+			return false;
+		} else {
+			//TODO: Differentiate by user maybe ?!
+			return true;
+		}
+	}
+
+	/**
+	 * Generate column in table with buttons.
+	 *
+	 * @author Petyr
+	 *
+	 */
+	class actionColumnGenerator implements CustomTable.ColumnGenerator {
+
+		@Override
+		public Object generateCell(final CustomTable source, final Object itemId,
+				Object columnId) {
+			HorizontalLayout layout = new HorizontalLayout();
+
+			Button updateButton = new Button();
+			updateButton.setCaption("edit");
+			updateButton.setWidth("80px");
+			updateButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// navigate to PIPELINE_EDIT/New
+					App.getApp()
+							.getNavigator()
+							.navigateTo(
+							ViewNames.PIPELINE_EDIT.getUrl()
+							+ "/" + itemId.toString());
+				}
+			});
+			layout.addComponent(updateButton);
+
+
+
+			// get item
+			CompositeItem item = (CompositeItem) source.getItem(itemId);
+			Long pipelineId = (Long) item.getItemProperty("id").getValue();
+			final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
+			Button copyButton = new Button();
+			copyButton.setCaption("copy");
+			copyButton.setWidth("80px");
+			copyButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
+					String copiedPipelineName = "Copy of " + pipeline.getName();
+					if (copiedPipelineName.length() > MaxLengthValidator.NAME_LENGTH) {
+						Notification.show(String.format("Name of copied pipeline would exceed limit of %d characters, new pipeline has same name as original.", MaxLengthValidator.NAME_LENGTH), Notification.Type.WARNING_MESSAGE);
+					} else {
+						nPipeline.setName(copiedPipelineName);
+					}
+					pipelineFacade.save(nPipeline);
+					refreshData();
+					//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
+				}
+			});
+			layout.addComponent(copyButton);
+
+
+			Button deleteButton = new Button();
+			deleteButton.setCaption("delete");
+			deleteButton.setWidth("80px");
+			deleteButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					String message = "Would you really like to delete the " + pipeline.getName() + " pipeline and all associated records (DPU instances e.g.)?";
+					if (isExecInSystem(pipeline, PipelineExecutionStatus.RUNNING)) {
+						message += "\nPipeline is running currently, the current run will be cancelled!";
+					}
+					if (isExecInSystem(pipeline, PipelineExecutionStatus.SCHEDULED)) {
+						message += "\nPipeline is scheduled currently, the scheduled execution will be deleted!";
+					}
+					if (!App.getSchedules().getSchedulesFor(pipeline).isEmpty()) {
+						message += "\nThere is/are scheduler rules with the pipeline, it/they will be deleted!";
+					}
+
+					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
+						@Override
+						public void onClose(ConfirmDialog cd) {
+							if (cd.isConfirmed()) {
+								pipelineFacade.delete(pipeline);
+								// now we have to remove pipeline from table
+								source.removeItem(itemId);
+								refreshData();
+								//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
+							}
+						}
+					});
+
+
+
+				}
+			});
+			layout.addComponent(deleteButton);
+
+			Button runButton = new Button();
+			runButton.setCaption("run");
+			runButton.setWidth("80px");
+			runButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					IntlibHelper.runPipeline(pipeline, false);
+				}
+			});
+			layout.addComponent(runButton);
+
+			Button runDebugButton = new Button();
+			runDebugButton.setCaption("debug");
+			runDebugButton.setWidth("80px");
+			runDebugButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					PipelineExecution exec = IntlibHelper.runPipeline(pipeline, true);
+					if (exec != null) {
+						App.getApp().getNavigator().navigateTo(ViewNames.EXECUTION_MONITOR.getUrl() + "/" + exec.getId());
+					}
+				}
+			});
+			layout.addComponent(runDebugButton);
+
+
+			Button schedulerButton = new Button();
+			schedulerButton.setCaption("schedule");
+			schedulerButton.setWidth("80px");
+			schedulerButton
+					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// open scheduler dialog
+					SchedulePipeline sch = new SchedulePipeline();
+					sch.setSelectePipeline(pipeline);
+					App.getApp().addWindow(sch);
+				}
+			});
+			layout.addComponent(schedulerButton);
+
+			return layout;
+		}
+	}
 }
