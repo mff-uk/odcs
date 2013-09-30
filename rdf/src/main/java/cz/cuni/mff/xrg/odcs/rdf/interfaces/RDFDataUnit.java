@@ -65,6 +65,9 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *
 	 * @param extractType         One of defined enum type for extraction data
 	 *                            from file.
+	 * @param format              One of RDFFormat value for parsing triples, if
+	 *                            value is null RDFFormat is selected by
+	 *                            filename.
 	 * @param path                String path to file/directory
 	 * @param suffix              String suffix of fileName (example: ".ttl",
 	 *                            ".xml", etc)
@@ -78,6 +81,7 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * @throws RDFException when extraction fail.
 	 */
 	public void extractFromFile(FileExtractType extractType,
+			RDFFormat format,
 			String path, String suffix,
 			String baseURI,
 			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
