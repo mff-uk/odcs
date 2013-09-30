@@ -1904,18 +1904,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 								new InputStreamReader(
 								errorStream, Charset.forName(encode)))) {
 
-                                                    StringBuilder inputStringBuilder = new StringBuilder();
-                                                    String line = reader.readLine();
-                                                    while(line != null){
-                                                        inputStringBuilder.append(line);
-                                                        inputStringBuilder.append('\n');
-                                                        line = reader.readLine();
-                                                    }
-        //System.out.println(inputStringBuilder.toString());
+							StringBuilder inputStringBuilder = new StringBuilder();
+							String line = reader.readLine();
+							while (line != null) {
+								inputStringBuilder.append(line);
+								inputStringBuilder.append('\n');
+								line = reader.readLine();
+							}
 
-                                                    
-                                                    
-							String cause = ". Caused by " + inputStringBuilder.toString();
+							String cause = ". Caused by " + inputStringBuilder
+									.toString();
 
 							message.append(cause);
 
