@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.extractor.file;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 
 /**
  * File extractor configuration.
@@ -15,7 +16,7 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 
 	public String FileSuffix = "";
 
-	public String RDFFormatValue = "";
+	public RDFFormatType RDFFormatValue = RDFFormatType.AUTO;
 	
 	public FileExtractType fileExtractType = FileExtractType.PATH_TO_FILE;
 
