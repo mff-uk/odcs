@@ -20,6 +20,7 @@ import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.rio.RDFFormat;
 import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,7 +229,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.RDFXML,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -252,7 +253,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, null,
 					dirFile.getAbsolutePath(), suffix, baseURI, useSuffix,
 					useStatisticHandler);
 			fail();
@@ -275,7 +276,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.RDFXML,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -298,7 +299,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.N3,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -322,7 +323,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.TURTLE,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -346,7 +347,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.NTRIPLES,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -370,7 +371,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.TRIG,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -394,7 +395,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.TRIX,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -562,7 +563,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, null,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -584,7 +585,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			rdfRepo.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY, null,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -719,7 +720,7 @@ public class LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE,
+			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -902,7 +903,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			repository.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,
+					FileExtractType.PATH_TO_DIRECTORY,null,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
