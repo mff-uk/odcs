@@ -138,3 +138,10 @@ INSERT INTO LOGGING_EVENT_EXCEPTION(event_id, i, trace_line)
  VALUES (1, 2, '    at org.springframework.orm.jpa.EntityManagerFactoryUtils.convertJpaAccessExceptionIfPossible(EntityManagerFactoryUtils.java:326)');
 INSERT INTO LOGGING_EVENT_EXCEPTION(event_id, i, trace_line)
  VALUES (1, 3, '    at org.springframework.orm.jpa.DefaultJpaDialect.translateExceptionIfPossible(DefaultJpaDialect.java:120)');
+
+INSERT INTO RDF_PREFIX(id, name, uri)
+ VALUES (1, 'ex1', 'http://example.com/1');
+
+INSERT INTO RDF_PREFIX(id, name, uri)
+ VALUES (2, 'ex2', 'http://example.com/2');
+
