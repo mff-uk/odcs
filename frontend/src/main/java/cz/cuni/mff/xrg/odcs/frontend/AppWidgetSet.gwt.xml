@@ -48,6 +48,6 @@
 
     <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
 
-    <inherits name="cz.cuni.mff.xrg.odcl.frontend.AppWidgetSet" />
+    
     
 </module>
