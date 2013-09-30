@@ -8,7 +8,9 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import org.openrdf.rio.RDFFormat;
 
 /**
  * 
@@ -36,13 +38,15 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final boolean onlyThisSuffix = config.OnlyThisSuffix;
 		final boolean useStatisticHandler = config.UseStatisticalHandler;
 
-		rdfDataUnit.extractFromFile(extractType, path, fileSuffix, baseURI,
-				onlyThisSuffix, useStatisticHandler);
+		RDFFormatType formatType = config.RDFFormatValue;
+		final RDFFormat format = RDFFormatType.getRDFFormatByType(formatType);
+
+		rdfDataUnit.extractFromFile(extractType, format, path, fileSuffix,
+				baseURI, onlyThisSuffix, useStatisticHandler);
 	}
 
 	@Override
 	public AbstractConfigDialog<FileExtractorConfig> getConfigurationDialog() {
 		return new FileExtractorDialog();
 	}
-	
 }
