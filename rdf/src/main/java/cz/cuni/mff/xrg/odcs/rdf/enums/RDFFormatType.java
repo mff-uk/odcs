@@ -67,10 +67,42 @@ public enum RDFFormatType {
 
 	}
 
+	public static RDFFormat getRDFFormatByType(RDFFormatType type) {
+		RDFFormat result;
+
+		switch (type) {
+			case AUTO:
+				result = null;
+				break;
+			case N3:
+				result = RDFFormat.N3;
+				break;
+			case NT:
+				result = RDFFormat.NTRIPLES;
+				break;
+			case RDFXML:
+				result = RDFFormat.RDFXML;
+				break;
+			case TRIG:
+				result = RDFFormat.TRIG;
+				break;
+			case TRIX:
+				result = RDFFormat.TRIX;
+				break;
+			case TTL:
+				result = RDFFormat.TURTLE;
+				break;
+			default:
+				result = null;
+		}
+
+		return result;
+	}
+
 	public static List<RDFFormatType> getListOfRDFType() {
 		List<RDFFormatType> list = new ArrayList<>();
-		list.addAll(map.values());
 		list.add(AUTO);
+		list.addAll(map.values());
 
 		return list;
 	}
