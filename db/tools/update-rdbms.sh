@@ -4,7 +4,7 @@ script=`readlink -f $0`
 basedir=`dirname $script`
 
 dumpdir="${basedir}/../virtuoso/rdbms"
-config="${HOME}/.intlib/config.properties"
+config="${HOME}/.odcs/config.properties"
 
 # parse out login info from configuration
 dbuser=`grep "^virtuoso.user" $config | head -n 1 | sed -r "s/^[^=]*=\\s?//"`
