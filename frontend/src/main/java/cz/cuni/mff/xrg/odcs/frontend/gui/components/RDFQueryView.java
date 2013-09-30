@@ -32,7 +32,6 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TTL;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
