@@ -503,6 +503,16 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
+				case "rerun":
+					PipelineExecution exec = App.getApp().getPipelines().getExecution(execId);
+					IntlibHelper.runPipeline(exec.getPipeline(), false);
+					refresh();
+					break;
+				case "redebug":
+					PipelineExecution execDebug = App.getApp().getPipelines().getExecution(execId);
+					IntlibHelper.runPipeline(execDebug.getPipeline(), true);
+					refresh();
+					break;
             }
 
         }

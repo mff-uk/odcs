@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
 import com.vaadin.data.Property;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
@@ -91,6 +93,29 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 				box.addComponent(debugButton);
 
 			}
+			
+			if(testStatus != PipelineExecutionStatus.RUNNING 
+					&& testStatus != PipelineExecutionStatus.CANCELLING) {
+				//Re-run button
+				Button rerunButton = new Button();
+				rerunButton.setDescription("Run pipeline");
+				rerunButton.setIcon(new ThemeResource("icons/running.png"), "Run pipeline");
+				rerunButton.setData(new ActionButtonData("rerun", itemId));
+				if (this.clickListener != null) {
+					rerunButton.addClickListener(this.clickListener);
+				}
+				box.addComponent(rerunButton);
+				
+				//Re-debug button
+				Button redebugButton = new Button();
+				redebugButton.setDescription("Debug pipeline");
+				redebugButton.setIcon(new ThemeResource("icons/debug.png"), "Debug pipeline");
+				redebugButton.setData(new ActionButtonData("redebug", itemId));
+				if (this.clickListener != null) {
+					redebugButton.addClickListener(this.clickListener);
+				}
+				box.addComponent(redebugButton);
+			} 
 
 		}
 

@@ -48,4 +48,6 @@
     <inherits name="org.tepi.filtertable.gwt.FilterTableWidgetset" />
 
     <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
+
+    <inherits name="cz.cuni.xrg.intlib.frontend.AppWidgetSet" />
 </module>
