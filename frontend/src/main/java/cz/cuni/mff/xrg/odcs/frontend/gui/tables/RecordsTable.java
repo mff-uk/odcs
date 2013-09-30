@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
@@ -31,7 +30,7 @@ import org.vaadin.addons.lazyquerycontainer.CompositeItem;
  * @author Bogo
  */
 public class RecordsTable extends CustomComponent {
-	
+
 	private boolean isInitialized = false;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
@@ -43,7 +42,6 @@ public class RecordsTable extends CustomComponent {
 	public RecordsTable() {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable() {
-
 			@Override
 			public Collection<?> getSortableContainerPropertyIds() {
 				ArrayList<String> sortableIds = new ArrayList<>(3);
@@ -52,8 +50,6 @@ public class RecordsTable extends CustomComponent {
 				sortableIds.add("dpuInstance.name");
 				return sortableIds;
 			}
-			
-			
 		};
 		messageTable.setSelectable(true);
 		messageTable.addItemClickListener(
@@ -83,7 +79,7 @@ public class RecordsTable extends CustomComponent {
 	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
 	public void setPipelineExecution(PipelineExecution execution) {
-		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer)messageTable.getContainerDataSource().getContainer();
+		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
 		c.removeDefaultFilters();
 		c.addDefaultFilter(new Compare.Equal("execution.id", execution.getId()));
 		c.refresh();
@@ -102,7 +98,7 @@ public class RecordsTable extends CustomComponent {
 				@Override
 				public Object generateCell(CustomTable source, Object itemId,
 						Object columnId) {
-					
+
 					MessageRecordType type = (MessageRecordType) source.getItem(itemId).getItemProperty(columnId).getValue();
 					ThemeResource img = null;
 					switch (type) {
@@ -139,7 +135,7 @@ public class RecordsTable extends CustomComponent {
 		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage");
 		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message");
 		messageTable.setSortEnabled(true);
-        messageTable.setFilterBarVisible(true);
+		messageTable.setFilterBarVisible(true);
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
@@ -174,9 +170,9 @@ public class RecordsTable extends CustomComponent {
 			detail.bringToFront();
 		}
 	}
-	
+
 	private class filterDecorator extends IntlibFilterDecorator {
-		
+
 		@Override
 		public Resource getEnumFilterIcon(Object propertyId, Object value) {
 			//if (propertyId.equals("type")) {

@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;

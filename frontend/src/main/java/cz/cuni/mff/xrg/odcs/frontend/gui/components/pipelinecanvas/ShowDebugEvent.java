@@ -11,21 +11,20 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * @author Bogo
  */
 public class ShowDebugEvent extends Event {
-	
+
 	private Pipeline pipeline;
 	private Node debugNode;
-	
-	
+
 	/**
-	 * Default constructor. Inform, that debug was requested for given {@link Pipeline} and
-	 * {@link Node}.
+	 * Default constructor. Inform, that debug was requested for given
+	 * {@link Pipeline} and {@link Node}.
 	 *
 	 * @param source Source component.
 	 * @param pipeline {@link Pipeline} to debug.
 	 * @param debugNode {@link Node} where debug should end.
 	 */
 	public ShowDebugEvent(Component source, Pipeline pipeline, Node debugNode) {
-		super(source);	
+		super(source);
 		this.pipeline = pipeline;
 		this.debugNode = debugNode;
 	}
@@ -33,7 +32,7 @@ public class ShowDebugEvent extends Event {
 	public Pipeline getPipeline() {
 		return pipeline;
 	}
-	
+
 	public Node getDebugNode() {
 		return debugNode;
 	}
