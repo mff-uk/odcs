@@ -138,7 +138,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		final boolean useStatisticHandler = true;
 
 		try {
-			extractFromFile(FileExtractType.PATH_TO_FILE,
+			extractFromFile(FileExtractType.PATH_TO_FILE, null,
 					file.getAbsolutePath(), suffix,
 					baseURI,
 					useSuffix, useStatisticHandler);
