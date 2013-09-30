@@ -95,7 +95,7 @@ public class DPUModuleManipulator {
 		}
 
 		// we need dpu template to work wit DPUs
-		DPUTemplateRecord newTemplate = new DPUTemplateRecord(name, null);
+		DPUTemplateRecord newTemplate = dpuFacade.createTemplate(name, null);
 		newTemplate.setJarDirectory(newDpuDirName);
 		newTemplate.setJarName(newDpuFileName);
 
