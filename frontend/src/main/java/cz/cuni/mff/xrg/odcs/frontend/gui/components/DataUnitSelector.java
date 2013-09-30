@@ -96,6 +96,13 @@ public class DataUnitSelector extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	public void refresh(PipelineExecution exec) {
+		pipelineExec = exec;
+		if (loadExecutionContextReader()) {
+			refreshDpuSelector();
+		}
+	}
+
 	private void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
 		for (Listener l : ls) {
@@ -111,13 +118,6 @@ public class DataUnitSelector extends CustomComponent {
 	private boolean loadExecutionContextReader() {
 		ctxReader = pipelineExec.getContextReadOnly();
 		return ctxReader != null;
-	}
-
-	public void refresh(PipelineExecution exec) {
-		pipelineExec = exec;
-		if (loadExecutionContextReader()) {
-			refreshDpuSelector();
-		}
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class DataUnitSelector extends CustomComponent {
 			if ((isInput && inputDataUnits.getValue()) || (!isInput && outputDataUnits.getValue())) {
 				if (!dataUnitSelector.containsId(dataUnit)) {
 					dataUnitSelector.addItem(dataUnit);
-					if(first == null) {
+					if (first == null) {
 						first = dataUnit;
 					}
 				}
@@ -213,15 +213,15 @@ public class DataUnitSelector extends CustomComponent {
 		refreshEnabled();
 	}
 
-	public DPUInstanceRecord getSelectedDPU() {
-		return debugDpu;
-	}
-
 	private void refreshEnabled() {
 		inputDataUnits.setEnabled(debugDpu != null);
 		outputDataUnits.setEnabled(debugDpu != null);
 		dataUnitSelector.setEnabled(debugDpu != null);
 		browse.setEnabled(dataUnitSelector.isEnabled() && !dataUnitSelector.getItemIds().isEmpty());
+	}
+
+	public DPUInstanceRecord getSelectedDPU() {
+		return debugDpu;
 	}
 
 	public DataUnitInfo getSelectedDataUnit() {

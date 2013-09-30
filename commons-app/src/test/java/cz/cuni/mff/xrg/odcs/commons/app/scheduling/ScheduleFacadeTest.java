@@ -1,17 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
 
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -27,6 +27,9 @@ public class ScheduleFacadeTest {
 	
 	@Autowired
 	private ScheduleFacade scheduler;
+	
+	@PersistenceContext
+	private EntityManager em;
 
 	/**
 	 * Test of getAllSchedules method, of class ScheduleFacade.
@@ -90,5 +93,24 @@ public class ScheduleFacadeTest {
 		EmailAddress email = sch.getNotification().getEmails().iterator().next();
 		assertEquals("scheduler", email.getName());
 		assertEquals("example.com", email.getDomain());
+	}
+	
+	/**
+	 * Test deleting schedule notification.
+	 */
+	@Test @Transactional
+	public void testDeleteScheduleNotification() {
+		
+		Schedule sch = scheduler.getSchedule(1L);
+		assertNotNull(sch);
+		assertNotNull(sch.getNotification());
+		
+		scheduler.deleteNotification(sch.getNotification());
+		em.flush();
+		em.clear();
+		
+		Schedule ret = scheduler.getSchedule(1L);
+		assertNotNull(ret);
+		assertNull(ret.getNotification());
 	}
 }

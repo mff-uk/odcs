@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
@@ -28,7 +28,6 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 	 * Data from repository.
 	 */
 	private List<RDFTriple> data = null;
-
 	/**
 	 * Table for data presentation.
 	 */
@@ -47,15 +46,14 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 				.getString(ConfigProperty.VIRTUOSO_PASSWORD);
 
 		VirtuosoRDFRepo virtosoRepository = RDFDataUnitFactory
-			.createVirtuosoRDFRepo(
+				.createVirtuosoRDFRepo(
 				hostName,
 				port,
 				user,
 				password,
 				GraphUrl.translateDataUnitId(dataUnitId),
 				"",
-				App.getApp().getBean(AppConfig.class).getProperties()
-			);
+				App.getApp().getBean(AppConfig.class).getProperties());
 
 		data = virtosoRepository.getRDFTriplesInRepository();
 		// close repository

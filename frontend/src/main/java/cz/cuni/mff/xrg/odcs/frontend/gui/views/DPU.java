@@ -51,7 +51,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 
@@ -77,10 +77,11 @@ import ru.xpoft.vaadin.VaadinView;
 @Scope("prototype")
 @VaadinView(DPU.NAME)
 class DPU extends ViewComponent {
-	
-	/** View name. */
-	public static final String NAME = "DPURecord";
 
+	/**
+	 * View name.
+	 */
+	public static final String NAME = "DPURecord";
 	private static final long serialVersionUID = 1L;
 	private VerticalLayout mainLayout;
 	private VerticalLayout verticalLayoutData; //Layout contains General tab components of {@link #tabSheet}.
@@ -126,13 +127,10 @@ class DPU extends ViewComponent {
 	 * Wrap for selected DPUTemplateRecord.
 	 */
 	private DPUTemplateWrap selectedDpuWrap = null;
-	
 	private static final Logger LOG = LoggerFactory.getLogger(ViewComponent.class);
+	private boolean saveAllow = false;
+	int fl = 0;
 
-	private boolean saveAllow=false;
-	int fl=0;
-
-	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 	/**
 	 *
 	 * The constructor should first build the main layout, set the composition
@@ -142,6 +140,29 @@ class DPU extends ViewComponent {
 	 * editor.
 	 */
 	public DPU() {
+	}
+
+	@Override
+	public boolean isModified() {
+		return ((selectedDpu != null) && (selectedDpu.getId() != null)
+				&& (isChanged()) && (saveAllow));
+	}
+
+	@Override
+	public boolean saveChanges() {
+		//control of the validity of Name field.
+		if (!validate()) {
+			//Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
+			return false;
+		}
+		saveDPUTemplate();
+		return true;
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		buildMainLayout();
+		setCompositionRoot(mainLayout);
 	}
 
 	/**
@@ -276,9 +297,9 @@ class DPU extends ViewComponent {
 			@Override
 			public void itemClick(final ItemClickEvent event) {
 				//if the previous selected
-				if ((selectedDpu != null) && (selectedDpu.getId() != null) 
-						&&(isChanged()) &&(saveAllow)) {
-						
+				if ((selectedDpu != null) && (selectedDpu.getId() != null)
+						&& (isChanged()) && (saveAllow)) {
+
 					//open confirmation dialog
 					ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
 							"There are unsaved changes.\nDo you wish to save them or discard?",
@@ -289,24 +310,22 @@ class DPU extends ViewComponent {
 						@Override
 						public void onClose(ConfirmDialog cd) {
 							if (cd.isConfirmed()) {
-			
+
 								saveDPUTemplate();
 								selectNewDPU(event);
 								dpuTree.refresh();
-							} 
-							else{
+							} else {
 								selectNewDPU(event);
 							}
 						}
 					});
 
-				}
-				else
+				} else {
 					selectNewDPU(event);
+				}
 
 
 			}
-
 		});
 
 
@@ -314,49 +333,6 @@ class DPU extends ViewComponent {
 		dpuLayout.addComponent(layoutInfo, 2, 0);
 
 		return dpuLayout;
-	}
-	
-	private void selectNewDPU(DPUTemplateRecord dpu) {
-		selectedDpu = dpu;
-		saveAllow = permissions.hasPermission(selectedDpu, "save");
-
-
-		//If DPURecord that != null was selected then it's details will be shown.
-		if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
-			// crate new wrap
-			selectedDpuWrap = new DPUTemplateWrap(selectedDpu);
-
-			dpuLayout.removeComponent(dpuDetailLayout);
-			dpuLayout.removeComponent(layoutInfo);
-			dpuDetailLayout = buildDPUDetailLayout();
-			dpuLayout.addComponent(dpuDetailLayout, 1, 0);
-
-			// show/hide replace button
-			reloadFile.setVisible(
-					selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
-			
-			setGeneralTabValues();
-			//Otherwise, the information layout will be shown.
-		} else {
-			dpuLayout.removeComponent(dpuDetailLayout);
-			dpuLayout.removeComponent(layoutInfo);
-			dpuLayout.addComponent(layoutInfo, 2, 0);
-
-		}
-	}
-	
-	private void selectNewDPU(ItemClickEvent event){
-
-		//If the first level of the DPU tree (category Extractors, Transformer, Loaders)
-		//was selected then information layout will be shown.
-		if (event.getItemId().getClass() != DPUTemplateRecord.class) {
-			dpuLayout.removeComponent(dpuDetailLayout);
-			dpuLayout.removeComponent(layoutInfo);
-			dpuLayout.addComponent(layoutInfo, 2, 0);
-			return;
-		}
-
-		selectNewDPU((DPUTemplateRecord) event.getItemId());
 	}
 
 	/**
@@ -428,7 +404,7 @@ class DPU extends ViewComponent {
 				}
 				// add dialog
 //				configDialog.setEnabled(permissions.hasPermission(selectedDpu, "save"));
-				
+
 				verticalLayoutConfigure.addComponent(configDialog);
 
 			}
@@ -439,7 +415,7 @@ class DPU extends ViewComponent {
 		tabSheet.addTab(verticalLayoutInstances, "DPU instances");
 
 		dpuDetailLayout.addComponent(tabSheet);
-		buttonDpuBar = buildDPUButtonBur();
+		buttonDpuBar = buildDPUButtonBar();
 		dpuDetailLayout.addComponent(buttonDpuBar);
 
 		return dpuDetailLayout;
@@ -486,12 +462,12 @@ class DPU extends ViewComponent {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void validate(Object value) throws InvalidValueException {
+			public void validate(Object value) throws Validator.InvalidValueException {
 				if (value.getClass() == String.class
 						&& !((String) value).isEmpty()) {
 					return;
 				}
-				throw new InvalidValueException("Name must be filled!");
+				throw new Validator.InvalidValueException("Name must be filled!");
 			}
 		});
 		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
@@ -536,7 +512,7 @@ class DPU extends ViewComponent {
 		reloadFile.addStyleName("horizontalgroup");
 		reloadFile.setHeight("40px");
 		reloadFile.setEnabled(permissions.hasPermission(selectedDpu, "save"));
-		
+
 		reloadFile.addStartedListener(new StartedListener() {
 			/**
 			 * Upload start listener. If selected file has JAR extension then an
@@ -627,39 +603,6 @@ class DPU extends ViewComponent {
 	}
 
 	/**
-	 * Reload DPU. The new DPU's jar file is accessible through the 
-	 * {@link FileUploadReceiver#path}. The current DPU, which is being replaced
-	 * , is assumed to be stored in {@link selectedDpu}.
-	 */
-	private void copyToTarget() {
-		if (fileUploadReceiver.path == null) {
-			// we have no file, end 
-			return;
-		}
-		
-		// prepare dpu validators
-		List<DPUValidator> validators = new LinkedList<>();
-		validators.add(new DPUDialogValidator());
-		
-		try {
-			App.getApp().getDPUManipulator().replace(
-					selectedDpuWrap.getDPUTemplateRecord(), 
-					fileUploadReceiver.file,
-					validators);
-		} catch (DPUReplaceException e) {
-			Notification.show("Failed to replace DPU",
-					e.getMessage(), Notification.Type.ERROR_MESSAGE);
-			return;
-		}
-		
-		// we are ending .. refresh data in dialog 
-		setGeneralTabValues();
-		
-		// and show message to the user that the replace has been successful
-		Notification.show("Replace finished", Notification.Type.HUMANIZED_MESSAGE);		
-	}
-
-	/**
 	 * Builds layout contains DPU instances tab of {@link #tabSheet}. Calls from
 	 * {@link #buildDPUDetailLayout}
 	 *
@@ -704,7 +647,7 @@ class DPU extends ViewComponent {
 	 *
 	 * @return buttonDpuBar HorizontalLayout contains action buttons.
 	 */
-	private HorizontalLayout buildDPUButtonBur() {
+	private HorizontalLayout buildDPUButtonBar() {
 
 		buttonDpuBar = new HorizontalLayout();
 		buttonDpuBar.setWidth("100%");
@@ -774,8 +717,8 @@ class DPU extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//open confirmation dialog
-				ConfirmDialog.show(UI.getCurrent(),"Confirmation of deleting DPU template",
-						"Delete " + selectedDpu.getName().toString() + " DPU template?","Delete", "Cancel",
+				ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting DPU template",
+						"Delete " + selectedDpu.getName().toString() + " DPU template?", "Delete", "Cancel",
 						new ConfirmDialog.Listener() {
 					private static final long serialVersionUID = 1L;
 
@@ -807,8 +750,6 @@ class DPU extends ViewComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				
-				
 			}
 		});
 		buttonDpuBar.addComponent(buttonExportDPU);
@@ -828,9 +769,9 @@ class DPU extends ViewComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				
+
 				saveDPUTemplate();
-				
+
 				//refresh data in dialog and dpu tree
 				dpuTree.refresh();
 				setGeneralTabValues();
@@ -852,54 +793,6 @@ class DPU extends ViewComponent {
 		dpuDetailLayout.addComponent(buttonDpuBar);
 
 		return buttonDpuBar;
-	}
-	
-	private boolean validate() {
-		try {
-			dpuName.validate();
-			dpuDescription.validate();
-		} catch (Validator.InvalidValueException e) {
-			Notification.show("Error validating DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * Store DPU Template record to DB
-	 */
-	private void saveDPUTemplate(){
-
-		//control of the validity of Name field.
-		if (!validate()) {
-			//Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
-			return;
-		}
-		//saving Name, Description and Visibility
-		if ((selectedDpuWrap != null)
-				&& (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
-			selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
-			selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
-					.getValue().trim());
-			selectedDpuWrap.getDPUTemplateRecord()
-					.setVisibility((VisibilityType) groupVisibility
-					.getValue());
-
-			// saving configuration
-			try {
-				selectedDpuWrap.saveConfig();
-			} catch (ConfigException e) {
-				selectedDpuWrap.getDPUTemplateRecord().setRawConf(null);
-			}
-
-			// store into DB
-			App.getDPUs().save(selectedDpuWrap.getDPUTemplateRecord());
-			Notification.show("DPURecord was saved",
-					Notification.Type.HUMANIZED_MESSAGE);
-
-
-		}
-	
 	}
 
 	/**
@@ -990,12 +883,12 @@ class DPU extends ViewComponent {
 			} else {
 				// 2+ level DPU .. just delete the database record
 				App.getApp().getDPUs()
-				.delete(selectedDpuWrap.getDPUTemplateRecord());
+						.delete(selectedDpuWrap.getDPUTemplateRecord());
 			}
 			// and refresh the layout
 			dpuTree.refresh();
-			dpuDetailLayout.removeAllComponents();			
-			
+			dpuDetailLayout.removeAllComponents();
+
 			Notification.show("DPURecord was removed",
 					Notification.Type.HUMANIZED_MESSAGE);
 		} //If DPU Template it used by any pipeline, than show the names of this pipelines.
@@ -1013,41 +906,143 @@ class DPU extends ViewComponent {
 		}
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		buildMainLayout();
-		setCompositionRoot(mainLayout);
+	public boolean isChanged() {
+
+		if (!dpuName.getValue().equals(selectedDpu.getName())) {
+			return true;
+		} else if (!dpuDescription.getValue().equals(selectedDpu.getDescription())) {
+			return true;
+		} else if (!groupVisibility.getValue().equals(selectedDpu.getVisibility())) {
+			return true;
+		} else if (!jarPath.getValue().equals(selectedDpu.getJarPath())) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	@Override
-	public boolean isModified() {
-		return ((selectedDpu != null) && (selectedDpu.getId() != null)
-				&& (isChanged()) && (saveAllow));
+	private void selectNewDPU(DPUTemplateRecord dpu) {
+		selectedDpu = dpu;
+		saveAllow = permissions.hasPermission(selectedDpu, "save");
+
+
+		//If DPURecord that != null was selected then it's details will be shown.
+		if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
+			// crate new wrap
+			selectedDpuWrap = new DPUTemplateWrap(selectedDpu);
+
+			dpuLayout.removeComponent(dpuDetailLayout);
+			dpuLayout.removeComponent(layoutInfo);
+			dpuDetailLayout = buildDPUDetailLayout();
+			dpuLayout.addComponent(dpuDetailLayout, 1, 0);
+
+			// show/hide replace button
+			reloadFile.setVisible(
+					selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
+
+			setGeneralTabValues();
+			//Otherwise, the information layout will be shown.
+		} else {
+			dpuLayout.removeComponent(dpuDetailLayout);
+			dpuLayout.removeComponent(layoutInfo);
+			dpuLayout.addComponent(layoutInfo, 2, 0);
+
+		}
 	}
-	
-	@Override
-	public boolean saveChanges() {		
+
+	private void selectNewDPU(ItemClickEvent event) {
+
+		//If the first level of the DPU tree (category Extractors, Transformer, Loaders)
+		//was selected then information layout will be shown.
+		if (event.getItemId().getClass() != DPUTemplateRecord.class) {
+			dpuLayout.removeComponent(dpuDetailLayout);
+			dpuLayout.removeComponent(layoutInfo);
+			dpuLayout.addComponent(layoutInfo, 2, 0);
+			return;
+		}
+
+		selectNewDPU((DPUTemplateRecord) event.getItemId());
+	}
+
+	/**
+	 * Reload DPU. The new DPU's jar file is accessible through the
+	 * {@link FileUploadReceiver#path}. The current DPU, which is being replaced
+	 * , is assumed to be stored in {@link selectedDpu}.
+	 */
+	private void copyToTarget() {
+		if (fileUploadReceiver.path == null) {
+			// we have no file, end 
+			return;
+		}
+
+		// prepare dpu validators
+		List<DPUValidator> validators = new LinkedList<>();
+		validators.add(new DPUDialogValidator());
+
+		try {
+			App.getApp().getDPUManipulator().replace(
+					selectedDpuWrap.getDPUTemplateRecord(),
+					fileUploadReceiver.file,
+					validators);
+		} catch (DPUReplaceException e) {
+			Notification.show("Failed to replace DPU",
+					e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			return;
+		}
+
+		// we are ending .. refresh data in dialog 
+		setGeneralTabValues();
+
+		// and show message to the user that the replace has been successful
+		Notification.show("Replace finished", Notification.Type.HUMANIZED_MESSAGE);
+	}
+
+	private boolean validate() {
+		try {
+			dpuName.validate();
+			dpuDescription.validate();
+		} catch (Validator.InvalidValueException e) {
+			Notification.show("Error validating DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Store DPU Template record to DB
+	 */
+	private void saveDPUTemplate() {
+
 		//control of the validity of Name field.
 		if (!validate()) {
 			//Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
-			return false;
+			return;
 		}
-		saveDPUTemplate();
-		return true;
-	}
-	
-	public boolean isChanged() {
-		
-		if (!dpuName.getValue().equals(selectedDpu.getName()))
-			return true;
-		else if (!dpuDescription.getValue().equals(selectedDpu.getDescription()))
-			return true;
-		else if (!groupVisibility.getValue().equals(selectedDpu.getVisibility()))
-			return true;
-		else if (!jarPath.getValue().equals(selectedDpu.getJarPath()))
-			return true;
-		else
-		return false;
+		//saving Name, Description and Visibility
+		if ((selectedDpuWrap != null)
+				&& (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
+			selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
+			selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
+					.getValue().trim());
+			selectedDpuWrap.getDPUTemplateRecord()
+					.setVisibility((VisibilityType) groupVisibility
+					.getValue());
+
+			// saving configuration
+			try {
+				selectedDpuWrap.saveConfig();
+			} catch (ConfigException e) {
+				selectedDpuWrap.getDPUTemplateRecord().setRawConf(null);
+			}
+
+			// store into DB
+			App.getDPUs().save(selectedDpuWrap.getDPUTemplateRecord());
+			Notification.show("DPURecord was saved",
+					Notification.Type.HUMANIZED_MESSAGE);
+
+
+		}
+
 	}
 
 	/**

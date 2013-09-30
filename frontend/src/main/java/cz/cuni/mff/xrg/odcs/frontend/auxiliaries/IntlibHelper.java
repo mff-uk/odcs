@@ -163,9 +163,10 @@ public class IntlibHelper {
 
 	/**
 	 * Gets duration of given {@link PipelineExecution}.
-	 * 
+	 *
 	 * @param exec Pipeline execution.
-	 * @return Duration of {@link PipelineExecution} or -1 if execution wasn't finished.
+	 * @return Duration of {@link PipelineExecution} or -1 if execution wasn't
+	 * finished.
 	 */
 	public static String getDuration(PipelineExecution exec) {
 		long duration = -1;
@@ -174,10 +175,11 @@ public class IntlibHelper {
 		}
 		return formatDuration(duration);
 	}
-	
+
 	/**
-	 * Gets set of {@link PipelineExecutionStatus} which are finished and therefore has valid duration.
-	 * 
+	 * Gets set of {@link PipelineExecutionStatus} which are finished and
+	 * therefore has valid duration.
+	 *
 	 * @return Set of {@link PipelineExecutionStatus} which are finished.
 	 */
 	public static Set<PipelineExecutionStatus> getFinishedStatuses() {

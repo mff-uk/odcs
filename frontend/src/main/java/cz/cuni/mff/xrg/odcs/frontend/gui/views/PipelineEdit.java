@@ -24,7 +24,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
@@ -34,12 +33,14 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedListener;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugListener;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.SCHEDULED;
-import java.util.EventObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import ru.xpoft.vaadin.VaadinView;
 
@@ -53,9 +54,11 @@ import ru.xpoft.vaadin.VaadinView;
 @VaadinView(PipelineEdit.NAME)
 class PipelineEdit extends ViewComponent {
 
-	/** View name. */
+	/**
+	 * View name.
+	 */
 	public static final String NAME = "PipelineEdit";
-	
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 	private View incomingView = null;
 	private VerticalLayout mainLayout;
 	private Label label;
@@ -72,7 +75,6 @@ class PipelineEdit extends ViewComponent {
 	private String canvasMode = DEVELOP_MODE;
 	private Tab standardTab;
 	private Tab developTab;
-	
 	Button buttonSave;
 	Button buttonSaveAndClose;
 	Button buttonCancel;
@@ -82,6 +84,45 @@ class PipelineEdit extends ViewComponent {
 	 */
 	public PipelineEdit() {
 		// put init code into enter method
+	}
+
+	/**
+	 * Enter method for PIPELINE_EDIT view.
+	 *
+	 * @param event {@link ViewChangeEvent}
+	 */
+	@Override
+	public void enter(ViewChangeEvent event) {
+		if (event.getOldView() != null && event.getOldView().getClass() != PipelineEdit.class) {
+			incomingView = event.getOldView();
+		}
+		buildMainLayout();
+		setCompositionRoot(mainLayout);
+		// ..
+		this.loadPipeline(event);
+		// or use this.entity.getEntity();
+
+		if (this.pipeline == null) {
+			label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
+		} else {
+			label.setValue("<h3>Editing pipeline<h3>");// + this.pipeline.getName() + "</h3>");
+		}
+
+		//Resizing canvas
+		UI.getCurrent().setImmediate(true);
+//		resizeCanvas(UI.getCurrent().getPage().getBrowserWindowWidth());
+//		UI.getCurrent().getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
+//			@Override
+//			public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
+//				int width = event.getWidth();
+//				resizeCanvas(width);
+//			}
+//		});
+
+
+
+		// work with pipeline here ...
+
 	}
 
 	/**
@@ -133,37 +174,48 @@ class PipelineEdit extends ViewComponent {
 		pc.setWidth(1060, Unit.PIXELS);
 		pc.setHeight(630, Unit.PIXELS);
 		pc.init();
-		pc.addListener(new DetailClosedListener() {
+		pc.addListener(new Listener() {
 			@Override
-			public void detailClosed(EventObject e) {
-				Class klass = (Class) e.getSource();
+			public void componentEvent(Event event) {
+				if (event.getClass() != DetailClosedEvent.class) {
+					return;
+				}
+				DetailClosedEvent dce = (DetailClosedEvent) event;
+
+				Class klass = dce.getDetailClass();
 				if (klass == Node.class) {
 					dpuTree.refresh();
 					dpuTree.markAsDirty();
 					setupButtons();
 					App.getApp().push();
-				} else if (klass == PipelineGraph.class) {
-					undo.setEnabled(true);
-					setupButtons();
 				} else if (klass == Edge.class) {
 					setupButtons();
 				}
-				
-			}
-
-			@Override
-			public void componentEvent(Event event) {
 			}
 		});
-		pc.addListener(new ShowDebugListener() {
-			@Override
-			public void showDebug(Pipeline pip, Node debugNode) {
 
-				openDebug(pip, debugNode);
-			}
-
+		pc.addListener(new Listener() {
 			@Override
 			public void componentEvent(Event event) {
+				if (event.getClass() != ShowDebugEvent.class) {
+					return;
+				}
+				ShowDebugEvent sde = (ShowDebugEvent) event;
+				openDebug(sde.getPipeline(), sde.getDebugNode());
+			}
+		});
+		pc.addListener(new Listener() {
+			@Override
+			public void componentEvent(Event event) {
+				if (event.getClass() != GraphChangedEvent.class) {
+					return;
+				}
+
+				if (((GraphChangedEvent) event).getIsUndoable()) {
+					undo.setEnabled(true);
+				}
+				setupButtons();
+
 			}
 		});
 
@@ -179,7 +231,7 @@ class PipelineEdit extends ViewComponent {
 
 			@Override
 			public void drop(DragAndDropEvent event) {
-				if(canvasMode.equals(STANDARD_MODE)) {
+				if (canvasMode.equals(STANDARD_MODE)) {
 					return;
 				}
 				Transferable t = (Transferable) event.getTransferable();
@@ -194,7 +246,7 @@ class PipelineEdit extends ViewComponent {
 						pc.addDpu(dpu, mouse.getClientX() - 20 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 280 + UI
 								.getCurrent().getScrollTop());
 					} else {
-						// TODO log unknown DPURecord
+						LOG.warn("Invalid drop operation.");
 					}
 				}
 
@@ -367,11 +419,155 @@ class PipelineEdit extends ViewComponent {
 
 		return mainLayout;
 	}
-	
+
+	/**
+	 * Builds part of layout with pipeline settings.
+	 *
+	 * @return {@link GridLayout} contains controls with information about
+	 * pipeline settings.
+	 * @throws com.vaadin.ui.GridLayout.OverlapsException
+	 * @throws com.vaadin.ui.GridLayout.OutOfBoundsException
+	 */
+	private GridLayout buildPipelineSettingsLayout() throws OverlapsException, OutOfBoundsException {
+
+		GridLayout pipelineSettingsLayout = new GridLayout(2, 3);
+		pipelineSettingsLayout.setWidth(600, Unit.PIXELS);
+		Label nameLabel = new Label("Name");
+		nameLabel.setImmediate(false);
+		nameLabel.setWidth("-1px");
+		nameLabel.setHeight("-1px");
+		pipelineSettingsLayout.addComponent(nameLabel, 0, 0);
+		pipelineName = new TextField();
+		pipelineName.setImmediate(true);
+		pipelineName.setWidth("200px");
+		pipelineName.setHeight("-1px");
+		pipelineName.setBuffered(true);
+		pipelineName.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+				if (value.getClass() == String.class && !((String) value).isEmpty()) {
+					return;
+				}
+				throw new Validator.InvalidValueException("Name must be filled!");
+			}
+		});
+		pipelineName.addValidator(new MaxLengthValidator(MaxLengthValidator.NAME_LENGTH));
+		pipelineName.addTextChangeListener(new FieldEvents.TextChangeListener() {
+			@Override
+			public void textChange(FieldEvents.TextChangeEvent event) {
+				setupButtons(true);
+			}
+		});
+		pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
+		Label descriptionLabel = new Label("Description");
+		descriptionLabel.setImmediate(false);
+		descriptionLabel.setWidth("-1px");
+		descriptionLabel.setHeight("-1px");
+		pipelineSettingsLayout.addComponent(descriptionLabel, 0, 1);
+		pipelineDescription = new TextArea();
+		pipelineDescription.setImmediate(true);
+		pipelineDescription.setWidth("400px");
+		pipelineDescription.setHeight("60px");
+		pipelineDescription.setBuffered(true);
+		pipelineDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
+		pipelineDescription.addTextChangeListener(new FieldEvents.TextChangeListener() {
+			@Override
+			public void textChange(FieldEvents.TextChangeEvent event) {
+				setupButtons(true);
+			}
+		});
+		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
+
+//		Label permissionLabel = new Label("Permissions");
+//		permissionLabel.setImmediate(false);
+//		permissionLabel.setWidth("-1px");
+//		permissionLabel.setHeight("-1px");
+//		pipelineSettingsLayout.addComponent(permissionLabel, 0, 2);
+//
+//		Table permissionsTable = new Table();
+//
+//		class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+//
+//			@Override
+//			public Object generateCell(final Table source, final Object itemId, Object columnId) {
+//				HorizontalLayout layout = new HorizontalLayout();
+//
+//				// get item
+//				final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
+//
+//				Button daleteButton = new Button();
+//				daleteButton.setCaption("delete");
+//				daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+//
+//					@Override
+//					public void buttonClick(ClickEvent event) {
+//						//TODO: Delete permission record
+//					}
+//				});
+//				layout.addComponent(daleteButton);
+//
+//				return layout;
+//			}
+//		}
+//		TODO: Have some object for representing permissions for pipeline by user
+//		permissionsTable = new Table();
+//		permissionsTable.setWidth("400px");
+//		permissionsTable.setHeight("150px");
+//		//TODO: assign data source
+//		Container container = ContainerFactory.CreatePipelines(App.getApp().getPipelines().getAllPipelines());
+//		//permissionsTable.setContainerDataSource(container);
+//
+//		// set columns
+//		permissionsTable.setVisibleColumns(new String[] {"User", "Read (Copy, Run)", "Developer"});
+//
+//		// add column
+//		permissionsTable.addGeneratedColumn("Actions", new actionColumnGenerator() );
+//		pipelineSettingsLayout.addComponent(permissionsTable, 1, 2);
+
+		pipelineSettingsLayout.setStyleName("pipelineSettingsLayout");
+		pipelineSettingsLayout.setMargin(true);
+		pipelineSettingsLayout.setSpacing(true);
+		//pipelineSettingsLayout.setWidth("100%");
+		return pipelineSettingsLayout;
+	}
+
+	@Override
+	public boolean isModified() {
+		return pipelineName.isModified() || pipelineDescription.isModified() || pc.isModified();
+	}
+
+	@Override
+	public boolean saveChanges() {
+		return savePipeline();
+	}
+
 	private void setupButtons() {
 		setupButtons(isModified());
 	}
-	
+
+	/**
+	 * Return true if given string is positive number.
+	 *
+	 * @param str {@link String} to check
+	 * @return True if given string is positive number, false otherwise.
+	 */
+	public static boolean isInteger(String str) {
+		if (str == null) {
+			return false;
+		}
+		int length = str.length();
+		if (length == 0) {
+			return false;
+		}
+		for (int i = 0; i < length; i++) {
+			if (Character.isDigit(str.charAt(i))) {
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private void setupButtons(boolean enabled) {
 		buttonSave.setEnabled(enabled);
 		buttonSaveAndClose.setEnabled(enabled);
@@ -387,11 +583,11 @@ class PipelineEdit extends ViewComponent {
 			if (incomingView.getClass() == DPU.class) {
 				App.getApp().getNavigator().getDisplay().showView(incomingView);
 			} else {
-				ViewNames name = ViewsFactory.getViewName(incomingView);
-				App.getApp().getNavigator().navigateTo(name.getUrl());
+				String name = ViewsFactory.getViewName(incomingView);
+				App.getApp().getNavigator().navigateTo(name);
 			}
 		} else {
-			App.getApp().getNavigator().navigateTo(ViewNames.PIPELINE_LIST.getUrl());
+			App.getApp().getNavigator().navigateTo(PipelineList.NAME);
 		}
 	}
 
@@ -460,148 +656,12 @@ class PipelineEdit extends ViewComponent {
 				debug.resize(e.getWindow().getHeight());
 			}
 		});
-		
-		if(pExec.getStatus() == RUNNING || pExec.getStatus() == SCHEDULED) {
+
+		if (pExec.getStatus() == RUNNING || pExec.getStatus() == SCHEDULED) {
 			//App.getApp().getRefreshThread().refreshExecution(pExec, debug);
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debug, pExec));
 		}
 		App.getApp().addWindow(debugWindow);
-	}
-
-	/**
-	 * Builds part of layout with pipeline settings.
-	 *
-	 * @return {@link GridLayout} contains controls with information about
-	 * pipeline settings.
-	 * @throws com.vaadin.ui.GridLayout.OverlapsException
-	 * @throws com.vaadin.ui.GridLayout.OutOfBoundsException
-	 */
-	private GridLayout buildPipelineSettingsLayout() throws OverlapsException, OutOfBoundsException {
-
-		GridLayout pipelineSettingsLayout = new GridLayout(2, 3);
-		pipelineSettingsLayout.setWidth(600, Unit.PIXELS);
-		Label nameLabel = new Label("Name");
-		nameLabel.setImmediate(false);
-		nameLabel.setWidth("-1px");
-		nameLabel.setHeight("-1px");
-		pipelineSettingsLayout.addComponent(nameLabel, 0, 0);
-		pipelineName = new TextField();
-		pipelineName.setImmediate(true);
-		pipelineName.setWidth("200px");
-		pipelineName.setHeight("-1px");
-		pipelineName.setBuffered(true);
-		pipelineName.addValidator(new Validator() {
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class && !((String) value).isEmpty()) {
-					return;
-				}
-				throw new InvalidValueException("Name must be filled!");
-			}
-		});
-		pipelineName.addValidator(new MaxLengthValidator(MaxLengthValidator.NAME_LENGTH));
-		pipelineName.addTextChangeListener(new FieldEvents.TextChangeListener() {
-
-			@Override
-			public void textChange(FieldEvents.TextChangeEvent event) {
-				setupButtons(true);
-			}
-		});
-		pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
-		Label descriptionLabel = new Label("Description");
-		descriptionLabel.setImmediate(false);
-		descriptionLabel.setWidth("-1px");
-		descriptionLabel.setHeight("-1px");
-		pipelineSettingsLayout.addComponent(descriptionLabel, 0, 1);
-		pipelineDescription = new TextArea();
-		pipelineDescription.setImmediate(true);
-		pipelineDescription.setWidth("400px");
-		pipelineDescription.setHeight("60px");
-		pipelineDescription.setBuffered(true);
-		pipelineDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
-		pipelineDescription.addTextChangeListener(new FieldEvents.TextChangeListener() {
-
-			@Override
-			public void textChange(FieldEvents.TextChangeEvent event) {
-				setupButtons(true);
-			}
-		});
-		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
-
-//		Label permissionLabel = new Label("Permissions");
-//		permissionLabel.setImmediate(false);
-//		permissionLabel.setWidth("-1px");
-//		permissionLabel.setHeight("-1px");
-//		pipelineSettingsLayout.addComponent(permissionLabel, 0, 2);
-//
-//		Table permissionsTable = new Table();
-//
-//		class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
-//
-//			@Override
-//			public Object generateCell(final Table source, final Object itemId, Object columnId) {
-//				HorizontalLayout layout = new HorizontalLayout();
-//
-//				// get item
-//				final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
-//
-//				Button daleteButton = new Button();
-//				daleteButton.setCaption("delete");
-//				daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-//
-//					@Override
-//					public void buttonClick(ClickEvent event) {
-//						//TODO: Delete permission record
-//					}
-//				});
-//				layout.addComponent(daleteButton);
-//
-//				return layout;
-//			}
-//		}
-//		TODO: Have some object for representing permissions for pipeline by user
-//		permissionsTable = new Table();
-//		permissionsTable.setWidth("400px");
-//		permissionsTable.setHeight("150px");
-//		//TODO: assign data source
-//		Container container = ContainerFactory.CreatePipelines(App.getApp().getPipelines().getAllPipelines());
-//		//permissionsTable.setContainerDataSource(container);
-//
-//		// set columns
-//		permissionsTable.setVisibleColumns(new String[] {"User", "Read (Copy, Run)", "Developer"});
-//
-//		// add column
-//		permissionsTable.addGeneratedColumn("Actions", new actionColumnGenerator() );
-//		pipelineSettingsLayout.addComponent(permissionsTable, 1, 2);
-
-		pipelineSettingsLayout.setStyleName("pipelineSettingsLayout");
-		pipelineSettingsLayout.setMargin(true);
-		pipelineSettingsLayout.setSpacing(true);
-		//pipelineSettingsLayout.setWidth("100%");
-		return pipelineSettingsLayout;
-	}
-
-	/**
-	 * Return true if given string is positive number.
-	 *
-	 * @param str {@link String} to check
-	 * @return True if given string is positive number, false otherwise.
-	 */
-	public static boolean isInteger(String str) {
-		if (str == null) {
-			return false;
-		}
-		int length = str.length();
-		if (length == 0) {
-			return false;
-		}
-		for (int i = 0; i < length; i++) {
-			if (Character.isDigit(str.charAt(i))) {
-			} else {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**
@@ -669,52 +729,13 @@ class PipelineEdit extends ViewComponent {
 		boolean doCleanup = pc.saveGraph(pipeline);
 
 		App.getApp().getPipelines().save(this.pipeline);
-		if(doCleanup) {
+		if (doCleanup) {
 			pc.afterSaveCleanUp();
 		}
-		
+
 		Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
 		setupButtons();
 		return true;
-	}
-
-	/**
-	 * Enter method for PIPELINE_EDIT view.
-	 *
-	 * @param event {@link ViewChangeEvent}
-	 */
-	@Override
-	public void enter(ViewChangeEvent event) {
-		if (event.getOldView() != null && event.getOldView().getClass() != PipelineEdit.class) {
-			incomingView = event.getOldView();
-		}
-		buildMainLayout();
-		setCompositionRoot(mainLayout);
-		// ..
-		this.loadPipeline(event);
-		// or use this.entity.getEntity();
-
-		if (this.pipeline == null) {
-			label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
-		} else {
-			label.setValue("<h3>Editing pipeline<h3>");// + this.pipeline.getName() + "</h3>");
-		}
-
-		//Resizing canvas
-		UI.getCurrent().setImmediate(true);
-//		resizeCanvas(UI.getCurrent().getPage().getBrowserWindowWidth());
-//		UI.getCurrent().getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
-//			@Override
-//			public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
-//				int width = event.getWidth();
-//				resizeCanvas(width);
-//			}
-//		});
-
-
-
-		// work with pipeline here ...
-
 	}
 
 	/**
@@ -779,14 +800,4 @@ class PipelineEdit extends ViewComponent {
 		}
 		return true;
 	}
-
-	@Override
-	public boolean isModified() {
-		return pipelineName.isModified() || pipelineDescription.isModified() || pc.isModified();
-	}
-	
-	@Override
-	public boolean saveChanges() {
-		return savePipeline();
-	}		
 }

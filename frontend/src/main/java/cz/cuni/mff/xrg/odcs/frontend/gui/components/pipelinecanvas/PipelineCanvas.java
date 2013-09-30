@@ -14,10 +14,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.EdgeDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
 
 import java.util.Collection;
-import java.util.EventObject;
 import java.util.Stack;
 
 /**
@@ -39,10 +38,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private Stack<PipelineGraph> historyStack;
 	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
 	private boolean isModified = false;
-	
-//	private final String STANDARD_MODE = "standard_mode";
-//	private final String DEVELOP_MODE = "develop_mode";
-//	private String canvasMode = DEVELOP_MODE;
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -85,7 +80,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDpuMoved(int dpuId, int newX, int newY) {
 				//storeHistoryGraph();
 				isModified = true;
-				fireDetailClosed(Edge.class);
+				fireEvent(new GraphChangedEvent(PipelineCanvas.this, false));
 				dpuMoved(dpuId, newX, newY);
 			}
 
@@ -120,20 +115,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Start pipeline in debug mode and show debug window.
-	 *
-	 * @param dpuId {@Link int} id of dpu, where debug should end.
-	 * @throws IllegalArgumentException
-	 * @throws NullPointerException
-	 */
-	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
-		pip.setGraph(graph);
-		App.getApp().getPipelines().save(pip);
-		Node debugNode = graph.getNodeById(dpuId);
-		fireShowDebug(pip, debugNode);
-	}
-
-	/**
 	 * Method initializing client side RPC.
 	 */
 	public void init() {
@@ -141,14 +122,28 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Method updating node position on server side.
+	 * Saves graph from graph canvas.
 	 *
-	 * @param dpuId Id of {@link Node} which was moved.
-	 * @param newX New X coordinate.
-	 * @param newY New Y coordinate.
+	 * @param pipeline {@link Pipeline} where graph should be saved.
+	 * @return If after save clean up is needed.
 	 */
-	private void dpuMoved(int dpuId, int newX, int newY) {
-		graph.moveNode(dpuId, newX, newY);
+	public boolean saveGraph(Pipeline pipeline) {
+		historyStack.clear();
+
+		pipeline.setGraph(graph);
+		isModified = false;
+		return !dpusToDelete.isEmpty();
+	}
+
+	/**
+	 * Cleans up removed DPU Instances, as Nodes dependency doesn't take care of
+	 * this. Always call after saving pipeline if saveGraph return True.
+	 *
+	 */
+	public void afterSaveCleanUp() {
+		for (DPUInstanceRecord instance : dpusToDelete) {
+			App.getDPUs().delete(instance);
+		}
 	}
 
 	/**
@@ -198,56 +193,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Initializes the canvas with given graph.
-	 *
-	 * @param pg {@link PipelineGraph} to show on canvas.
-	 */
-	private void setGraph(PipelineGraph pg) {
-		if (this.graph != null) {
-			getRpcProxy(PipelineCanvasClientRpc.class).clearStage();
-		}
-		this.graph = pg;
-
-		for (Node node : graph.getNodes()) {
-			DPUInstanceRecord dpu = node.getDpuInstance();
-			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY(), false);
-		}
-		for (Edge edge : graph.getEdges()) {
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
-		}
-	}
-
-	/**
-	 * Saves graph from graph canvas.
-	 *
-	 * @param pipeline {@link Pipeline} where graph should be saved.
-	 * @return If after save clean up is needed.
-	 */
-	public boolean saveGraph(Pipeline pipeline) {
-		historyStack.clear();
-		
-		pipeline.setGraph(graph);
-		isModified = false;
-		return !dpusToDelete.isEmpty();
-	}
-	
-	/**
-	 * Cleans up removed DPU Instances, as Nodes dependency doesn't take care of this. 
-	 * Always call after saving pipeline if saveGraph return True.
-	 * 
-	 */
-	public void afterSaveCleanUp() {
-		for (DPUInstanceRecord instance : dpusToDelete) {
-			App.getDPUs().delete(instance);
-		}
-	}
-
-	@Override
-	protected PipelineCanvasState getState() {
-		return (PipelineCanvasState) super.getState();
-	}
-
-	/**
 	 * Shows detail of given {@link DPUInstance} in new sub-window.
 	 *
 	 * @param node {@link Node} containing DPU, which detail should be showed.
@@ -259,62 +204,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			@Override
 			public void windowClose(CloseEvent e) {
 				isModified = true;
-				fireDetailClosed(Node.class);
+				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Node.class));
 				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
 		});
 		App.getApp().addWindow(detailDialog);
-	}
-
-	/**
-	 * Shows detail of given {@link Edge} in new sub-window.
-	 *
-	 * @param edge {@link Edge} which detail should be showed.
-	 */
-	private void showEdgeDetail(final Edge edge) {
-		EdgeDetail edgeDetailDialog = new EdgeDetail(edge);
-		edgeDetailDialog.addCloseListener(new Window.CloseListener() {
-			@Override
-			public void windowClose(CloseEvent e) {
-				isModified = true;
-				fireDetailClosed(Edge.class);
-				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
-			}
-		});
-		App.getApp().addWindow(edgeDetailDialog);
-	}
-
-	/**
-	 * Inform listeners, that the detail is closing.
-	 */
-	protected void fireDetailClosed(Class klass) {
-		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
-		for (Listener l : ls) {
-			try {
-				DetailClosedListener dcl = (DetailClosedListener) l;
-				dcl.detailClosed(new EventObject(klass));
-			} catch (Exception ex) {
-				//TODO: Solve better!
-			}
-		}
-	}
-
-	/**
-	 * Inform listeners, that debug request was made.
-	 *
-	 * @param pipeline {@link Pipeline} on which debug should be run.
-	 * @param node {@link Node} where execution should end.
-	 */
-	protected void fireShowDebug(Pipeline pipeline, Node node) {
-		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
-		for (Listener l : ls) {
-			try {
-				ShowDebugListener sdl = (ShowDebugListener) l;
-				sdl.showDebug(pipeline, node);
-			} catch (Exception ex) {
-				//TODO: Solve better!
-			}
-		}
 	}
 
 	/**
@@ -374,39 +268,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Store graph in stack for undo.
-	 */
-	private void storeHistoryGraph() {
-		PipelineGraph clonedGraph = graph.cloneGraph();
-		isModified = true;
-		if (historyStack.isEmpty()) {
-			//Make undo button enabled.
-			fireDetailClosed(PipelineGraph.class);
-		}
-		
-		historyStack.push(clonedGraph);
-	}
-
-	/**
-	 * Copy DPURecord on canvas.
-	 * 
-	 * @param nodeId Id of Node, which DPURecord should be copied.
-	 * 
-	 */
-	private void copyDpu(int nodeId, int x, int y) {
-		storeHistoryGraph();
-		Node node = graph.getNodeById(nodeId);
-		
-		DPUInstanceRecord dpu = new DPUInstanceRecord(node.getDpuInstance());
-		Node copyNode = graph.addDpuInstance(dpu);
-		graph.moveNode(copyNode.hashCode(), x, y);
-		getRpcProxy(PipelineCanvasClientRpc.class)
-				.addNode(copyNode.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), x, y, true);
-	}
-
-	/**
 	 * Changes mode of the pipeline canvas.
-	 * 
+	 *
 	 */
 	public void changeMode(String newMode) {
 //		if(canvasMode.equals(STANDARD_MODE)) {
@@ -419,9 +282,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Returns if PipelineCanvas was modified since last save.
-	 * 
+	 *
 	 * @return Is modified?
-	 * 
+	 *
 	 */
 	public boolean isModified() {
 		return isModified;
@@ -429,5 +292,114 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	public void cancelChanges() {
 		isModified = false;
+	}
+
+	@Override
+	protected PipelineCanvasState getState() {
+		return (PipelineCanvasState) super.getState();
+	}
+
+	/**
+	 * Inform listeners, that the detail is closing.
+	 */
+	protected void fireEvent(Event event) {
+		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
+		for (Listener l : ls) {
+			l.componentEvent(event);
+		}
+	}
+
+	/**
+	 * Initializes the canvas with given graph.
+	 *
+	 * @param pg {@link PipelineGraph} to show on canvas.
+	 */
+	private void setGraph(PipelineGraph pg) {
+		if (this.graph != null) {
+			getRpcProxy(PipelineCanvasClientRpc.class).clearStage();
+		}
+		this.graph = pg;
+
+		for (Node node : graph.getNodes()) {
+			DPUInstanceRecord dpu = node.getDpuInstance();
+			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY(), false);
+		}
+		for (Edge edge : graph.getEdges()) {
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
+		}
+	}
+
+	/**
+	 * Method updating node position on server side.
+	 *
+	 * @param dpuId Id of {@link Node} which was moved.
+	 * @param newX New X coordinate.
+	 * @param newY New Y coordinate.
+	 */
+	private void dpuMoved(int dpuId, int newX, int newY) {
+		graph.moveNode(dpuId, newX, newY);
+	}
+
+	/**
+	 * Shows detail of given {@link Edge} in new sub-window.
+	 *
+	 * @param edge {@link Edge} which detail should be showed.
+	 */
+	private void showEdgeDetail(final Edge edge) {
+		EdgeDetail edgeDetailDialog = new EdgeDetail(edge);
+		edgeDetailDialog.addCloseListener(new Window.CloseListener() {
+			@Override
+			public void windowClose(CloseEvent e) {
+				isModified = true;
+				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Edge.class));
+				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
+			}
+		});
+		App.getApp().addWindow(edgeDetailDialog);
+	}
+
+	/**
+	 * Store graph in stack for undo.
+	 */
+	private void storeHistoryGraph() {
+		PipelineGraph clonedGraph = graph.cloneGraph();
+		isModified = true;
+		if (historyStack.isEmpty()) {
+			//Make undo button enabled.
+			fireEvent(new GraphChangedEvent(this, true));
+		}
+
+		historyStack.push(clonedGraph);
+	}
+
+	/**
+	 * Copy DPURecord on canvas.
+	 *
+	 * @param nodeId Id of Node, which DPURecord should be copied.
+	 *
+	 */
+	private void copyDpu(int nodeId, int x, int y) {
+		storeHistoryGraph();
+		Node node = graph.getNodeById(nodeId);
+
+		DPUInstanceRecord dpu = new DPUInstanceRecord(node.getDpuInstance());
+		Node copyNode = graph.addDpuInstance(dpu);
+		graph.moveNode(copyNode.hashCode(), x, y);
+		getRpcProxy(PipelineCanvasClientRpc.class)
+				.addNode(copyNode.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), x, y, true);
+	}
+
+	/**
+	 * Start pipeline in debug mode and show debug window.
+	 *
+	 * @param dpuId {@Link int} id of dpu, where debug should end.
+	 * @throws IllegalArgumentException
+	 * @throws NullPointerException
+	 */
+	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
+		pip.setGraph(graph);
+		App.getApp().getPipelines().save(pip);
+		Node debugNode = graph.getNodeById(dpuId);
+		fireEvent(new ShowDebugEvent(this, pip, debugNode));
 	}
 }

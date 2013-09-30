@@ -45,488 +45,488 @@ import org.vaadin.addons.lazyquerycontainer.Query;
  */
 public class IntlibQuery<E> implements Query, Serializable {
 
-    /**
-     * Java serialization version UID.
-     */
-    private static final long serialVersionUID = 1L;
-    /**
-     * The JPA EntityManager.
-     */
-    private final EntityManager entityManager;
-    /**
-     * Flag reflecting whether application manages transactions.
-     */
-    private final boolean applicationTransactionManagement;
-    /**
-     * The JPA entity class.
-     */
-    private final Class<E> entityClass;
-    /**
-     * QueryDefinition contains definition of the query properties and batch
-     * size.
-     */
-    private final EntityQueryDefinition queryDefinition;
-    /**
-     * The size of the query.
-     */
-    private int querySize = -1;
-	
-    /**
-     * Constructor for configuring the query.
-     *
-     * @param entityQueryDefinition The entity query definition.
-     * @param entityManager The entity manager.
-     */
-    public IntlibQuery(final EntityQueryDefinition entityQueryDefinition, final EntityManager entityManager) {
-        this.entityManager = entityManager;
-        this.queryDefinition = entityQueryDefinition;
-        this.entityClass = (Class<E>) entityQueryDefinition.getEntityClass();
-        this.applicationTransactionManagement = entityQueryDefinition.isApplicationManagedTransactions();
-    }
+	/**
+	 * Java serialization version UID.
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * The JPA EntityManager.
+	 */
+	private final EntityManager entityManager;
+	/**
+	 * Flag reflecting whether application manages transactions.
+	 */
+	private final boolean applicationTransactionManagement;
+	/**
+	 * The JPA entity class.
+	 */
+	private final Class<E> entityClass;
+	/**
+	 * QueryDefinition contains definition of the query properties and batch
+	 * size.
+	 */
+	private final EntityQueryDefinition queryDefinition;
+	/**
+	 * The size of the query.
+	 */
+	private int querySize = -1;
 
-    /**
-     * Constructs new item based on QueryDefinition.
-     *
-     * @return new item.
-     */
-    @Override
-    public final Item constructItem() {
-        try {
-            final Object entity = entityClass.newInstance();
-            final BeanInfo info = Introspector.getBeanInfo(entityClass);
-            for (final PropertyDescriptor pd : info.getPropertyDescriptors()) {
-                for (final Object propertyId : queryDefinition.getPropertyIds()) {
-                    if (pd.getName().equals(propertyId)) {
-                        pd.getWriteMethod().invoke(entity, queryDefinition.getPropertyDefaultValue(propertyId));
-                    }
-                }
-            }
-            return toItem(entity);
-        } catch (final Exception e) {
-            throw new RuntimeException("Error in bean construction or property population with default values.", e);
-        }
-    }
+	/**
+	 * Constructor for configuring the query.
+	 *
+	 * @param entityQueryDefinition The entity query definition.
+	 * @param entityManager The entity manager.
+	 */
+	public IntlibQuery(final EntityQueryDefinition entityQueryDefinition, final EntityManager entityManager) {
+		this.entityManager = entityManager;
+		this.queryDefinition = entityQueryDefinition;
+		this.entityClass = (Class<E>) entityQueryDefinition.getEntityClass();
+		this.applicationTransactionManagement = entityQueryDefinition.isApplicationManagedTransactions();
+	}
 
-    /**
-     * Number of beans returned by query.
-     *
-     * @return number of beans.
-     */
-    @Override
-    public final int size() {
+	/**
+	 * Constructs new item based on QueryDefinition.
+	 *
+	 * @return new item.
+	 */
+	@Override
+	public final Item constructItem() {
+		try {
+			final Object entity = entityClass.newInstance();
+			final BeanInfo info = Introspector.getBeanInfo(entityClass);
+			for (final PropertyDescriptor pd : info.getPropertyDescriptors()) {
+				for (final Object propertyId : queryDefinition.getPropertyIds()) {
+					if (pd.getName().equals(propertyId)) {
+						pd.getWriteMethod().invoke(entity, queryDefinition.getPropertyDefaultValue(propertyId));
+					}
+				}
+			}
+			return toItem(entity);
+		} catch (final Exception e) {
+			throw new RuntimeException("Error in bean construction or property population with default values.", e);
+		}
+	}
 
-        if (querySize == -1) {
-            final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-            final Root<E> root = cq.from(entityClass);
+	/**
+	 * Number of beans returned by query.
+	 *
+	 * @return number of beans.
+	 */
+	@Override
+	public final int size() {
 
-            cq.select(cb.count(root));
+		if (querySize == -1) {
+			final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+			final Root<E> root = cq.from(entityClass);
 
-            setWhereCriteria(cb, cq, root);
+			cq.select(cb.count(root));
 
-            //setOrderClause(cb, cq, root);
+			setWhereCriteria(cb, cq, root);
 
-            TypedQuery<Long> query = entityManager.createQuery(cq);
+			//setOrderClause(cb, cq, root);
 
-            querySize = query.getSingleResult().intValue();
-        }
-        return querySize;
-    }
+			TypedQuery<Long> query = entityManager.createQuery(cq);
 
-    /**
-     * Load batch of items.
-     *
-     * @param startIndex Starting index of the item list.
-     * @param count Count of the items to be retrieved.
-     * @return List of items.
-     */
-    @Override
-    public final List<Item> loadItems(final int startIndex, final int count) {
+			querySize = query.getSingleResult().intValue();
+		}
+		return querySize;
+	}
 
-        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<E> cq = cb.createQuery(entityClass);
-        final Root<E> root = cq.from(entityClass);
+	/**
+	 * Load batch of items.
+	 *
+	 * @param startIndex Starting index of the item list.
+	 * @param count Count of the items to be retrieved.
+	 * @return List of items.
+	 */
+	@Override
+	public final List<Item> loadItems(final int startIndex, final int count) {
 
-        cq.select(root);
+		final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		final CriteriaQuery<E> cq = cb.createQuery(entityClass);
+		final Root<E> root = cq.from(entityClass);
+
+		cq.select(root);
 
 		setWhereCriteria(cb, cq, root);
-		
-        setOrderClause(cb, cq, root);
 
-        TypedQuery<E> query = entityManager.createQuery(cq);
+		setOrderClause(cb, cq, root);
 
-        query.setFirstResult(startIndex);
-        query.setMaxResults(count);
+		TypedQuery<E> query = entityManager.createQuery(cq);
 
-        List<E> entities = query.getResultList();
-        List<Item> items = new ArrayList<>();
-        for (final Object entity : entities) {
-            if (queryDefinition.isDetachedEntities()) {
-                entityManager.detach(entity);
-            }
-            items.add(toItem(entity));
-        }
+		query.setFirstResult(startIndex);
+		query.setMaxResults(count);
 
-        return items;
-    }
+		List<E> entities = query.getResultList();
+		List<Item> items = new ArrayList<>();
+		for (final Object entity : entities) {
+			if (queryDefinition.isDetachedEntities()) {
+				entityManager.detach(entity);
+			}
+			items.add(toItem(entity));
+		}
 
-    /**
-     * Sets where criteria of JPA 2.0 Criteria API query according to Vaadin
-     * filters.
-     *
-     * @param cb the CriteriaBuilder
-     * @param cq the CriteriaQuery
-     * @param root the root
-     * @param <SE> the selected entity
-     */
-    private <SE> void setWhereCriteria(final CriteriaBuilder cb, final CriteriaQuery<SE> cq, final Root<E> root) {
-        final List<Container.Filter> filters = new ArrayList<>();
+		return items;
+	}
+
+	/**
+	 * Sets where criteria of JPA 2.0 Criteria API query according to Vaadin
+	 * filters.
+	 *
+	 * @param cb the CriteriaBuilder
+	 * @param cq the CriteriaQuery
+	 * @param root the root
+	 * @param <SE> the selected entity
+	 */
+	private <SE> void setWhereCriteria(final CriteriaBuilder cb, final CriteriaQuery<SE> cq, final Root<E> root) {
+		final List<Container.Filter> filters = new ArrayList<>();
 
 		filters.addAll(queryDefinition.getDefaultFilters());
-        filters.addAll(queryDefinition.getFilters());
+		filters.addAll(queryDefinition.getFilters());
 
-        Container.Filter rootFilter;
-        if (filters.size() > 0) {
-            rootFilter = filters.remove(0);
-        } else {
-            rootFilter = null;
-        }
-        while (filters.size() > 0) {
-            final Container.Filter filter = filters.remove(0);
-            rootFilter = new And(rootFilter, filter);
-        }
-		
+		Container.Filter rootFilter;
+		if (filters.size() > 0) {
+			rootFilter = filters.remove(0);
+		} else {
+			rootFilter = null;
+		}
+		while (filters.size() > 0) {
+			final Container.Filter filter = filters.remove(0);
+			rootFilter = new And(rootFilter, filter);
+		}
+
 		// build authorization predicate
 		AuthenticationContext authCtx = App.getApp().getAuthCtx();
 		PredicateBuilder apb = new AuthorizationPredicateBuilder<>(authCtx, root, cq, cb, entityClass);
 		Predicate authPredicate = apb.build();
 
-        if (rootFilter == null) {
+		if (rootFilter == null) {
 			cq.where(authPredicate);
 		} else {
 			cq.where(cb.and(authPredicate, setFilter(rootFilter, cb, cq, root)));
-        }
-    }
+		}
+	}
 
-    /**
-     * Sets order clause of JPA 2.0 Criteria API query according to Vaadin sort
-     * states.
-     *
-     * @param cb the CriteriaBuilder
-     * @param cq the CriteriaQuery
-     * @param root the root
-     * @param <SE> the selected entity
-     */
-    private <SE> void setOrderClause(final CriteriaBuilder cb, final CriteriaQuery<SE> cq, final Root<E> root) {
-        Object[] sortPropertyIds;
-        boolean[] sortPropertyAscendingStates;
+	/**
+	 * Sets order clause of JPA 2.0 Criteria API query according to Vaadin sort
+	 * states.
+	 *
+	 * @param cb the CriteriaBuilder
+	 * @param cq the CriteriaQuery
+	 * @param root the root
+	 * @param <SE> the selected entity
+	 */
+	private <SE> void setOrderClause(final CriteriaBuilder cb, final CriteriaQuery<SE> cq, final Root<E> root) {
+		Object[] sortPropertyIds;
+		boolean[] sortPropertyAscendingStates;
 
-        if (queryDefinition.getSortPropertyIds().length == 0) {
-            sortPropertyIds = queryDefinition.getDefaultSortPropertyIds();
-            sortPropertyAscendingStates = queryDefinition.getDefaultSortPropertyAscendingStates();
-        } else {
-            sortPropertyIds = queryDefinition.getSortPropertyIds();
-            sortPropertyAscendingStates = queryDefinition.getSortPropertyAscendingStates();
-        }
+		if (queryDefinition.getSortPropertyIds().length == 0) {
+			sortPropertyIds = queryDefinition.getDefaultSortPropertyIds();
+			sortPropertyAscendingStates = queryDefinition.getDefaultSortPropertyAscendingStates();
+		} else {
+			sortPropertyIds = queryDefinition.getSortPropertyIds();
+			sortPropertyAscendingStates = queryDefinition.getSortPropertyAscendingStates();
+		}
 
-        if (sortPropertyIds.length > 0) {
-            final List<Order> orders = new ArrayList<Order>();
-            for (int i = 0; i < sortPropertyIds.length; i++) {
-                final Expression property = (Expression) getPropertyPath(root, sortPropertyIds[i]);
-                if (sortPropertyAscendingStates[i]) {
-                    orders.add(cb.asc(property));
-                } else {
-                    orders.add(cb.desc(property));
-                }
-            }
-            cq.orderBy(orders);
-        }
-    }
+		if (sortPropertyIds.length > 0) {
+			final List<Order> orders = new ArrayList<Order>();
+			for (int i = 0; i < sortPropertyIds.length; i++) {
+				final Expression property = (Expression) getPropertyPath(root, sortPropertyIds[i]);
+				if (sortPropertyAscendingStates[i]) {
+					orders.add(cb.asc(property));
+				} else {
+					orders.add(cb.desc(property));
+				}
+			}
+			cq.orderBy(orders);
+		}
+	}
 
-    /**
-     * Implements conversion of Vaadin filter to JPA 2.0 Criteria API based
-     * predicate. Supports the following operations:
-     *
-     * And, Between, Compare, Compare.Equal, Compare.Greater,
-     * Compare.GreaterOrEqual, Compare.Less, Compare.LessOrEqual, IsNull, Like,
-     * Not, Or, SimpleStringFilter
-     *
-     * @param filter the Vaadin filter
-     * @param cb the CriteriaBuilder
-     * @param cq the CriteriaQuery
-     * @param root the root
-     * @return the predicate
-     */
-    private Predicate setFilter(final Container.Filter filter, final CriteriaBuilder cb,
-            final CriteriaQuery<?> cq, final Root<?> root) {
-		
-        if (filter instanceof And) {
-            final And and = (And) filter;
-            final List<Container.Filter> filters = new ArrayList<>(and.getFilters());
+	/**
+	 * Implements conversion of Vaadin filter to JPA 2.0 Criteria API based
+	 * predicate. Supports the following operations:
+	 *
+	 * And, Between, Compare, Compare.Equal, Compare.Greater,
+	 * Compare.GreaterOrEqual, Compare.Less, Compare.LessOrEqual, IsNull, Like,
+	 * Not, Or, SimpleStringFilter
+	 *
+	 * @param filter the Vaadin filter
+	 * @param cb the CriteriaBuilder
+	 * @param cq the CriteriaQuery
+	 * @param root the root
+	 * @return the predicate
+	 */
+	private Predicate setFilter(final Container.Filter filter, final CriteriaBuilder cb,
+			final CriteriaQuery<?> cq, final Root<?> root) {
 
-            Predicate predicate = cb.and(setFilter(filters.remove(0), cb, cq, root),
-                    setFilter(filters.remove(0), cb, cq, root));
+		if (filter instanceof And) {
+			final And and = (And) filter;
+			final List<Container.Filter> filters = new ArrayList<>(and.getFilters());
 
-            while (filters.size() > 0) {
-                predicate = cb.and(predicate, setFilter(filters.remove(0), cb, cq, root));
-            }
+			Predicate predicate = cb.and(setFilter(filters.remove(0), cb, cq, root),
+					setFilter(filters.remove(0), cb, cq, root));
 
-            return predicate;
-        }
+			while (filters.size() > 0) {
+				predicate = cb.and(predicate, setFilter(filters.remove(0), cb, cq, root));
+			}
 
-        if (filter instanceof Or) {
-            final Or or = (Or) filter;
-            final List<Container.Filter> filters = new ArrayList<>(or.getFilters());
+			return predicate;
+		}
 
-            Predicate predicate = cb.or(setFilter(filters.remove(0), cb, cq, root),
-                    setFilter(filters.remove(0), cb, cq, root));
+		if (filter instanceof Or) {
+			final Or or = (Or) filter;
+			final List<Container.Filter> filters = new ArrayList<>(or.getFilters());
 
-            while (filters.size() > 0) {
-                predicate = cb.or(predicate, setFilter(filters.remove(0), cb, cq, root));
-            }
+			Predicate predicate = cb.or(setFilter(filters.remove(0), cb, cq, root),
+					setFilter(filters.remove(0), cb, cq, root));
 
-            return predicate;
-        }
+			while (filters.size() > 0) {
+				predicate = cb.or(predicate, setFilter(filters.remove(0), cb, cq, root));
+			}
 
-        if (filter instanceof Not) {
-            final Not not = (Not) filter;
-            return cb.not(setFilter(not.getFilter(), cb, cq, root));
-        }
+			return predicate;
+		}
 
-        if (filter instanceof Between) {
-            final Between between = (Between) filter;
-            final Expression property = (Expression) getPropertyPath(root, between.getPropertyId());
-            return cb.between(property, (Comparable) between.getStartValue(), (Comparable) between.getEndValue());
-        }
+		if (filter instanceof Not) {
+			final Not not = (Not) filter;
+			return cb.not(setFilter(not.getFilter(), cb, cq, root));
+		}
 
-        if (filter instanceof Compare) {
-            final Compare compare = (Compare) filter;
-            final Expression<Comparable> property = (Expression) getPropertyPath(root, compare.getPropertyId());
-            switch (compare.getOperation()) {
-                case EQUAL:
-                    return cb.equal(property, compare.getValue());
-                case GREATER:
-                    return cb.greaterThan(property, (Comparable) compare.getValue());
-                case GREATER_OR_EQUAL:
-                    return cb.greaterThanOrEqualTo(property, (Comparable) compare.getValue());
-                case LESS:
-                    return cb.lessThan(property, (Comparable) compare.getValue());
-                case LESS_OR_EQUAL:
-                    return cb.lessThanOrEqualTo(property, (Comparable) compare.getValue());
-                default:
-            }
-        }
+		if (filter instanceof Between) {
+			final Between between = (Between) filter;
+			final Expression property = (Expression) getPropertyPath(root, between.getPropertyId());
+			return cb.between(property, (Comparable) between.getStartValue(), (Comparable) between.getEndValue());
+		}
 
-        if (filter instanceof IsNull) {
-            final IsNull isNull = (IsNull) filter;
-            return cb.isNull((Expression) getPropertyPath(root, isNull.getPropertyId()));
-        }
+		if (filter instanceof Compare) {
+			final Compare compare = (Compare) filter;
+			final Expression<Comparable> property = (Expression) getPropertyPath(root, compare.getPropertyId());
+			switch (compare.getOperation()) {
+				case EQUAL:
+					return cb.equal(property, compare.getValue());
+				case GREATER:
+					return cb.greaterThan(property, (Comparable) compare.getValue());
+				case GREATER_OR_EQUAL:
+					return cb.greaterThanOrEqualTo(property, (Comparable) compare.getValue());
+				case LESS:
+					return cb.lessThan(property, (Comparable) compare.getValue());
+				case LESS_OR_EQUAL:
+					return cb.lessThanOrEqualTo(property, (Comparable) compare.getValue());
+				default:
+			}
+		}
 
-        if (filter instanceof Like) {
-            final Like like = (Like) filter;
-            if (like.isCaseSensitive()) {
-                return cb.like((Expression) getPropertyPath(root, like.getPropertyId()), like.getValue());
-            } else {
-                return cb.like(cb.lower((Expression) getPropertyPath(root, like.getPropertyId())),
-                        like.getValue().toLowerCase());
-            }
-        }
+		if (filter instanceof IsNull) {
+			final IsNull isNull = (IsNull) filter;
+			return cb.isNull((Expression) getPropertyPath(root, isNull.getPropertyId()));
+		}
 
-        if (filter instanceof SimpleStringFilter) {
-            final SimpleStringFilter simpleStringFilter = (SimpleStringFilter) filter;
-            final Expression<String> property = (Expression) getPropertyPath(
-                    root, simpleStringFilter.getPropertyId());
-            return cb.like(property, "**"
-                    + simpleStringFilter.getFilterString());
-        }
+		if (filter instanceof Like) {
+			final Like like = (Like) filter;
+			if (like.isCaseSensitive()) {
+				return cb.like((Expression) getPropertyPath(root, like.getPropertyId()), like.getValue());
+			} else {
+				return cb.like(cb.lower((Expression) getPropertyPath(root, like.getPropertyId())),
+						like.getValue().toLowerCase());
+			}
+		}
 
-        if (filter instanceof PropertiesFilter) {
-            final PropertiesFilter propertiesFilter = (PropertiesFilter) filter;
-            //Root<LogMessage> msg = cq.from(LogMessage.class);
-            MapJoin<LogMessage, String, String> props = root.joinMap("properties");
-			
-			
-            Predicate isFromDpu = cb.and(
-                    cb.equal(props.key(), propertiesFilter.parameterName),
-                    cb.equal(props.value(), propertiesFilter.value));
-            return isFromDpu;
-        }
+		if (filter instanceof SimpleStringFilter) {
+			final SimpleStringFilter simpleStringFilter = (SimpleStringFilter) filter;
+			final Expression<String> property = (Expression) getPropertyPath(
+					root, simpleStringFilter.getPropertyId());
+			return cb.like(property, "**"
+					+ simpleStringFilter.getFilterString());
+		}
 
-        if (filter instanceof InFilter) {
-            final InFilter inFilter = (InFilter) filter;
-            final Expression<String> property = (Expression) root.get(inFilter.name);
-            return property.in(inFilter.getStringSet());
-        }
+		if (filter instanceof PropertiesFilter) {
+			final PropertiesFilter propertiesFilter = (PropertiesFilter) filter;
+			//Root<LogMessage> msg = cq.from(LogMessage.class);
+			MapJoin<LogMessage, String, String> props = root.joinMap("properties");
 
-        throw new UnsupportedOperationException("Vaadin filter: " + filter.getClass().getName() + " is not supported.");
-    }
 
-    /**
-     * Gets property path.
-     *
-     * @param root the root where path starts form
-     * @param propertyId the property ID
-     * @return the path to property
-     */
-    private Path<Object> getPropertyPath(final Root<?> root, final Object propertyId) {
-        final String[] propertyIdParts = ((String) propertyId).split("\\.");
+			Predicate isFromDpu = cb.and(
+					cb.equal(props.key(), propertiesFilter.parameterName),
+					cb.equal(props.value(), propertiesFilter.value));
+			return isFromDpu;
+		}
 
-        Path<Object> path = null;
-        for (final String part : propertyIdParts) {
-            if (path == null) {
-                path = root.get(part);
-            } else {
-                path = path.get(part);
-            }
-        }
-        return path;
-    }
+		if (filter instanceof InFilter) {
+			final InFilter inFilter = (InFilter) filter;
+			final Expression<String> property = (Expression) root.get(inFilter.name);
+			return property.in(inFilter.getStringSet());
+		}
 
-    /**
-     * Saves the modifications done by container to the query result. Query will
-     * be discarded after changes have been saved and new query loaded so that
-     * changed items are sorted appropriately.
-     *
-     * @param addedItems Items to be inserted.
-     * @param modifiedItems Items to be updated.
-     * @param removedItems Items to be deleted.
-     */
-    @Override
-    public final void saveItems(final List<Item> addedItems, final List<Item> modifiedItems,
-            final List<Item> removedItems) {
-        if (applicationTransactionManagement) {
-            entityManager.getTransaction().begin();
-        }
-        try {
-            for (final Item item : addedItems) {
-                if (!removedItems.contains(item)) {
-                    entityManager.persist(fromItem(item));
-                }
-            }
-            for (final Item item : modifiedItems) {
-                if (!removedItems.contains(item)) {
-                    Object entity = fromItem(item);
-                    if (queryDefinition.isDetachedEntities()) {
-                        entity = entityManager.merge(entity);
-                    }
-                    entityManager.persist(entity);
-                }
-            }
-            for (final Item item : removedItems) {
-                if (!addedItems.contains(item)) {
-                    Object entity = fromItem(item);
-                    if (queryDefinition.isDetachedEntities()) {
-                        entity = entityManager.merge(entity);
-                    }
-                    entityManager.remove(entity);
-                }
-            }
-            if (applicationTransactionManagement) {
-                entityManager.getTransaction().commit();
-            }
-        } catch (final Exception e) {
-            if (applicationTransactionManagement) {
-                if (entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
-                }
-            }
-            throw new RuntimeException(e);
-        }
-    }
+		throw new UnsupportedOperationException("Vaadin filter: " + filter.getClass().getName() + " is not supported.");
+	}
 
-    /**
-     * Removes all items. Query will be discarded after delete all items has
-     * been called.
-     *
-     * @return true if the operation succeeded or false in case of a failure.
-     */
-    @Override
-    public final boolean deleteAllItems() {
-        if (applicationTransactionManagement) {
-            entityManager.getTransaction().begin();
-        }
-        try {
-            final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            final CriteriaQuery<E> cq = cb.createQuery(entityClass);
-            final Root<E> root = cq.from(entityClass);
+	/**
+	 * Gets property path.
+	 *
+	 * @param root the root where path starts form
+	 * @param propertyId the property ID
+	 * @return the path to property
+	 */
+	private Path<Object> getPropertyPath(final Root<?> root, final Object propertyId) {
+		final String[] propertyIdParts = ((String) propertyId).split("\\.");
 
-            cq.select(root);
+		Path<Object> path = null;
+		for (final String part : propertyIdParts) {
+			if (path == null) {
+				path = root.get(part);
+			} else {
+				path = path.get(part);
+			}
+		}
+		return path;
+	}
 
-            setWhereCriteria(cb, cq, root);
+	/**
+	 * Saves the modifications done by container to the query result. Query will
+	 * be discarded after changes have been saved and new query loaded so that
+	 * changed items are sorted appropriately.
+	 *
+	 * @param addedItems Items to be inserted.
+	 * @param modifiedItems Items to be updated.
+	 * @param removedItems Items to be deleted.
+	 */
+	@Override
+	public final void saveItems(final List<Item> addedItems, final List<Item> modifiedItems,
+			final List<Item> removedItems) {
+		if (applicationTransactionManagement) {
+			entityManager.getTransaction().begin();
+		}
+		try {
+			for (final Item item : addedItems) {
+				if (!removedItems.contains(item)) {
+					entityManager.persist(fromItem(item));
+				}
+			}
+			for (final Item item : modifiedItems) {
+				if (!removedItems.contains(item)) {
+					Object entity = fromItem(item);
+					if (queryDefinition.isDetachedEntities()) {
+						entity = entityManager.merge(entity);
+					}
+					entityManager.persist(entity);
+				}
+			}
+			for (final Item item : removedItems) {
+				if (!addedItems.contains(item)) {
+					Object entity = fromItem(item);
+					if (queryDefinition.isDetachedEntities()) {
+						entity = entityManager.merge(entity);
+					}
+					entityManager.remove(entity);
+				}
+			}
+			if (applicationTransactionManagement) {
+				entityManager.getTransaction().commit();
+			}
+		} catch (final Exception e) {
+			if (applicationTransactionManagement) {
+				if (entityManager.getTransaction().isActive()) {
+					entityManager.getTransaction().rollback();
+				}
+			}
+			throw new RuntimeException(e);
+		}
+	}
 
-            setOrderClause(cb, cq, root);
+	/**
+	 * Removes all items. Query will be discarded after delete all items has
+	 * been called.
+	 *
+	 * @return true if the operation succeeded or false in case of a failure.
+	 */
+	@Override
+	public final boolean deleteAllItems() {
+		if (applicationTransactionManagement) {
+			entityManager.getTransaction().begin();
+		}
+		try {
+			final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			final CriteriaQuery<E> cq = cb.createQuery(entityClass);
+			final Root<E> root = cq.from(entityClass);
 
-            final TypedQuery<E> query = entityManager.createQuery(cq);
+			cq.select(root);
 
-            final List<?> entities = query.getResultList();
-            for (final Object entity : entities) {
-                entityManager.remove(entity);
-            }
+			setWhereCriteria(cb, cq, root);
 
-            if (applicationTransactionManagement) {
-                entityManager.getTransaction().commit();
-            }
-        } catch (final Exception e) {
-            if (applicationTransactionManagement) {
-                if (entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
-                }
-            }
-            throw new RuntimeException(e);
-        }
-        return true;
-    }
+			setOrderClause(cb, cq, root);
 
-    /**
-     * Converts bean to Item. Implemented by encapsulating the Bean first to
-     * BeanItem and then to CompositeItem.
-     *
-     * @param entity bean to be converted.
-     * @return item converted from bean.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    protected final Item toItem(final Object entity) {
-        if (queryDefinition.isCompositeItems()) {
-            final NestingBeanItem<?> beanItem = new NestingBeanItem<Object>(entity,
-                    queryDefinition.getMaxNestedPropertyDepth(), queryDefinition.getPropertyIds());
+			final TypedQuery<E> query = entityManager.createQuery(cq);
 
-            final CompositeItem compositeItem = new CompositeItem();
-            compositeItem.addItem("bean", beanItem);
+			final List<?> entities = query.getResultList();
+			for (final Object entity : entities) {
+				entityManager.remove(entity);
+			}
 
-            for (final Object propertyId : queryDefinition.getPropertyIds()) {
-                if (compositeItem.getItemProperty(propertyId) == null) {
-                    compositeItem.addItemProperty(
-                            propertyId,
-                            new ObjectProperty(queryDefinition.getPropertyDefaultValue(propertyId), queryDefinition
-                            .getPropertyType(propertyId), queryDefinition.isPropertyReadOnly(propertyId)));
-                }
-            }
+			if (applicationTransactionManagement) {
+				entityManager.getTransaction().commit();
+			}
+		} catch (final Exception e) {
+			if (applicationTransactionManagement) {
+				if (entityManager.getTransaction().isActive()) {
+					entityManager.getTransaction().rollback();
+				}
+			}
+			throw new RuntimeException(e);
+		}
+		return true;
+	}
 
-            return compositeItem;
-        } else {
-            return new NestingBeanItem<Object>(entity,
-                    queryDefinition.getMaxNestedPropertyDepth(), queryDefinition.getPropertyIds());
-        }
-    }
+	/**
+	 * Converts bean to Item. Implemented by encapsulating the Bean first to
+	 * BeanItem and then to CompositeItem.
+	 *
+	 * @param entity bean to be converted.
+	 * @return item converted from bean.
+	 */
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	protected final Item toItem(final Object entity) {
+		if (queryDefinition.isCompositeItems()) {
+			final NestingBeanItem<?> beanItem = new NestingBeanItem<Object>(entity,
+					queryDefinition.getMaxNestedPropertyDepth(), queryDefinition.getPropertyIds());
 
-    /**
-     * Converts item back to bean.
-     *
-     * @param item Item to be converted to bean.
-     * @return Resulting bean.
-     */
-    protected final Object fromItem(final Item item) {
-        if (queryDefinition.isCompositeItems()) {
-            return (Object) ((BeanItem<?>) (((CompositeItem) item).getItem("bean"))).getBean();
-        } else {
-            return ((BeanItem<?>) item).getBean();
-        }
-    }
+			final CompositeItem compositeItem = new CompositeItem();
+			compositeItem.addItem("bean", beanItem);
 
-    /**
-     * @return the queryDefinition
-     */
-    protected final EntityQueryDefinition getQueryDefinition() {
-        return queryDefinition;
-    }
+			for (final Object propertyId : queryDefinition.getPropertyIds()) {
+				if (compositeItem.getItemProperty(propertyId) == null) {
+					compositeItem.addItemProperty(
+							propertyId,
+							new ObjectProperty(queryDefinition.getPropertyDefaultValue(propertyId), queryDefinition
+							.getPropertyType(propertyId), queryDefinition.isPropertyReadOnly(propertyId)));
+				}
+			}
+
+			return compositeItem;
+		} else {
+			return new NestingBeanItem<Object>(entity,
+					queryDefinition.getMaxNestedPropertyDepth(), queryDefinition.getPropertyIds());
+		}
+	}
+
+	/**
+	 * Converts item back to bean.
+	 *
+	 * @param item Item to be converted to bean.
+	 * @return Resulting bean.
+	 */
+	protected final Object fromItem(final Item item) {
+		if (queryDefinition.isCompositeItems()) {
+			return (Object) ((BeanItem<?>) (((CompositeItem) item).getItem("bean"))).getBean();
+		} else {
+			return ((BeanItem<?>) item).getBean();
+		}
+	}
+
+	/**
+	 * @return the queryDefinition
+	 */
+	protected final EntityQueryDefinition getQueryDefinition() {
+		return queryDefinition;
+	}
 }

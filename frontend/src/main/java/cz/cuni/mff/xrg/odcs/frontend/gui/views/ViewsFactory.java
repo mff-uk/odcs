@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import com.vaadin.navigator.View;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
@@ -45,13 +46,13 @@ public class ViewsFactory {
 		
 	}
 	
-	public static ViewNames getViewName(View view) {
+	public static String getViewName(View view) {
 		if(view.getClass() == PipelineList.class) {
-			return ViewNames.PIPELINE_LIST;
+			return PipelineList.NAME;
 		} else if(view.getClass() == DPU.class) {
-			return ViewNames.DPU;
+			return DPU.NAME;
 		} else {
-			return ViewNames.INITIAL;
+			return Initial.NAME;
 		}
 	}
 	

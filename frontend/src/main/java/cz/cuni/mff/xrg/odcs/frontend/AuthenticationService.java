@@ -21,26 +21,24 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
  * @author Jan Vojt
  */
 public class AuthenticationService {
-	
+
 	/**
 	 * Attribute key for storing {@link Authentication} in HTTP session.
 	 */
 	public static final String SESSION_KEY = "authentication";
-	
 	@Autowired
 	@Qualifier("authenticationManager")
 	private AuthenticationManager authManager;
-	
 	@Autowired
 	private LogoutHandler logoutHandler;
-	
+
 	/**
 	 * Creates security context and saves authentication details into session.
-	 * 
+	 *
 	 * @param login
 	 * @param password
 	 * @param httpRequest
-	 * @throws AuthenticationException 
+	 * @throws AuthenticationException
 	 */
 	public void login(String login, String password, HttpServletRequest httpRequest)
 			throws AuthenticationException {
@@ -50,16 +48,16 @@ public class AuthenticationService {
 		token.setDetails(new WebAuthenticationDetails(httpRequest));
 
 		Authentication authentication = authManager.authenticate(token);
-		
+
 		HttpSession session = RequestHolder.getRequest().getSession();
 		session.setAttribute(SESSION_KEY, authentication);
-		
+
 		if (session instanceof FakeHttpSession) {
 			// We are servicing a PUSH request in a websocket connection, so we
 			// also need to update the servlet session outside this connection.
 			getServletSession(session).setAttribute(SESSION_KEY, authentication);
 		}
-		
+
 		httpRequest.getSession().setAttribute(SESSION_KEY, authentication);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -67,8 +65,8 @@ public class AuthenticationService {
 
 	/**
 	 * Clears security context and removes authentication from session.
-	 * 
-	 * @param httpRequest 
+	 *
+	 * @param httpRequest
 	 */
 	public void logout(HttpServletRequest httpRequest) {
 
@@ -83,7 +81,7 @@ public class AuthenticationService {
 	/**
 	 * Get the servlet session, which differs from the session on websocket
 	 * request object.
-	 * 
+	 *
 	 * @param session fake session on PUSH request
 	 * @return session used in HTTP servlet requests
 	 */

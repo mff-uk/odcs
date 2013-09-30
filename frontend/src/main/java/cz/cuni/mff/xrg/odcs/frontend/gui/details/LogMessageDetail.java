@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,7 +16,6 @@ import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogException;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-
 
 /**
  * Shows detail of selected log message.
@@ -44,9 +43,9 @@ public class LogMessageDetail extends Window {
 		mainLayout.setSpacing(true);
 		mainLayout.setMargin(true);
 		mainLayout.setSizeFull();
-		
 
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,  Locale.getDefault());
+
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
 		formattedDate = df.format(log.getDate());
 
 		Label timeLabel = new Label("Time:");
@@ -70,17 +69,17 @@ public class LogMessageDetail extends Window {
 		mainLayout.addComponent(sourceLabel, 0, 3);
 		sourceContent = new Label(log.getSource());
 		mainLayout.addComponent(sourceContent, 1, 3);
-		
+
 		Label messageLabel = new Label("Message:");
 		mainLayout.addComponent(messageLabel, 0, 4);
 
 		fullMessageContent = new TextArea();
 		LogException le = App.getLogs().getLogException(log);
-        fullMessageContent.setValue(le == null ? log.getMessage() : le.toString());
-        fullMessageContent.setReadOnly(true);
+		fullMessageContent.setValue(le == null ? log.getMessage() : le.toString());
+		fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
 		mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
-                mainLayout.setComponentAlignment(fullMessageContent, Alignment.TOP_LEFT);
+		mainLayout.setComponentAlignment(fullMessageContent, Alignment.TOP_LEFT);
 
 		Button closeButton = new Button("Close", new Button.ClickListener() {
 			@Override
@@ -99,30 +98,30 @@ public class LogMessageDetail extends Window {
 	}
 
 	/**
+	 * Load new log message to existing detail window.
+	 *
+	 * @param log Log message to load.
+	 */
+	public void loadMessage(LogMessage log) {
+		timeContent.setValue(formattedDate);
+		threadContent.setValue(log.getThread());
+		levelContent.setValue(log.getLevel().toString());
+		sourceContent.setValue(log.getSource());
+		fullMessageContent.setReadOnly(false);
+		LogException le = App.getLogs().getLogException(log);
+		fullMessageContent.setValue(le == null ? log.getMessage() : le.toString());
+		fullMessageContent.setReadOnly(true);
+		setContentHeight(this.getHeight(), this.getHeightUnits());
+	}
+
+	/**
 	 * Resizes content due to resize of whole dialog.
 	 *
 	 * @param height New height of whole dialog.
 	 * @param unit
 	 * @{link Unit} of height.
 	 */
-	void setContentHeight(float height, Sizeable.Unit unit) {
+	public void setContentHeight(float height, Sizeable.Unit unit) {
 		fullMessageContent.setHeight(height - 230, unit);
-	}
-
-	/**
-	 * Load new log message to existing detail window.
-	 *
-	 * @param log Log message to load.
-	 */
-	void loadMessage(LogMessage log) {
-		timeContent.setValue(formattedDate);
-		threadContent.setValue(log.getThread());
-		levelContent.setValue(log.getLevel().toString());
-		sourceContent.setValue(log.getSource());
-                fullMessageContent.setReadOnly(false);
-				LogException le = App.getLogs().getLogException(log);
-                fullMessageContent.setValue(le == null ? log.getMessage() : le.toString());
-                fullMessageContent.setReadOnly(true);
-                setContentHeight(this.getHeight(), this.getHeightUnits());
 	}
 }

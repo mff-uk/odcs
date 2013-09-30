@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
 import com.vaadin.data.Item;
 import com.vaadin.shared.ui.MarginInfo;
@@ -8,7 +8,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -28,26 +27,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Window showing Edge detail. Currently only corresponding DataUnit can be named.
+ * Window showing Edge detail. Used to create mappings between output and input
+ * DataUnits of connected DPUs.
  *
  * @author Bogo
  */
 public class EdgeDetail extends Window {
 
 	private final static Logger LOG = LoggerFactory.getLogger(EdgeDetail.class);
-
 	private final Edge edge;
-	
 	private List<String> outputUnits;
 	private List<String> inputUnits;
 	private List<MutablePair<List<Integer>, Integer>> mappings;
-
 	private ListSelect outputSelect;
 	private ListSelect inputSelect;
 	private ListSelect mappingsSelect;
-	
 	private HashMap<String, MutablePair<List<Integer>, Integer>> map;
-	
 	/**
 	 * Class for working with edge's script.
 	 */
@@ -71,21 +66,21 @@ public class EdgeDetail extends Window {
 
 		GridLayout edgeSettingsLayout = new GridLayout(3, 10);
 		edgeSettingsLayout.setSpacing(true);
-		
+
 		outputSelect = new ListSelect("Output data units of the source DPU:");
 		outputSelect.setMultiSelect(true);
 		outputSelect.setNewItemsAllowed(false);
 		outputSelect.setWidth(250, Unit.PIXELS);
 		outputSelect.setImmediate(true);
 		outputSelect.setRows(10);
-		outputUnits = edgeCompiler.getOutputNames(edge.getFrom().getDpuInstance()); 
-				
-		for(String unit : outputUnits) {
+		outputUnits = edgeCompiler.getOutputNames(edge.getFrom().getDpuInstance());
+
+		for (String unit : outputUnits) {
 			outputSelect.addItem(unit);
 		}
 		edgeSettingsLayout.addComponent(outputSelect, 0, 0, 0, 4);
-		
-		
+
+
 		inputSelect = new ListSelect("Input data units of the target DPU:");
 		inputSelect.setMultiSelect(false);
 		inputSelect.setWidth(250, Unit.PIXELS);
@@ -93,45 +88,43 @@ public class EdgeDetail extends Window {
 		inputSelect.setNullSelectionAllowed(false);
 		inputSelect.setImmediate(true);
 		inputSelect.setRows(10);
-		inputUnits = edgeCompiler.getInputNames(edge.getTo().getDpuInstance()); 
+		inputUnits = edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
 
-		for(String unit : inputUnits) {
+		for (String unit : inputUnits) {
 			inputSelect.addItem(unit);
 		}
 		edgeSettingsLayout.addComponent(inputSelect, 1, 0, 1, 4);
 		Button mapButton = new Button("Map", new Button.ClickListener() {
-
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				//Iterate whole collection to preserve order and identify same mapping with different order of selecting.
 				Set<String> outputs = new HashSet<>(); //Set<String>)outputSelect.getValue();
-				Collection<String> outputItems = (Collection<String>)outputSelect.getItemIds();
-				for(String outputItem : outputItems) {
-					if(outputSelect.isSelected(outputItem)) {
+				Collection<String> outputItems = (Collection<String>) outputSelect.getItemIds();
+				for (String outputItem : outputItems) {
+					if (outputSelect.isSelected(outputItem)) {
 						outputs.add(outputItem);
 					}
 				}
-				String input = (String)inputSelect.getValue();
-				if(outputs.isEmpty() || input == null) {
+				String input = (String) inputSelect.getValue();
+				if (outputs.isEmpty() || input == null) {
 					Notification.show("At least one output and exactly one input must be selected!", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-				
+
 				List<Integer> left = new ArrayList<>(outputs.size());
-				for(String output : outputs) {
+				for (String output : outputs) {
 					left.add(outputUnits.indexOf(output));
 				}
 				MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
-				if(addMappingToList(mapping)) {
+				if (addMappingToList(mapping)) {
 					mappings.add(mapping);
 				}
 			}
 		});
 		mapButton.setWidth(130, Unit.PIXELS);
 		edgeSettingsLayout.addComponent(mapButton, 2, 1);
-		
-		Button clearButton = new Button("Clear selection", new Button.ClickListener() {
 
+		Button clearButton = new Button("Clear selection", new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				outputSelect.setValue(null);
@@ -140,7 +133,7 @@ public class EdgeDetail extends Window {
 		});
 		clearButton.setWidth(130, Unit.PIXELS);
 		edgeSettingsLayout.addComponent(clearButton, 2, 2);
-		
+
 		mappingsSelect = new ListSelect("Available mappings:");
 		mappingsSelect.setStyleName("select-hide-tb");
 		mappingsSelect.setWidth(500, Unit.PIXELS);
@@ -148,19 +141,18 @@ public class EdgeDetail extends Window {
 		mappingsSelect.setNewItemsAllowed(false);
 		mappingsSelect.setImmediate(true);
 		// inputUnits and outputUnits are already set !
-		mappings = edgeCompiler.decompileMapping(edge.getScript(), outputUnits, inputUnits); 
-				
-		for(MutablePair<List<Integer>, Integer> mapping : mappings) {
+		mappings = edgeCompiler.decompileMapping(edge.getScript(), outputUnits, inputUnits);
+
+		for (MutablePair<List<Integer>, Integer> mapping : mappings) {
 			addMappingToList(mapping);
 		}
 		edgeSettingsLayout.addComponent(mappingsSelect, 0, 5, 1, 9);
-		
-		Button deleteButton = new Button("Delete mapping", new Button.ClickListener() {
 
+		Button deleteButton = new Button("Delete mapping", new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				Set<String> selectedMappings = (Set<String>)mappingsSelect.getValue();
-				for(String strMapping : selectedMappings) {
+				Set<String> selectedMappings = (Set<String>) mappingsSelect.getValue();
+				for (String strMapping : selectedMappings) {
 					MutablePair<List<Integer>, Integer> mapping = map.get(strMapping);
 					map.remove(strMapping);
 					mappingsSelect.removeItem(strMapping);
@@ -176,7 +168,7 @@ public class EdgeDetail extends Window {
 		buttonBar.setSpacing(true);
 		buttonBar.setWidth(100, Unit.PERCENTAGE);
 		buttonBar.setMargin(new MarginInfo(true, false, false, false));
-		
+
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
@@ -233,16 +225,15 @@ public class EdgeDetail extends Window {
 	 * @return True if save was successful, false otherwise.
 	 */
 	protected boolean save() {
-			if (!validate()) {
-				return false;
-			}
-			String script = 
-					edgeCompiler.compileScript(mappings, outputUnits, inputUnits);			
-			edge.setScript(script);			
-			return true;
+		if (!validate()) {
+			return false;
+		}
+		String script =
+				edgeCompiler.compileScript(mappings, outputUnits, inputUnits);
+		edge.setScript(script);
+		return true;
 	}
 
-	
 	private boolean validate() {
 //		try {
 //			edgeName.validate();
@@ -256,7 +247,7 @@ public class EdgeDetail extends Window {
 	private boolean addMappingToList(MutablePair<List<Integer>, Integer> mapping) throws UnsupportedOperationException {
 		Iterator<Integer> iter = mapping.left.iterator();
 		String leftSide = outputUnits.get(iter.next());
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			leftSide += ", " + outputUnits.get(iter.next());
 		}
 		String strMapping = String.format("%s -> %s", leftSide, inputUnits.get(mapping.right));

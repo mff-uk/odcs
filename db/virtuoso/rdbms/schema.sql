@@ -182,7 +182,7 @@ CREATE INDEX "ix_PPL_MODEL_user_id" ON "DB"."INTLIB"."PPL_MODEL" ("user_id");
 
 CREATE TABLE "DB"."INTLIB"."PPL_PPL_CONFLICTS"
 (
-  "pipeline_id" INTEGER IDENTITY
+  "pipeline_id" INTEGER IDENTITY,
   "pipeline_conflict_id" SMALLINT,
   PRIMARY KEY ("pipeline_id", "pipeline_conflict_id")
 );

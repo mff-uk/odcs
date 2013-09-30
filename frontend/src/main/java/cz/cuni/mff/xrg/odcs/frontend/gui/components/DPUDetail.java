@@ -97,7 +97,7 @@ public class DPUDetail extends Window {
 		dpuDescription.setHeight("60px");
 		if (dpu.useDPUDescription()) {
 			// leave dpuDescription blank
-		} else {		
+		} else {
 			dpuDescription.setValue(dpu.getDescription().trim());
 		}
 		dpuDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
@@ -138,7 +138,7 @@ public class DPUDetail extends Window {
 			}
 			// add to layout
 			confDialog.setWidth("100%");
-			
+
 			setResizable(true);
 			mainLayout.addComponent(confDialog);
 		}
@@ -207,7 +207,7 @@ public class DPUDetail extends Window {
 			if (!validate()) {
 				return false;
 			}
-			
+
 			String userDescription = dpuDescription.getValue().trim();
 			if (userDescription.isEmpty()) {
 				String dialogDescription = confDialog.getDescription();
@@ -220,14 +220,14 @@ public class DPUDetail extends Window {
 					// use dialogDescription
 					dpuInstance.getDPUInstanceRecord().setDescription(dialogDescription);
 					dpuInstance.getDPUInstanceRecord().setUseDPUDescription(true);
-				}				
+				}
 			} else {
 				// use user provided description
 				dpuInstance.getDPUInstanceRecord().setDescription(dpuDescription
 						.getValue().trim());
 				dpuInstance.getDPUInstanceRecord().setUseDPUDescription(false);
 			}
-			
+
 			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue().trim());
 			dpuInstance.saveConfig();
 		} catch (Exception ce) {

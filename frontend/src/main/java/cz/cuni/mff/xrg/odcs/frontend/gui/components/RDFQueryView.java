@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FileDownloader;
@@ -16,8 +17,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DownloadStreamResource;
-import cz.cuni.mff.xrg.odcs.frontend.browser.DataUnitBrowserFactory;
+import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
@@ -45,13 +45,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple query view for browsing and querying debug data. User can query data
- * for given DPU. If DPU is TRANSFORMER, user can select if input or output
- * graph should be queried. If SELECT query is used, data are shown in table. If
- * CONSTRUCT query is used, data are provided as file for download. User can
- * select format of data.
- *
- * TODO: Refresh description
+ * Simple query view for browsing and querying debug data. User selects DPU and
+ * then specifies DataUnit. User can simply browse the data, or query them. Both
+ * SELECT and CONSTRUCT query can be used to show data in table and also to
+ * download them. User can select format of data.
  *
  * @author Bogo
  */
@@ -66,7 +63,6 @@ public class RDFQueryView extends CustomComponent {
 	private Link export;
 	private final static Logger LOG = LoggerFactory.getLogger(RDFQueryView.class);
 	private boolean isEnabled = true;
-	
 	Button queryDownloadButton;
 	Button queryButton;
 
@@ -145,25 +141,19 @@ public class RDFQueryView extends CustomComponent {
 				}
 				format = (RDFFormatType) o;
 
-
-				String mimeType = null;
 				String filename = null;
 				switch (format) {
 					case TTL:
-						mimeType = DownloadStreamResource.MIME_TYPE_TTL;
 						filename = "data.ttl";
 						break;
 					case AUTO:
 					case RDFXML:
-						mimeType = DownloadStreamResource.MIME_TYPE_RDFXML;
 						filename = "data.rdf";
 						break;
 					case N3:
-						mimeType = "text/n3";
 						filename = "data.n3";
 						break;
 					case TRIG:
-						mimeType = "application/trig";
 						filename = "data.trig";
 						break;
 				}
@@ -181,7 +171,7 @@ public class RDFQueryView extends CustomComponent {
 			private InputStream getDownloadData() {
 				try {
 					RDFDataUnit repository = getRepository(selector.getSelectedDataUnit());
-					if(repository == null) {
+					if (repository == null) {
 						return null;
 					}
 					String query = queryText.getValue();
@@ -270,6 +260,20 @@ public class RDFQueryView extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Gets repository for selected DataUnit from context.
+	 *
+	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
+	 *
+	 */
+	RDFDataUnit getRepository(DataUnitInfo dataUnit) {
+		return RDFDataUnitHelper.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
+	}
+
+	void setDpu(DPUInstanceRecord dpu) {
+		selector.setSelectedDPU(dpu);
+	}
+
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
 		if (query.length() < 9) {
 			//Due to expected exception format in catch block
@@ -318,13 +322,9 @@ public class RDFQueryView extends CustomComponent {
 			container = buildDataSource((Map<String, List<String>>) data);
 		} else {
 			container = App.getApp().getBean(ContainerFactory.class)
-							.createRDFData((List<RDFTriple>) data);
+					.createRDFData((List<RDFTriple>) data);
 		}
 		resultTable.setContainerDataSource(container);
-	}
-
-	private void downloadQuery() throws InvalidQueryException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	private List<RDFTriple> getRDFTriplesData(List<Statement> statements) {
@@ -354,18 +354,6 @@ public class RDFQueryView extends CustomComponent {
 		} catch (InvalidQueryException ex) {
 			//Should not happen
 		}
-	}
-
-	/**
-	 * Gets repository path from context.
-	 *
-	 * @return {@link ExecutionContextInfo} containing current execution
-	 * information.
-	 *
-	 * //TODO: Change getRepository method and arguments
-	 */
-	RDFDataUnit getRepository(DataUnitInfo dataUnit) {
-		return DataUnitBrowserFactory.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
 	}
 
 	/**
@@ -402,8 +390,14 @@ public class RDFQueryView extends CustomComponent {
 		return result;
 	}
 
-	void setDpu(DPUInstanceRecord dpu) {
-		selector.setSelectedDPU(dpu);
+	private void setQueryingEnabled(boolean value) {
+		if (isEnabled != value) {
+			queryText.setEnabled(value);
+			formatSelect.setEnabled(value);
+			queryButton.setEnabled(value);
+			queryDownloadButton.setEnabled(value);
+			isEnabled = value;
+		}
 	}
 
 	/**
@@ -439,16 +433,6 @@ public class RDFQueryView extends CustomComponent {
 
 		private StreamResource getResource() {
 			return (StreamResource) this.getResource("dl");
-		}
-	}
-
-	private void setQueryingEnabled(boolean value) {
-		if(isEnabled != value) {
-			queryText.setEnabled(value);
-			formatSelect.setEnabled(value);
-			queryButton.setEnabled(value);
-			queryDownloadButton.setEnabled(value);
-			isEnabled = value;
 		}
 	}
 }
