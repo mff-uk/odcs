@@ -14,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.EdgeDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
 
 import java.util.Collection;
 import java.util.Stack;

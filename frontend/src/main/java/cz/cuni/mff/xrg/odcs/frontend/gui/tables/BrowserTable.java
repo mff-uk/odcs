@@ -1,5 +1,6 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;

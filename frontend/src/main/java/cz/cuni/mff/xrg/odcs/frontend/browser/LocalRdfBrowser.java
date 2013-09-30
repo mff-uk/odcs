@@ -5,7 +5,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;

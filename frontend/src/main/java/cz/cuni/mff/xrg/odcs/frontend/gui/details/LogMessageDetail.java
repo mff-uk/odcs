@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -105,7 +105,7 @@ public class LogMessageDetail extends Window {
 	 * @param unit
 	 * @{link Unit} of height.
 	 */
-	void setContentHeight(float height, Sizeable.Unit unit) {
+	public void setContentHeight(float height, Sizeable.Unit unit) {
 		fullMessageContent.setHeight(height - 230, unit);
 	}
 
@@ -114,7 +114,7 @@ public class LogMessageDetail extends Window {
 	 *
 	 * @param log Log message to load.
 	 */
-	void loadMessage(LogMessage log) {
+	public void loadMessage(LogMessage log) {
 		timeContent.setValue(formattedDate);
 		threadContent.setValue(log.getThread());
 		levelContent.setValue(log.getLevel().toString());

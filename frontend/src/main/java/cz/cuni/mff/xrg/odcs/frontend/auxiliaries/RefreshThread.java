@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.ExecutionMonitor;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

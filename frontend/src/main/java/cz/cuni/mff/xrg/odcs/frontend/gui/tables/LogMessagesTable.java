@@ -1,5 +1,6 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
@@ -20,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.InFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.PropertiesFilter;
+import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 
 import java.util.List;
 import java.util.Set;

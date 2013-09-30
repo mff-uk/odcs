@@ -10,7 +10,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.SimpleTreeFilter;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 
 import java.util.List;
 

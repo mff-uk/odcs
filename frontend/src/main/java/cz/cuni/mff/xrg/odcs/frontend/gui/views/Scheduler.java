@@ -31,8 +31,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.IntlibFilterDecorator;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 
 import org.springframework.context.annotation.Scope;

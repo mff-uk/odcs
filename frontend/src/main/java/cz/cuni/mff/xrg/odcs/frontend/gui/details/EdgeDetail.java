@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
 import com.vaadin.data.Item;
 import com.vaadin.shared.ui.MarginInfo;

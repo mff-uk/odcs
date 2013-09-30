@@ -1,5 +1,7 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views;
+package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.github.wolfie.refresher.Refresher;
 import java.text.DateFormat;
 import java.sql.Timestamp;

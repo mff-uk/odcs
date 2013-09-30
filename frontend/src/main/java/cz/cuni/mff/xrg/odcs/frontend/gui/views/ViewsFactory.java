@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import com.vaadin.navigator.View;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;

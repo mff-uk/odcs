@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import java.util.List;
 import java.util.Set;
 

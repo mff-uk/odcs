@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views;
+package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor;
 
 import com.vaadin.data.Property;
 import com.vaadin.server.ThemeResource;

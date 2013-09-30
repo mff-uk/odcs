@@ -1,5 +1,6 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
@@ -18,6 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
+import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
 
 import java.util.ArrayList;
 import java.util.Collection;

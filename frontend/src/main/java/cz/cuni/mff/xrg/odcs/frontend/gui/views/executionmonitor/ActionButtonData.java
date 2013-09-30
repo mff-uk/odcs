@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views;
+package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor;
 
 /**
  * Preserves buttons type and table row on which the button on Execution Monitor was pressed.

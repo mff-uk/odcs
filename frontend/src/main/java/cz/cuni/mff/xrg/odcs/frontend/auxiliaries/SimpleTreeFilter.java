@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views;
+package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
 import java.text.DateFormat;
 import java.util.Locale;
@@ -96,7 +96,7 @@ public class RecordDetail extends Window {
 	 * @param unit
 	 * @{link Unit} of height.
 	 */
-	void setContentHeight(float height, Unit unit) {
+	public void setContentHeight(float height, Unit unit) {
 		fullMessageContent.setHeight(height - 250, unit);
 	}
 	
@@ -105,7 +105,7 @@ public class RecordDetail extends Window {
 	 *
 	 * @param record Record to load.
 	 */
-	void loadMessage(MessageRecord record) {
+	public void loadMessage(MessageRecord record) {
 		pipelineExecutionContent.setValue(String.format("%d", record.getExecution().getId()));
 		timeContent.setValue(formattedDate);
 		instanceContent.setValue(record.getType().toString());

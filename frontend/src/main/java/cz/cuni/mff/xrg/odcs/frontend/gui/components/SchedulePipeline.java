@@ -39,7 +39,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.SimpleTreeFilter;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 
 /**
  *  Dialog for the scheduling rule creation. Called from the {@link #Scheduler} 

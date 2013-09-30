@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.RecordsTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;

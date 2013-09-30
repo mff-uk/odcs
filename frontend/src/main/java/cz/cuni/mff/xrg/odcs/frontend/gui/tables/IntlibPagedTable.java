@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.components;
+package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.shared.ui.label.ContentMode;

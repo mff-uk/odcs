@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FileDownloader;
