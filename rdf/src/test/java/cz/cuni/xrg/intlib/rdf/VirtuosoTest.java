@@ -117,7 +117,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		long size = rdfRepo.getTripleCount();
 
 		try {
-			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE,
+			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
