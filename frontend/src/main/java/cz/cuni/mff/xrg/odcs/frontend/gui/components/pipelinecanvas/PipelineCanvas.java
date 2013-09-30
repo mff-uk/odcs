@@ -17,7 +17,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EdgeDetail;
 
 import java.util.Collection;
-import java.util.EventObject;
 import java.util.Stack;
 
 /**
@@ -85,7 +84,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void onDpuMoved(int dpuId, int newX, int newY) {
 				//storeHistoryGraph();
 				isModified = true;
-				fireDetailClosed(Edge.class);
+				fireEvent(new GraphChangedEvent(PipelineCanvas.this, false));
 				dpuMoved(dpuId, newX, newY);
 			}
 
@@ -130,7 +129,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		pip.setGraph(graph);
 		App.getApp().getPipelines().save(pip);
 		Node debugNode = graph.getNodeById(dpuId);
-		fireShowDebug(pip, debugNode);
+		fireEvent(new ShowDebugEvent(this, pip, debugNode));
 	}
 
 	/**
@@ -259,7 +258,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			@Override
 			public void windowClose(CloseEvent e) {
 				isModified = true;
-				fireDetailClosed(Node.class);
+				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Node.class));
 				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
 			}
 		});
@@ -277,7 +276,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			@Override
 			public void windowClose(CloseEvent e) {
 				isModified = true;
-				fireDetailClosed(Edge.class);
+				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Edge.class));
 				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
 			}
 		});
@@ -287,33 +286,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Inform listeners, that the detail is closing.
 	 */
-	protected void fireDetailClosed(Class klass) {
+	protected void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
 		for (Listener l : ls) {
-			try {
-				DetailClosedListener dcl = (DetailClosedListener) l;
-				dcl.detailClosed(new EventObject(klass));
-			} catch (Exception ex) {
-				//TODO: Solve better!
-			}
-		}
-	}
-
-	/**
-	 * Inform listeners, that debug request was made.
-	 *
-	 * @param pipeline {@link Pipeline} on which debug should be run.
-	 * @param node {@link Node} where execution should end.
-	 */
-	protected void fireShowDebug(Pipeline pipeline, Node node) {
-		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
-		for (Listener l : ls) {
-			try {
-				ShowDebugListener sdl = (ShowDebugListener) l;
-				sdl.showDebug(pipeline, node);
-			} catch (Exception ex) {
-				//TODO: Solve better!
-			}
+			l.componentEvent(event);
 		}
 	}
 
@@ -381,7 +357,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		isModified = true;
 		if (historyStack.isEmpty()) {
 			//Make undo button enabled.
-			fireDetailClosed(PipelineGraph.class);
+			fireEvent(new GraphChangedEvent(this, true));
 		}
 		
 		historyStack.push(clonedGraph);

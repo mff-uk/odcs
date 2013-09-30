@@ -16,8 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DownloadStreamResource;
-import cz.cuni.mff.xrg.odcs.frontend.browser.DataUnitBrowserFactory;
+import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
@@ -32,7 +31,6 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TTL;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,13 +44,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple query view for browsing and querying debug data. User can query data
- * for given DPU. If DPU is TRANSFORMER, user can select if input or output
- * graph should be queried. If SELECT query is used, data are shown in table. If
- * CONSTRUCT query is used, data are provided as file for download. User can
- * select format of data.
- *
- * TODO: Refresh description
+ * Simple query view for browsing and querying debug data. User selects DPU and 
+ * then specifies DataUnit. User can simply browse the data, or query them.
+ * Both SELECT and CONSTRUCT query can be used to show data in table and also to 
+ * download them. User can select format of data.
  *
  * @author Bogo
  */
@@ -146,25 +141,19 @@ public class RDFQueryView extends CustomComponent {
 				}
 				format = (RDFFormatType) o;
 
-
-				String mimeType = null;
 				String filename = null;
 				switch (format) {
 					case TTL:
-						mimeType = DownloadStreamResource.MIME_TYPE_TTL;
 						filename = "data.ttl";
 						break;
 					case AUTO:
 					case RDFXML:
-						mimeType = DownloadStreamResource.MIME_TYPE_RDFXML;
 						filename = "data.rdf";
 						break;
 					case N3:
-						mimeType = "text/n3";
 						filename = "data.n3";
 						break;
 					case TRIG:
-						mimeType = "application/trig";
 						filename = "data.trig";
 						break;
 				}
@@ -358,15 +347,13 @@ public class RDFQueryView extends CustomComponent {
 	}
 
 	/**
-	 * Gets repository path from context.
+	 * Gets repository for selected DataUnit from context.
 	 *
-	 * @return {@link ExecutionContextInfo} containing current execution
-	 * information.
+	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
 	 *
-	 * //TODO: Change getRepository method and arguments
 	 */
 	RDFDataUnit getRepository(DataUnitInfo dataUnit) {
-		return DataUnitBrowserFactory.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
+		return RDFDataUnitHelper.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
 	}
 
 	/**

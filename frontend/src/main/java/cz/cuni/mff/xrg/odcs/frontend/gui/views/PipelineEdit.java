@@ -24,7 +24,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
@@ -34,12 +33,14 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedListener;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugListener;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.SCHEDULED;
-import java.util.EventObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import ru.xpoft.vaadin.VaadinView;
 
@@ -55,6 +56,8 @@ class PipelineEdit extends ViewComponent {
 
 	/** View name. */
 	public static final String NAME = "PipelineEdit";
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 	
 	private View incomingView = null;
 	private VerticalLayout mainLayout;
@@ -133,37 +136,51 @@ class PipelineEdit extends ViewComponent {
 		pc.setWidth(1060, Unit.PIXELS);
 		pc.setHeight(630, Unit.PIXELS);
 		pc.init();
-		pc.addListener(new DetailClosedListener() {
+		pc.addListener(new Listener() {
+
 			@Override
-			public void detailClosed(EventObject e) {
-				Class klass = (Class) e.getSource();
+			public void componentEvent(Event event) {
+				if(event.getClass() != DetailClosedEvent.class) {
+					return;
+				}
+				DetailClosedEvent dce = (DetailClosedEvent)event;
+				
+				Class klass = dce.getDetailClass();
 				if (klass == Node.class) {
 					dpuTree.refresh();
 					dpuTree.markAsDirty();
 					setupButtons();
 					App.getApp().push();
-				} else if (klass == PipelineGraph.class) {
-					undo.setEnabled(true);
-					setupButtons();
 				} else if (klass == Edge.class) {
 					setupButtons();
 				}
-				
-			}
-
-			@Override
-			public void componentEvent(Event event) {
 			}
 		});
-		pc.addListener(new ShowDebugListener() {
-			@Override
-			public void showDebug(Pipeline pip, Node debugNode) {
-
-				openDebug(pip, debugNode);
-			}
+			
+		pc.addListener(new Listener() {
 
 			@Override
 			public void componentEvent(Event event) {
+				if(event.getClass() != ShowDebugEvent.class) {
+					return;
+				}
+				ShowDebugEvent sde = (ShowDebugEvent)event;
+				openDebug(sde.getPipeline(), sde.getDebugNode());
+			}
+		});
+		pc.addListener(new Listener() {
+
+			@Override
+			public void componentEvent(Event event) {
+				if(event.getClass() != GraphChangedEvent.class) {
+					return;
+				}
+				
+				if (((GraphChangedEvent)event).getIsUndoable()) {
+					undo.setEnabled(true);
+				}
+				setupButtons();
+				
 			}
 		});
 
@@ -194,7 +211,7 @@ class PipelineEdit extends ViewComponent {
 						pc.addDpu(dpu, mouse.getClientX() - 20 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 280 + UI
 								.getCurrent().getScrollTop());
 					} else {
-						// TODO log unknown DPURecord
+						LOG.warn("Invalid drop operation.");
 					}
 				}
 

@@ -101,6 +101,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 				// Change the order of buttons
 				d.setContentMode(ConfirmDialog.ContentMode.TEXT);
+				
 				Button ok = d.getOkButton();
 				ok.setWidth(120, Unit.PIXELS);
 				HorizontalLayout buttons = (HorizontalLayout) ok.getParent();
