@@ -394,7 +394,7 @@ public class SchedulePipeline extends Window {
 				//checking if the dialog was open from the Scheduler table
 				//if no, create new scheduling rule
 				if (selectSch== null){
-					schedule = new Schedule();
+					schedule = App.getSchedules().createSchedule();
 				}
 				else{
 					schedule = selectSch;

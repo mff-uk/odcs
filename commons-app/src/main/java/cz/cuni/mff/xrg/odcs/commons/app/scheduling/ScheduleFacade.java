@@ -8,8 +8,10 @@ import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 /**
@@ -27,6 +29,9 @@ public class ScheduleFacade {
 	@PersistenceContext
 	private EntityManager em;
 	
+	@Autowired(required = false)
+	private AuthenticationContext authCtx;
+	
 	/**
 	 * Schedule factory. Explicitly call {@link #save(cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule)}
 	 * to persist created entity.
@@ -39,6 +44,9 @@ public class ScheduleFacade {
 		notify.setTypeError(NotificationRecordType.NO_REPORT);
 		notify.setTypeSuccess(NotificationRecordType.INSTANT);
 		sch.setNotification(notify);
+		if (authCtx != null) {
+			sch.setOwner(authCtx.getUser());
+		}
 		return sch;
 	}
 	

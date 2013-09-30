@@ -301,7 +301,11 @@ class Scheduler extends ViewComponent {
 			}
 
 			result.getContainerProperty(num, "schid").setValue(item.getId());
-			result.getContainerProperty(num, "user").setValue(" ");
+			if(item.getOwner() == null) {
+				result.getContainerProperty(num, "user").setValue(" ");
+			} else {
+				result.getContainerProperty(num, "user").setValue(item.getOwner().getUsername());
+			}
 			result.getContainerProperty(num, "pipeline").setValue(
 					item.getPipeline().getName());
 			
