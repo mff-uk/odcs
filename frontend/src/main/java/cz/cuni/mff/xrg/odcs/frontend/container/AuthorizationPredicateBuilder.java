@@ -16,22 +16,16 @@ import javax.persistence.criteria.Root;
 /**
  * Builder of predicate with authentication logic deciding about permissions on
  * entity selected in query.
- * 
+ *
  * @author Jan Vojt
  * @param <E> entity class selected in query
  */
 public class AuthorizationPredicateBuilder<E> implements PredicateBuilder {
-	
+
 	private AuthenticationContext authCtx;
-	
 	private Root<E> root;
-	
-	private CriteriaQuery query;
-	
 	private CriteriaBuilder builder;
-	
 	private final Class<E> entityClass;
-	
 	/**
 	 * A set of predicates deciding authorization logic. Each predicate is
 	 * indexed by class to which it is relevant.
@@ -44,10 +38,9 @@ public class AuthorizationPredicateBuilder<E> implements PredicateBuilder {
 			CriteriaQuery query,
 			CriteriaBuilder builder,
 			Class<E> entityClass) {
-		
+
 		this.authCtx = authCtx;
 		this.root = root;
-		this.query = query;
 		this.builder = builder;
 		this.entityClass = entityClass;
 		preparePredicates();
@@ -55,16 +48,16 @@ public class AuthorizationPredicateBuilder<E> implements PredicateBuilder {
 
 	/**
 	 * Builds the filtering predicate.
-	 * 
+	 *
 	 * @return predicate deciding about permission
 	 */
 	@Override
 	public Predicate build() {
-		
+
 		// Disjunction with zero disjuncts is always false,
 		// which corresponds with restrictive policy of PermissionEvaluator.
 		Predicate predicate = builder.or();
-		
+
 		boolean predicateUsed = false;
 		for (Map.Entry<Class, PredicateBuilder> e : predicates.entrySet()) {
 			if (e.getKey().isAssignableFrom(entityClass)) {
@@ -73,46 +66,43 @@ public class AuthorizationPredicateBuilder<E> implements PredicateBuilder {
 				predicateUsed = true;
 			}
 		}
-		
+
 		// If no predicates are applicable to our entity, just allow all.
 		// This is just a temporary solution until all our entities have
 		// applicable predicates (rules for handling authorization).
 		return predicateUsed ? predicate : builder.and();
 	}
-	
+
 	/**
-	 * Builds predicates for incorporating permission logic into query.
-	 * Should be consistent with <code>view</code> permission on entity in
+	 * Builds predicates for incorporating permission logic into query. Should
+	 * be consistent with
+	 * <code>view</code> permission on entity in
 	 * {@link IntlibPermissionEvaluator#hasPermission(org.springframework.security.core.Authentication, java.lang.Object, "view") }.
 	 */
 	private void preparePredicates() {
-		
+
 		// admin role predicate
 		if (authCtx.getAuthentication().getAuthorities().contains(Role.ROLE_ADMIN)) {
-			
-			predicates.put(Object.class, new PredicateBuilder() {
 
+			predicates.put(Object.class, new PredicateBuilder() {
 				@Override
 				public Predicate build() {
 					return builder.and();
 				}
 			});
-			
-		} else {
-		
-			predicates.put(OwnedEntity.class, new PredicateBuilder() {
 
+		} else {
+
+			predicates.put(OwnedEntity.class, new PredicateBuilder() {
 				@Override
 				public Predicate build() {
 					return builder.and(
 							builder.equal(root.get("owner"),
-							authCtx.getUser())
-					);
+							authCtx.getUser()));
 				}
 			});
 
 			predicates.put(SharedEntity.class, new PredicateBuilder() {
-
 				@Override
 				public Predicate build() {
 					return builder.equal(root.get("public"), true);
@@ -122,5 +112,4 @@ public class AuthorizationPredicateBuilder<E> implements PredicateBuilder {
 			// TODO special rules for pipelines
 		}
 	}
-
 }

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSessionListener;
 
 /**
  * Keeps track of all sessions in the {@link ServletContext}.
- * 
+ *
  * <p>
  * Session map is needed in websocket connections, where only a fake session is
  * available on the request implementation of {@link HttpServletRequest}.
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSessionListener;
  * @author Jan Vojt
  */
 public class SessionHolder implements HttpSessionListener {
-	
+
 	/**
 	 * Attribute key for getting the attribute with session map from servlet
 	 * context.
@@ -33,7 +33,8 @@ public class SessionHolder implements HttpSessionListener {
 
 	/**
 	 * Adds a newly created session to the session map in the servlet context.
-	 * @param se 
+	 *
+	 * @param se
 	 */
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
@@ -43,36 +44,35 @@ public class SessionHolder implements HttpSessionListener {
 
 	/**
 	 * Removes session from the session map in servlet context.
-	 * 
-	 * @param se 
+	 *
+	 * @param se
 	 */
 	@Override
 	public void sessionDestroyed(HttpSessionEvent se) {
 		Map<String, HttpSession> sessionMap = getSessionMap(se);
 		sessionMap.remove(se.getSession().getId());
 	}
-	
+
 	/**
 	 * Gets the session map, or creates it in the servlet context if it does not
 	 * exist.
-	 * 
+	 *
 	 * @param se
-	 * @return 
+	 * @return
 	 */
 	private Map<String, HttpSession> getSessionMap(HttpSessionEvent se) {
-		
+
 		Map<String, HttpSession> sessionMap = (Map<String, HttpSession>) se
 				.getSession()
 				.getServletContext()
 				.getAttribute(ATTR_KEY);
-		
+
 		if (sessionMap == null) {
 			// this should only happen when the first session is created by servlet
 			sessionMap = new HashMap<>();
 			se.getSession().getServletContext().setAttribute(ATTR_KEY, sessionMap);
 		}
-		
+
 		return sessionMap;
 	}
-
 }

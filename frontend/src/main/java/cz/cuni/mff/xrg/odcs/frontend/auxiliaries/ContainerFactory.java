@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Class support creating Vaadin container from List<?>.
- * 
+ *
  * @author Petyr
  *
  */

@@ -12,7 +12,6 @@ import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
 import java.io.File;
 import java.util.List;
 
-
 /**
  * Implementation of browser for
  * {@link cz.cuni.xrg.intlib.backend.data.rdf.LocalRDF}.
@@ -26,7 +25,6 @@ class LocalRdfBrowser extends DataUnitBrowser {
 	 * Data from repository.
 	 */
 	private List<RDFTriple> data = null;
-	
 	/**
 	 * Table for data presentation.
 	 */
@@ -63,10 +61,9 @@ class LocalRdfBrowser extends DataUnitBrowser {
 		dataTable = new IntlibPagedTable();
 		Container container = App.getApp().getBean(ContainerFactory.class).createRDFData(data);
 		dataTable.setContainerDataSource(container);
-		
+
 
 		dataTable.setVisibleColumns("subject", "predicate", "object");
-                dataTable.setFilterBarVisible(true);
+		dataTable.setFilterBarVisible(true);
 	}
-
 }

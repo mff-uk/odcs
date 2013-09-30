@@ -34,16 +34,16 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 
 /**
- * Dialog for the DPU template creation. Called from the {@link #DPU}.  Allows to upload a JAR file
- * and on base of it create a new DPU template that will be stored to the DPU template tree.
- * 
+ * Dialog for the DPU template creation. Called from the {@link #DPU}. Allows to
+ * upload a JAR file and on base of it create a new DPU template that will be
+ * stored to the DPU template tree.
+ *
  * @author Maria Kukhar
  *
  */
 public class DPUCreate extends Window {
 
 	private TextField dpuName;
-
 	private TextArea dpuDescription;
 	private OptionGroup groupVisibility;
 	private Upload selectFile;
@@ -52,18 +52,17 @@ public class DPUCreate extends Window {
 	private GridLayout dpuGeneralSettingsLayout;
 	private DPUTemplateRecord dpuTemplate;
 	private TextField uploadFile;
-	public static int fl=0;
+	public static int fl = 0;
 
 	/**
-	 *  Basic constructor.
+	 * Basic constructor.
 	 */
-
 	public DPUCreate() {
 
 		this.setResizable(false);
 		this.setModal(true);
 		this.setCaption("DPU Template Creation");
-		
+
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
@@ -87,7 +86,6 @@ public class DPUCreate extends Window {
 		dpuName.setHeight("-1px");
 		//settings of mandatory
 		dpuName.addValidator(new Validator() {
-
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class
@@ -99,7 +97,7 @@ public class DPUCreate extends Window {
 			}
 		});
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
-		
+
 		//Description of DPU Template: label & TextArea
 		Label descriptionLabel = new Label("Description");
 		descriptionLabel.setImmediate(false);
@@ -112,7 +110,7 @@ public class DPUCreate extends Window {
 		dpuDescription.setWidth("310px");
 		dpuDescription.setHeight("60px");
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
-		
+
 		//Visibility of DPU Template: label & OptionGroup
 		Label visibilityLabel = new Label("Visibility");
 		descriptionLabel.setImmediate(false);
@@ -135,7 +133,7 @@ public class DPUCreate extends Window {
 		dpuGeneralSettingsLayout.addComponent(selectLabel, 0, 3);
 
 		fileUploadReceiver = new FileUploadReceiver();
-		
+
 		HorizontalLayout uploadFileLayout = new HorizontalLayout();
 		uploadFileLayout.setSpacing(true);
 
@@ -147,12 +145,11 @@ public class DPUCreate extends Window {
 		selectFile.setHeight("40px");
 
 		selectFile.addStartedListener(new StartedListener() {
-
 			/**
-			 * Upload start listener. If selected file has JAR extension then 
-			 * an upload status window with upload progress bar will be shown. 
-			 * If selected file has other extension, then upload will be interrupted and 
-			 * error notification will be shown.
+			 * Upload start listener. If selected file has JAR extension then an
+			 * upload status window with upload progress bar will be shown. If
+			 * selected file has other extension, then upload will be
+			 * interrupted and error notification will be shown.
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -161,10 +158,10 @@ public class DPUCreate extends Window {
 				String filename = event.getFilename();
 				String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
 				String jar = "jar";
-				
-				if(!jar.equals(extension)){
+
+				if (!jar.equals(extension)) {
 					selectFile.interruptUpload();
-					fl=1;
+					fl = 1;
 					Notification.show(
 							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
 					return;
@@ -178,34 +175,34 @@ public class DPUCreate extends Window {
 
 		selectFile.addFinishedListener(new Upload.FinishedListener() {
 			/**
-			 * Upload finished listener. Upload window will be closed after upload finished.
-			 * If an upload process wasn't interrupted then will be
-			 * show the name of an uploaded file on the DPU template creation dialogue. 
-			 * 
+			 * Upload finished listener. Upload window will be closed after
+			 * upload finished. If an upload process wasn't interrupted then
+			 * will be show the name of an uploaded file on the DPU template
+			 * creation dialogue.
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void uploadFinished(final FinishedEvent event) {
-				
+
 				uploadInfoWindow.setClosable(true);
 				uploadInfoWindow.close();
-				if(fl==0){
+				if (fl == 0) {
 					uploadFile.setReadOnly(false);
 					uploadFile.setValue(event.getFilename());
 					uploadFile.setReadOnly(true);
-				}
-				else{
+				} else {
 					uploadFile.setReadOnly(false);
 					uploadFile.setValue("");
 					uploadFile.setReadOnly(true);
-					fl=0;
+					fl = 0;
 				}
 			}
 		});
 		// Upload status window
 		uploadInfoWindow = new UploadInfoWindow(selectFile);
-		
+
 		uploadFileLayout.addComponent(selectFile);
 
 		uploadFile = new TextField();
@@ -213,7 +210,6 @@ public class DPUCreate extends Window {
 		uploadFile.setReadOnly(true);
 		//set mandatory to uploadFile text field.
 		uploadFile.addValidator(new Validator() {
-
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.getClass() == String.class
@@ -224,9 +220,9 @@ public class DPUCreate extends Window {
 
 			}
 		});
-		
+
 		uploadFileLayout.addComponent(uploadFile);
-		
+
 		dpuGeneralSettingsLayout.addComponent(uploadFileLayout, 1, 3);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
@@ -240,16 +236,15 @@ public class DPUCreate extends Window {
 
 		Button saveButton = new Button("Save");
 		saveButton.setWidth("90px");
-		
-		saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
 
+		saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
 			/**
-			 * After pushing the button Save will be checked validation of the mandatory fields:
-			 * Name, Description and uploadFile. 
-			 * JAR file will be copied from template folder to  the /target/dpu/ folder 
-			 * if there no conflicts.
-			 * After getting all information from JAR file needed to store new DPUTemplateRecord,
-			 * the record in Database will be created
+			 * After pushing the button Save will be checked validation of the
+			 * mandatory fields: Name, Description and uploadFile. JAR file will
+			 * be copied from template folder to the /target/dpu/ folder if
+			 * there no conflicts. After getting all information from JAR file
+			 * needed to store new DPUTemplateRecord, the record in Database
+			 * will be created
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -262,23 +257,23 @@ public class DPUCreate extends Window {
 							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-				
+
 				// prepare dpu validators
 				List<DPUValidator> validators = new LinkedList<>();
 				validators.add(new DPUDialogValidator());
-				
+
 				final File sourceFile = fileUploadReceiver.file;
 				// create new representation
-				DPUTemplateWrap dpuWrap = null;				
+				DPUTemplateWrap dpuWrap = null;
 				try {
 					dpuWrap = new DPUTemplateWrap(
 							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
-				} catch(DPUCreateException e) {
+				} catch (DPUCreateException e) {
 					uploadFile.setReadOnly(false);
 					uploadFile.setValue("");
 					uploadFile.setReadOnly(true);
 					Notification.show("Failed to create DPU",
-							e.getMessage(), 
+							e.getMessage(),
 							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
@@ -289,14 +284,12 @@ public class DPUCreate extends Window {
 				dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
 				App.getDPUs().save(dpuTemplate);
 				// and at the end we can close the dialog .. 
-				close();				
+				close();
 			}
-
 		}));
 		buttonBar.addComponent(saveButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
-
 			/**
 			 * Closes DPU Template creation window
 			 */
@@ -304,7 +297,7 @@ public class DPUCreate extends Window {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-			close();
+				close();
 
 			}
 		});
@@ -316,5 +309,4 @@ public class DPUCreate extends Window {
 		this.setContent(mainLayout);
 		setSizeUndefined();
 	}
-
 }

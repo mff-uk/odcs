@@ -2,22 +2,21 @@ package cz.cuni.mff.xrg.odcs.frontend.browser;
 
 /**
  * Indicates that the initialisation of DataUnitBrowser failed.
- * 
+ *
  * @author Petyr
  *
  */
 public class BrowserInitFailedException extends Exception {
 
-    public BrowserInitFailedException(Throwable cause) {
-        super(cause);
-    }
+	public BrowserInitFailedException(Throwable cause) {
+		super(cause);
+	}
 
-    public BrowserInitFailedException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public BrowserInitFailedException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    public BrowserInitFailedException(String message) {
-        super(message);
-    }		
-	
+	public BrowserInitFailedException(String message) {
+		super(message);
+	}
 }

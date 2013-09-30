@@ -3,21 +3,21 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 import com.vaadin.data.Validator;
 
 /**
- * Validator for checking maximum length of input. Maximum length can be set in constructor.
- * 
+ * Validator for checking maximum length of input. Maximum length can be set in
+ * constructor.
+ *
  * @author Bogo
  */
 public final class MaxLengthValidator implements Validator {
-	
+
 	public static int NAME_LENGTH = 255;
 	public static int DPU_NAME_LENGTH = 45;
 	public static int DESCRIPTION_LENGTH = 512;
-
 	private int maxLength = 1000;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param maxLength Maximum length of input.
 	 */
 	public MaxLengthValidator(int maxLength) {
@@ -26,8 +26,10 @@ public final class MaxLengthValidator implements Validator {
 
 	/**
 	 * Validates value for maximum length.
+	 *
 	 * @param value value to validate
-	 * @throws com.vaadin.data.Validator.InvalidValueException If maximum length is exceeded.
+	 * @throws com.vaadin.data.Validator.InvalidValueException If maximum length
+	 * is exceeded.
 	 */
 	@Override
 	public void validate(Object value) throws InvalidValueException {

@@ -45,9 +45,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple query view for browsing and querying debug data. User selects DPU and 
- * then specifies DataUnit. User can simply browse the data, or query them.
- * Both SELECT and CONSTRUCT query can be used to show data in table and also to 
+ * Simple query view for browsing and querying debug data. User selects DPU and
+ * then specifies DataUnit. User can simply browse the data, or query them. Both
+ * SELECT and CONSTRUCT query can be used to show data in table and also to
  * download them. User can select format of data.
  *
  * @author Bogo
@@ -63,7 +63,6 @@ public class RDFQueryView extends CustomComponent {
 	private Link export;
 	private final static Logger LOG = LoggerFactory.getLogger(RDFQueryView.class);
 	private boolean isEnabled = true;
-	
 	Button queryDownloadButton;
 	Button queryButton;
 
@@ -172,7 +171,7 @@ public class RDFQueryView extends CustomComponent {
 			private InputStream getDownloadData() {
 				try {
 					RDFDataUnit repository = getRepository(selector.getSelectedDataUnit());
-					if(repository == null) {
+					if (repository == null) {
 						return null;
 					}
 					String query = queryText.getValue();
@@ -261,6 +260,20 @@ public class RDFQueryView extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Gets repository for selected DataUnit from context.
+	 *
+	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
+	 *
+	 */
+	RDFDataUnit getRepository(DataUnitInfo dataUnit) {
+		return RDFDataUnitHelper.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
+	}
+
+	void setDpu(DPUInstanceRecord dpu) {
+		selector.setSelectedDPU(dpu);
+	}
+
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
 		if (query.length() < 9) {
 			//Due to expected exception format in catch block
@@ -309,13 +322,9 @@ public class RDFQueryView extends CustomComponent {
 			container = buildDataSource((Map<String, List<String>>) data);
 		} else {
 			container = App.getApp().getBean(ContainerFactory.class)
-							.createRDFData((List<RDFTriple>) data);
+					.createRDFData((List<RDFTriple>) data);
 		}
 		resultTable.setContainerDataSource(container);
-	}
-
-	private void downloadQuery() throws InvalidQueryException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	private List<RDFTriple> getRDFTriplesData(List<Statement> statements) {
@@ -345,16 +354,6 @@ public class RDFQueryView extends CustomComponent {
 		} catch (InvalidQueryException ex) {
 			//Should not happen
 		}
-	}
-
-	/**
-	 * Gets repository for selected DataUnit from context.
-	 *
-	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
-	 *
-	 */
-	RDFDataUnit getRepository(DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
 	}
 
 	/**
@@ -391,8 +390,14 @@ public class RDFQueryView extends CustomComponent {
 		return result;
 	}
 
-	void setDpu(DPUInstanceRecord dpu) {
-		selector.setSelectedDPU(dpu);
+	private void setQueryingEnabled(boolean value) {
+		if (isEnabled != value) {
+			queryText.setEnabled(value);
+			formatSelect.setEnabled(value);
+			queryButton.setEnabled(value);
+			queryDownloadButton.setEnabled(value);
+			isEnabled = value;
+		}
 	}
 
 	/**
@@ -428,16 +433,6 @@ public class RDFQueryView extends CustomComponent {
 
 		private StreamResource getResource() {
 			return (StreamResource) this.getResource("dl");
-		}
-	}
-
-	private void setQueryingEnabled(boolean value) {
-		if(isEnabled != value) {
-			queryText.setEnabled(value);
-			formatSelect.setEnabled(value);
-			queryButton.setEnabled(value);
-			queryDownloadButton.setEnabled(value);
-			isEnabled = value;
 		}
 	}
 }

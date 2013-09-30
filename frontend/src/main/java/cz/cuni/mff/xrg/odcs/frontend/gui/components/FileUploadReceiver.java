@@ -14,29 +14,27 @@ import com.vaadin.ui.Upload.Receiver;
 
 /**
  * Upload selected file to template directory
- * 
+ *
  * @author Maria Kukhar
  *
  */
 public class FileUploadReceiver implements Receiver {
 
 	private static final long serialVersionUID = 5099459605355200117L;
-	private int total;
-	private boolean sleep;
-	public  File file;
+	public File file;
 	private FileOutputStream fstream = null;
-	public  Path path;
-	public  String fName;
+	public Path path;
+	public String fName;
 
 	/**
-	 * return an OutputStream 
+	 * return an OutputStream
 	 */
+	@Override
 	public OutputStream receiveUpload(final String filename,
 			final String MIMEType) {
-		total = 0;
 		fName = filename;
 
-		OutputStream fos = null;
+		OutputStream fos;
 
 		try {
 			//create template directory
@@ -53,22 +51,21 @@ public class FileUploadReceiver implements Receiver {
 
 				@Override
 				public void write(final int b) throws IOException {
-					total++;
 					fstream.write(b);
 				}
-				
+
+				@Override
 				public void write(byte b[], int off, int len) throws IOException {
-			        if (b == null) {
-			            throw new NullPointerException();
-			        } else if ((off < 0) || (off > b.length) || (len < 0) ||
-			                   ((off + len) > b.length) || ((off + len) < 0)) {
-			            throw new IndexOutOfBoundsException();
-			        } else if (len == 0) {
-			            return;
-			        }
-			        fstream.write(b, off, len);
-			        total+=len;
-			    }
+					if (b == null) {
+						throw new NullPointerException();
+					} else if ((off < 0) || (off > b.length) || (len < 0)
+							|| ((off + len) > b.length) || ((off + len) < 0)) {
+						throw new IndexOutOfBoundsException();
+					} else if (len == 0) {
+						return;
+					}
+					fstream.write(b, off, len);
+				}
 
 				@Override
 				public void close() throws IOException {
@@ -84,5 +81,4 @@ public class FileUploadReceiver implements Receiver {
 		}
 		return fos;
 	}
-
 }

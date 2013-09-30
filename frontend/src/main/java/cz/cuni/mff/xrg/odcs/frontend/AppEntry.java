@@ -11,7 +11,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
@@ -43,7 +42,6 @@ import org.springframework.context.ApplicationContext;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import ru.xpoft.vaadin.DiscoveryNavigator;
-import virtuoso.jdbc4.VirtuosoException;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -58,28 +56,19 @@ import virtuoso.jdbc4.VirtuosoException;
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
-	
 	/**
 	 * Used to resolve URL request and select active view.
 	 */
 	private com.vaadin.navigator.Navigator navigator;
-	
 	/**
 	 * Spring application context.
 	 */
 	@Autowired
 	private ApplicationContext context;
-	
 	private MenuLayout main;
-	
 	private Date lastAction = null;
-	
-	//private RefreshThread refreshThread;
-	
 	private Client backendClient;
-	
 	private RefreshManager refreshManager;
-	
 	private String storedNavigation = null;
 
 	@Override
@@ -89,7 +78,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		// in panel, for possible vertical scrolling
 		main = new MenuLayout();
 		setContent(main);
-		
+
 		ConfirmDialog.Factory df = new DefaultConfirmDialogFactory() {
 			// We change the default order of the buttons
 			@Override
@@ -101,7 +90,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 				// Change the order of buttons
 				d.setContentMode(ConfirmDialog.ContentMode.TEXT);
-				
+
 				Button ok = d.getOkButton();
 				ok.setWidth(120, Unit.PIXELS);
 				HorizontalLayout buttons = (HorizontalLayout) ok.getParent();
@@ -140,7 +129,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 //						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
 //						return;
 //					}
-					
+
 					// Display the error message in a custom fashion
 					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
 					Notification.show(cause.getMessage(), text, Notification.Type.ERROR_MESSAGE);
@@ -152,18 +141,17 @@ public class AppEntry extends com.vaadin.ui.UI {
 				}
 			}
 		});
-		
+
 		/**
 		 * Checking user every time request is made.
 		 */
-
 		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
 			@Override
 			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
 				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
 					storedNavigation = event.getViewName();
 					String parameters = event.getParameters();
-					if(parameters != null) {
+					if (parameters != null) {
 						storedNavigation += "/" + parameters;
 					}
 					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
@@ -175,8 +163,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 //					setupRefreshThread();
 //					LOG.debug("Starting new refresh thread.");
 //				}
-				
-				if(!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
+
+				if (!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
 					refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
 					refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
 					//refreshThread.refreshExecution(null, null);
@@ -188,39 +176,39 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
 			}
 		});
-		
-		 // attach a listener so that we'll get asked isViewChangeAllowed?
-        this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+
+		// attach a listener so that we'll get asked isViewChangeAllowed?
+		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
 			private String pendingViewAndParameters;
 			private ModifiableComponent lastView;
 			boolean forceViewChange = false;
+
 			@Override
-            public boolean beforeViewChange(ViewChangeEvent event) {
-				if(forceViewChange) {
+			public boolean beforeViewChange(ViewChangeEvent event) {
+				if (forceViewChange) {
 					forceViewChange = false;
 					pendingViewAndParameters = null;
 					return true;
 				}
 
 				if (event.getOldView() instanceof ModifiableComponent
-						&& ((ModifiableComponent)event.getOldView()).isModified()) {
+						&& ((ModifiableComponent) event.getOldView()).isModified()) {
 
-                    // save the View where the user intended to go
-					lastView = (ModifiableComponent)event.getOldView();
-                    pendingViewAndParameters = event.getViewName();
-                    if (event.getParameters() != null) {
-                        pendingViewAndParameters += "/";
-                        pendingViewAndParameters += event
-                                .getParameters();
-                    }
+					// save the View where the user intended to go
+					lastView = (ModifiableComponent) event.getOldView();
+					pendingViewAndParameters = event.getViewName();
+					if (event.getParameters() != null) {
+						pendingViewAndParameters += "/";
+						pendingViewAndParameters += event
+								.getParameters();
+					}
 
-                    // Prompt the user to save or cancel if the name is changed
+					// Prompt the user to save or cancel if the name is changed
 					ConfirmDialog.show(getUI(), "Unsaved changes", "There are unsaved changes.\nDo you wish to save them or discard?", "Save", "Discard changes", new ConfirmDialog.Listener() {
-
 						@Override
 						public void onClose(ConfirmDialog cd) {
-							if(cd.isConfirmed()) {
-								if(!lastView.saveChanges()) {
+							if (cd.isConfirmed()) {
+								if (!lastView.saveChanges()) {
 									return;
 								}
 							} else {
@@ -229,19 +217,19 @@ public class AppEntry extends com.vaadin.ui.UI {
 							navigator.navigateTo(pendingViewAndParameters);
 						}
 					});
-                    //Notification.show("Please apply or cancel your changes", Type.WARNING_MESSAGE);
+					//Notification.show("Please apply or cancel your changes", Type.WARNING_MESSAGE);
 
-                    return false;
-                } else {
-                    return true;
-                }
-            }
+					return false;
+				} else {
+					return true;
+				}
+			}
 
 			@Override
-            public void afterViewChange(ViewChangeEvent event) {
-                pendingViewAndParameters = null;
-            }
-        });
+			public void afterViewChange(ViewChangeEvent event) {
+				pendingViewAndParameters = null;
+			}
+		});
 
 		AppConfig config = getAppConfiguration();
 		backendClient = new Client(
@@ -267,6 +255,16 @@ public class AppEntry extends com.vaadin.ui.UI {
 		});
 	}
 
+	public void navigateAfterLogin() {
+		if (storedNavigation == null) {
+			getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
+		} else {
+			String navigationTarget = storedNavigation;
+			storedNavigation = null;
+			getNavigator().navigateTo(navigationTarget);
+		}
+	}
+
 	/**
 	 * Checks if there is logged in user and if its session is still valid.
 	 *
@@ -274,6 +272,13 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 */
 	private boolean checkAuthentication() {
 		return getAuthCtx().isAuthenticated();
+	}
+
+	/**
+	 * Sets last action date to current time.
+	 */
+	public void setActive() {
+		lastAction = new Date();
 	}
 
 	/**
@@ -330,9 +335,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 	public UserFacade getUsers() {
 		return (UserFacade) context.getBean("userFacade");
 	}
-	
+
 	/**
-	 * Return facade, which provide services for manipulating with Namespace Prefix.
+	 * Return facade, which provide services for manipulating with Namespace
+	 * Prefix.
 	 *
 	 * @return NamespascePrefix facade
 	 */
@@ -360,12 +366,13 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Return class that can be used to explore DPUs.
+	 *
 	 * @return
 	 */
 	public DPUExplorer getDPUExplorere() {
 		return (DPUExplorer) context.getBean(DPUExplorer.class);
 	}
-	
+
 	/**
 	 * Fetches spring bean.
 	 *
@@ -404,13 +411,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	public DPUModuleManipulator getDPUManipulator() {
 		return getBean(DPUModuleManipulator.class);
 	}
-	
-	/**
-	 * Sets last action date to current time.
-	 */
-	public void setActive() {
-		lastAction = new Date();
-	}
 
 	/**
 	 * Gets time of last action.
@@ -421,30 +421,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 		return lastAction;
 	}
 
-//	public void setupRefreshThread() {
-//		refreshThread = new RefreshThread(5000);
-//		//refreshThread.start();
-//	}
-
 	public Client getBackendClient() {
 		return backendClient;
 	}
-	
-//	public RefreshThread getRefreshThread() {
-//		return refreshThread;
-//	}
-	
+
 	public RefreshManager getRefreshManager() {
 		return refreshManager;
-	}
-	
-	public void navigateAfterLogin() {
-		if(storedNavigation == null) {
-			getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
-		} else {
-			String navigationTarget = storedNavigation;
-			storedNavigation = null;
-			getNavigator().navigateTo(navigationTarget);
-		}
 	}
 }

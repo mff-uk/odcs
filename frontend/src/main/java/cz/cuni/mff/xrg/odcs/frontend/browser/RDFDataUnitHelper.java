@@ -15,7 +15,6 @@ import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 
-
 /**
  * Helper for RDF DataUnits.
  *
@@ -24,12 +23,12 @@ import java.io.File;
  *
  */
 public class RDFDataUnitHelper {
- 
+
 	/**
 	 * Return repository for specified RDF DataUnit.
 	 *
-	 * @param context       The pipelineExecution context.
-	 * @param dpuInstance   Owner of DataUnit.
+	 * @param context The pipelineExecution context.
+	 * @param dpuInstance Owner of DataUnit.
 	 * @param dataUnitIndex Index of data unit.
 	 * @return Repository or null if there is no browser for given type.
 	 *
@@ -79,15 +78,14 @@ public class RDFDataUnitHelper {
 						appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
 
 				VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
-					.createVirtuosoRDFRepo(
+						.createVirtuosoRDFRepo(
 						hostName,
 						port,
 						user,
 						password,
 						GraphUrl.translateDataUnitId(dataUnitId),
 						"",
-						App.getApp().getBean(AppConfig.class).getProperties()
-					);
+						App.getApp().getBean(AppConfig.class).getProperties());
 
 				return virtuosoRepository;
 

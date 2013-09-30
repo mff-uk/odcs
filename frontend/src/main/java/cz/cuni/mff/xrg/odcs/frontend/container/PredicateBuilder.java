@@ -9,10 +9,9 @@ import javax.persistence.criteria.Predicate;
  * @author Jan Vojt
  */
 public interface PredicateBuilder {
-	
+
 	/**
 	 * @return predicate produced
 	 */
 	public Predicate build();
-
 }

@@ -6,26 +6,24 @@ import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 
 /**
- * Simple extender of {@link Navigator} class, allowing to display PipelineEdit view correctly.
+ * Simple extender of {@link Navigator} class, allowing to display PipelineEdit
+ * view correctly.
  *
  * @author Bogo
  */
 public class IntlibNavigator extends Navigator {
-    
-    public IntlibNavigator(UI ui, SingleComponentContainer container) {
-        super(ui, container);
-    }
 
-    @Override
-    public void navigateTo(String navigationState) {
-        if(navigationState.contains("PipelineEdit")) {
-            App.getApp().getMain().setSizeUndefined();
-        } else {
-            App.getApp().getMain().setWidth(100, Unit.PERCENTAGE);
-        }
-        super.navigateTo(navigationState);
-    }
-    
-    
-    
+	public IntlibNavigator(UI ui, SingleComponentContainer container) {
+		super(ui, container);
+	}
+
+	@Override
+	public void navigateTo(String navigationState) {
+		if (navigationState.contains("PipelineEdit")) {
+			App.getApp().getMain().setSizeUndefined();
+		} else {
+			App.getApp().getMain().setWidth(100, Unit.PERCENTAGE);
+		}
+		super.navigateTo(navigationState);
+	}
 }

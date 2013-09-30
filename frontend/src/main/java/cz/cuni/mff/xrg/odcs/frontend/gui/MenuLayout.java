@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -45,49 +44,15 @@ public class MenuLayout extends CustomComponent {
 	Label userName;
 	Button logOutButton;
 	Embedded backendStatus;
-	
 	/**
 	 * Authentication context used to render menu with respect to currently
 	 * logged in user.
 	 */
 	private AuthenticationContext authCtx;
-	
 	/**
 	 * Authentication service handling logging in and out.
 	 */
 	private AuthenticationService authService;
-
-	/**
-	 * Class use as command to change sub-pages.
-	 *
-	 * @author Petyr
-	 */
-	private class NavigateToCommand implements Command {
-
-		private static final long serialVersionUID = 1L;
-		/**
-		 * Url to navigate on.
-		 */
-		private String url;
-
-		public NavigateToCommand(String url) {
-			this.url = url;
-		}
-
-		@Override
-		public void menuSelected(MenuItem selectedItem) {
-			App.getApp().getNavigator().navigateTo(this.url);
-		}
-	}
-
-	/**
-	 * Return layout for application views.
-	 *
-	 * @return
-	 */
-	public Panel getViewLayout() {
-		return this.viewLayout;
-	}
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -99,7 +64,7 @@ public class MenuLayout extends CustomComponent {
 	public MenuLayout() {
 		authCtx = App.getApp().getAuthCtx();
 		authService = App.getApp().getBean(AuthenticationService.class);
-		
+
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// init menuBar
@@ -129,16 +94,16 @@ public class MenuLayout extends CustomComponent {
 		this.menuBar.setHeight("45px");
 		this.menuBar.setHtmlContentAllowed(true);
 		//this.mainLayout.addComponent(menuBar);
-		
+
 		backendStatus = new Embedded();
 		backendStatus.setWidth(16, Unit.PIXELS);
 		backendStatus.setHeight(16, Unit.PIXELS);
 		backendStatus.setStyleName("backendStatus");
-		
+
 		userName = new Label(authCtx.getUsername());
 		userName.setWidth(100, Unit.PIXELS);
 		userName.addStyleName("username");
-		
+
 		logOutButton = new Button();
 		logOutButton.setWidth(16, Unit.PIXELS);
 		logOutButton.setVisible(authCtx.isAuthenticated());
@@ -172,19 +137,51 @@ public class MenuLayout extends CustomComponent {
 		//this.viewLayout.setMargin(false);
 		this.viewLayout.setStyleName("viewLayout");
 		this.mainLayout.addComponent(viewLayout);
-		
+
 		refreshBackendStatus(false);
 
 		return this.mainLayout;
+	}
+
+	/**
+	 * Return layout for application views.
+	 *
+	 * @return
+	 */
+	public Panel getViewLayout() {
+		return this.viewLayout;
 	}
 
 	public void refreshUserBar() {
 		userName.setValue(authCtx.getUsername());
 		logOutButton.setVisible(authCtx.isAuthenticated());
 	}
-	
+
 	public void refreshBackendStatus(boolean isRunning) {
 		backendStatus.setDescription(isRunning ? "Backend is online!" : "Backend is offline!");
 		backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.png" : "icons/offline.png"));
+	}
+
+	/**
+	 * Class use as command to change sub-pages.
+	 *
+	 * @author Petyr
+	 */
+	private class NavigateToCommand implements Command {
+
+		private static final long serialVersionUID = 1L;
+		/**
+		 * Url to navigate on.
+		 */
+		private String url;
+
+		public NavigateToCommand(String url) {
+			this.url = url;
+		}
+
+		@Override
+		public void menuSelected(MenuItem selectedItem) {
+			App.getApp().getNavigator().navigateTo(this.url);
+		}
 	}
 }

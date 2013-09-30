@@ -8,9 +8,9 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 
 /**
  * Validate DPU's dialog.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class DPUDialogValidator implements DPUValidator {
 
@@ -21,7 +21,7 @@ public class DPUDialogValidator implements DPUValidator {
 			@SuppressWarnings("rawtypes")
 			ConfigDialogProvider provider = (ConfigDialogProvider) dpuInstance;
 			try {
-				@SuppressWarnings({ "rawtypes", "unused" })
+				@SuppressWarnings({"rawtypes", "unused"})
 				AbstractConfigDialog dialog = provider.getConfigurationDialog();
 			} catch (Throwable t) {
 				// catch everything ..
@@ -31,5 +31,4 @@ public class DPUDialogValidator implements DPUValidator {
 			// no dialog
 		}
 	}
-
 }

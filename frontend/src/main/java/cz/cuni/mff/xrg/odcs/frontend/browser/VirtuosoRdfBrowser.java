@@ -28,7 +28,6 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 	 * Data from repository.
 	 */
 	private List<RDFTriple> data = null;
-
 	/**
 	 * Table for data presentation.
 	 */
@@ -47,15 +46,14 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 				.getString(ConfigProperty.VIRTUOSO_PASSWORD);
 
 		VirtuosoRDFRepo virtosoRepository = RDFDataUnitFactory
-			.createVirtuosoRDFRepo(
+				.createVirtuosoRDFRepo(
 				hostName,
 				port,
 				user,
 				password,
 				GraphUrl.translateDataUnitId(dataUnitId),
 				"",
-				App.getApp().getBean(AppConfig.class).getProperties()
-			);
+				App.getApp().getBean(AppConfig.class).getProperties());
 
 		data = virtosoRepository.getRDFTriplesInRepository();
 		// close repository

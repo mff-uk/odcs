@@ -9,22 +9,22 @@ import com.vaadin.ui.Component.Event;
  * @author Bogo
  */
 public class GraphChangedEvent extends Event {
-	
+
 	private boolean isUndo;
-	
+
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param source Source component.
-	 * @param isUndoable Whether or not is given graph change undoable.
-	 * (Undo button is enabled if it is.) 
-	 * 
+	 * @param isUndoable Whether or not is given graph change undoable. (Undo
+	 * button is enabled if it is.)
+	 *
 	 */
 	public GraphChangedEvent(Component source, boolean isUndoable) {
 		super(source);
 		isUndo = isUndoable;
 	}
-	
+
 	public boolean getIsUndoable() {
 		return isUndo;
 	}
