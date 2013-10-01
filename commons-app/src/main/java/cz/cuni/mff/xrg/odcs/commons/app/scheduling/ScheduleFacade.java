@@ -40,10 +40,6 @@ public class ScheduleFacade {
 	 */
 	public Schedule createSchedule() {
 		Schedule sch = new Schedule();
-		ScheduleNotificationRecord notify = new ScheduleNotificationRecord();
-		notify.setTypeError(NotificationRecordType.NO_REPORT);
-		notify.setTypeSuccess(NotificationRecordType.INSTANT);
-		sch.setNotification(notify);
 		if (authCtx != null) {
 			sch.setOwner(authCtx.getUser());
 		}
