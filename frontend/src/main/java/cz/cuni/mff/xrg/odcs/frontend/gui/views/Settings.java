@@ -28,6 +28,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.NamespacePrefixes;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
 
 import org.springframework.context.annotation.Scope;
@@ -72,6 +73,7 @@ public class Settings extends ViewComponent {
 	private EmailComponent email;
 	private EmailNotifications emailNotifications;
 	private GridLayout emailLayout;
+	private NamespacePrefixes prefixesList;
 	/**
 	 * Currently logged in user.
 	 */
@@ -170,13 +172,13 @@ public class Settings extends ViewComponent {
 
 		//layout for Namespace Prefixes
 		prefixesLayout = new VerticalLayout();
-		prefixesLayout.setMargin(true);
-		prefixesLayout.setSpacing(true);
 		prefixesLayout.setImmediate(true);
-		prefixesLayout.setStyleName("settings");
 		prefixesLayout.setWidth("100%");
-		prefixesLayout.addComponent(new Label("Namespace Prefixes"));
-
+		prefixesLayout.setHeight("100%");
+		prefixesList = new NamespacePrefixes();
+		prefixesLayout = prefixesList.buildNamespacePrefixesLayout();
+		prefixesLayout.setStyleName("settings");
+		
 		//My account tab
 		accountButton = new NativeButton("My account");
 		accountButton.setHeight("40px");
