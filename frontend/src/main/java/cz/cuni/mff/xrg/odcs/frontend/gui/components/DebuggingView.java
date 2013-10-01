@@ -133,6 +133,7 @@ public class DebuggingView extends CustomComponent {
 		//Query View
 		if (isInDebugMode && isRunFinished()) {
 			queryTab.setEnabled(true);
+			queryView.refreshDPUs(pipelineExec);
 		} else {
 			queryTab.setEnabled(false);
 		}

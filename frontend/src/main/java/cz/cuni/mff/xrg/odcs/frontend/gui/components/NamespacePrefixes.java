@@ -30,8 +30,8 @@ public class NamespacePrefixes {
 
 	private IntlibPagedTable prefixesTable;
 	private VerticalLayout prefixesListLayout;
-	private static String[] visibleCols = new String[]{"name", "uri", "actions"};
-	private static String[] headers = new String[]{"Prefix name", "Prefix URI", "Actions"};
+	private static String[] visibleCols = new String[]{"id","name", "uri", "actions"};
+	private static String[] headers = new String[]{"ID", "Prefix name", "Prefix URI", "Actions"};
 	private IndexedContainer tableData;
 	private Long prefixId;
 	private NamespacePrefix prefixDel;
@@ -53,7 +53,7 @@ public class NamespacePrefixes {
 
 		Button addUserButton = new Button();
 		addUserButton.setCaption("Create new prefix");
-		addUserButton.setWidth("120px");
+		addUserButton.setWidth("130px");
 		addUserButton
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -80,7 +80,7 @@ public class NamespacePrefixes {
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
-		buttonDeleteFilters.setWidth("120px");
+		buttonDeleteFilters.setWidth("130px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -149,11 +149,16 @@ public class NamespacePrefixes {
 
 		for (String p : visibleCols) {
 			// setting type of columns
-			result.addContainerProperty(p, String.class, "");
-			break;
+			switch (p) {
+				case "id":
+					result.addContainerProperty(p, Long.class, null);
+					break;
+				default:
+					result.addContainerProperty(p, String.class, "");
+					break;
+				}
 		}
-
-		result.addContainerProperty("id", Long.class, "");
+//		result.addContainerProperty("id", Long.class, "");
 
 
 		for (NamespacePrefix item : data) {
