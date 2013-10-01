@@ -9,7 +9,9 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLQueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
@@ -25,31 +27,44 @@ public class SPARQLTransformer
 
 	@InputDataUnit
 	public RDFDataUnit intputDataUnit;
-	
+
 	@OutputDataUnit
-	public RDFDataUnit outputDataUnit;	
-	
+	public RDFDataUnit outputDataUnit;
+
 	public SPARQLTransformer() {
 		super(SPARQLTransformerConfig.class);
+	}
+
+	private boolean isConstructQuery(String query) {
+		SPARQLQueryValidator sparqlQuery = new SPARQLQueryValidator(query,
+				SPARQLQueryType.CONSTRUCT);
+
+		return sparqlQuery.isQueryValid();
 	}
 
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException, DataUnitException {
-		
-		outputDataUnit.merge(intputDataUnit);
 
 		final String updateQuery = config.SPARQL_Update_Query;
+
 		try {
-			outputDataUnit.transform(updateQuery);
+			if (isConstructQuery(updateQuery)) {
+				intputDataUnit.transform(updateQuery);
+				outputDataUnit.merge(intputDataUnit);
+			} else {
+				outputDataUnit.merge(intputDataUnit);
+				outputDataUnit.transform(updateQuery);
+			}
+
 		} catch (RDFDataUnitException ex) {
 			throw new DPUException(ex.getMessage(), ex);
 		}
 
 	}
+
 	@Override
 	public AbstractConfigDialog<SPARQLTransformerConfig> getConfigurationDialog() {
 		return new SPARQLTransformerDialog();
 	}
-	
 }
