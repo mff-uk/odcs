@@ -4,6 +4,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.GraphNotEmptyException;
@@ -26,7 +27,10 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
+import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
+import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriter;
+import org.openrdf.query.resultio.text.tsv.SPARQLResultsTSVWriter;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -1505,12 +1509,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @param selectQuery String representation of SPARQL query
 	 * @param filePath    String path to file for saving result of query in
 	 *                    SPARQL XML syntax.
+	 * @param selectType  One of possible format for result of SPARQL select
+	 *                    query.
 	 * @return File contains result of given SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
 	public File executeSelectQuery(String selectQuery,
-			String filePath)
+			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException {
 
 		RepositoryConnection connection = null;
@@ -1529,8 +1535,26 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			createNewFile(file);
 
 			FileOutputStream os = new FileOutputStream(file);
-			TupleQueryResultWriter tupleHandler = new SPARQLResultsXMLWriter(
-					os);
+
+			TupleQueryResultWriter tupleHandler;
+
+			switch (selectType) {
+				case XML:
+					tupleHandler = new SPARQLResultsXMLWriter(os);
+					break;
+				case CSV:
+					tupleHandler = new SPARQLResultsCSVWriter(os);
+					break;
+				case JSON:
+					tupleHandler = new SPARQLResultsJSONWriter(os);
+					break;
+				case TSV:
+					tupleHandler = new SPARQLResultsTSVWriter(os);
+					break;
+				default:
+					tupleHandler = new SPARQLResultsXMLWriter(os);
+
+			}
 
 			tupleQuery.evaluate(tupleHandler);
 			return file;
