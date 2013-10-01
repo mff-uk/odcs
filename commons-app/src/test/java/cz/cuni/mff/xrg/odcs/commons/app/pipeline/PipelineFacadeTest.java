@@ -106,7 +106,7 @@ public class PipelineFacadeTest {
 		assertEquals(pipes[2], facade.getPipeline(pipes[2].getId()));
 	}
 	
-//	@Test // FIXME
+	@Test
 	@Transactional
 	public void testDeepDeletePipeline() {
 		
