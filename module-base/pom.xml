@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>cz.cuni.xrg.intlib</groupId>
-		<artifactId>intlib</artifactId>
-		<version>0.0.1</version>
+		<groupId>cz.cuni.mff.xrg.odcs</groupId>
+		<artifactId>odcs</artifactId>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>module-base</artifactId>
 	<packaging>pom</packaging>
@@ -42,16 +42,16 @@
 	<dependencies>
 
 		<dependency> <!-- commons-web project -->
-			<groupId>cz.cuni.xrg.intlib</groupId>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>commons-web</artifactId>
-			<version>${intlib.version}</version>
+			<version>${odcs.version}</version>
 			<type>jar</type>
 		</dependency>
 
 		<dependency> <!-- commons-module project -->
-			<groupId>cz.cuni.xrg.intlib</groupId>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>commons-module</artifactId>
-			<version>${intlib.version}</version>
+			<version>${odcs.version}</version>
 			<type>jar</type>
 		</dependency>
 
@@ -64,9 +64,9 @@
 		</dependency>
 
 		<dependency> <!-- RDF data unit -->
-			<groupId>cz.cuni.xrg.intlib</groupId>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>RDF</artifactId>
-			<version>${intlib.version}</version>
+			<version>${odcs.version}</version>
 			<type>jar</type>
 		</dependency>
 
@@ -82,7 +82,7 @@
 				<configuration>
 					<!-- exclude dependencies provided by application -->
 					<excludeDependencies>
-						*;groupId=cz.cuni.xrg.intlib
+						*;groupId=cz.cuni.mff.xrg.odcs
 						,*;groupId=com.vaadin
 						,*;groupId=org.openrdf.sesame
 						,org.slf4j
@@ -94,17 +94,17 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-Description>${project.description}</Bundle-Description>
 						<Export-Package>${dpu.package};version="${project.version}"</Export-Package>
-						<Import-Package>cz.cuni.xrg.intlib.commons.*;version="${intlib.version}",com.vaadin.*;version="${vaadin.version}",*</Import-Package>
+						<Import-Package>cz.cuni.mff.xrg.odcs.*;version="${odcs.version}",com.vaadin.*;version="${vaadin.version}",*</Import-Package>
 						<!-- dependencies embedding -->
 						<Embed-Dependency>*;scope=compile|system</Embed-Dependency> <!-- use provided for dependencies that are provided by application -->
 						<Embed-Transitive>${embed.transitive}</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->
 						<!-- dependencies location in output file -->
 						<Embed-Directory>dependency</Embed-Directory>
 						<Embed-StripGroup>false</Embed-StripGroup>
-						<!-- information for intlib -->
+						<!-- information for ODCleanStore -->
 						<DPU-Package>${dpu.package}</DPU-Package>
 						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
-						<Intlib-Version>${intlib.version}</Intlib-Version>
+						<ODCS-Version>${odcs.version}</ODCS-Version>
 					</instructions>
 				</configuration>
 			</plugin>

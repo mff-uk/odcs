@@ -10,26 +10,26 @@
         Data processing units typically consists of three parts:
         
         <ul>
-            <li>the main executive part, which contains the method <code>execute()</code> being called when the DPU is executed as part of the pipeline execution. See an example for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformer.java">SPARQL transformer</a> 
+            <li>the main executive part, which contains the method <code>execute()</code> being called when the DPU is executed as part of the pipeline execution. See an example for <a href="https://github.com/mff-uk/odcs/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/odcs/transformer/SPARQL/SPARQLTransformer.java">SPARQL transformer</a> 
             	</li>
-            <li>the configuration object, which configures main executive part and is used to persist the configuration dialog settings. See an example for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformerConfig.java">SPARQL transformer</a></li>
-            <li>the configuration dialog, which allows to configure the DPU in the graphical user interface of ODCleanStore. See an example for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/intlib/transformer/SPARQL/SPARQLTransformerDialog.java">SPARQL transformer</a></li>
+            <li>the configuration object, which configures main executive part and is used to persist the configuration dialog settings. See an example for <a href="https://github.com/mff-uk/odcs/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/odcs/transformer/SPARQL/SPARQLTransformerConfig.java">SPARQL transformer</a></li>
+            <li>the configuration dialog, which allows to configure the DPU in the graphical user interface of ODCleanStore. See an example for <a href="https://github.com/mff-uk/odcs/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/odcs/transformer/SPARQL/SPARQLTransformerDialog.java">SPARQL transformer</a></li>
         </ul>
         Every DPU must implement only the first part. The second and third parts are optional.
         Based on the required features the DPU's programmer <a href="#whyUsePreImpl">should</a> use
-        appropriate preimplemented class from package <code>cz.cuni.xrg.intlib.commons.module.dpu</code>
+        appropriate preimplemented class from package <code>cz.cuni.mff.xrg.odcs.commons.module.dpu</code>
         <ul>
         	<li><code>ConfigurableBase</code> for DPU's with configuration and optionali with configuration dialog.</li>
         	<li><code>NonConfigurableBase</code> for DPU's without configuration and dialog.</li>
         </ul>
         In order to provide configuration dialog the DPU's main class also has to implements interface 
 			<div class="code"> <pre> <code>
-interface cz.cuni.xrg.intlib.commons.web.ConfigDialogProvider &lt;C extends DPUConfigObject&gt; </code> </pre> </div>         
+interface cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider &lt;C extends DPUConfigObject&gt; </code> </pre> </div>         
         
         <h3 id="DpuExecFailed">DPUs execution</h3>
         DPU's main functionality is executed in - <code>execute(DPUContext context)</code> - method from interface
         <div class="code"> <pre> <code>
-interface cz.cuni.xrg.intlib.commons.dpu.DPU </code> </pre> </div>    
+interface cz.cuni.mff.xrg.odcs.commons.dpu.DPU </code> </pre> </div>    
         Also not every execution has to ends well. For such reason every execution can failed. There are
         two ways how to fail DPU's execution:
         <ol>
@@ -70,14 +70,14 @@ interface cz.cuni.xrg.intlib.commons.dpu.DPU </code> </pre> </div>
 			
 			The configuration object must implement interface
 			<div class="code"> <pre> <code>
-interface cz.cuni.xrg.intlib.commons.configuration.DPUConfigObject </code> </pre> </div> 
+interface cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject </code> </pre> </div> 
 			which is located in <code>commons</code> module. The interface requires implementation 
 			of one method - <code>isValid</code> - which checks whether the configuration is valid when the user's input is stored from the configuration dialog to the configuration object.			</div>
             Configuration object may be also used to hold default configuration of the DPU by introducing default values for the required attributes. 
             <br/>Instead of implementing interface the configuration class can extend 
             following preimplemented configuration class. 
 			<div class="code"> <pre> <code>
-class cz.cuni.xrg.intlib.commons.module.config.DPUConfigObject</code> </pre> </div> 
+class cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObject</code> </pre> </div> 
 			This class provide default 'always true' implementation of - <code>isValid</code> -, 
 			this implementation can be optionally override by programmer. 
 			See <a href="#whyUsePreImpl">reasons</a> why is usage of preimplementad classes prefered solution. 
@@ -240,15 +240,15 @@ public class MyDPU  {
 	
 	
 <div class="maven-pom"> <pre> <code>
-Export-Package: cz.cuni.mff.xrg.intlib.loader.rdf
+Export-Package: cz.cuni.mff.xrg.odcs.loader.rdf
 Import-Package: com.vaadin.data,com.vaadin.data.util,com.vaadin.server,c
- om.vaadin.shared.ui.combobox,com.vaadin.ui,cz.cuni.xrg.intlib.commons.c
- onfiguration;version="0.0.1",cz.cuni.xrg.intlib.commons.data;version="0
- .0.1",cz.cuni.xrg.intlib.commons.loader;version="0.0.1",cz.cuni.xrg.int
- lib.commons.module.data;version="0.0.1",cz.cuni.xrg.intlib.commons.modu
- le.dialog;version="0.0.1",cz.cuni.xrg.intlib.commons.module.dpu;version
- ="0.0.1",cz.cuni.xrg.intlib.commons.web;version="0.0.1",cz.cuni.xrg.int
- lib.rdf.enums,cz.cuni.xrg.intlib.rdf.exceptions,cz.cuni.xrg.intlib.rdf.
+ om.vaadin.shared.ui.combobox,com.vaadin.ui,cz.cuni.mff.xrg.odcs.commons.c
+ onfiguration;version="0.0.1",cz.cuni.mff.xrg.odcs.commons.data;version="0
+ .0.1",cz.cuni.mff.xrg.odcs.commons.loader;version="0.0.1",cz.cuni.xrg.int
+ lib.commons.module.data;version="0.0.1",cz.cuni.mff.xrg.odcs.commons.modu
+ le.dialog;version="0.0.1",cz.cuni.mff.xrg.odcs.commons.module.dpu;version
+ ="0.0.1",cz.cuni.mff.xrg.odcs.commons.web;version="0.0.1",cz.cuni.xrg.int
+ lib.rdf.enums,cz.cuni.mff.xrg.odcs.rdf.exceptions,cz.cuni.mff.xrg.odcs.rdf.
  interfaces
 </code> </pre> </div>
 
@@ -267,7 +267,7 @@ Import-Package: com.vaadin.data,com.vaadin.data.util,com.vaadin.server,c
             
 
 	<p><code>Pom.xml</code> file is the basic configuration file needed when the maven project is being build. If you want to add dependency
-	to the project (DPU bundle),  <code>pom.xml</code>  is the right place. See the sample <code>pom.xml</code> for <a href="https://github.com/mff-uk/intlib/blob/master/module/SPARQL_transformer/pom.xml">SPARQL transformer</a> </p>
+	to the project (DPU bundle),  <code>pom.xml</code>  is the right place. See the sample <code>pom.xml</code> for <a href="https://github.com/mff-uk/odcs/blob/master/module/SPARQL_transformer/pom.xml">SPARQL transformer</a> </p>
         
     <h3 id="whyUsePreImpl">Why use preimplemented classes?</h3>    
     The preimplemented classes contains default implementation for optionally implemented methods. 

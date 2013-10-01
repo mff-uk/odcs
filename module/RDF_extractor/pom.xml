@@ -3,17 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>cz.cuni.xrg.intlib</groupId>
+        <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>module-core</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>RDF_extractor</artifactId>
     <packaging>bundle</packaging>
     <name>RDF_extractor</name>
-    <version>0.0.1</version>
     
     <properties>       
-        <dpu.package>cz.cuni.mff.xrg.intlib.extractor.rdf</dpu.package>
+        <dpu.package>cz.cuni.mff.xrg.odcs.extractor.rdf</dpu.package>
         <dpu.mainClass>RDFExtractor</dpu.mainClass>
     </properties>
  	

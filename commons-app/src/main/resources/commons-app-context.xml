@@ -8,7 +8,7 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 	
 	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig" />
+	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" />
 	
 	<!-- data source with db login properties loaded from application configuration -->
 	<bean id="dataSource" class="virtuoso.ConfigurableDataSource">
@@ -27,43 +27,43 @@
 	</bean>
 
 	<!-- support for loading DPUs -->
-	<bean id="moduleFacade" class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIModuleFacade"
+	<bean id="moduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacade"
 	    init-method="start" destroy-method="stop" />
 
 	<!-- implementation of DPU's watcher -->
-	<bean id="watcher" class="cz.cuni.xrg.intlib.commons.app.module.impl.FileNotifierServer" 
+	<bean id="watcher" class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierServer" 
 	    init-method="start" destroy-method="stop"/>	
 		
 	<!-- Facade for managing users -->
-	<bean id="userFacade" class="cz.cuni.xrg.intlib.commons.app.user.UserFacade" />
+	<bean id="userFacade" class="cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade" />
 
 	<!-- Facade for managing pipelines -->
-	<bean id="pipelineFacade" class="cz.cuni.xrg.intlib.commons.app.pipeline.PipelineFacade" />
+	<bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade" />
 
 	<!-- Facade for managing DPUs -->
-	<bean id="dpuFacade" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUFacade" />
+	<bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade" />
 	
 	<!-- Facade for viewing log messages -->
-	<bean id="logFacade" class="cz.cuni.xrg.intlib.commons.app.execution.log.LogFacade" />
+	<bean id="logFacade" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade" />
 
 	<!-- Facade for managing shedules -->
-	<bean id="scheduleFacade" class="cz.cuni.xrg.intlib.commons.app.scheduling.ScheduleFacade" />
+	<bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade" />
 
 	<!-- Facade for managing RDF namespace prefixes -->
-	<bean id="prefixFacade" class="cz.cuni.xrg.intlib.commons.app.rdf.namespace.NamespacePrefixFacade" />
+	<bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefixFacade" />
 	
 	<!-- Service responsible for delivering emails -->
-	<bean id="emailSender" class="cz.cuni.xrg.intlib.commons.app.communication.EmailSender">
+	<bean id="emailSender" class="cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender">
 		<constructor-arg ref="configuration" />
 	</bean>
 	
 	<!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
-	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIModuleFacadeConfig">
+	<bean id="abstractModuleFacadeConfig" abstract="true" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
 		<constructor-arg ref="configuration" />
 	</bean>
 
 	<!-- Service or exploring DPUs -->
-	<bean id="DPUExplorer" class="cz.cuni.xrg.intlib.commons.app.dpu.DPUExplorer" />
+	<bean id="DPUExplorer" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer" />
 	
 	<context:annotation-config />
 

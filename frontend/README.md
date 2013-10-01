@@ -1,10 +1,10 @@
-Intlib frontend
+ODCleanStore frontend
 ===============
 
-Web frontend deployable on Apache Tomcat server for managing Intlib application.
+Web frontend deployable on Apache Tomcat server for managing ODCS application.
 Web frontend can run independently from backend, however some functionality may
 not work or activities may be postponed until backend is started. Frontend makes
-use of global configuration in `$HOME/.intlib/config.properties`.
+use of global configuration in `$HOME/.odcs/config.properties`.
 
 Developing notes:
 -----------------

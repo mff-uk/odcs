@@ -8,11 +8,11 @@
 	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">	    
 	    <!-- requiredKey must by in MDC to pass this filter, 
 	    	so only messages related to executions will pass-->	    
-		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcFilter">
+		<filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter">
 		   <requiredKey>execution</requiredKey>
 		</filter>	    
 	    <!-- execution level based filtering -->
-		<filter class="cz.cuni.xrg.intlib.backend.logback.MdcExecutionLevelFilter" />
+		<filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter" />
 		
 		<connectionSource class="ch.qos.logback.classic.db.ConfigurableConnectionSource" />
 	</appender>
@@ -40,8 +40,8 @@
 		</encoder>
 	</appender>
 
-	<logger name="org.hibernate.type" level="WARN" />
-	<logger name="org.hibernate" level="WARN" />
+	<!-- TODO define logger for EclipseLink -->
+	
 	<logger name="org.springframework" level="WARN" />
 	
 	<root level="ALL">

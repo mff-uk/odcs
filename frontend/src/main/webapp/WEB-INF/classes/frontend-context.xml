@@ -2,13 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:context="http://www.springframework.org/schema/context"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<import resource="classpath:commons-app-context.xml" />
+	
+	<!-- Scan Views for bean definitions. -->
+	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
 
 	<!-- Application configuration is taken from war file, so we override it. -->
-	<bean id="configuration" class="cz.cuni.xrg.intlib.commons.app.conf.AppConfig">
+	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
 		<constructor-arg value="/WEB-INF/config.properties" />
 	</bean>
 	
@@ -19,14 +22,19 @@
 	</bean>
 	
 	<!-- bean for notification -->
-	<bean class="cz.cuni.xrg.intlib.commons.app.module.impl.FileNotifierClient" />
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierClient" />
 	
 	<!-- watcher for DPU changes -->
-	<bean class="cz.cuni.xrg.intlib.commons.app.module.osgi.OSGIChangeManager" >
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager" >
 	    <constructor-arg name="refreshDatabase" value="true"/>
 	</bean>
 	
 	<!-- bean that provide functionality for manipulating with DPUs -->
-	<bean class="cz.cuni.xrg.intlib.commons.app.module.DPUModuleManipulator" />
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
 		
+	<!-- Factory for constructing data containers for Vaadin tables. -->
+	<bean id="containerFactory" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory" />
+	
+	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
+	
 </beans>

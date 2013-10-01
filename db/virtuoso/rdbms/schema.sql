@@ -14,6 +14,7 @@ DROP TABLE "DB"."INTLIB"."SCH_USR_NOTIFICATION_EMAIL";
 DROP TABLE "DB"."INTLIB"."SCH_USR_NOTIFICATION";
 DROP TABLE "DB"."INTLIB"."EXEC_SCHEDULE";
 DROP TABLE "DB"."INTLIB"."PPL_MODEL";
+DROP TABLE "DB"."INTLIB"."PPL_PPL_CONFLICTS";
 DROP TABLE "DB"."INTLIB"."DPU_INSTANCE";
 DROP TABLE "DB"."INTLIB"."DPU_TEMPLATE";
 DROP TABLE "DB"."INTLIB"."PPL_POSITION";
@@ -22,7 +23,7 @@ DROP TABLE "DB"."INTLIB"."USR_USER";
 DROP TABLE "DB"."INTLIB"."SCH_EMAIL";
 DROP TABLE "DB"."INTLIB"."RDF_PREFIX";
 
-
+sequence_set('seq_dpu_record', 100, 1); -- shared sequence for both dpu_instance and dpu_template
 CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
 (
 -- DPURecord
@@ -61,6 +62,7 @@ CREATE INDEX "ix_DPU_TEMPLATE_parent_id" ON "DB"."INTLIB"."DPU_TEMPLATE" ("paren
 CREATE INDEX "ix_DPU_TEMPLATE_user_id" ON "DB"."INTLIB"."DPU_TEMPLATE" ("user_id");
 CREATE INDEX "ix_DPU_TEMPLATE_visibility" ON "DB"."INTLIB"."DPU_TEMPLATE" ("visibility");
 
+sequence_set('seq_exec_dataunit_info', 100, 1);
 CREATE TABLE "DB"."INTLIB"."EXEC_DATAUNIT_INFO"
 (
   "id" INTEGER IDENTITY,
@@ -73,6 +75,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_DATAUNIT_INFO"
 );
 CREATE INDEX "ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id" ON "DB"."INTLIB"."EXEC_DATAUNIT_INFO" ("exec_context_dpu_id");
 
+sequence_set('seq_exec_context_pipeline', 100, 1);
 CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
@@ -81,6 +84,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_PIPELINE"
   PRIMARY KEY ("id")
 );
 
+sequence_set('seq_exec_context_dpu', 100, 1);
 CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_DPU"
 (
   "id" INTEGER IDENTITY,
@@ -92,6 +96,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_CONTEXT_DPU"
 CREATE INDEX "ix_EXEC_CONTEXT_DPU_exec_context_pipeline_id" ON "DB"."INTLIB"."EXEC_CONTEXT_DPU" ("exec_context_pipeline_id");
 CREATE INDEX "ix_EXEC_CONTEXT_DPU_dpu_instance_id" ON "DB"."INTLIB"."EXEC_CONTEXT_DPU" ("dpu_instance_id");
 
+sequence_set('seq_exec_record', 100, 1);
 CREATE TABLE "DB"."INTLIB"."EXEC_RECORD"
 (
   "id" INTEGER IDENTITY,
@@ -108,6 +113,7 @@ CREATE INDEX "ix_EXEC_RECORD_r_type" ON "DB"."INTLIB"."EXEC_RECORD" ("r_type");
 CREATE INDEX "ix_EXEC_RECORD_dpu_id" ON "DB"."INTLIB"."EXEC_RECORD" ("dpu_id");
 CREATE INDEX "ix_EXEC_RECORD_execution_id" ON "DB"."INTLIB"."EXEC_RECORD" ("execution_id");
 
+sequence_set('seq_exec_pipeline', 100, 1);
 CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
 (
   "id" INTEGER IDENTITY,
@@ -131,6 +137,7 @@ CREATE INDEX "ix_EXEC_PIPELINE_t_start" ON "DB"."INTLIB"."EXEC_PIPELINE" ("t_sta
 CREATE INDEX "ix_EXEC_PIPELINE_context_id" ON "DB"."INTLIB"."EXEC_PIPELINE" ("context_id");
 CREATE INDEX "ix_EXEC_PIPELINE_schedule_id" ON "DB"."INTLIB"."EXEC_PIPELINE" ("schedule_id");
 
+sequence_set('seq_exec_schedule', 100, 1);
 CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
@@ -145,6 +152,8 @@ CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE"
   "last_exec" DATETIME,
   "time_period" INTEGER,
   "period_unit" SMALLINT,
+  "strict_timing" SMALLINT,
+  "strict_tolerance" INTEGER,
   PRIMARY KEY ("id")
 );
 -- composite index to optimize fetching schedules following pipeline
@@ -160,6 +169,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_SCHEDULE_AFTER"
   PRIMARY KEY ("schedule_id", "pipeline_id")
 );
 
+sequence_set('seq_ppl_model', 100, 1);
 CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,
@@ -170,6 +180,15 @@ CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
 );
 CREATE INDEX "ix_PPL_MODEL_user_id" ON "DB"."INTLIB"."PPL_MODEL" ("user_id");
 
+CREATE TABLE "DB"."INTLIB"."PPL_PPL_CONFLICTS"
+(
+  "pipeline_id" INTEGER IDENTITY,
+  "pipeline_conflict_id" SMALLINT,
+  PRIMARY KEY ("pipeline_id", "pipeline_conflict_id")
+);
+CREATE INDEX "ix_PPL_PPL_CONFLICTS_pipeline_id" ON "DB"."INTLIB"."PPL_PPL_CONFLICTS" ("pipeline_id");
+
+sequence_set('seq_ppl_edge', 100, 1);
 CREATE TABLE "DB"."INTLIB"."PPL_EDGE"
 (
   "id" INTEGER IDENTITY,
@@ -183,6 +202,7 @@ CREATE INDEX "ix_PPL_EDGE_graph_id" ON "DB"."INTLIB"."PPL_EDGE" ("graph_id");
 CREATE INDEX "ix_PPL_EDGE_node_from_id" ON "DB"."INTLIB"."PPL_EDGE" ("node_from_id");
 CREATE INDEX "ix_PPL_EDGE_node_to_id" ON "DB"."INTLIB"."PPL_EDGE" ("node_to_id");
 
+sequence_set('seq_ppl_node', 100, 1);
 CREATE TABLE "DB"."INTLIB"."PPL_NODE"
 (
   "id" INTEGER IDENTITY,
@@ -194,6 +214,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_NODE"
 CREATE INDEX "ix_PPL_NODE_graph_id" ON "DB"."INTLIB"."PPL_NODE" ("graph_id");
 CREATE INDEX "ix_PPL_NODE_instance_id" ON "DB"."INTLIB"."PPL_NODE" ("instance_id");
 
+sequence_set('seq_ppl_graph', 100, 1);
 CREATE TABLE "DB"."INTLIB"."PPL_GRAPH"
 (
   "id" INTEGER IDENTITY,
@@ -203,6 +224,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_GRAPH"
 );
 CREATE INDEX "ix_PPL_GRAPH_pipeline_id" ON "DB"."INTLIB"."PPL_GRAPH" ("pipeline_id");
 
+sequence_set('seq_ppl_position', 100, 1);
 CREATE TABLE "DB"."INTLIB"."PPL_POSITION"
 (
   "id" INTEGER IDENTITY,
@@ -211,6 +233,7 @@ CREATE TABLE "DB"."INTLIB"."PPL_POSITION"
   PRIMARY KEY ("id")
 );
 
+sequence_set('seq_sch_notification', 100, 1); -- shared for both schedule and user notifications
 CREATE TABLE "DB"."INTLIB"."SCH_SCH_NOTIFICATION"
 (
   "id" INTEGER IDENTITY,
@@ -232,6 +255,7 @@ CREATE TABLE "DB"."INTLIB"."SCH_USR_NOTIFICATION"
 );
 CREATE INDEX "ix_SCH_USR_NOTIFICATION_user_id" ON "DB"."INTLIB"."SCH_USR_NOTIFICATION" ("user_id");
 
+sequence_set('seq_sch_email', 100, 1);
 CREATE TABLE "DB"."INTLIB"."SCH_EMAIL"
 (
   "id" INTEGER IDENTITY,
@@ -243,7 +267,7 @@ CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."INTLIB"."SCH_EMAIL" ("e_user", "e_dom
 
 CREATE TABLE "DB"."INTLIB"."SCH_SCH_NOTIFICATION_EMAIL"
 (
-  "notification_id" INTEGER IDENTITY,
+  "notification_id" INTEGER,
   "email_id" SMALLINT,
   PRIMARY KEY ("notification_id", "email_id")
 );
@@ -256,6 +280,7 @@ CREATE TABLE "DB"."INTLIB"."SCH_USR_NOTIFICATION_EMAIL"
 );
 CREATE INDEX "ix_SCH_USR_NOTIFICATION_EMAIL_email_id" ON "DB"."INTLIB"."SCH_USR_NOTIFICATION_EMAIL" ("email_id");
 
+sequence_set('seq_usr_user', 100, 1);
 CREATE TABLE "DB"."INTLIB"."USR_USER"
 (
   "id" INTEGER IDENTITY,
@@ -275,9 +300,10 @@ CREATE TABLE "DB"."INTLIB"."USR_USER_ROLE"
   PRIMARY KEY ("user_id", "role_id")
 );
 
+sequence_set('seq_rdf_prefix', 100, 1);
 CREATE TABLE "DB"."INTLIB"."RDF_PREFIX"
 (
-  "id" INTEGER NOT NULL,
+  "id" INTEGER IDENTITY,
   "name" VARCHAR(25) NOT NULL,
   "uri" VARCHAR(255) NOT NULL,
   PRIMARY KEY ("id"),

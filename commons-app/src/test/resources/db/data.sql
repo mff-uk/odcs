@@ -48,12 +48,12 @@ INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context
  VALUES(1,5,1,0,NULL,NULL,1,NULL,1,NULL,0);
 
 -- schedule define by times when to run pipeline
-INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
- VALUES(1,NULL,NULL,1,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3);
+INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit,strict_timing,strict_tolerance)
+ VALUES(1,NULL,NULL,1,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3,0,NULL);
 
 -- schedule defined by "run after pipeline"
-INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit)
- VALUES(2,NULL,NULL,2,1,1,1,0,NULL,NULL,NULL,NULL);
+INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit,strict_timing,strict_tolerance)
+ VALUES(2,NULL,NULL,2,1,1,1,0,NULL,NULL,NULL,NULL,0,NULL);
 -- Test 2 should run after Test 1
 INSERT INTO EXEC_SCHEDULE_AFTER(schedule_id,pipeline_id) VALUES(2,1);
 
@@ -138,3 +138,10 @@ INSERT INTO LOGGING_EVENT_EXCEPTION(event_id, i, trace_line)
  VALUES (1, 2, '    at org.springframework.orm.jpa.EntityManagerFactoryUtils.convertJpaAccessExceptionIfPossible(EntityManagerFactoryUtils.java:326)');
 INSERT INTO LOGGING_EVENT_EXCEPTION(event_id, i, trace_line)
  VALUES (1, 3, '    at org.springframework.orm.jpa.DefaultJpaDialect.translateExceptionIfPossible(DefaultJpaDialect.java:120)');
+
+INSERT INTO RDF_PREFIX(id, name, uri)
+ VALUES (1, 'ex1', 'http://example.com/1');
+
+INSERT INTO RDF_PREFIX(id, name, uri)
+ VALUES (2, 'ex2', 'http://example.com/2');
+

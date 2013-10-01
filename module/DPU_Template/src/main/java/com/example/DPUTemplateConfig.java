@@ -1,6 +1,6 @@
 package com.example;
 
-import cz.cuni.xrg.intlib.commons.module.config.DPUConfigObjectBase;
+import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Put your DPU's configuration here.

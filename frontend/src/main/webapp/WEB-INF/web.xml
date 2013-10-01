@@ -5,7 +5,7 @@
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 		 id="WebApp_ID" version="3.0">
 	
-	<display-name>Intlib Web Application</display-name>
+	<display-name>ODCleanStore Web Application</display-name>
 	
 	<context-param>
 		<description>Vaadin production mode</description>
@@ -30,20 +30,20 @@
 	<listener>
 		<!-- To keep a session map in servlet context, so sessions
 			 are accessible in websocket connections. -->
-		<listener-class>cz.cuni.xrg.intlib.frontend.SessionHolder</listener-class>
+		<listener-class>cz.cuni.mff.xrg.odcs.frontend.SessionHolder</listener-class>
 	</listener>
 	
 	<servlet>
 		<servlet-name>Vaadin Application Servlet</servlet-name>
-		<servlet-class>cz.cuni.xrg.intlib.frontend.IntlibApplicationServlet</servlet-class>
+		<servlet-class>cz.cuni.mff.xrg.odcs.frontend.IntlibApplicationServlet</servlet-class>
 		<init-param>
 			<description>Vaadin UI to display</description>
 			<param-name>UI</param-name>
-			<param-value>cz.cuni.xrg.intlib.frontend.AppEntry</param-value>
+			<param-value>cz.cuni.mff.xrg.odcs.frontend.AppEntry</param-value>
 		</init-param>
 		<init-param>
 			<param-name>widgetset</param-name>
-			<param-value>cz.cuni.xrg.intlib.frontend.AppWidgetSet</param-value>
+			<param-value>cz.cuni.mff.xrg.odcs.frontend.AppWidgetSet</param-value>
 		</init-param>
 		<async-supported>true</async-supported>
 	</servlet>

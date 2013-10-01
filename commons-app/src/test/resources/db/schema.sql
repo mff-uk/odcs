@@ -4,14 +4,14 @@
 
 
 
-
+CREATE SEQUENCE `seq_dpu_record` START WITH 100;
 CREATE TABLE `DPU_INSTANCE`
 (
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(45),
   `use_dpu_description` SMALLINT,
-  `description` VARCHAR(255),
+  `description` VARCHAR(512),
   `tool_tip` VARCHAR(255),
   `configuration` BLOB,
 -- DPUInstaceRecord
@@ -26,7 +26,7 @@ CREATE TABLE `DPU_TEMPLATE`
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(45),
   `use_dpu_description` SMALLINT,
-  `description` VARCHAR(255),  
+  `description` VARCHAR(512),  
   `configuration` BLOB,
   `parent_id` INTEGER,
 -- DPUTemplateRecord
@@ -43,6 +43,7 @@ CREATE INDEX `ix_DPU_TEMPLATE_parent_id` ON `DPU_TEMPLATE` (`parent_id`);
 CREATE INDEX `ix_DPU_TEMPLATE_user_id` ON `DPU_TEMPLATE` (`user_id`);
 CREATE INDEX `ix_DPU_TEMPLATE_visibility` ON `DPU_TEMPLATE` (`visibility`);
 
+CREATE SEQUENCE `seq_exec_dataunit_info` START WITH 100;
 CREATE TABLE `EXEC_DATAUNIT_INFO`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -55,6 +56,7 @@ CREATE TABLE `EXEC_DATAUNIT_INFO`
 );
 CREATE INDEX `ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id` ON `EXEC_DATAUNIT_INFO` (`exec_context_dpu_id`);
 
+CREATE SEQUENCE `seq_exec_context_pipeline` START WITH 100;
 CREATE TABLE `EXEC_CONTEXT_PIPELINE`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -63,6 +65,7 @@ CREATE TABLE `EXEC_CONTEXT_PIPELINE`
   PRIMARY KEY (`id`)
 );
 
+CREATE SEQUENCE `seq_exec_context_dpu` START WITH 100;
 CREATE TABLE `EXEC_CONTEXT_DPU`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -74,6 +77,7 @@ CREATE TABLE `EXEC_CONTEXT_DPU`
 CREATE INDEX `ix_EXEC_CONTEXT_DPU_exec_context_pipeline_id` ON `EXEC_CONTEXT_DPU` (`exec_context_pipeline_id`);
 CREATE INDEX `ix_EXEC_CONTEXT_DPU_dpu_instance_id` ON `EXEC_CONTEXT_DPU` (`dpu_instance_id`);
 
+CREATE SEQUENCE `seq_exec_record` START WITH 100;
 CREATE TABLE `EXEC_RECORD`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -90,6 +94,7 @@ CREATE INDEX `ix_EXEC_RECORD_r_type` ON `EXEC_RECORD` (`r_type`);
 CREATE INDEX `ix_EXEC_RECORD_dpu_id` ON `EXEC_RECORD` (`dpu_id`);
 CREATE INDEX `ix_EXEC_RECORD_execution_id` ON `EXEC_RECORD` (`execution_id`);
 
+CREATE SEQUENCE `seq_exec_pipeline` START WITH 100;
 CREATE TABLE `EXEC_PIPELINE`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -113,6 +118,7 @@ CREATE INDEX `ix_EXEC_PIPELINE_t_start` ON `EXEC_PIPELINE` (`t_start`);
 CREATE INDEX `ix_EXEC_PIPELINE_context_id` ON `EXEC_PIPELINE` (`context_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_schedule_id` ON `EXEC_PIPELINE` (`schedule_id`);
 
+CREATE SEQUENCE `seq_exec_schedule` START WITH 100;
 CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -127,6 +133,8 @@ CREATE TABLE `EXEC_SCHEDULE`
   `last_exec` DATETIME,
   `time_period` INTEGER,
   `period_unit` SMALLINT,
+  `strict_timing` SMALLINT,
+  `strict_tolerance` INTEGER,
   PRIMARY KEY (`id`)
 );
 -- composite index to optimize fetching schedules following pipeline
@@ -142,16 +150,26 @@ CREATE TABLE `EXEC_SCHEDULE_AFTER`
   PRIMARY KEY (`schedule_id`, `pipeline_id`)
 );
 
+CREATE SEQUENCE `seq_ppl_model` START WITH 100;
 CREATE TABLE `PPL_MODEL`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(45),
-  `description` VARCHAR(255),
+  `name` VARCHAR(255),
+  `description` VARCHAR(512),
   `user_id` INTEGER,
   PRIMARY KEY (`id`)
 );
 CREATE INDEX `ix_PPL_MODEL_user_id` ON `PPL_MODEL` (`user_id`);
 
+CREATE TABLE `PPL_PPL_CONFLICTS`
+(
+  `pipeline_id` INTEGER AUTO_INCREMENT,
+  `pipeline_conflict_id` SMALLINT,
+  PRIMARY KEY (`pipeline_id`, `pipeline_conflict_id`)
+);
+CREATE INDEX `ix_PPL_PPL_CONFLICTS_pipeline_id` ON `PPL_PPL_CONFLICTS` (`pipeline_id`);
+
+CREATE SEQUENCE `seq_ppl_edge` START WITH 100;
 CREATE TABLE `PPL_EDGE`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -165,6 +183,7 @@ CREATE INDEX `ix_PPL_EDGE_graph_id` ON `PPL_EDGE` (`graph_id`);
 CREATE INDEX `ix_PPL_EDGE_node_from_id` ON `PPL_EDGE` (`node_from_id`);
 CREATE INDEX `ix_PPL_EDGE_node_to_id` ON `PPL_EDGE` (`node_to_id`);
 
+CREATE SEQUENCE `seq_ppl_node` START WITH 100;
 CREATE TABLE `PPL_NODE`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -176,6 +195,7 @@ CREATE TABLE `PPL_NODE`
 CREATE INDEX `ix_PPL_NODE_graph_id` ON `PPL_NODE` (`graph_id`);
 CREATE INDEX `ix_PPL_NODE_instance_id` ON `PPL_NODE` (`instance_id`);
 
+CREATE SEQUENCE `seq_ppl_graph` START WITH 100;
 CREATE TABLE `PPL_GRAPH`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -185,6 +205,7 @@ CREATE TABLE `PPL_GRAPH`
 );
 CREATE INDEX `ix_PPL_GRAPH_pipeline_id` ON `PPL_GRAPH` (`pipeline_id`);
 
+CREATE SEQUENCE `seq_ppl_position` START WITH 100;
 CREATE TABLE `PPL_POSITION`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -193,6 +214,7 @@ CREATE TABLE `PPL_POSITION`
   PRIMARY KEY (`id`)
 );
 
+CREATE SEQUENCE `seq_sch_notification` START WITH 100;
 CREATE TABLE `SCH_SCH_NOTIFICATION`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -214,6 +236,7 @@ CREATE TABLE `SCH_USR_NOTIFICATION`
 );
 CREATE INDEX `ix_SCH_USR_NOTIFICATION_user_id` ON `SCH_USR_NOTIFICATION` (`user_id`);
 
+CREATE SEQUENCE `seq_sch_email` START WITH 100;
 CREATE TABLE `SCH_EMAIL`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -225,7 +248,7 @@ CREATE INDEX `ix_SCH_EMAIL_email` ON `SCH_EMAIL` (`e_user`, `e_domain`);
 
 CREATE TABLE `SCH_SCH_NOTIFICATION_EMAIL`
 (
-  `notification_id` INTEGER AUTO_INCREMENT,
+  `notification_id` INTEGER,
   `email_id` SMALLINT,
   PRIMARY KEY (`notification_id`, `email_id`)
 );
@@ -238,6 +261,7 @@ CREATE TABLE `SCH_USR_NOTIFICATION_EMAIL`
 );
 CREATE INDEX `ix_SCH_USR_NOTIFICATION_EMAIL_email_id` ON `SCH_USR_NOTIFICATION_EMAIL` (`email_id`);
 
+CREATE SEQUENCE `seq_usr_user` START WITH 100;
 CREATE TABLE `USR_USER`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -257,9 +281,10 @@ CREATE TABLE `USR_USER_ROLE`
   PRIMARY KEY (`user_id`, `role_id`)
 );
 
+CREATE SEQUENCE `seq_rdf_prefix` START WITH 100;
 CREATE TABLE `RDF_PREFIX`
 (
-  `id` INTEGER NOT NULL,
+  `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(25) NOT NULL,
   `uri` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
