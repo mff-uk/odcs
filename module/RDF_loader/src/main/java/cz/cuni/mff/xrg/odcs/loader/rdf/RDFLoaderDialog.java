@@ -256,12 +256,17 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 				"Stop the loading process and "
 				+ "end with an error.");
 
+		InsertItem repeat = new InsertItem(InsertType.REPEAT_IF_BAD_PART,
+				"Repait loading process again from zero.");
+
 		insertItems.add(stop);
 		insertItems.add(skip);
+		insertItems.add(repeat);
 
 
 		dataPartsOption.addItem(stop.getDescription());
 		dataPartsOption.addItem(skip.getDescription());
+		dataPartsOption.addItem(repeat.getDescription());
 
 		dataPartsOption.setValue(stop.getDescription());
 	}
@@ -794,7 +799,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 *                         null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
 	 *             {@link #passwordFieldPass}, {@link #optionGroupDetail},
 	 *             {@link #griddata} , in read-only mode or when requested operation is not
 	 *                         supported.
