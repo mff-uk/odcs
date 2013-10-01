@@ -1366,14 +1366,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return "_:" + bnode.getID();
 	}
 
+	private String getEscapedLabel(String label) {
+
+		String result = label.replace("\\", "\\\\")
+				.replace("\"", "\\\"")
+				.replace("\'", "\\\'");
+
+		return result;
+	}
+
 	private String prepareLiteral(Literal literal) {
 
-		String label = literal.getLabel().replace("\\", "\\\\");
-
-		if (label.endsWith("\"")) {
-			label = label.substring(0, label.length() - 1) + "\\\"";
-		}
-
+		String label = getEscapedLabel(literal.getLabel());
+		
 		String result = "\"\"\"" + label + "\"\"\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
