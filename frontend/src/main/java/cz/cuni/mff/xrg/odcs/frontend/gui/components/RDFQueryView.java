@@ -19,6 +19,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
@@ -55,22 +56,33 @@ import org.slf4j.LoggerFactory;
 public class RDFQueryView extends CustomComponent {
 
 	private DataUnitSelector selector;
+
 	private TextArea queryText;
+
 	private IntlibPagedTable resultTable;
+
 	private HorizontalLayout resultTableControls;
+
 	private NativeSelect formatSelect;
+
 	private NativeSelect downloadFormatSelect;
+
 	private Link export;
-	private final static Logger LOG = LoggerFactory.getLogger(RDFQueryView.class);
+
+	private final static Logger LOG = LoggerFactory
+			.getLogger(RDFQueryView.class);
+
 	private boolean isEnabled = true;
+
 	Button queryDownloadButton;
+
 	Button queryButton;
 
 	/**
 	 * Constructor with parent view.
 	 *
 	 * @param parent {@link DebuggingView} which is parent to this
-	 * {@link RDFQueryView}.
+	 *               {@link RDFQueryView}.
 	 */
 	public RDFQueryView(PipelineExecution execution) {
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -116,8 +128,10 @@ public class RDFQueryView extends CustomComponent {
 		queryControls.addComponent(formatSelect);
 
 		queryDownloadButton = new Button("Run Query and Download");
-		OnDemandFileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
+		OnDemandFileDownloader fileDownloader = new OnDemandFileDownloader(
+				new OnDemandStreamResource() {
 			private RDFFormatType format;
+
 			private String fileName;
 
 			@Override
@@ -135,7 +149,9 @@ public class RDFQueryView extends CustomComponent {
 			private void getFormat() {
 				Object o = formatSelect.getValue();
 				if (o == null) {
-					Notification.show("Format not selected!", "Format must be selected for download!", Notification.Type.ERROR_MESSAGE);
+					Notification.show("Format not selected!",
+							"Format must be selected for download!",
+							Notification.Type.ERROR_MESSAGE);
 					fileName = "";
 					return;
 				}
@@ -163,14 +179,15 @@ public class RDFQueryView extends CustomComponent {
 			/**
 			 * Prepare data file for download after CONSTRUCT query.
 			 *
-			 * @param repository {@link LocalRDFRepo} of selected graph.
+			 * @param repository     {@link LocalRDFRepo} of selected graph.
 			 * @param constructQuery {@link String} containing query to execute
-			 * on repository.
+			 *                       on repository.
 			 * @throws InvalidQueryException If the query is badly formatted.
 			 */
 			private InputStream getDownloadData() {
 				try {
-					RDFDataUnit repository = getRepository(selector.getSelectedDataUnit());
+					RDFDataUnit repository = getRepository(selector
+							.getSelectedDataUnit());
 					if (repository == null) {
 						return null;
 					}
@@ -178,18 +195,26 @@ public class RDFQueryView extends CustomComponent {
 					boolean isSelectQuery = isSelectQuery(query);
 
 					File constructData;
-					String fn = File.createTempFile("data", "dt").getAbsolutePath();
+					String fn = File.createTempFile("data", "dt")
+							.getAbsolutePath();
+
+					SelectFormatType selectType = SelectFormatType.XML;
+
 					if (isSelectQuery) {
-						constructData = repository.executeSelectQuery(query, fn);
+						constructData = repository.executeSelectQuery(query, fn,
+								selectType);
 					} else {
-						constructData = repository.executeConstructQuery(query, format, fn);
+						constructData = repository.executeConstructQuery(query,
+								format, fn);
 					}
 
 					FileInputStream fis = new FileInputStream(constructData);
 					return fis;
 				} catch (IOException ex) {
 					LOG.error("File with result not found.", ex);
-					Notification.show("There was error in creating donwload file!", Notification.Type.ERROR_MESSAGE);
+					Notification.show(
+							"There was error in creating donwload file!",
+							Notification.Type.ERROR_MESSAGE);
 					return null;
 				} catch (InvalidQueryException ex) {
 					LOG.error("Invalid query!", ex);
@@ -267,7 +292,8 @@ public class RDFQueryView extends CustomComponent {
 	 *
 	 */
 	RDFDataUnit getRepository(DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(selector.getContext(), selector.getSelectedDPU(), dataUnit);
+		return RDFDataUnitHelper.getRepository(selector.getContext(), selector
+				.getSelectedDPU(), dataUnit);
 	}
 
 	void setDpu(DPUInstanceRecord dpu) {
@@ -277,7 +303,8 @@ public class RDFQueryView extends CustomComponent {
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
 		if (query.length() < 9) {
 			//Due to expected exception format in catch block
-			throw new InvalidQueryException(new InvalidQueryException("Invalid query."));
+			throw new InvalidQueryException(new InvalidQueryException(
+					"Invalid query."));
 		}
 		String queryStart = query.trim().substring(0, 9).toLowerCase();
 		return queryStart.startsWith("select");
@@ -295,7 +322,8 @@ public class RDFQueryView extends CustomComponent {
 
 		Object data = null;
 		try {
-			RDFDataUnit repository = getRepository(selector.getSelectedDataUnit());
+			RDFDataUnit repository = getRepository(selector
+					.getSelectedDataUnit());
 			if (repository == null) {
 				//TODO is this an error?	
 				return;
@@ -361,7 +389,7 @@ public class RDFQueryView extends CustomComponent {
 	 *
 	 * @param data Data with result of SELECT query.
 	 * @return {@link IndexedContainer} to serve as data source for
-	 * {@link IntlibPagedTable}.
+	 *         {@link IntlibPagedTable}.
 	 */
 	private IndexedContainer buildDataSource(Map<String, List<String>> data) {
 		IndexedContainer result = new IndexedContainer();
@@ -417,15 +445,18 @@ public class RDFQueryView extends CustomComponent {
 	public class OnDemandFileDownloader extends FileDownloader {
 
 		private static final long serialVersionUID = 1L;
+
 		private final OnDemandStreamResource onDemandStreamResource;
 
-		public OnDemandFileDownloader(OnDemandStreamResource onDemandStreamResource) {
+		public OnDemandFileDownloader(
+				OnDemandStreamResource onDemandStreamResource) {
 			super(new StreamResource(onDemandStreamResource, ""));
 			this.onDemandStreamResource = onDemandStreamResource;
 		}
 
 		@Override
-		public boolean handleConnectorRequest(VaadinRequest request, VaadinResponse response, String path)
+		public boolean handleConnectorRequest(VaadinRequest request,
+				VaadinResponse response, String path)
 				throws IOException {
 			getResource().setFilename(onDemandStreamResource.getFilename());
 			return super.handleConnectorRequest(request, response, path);
