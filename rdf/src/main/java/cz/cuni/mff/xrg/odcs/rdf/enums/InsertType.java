@@ -16,5 +16,10 @@ public enum InsertType {
 	 * If some of parts for loading contains errors. No data parts are loading.
 	 * Loading failed and it´s thrown LoadException.
 	 */
-	STOP_WHEN_BAD_PART;
+	STOP_WHEN_BAD_PART,
+	/**
+	 * If any data part for loading contains errors, process clean all
+	 * successfully loaded parts and start loading parts again from zero. 
+	 */
+	REPAIT_IF_BAD_PART;
 }
