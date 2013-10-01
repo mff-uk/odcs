@@ -21,5 +21,5 @@ public enum InsertType {
 	 * If any data part for loading contains errors, process clean all
 	 * successfully loaded parts and start loading parts again from zero. 
 	 */
-	REPAIT_IF_BAD_PART;
+	REPEAT_IF_BAD_PART;
 }
