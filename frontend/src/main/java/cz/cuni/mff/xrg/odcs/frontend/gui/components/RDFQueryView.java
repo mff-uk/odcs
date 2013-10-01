@@ -392,7 +392,7 @@ public class RDFQueryView extends CustomComponent {
 
 		Set<String> columns = data.keySet();
 
-		result.addContainerProperty("#", Integer.class, "");
+		result.addContainerProperty("id", Integer.class, "");
 		for (String column : columns) {
 			//		if (p.equals("exeid")==false)
 			result.addContainerProperty(column, String.class, "");
@@ -402,7 +402,7 @@ public class RDFQueryView extends CustomComponent {
 				i < count;
 				i++) {
 			Object num = result.addItem();
-			result.getContainerProperty(num, "#").setValue(i);
+			result.getContainerProperty(num, "id").setValue(i + 1);
 			for (String column : columns) {
 				String value = data.get(column).get(i);
 				result.getContainerProperty(num, column).setValue(value);
