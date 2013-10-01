@@ -52,9 +52,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final long DEFAULT_CHUNK_SIZE = 10;
 
 	/**
-	 * Count of attempts to reconnect if the connection fails
+	 * Count of attempts to reconnect if the connection fails. For infinite loop
+	 * use zero or negative integer.
 	 */
 	protected static final int RETRY_CONNECTION_SIZE = 20;
+
+	/**
+	 * Time in miliseconds how long to wait before trying to reconnect.
+	 */
+	protected static final long RETRY_CONNECTION_TIME = 1000;
 
 	/**
 	 * Represent successfully connection using HTTP.
@@ -2013,7 +2019,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				} else {
 					try {
 						//sleep and attempt to reconnect
-						Thread.sleep(1000);
+						Thread.sleep(RETRY_CONNECTION_TIME);
 					} catch (InterruptedException ex) {
 						logger.debug(ex.getMessage());
 					}
