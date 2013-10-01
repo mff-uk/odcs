@@ -602,24 +602,42 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				final String tempGraph = endpointGraph + "/temp";
 
-				if (insertType == InsertType.STOP_WHEN_BAD_PART) {
+				switch (insertType) {
+					case STOP_WHEN_BAD_PART:
+						try {
+							loadDataParts(endpointURL, tempGraph, insertType,
+									chunkSize);
+							moveDataToTarget(endpointURL, tempGraph,
+									endpointGraph);
 
-					try {
-						loadDataParts(endpointURL, tempGraph, insertType,
+						} catch (InsertPartException e) {
+							throw new RDFException(e.getMessage(), e);
+						} finally {
+							clearEndpointGraph(endpointURL, tempGraph);
+						}
+						break;
+					case SKIP_BAD_PARTS:
+						loadDataParts(endpointURL, endpointGraph, insertType,
 								chunkSize);
-						moveDataToTarget(endpointURL, tempGraph, endpointGraph);
+						break;
+					case REPEAT_IF_BAD_PART:
+						while (true) {
+							try {
+								loadDataParts(endpointURL, tempGraph, insertType,
+										chunkSize);
+								moveDataToTarget(endpointURL, tempGraph,
+										endpointGraph);
+								break; //loaded sucessfull - leave infinite loop
 
-					} catch (InsertPartException e) {
-						throw new RDFException(e.getMessage(), e);
-					} finally {
-						clearEndpointGraph(endpointURL, tempGraph);
-					}
-
-				} else {
-					loadDataParts(endpointURL, endpointGraph, insertType,
-							chunkSize);
+							} catch (InsertPartException e) {
+								//log message with destription of insert part problem.
+								logger.debug(e.getMessage());
+							} finally {
+								clearEndpointGraph(endpointURL, tempGraph);
+							}
+						}
+						break;
 				}
-
 			}
 
 		} catch (RepositoryException ex) {
@@ -722,12 +740,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						logger.warn(message);
 						break;
 					case STOP_WHEN_BAD_PART:
+					case REPEAT_IF_BAD_PART:
 
 						message = "Inserting failed to " + processing + " data part. "
 								+ e.getMessage();
 						logger.error(message);
 
 						throw new InsertPartException(message, e);
+
 				}
 
 			} catch (IOException e) {
