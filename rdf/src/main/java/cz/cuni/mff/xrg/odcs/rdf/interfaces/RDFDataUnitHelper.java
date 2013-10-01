@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -286,11 +287,13 @@ public interface RDFDataUnitHelper {
 	 * @param selectQuery String representation of SPARQL query
 	 * @param filePath    String path to file for saving result of query in
 	 *                    SPARQL XML syntax.
+	 * @param selectType  One of possible format for result of SPARQL select
+	 *                    query.
 	 * @return File contains result of given SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	public File executeSelectQuery(String selectQuery,
-			String filePath)
+			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException;
 
 	/**
