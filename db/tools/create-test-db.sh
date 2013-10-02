@@ -1,4 +1,6 @@
 #!/bin/bash
+#Used to generate commons-app/src/test/resources/db/schema.sql 
+# for tests running on top of in memory storage H2 used to test Facades
 
 script=`readlink -f $0`
 basedir=`dirname $script`
