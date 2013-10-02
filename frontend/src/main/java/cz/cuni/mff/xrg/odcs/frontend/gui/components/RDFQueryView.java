@@ -30,6 +30,7 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TRIG;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TTL;
+import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +43,8 @@ import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +116,9 @@ public class RDFQueryView extends CustomComponent {
 				formatSelect.addItem(type);
 			}
 		}
+		for (SelectFormatType t : SelectFormatType.values()) {
+			formatSelect.addItem(t);
+		}
 		formatSelect.setImmediate(true);
 		formatSelect.setNullSelectionAllowed(false);
 		queryControls.addComponent(formatSelect);
@@ -120,7 +126,7 @@ public class RDFQueryView extends CustomComponent {
 		queryDownloadButton = new Button("Run Query and Download");
 		OnDemandFileDownloader fileDownloader = new OnDemandFileDownloader(
 				new OnDemandStreamResource() {
-			private RDFFormatType format;
+			private Object format;
 			private String fileName;
 
 			@Override
@@ -144,23 +150,39 @@ public class RDFQueryView extends CustomComponent {
 					fileName = "";
 					return;
 				}
-				format = (RDFFormatType) o;
-
 				String filename = null;
-				switch (format) {
-					case TTL:
-						filename = "data.ttl";
-						break;
-					case AUTO:
-					case RDFXML:
-						filename = "data.rdf";
-						break;
-					case N3:
-						filename = "data.n3";
-						break;
-					case TRIG:
-						filename = "data.trig";
-						break;
+				format = o;
+				if (format.getClass() == RDFFormatType.class) { 
+					switch ((RDFFormatType)format) {
+						case TTL:
+							filename = "data.ttl";
+							break;
+						case AUTO:
+						case RDFXML:
+							filename = "data.rdf";
+							break;
+						case N3:
+							filename = "data.n3";
+							break;
+						case TRIG:
+							filename = "data.trig";
+							break;
+					}
+				} else if(format.getClass() == SelectFormatType.class) {
+					switch ((SelectFormatType)format) {
+						case CSV:
+							filename = "data.csv";
+							break;
+						case XML:
+							filename = "data.xml";
+							break;
+						case TSV:
+							filename = "data.tsv";
+							break;
+						case JSON:
+							filename = "data.json";
+							break;
+					}
 				}
 				fileName = filename;
 			}
@@ -187,14 +209,21 @@ public class RDFQueryView extends CustomComponent {
 					String fn = File.createTempFile("data", "dt")
 							.getAbsolutePath();
 
-					SelectFormatType selectType = SelectFormatType.XML;
+					if(isSelectQuery != (format.getClass() == SelectFormatType.class)) {
+						Notification.show("Bad format selected!",
+							"Proper format for query type must be selected!",
+							Notification.Type.ERROR_MESSAGE);
+						return null;
+					}
 
 					if (isSelectQuery) {
+						SelectFormatType selectType = (SelectFormatType)format;
 						constructData = repository.executeSelectQuery(query, fn,
 								selectType);
 					} else {
+						RDFFormatType rdfType = (RDFFormatType)format;
 						constructData = repository.executeConstructQuery(query,
-								format, fn);
+								rdfType, fn);
 					}
 
 					FileInputStream fis = new FileInputStream(constructData);
@@ -323,7 +352,7 @@ public class RDFQueryView extends CustomComponent {
 			}
 
 			if (isSelectQuery) {
-				data = repository.executeSelectQuery(query);
+				data = repository.executeSelectQueryAsTuples(query);
 			} else {
 				Graph queryResult = repository.executeConstructQuery(query);
 				List<Statement> result = new ArrayList<>(queryResult.size());
@@ -340,7 +369,7 @@ public class RDFQueryView extends CustomComponent {
 		}
 		Container container;
 		if (isSelectQuery) {
-			container = buildDataSource((Map<String, List<String>>) data);
+			container = buildDataSource((MyTupleQueryResult) data);
 		} else {
 			container = App.getApp().getBean(ContainerFactory.class)
 					.createRDFData((List<RDFTriple>) data);
@@ -384,31 +413,34 @@ public class RDFQueryView extends CustomComponent {
 	 * @return {@link IndexedContainer} to serve as data source for
 	 * {@link IntlibPagedTable}.
 	 */
-	private IndexedContainer buildDataSource(Map<String, List<String>> data) {
+	private IndexedContainer buildDataSource(MyTupleQueryResult data) {
 		IndexedContainer result = new IndexedContainer();
-		if (data.isEmpty()) {
+		try {
+			if (!data.hasNext()) {
+				return result;
+			}
+
+			List<String> columns = data.getBindingNames();
+
+			result.addContainerProperty("id", Integer.class, "");
+			for (String column : columns) {
+				result.addContainerProperty(column, String.class, "");
+			}
+			int i = 1;
+			while (data.hasNext()) {
+				BindingSet item = data.next();
+				Object num = result.addItem();
+				result.getContainerProperty(num, "id").setValue(i);
+				for (String column : columns) {
+					String value = item.getValue(column).stringValue();
+					result.getContainerProperty(num, column).setValue(value);
+				}
+			}
+			return result;
+		} catch (QueryEvaluationException e) {
+			LOG.error("Error geting data from query", e);
 			return result;
 		}
-
-		Set<String> columns = data.keySet();
-
-		result.addContainerProperty("id", Integer.class, "");
-		for (String column : columns) {
-			//		if (p.equals("exeid")==false)
-			result.addContainerProperty(column, String.class, "");
-		}
-		int count = data.get(columns.iterator().next()).size();
-		for (int i = 0;
-				i < count;
-				i++) {
-			Object num = result.addItem();
-			result.getContainerProperty(num, "id").setValue(i + 1);
-			for (String column : columns) {
-				String value = data.get(column).get(i);
-				result.getContainerProperty(num, column).setValue(value);
-			}
-		}
-		return result;
 	}
 
 	private void setQueryingEnabled(boolean value) {
