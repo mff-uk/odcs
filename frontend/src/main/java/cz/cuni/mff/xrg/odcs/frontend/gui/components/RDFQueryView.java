@@ -56,33 +56,23 @@ import org.slf4j.LoggerFactory;
 public class RDFQueryView extends CustomComponent {
 
 	private DataUnitSelector selector;
-
 	private TextArea queryText;
-
 	private IntlibPagedTable resultTable;
-
 	private HorizontalLayout resultTableControls;
-
 	private NativeSelect formatSelect;
-
 	private NativeSelect downloadFormatSelect;
-
 	private Link export;
-
 	private final static Logger LOG = LoggerFactory
 			.getLogger(RDFQueryView.class);
-
 	private boolean isEnabled = true;
-
 	Button queryDownloadButton;
-
 	Button queryButton;
 
 	/**
 	 * Constructor with parent view.
 	 *
 	 * @param parent {@link DebuggingView} which is parent to this
-	 *               {@link RDFQueryView}.
+	 * {@link RDFQueryView}.
 	 */
 	public RDFQueryView(PipelineExecution execution) {
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -131,7 +121,6 @@ public class RDFQueryView extends CustomComponent {
 		OnDemandFileDownloader fileDownloader = new OnDemandFileDownloader(
 				new OnDemandStreamResource() {
 			private RDFFormatType format;
-
 			private String fileName;
 
 			@Override
@@ -179,9 +168,9 @@ public class RDFQueryView extends CustomComponent {
 			/**
 			 * Prepare data file for download after CONSTRUCT query.
 			 *
-			 * @param repository     {@link LocalRDFRepo} of selected graph.
+			 * @param repository {@link LocalRDFRepo} of selected graph.
 			 * @param constructQuery {@link String} containing query to execute
-			 *                       on repository.
+			 * on repository.
 			 * @throws InvalidQueryException If the query is badly formatted.
 			 */
 			private InputStream getDownloadData() {
@@ -300,6 +289,10 @@ public class RDFQueryView extends CustomComponent {
 		selector.setSelectedDPU(dpu);
 	}
 
+	void refreshDPUs(PipelineExecution exec) {
+		selector.refresh(exec);
+	}
+
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
 		if (query.length() < 9) {
 			//Due to expected exception format in catch block
@@ -389,7 +382,7 @@ public class RDFQueryView extends CustomComponent {
 	 *
 	 * @param data Data with result of SELECT query.
 	 * @return {@link IndexedContainer} to serve as data source for
-	 *         {@link IntlibPagedTable}.
+	 * {@link IntlibPagedTable}.
 	 */
 	private IndexedContainer buildDataSource(Map<String, List<String>> data) {
 		IndexedContainer result = new IndexedContainer();
@@ -399,7 +392,7 @@ public class RDFQueryView extends CustomComponent {
 
 		Set<String> columns = data.keySet();
 
-		result.addContainerProperty("#", Integer.class, "");
+		result.addContainerProperty("id", Integer.class, "");
 		for (String column : columns) {
 			//		if (p.equals("exeid")==false)
 			result.addContainerProperty(column, String.class, "");
@@ -409,7 +402,7 @@ public class RDFQueryView extends CustomComponent {
 				i < count;
 				i++) {
 			Object num = result.addItem();
-			result.getContainerProperty(num, "#").setValue(i);
+			result.getContainerProperty(num, "id").setValue(i + 1);
 			for (String column : columns) {
 				String value = data.get(column).get(i);
 				result.getContainerProperty(num, column).setValue(value);
@@ -445,7 +438,6 @@ public class RDFQueryView extends CustomComponent {
 	public class OnDemandFileDownloader extends FileDownloader {
 
 		private static final long serialVersionUID = 1L;
-
 		private final OnDemandStreamResource onDemandStreamResource;
 
 		public OnDemandFileDownloader(

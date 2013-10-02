@@ -52,9 +52,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final long DEFAULT_CHUNK_SIZE = 10;
 
 	/**
-	 * Count of attempts to reconnect if the connection fails
+	 * Count of attempts to reconnect if the connection fails. For infinite loop
+	 * use zero or negative integer.
 	 */
 	protected static final int RETRY_CONNECTION_SIZE = 20;
+
+	/**
+	 * Time in miliseconds how long to wait before trying to reconnect.
+	 */
+	protected static final long RETRY_CONNECTION_TIME = 1000;
 
 	/**
 	 * Represent successfully connection using HTTP.
@@ -596,24 +602,42 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				final String tempGraph = endpointGraph + "/temp";
 
-				if (insertType == InsertType.STOP_WHEN_BAD_PART) {
+				switch (insertType) {
+					case STOP_WHEN_BAD_PART:
+						try {
+							loadDataParts(endpointURL, tempGraph, insertType,
+									chunkSize);
+							moveDataToTarget(endpointURL, tempGraph,
+									endpointGraph);
 
-					try {
-						loadDataParts(endpointURL, tempGraph, insertType,
+						} catch (InsertPartException e) {
+							throw new RDFException(e.getMessage(), e);
+						} finally {
+							clearEndpointGraph(endpointURL, tempGraph);
+						}
+						break;
+					case SKIP_BAD_PARTS:
+						loadDataParts(endpointURL, endpointGraph, insertType,
 								chunkSize);
-						moveDataToTarget(endpointURL, tempGraph, endpointGraph);
+						break;
+					case REPEAT_IF_BAD_PART:
+						while (true) {
+							try {
+								loadDataParts(endpointURL, tempGraph, insertType,
+										chunkSize);
+								moveDataToTarget(endpointURL, tempGraph,
+										endpointGraph);
+								break; //loaded sucessfull - leave infinite loop
 
-					} catch (InsertPartException e) {
-						throw new RDFException(e.getMessage(), e);
-					} finally {
-						clearEndpointGraph(endpointURL, tempGraph);
-					}
-
-				} else {
-					loadDataParts(endpointURL, endpointGraph, insertType,
-							chunkSize);
+							} catch (InsertPartException e) {
+								//log message with destription of insert part problem.
+								logger.debug(e.getMessage());
+							} finally {
+								clearEndpointGraph(endpointURL, tempGraph);
+							}
+						}
+						break;
 				}
-
 			}
 
 		} catch (RepositoryException ex) {
@@ -716,12 +740,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						logger.warn(message);
 						break;
 					case STOP_WHEN_BAD_PART:
+					case REPEAT_IF_BAD_PART:
 
 						message = "Inserting failed to " + processing + " data part. "
 								+ e.getMessage();
 						logger.error(message);
 
 						throw new InsertPartException(message, e);
+
 				}
 
 			} catch (IOException e) {
@@ -1340,14 +1366,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return "_:" + bnode.getID();
 	}
 
+	private String getEscapedLabel(String label) {
+
+		String result = label.replace("\\", "\\\\")
+				.replace("\"", "\\\"")
+				.replace("\'", "\\\'");
+
+		return result;
+	}
+
 	private String prepareLiteral(Literal literal) {
 
-		String label = literal.getLabel().replace("\\", "\\\\");
-
-		if (label.endsWith("\"")) {
-			label = label.substring(0, label.length() - 1) + "\\\"";
-		}
-
+		String label = getEscapedLabel(literal.getLabel());
+		
 		String result = "\"\"\"" + label + "\"\"\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
@@ -2013,7 +2044,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				} else {
 					try {
 						//sleep and attempt to reconnect
-						Thread.sleep(1000);
+						Thread.sleep(RETRY_CONNECTION_TIME);
 					} catch (InterruptedException ex) {
 						logger.debug(ex.getMessage());
 					}

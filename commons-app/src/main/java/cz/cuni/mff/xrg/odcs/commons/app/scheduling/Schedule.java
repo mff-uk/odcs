@@ -112,6 +112,7 @@ public class Schedule implements Serializable {
 	
 	/**
 	 * Notification settings for this schedule.
+	 * May be null, if so {@link UserNotificationRecord} is to be used.
 	 */
 	@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
 	private ScheduleNotificationRecord notification;
