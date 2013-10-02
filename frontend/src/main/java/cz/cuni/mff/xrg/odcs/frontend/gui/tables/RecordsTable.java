@@ -5,11 +5,14 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.*;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
@@ -128,15 +131,46 @@ public class RecordsTable extends CustomComponent {
 					return emb;
 				}
 			});
+			messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
+
+				@Override
+				public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+					final Long dpuId = (Long)source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
+					if(dpuId == null) {
+						return null;
+					}
+					Button logsLink = new Button("Logs");
+					logsLink.setStyleName(BaseTheme.BUTTON_LINK);
+					logsLink.addClickListener(new Button.ClickListener() {
+
+						@Override
+						public void buttonClick(Button.ClickEvent event) {
+							fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
+						}
+					});
+					return logsLink;
+				}
+			});
 			messageTable.setFilterDecorator(new filterDecorator());
 			// set columns
 			isInitialized = true;
 		}
-		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage");
-		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message");
+		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage", "");
+		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message", "");
 		messageTable.setSortEnabled(true);
+		messageTable.setFilterFieldVisible("", false);
 		messageTable.setFilterBarVisible(true);
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+	}
+	
+	/**
+	 * Inform listeners, that the detail is closing.
+	 */
+	protected void fireEvent(Event event) {
+		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
+		for (Listener l : ls) {
+			l.componentEvent(event);
+		}
 	}
 
 	/**

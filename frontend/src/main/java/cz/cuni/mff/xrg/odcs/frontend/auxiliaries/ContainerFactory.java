@@ -104,6 +104,7 @@ public class ContainerFactory {
 		container.addContainerProperty("time", Date.class, null, true, true);
 		container.addContainerProperty("type", MessageRecordType.class, MessageRecordType.DPU_INFO, true, true);
 		container.addContainerProperty("dpuInstance.name", String.class, "", true, true);
+		container.addContainerProperty("dpuInstance.id", Long.class, null, true, true);
 		container.addContainerProperty("shortMessage", String.class, "", true, true);
 
 		return container;
@@ -127,6 +128,7 @@ public class ContainerFactory {
 		container.addContainerProperty("source", String.class, "", true, true);
 		container.addContainerProperty("message", String.class, "", true, true);
 		container.addContainerProperty("date", Date.class, null, true, true);
+		container.addContainerProperty("dpuInstanceId", Long.class, null, true, true);
 
 		//container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX, Integer.class, 0, true, true);
 		//container.addContainerProperty(LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX, Integer.class, 0, true, true);

@@ -300,7 +300,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Inform listeners, that the detail is closing.
+	 * Inform listeners, about supplied event.
 	 */
 	protected void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);

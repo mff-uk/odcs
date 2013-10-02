@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -12,8 +13,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 
 import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Shows complex debug information about current pipeline execution. Shows
@@ -35,12 +38,15 @@ public class DebuggingView extends CustomComponent {
 	private boolean isInDebugMode;
 	private RecordsTable executionRecordsTable;
 	private Tab queryTab;
+	private Tab logsTab;
 	private TabSheet tabs;
 	private RDFQueryView queryView;
 	private LogMessagesTable logMessagesTable;
 	private boolean isFromCanvas;
 	private Embedded iconStatus;
 	private CheckBox refreshAutomatically = null;
+	
+	private DPUFacade dpuFacade = App.getDPUs();
 
 	/**
 	 * Default constructor.
@@ -79,6 +85,18 @@ public class DebuggingView extends CustomComponent {
 		tabs.setSizeFull();
 
 		executionRecordsTable = new RecordsTable();
+		executionRecordsTable.addListener(new Listener() {
+
+			@Override
+			public void componentEvent(Event event) {
+				if(event.getClass() == OpenLogsEvent.class) {
+					OpenLogsEvent ole = (OpenLogsEvent)event;
+					debugDpu = dpuFacade.getDPUInstance(ole.getDpuId());
+					logMessagesTable.setDpu(pipelineExec, debugDpu, true);
+					tabs.setSelectedTab(logsTab);
+				}
+			}
+		});
 		executionRecordsTable.setWidth("100%");
 
 		tabs.addTab(executionRecordsTable, "Events");
@@ -99,7 +117,7 @@ public class DebuggingView extends CustomComponent {
 		logMessagesTable = new LogMessagesTable();
 		logLayout.addComponent(logMessagesTable);
 		logLayout.setSizeFull();
-		tabs.addTab(logLayout, "Log");
+		logsTab = tabs.addTab(logLayout, "Log");
 
 		queryView = new RDFQueryView(pipelineExec);
 		if (debugDpu != null) {

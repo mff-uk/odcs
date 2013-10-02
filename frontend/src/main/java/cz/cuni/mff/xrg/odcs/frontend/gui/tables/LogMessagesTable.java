@@ -7,11 +7,14 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -41,8 +44,11 @@ public class LogMessagesTable extends CustomComponent {
 	private DPUInstanceRecord dpu;
 	private PipelineExecution pipelineExecution;
 	private ComboBox levelSelector;
+	private ComboBox dpuSelector;
 	private LogMessageDetail detail = null;
 	private IntlibLazyQueryContainer container;
+	private LogFacade logFacade = App.getLogs();
+	private DPUFacade dpuFacade = App.getDPUs();
 
 	/**
 	 * Default constructor.
@@ -80,6 +86,8 @@ public class LogMessagesTable extends CustomComponent {
 			levelSelector.addItem(level);
 			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
+		dpuSelector = new ComboBox();
+		dpuSelector.setImmediate(true);
 		loadMessageTable();
 		setCompositionRoot(mainLayout);
 	}
@@ -101,14 +109,13 @@ public class LogMessagesTable extends CustomComponent {
 			this.pipelineExecution = exec;
 			c.removeDefaultFilters();
 			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
-			if (dpu != null) {
-				c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
-			}
+//			if (dpu != null) {
+//				c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
+//			}
 		}
+		refreshDpuSelector();
 		c.refresh();
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
-
-
 	}
 
 	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {
@@ -132,6 +139,17 @@ public class LogMessagesTable extends CustomComponent {
 	private void loadMessageTable() {
 
 		container = App.getApp().getBean(ContainerFactory.class).createLogMessages();
+		messageTable.addGeneratedColumn("dpuInstanceId", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				Long dpuId = (Long) source.getItem(itemId).getItemProperty(columnId).getValue();
+				if (dpuId == null) {
+					return null;
+				}
+				DPUInstanceRecord dpu = dpuFacade.getDPUInstance(dpuId);
+				return dpu.getName();
+			}
+		});
 		messageTable.setFilterGenerator(new FilterGenerator() {
 			@Override
 			public Container.Filter generateFilter(Object propertyId, Object value) {
@@ -146,14 +164,24 @@ public class LogMessagesTable extends CustomComponent {
 					} else {
 						return new Between("timestamp", interval.getFrom().getTime(), interval.getTo().getTime());
 					}
+				} else if (propertyId.equals("dpuInstanceId")) {
+					if (value != null) {
+						Long id = ((DPUInstanceRecord) value).getId();
+						return new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, id);
+					}
 				}
 				return null;
 			}
 
 			@Override
 			public AbstractField<?> getCustomFilterComponent(Object propertyId) {
+				if (propertyId == null) {
+					return null;
+				}
 				if (propertyId.equals("level")) {
 					return levelSelector;
+				} else if (propertyId.equals("dpuInstanceId")) {
+					return dpuSelector;
 				}
 				return null;
 			}
@@ -177,7 +205,8 @@ public class LogMessagesTable extends CustomComponent {
 			}
 		});
 		messageTable.setContainerDataSource(container);
-		messageTable.setVisibleColumns("date", "level", "message", "source");
+		messageTable.setVisibleColumns("date", "level", "dpuInstanceId", "message", "source");
+		messageTable.setColumnHeader("dpuInstanceId", "DPU Instance");
 		messageTable.setSortEnabled(false);
 		messageTable.setFilterBarVisible(true);
 		levelSelector.setValue(Level.INFO);
@@ -214,6 +243,20 @@ public class LogMessagesTable extends CustomComponent {
 		} else {
 			detail.loadMessage(log);
 			detail.bringToFront();
+		}
+	}
+
+	private void refreshDpuSelector() {
+		ExecutionContextInfo ctx = pipelineExecution.getContextReadOnly();
+		if (ctx != null) {
+			for (DPUInstanceRecord dpuInstance : ctx.getDPUIndexes()) {
+				if (!dpuSelector.containsId(dpuInstance)) {
+					dpuSelector.addItem(dpuInstance);
+				}
+			}
+			if (dpuSelector.containsId(dpu)) {
+				dpuSelector.select(dpu);
+			}
 		}
 	}
 }

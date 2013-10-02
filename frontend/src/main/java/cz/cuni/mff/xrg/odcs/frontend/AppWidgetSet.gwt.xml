@@ -52,4 +52,6 @@
     
 
     
+
+    <inherits name="cz.cuni.xrg.intlib.frontend.AppWidgetSet" />
 </module>
