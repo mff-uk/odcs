@@ -86,6 +86,23 @@ public class SPARQLQueryValidator implements Validator {
 		return myType;
 	}
 
+	/*
+	 * If query has required type returns true if type of the given query and required type are the same, false otherwise. 
+	 * If no required query type is set returns true. 
+	 */
+	public boolean hasSameType() {
+		if (requireSPARQLType) {
+			SPARQLQueryType queryType = getSPARQLQueryType();
+			if (isSameType(queryType, requiredType)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+
 	/**
 	 * Method for detection right syntax of sparql query.
 	 *
