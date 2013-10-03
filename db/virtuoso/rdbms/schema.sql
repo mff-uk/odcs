@@ -21,7 +21,7 @@ DROP TABLE "DB"."INTLIB"."PPL_POSITION";
 DROP TABLE "DB"."INTLIB"."USR_USER_ROLE";
 DROP TABLE "DB"."INTLIB"."USR_USER";
 DROP TABLE "DB"."INTLIB"."SCH_EMAIL";
-DROP TABLE "DB"."INTLIB"."RDF_PREFIX";
+DROP TABLE "DB"."INTLIB"."RDF_NS_PREFIX";
 
 sequence_set('seq_dpu_record', 100, 1); -- shared sequence for both dpu_instance and dpu_template
 CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
@@ -300,8 +300,8 @@ CREATE TABLE "DB"."INTLIB"."USR_USER_ROLE"
   PRIMARY KEY ("user_id", "role_id")
 );
 
-sequence_set('seq_rdf_prefix', 100, 1);
-CREATE TABLE "DB"."INTLIB"."RDF_PREFIX"
+sequence_set('seq_rdf_ns_prefix', 100, 1);
+CREATE TABLE "DB"."INTLIB"."RDF_NS_PREFIX"
 (
   "id" INTEGER IDENTITY,
   "name" VARCHAR(25) NOT NULL,
