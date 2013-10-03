@@ -9,10 +9,9 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLQueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import org.openrdf.model.Graph;
 
 /**
  *
@@ -35,26 +34,20 @@ public class SPARQLTransformer
 		super(SPARQLTransformerConfig.class);
 	}
 
-	private boolean isConstructQuery(String query) {
-		SPARQLQueryValidator sparqlQuery = new SPARQLQueryValidator(query,
-				SPARQLQueryType.CONSTRUCT);
-
-		return sparqlQuery.isQueryValid();
-	}
-
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException, DataUnitException {
 
 		final String updateQuery = config.SPARQL_Update_Query;
+		final boolean isConstructQuery = config.isConstructType;
 
 		try {
-			if (isConstructQuery(updateQuery)) {
-				intputDataUnit.transform(updateQuery);
-				outputDataUnit.merge(intputDataUnit);
+			if (isConstructQuery) {
+				Graph graph = intputDataUnit.executeConstructQuery(updateQuery);
+				outputDataUnit.addTriplesFromGraph(graph);
 			} else {
 				outputDataUnit.merge(intputDataUnit);
-				outputDataUnit.transform(updateQuery);
+				outputDataUnit.executeSPARQLUpdateQuery(updateQuery);
 			}
 
 		} catch (RDFDataUnitException ex) {
