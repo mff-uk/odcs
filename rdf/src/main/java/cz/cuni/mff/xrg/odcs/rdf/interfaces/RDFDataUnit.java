@@ -14,6 +14,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import org.openrdf.model.Graph;
 
 import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;
@@ -294,4 +295,11 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * create new instance.
 	 */
 	public void shutDown();
+
+	/**
+	 * Add all RDF triples in defined graph to reposiotory.
+	 *
+	 * @param graphInstance Concrete graph contains RDF triples.
+	 */
+	public void addTriplesFromGraph(Graph graphInstance);
 }
