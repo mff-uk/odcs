@@ -8,7 +8,9 @@ import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
+import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLQueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLUpdateValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
 
@@ -32,6 +34,12 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	 * SPARQL VALIDATOR - default false.
 	 */
 	private boolean isQueryValid = false;
+
+	/**
+	 * If query is construct or other update query.
+	 */
+	private boolean isConstructQuery = false;
+
 	private String validationErrorMessage = "";
 
 	/**
@@ -42,11 +50,11 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
-        
-        /**
-	 * Load values from configuration object implementing {@link DPUConfigObject}
-	 * interface and configuring DPU into the dialog where the configuration
-	 * object may be edited.
+
+	/**
+	 * Load values from configuration object implementing
+	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
+	 * where the configuration object may be edited.
 	 *
 	 * @throws ConfigException Exception not used in current implementation of
 	 *                         this method.
@@ -56,12 +64,13 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	@Override
 	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
 		txtQuery.setValue(conf.SPARQL_Update_Query);
+		isConstructQuery = conf.isConstructType;
 	}
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface and
-	 * configuring DPU
+	 * to configuration object implementing {@link DPUConfigObject} interface
+	 * and configuring DPU
 	 *
 	 * @throws ConfigException Exception which might be thrown when
 	 *                         {@link #isQueryValid} is false.
@@ -74,19 +83,20 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 		//Right SPARQL VALIDATOR - default false
 		if (!txtQuery.isValid()) {
-                    InvalidValueException ex = new EmptyValueException("SPARQL query must be filled");	
-                    throw new ConfigException(ex.getMessage(), ex);
+			InvalidValueException ex = new EmptyValueException(
+					"SPARQL query must be filled");
+			throw new ConfigException(ex.getMessage(), ex);
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(validationErrorMessage);
 		} else {
 
 			SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
 			conf.SPARQL_Update_Query = txtQuery.getValue().trim();
+			conf.isConstructType = isConstructQuery;
 
 			return conf;
 		}
 	}
-        
 
 	/**
 	 * Builds main layout with all dialog components.
@@ -123,18 +133,37 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 			public void valueChange(Property.ValueChangeEvent event) {
 				final String query = txtQuery.getValue().trim();
 
-				Validator validator = new SPARQLUpdateValidator(query);
+				Validator updateValidator = new SPARQLUpdateValidator(query);
+				SPARQLQueryValidator constructValidator = new SPARQLQueryValidator(
+						query, SPARQLQueryType.CONSTRUCT);
 
-				if (!validator.isQueryValid()) {
+				boolean isConstructValid = constructValidator.isQueryValid();
+				boolean isUpdateValid = updateValidator.isQueryValid();
 
-					isQueryValid = false;
-					validationErrorMessage = validator.getErrorMessage();
-
-				} else {
+				if (isConstructValid) {
 					isQueryValid = true;
+					isConstructQuery = true;
+					return;
+				} else {
+					//if is construct query, but no valid
+					if (constructValidator.hasSameType()) {
+						isConstructQuery = true;
+						isQueryValid = false;
+						validationErrorMessage = constructValidator
+								.getErrorMessage();
+						return;
+					} else {
+						isConstructQuery = false;
+					}
 				}
 
-
+				if (isUpdateValid) {
+					isQueryValid = true;
+				} else {
+					isQueryValid = false;
+					validationErrorMessage = updateValidator
+							.getErrorMessage();
+				}
 			}
 		});
 
@@ -142,8 +171,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value.toString().isEmpty()) {
-					
-					throw  new EmptyValueException("SPARQL query must be filled");
+
+					throw new EmptyValueException("SPARQL query must be filled");
 				}
 			}
 		});
@@ -161,6 +190,4 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 		return mainLayout;
 	}
-
-	
 }
