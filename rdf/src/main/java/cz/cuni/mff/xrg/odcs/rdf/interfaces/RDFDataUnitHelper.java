@@ -278,7 +278,7 @@ public interface RDFDataUnitHelper {
 	 * @param updateQuery String value of update SPARQL query.
 	 * @throws RDFException when transformation fail.
 	 */
-	public void transform(String updateQuery) throws RDFException;
+	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException;
 
 	/**
 	 * Make select query over repository data and return file as SPARQL XML
