@@ -6,7 +6,6 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.*;
@@ -19,17 +18,20 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
+import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TRIG;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TTL;
+import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.CSV;
+import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.JSON;
+import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.TSV;
+import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.XML;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 
 import java.io.File;
@@ -39,8 +41,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.query.BindingSet;
@@ -64,12 +65,16 @@ public class RDFQueryView extends CustomComponent {
 	private HorizontalLayout resultTableControls;
 	private NativeSelect formatSelect;
 	private NativeSelect downloadFormatSelect;
-	private Link export;
+	private Button tableDownload;
 	private final static Logger LOG = LoggerFactory
 			.getLogger(RDFQueryView.class);
 	private boolean isEnabled = true;
 	Button queryDownloadButton;
 	Button queryButton;
+	private HorizontalLayout resultDownloadControls;
+	private String tableQuery = null;
+	private DPUInstanceRecord tableDpu = null;
+	private DataUnitInfo tableDataUnit = null;
 
 	/**
 	 * Constructor with parent view.
@@ -126,122 +131,19 @@ public class RDFQueryView extends CustomComponent {
 		queryDownloadButton = new Button("Run Query and Download");
 		OnDemandFileDownloader fileDownloader = new OnDemandFileDownloader(
 				new OnDemandStreamResource() {
-			private Object format;
-			private String fileName;
-
 			@Override
 			public String getFilename() {
-				getFormat();
-				return fileName;
+				return getFileName(formatSelect.getValue());
 			}
 
 			@Override
 			public InputStream getStream() {
-				getFormat();
-				return getDownloadData();
-			}
-
-			private void getFormat() {
-				Object o = formatSelect.getValue();
-				if (o == null) {
-					Notification.show("Format not selected!",
-							"Format must be selected for download!",
-							Notification.Type.ERROR_MESSAGE);
-					fileName = "";
-					return;
-				}
-				String filename = null;
-				format = o;
-				if (format.getClass() == RDFFormatType.class) { 
-					switch ((RDFFormatType)format) {
-						case TTL:
-							filename = "data.ttl";
-							break;
-						case AUTO:
-						case RDFXML:
-							filename = "data.rdf";
-							break;
-						case N3:
-							filename = "data.n3";
-							break;
-						case TRIG:
-							filename = "data.trig";
-							break;
-					}
-				} else if(format.getClass() == SelectFormatType.class) {
-					switch ((SelectFormatType)format) {
-						case CSV:
-							filename = "data.csv";
-							break;
-						case XML:
-							filename = "data.xml";
-							break;
-						case TSV:
-							filename = "data.tsv";
-							break;
-						case JSON:
-							filename = "data.json";
-							break;
-					}
-				}
-				fileName = filename;
-			}
-
-			/**
-			 * Prepare data file for download after CONSTRUCT query.
-			 *
-			 * @param repository {@link LocalRDFRepo} of selected graph.
-			 * @param constructQuery {@link String} containing query to execute
-			 * on repository.
-			 * @throws InvalidQueryException If the query is badly formatted.
-			 */
-			private InputStream getDownloadData() {
-				try {
-					RDFDataUnit repository = getRepository(selector
-							.getSelectedDataUnit());
-					if (repository == null) {
-						return null;
-					}
-					String query = queryText.getValue();
-					boolean isSelectQuery = isSelectQuery(query);
-
-					File constructData;
-					String fn = File.createTempFile("data", "dt")
-							.getAbsolutePath();
-
-					if(isSelectQuery != (format.getClass() == SelectFormatType.class)) {
-						Notification.show("Bad format selected!",
-							"Proper format for query type must be selected!",
-							Notification.Type.ERROR_MESSAGE);
-						return null;
-					}
-
-					if (isSelectQuery) {
-						SelectFormatType selectType = (SelectFormatType)format;
-						constructData = repository.executeSelectQuery(query, fn,
-								selectType);
-					} else {
-						RDFFormatType rdfType = (RDFFormatType)format;
-						constructData = repository.executeConstructQuery(query,
-								rdfType, fn);
-					}
-
-					FileInputStream fis = new FileInputStream(constructData);
-					return fis;
-				} catch (IOException ex) {
-					LOG.error("File with result not found.", ex);
-					Notification.show(
-							"There was error in creating donwload file!",
-							Notification.Type.ERROR_MESSAGE);
-					return null;
-				} catch (InvalidQueryException ex) {
-					LOG.error("Invalid query!", ex);
-					Notification.show("Query Validator",
-							"Query is not valid: "
-							+ ex.getCause().getMessage(),
-							Notification.Type.ERROR_MESSAGE);
+				RDFDataUnit repository = getRepository(selector.getSelectedDPU(), selector.getSelectedDataUnit());
+				if (repository == null) {
 					return null;
 				}
+				String query = queryText.getValue();
+				return getDownloadData(repository, query, formatSelect.getValue());
 			}
 		});
 		fileDownloader.extend(queryDownloadButton);
@@ -280,22 +182,32 @@ public class RDFQueryView extends CustomComponent {
 		resultTableControls.setImmediate(true);
 		mainLayout.addComponent(resultTableControls);
 
-		HorizontalLayout bottomLine = new HorizontalLayout();
+		resultDownloadControls = new HorizontalLayout();
 
 		downloadFormatSelect = new NativeSelect();
-		bottomLine.addComponent(downloadFormatSelect);
+		resultDownloadControls.addComponent(downloadFormatSelect);
 
-		export = new Link("Download", null);
-		export.setIcon(new ThemeResource("icons/download.png"));
-		export.setVisible(false);
-		export.setImmediate(true);
-		export.addListener(new Listener() {
+		tableDownload = new Button("Download");
+		OnDemandFileDownloader tableFileDownloader = new OnDemandFileDownloader(
+				new OnDemandStreamResource() {
 			@Override
-			public void componentEvent(Event event) {
-				export.setEnabled(false);
+			public String getFilename() {
+				return getFileName(downloadFormatSelect.getValue());
+			}
+
+			@Override
+			public InputStream getStream() {
+				if (tableDpu == null) {
+					return null;
+				}
+				RDFDataUnit tableRepo = getRepository(tableDpu, tableDataUnit);
+				return getDownloadData(tableRepo, tableQuery, downloadFormatSelect.getValue());
 			}
 		});
-		bottomLine.addComponent(export);
+		tableFileDownloader.extend(tableDownload);
+		resultDownloadControls.addComponent(tableDownload);
+		resultDownloadControls.setVisible(false);
+		mainLayout.addComponent(resultDownloadControls);
 
 
 		mainLayout.setSizeFull();
@@ -309,9 +221,8 @@ public class RDFQueryView extends CustomComponent {
 	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
 	 *
 	 */
-	RDFDataUnit getRepository(DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(selector.getContext(), selector
-				.getSelectedDPU(), dataUnit);
+	RDFDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
+		return RDFDataUnitHelper.getRepository(selector.getContext(), dpu, dataUnit);
 	}
 
 	void setDpu(DPUInstanceRecord dpu) {
@@ -344,8 +255,9 @@ public class RDFQueryView extends CustomComponent {
 
 		Object data = null;
 		try {
-			RDFDataUnit repository = getRepository(selector
-					.getSelectedDataUnit());
+			DPUInstanceRecord selectedDpu = selector.getSelectedDPU();
+			DataUnitInfo selectedDataUnit = selector.getSelectedDataUnit();
+			RDFDataUnit repository = getRepository(selectedDpu, selectedDataUnit);
 			if (repository == null) {
 				//TODO is this an error?	
 				return;
@@ -364,6 +276,8 @@ public class RDFQueryView extends CustomComponent {
 			}
 			// close reporistory
 			repository.shutDown();
+
+			setUpTableDownload(selectedDpu, selectedDataUnit, query);
 		} catch (RuntimeException e) {
 			throw new RuntimeException(e);
 		}
@@ -450,6 +364,129 @@ public class RDFQueryView extends CustomComponent {
 			queryButton.setEnabled(value);
 			queryDownloadButton.setEnabled(value);
 			isEnabled = value;
+		}
+	}
+
+	/**
+	 * Prepare data file for download after SELECT or CONSTRUCT query.
+	 *
+	 * @param repository {@link LocalRDFRepo} of selected graph.
+	 * @param query {@link String} containing query to execute on repository.
+	 * @throws InvalidQueryException If the query is badly formatted.
+	 */
+	private InputStream getDownloadData(RDFDataUnit repository, String query, Object format) {
+		try {
+			boolean isSelectQuery = isSelectQuery(query);
+
+			File constructData;
+			String fn = File.createTempFile("data", "dt")
+					.getAbsolutePath();
+
+			if (isSelectQuery != (format.getClass() == SelectFormatType.class)) {
+				Notification.show("Bad format selected!",
+						"Proper format for query type must be selected!",
+						Notification.Type.ERROR_MESSAGE);
+				return null;
+			}
+
+			if (isSelectQuery) {
+				SelectFormatType selectType = (SelectFormatType) format;
+				constructData = repository.executeSelectQuery(query, fn,
+						selectType);
+			} else {
+				RDFFormatType rdfType = (RDFFormatType) format;
+				constructData = repository.executeConstructQuery(query,
+						rdfType, fn);
+			}
+
+			FileInputStream fis = new FileInputStream(constructData);
+			return fis;
+		} catch (IOException ex) {
+			LOG.error("File with result not found.", ex);
+			Notification.show(
+					"There was error in creating donwload file!",
+					Notification.Type.ERROR_MESSAGE);
+			return null;
+		} catch (InvalidQueryException ex) {
+			LOG.error("Invalid query!", ex);
+			Notification.show("Query Validator",
+					"Query is not valid: "
+					+ ex.getCause().getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+			return null;
+		}
+	}
+
+	private String getFileName(Object oFormat) {
+		if (oFormat == null) {
+			Notification.show("Format not selected!",
+					"Format must be selected for download!",
+					Notification.Type.ERROR_MESSAGE);
+			return "";
+		}
+		String filename = null;
+		if (oFormat.getClass() == RDFFormatType.class) {
+			switch ((RDFFormatType) oFormat) {
+				case TTL:
+					filename = "data.ttl";
+					break;
+				case AUTO:
+				case RDFXML:
+					filename = "data.rdf";
+					break;
+				case N3:
+					filename = "data.n3";
+					break;
+				case TRIG:
+					filename = "data.trig";
+					break;
+				case TRIX:
+					filename = "data.trix";
+					break;
+				case NT:
+					filename = "data.nt";
+					break;
+			}
+		} else if (oFormat.getClass() == SelectFormatType.class) {
+			switch ((SelectFormatType) oFormat) {
+				case CSV:
+					filename = "data.csv";
+					break;
+				case XML:
+					filename = "data.xml";
+					break;
+				case TSV:
+					filename = "data.tsv";
+					break;
+				case JSON:
+					filename = "data.json";
+					break;
+			}
+		}
+		return filename;
+	}
+
+	private void setUpTableDownload(DPUInstanceRecord selectedDpu, DataUnitInfo selectedDataUnit, String query) {
+		resultDownloadControls.setVisible(true);
+		tableDpu = selectedDpu;
+		tableDataUnit = selectedDataUnit;
+		tableQuery = query;
+		try {
+			if (isSelectQuery(query)) {
+				downloadFormatSelect.removeAllItems();
+				for (SelectFormatType t : SelectFormatType.values()) {
+					downloadFormatSelect.addItem(t);
+				}
+			} else {
+				downloadFormatSelect.removeAllItems();
+				for (RDFFormatType type : RDFFormatType.values()) {
+					if (type != RDFFormatType.AUTO) {
+						downloadFormatSelect.addItem(type);
+					}
+				}
+			}
+		} catch (InvalidQueryException ex) {
+			//Should not happen, only correct queries are shown in table.
 		}
 	}
 

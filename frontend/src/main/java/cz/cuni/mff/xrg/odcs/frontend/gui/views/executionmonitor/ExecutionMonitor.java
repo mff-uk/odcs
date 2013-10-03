@@ -167,20 +167,20 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			}
 		});
 		buttonBar.addComponent(buttonClose);
-		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_LEFT);
+		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_RIGHT);
 
-		Button buttonExport = new Button();
-		buttonExport.setCaption("Export");
-		buttonExport.setHeight("25px");
-		buttonExport.setWidth("100px");
-		buttonExport
-				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-			}
-		});
-		buttonBar.addComponent(buttonExport);
-		buttonBar.setComponentAlignment(buttonExport, Alignment.BOTTOM_RIGHT);
+//		Button buttonExport = new Button();
+//		buttonExport.setCaption("Export");
+//		buttonExport.setHeight("25px");
+//		buttonExport.setWidth("100px");
+//		buttonExport
+//				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+//			@Override
+//			public void buttonClick(ClickEvent event) {
+//			}
+//		});
+//		buttonBar.addComponent(buttonExport);
+//		buttonBar.setComponentAlignment(buttonExport, Alignment.BOTTOM_RIGHT);
 
 		logLayout.addComponent(buttonBar);
 		logLayout.setExpandRatio(buttonBar, 0);
