@@ -152,39 +152,37 @@ class PipelineList extends ViewComponent {
 				return IntlibHelper.getDuration(latestExec);
 			}
 		});
-		// High performance loss in current version.
-//		tablePipelines.addGeneratedColumn("lastExecTime", new CustomTable.ColumnGenerator() {
-//
-//			@Override
-//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-//				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
-//				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
-//				if(latestExec != null) {
-//					return latestExec.getStart();
-//				} else {
-//					return null;
-//				}
-//			}
-//		});
-//		tablePipelines.addGeneratedColumn("lastExecStatus", new CustomTable.ColumnGenerator() {
-//
-//			@Override
-//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-//				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
-//				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
-//				if(latestExec != null) {
-//					return latestExec.getStatus();
-//				} else {
-//					return null;
-//				}
-//			}
-//		});
+		tablePipelines.addGeneratedColumn("lastExecTime", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
+				if(latestExec != null) {
+					return latestExec.getStart();
+				} else {
+					return null;
+				}
+			}
+		});
+		tablePipelines.addGeneratedColumn("lastExecStatus", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
+				// TODO get the Pipeline from container, instead of loading through facade
+				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
+				if(latestExec != null) {
+					return latestExec.getStatus();
+				} else {
+					return null;
+				}
+			}
+		});
+		
 		// set columns
-		tablePipelines.setVisibleColumns("id", "name", "duration", "description", "");
-		//tablePipelines.setVisibleColumns("id", "name", "duration", "lastExecTime", "lastExecStatus", "description", "");
+		tablePipelines.setVisibleColumns("id", "name", "duration", "lastExecTime", "lastExecStatus", "description", "");
 		tablePipelines.setColumnHeader("duration", "Last run time");
-		//tablePipelines.setColumnHeader("lastExecTime", "Last execution time");
-		//tablePipelines.setColumnHeader("lastExecStatus", "Last status");
+		tablePipelines.setColumnHeader("lastExecTime", "Last execution time");
+		tablePipelines.setColumnHeader("lastExecStatus", "Last status");
 		tablePipelines.setFilterBarVisible(true);
 		tablePipelines.setFilterLayout();
 		tablePipelines.setSelectable(true);
