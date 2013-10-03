@@ -542,7 +542,7 @@ public class LocalRDFRepoTest {
 		assertTrue(beforeUpdate);
 
 		try {
-			rdfRepo.transform(updateQuery);
+			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -607,7 +607,7 @@ public class LocalRDFRepoTest {
 				+ "}";
 
 		try {
-			rdfRepo.transform(updateQuery);
+			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
 			//*VIRTUOSO TODO !!! */ fail(e.getMessage());
 		}
@@ -654,7 +654,7 @@ public class LocalRDFRepoTest {
 				+ "WHERE {?s s:streetAddress ?o}} FILTER (BOUND(?x))}";
 
 		try {
-			rdfRepo.transform(updateQuery);
+			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
 			//*VIRTUOSO*/fail(e.getMessage());
 		}
@@ -753,7 +753,7 @@ public class LocalRDFRepoTest {
 				+ "  ?s ?p ?s1 . }";
 
 		try {
-			rdfRepo.transform(updateQuery);
+			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -780,7 +780,7 @@ public class LocalRDFRepoTest {
 				+ "  ?s ?p ?o . }";
 
 		try {
-			rdfRepo.transform(updateQuery);
+			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -805,7 +805,7 @@ public class LocalRDFRepoTest {
 
 
 		try {
-			rdfRepo.transform(updateQuery);
+			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -930,7 +930,7 @@ public class LocalRDFRepoTest {
 				+ "  ?s ?p ?o . }";
 
 		try {
-			repository.transform(updateQuery);
+			repository.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
