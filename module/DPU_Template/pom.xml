@@ -1,60 +1,60 @@
-
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>cz.cuni.xrg.intlib</groupId>
-        <artifactId>module-base</artifactId>
-        <version>0.0.1</version>
-    </parent>    
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cz.cuni.mff.xrg.odcs</groupId>
+		<artifactId>module-base</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../module-base/pom.xml</relativePath>
+	</parent>    
     
-    <!-- TODO 1: fill the DPU name, without special characters, use '_' instead of whitespaces -->
-    <artifactId>DPU_Name</artifactId>
+	<!-- TODO 1: fill the DPU name, without special characters, use '_' instead of whitespaces -->
+	<artifactId>DPU_Name</artifactId>
     
-    <!-- TODO 2: specify module version, can be left unchanged -->
-    <version>0.0.1</version>
+	<!-- TODO 2: specify module version, can be left unchanged -->
+	<version>0.0.1</version>
     
-    <packaging>bundle</packaging>
+	<packaging>bundle</packaging>
     
-    <!-- TODO 3: fill module description, the description will be visible to the user -->
-    <description>My first DPU implementation.</description>
+	<!-- TODO 3: fill module description, the description will be visible to the user -->
+	<description>My first DPU implementation.</description>
     
-    <properties>
-        <!-- TODO 4: fill the name of root package -->
-        <dpu.package>com.example</dpu.package>
-        <!-- TODO 5: fill DPU main class name here -->
-        <dpu.mainClass>DPUTemplate</dpu.mainClass>
-        <!-- TODO 6: Put path to the ODCL DPUs directory here -->
-        <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->    
-        <dpu.odcl.dir></dpu.odcl.dir>
-    </properties>
+	<properties>
+		<!-- TODO 4: fill the name of root package -->
+		<dpu.package>com.example</dpu.package>
+		<!-- TODO 5: fill DPU main class name here -->
+		<dpu.mainClass>DPUTemplate</dpu.mainClass>
+		<!-- TODO 6: Put path to the ODCL DPUs directory here -->
+		<!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->    
+		<dpu.odcl.dir></dpu.odcl.dir>
+	</properties>
  	
- 	<dependencies>
- 		<!-- TODO 7: add dependencies here -->
+	<dependencies>
+		<!-- TODO 7: add dependencies here -->
        
-                <!-- Sample dependency defining a maven artifact - Saxon JAR - available on Maven repositories. If you have configured on your machine access to any maven repository, the following lines should work for you and should automatically make SAXON HE 9.2.1.5 available. The dependency (jar file) will be automaticaly
- 			added to the resulting OSGi bundle  
-                <dependency>
-                    <groupId>net.sourceforge.saxon</groupId>
-                    <artifactId>saxonhe</artifactId>
-                    <version>9.2.1.5</version>
-                    <type>jar</type>
-                </dependency>
-                -->
- 		 		
- 		<!-- Alternatively, if you would like to refer to local dependency on the file system,  use following code to import local dependency 
- 			from sample project (folder) file\lib\MyLib.java. The dependency (jar file) will be automaticaly
- 			added to the resulting OSGi bundle. Prefer the reference to publicly available Maven repository (previous dependency example) over local repository (the following dependency example) - if you move the development of DPU to a different machine, local repository will not work there. 
+		<!-- Sample dependency defining a maven artifact - Saxon JAR - available on Maven repositories. If you have configured on your machine access to any maven repository, the following lines should work for you and should automatically make SAXON HE 9.2.1.5 available. The dependency (jar file) will be automaticaly
+	added to the resulting OSGi bundle  
 		<dependency>
-			<groupId>com.surname.intlib</groupId>
-			<artifactId>MyLib</artifactId>
-			<version>1.0.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/MyLib.java</systemPath>
-		</dependency> 		
- 		 -->
+			<groupId>net.sourceforge.saxon</groupId>
+			<artifactId>saxonhe</artifactId>
+			<version>9.2.1.5</version>
+			<type>jar</type>
+		</dependency>
+		-->
+ 		 		
+		<!-- Alternatively, if you would like to refer to local dependency on the file system,  use following code to import local dependency 
+		   from sample project (folder) file\lib\MyLib.java. The dependency (jar file) will be automaticaly
+		   added to the resulting OSGi bundle. Prefer the reference to publicly available Maven repository (previous dependency example) over local repository (the following dependency example) - if you move the development of DPU to a different machine, local repository will not work there. 
+	   <dependency>
+		   <groupId>com.surname.intlib</groupId>
+		   <artifactId>MyLib</artifactId>
+		   <version>1.0.0</version>
+		   <scope>system</scope>
+		   <systemPath>${project.basedir}/lib/MyLib.java</systemPath>
+	   </dependency> 		
+		-->
  		 
- 	</dependencies>
+	</dependencies>
  	
 </project>
