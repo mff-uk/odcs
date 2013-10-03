@@ -264,7 +264,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		//table with pipeline execution records
 		monitorTable = new IntlibPagedTable();
 		monitorTable.setSelectable(true);
-		monitorTable.setContainerDataSource(tableData);
 		monitorTable.setWidth("100%");
 		monitorTable.setHeight("100%");
 		monitorTable.setImmediate(true);
@@ -279,7 +278,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setSortContainerPropertyId(property);
 		monitorTable.setSortAscending(false);
 		monitorTable.sort();
-		//monitorTable.setSortEnabled(true);
+		
+		monitorTable.setContainerDataSource(tableData);
 		
 		monitorTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
 			@Override
