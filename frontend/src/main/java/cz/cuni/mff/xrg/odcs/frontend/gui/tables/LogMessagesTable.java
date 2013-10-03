@@ -4,7 +4,9 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
@@ -20,10 +22,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.InFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.PropertiesFilter;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import java.util.List;
 import java.util.Set;
@@ -47,7 +53,6 @@ public class LogMessagesTable extends CustomComponent {
 	private ComboBox dpuSelector;
 	private LogMessageDetail detail = null;
 	private IntlibLazyQueryContainer container;
-	private LogFacade logFacade = App.getLogs();
 	private DPUFacade dpuFacade = App.getDPUs();
 
 	/**
@@ -89,6 +94,37 @@ public class LogMessagesTable extends CustomComponent {
 		dpuSelector = new ComboBox();
 		dpuSelector.setImmediate(true);
 		loadMessageTable();
+
+		Button download = new Button("Download");
+		FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
+			@Override
+			public String getFilename() {
+				return "log.txt";
+			}
+
+			@Override
+			public InputStream getStream() {
+				List<LogMessage> data = getData(pipelineExecution, null, Level.ALL);
+				StringBuilder sb = new StringBuilder();
+				for(LogMessage log : data) {
+					//17:42:17.661 [http-bio-8084-exec-21] DEBUG v.ConfigurableDataSource - Creating new JDBC DriverManager Connection to [jdbc:virtuoso://localhost:1111/charset=UTF-8]
+					sb.append(log.getDate());
+					sb.append(' ');
+					sb.append(log.getThread());
+					sb.append(' ');
+					sb.append(log.getLevelString());
+					sb.append(' ');
+					sb.append(log.getSource());
+					sb.append(' ');
+					sb.append(log.getMessage());
+					sb.append('\r');
+					sb.append('\n');
+				}
+				return new ByteArrayInputStream(sb.toString().getBytes());
+			}
+		});
+		fileDownloader.extend(download);
+		mainLayout.addComponent(download);
 		setCompositionRoot(mainLayout);
 	}
 

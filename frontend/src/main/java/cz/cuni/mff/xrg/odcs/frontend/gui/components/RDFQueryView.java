@@ -3,11 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.StreamResource;
-import com.vaadin.server.StreamResource.StreamSource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
@@ -16,6 +11,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
@@ -41,7 +38,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.query.BindingSet;
@@ -487,44 +483,6 @@ public class RDFQueryView extends CustomComponent {
 			}
 		} catch (InvalidQueryException ex) {
 			//Should not happen, only correct queries are shown in table.
-		}
-	}
-
-	/**
-	 * Provide both the {@link StreamSource} and the filename in an on-demand
-	 * way.
-	 */
-	public interface OnDemandStreamResource extends StreamSource {
-
-		String getFilename();
-	}
-
-	/**
-	 * This specializes {@link FileDownloader} in a way, such that both the file
-	 * name and content can be determined on-demand, i.e. when the user has
-	 * clicked the component.
-	 */
-	public class OnDemandFileDownloader extends FileDownloader {
-
-		private static final long serialVersionUID = 1L;
-		private final OnDemandStreamResource onDemandStreamResource;
-
-		public OnDemandFileDownloader(
-				OnDemandStreamResource onDemandStreamResource) {
-			super(new StreamResource(onDemandStreamResource, ""));
-			this.onDemandStreamResource = onDemandStreamResource;
-		}
-
-		@Override
-		public boolean handleConnectorRequest(VaadinRequest request,
-				VaadinResponse response, String path)
-				throws IOException {
-			getResource().setFilename(onDemandStreamResource.getFilename());
-			return super.handleConnectorRequest(request, response, path);
-		}
-
-		private StreamResource getResource() {
-			return (StreamResource) this.getResource("dl");
 		}
 	}
 }
