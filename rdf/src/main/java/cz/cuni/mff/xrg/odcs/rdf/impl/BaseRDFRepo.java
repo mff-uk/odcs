@@ -1067,7 +1067,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * @throws RDFException when transformation fault.
 	 */
 	@Override
-	public void transform(String updateQuery) throws RDFException {
+	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException {
 
 		RepositoryConnection connection = null;
 		try {
@@ -1378,7 +1378,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private String prepareLiteral(Literal literal) {
 
 		String label = getEscapedLabel(literal.getLabel());
-		
+
 		String result = "\"\"\"" + label + "\"\"\"";
 		if (literal.getLanguage() != null) {
 			//there is language tag
@@ -1473,6 +1473,24 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	/**
+	 * Add all RDF triples in defined graph to reposiotory.
+	 *
+	 * @param graphInstance Concrete graph contains RDF triples.
+	 */
+	@Override
+	public void addTriplesFromGraph(Graph graphInstance) {
+
+		if (graphInstance != null) {
+			Iterator<Statement> it = graphInstance.iterator();
+
+			while (it.hasNext()) {
+				Statement statement = it.next();
+				addStatement(statement, graph);
+			}
+		}
+	}
+
+	/**
 	 * Make construct query over repository data and return interface Graph as
 	 * result contains iterator for statements (triples).
 	 *
@@ -1499,6 +1517,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			try {
 
 				GraphQueryResult result = graphQuery.evaluate();
+
 				logger.debug(
 						"Query " + constructQuery + " has not null result.");
 				return result.asGraph();
