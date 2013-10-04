@@ -3,11 +3,13 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomTable;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -155,9 +157,10 @@ class PipelineList extends ViewComponent {
 		tablePipelines.addGeneratedColumn("lastExecTime", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
-				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
-				if(latestExec != null) {
+				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
+				Pipeline ppl = (Pipeline) container.getEntity(itemId);
+				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl);
+				if (latestExec != null) {
 					return latestExec.getStart();
 				} else {
 					return null;
@@ -167,17 +170,21 @@ class PipelineList extends ViewComponent {
 		tablePipelines.addGeneratedColumn("lastExecStatus", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
-				// TODO get the Pipeline from container, instead of loading through facade
-				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId));
-				if(latestExec != null) {
-					return latestExec.getStatus();
+				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
+				Pipeline ppl = (Pipeline) container.getEntity(itemId);
+				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl);
+				if (latestExec != null) {
+					PipelineExecutionStatus type = latestExec.getStatus();
+					ThemeResource img = IntlibHelper.getIconForExecutionStatus(type);
+					Embedded emb = new Embedded(type.name(), img);
+					emb.setDescription(type.name());
+					return emb;
 				} else {
 					return null;
 				}
 			}
 		});
-		
+
 		// set columns
 		tablePipelines.setVisibleColumns("id", "name", "duration", "lastExecTime", "lastExecStatus", "description", "");
 		tablePipelines.setColumnHeader("duration", "Last run time");
