@@ -114,7 +114,7 @@ public class SPARQLQueryValidator implements Validator {
 		if (requireSPARQLType) {
 			SPARQLQueryType myType = getSPARQLQueryType();
 			if (!isSameType(myType, requiredType)) {
-				message = requiredType.toString() + " SPARQL type is required.";
+				message = requiredType.toString() + " Unsupported SPARQL 1.1 query - the DPU expects SELECT/CONSTRUCT";
 				return false;
 			}
 		}
