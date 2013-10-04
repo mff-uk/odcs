@@ -120,4 +120,8 @@ public final class IntlibLazyQueryContainer<T> extends LazyQueryContainer {
 			return ((BeanItem<T>) getItem(getIdByIndex(index))).getBean();
 		}
 	}
+	
+	public void refreshRow(Long id) {
+		
+	}
 }
