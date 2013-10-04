@@ -170,6 +170,21 @@ public class IntlibQuery<E> implements Query, Serializable {
 		return items;
 	}
 
+	public Item loadItem(Long id) {
+		final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		final CriteriaQuery<E> cq = cb.createQuery(entityClass);
+		final Root<E> root = cq.from(entityClass);
+
+		cq.select(root);
+		cq.where(cb.equal(getPropertyPath(root, queryDefinition.getIdPropertyId()), id));
+		TypedQuery<E> query = entityManager.createQuery(cq);
+		E entity = query.getSingleResult();
+		if (queryDefinition.isDetachedEntities()) {
+			entityManager.detach(entity);
+		}
+		return toItem(entity);
+	}
+
 	/**
 	 * Sets where criteria of JPA 2.0 Criteria API query according to Vaadin
 	 * filters.
