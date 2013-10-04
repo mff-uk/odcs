@@ -93,6 +93,9 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
         this.email = email;
     }
 
+    /**
+     * @return user name as unique identifier.
+     */
 	@Override
 	public String getUsername() {
 		return username;

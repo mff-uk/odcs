@@ -19,6 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
@@ -288,8 +289,7 @@ public class Context implements DPUContext {
 	 * @return
 	 */
 	private String getTemplateIdentification() {
-		// TODO Petyr: Use something better
-		return dpuInstance.getJarPath();
+		return dpuInstance.getTemplate().getJarDirectory();
 	}	
 	
 	/**
@@ -396,8 +396,17 @@ public class Context implements DPUContext {
 
 	@Override
 	public File getUserDirectory() {
-		File result = new File(getGeneralWorkingDir(), DPU_DIR + File.separator
-				+ USER_DIR + File.separator + getTemplateIdentification());
+		User owner = getExecution().getOwner();
+		String userId; 
+		if (owner == null) {
+			userId = "default";
+		} else {
+			// user name is unique .. we can use it
+			userId = owner.getUsername();
+		}
+		
+		File result = new File(getGeneralWorkingDir(), USER_DIR + File.separator
+				+ userId + File.separator + getTemplateIdentification());
 		result.mkdirs();
 		return result;
 	}

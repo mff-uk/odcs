@@ -6,6 +6,7 @@ import javax.persistence.*;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -217,6 +218,15 @@ public class PipelineExecution implements Serializable {
 		return stop;
 	}
 
+	public void setOwner(User user) {
+		// TODO Add user
+	}	
+	
+	public User getOwner() {
+		// TODO Add user
+		return null;
+	}
+	
 	public void stop() {
 		status = PipelineExecutionStatus.CANCELLING;
 		stop = true;
