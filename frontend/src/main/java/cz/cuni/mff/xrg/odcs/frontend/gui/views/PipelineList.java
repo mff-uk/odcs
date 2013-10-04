@@ -179,7 +179,7 @@ class PipelineList extends ViewComponent {
 		});
 		
 		// set columns
-		tablePipelines.setVisibleColumns("id", "name", "duration", "lastExecTime", "lastExecStatus", "description", "");
+		tablePipelines.setVisibleColumns("id", "name", "description", "", "duration", "lastExecTime", "lastExecStatus");
 		tablePipelines.setColumnHeader("duration", "Last run time");
 		tablePipelines.setColumnHeader("lastExecTime", "Last execution time");
 		tablePipelines.setColumnHeader("lastExecStatus", "Last status");
