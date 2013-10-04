@@ -272,14 +272,15 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setColumnWidth("isDebugging", 50);
 		monitorTable.setColumnWidth("duration", 60);
 		monitorTable.setColumnWidth("actions", 200);
-
+		
 		//sorting by execution date
 		Object property = "start";
 		monitorTable.setSortContainerPropertyId(property);
 		monitorTable.setSortAscending(false);
-		monitorTable.sort();
 		
 		monitorTable.setContainerDataSource(tableData);
+		
+		monitorTable.sort();
 		
 		monitorTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
 			@Override
