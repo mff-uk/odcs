@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
  */
 public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 
-	public String SPARQL_Update_Query = "";
+	public String SPARQL_Update_Query = " ";
 
 	public boolean isConstructType = false;
 

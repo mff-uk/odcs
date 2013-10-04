@@ -170,7 +170,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		txtQuery.addValidator(new com.vaadin.data.Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
-				if (value.toString().isEmpty()) {
+				if (value.toString().trim().isEmpty()) {
 
 					throw new EmptyValueException("SPARQL query must be filled");
 				}
