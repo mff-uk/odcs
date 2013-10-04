@@ -444,6 +444,11 @@ public class SchedulePipeline extends Window {
 					schedule.setPeriod(null);
 				}
 				schedule.setEnabled(true);
+				
+				// store scheduling rule record to DB
+				App.getApp().getSchedules().save(schedule);
+				Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+
 
 				if (notifyThis.getValue().equals(true)) {
 
@@ -507,6 +512,11 @@ public class SchedulePipeline extends Window {
 						schedule.setNotification(scheduleNotificationRecord);
 
 					}
+				
+					// store scheduling rule record to DB
+					App.getApp().getSchedules().save(schedule);
+					Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+
 				} else {
 					if (schedule.getNotification() != null) {
 
@@ -514,10 +524,6 @@ public class SchedulePipeline extends Window {
 
 					}
 				}
-				// store scheduling rule record to DB
-				App.getApp().getSchedules().save(schedule);
-
-				Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 
 				close();
 
