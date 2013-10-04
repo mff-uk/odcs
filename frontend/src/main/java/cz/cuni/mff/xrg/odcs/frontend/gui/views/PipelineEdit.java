@@ -439,7 +439,7 @@ class PipelineEdit extends ViewComponent {
 		pipelineSettingsLayout.addComponent(nameLabel, 0, 0);
 		pipelineName = new TextField();
 		pipelineName.setImmediate(true);
-		pipelineName.setWidth("200px");
+		pipelineName.setWidth("400px");
 		pipelineName.setHeight("-1px");
 		pipelineName.setBuffered(true);
 		pipelineName.addValidator(new Validator() {

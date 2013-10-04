@@ -8,14 +8,14 @@ import javax.persistence.*;
  * @author Jan Vojt
  */
 @Entity
-@Table(name = "rdf_prefix")
+@Table(name = "rdf_ns_prefix")
 public class NamespacePrefix {
 	
 	/**
 	 * Primary key of entity.
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_prefix")
-	@SequenceGenerator(name = "seq_rdf_prefix", allocationSize = 1)
+	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_ns_prefix")
+	@SequenceGenerator(name = "seq_rdf_ns_prefix", allocationSize = 1)
 	private Long id;
 	
 	/**
