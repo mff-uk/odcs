@@ -48,7 +48,7 @@ public class SPARQLQueryValidator implements Validator {
 
 	private String getQueryWithoutPrexices(String myQuery) {
 
-		String regex = ".*prefix\\s+[\\w]+[:]?\\s+[<]?http://[\\w:/\\.#]+[>]?\\s+";
+		String regex = ".*prefix\\s+[\\w-_]+[:]?\\s+[<]?http://[\\w:/\\.#-_]+[>]?\\s+";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(myQuery.toLowerCase());
 
