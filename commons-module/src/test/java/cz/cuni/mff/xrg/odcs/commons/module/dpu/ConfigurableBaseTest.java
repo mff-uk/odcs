@@ -56,7 +56,8 @@ public class ConfigurableBaseTest {
 		ConfigurableDummy configurable = new ConfigurableDummy();
 		byte[] oldConfig = configurable.getConf();
 		assertNotNull(oldConfig);
-		configurable.configure(null);
+		byte[] nullByteConfig = null;
+		configurable.configure(nullByteConfig);
 		assertNotNull(configurable.getConf());
 		byte[] newConfig = configurable.getConf();
 		// configuration is unchanged

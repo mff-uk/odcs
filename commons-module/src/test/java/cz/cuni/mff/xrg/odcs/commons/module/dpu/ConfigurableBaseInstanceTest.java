@@ -24,7 +24,7 @@ public class ConfigurableBaseInstanceTest extends ConfigurableBase<ConfigDummy> 
 	}
 	
 	/**
-	 * Test that initial configuration has been set propoerly.
+	 * Test that initial configuration has been set properly.
 	 */
 	@Test 
 	public void initialConfigNotNull() {
@@ -38,8 +38,8 @@ public class ConfigurableBaseInstanceTest extends ConfigurableBase<ConfigDummy> 
 	public void nullSet() throws ConfigException {
 		DPUConfigObject oldConfig = config;
 		assertNotNull(oldConfig);
-		
-		this.configure(null);
+		byte[] nullByteConfig = null;
+		this.configure(nullByteConfig);
 		
 		assertEquals(oldConfig, config);
 	}

@@ -59,7 +59,7 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	 * @param c
 	 * @throws ConfigException In case of invalid configuration.
 	 */
-	public void configure(C newConfig) throws ConfigException {
+	public void configureDirectly(C newConfig) throws ConfigException {
 		if (newConfig != null && newConfig.isValid()) {
 			config = newConfig;
 		} else {
