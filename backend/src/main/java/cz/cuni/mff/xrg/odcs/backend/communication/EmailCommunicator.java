@@ -11,14 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
-import cz.cuni.mff.xrg.odcs.backend.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.NotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
