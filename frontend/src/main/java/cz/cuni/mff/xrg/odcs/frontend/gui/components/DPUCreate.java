@@ -17,8 +17,10 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedListener;
+import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
@@ -182,9 +184,7 @@ public class DPUCreate extends Window {
 					dpuWrap = new DPUTemplateWrap(
 							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
 				} catch (DPUCreateException e) {
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue("");
-					uploadFile.setReadOnly(true);
+
 					dpuGeneralSettingsLayout.removeComponent(1, 3);
 					dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
 					Notification.show("Failed to create DPU",
@@ -257,7 +257,6 @@ public class DPUCreate extends Window {
 
 				if (!jar.equals(extension)) {
 					selectFile.interruptUpload();
-					fl = 1;
 					Notification.show(
 							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
 					return;
@@ -269,33 +268,37 @@ public class DPUCreate extends Window {
 			}
 		});
 
-		selectFile.addFinishedListener(new Upload.FinishedListener() {
-			/**
-			 * Upload finished listener. Upload window will be closed after
-			 * upload finished. If an upload process wasn't interrupted then
-			 * will be show the name of an uploaded file on the DPU template
-			 * creation dialogue.
-			 *
-			 */
+		//If upload failed, upload window will be closed 
+		selectFile.addFailedListener(new Upload.FailedListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void uploadFinished(final FinishedEvent event) {
+			public void uploadFailed(FailedEvent event) {
 
 				uploadInfoWindow.setClosable(true);
 				uploadInfoWindow.close();
-				if (fl == 0) {
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue(event.getFilename());
-					uploadFile.setReadOnly(true);
-				} else {
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue("");
-					uploadFile.setReadOnly(true);
-					dpuGeneralSettingsLayout.removeComponent(1, 3);
-					dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
-					fl = 0;
-				}
+				dpuGeneralSettingsLayout.removeComponent(1, 3);
+				dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
+				
+			}
+		});
+		
+		//If upload finish successful, upload window will be closed and the name 
+		//of the uploaded file will be shown
+		selectFile.addSucceededListener(new Upload.SucceededListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void uploadSucceeded(final SucceededEvent event) {
+
+				uploadInfoWindow.setClosable(true);
+				uploadInfoWindow.close();
+				uploadFile.setReadOnly(false);
+				uploadFile.setValue(event.getFilename());
+				uploadFile.setReadOnly(true);
+
 			}
 		});
 		// Upload status window
