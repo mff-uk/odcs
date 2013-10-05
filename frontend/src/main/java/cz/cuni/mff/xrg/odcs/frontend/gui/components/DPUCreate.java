@@ -134,6 +134,102 @@ public class DPUCreate extends Window {
 
 		fileUploadReceiver = new FileUploadReceiver();
 
+		HorizontalLayout uploadFileLayout = buildUploadLayout();
+
+		dpuGeneralSettingsLayout.addComponent(uploadFileLayout, 1, 3);
+
+		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
+				false));
+		mainLayout.addComponent(dpuGeneralSettingsLayout);
+
+		//Layout with buttons Save and Cancel
+		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setStyleName("dpuDetailButtonBar");
+		buttonBar.setMargin(new MarginInfo(true, false, false, false));
+
+		Button saveButton = new Button("Save");
+		saveButton.setWidth("90px");
+
+		saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
+			/**
+			 * After pushing the button Save will be checked validation of the
+			 * mandatory fields: Name, Description and uploadFile. JAR file will
+			 * be copied from template folder to the /target/dpu/ folder if
+			 * there no conflicts. After getting all information from JAR file
+			 * needed to store new DPUTemplateRecord, the record in Database
+			 * will be created
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// checking validation of the mandatory fields
+				if (!dpuName.isValid() || (!uploadFile.isValid())) {
+					Notification.show("Failed to save DPURecord",
+							"Mandatory fields should be filled",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+
+				// prepare dpu validators
+				List<DPUValidator> validators = new LinkedList<>();
+				validators.add(new DPUDialogValidator());
+
+				final File sourceFile = fileUploadReceiver.file;
+				// create new representation
+				DPUTemplateWrap dpuWrap = null;
+				try {
+					dpuWrap = new DPUTemplateWrap(
+							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
+				} catch (DPUCreateException e) {
+					uploadFile.setReadOnly(false);
+					uploadFile.setValue("");
+					uploadFile.setReadOnly(true);
+					dpuGeneralSettingsLayout.removeComponent(1, 3);
+					dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
+					Notification.show("Failed to create DPU",
+							e.getMessage(),
+							Notification.Type.ERROR_MESSAGE);
+					
+
+					
+					return;
+				}
+				// set additional variables
+				dpuTemplate = dpuWrap.getDPUTemplateRecord();
+				// now we know all, we can update the DPU template
+				dpuTemplate.setDescription(dpuDescription.getValue());
+				dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
+				App.getDPUs().save(dpuTemplate);
+				// and at the end we can close the dialog .. 
+				close();
+			}
+		}));
+		buttonBar.addComponent(saveButton);
+
+		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+			/**
+			 * Closes DPU Template creation window
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				close();
+
+			}
+		});
+		cancelButton.setWidth("90px");
+		buttonBar.addComponent(cancelButton);
+
+		mainLayout.addComponent(buttonBar);
+
+		this.setContent(mainLayout);
+		setSizeUndefined();
+	}
+	
+	private HorizontalLayout buildUploadLayout(){
+		
 		HorizontalLayout uploadFileLayout = new HorizontalLayout();
 		uploadFileLayout.setSpacing(true);
 
@@ -196,6 +292,8 @@ public class DPUCreate extends Window {
 					uploadFile.setReadOnly(false);
 					uploadFile.setValue("");
 					uploadFile.setReadOnly(true);
+					dpuGeneralSettingsLayout.removeComponent(1, 3);
+					dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
 					fl = 0;
 				}
 			}
@@ -223,90 +321,10 @@ public class DPUCreate extends Window {
 
 		uploadFileLayout.addComponent(uploadFile);
 
-		dpuGeneralSettingsLayout.addComponent(uploadFileLayout, 1, 3);
-
-		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
-				false));
-		mainLayout.addComponent(dpuGeneralSettingsLayout);
-
-		//Layout with buttons Save and Cancel
-		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setStyleName("dpuDetailButtonBar");
-		buttonBar.setMargin(new MarginInfo(true, false, false, false));
-
-		Button saveButton = new Button("Save");
-		saveButton.setWidth("90px");
-
-		saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
-			/**
-			 * After pushing the button Save will be checked validation of the
-			 * mandatory fields: Name, Description and uploadFile. JAR file will
-			 * be copied from template folder to the /target/dpu/ folder if
-			 * there no conflicts. After getting all information from JAR file
-			 * needed to store new DPUTemplateRecord, the record in Database
-			 * will be created
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// checking validation of the mandatory fields
-				if (!dpuName.isValid() || (!uploadFile.isValid())) {
-					Notification.show("Failed to save DPURecord",
-							"Mandatory fields should be filled",
-							Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-
-				// prepare dpu validators
-				List<DPUValidator> validators = new LinkedList<>();
-				validators.add(new DPUDialogValidator());
-
-				final File sourceFile = fileUploadReceiver.file;
-				// create new representation
-				DPUTemplateWrap dpuWrap = null;
-				try {
-					dpuWrap = new DPUTemplateWrap(
-							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
-				} catch (DPUCreateException e) {
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue("");
-					uploadFile.setReadOnly(true);
-					Notification.show("Failed to create DPU",
-							e.getMessage(),
-							Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-				// set additional variables
-				dpuTemplate = dpuWrap.getDPUTemplateRecord();
-				// now we know all, we can update the DPU template
-				dpuTemplate.setDescription(dpuDescription.getValue());
-				dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
-				App.getDPUs().save(dpuTemplate);
-				// and at the end we can close the dialog .. 
-				close();
-			}
-		}));
-		buttonBar.addComponent(saveButton);
-
-		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
-			/**
-			 * Closes DPU Template creation window
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				close();
-
-			}
-		});
-		cancelButton.setWidth("90px");
-		buttonBar.addComponent(cancelButton);
-
-		mainLayout.addComponent(buttonBar);
-
-		this.setContent(mainLayout);
-		setSizeUndefined();
+		
+		return uploadFileLayout;
+				
+				
 	}
+	
 }
