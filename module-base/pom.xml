@@ -55,19 +55,25 @@
 			<type>jar</type>
 		</dependency>
 
-		<dependency> <!-- JUnit dependency -->
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<!-- will not be included in output bundles -->
-			<scope>test</scope>
-		</dependency>
-
 		<dependency> <!-- RDF data unit -->
 			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>RDF</artifactId>
 			<version>${odcs.version}</version>
 			<type>jar</type>
+		</dependency>
+
+		<dependency> <!-- JUnit dependency -->
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency> <!-- dpu tests environment -->
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<artifactId>module-test</artifactId>
+			<version>${odcs.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
