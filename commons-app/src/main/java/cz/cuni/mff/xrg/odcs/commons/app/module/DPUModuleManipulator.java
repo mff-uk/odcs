@@ -118,6 +118,7 @@ public class DPUModuleManipulator {
 			} catch (IOException ex) {
 				LOG.error("Failed to delete directory after DPU.", ex);
 			}
+			moduleFacade.unLoad(newTemplate);
 			throw new DPUCreateException(
 					"Failed to load DPU bacuse of exception:" + e.getMessage());
 		}
