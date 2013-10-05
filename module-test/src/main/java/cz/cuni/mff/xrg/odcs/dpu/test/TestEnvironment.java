@@ -163,14 +163,16 @@ public class TestEnvironment {
 	 * @return Created input data unit.
 	 */
 	public RDFDataUnit createRdfInputFromResource(String name,
-			String resorceName, RDFFormat format) throws RDFException {
+			String resorceName,
+			RDFFormat format) throws RDFException {
 		RDFDataUnit rdf = createRdfDataUnit(name);
 		// construct path to the resource
 		URL url = Thread.currentThread().getContextClassLoader()
 				.getResource(resorceName);
 		// check ..
 		if (url == null) {
-			throw new RDFException("Missing input file in resource.");
+			throw new RDFException("Missing input file in resource for: "
+					+ resorceName);
 		}
 		File inputFile = new File(url.getPath());
 		// return file
@@ -235,8 +237,8 @@ public class TestEnvironment {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-		}		
-		
+		}
+
 		// delete working directory ..
 		try {
 			org.apache.commons.io.FileUtils.deleteDirectory(workingDirectory);

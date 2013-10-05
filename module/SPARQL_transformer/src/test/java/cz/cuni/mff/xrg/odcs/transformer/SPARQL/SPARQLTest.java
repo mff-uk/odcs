@@ -23,7 +23,7 @@ public class SPARQLTest {
 		TestEnvironment env = TestEnvironment.create();
 		// prepare data units
 		RDFDataUnit input = env.createRdfInputFromResource("input",
-				"dbpedia.ttl", RDFFormat.TURTLE);
+				"metadata.ttl", RDFFormat.TURTLE);
 		RDFDataUnit output = env.createRdfOutput("output");
 		
 		// some triples has been loaded 
