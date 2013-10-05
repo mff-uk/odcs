@@ -41,11 +41,17 @@ class DPURecordWrap {
 	 *
 	 * @throws ConfigException
 	 */
-	public void saveConfig() throws ConfigException {
+	public void saveConfig() throws ConfigException, DPUWrapException {
 		if (configDialog == null) {
 			return;
 		}
-		dpuRecord.setRawConf(configDialog.getConfig());
+		try {
+			dpuRecord.setRawConf(configDialog.getConfig());
+		} catch (ConfigException e) {
+			throw e;
+		} catch (Throwable e) {
+			throw new DPUWrapException("Failed to save configuration.", e);
+		}
 	}
 
 	/**
@@ -57,9 +63,17 @@ class DPURecordWrap {
 	 * @throws FileNotFoundException
 	 */
 	public AbstractConfigDialog<DPUConfigObject> getDialog()
-			throws ModuleException, FileNotFoundException {
+			throws ModuleException, FileNotFoundException, DPUWrapException {
 		// load configuration dialog
-		loadConfigDialog();
+		try {
+			loadConfigDialog();
+		} catch(ModuleException e) {
+			throw e;
+		} catch(FileNotFoundException e) {
+			throw e;
+		} catch (Throwable e) {
+			throw new DPUWrapException("Failed to load dialog.", e);
+		}
 		return configDialog;
 	}
 
@@ -70,9 +84,15 @@ class DPURecordWrap {
 	 * @throws ConfigException
 	 */
 	public void configuredDialog()
-			throws ConfigException {
+			throws ConfigException, DPUWrapException {
 		// set dialog configuration
-		loadConfigIntoDialog();
+		try {
+			loadConfigIntoDialog();
+		} catch (ConfigException e) {
+			throw e;
+		} catch (Throwable e) {
+			throw new DPUWrapException("Failed to configure dpu's dialog.", e);
+		}
 	}
 
 	/**
@@ -81,10 +101,12 @@ class DPURecordWrap {
 	 * ({@link #configDialog} is not null) then nothing is done. If the
 	 * {@link #dpuRecord} does not provide configuration dialog set
 	 * {@link #configDialog} to null.
-	 *
+	 * Can possibly emit runtime exception.
+	 * 
 	 * @throws ModuleException
 	 * @throws FileNotFoundException
 	 */
+	@SuppressWarnings("unchecked")
 	private void loadConfigDialog() throws ModuleException, FileNotFoundException {
 		if (configDialog == null) {
 			// continue and load the dialog
@@ -99,6 +121,7 @@ class DPURecordWrap {
 		// now try to load the dialog
 		if (instance instanceof ConfigDialogProvider<?>) {
 			ConfigDialogProvider<DPUConfigObject> dialogProvider;
+			// 'unchecked casting' .. we check type in condition above
 			dialogProvider = (ConfigDialogProvider<DPUConfigObject>) instance;
 			// get configuration dialog
 			configDialog = dialogProvider.getConfigurationDialog();
@@ -111,7 +134,7 @@ class DPURecordWrap {
 
 	/**
 	 * Try to load configuration from {@link #dpuRecord} into
-	 * {@link #configDialog}.
+	 * {@link #configDialog}. Can possibly emit runtime exception.
 	 *
 	 * @throws ConfigException
 	 */
@@ -122,5 +145,5 @@ class DPURecordWrap {
 		}
 		byte[] conf = dpuRecord.getRawConf();
 		configDialog.setConfig(conf);
-	}
+	}	
 }

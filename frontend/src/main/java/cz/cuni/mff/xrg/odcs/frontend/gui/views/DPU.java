@@ -44,6 +44,7 @@ import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
@@ -401,10 +402,16 @@ class DPU extends ViewComponent {
 							"Failed to load configuration. The dialog defaul configuration is used.",
 							e.getMessage(), Type.WARNING_MESSAGE);
 					LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+				} catch (DPUWrapException e) {
+					Notification.show(
+							"Unexpected error. The configuration dialog may not be loaded correctly.",
+							e.getMessage(), Type.WARNING_MESSAGE);
+					LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 				}
 				// add dialog
 //				configDialog.setEnabled(permissions.hasPermission(selectedDpu, "save"));
 
+				
 				verticalLayoutConfigure.addComponent(configDialog);
 
 			}
@@ -784,6 +791,11 @@ class DPU extends ViewComponent {
 							"Failed to load configuration. The dialog defaul configuration is used.",
 							e.getMessage(), Type.WARNING_MESSAGE);
 					LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+				} catch (DPUWrapException e) {
+					Notification.show(
+							"Unexpected error. The configuration dialog may not be loaded correctly.",
+							e.getMessage(), Type.WARNING_MESSAGE);
+					LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 				}
 			}
 		});
@@ -1033,6 +1045,11 @@ class DPU extends ViewComponent {
 				selectedDpuWrap.saveConfig();
 			} catch (ConfigException e) {
 				selectedDpuWrap.getDPUTemplateRecord().setRawConf(null);
+			} catch (DPUWrapException e) {
+				Notification.show(
+						"Unexpected error. The configuration may have not been saved.",
+						e.getMessage(), Type.WARNING_MESSAGE);
+				LOG.error("Unexpected error while saving configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 			}
 
 			// store into DB

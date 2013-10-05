@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUInstanceWrap;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -135,6 +136,11 @@ public class DPUDetail extends Window {
 						e.getMessage(), Type.WARNING_MESSAGE);
 				LOG.error("Problem with configuration for {}", dpuInstance
 						.getDPUInstanceRecord().getId(), e);
+			} catch (DPUWrapException e) {
+				Notification.show(
+						"Unexpected error. The configuration dialog may not be loaded correctly.",
+						e.getMessage(), Type.WARNING_MESSAGE);
+				LOG.error("Unexpected error while loading dialog for {}", dpuInstance.getDPUInstanceRecord().getId(), e);
 			}
 			// add to layout
 			confDialog.setWidth("100%");
