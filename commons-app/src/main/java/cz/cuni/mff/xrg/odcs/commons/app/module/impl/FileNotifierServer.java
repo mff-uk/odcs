@@ -76,6 +76,8 @@ class FileNotifierServer implements Runnable {
 
 	private Thread watcherThread = null;
 
+	private boolean interrupted = false;
+	
 	/**
 	 * Contains names of directories in which first notification will be
 	 * ignored.
@@ -111,7 +113,19 @@ class FileNotifierServer implements Runnable {
 	 * Terminates watcher.
 	 */
 	public void stop() {
+		LOG.trace("Stopping FileNotifierServer ...");
+		
 		watcherThread.interrupt();
+		
+		try {
+			watcherThread.join();
+			// ..
+			LOG.trace("FileNotifierServer has been stopped.");
+		} catch (InterruptedException e) {
+			LOG.trace("Interrupted when fait for FileNotifierServer to stop.");
+		}
+		// give up the thread ..
+		watcherThread = null;
 	}
 
 	/**
@@ -264,13 +278,16 @@ class FileNotifierServer implements Runnable {
 		// so it is not locked by OS
 		try {
 			Thread.sleep(100);
-		} catch (InterruptedException e) { }
+		} catch (InterruptedException e) {
+			interrupted = true;
+			LOG.info("DPU's change watcher has been interrupted.");
+		}
 		
 		try {
 			Files.delete(eventPath);
 			// we use Exception as it can throw IOException as
 			// well
-		} catch (Exception e) {
+		} catch (IOException e) {
 			LOG.debug("Failed to delete notification file '{}', " +
 					"but it is ok as it was probably delete by other " +
 					"notification server.", eventPath.toString());
@@ -284,18 +301,17 @@ class FileNotifierServer implements Runnable {
 	public void run() {
 		LOG.info("DPU's change watcher is running ... ");
 		// wait for event
-		for (;;) {
+		while (!interrupted) {
 			if (Thread.interrupted()) {
-				// if yes finish
-				return;
+				// if yes finish				
+				break;
 			}
 
 			WatchKey key = null;
 			try {
 				key = watcher.take();
-			} catch (InterruptedException x) {
-				// stop the execution
-				return;
+			} catch (InterruptedException e) {
+				break;
 			}
 			// get the path for the event
 			Path dir = keys.get(key);
@@ -334,6 +350,15 @@ class FileNotifierServer implements Runnable {
 				LOG.debug("Key for: '{}' is no longer valid.", dir.toString());
 			}
 		}
+		// unregister watcher
+		try {
+			if (watcher != null) {
+				watcher.close();
+			}
+			watcher = null;
+		} catch (IOException e) { }
+		
+		LOG.trace("DPU's change watcher has been interrupted.");
 	}
-
+		
 }
