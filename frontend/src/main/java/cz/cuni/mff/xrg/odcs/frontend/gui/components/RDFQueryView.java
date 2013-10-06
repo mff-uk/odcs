@@ -1,25 +1,23 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-import com.vaadin.data.Container;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
+import cz.cuni.mff.xrg.odcs.frontend.container.RDFLazyQueryContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryDefinition;
+import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
@@ -29,19 +27,11 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.CSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.JSON;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.TSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.XML;
-import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import org.openrdf.model.Graph;
-import org.openrdf.model.Statement;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.QueryEvaluationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -247,64 +237,18 @@ public class RDFQueryView extends CustomComponent {
 	 */
 	private void runQuery() throws InvalidQueryException {
 		String query = queryText.getValue();
-		boolean isSelectQuery = isSelectQuery(query);
 
-		Object data = null;
-		try {
-			DPUInstanceRecord selectedDpu = selector.getSelectedDPU();
-			DataUnitInfo selectedDataUnit = selector.getSelectedDataUnit();
-			RDFDataUnit repository = getRepository(selectedDpu, selectedDataUnit);
-			if (repository == null) {
-				//TODO is this an error?	
-				return;
-			}
+		DPUInstanceRecord selectedDpu = selector.getSelectedDPU();
+		DataUnitInfo selectedDataUnit = selector.getSelectedDataUnit();
+		setUpTableDownload(selectedDpu, selectedDataUnit, query);
 
-			if (isSelectQuery) {
-				data = repository.executeSelectQueryAsTuples(query);
-			} else {
-				Graph queryResult = repository.executeConstructQuery(query);
-				List<Statement> result = new ArrayList<>(queryResult.size());
-				Iterator<Statement> it = queryResult.iterator();
-				while (it.hasNext()) {
-					result.add(it.next());
-				}
-				data = getRDFTriplesData(result);
-			}
-			// close reporistory
-			repository.shutDown();
-
-			setUpTableDownload(selectedDpu, selectedDataUnit, query);
-		} catch (RuntimeException e) {
-			throw new RuntimeException(e);
+		//New RDFLazyQueryContainer
+		RDFLazyQueryContainer container = new RDFLazyQueryContainer(new RDFQueryDefinition(20, "id", query, selector.getContext(), selectedDpu, selectedDataUnit), new RDFQueryFactory());
+		for (Object propertyId : container.getItem(container.getIdByIndex(0)).getItemPropertyIds()) {
+			container.addContainerProperty(propertyId, String.class, null, true, true);
 		}
-		Container container;
-		if (isSelectQuery) {
-			container = buildDataSource((MyTupleQueryResult) data);
-		} else {
-			container = App.getApp().getBean(ContainerFactory.class)
-					.createRDFData((List<RDFTriple>) data);
-		}
+
 		resultTable.setContainerDataSource(container);
-	}
-
-	private List<RDFTriple> getRDFTriplesData(List<Statement> statements) {
-
-		List<RDFTriple> triples = new ArrayList<>();
-
-		int count = 0;
-
-		for (Statement next : statements) {
-			String subject = next.getSubject().stringValue();
-			String predicate = next.getPredicate().stringValue();
-			String object = next.getObject().stringValue();
-
-			count++;
-
-			RDFTriple triple = new RDFTriple(count, subject, predicate, object);
-			triples.add(triple);
-		}
-
-		return triples;
 	}
 
 	private void browseDataUnit() {
@@ -313,43 +257,6 @@ public class RDFQueryView extends CustomComponent {
 			runQuery();
 		} catch (InvalidQueryException ex) {
 			//Should not happen
-		}
-	}
-
-	/**
-	 * Initializes table with data from SELECT query.
-	 *
-	 * @param data Data with result of SELECT query.
-	 * @return {@link IndexedContainer} to serve as data source for
-	 * {@link IntlibPagedTable}.
-	 */
-	private IndexedContainer buildDataSource(MyTupleQueryResult data) {
-		IndexedContainer result = new IndexedContainer();
-		try {
-			if (!data.hasNext()) {
-				return result;
-			}
-
-			List<String> columns = data.getBindingNames();
-
-			result.addContainerProperty("id", Integer.class, "");
-			for (String column : columns) {
-				result.addContainerProperty(column, String.class, "");
-			}
-			int i = 1;
-			while (data.hasNext()) {
-				BindingSet item = data.next();
-				Object num = result.addItem();
-				result.getContainerProperty(num, "id").setValue(i);
-				for (String column : columns) {
-					String value = item.getValue(column).stringValue();
-					result.getContainerProperty(num, column).setValue(value);
-				}
-			}
-			return result;
-		} catch (QueryEvaluationException e) {
-			LOG.error("Error geting data from query", e);
-			return result;
 		}
 	}
 
