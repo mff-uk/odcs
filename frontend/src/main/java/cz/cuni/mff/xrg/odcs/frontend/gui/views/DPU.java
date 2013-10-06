@@ -840,11 +840,11 @@ class DPU extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 
 				saveDPUTemplate();
-
+				
 				//refresh data in dialog and dpu tree
 				dpuTree.refresh();
 				setGeneralTabValues();
-
+				buttonSaveDPU.setEnabled(false);
 				// refresh configuration
 				try {
 					selectedDpuWrap.configuredDialog();
@@ -859,6 +859,7 @@ class DPU extends ViewComponent {
 							e.getMessage(), Type.WARNING_MESSAGE);
 					LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 				}
+				
 			}
 		});
 		buttonDpuBar.addComponent(buttonSaveDPU);
