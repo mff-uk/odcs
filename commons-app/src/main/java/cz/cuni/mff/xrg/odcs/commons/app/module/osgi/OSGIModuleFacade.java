@@ -419,6 +419,11 @@ class OSGIModuleFacade implements ModuleFacade {
 			throws ModuleException {
 		LOG.debug("Installing bundle from '{}'/'{}'", directory, fileName);
 		
+		if (directory == null || fileName == null) {
+			LOG.error("Can't install bundle bundle from '{}'/'{}'", directory, fileName);
+			throw new ModuleException("Missing path to bundle.");
+		}
+		
 		// prepare uri
 		final String uri = createUri(directory, fileName);
 		// we lock the directory for updates
