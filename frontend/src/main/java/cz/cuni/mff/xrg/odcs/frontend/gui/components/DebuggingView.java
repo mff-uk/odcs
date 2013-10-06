@@ -143,7 +143,7 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		executionRecordsTable.setPipelineExecution(pipelineExec);
+		executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh);
 
 		//Content of text log file
 		logMessagesTable.setDpu(pipelineExec, null, isRefresh);
@@ -166,11 +166,7 @@ public class DebuggingView extends CustomComponent {
 	 */
 	public void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
-		fillContent(true);
-		fireRefreshRequest();
-//        if (debugDpu != null) {
-//            queryView.setGraphs(debugDpu.getType());
-//        }
+		fillContent(false);
 		setCompositionRoot(mainLayout);
 	}
 
@@ -185,8 +181,7 @@ public class DebuggingView extends CustomComponent {
 		this.pipelineExec = execution;
 		this.debugDpu = instance;
 		refreshContent();
-		if (refreshAutomatically.getValue()) {
-			//App.getApp().getRefreshThread().refreshExecution(this.pipelineExec, this);
+		if (refreshAutomatically != null && refreshAutomatically.getValue()) {
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(this, execution));
 		}
 	}

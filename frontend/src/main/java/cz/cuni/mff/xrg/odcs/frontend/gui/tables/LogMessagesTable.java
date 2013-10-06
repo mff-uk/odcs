@@ -106,7 +106,7 @@ public class LogMessagesTable extends CustomComponent {
 			public InputStream getStream() {
 				List<LogMessage> data = getData(pipelineExecution, null, Level.ALL);
 				StringBuilder sb = new StringBuilder();
-				for(LogMessage log : data) {
+				for (LogMessage log : data) {
 					//17:42:17.661 [http-bio-8084-exec-21] DEBUG v.ConfigurableDataSource - Creating new JDBC DriverManager Connection to [jdbc:virtuoso://localhost:1111/charset=UTF-8]
 					sb.append(log.getDate());
 					sb.append(' ');
@@ -136,21 +136,25 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param dpu {@link DPUInstanceRecord} or null.
 	 */
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, boolean isRefresh) {
-		this.dpu = dpu;
-		if (pipelineExecution != exec && !isRefresh) {
-			levelSelector.setValue(exec.isDebugging() ? Level.ALL : Level.INFO);
-		}
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
 		if (!isRefresh) {
 			this.pipelineExecution = exec;
 			c.removeDefaultFilters();
 			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
-//			if (dpu != null) {
-//				c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
-//			}
+		}
+		this.dpu = dpu;
+		if (!isRefresh) {
+			Level newValue = exec.isDebugging() ? Level.ALL : Level.INFO;
+			if (newValue.equals(levelSelector.getValue())) {
+				c.refresh();
+			} else {
+				levelSelector.setValue(newValue);
+			}
+		} else {
+			c.refresh();
 		}
 		refreshDpuSelector();
-		c.refresh();
+
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
@@ -245,9 +249,6 @@ public class LogMessagesTable extends CustomComponent {
 		messageTable.setColumnHeader("dpuInstanceId", "DPU Instance");
 		messageTable.setSortEnabled(false);
 		messageTable.setFilterBarVisible(true);
-		levelSelector.setValue(Level.INFO);
-
-		//messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
 	/*

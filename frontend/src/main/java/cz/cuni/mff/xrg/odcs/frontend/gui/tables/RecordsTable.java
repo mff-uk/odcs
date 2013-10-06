@@ -81,10 +81,12 @@ public class RecordsTable extends CustomComponent {
 	 *
 	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
-	public void setPipelineExecution(PipelineExecution execution) {
+	public void setPipelineExecution(PipelineExecution execution, boolean isRefresh) {
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
-		c.removeDefaultFilters();
-		c.addDefaultFilter(new Compare.Equal("execution.id", execution.getId()));
+		if(!isRefresh) {
+			c.removeDefaultFilters();
+			c.addDefaultFilter(new Compare.Equal("execution.id", execution.getId()));
+		}
 		c.refresh();
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
@@ -95,6 +97,7 @@ public class RecordsTable extends CustomComponent {
 	 */
 	private void loadMessageTable() {
 		Container container = App.getApp().getBean(ContainerFactory.class).createExecutionMessages();
+		messageTable.setSortEnabled(true);
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
 			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
@@ -157,10 +160,8 @@ public class RecordsTable extends CustomComponent {
 		}
 		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage", "");
 		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message", "");
-		messageTable.setSortEnabled(true);
 		messageTable.setFilterFieldVisible("", false);
 		messageTable.setFilterBarVisible(true);
-		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 	
 	/**
