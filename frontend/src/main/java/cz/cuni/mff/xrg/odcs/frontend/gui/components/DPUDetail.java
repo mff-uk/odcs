@@ -101,6 +101,7 @@ public class DPUDetail extends Window {
 		} else {
 			dpuDescription.setValue(dpu.getDescription().trim());
 		}
+		dpuDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,

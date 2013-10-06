@@ -469,7 +469,6 @@ class PipelineEdit extends ViewComponent {
 		pipelineDescription.setWidth("400px");
 		pipelineDescription.setHeight("60px");
 		pipelineDescription.setBuffered(true);
-		pipelineDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		pipelineDescription.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent event) {
