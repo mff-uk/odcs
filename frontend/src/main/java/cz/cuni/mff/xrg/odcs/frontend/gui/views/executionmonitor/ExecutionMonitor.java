@@ -399,12 +399,16 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		return mainLayout;
 	}
 
-	private void refresh(PipelineExecution execution) {
+	private void refresh(PipelineExecution execution, boolean isNew) {
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) monitorTable.getContainerDataSource().getContainer();
-		Item item = c.getItem(execution.getId());
-		if (item == null) {
-			// e = (PipelineExecution) c.addEntity();
+		
+		if (isNew) {
+			refresh();
+			//Item item = c.addItemAt(0, execution.getId());
+			//item.getItemProperty("status").setValue(execution.getStatus());
+			//item.getItemProperty("start").setValue(execution.getStart());
 		} else {
+			Item item = c.getItem(execution.getId());
 			item.getItemProperty("status").setValue(execution.getStatus());
 			item.getItemProperty("start").setValue(execution.getStart());
 		}
@@ -452,7 +456,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					App.getApp().getPipelines().save(pipelineExec);
 					senderButton.setVisible(false);
 					// this load new data from database
-					refresh(pipelineExec);
+					refresh(pipelineExec, false);
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
 					break;
 				case "showlog":
@@ -466,12 +470,16 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 				case "rerun":
 					PipelineExecution exec = App.getApp().getPipelines().getExecution(execId);
 					PipelineExecution newExec = IntlibHelper.runPipeline(exec.getPipeline(), false);
-					refresh();
+					if(newExec != null) {
+						refresh(newExec, true);
+					}
 					break;
 				case "redebug":
 					PipelineExecution execDebug = App.getApp().getPipelines().getExecution(execId);
 					PipelineExecution newExec2 = IntlibHelper.runPipeline(execDebug.getPipeline(), true);
-					refresh();
+					if(newExec2 != null) {
+						refresh(newExec2, true);
+					}
 					break;
 			}
 

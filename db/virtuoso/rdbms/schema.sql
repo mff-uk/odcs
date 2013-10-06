@@ -173,8 +173,8 @@ sequence_set('seq_ppl_model', 100, 1);
 CREATE TABLE "DB"."INTLIB"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(255),
-  "description" VARCHAR(512),
+  "name" VARCHAR(2048),
+  "description" LONG VARCHAR,
   "user_id" INTEGER,
   PRIMARY KEY ("id")
 );
