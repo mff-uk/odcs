@@ -34,6 +34,10 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.*;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +70,9 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private HorizontalSplitPanel hsplit;
 	private Panel mainLayout;
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionMonitor.class);
+	
+	private HashMap<Date, Label> runTimeLabels = new HashMap<>();
+	
 	/**
 	 * Table contains pipeline executions.
 	 */
@@ -326,10 +333,14 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
 				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
-//				if(duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
-//					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
-//					duration = (new Date()).getTime() - start.getTime();
-//				}
+				if(duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
+					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
+					duration = (new Date()).getTime() - start.getTime();
+					Label durationLabel = new Label(IntlibHelper.formatDuration(duration));
+					durationLabel.setImmediate(true);
+					runTimeLabels.put(start, durationLabel);
+					return durationLabel;
+				}
 				return IntlibHelper.formatDuration(duration);
 			}
 		});
@@ -419,6 +430,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		Date now = new Date();
 		boolean hasModifiedExecutions = App.getApp().getPipelines().hasModifiedExecutions(lastLoad);
 		if (hasModifiedExecutions) {
+			runTimeLabels.clear();
 			int page = monitorTable.getCurrentPage();
 			Object selectedRow = monitorTable.getValue();
 			IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) monitorTable.getContainerDataSource().getContainer();
@@ -428,6 +440,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			lastLoad = now;
 		}
 		//TODO: Force refresh to running execution on run time.
+		for(Entry<Date, Label> entry : runTimeLabels.entrySet()) {
+			long duration = (new Date()).getTime() - entry.getKey().getTime();
+			entry.getValue().setValue(IntlibHelper.formatDuration(duration));
+		}
+		
 	}
 
 	/**
