@@ -302,4 +302,14 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * @param graphInstance Concrete graph contains RDF triples.
 	 */
 	public void addTriplesFromGraph(Graph graphInstance);
+
+	/**
+	 * For given valid SELECT of CONSTRUCT query return its size {count of rows
+	 * returns for given query).
+	 *
+	 * @param query Valid SELECT/CONTRUCT query for asking.
+	 * @return
+	 * @throws InvalidQueryException if query is not valid.
+	 */
+	public long getResultSizeForQuery(String query) throws InvalidQueryException;
 }
