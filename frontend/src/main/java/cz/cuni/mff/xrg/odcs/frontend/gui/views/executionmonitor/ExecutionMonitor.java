@@ -506,13 +506,15 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		exeId = executionId;
 		if (logLayout == null) {
 			logLayout = buildlogLayout();
-			hsplit.setSplitPosition(55, Unit.PERCENTAGE);
 			hsplit.setSecondComponent(logLayout);
-			hsplit.setHeight("-1px");
-			hsplit.setLocked(false);
 		} else {
 			PipelineExecution pipelineExec = App.getPipelines().getExecution(exeId);
 			getDebugView(pipelineExec);
+		}
+		if(hsplit.isLocked()) {
+			hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+			hsplit.setHeight("-1px");
+			hsplit.setLocked(false);
 		}
 	}
 	

@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.container;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification;
 import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
@@ -17,8 +19,8 @@ import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
 /**
- * Implementation of {@link Query} interface for RDF queries. 
- * Just read-only access to data is supported.
+ * Implementation of {@link Query} interface for RDF queries. Just read-only
+ * access to data is supported.
  *
  * @author Bogo
  */
@@ -38,13 +40,12 @@ public class RDFQuery implements Query {
 	public int size() {
 		RDFDataUnit repository = RDFDataUnitHelper.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
 		try {
-			if (isSelectQuery(baseQuery)) {
-				return 1000;
-			} else {
-				Graph queryResult = repository.executeConstructQuery(baseQuery);
-				return queryResult.size();
-			}
+			return (int) repository.getResultSizeForQuery(baseQuery);
 		} catch (InvalidQueryException ex) {
+			Notification.show("Query Validator",
+					"Query is not valid: "
+					+ ex.getCause().getMessage(),
+					Notification.Type.ERROR_MESSAGE);
 		} finally {
 			repository.shutDown();
 		}
@@ -83,7 +84,7 @@ public class RDFQuery implements Query {
 				}
 				data = getRDFTriplesData(result);
 			}
-			
+
 			List<Item> items = new ArrayList<>();
 			if (isSelectQuery) {
 				MyTupleQueryResult result = (MyTupleQueryResult) data;
@@ -99,7 +100,15 @@ public class RDFQuery implements Query {
 			}
 			return items;
 		} catch (InvalidQueryException ex) {
+			Notification.show("Query Validator",
+					"Query is not valid: "
+					+ ex.getCause().getMessage(),
+					Notification.Type.ERROR_MESSAGE);
 		} catch (QueryEvaluationException ex) {
+			Notification.show("Query Evaluation",
+					"Error in query evaluation: "
+					+ ex.getCause().getMessage(),
+					Notification.Type.ERROR_MESSAGE);
 		} finally {
 			// close reporistory
 			repository.shutDown();
