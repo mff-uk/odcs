@@ -73,7 +73,12 @@ public class SPARQLQueryValidator implements Validator {
 		return myQuery.trim().toLowerCase();
 	}
 
-	private SPARQLQueryType getSPARQLQueryType() {
+	/**
+	 * Return one of enum as query type - SELECT, CONTRUCT, UNKNOWN.
+	 *
+	 * @return
+	 */
+	public SPARQLQueryType getSPARQLQueryType() {
 		String myQyery = getQueryWithoutPrexices(query);
 
 		SPARQLQueryType myType = SPARQLQueryType.UNKNOWN;
