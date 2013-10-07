@@ -27,6 +27,7 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.CSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.JSON;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.TSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.XML;
+import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLQueryValidator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -238,14 +239,25 @@ public class RDFQueryView extends CustomComponent {
 	private void runQuery() throws InvalidQueryException {
 		String query = queryText.getValue();
 
+		SPARQLQueryValidator validator = new SPARQLQueryValidator(query);
+		if (!validator.isQueryValid()) {
+			Notification.show("Query Validator",
+					"Query is not valid: "
+					+ validator.getErrorMessage(),
+					Notification.Type.ERROR_MESSAGE);
+			return;
+		}
+
 		DPUInstanceRecord selectedDpu = selector.getSelectedDPU();
 		DataUnitInfo selectedDataUnit = selector.getSelectedDataUnit();
 		setUpTableDownload(selectedDpu, selectedDataUnit, query);
 
 		//New RDFLazyQueryContainer
 		RDFLazyQueryContainer container = new RDFLazyQueryContainer(new RDFQueryDefinition(20, "id", query, selector.getContext(), selectedDpu, selectedDataUnit), new RDFQueryFactory());
-		for (Object propertyId : container.getItem(container.getIdByIndex(0)).getItemPropertyIds()) {
-			container.addContainerProperty(propertyId, String.class, null, true, true);
+		if (container.size() > 0) {
+			for (Object propertyId : container.getItem(container.getIdByIndex(0)).getItemPropertyIds()) {
+				container.addContainerProperty(propertyId, String.class, null, true, true);
+			}
 		}
 
 		resultTable.setContainerDataSource(container);
