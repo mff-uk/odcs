@@ -292,12 +292,12 @@ public class LogFacade {
         if (message.isEmpty()) {
             message = null;
         } else {
-            message = "%" + message + "%";
+            message = "**" + message;
         }
         if (source.isEmpty()) {
             source = null;
         } else {
-            source = "%" + source + "%";
+            source = "**" + source;
         }
 
         if (message == null && source == null && start == null && end == null) {
