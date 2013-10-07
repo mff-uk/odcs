@@ -70,6 +70,8 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private Client backendClient;
 	private RefreshManager refreshManager;
 	private String storedNavigation = null;
+	private String lastView = null;
+	private String actualView = null;
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
@@ -158,6 +160,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 					getMain().refreshUserBar();
 					return false;
 				}
+				setNavigationHistory(event);
 				setActive();
 //				if(refreshThread == null || !refreshThread.isAlive()) {
 //					setupRefreshThread();
@@ -272,6 +275,22 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 */
 	private boolean checkAuthentication() {
 		return getAuthCtx().isAuthenticated();
+	}
+
+	private void setNavigationHistory(ViewChangeListener.ViewChangeEvent event) {
+		lastView = actualView;
+		actualView = event.getViewName();
+		if(event.getParameters() != null) {
+			actualView += "/" + event.getParameters();
+		}
+	}
+	
+	public void navigateToLastView() {
+		if(lastView != null) {
+			navigator.navigateTo(lastView);
+		} else {
+			navigator.navigateTo("");
+		}
 	}
 
 	/**
