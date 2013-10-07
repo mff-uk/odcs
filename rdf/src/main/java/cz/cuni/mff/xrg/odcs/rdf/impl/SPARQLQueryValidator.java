@@ -4,8 +4,6 @@ import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
@@ -46,58 +44,14 @@ public class SPARQLQueryValidator implements Validator {
 		return type1.equals(type2);
 	}
 
-	private String getQueryWithoutPrexices(String myQuery) {
-
-		String regex = ".*prefix\\s+[\\w-_]+[:]?\\s+[<]?http://[\\w:/\\.#-_]+[>]?\\s+";
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(myQuery.toLowerCase());
-
-		boolean hasResult = matcher.find();
-
-		if (hasResult) {
-
-			int index = matcher.end();
-
-			while (matcher.find()) {
-				index = matcher.end();
-			}
-
-			String result = myQuery.substring(index, myQuery.length())
-					.toLowerCase();
-
-			return result;
-
-
-		}
-
-		return myQuery.trim().toLowerCase();
-	}
-
-	/**
-	 * Return one of enum as query type - SELECT, CONTRUCT, UNKNOWN.
-	 *
-	 * @return
-	 */
-	public SPARQLQueryType getSPARQLQueryType() {
-		String myQyery = getQueryWithoutPrexices(query);
-
-		SPARQLQueryType myType = SPARQLQueryType.UNKNOWN;
-
-		if (myQyery.startsWith("select")) {
-			myType = SPARQLQueryType.SELECT;
-		} else if (myQyery.startsWith("construct")) {
-			myType = SPARQLQueryType.CONSTRUCT;
-		}
-		return myType;
-	}
-
 	/*
 	 * If query has required type returns true if type of the given query and required type are the same, false otherwise. 
 	 * If no required query type is set returns true. 
 	 */
 	public boolean hasSameType() {
 		if (requireSPARQLType) {
-			SPARQLQueryType queryType = getSPARQLQueryType();
+			QueryPart queryPart=new QueryPart(query);
+			SPARQLQueryType queryType = queryPart.getSPARQLQueryType();
 			if (isSameType(queryType, requiredType)) {
 				return true;
 			} else {
@@ -117,7 +71,9 @@ public class SPARQLQueryValidator implements Validator {
 	public boolean isQueryValid() {
 
 		if (requireSPARQLType) {
-			SPARQLQueryType myType = getSPARQLQueryType();
+			QueryPart queryPart = new QueryPart(query);
+
+			SPARQLQueryType myType = queryPart.getSPARQLQueryType();
 			if (!isSameType(myType, requiredType)) {
 				message = requiredType.toString() + " Unsupported SPARQL 1.1 query - the DPU expects SELECT/CONSTRUCT";
 				return false;
