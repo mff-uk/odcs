@@ -4,6 +4,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
@@ -1708,20 +1709,66 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return map;
 	}
 
-	/**
-	 * For given valid SELECT of CONSTRUCT query return its size {count of rows
-	 * returns for given query).
-	 *
-	 * @param query Valid SELECT/CONTRUCT query for asking.
-	 * @return
-	 * @throws InvalidQueryException if query is not valid.
-	 */
-	@Override
-	public long getResultSizeForQuery(String query) throws InvalidQueryException {
+	private SPARQLQueryType getQueryType(String query) {
+		SPARQLQueryValidator validator = new SPARQLQueryValidator(query);
+		return validator.getSPARQLQueryType();
+	}
 
+	private long getSizeForConstruct(String constructQuery) throws InvalidQueryException {
+		long size = 0;
+
+		RepositoryConnection connection = null;
+
+		try {
+			connection = repository.getConnection();
+
+			GraphQuery graphQuery = connection.prepareGraphQuery(
+					QueryLanguage.SPARQL,
+					constructQuery);
+
+			graphQuery.setDataset(getDataSetForGraph());
+			try {
+				GraphQueryResult result = graphQuery.evaluate();
+
+				while (result.hasNext()) {
+					result.next();
+					size++;
+				}
+
+			} catch (QueryEvaluationException ex) {
+
+				throw new InvalidQueryException(
+						"This query is probably not valid. " + ex
+						.getMessage(),
+						ex);
+			}
+
+		} catch (MalformedQueryException ex) {
+			throw new InvalidQueryException(
+					"This query is probably not valid as construct query. "
+					+ ex.getMessage(), ex);
+		} catch (RepositoryException ex) {
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn(
+							"Failed to close connection to RDF repository while querying. "
+							+ ex.getMessage(), ex);
+				}
+			}
+		}
+
+		return size;
+	}
+
+	private long getSizeForSelect(String selectQuery) throws InvalidQueryException {
 		final String sizeVar = "selectSize";
 		final String sizeQuery = String.format(
-				"select count(*) as ?%s where {%s}", sizeVar, query);
+				"select count(*) as ?%s where {%s}", sizeVar, selectQuery);
 		try {
 			RepositoryConnection connection = repository.getConnection();
 
@@ -1738,7 +1785,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					return resultSize;
 				}
 				throw new InvalidQueryException(
-						"Query: " + query + " has no bindings for information about its size");
+						"Query: " + selectQuery + " has no bindings for information about its size");
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
 						"This query is probably not valid. " + ex
@@ -1757,6 +1804,38 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * For given valid SELECT of CONSTRUCT query return its size {count of rows
+	 * returns for given query).
+	 *
+	 * @param query Valid SELECT/CONTRUCT query for asking.
+	 * @return
+	 * @throws InvalidQueryException if query is not valid.
+	 */
+	@Override
+	public long getResultSizeForQuery(String query) throws InvalidQueryException {
+
+		long size = 0;
+
+		SPARQLQueryType type = getQueryType(query);
+
+		switch (type) {
+			case SELECT:
+				size = getSizeForSelect(query);
+				break;
+			case CONSTRUCT:
+				size = getSizeForConstruct(query);
+				break;
+			case UNKNOWN:
+				throw new InvalidQueryException(
+						"Given query: " + query + "have to be SELECT or CONSTRUCT type.");
+		}
+
+		return size;
+
+
 	}
 
 	/**
