@@ -47,7 +47,7 @@ public class QueryPart {
 	 * @return String representation of query without defined prefixes.
 	 */
 	public String getQueryWithoutPrefixes() {
-		return query.substring(prefixEndIndex, query.length()).toLowerCase();
+		return query.substring(prefixEndIndex, query.length());
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class QueryPart {
 	 * @return all defined prefixes in given query.
 	 */
 	public String getQueryPrefixes() {
-		return query.substring(0, prefixEndIndex).toLowerCase();
+		return query.substring(0, prefixEndIndex);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class QueryPart {
 	 * @return string representation of query.
 	 */
 	public String getQuery() {
-		return query.toLowerCase();
+		return query;
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class QueryPart {
 	 */
 	public SPARQLQueryType getSPARQLQueryType() {
 
-		String myQyery = getQueryWithoutPrefixes();
+		String myQyery = getQueryWithoutPrefixes().toLowerCase();
 
 		SPARQLQueryType myType = SPARQLQueryType.UNKNOWN;
 
