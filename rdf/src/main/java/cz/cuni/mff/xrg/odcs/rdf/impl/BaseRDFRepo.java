@@ -1709,6 +1709,57 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	/**
+	 * For given valid SELECT of CONSTRUCT query return its size {count of rows
+	 * returns for given query).
+	 *
+	 * @param query Valid SELECT/CONTRUCT query for asking.
+	 * @return
+	 * @throws InvalidQueryException if query is not valid.
+	 */
+	@Override
+	public long getResultSizeForQuery(String query) throws InvalidQueryException {
+
+		final String sizeVar = "selectSize";
+		final String sizeQuery = String.format(
+				"select count(*) as ?%s where {%s}", sizeVar, query);
+		try {
+			RepositoryConnection connection = repository.getConnection();
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(
+					QueryLanguage.SPARQL, sizeQuery);
+
+			tupleQuery.setDataset(getDataSetForGraph());
+			try {
+				TupleQueryResult tupleResult = tupleQuery.evaluate();
+				if (tupleResult.hasNext()) {
+					String selectSize = tupleResult.next()
+							.getValue(sizeVar).stringValue();
+					long resultSize = Long.parseLong(selectSize);
+					return resultSize;
+				}
+				throw new InvalidQueryException(
+						"Query: " + query + " has no bindings for information about its size");
+			} catch (QueryEvaluationException ex) {
+				throw new InvalidQueryException(
+						"This query is probably not valid. " + ex
+						.getMessage(),
+						ex);
+			}
+
+
+		} catch (MalformedQueryException ex) {
+			throw new InvalidQueryException(
+					"This query is probably not valid. "
+					+ ex.getMessage(), ex);
+		} catch (RepositoryException ex) {
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
+		}
+
+		return 0;
+	}
+
+	/**
 	 * Make select query over repository data and return MyTupleQueryResult
 	 * class as result.
 	 *
@@ -1739,7 +1790,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				MyTupleQueryResult result = new MyTupleQueryResult(
 						connection,
 						tupleResult);
-
 				return result;
 
 			} catch (QueryEvaluationException ex) {
