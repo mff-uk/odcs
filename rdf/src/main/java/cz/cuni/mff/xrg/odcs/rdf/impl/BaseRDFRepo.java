@@ -1709,11 +1709,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return map;
 	}
 
-	private SPARQLQueryType getQueryType(String query) {
-		SPARQLQueryValidator validator = new SPARQLQueryValidator(query);
-		return validator.getSPARQLQueryType();
-	}
-
 	private long getSizeForConstruct(String constructQuery) throws InvalidQueryException {
 		long size = 0;
 
@@ -1765,10 +1760,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return size;
 	}
 
-	private long getSizeForSelect(String selectQuery) throws InvalidQueryException {
+	private long getSizeForSelect(QueryPart queryPart) throws InvalidQueryException {
+
 		final String sizeVar = "selectSize";
 		final String sizeQuery = String.format(
-				"select count(*) as ?%s where {%s}", sizeVar, selectQuery);
+				"%s select count(*) as ?%s where {%s}", queryPart
+				.getQueryPrefixes(),
+				sizeVar, queryPart.getQueryWithoutPrefixes());
 		try {
 			RepositoryConnection connection = repository.getConnection();
 
@@ -1785,7 +1783,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					return resultSize;
 				}
 				throw new InvalidQueryException(
-						"Query: " + selectQuery + " has no bindings for information about its size");
+						"Query: " + queryPart.getQuery() + " has no bindings for information about its size");
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(
 						"This query is probably not valid. " + ex
@@ -1819,11 +1817,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		long size = 0;
 
-		SPARQLQueryType type = getQueryType(query);
+		QueryPart queryPart = new QueryPart(query);
+		SPARQLQueryType type = queryPart.getSPARQLQueryType();
 
 		switch (type) {
 			case SELECT:
-				size = getSizeForSelect(query);
+				size = getSizeForSelect(queryPart);
 				break;
 			case CONSTRUCT:
 				size = getSizeForConstruct(query);
