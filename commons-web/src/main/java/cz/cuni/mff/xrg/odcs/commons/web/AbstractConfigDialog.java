@@ -50,7 +50,17 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	 * 
 	 * @return Can be null.
 	 */	
-        @Override
+    @Override
 	public abstract String getDescription();
 	
+    /**
+     * Compare last configuration and current dialog's configuration. If any
+     * exception is thrown then return false.
+     * The last configuration is updated in calls {@link #getConfig()}
+     * and {@link #setConfig(byte[])}.
+     *  
+     * @return False if configurations are valid and are different.
+     */
+    public abstract boolean hasConfigChanged();
+    
 }

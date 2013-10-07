@@ -16,21 +16,28 @@
 	</properties>
 
 	<dependencies>
-	
+
 		<dependency> <!-- mocking for testing -->
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.8.4</version>
 			<scope>test</scope>
-		</dependency>	
-	
+		</dependency>
+
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
-		</dependency>	
-	
+		</dependency>
+
+		<dependency> <!-- used for testing, required by BaseConfigDialog -->
+			<groupId>javax.servlet</groupId>
+			<artifactId>com.springsource.javax.servlet</artifactId>
+			<version>2.4.0</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency> <!-- RDF project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>RDF</artifactId>
@@ -39,7 +46,7 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons-web</artifactId>
@@ -47,7 +54,7 @@
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>provided</scope>
-		</dependency>		
+		</dependency>
 
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
@@ -59,28 +66,28 @@
 	</dependencies>
 
 	<build>
-        <!-- create bundle -->
-        <plugins>
-            <plugin> <!-- generate manifest file -->
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
-                <extensions>true</extensions>				
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <!-- export just packages under cz.cuni.mff.xrg.odcs.commons.web -->
-                       	<Export-Package>cz.cuni.mff.xrg.odcs.commons.module.*;version="${odcs.version}"</Export-Package>
-                        <!-- import vaadin, commons, web, RDF -->
-                        <Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.mff.xrg.odcs.commons.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.commons.web.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.rdf.*;version="${odcs.version}",*"</Import-Package>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                    </instructions>
-                </configuration>
-            </plugin>
-				
-        </plugins>
-    </build>
+		<!-- create bundle -->
+		<plugins>
+			<plugin> <!-- generate manifest file -->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.artifactId}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<!-- export just packages under cz.cuni.mff.xrg.odcs.commons.web -->
+						<Export-Package>cz.cuni.mff.xrg.odcs.commons.module.*;version="${odcs.version}"</Export-Package>
+						<!-- import vaadin, commons, web, RDF -->
+						<Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.mff.xrg.odcs.commons.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.commons.web.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.rdf.*;version="${odcs.version}",*"</Import-Package>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+					</instructions>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
 
 </project>

@@ -39,6 +39,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEven
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.SCHEDULED;
+import java.net.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -59,7 +60,6 @@ class PipelineEdit extends ViewComponent {
 	 */
 	public static final String NAME = "PipelineEdit";
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
-	private View incomingView = null;
 	private VerticalLayout mainLayout;
 	private Label label;
 	private TextField pipelineName;
@@ -93,9 +93,6 @@ class PipelineEdit extends ViewComponent {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		if (event.getOldView() != null && event.getOldView().getClass() != PipelineEdit.class) {
-			incomingView = event.getOldView();
-		}
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// ..
@@ -469,7 +466,6 @@ class PipelineEdit extends ViewComponent {
 		pipelineDescription.setWidth("400px");
 		pipelineDescription.setHeight("60px");
 		pipelineDescription.setBuffered(true);
-		pipelineDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		pipelineDescription.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent event) {
@@ -578,17 +574,7 @@ class PipelineEdit extends ViewComponent {
 	 *
 	 */
 	private void closeView() {
-		if (incomingView != null) {
-			//App.getApp().getNavigator().getDisplay().showView(incomingView);
-			if (incomingView.getClass() == DPU.class) {
-				App.getApp().getNavigator().getDisplay().showView(incomingView);
-			} else {
-				String name = ViewsFactory.getViewName(incomingView);
-				App.getApp().getNavigator().navigateTo(name);
-			}
-		} else {
-			App.getApp().getNavigator().navigateTo(PipelineList.NAME);
-		}
+		App.getApp().navigateToLastView();
 	}
 
 	/**

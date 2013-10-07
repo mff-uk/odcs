@@ -8,9 +8,11 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FailedListener;
@@ -24,8 +26,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.Validator;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.*;
@@ -44,6 +50,7 @@ import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
@@ -73,6 +80,7 @@ import ru.xpoft.vaadin.VaadinView;
  *
  * @author Maria Kukhar
  */
+@SuppressWarnings("deprecation")
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @VaadinView(DPU.NAME)
@@ -129,7 +137,8 @@ class DPU extends ViewComponent {
 	private DPUTemplateWrap selectedDpuWrap = null;
 	private static final Logger LOG = LoggerFactory.getLogger(ViewComponent.class);
 	private boolean saveAllow = false;
-	int fl = 0;
+	private Button buttonSaveDPU;
+	private String tabname;
 
 	/**
 	 *
@@ -354,11 +363,42 @@ class DPU extends ViewComponent {
 		tabSheet = new TabSheet();
 		tabSheet.setWidth(630, Unit.PIXELS);
 		tabSheet.setHeight(350, Unit.PIXELS);
+		tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				
+				if(buttonSaveDPU!=null){
+					tabname = event.getTabSheet().getSelectedTab().getCaption();
+					
+					if(tabname=="general"){
+						if(isChanged())
+							buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
+						else
+							buttonSaveDPU.setEnabled(false);
+					}
+					else if(tabname=="configuration"){
+						buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
+					}
+					else if(tabname=="instances"){
+						if(isChanged())
+							buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
+						else
+							buttonSaveDPU.setEnabled(false);
+					}
+					
+				}
+				
+			}
+		});
 
 
 		//General tab. Contains informations: name, description, visibility,
 		//information about JAR file.
 		verticalLayoutData = buildVerticalLayoutData();
+		verticalLayoutData.setCaption("general");
 		Tab dataTab = tabSheet.addTab(verticalLayoutData, "General");
 
 		//Template Configuration tab. Contains information about configuration 
@@ -366,6 +406,7 @@ class DPU extends ViewComponent {
 		verticalLayoutConfigure = new VerticalLayout();
 		verticalLayoutConfigure.setImmediate(false);
 		verticalLayoutConfigure.setMargin(true);
+		verticalLayoutConfigure.setCaption("configuration");
 		tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
 		tabSheet.setSelectedTab(dataTab);
 
@@ -401,10 +442,16 @@ class DPU extends ViewComponent {
 							"Failed to load configuration. The dialog defaul configuration is used.",
 							e.getMessage(), Type.WARNING_MESSAGE);
 					LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+				} catch (DPUWrapException e) {
+					Notification.show(
+							"Unexpected error. The configuration dialog may not be loaded correctly.",
+							e.getMessage(), Type.WARNING_MESSAGE);
+					LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 				}
 				// add dialog
 //				configDialog.setEnabled(permissions.hasPermission(selectedDpu, "save"));
 
+				
 				verticalLayoutConfigure.addComponent(configDialog);
 
 			}
@@ -412,6 +459,7 @@ class DPU extends ViewComponent {
 
 		//DPU instances tab. Contains pipelines using the given DPU. 
 		verticalLayoutInstances = buildVerticalLayoutInstances();
+		verticalLayoutInstances.setCaption("instances");
 		tabSheet.addTab(verticalLayoutInstances, "DPU instances");
 
 		dpuDetailLayout.addComponent(tabSheet);
@@ -472,7 +520,18 @@ class DPU extends ViewComponent {
 		});
 		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
 		dpuSettingsLayout.addComponent(dpuName, 1, 0);
+		dpuName.addTextChangeListener(new TextChangeListener() {
 
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void textChange(TextChangeEvent event) {
+				buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
+				
+			}
+		});
+		
+		
 		//Description of DPU Template: label & TextArea
 		Label descriptionLabel = new Label("Description:");
 		descriptionLabel.setImmediate(false);
@@ -484,6 +543,17 @@ class DPU extends ViewComponent {
 		dpuDescription.setImmediate(true);
 		dpuDescription.setWidth("100%");
 		dpuDescription.setHeight("60px");
+		dpuDescription.addTextChangeListener(new TextChangeListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void textChange(TextChangeEvent event) {
+				buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
+				
+			}
+		});
+		
 		dpuSettingsLayout.addComponent(dpuDescription, 1, 1);
 
 		//Visibility of DPU Template: label & OptionGroup
@@ -758,11 +828,12 @@ class DPU extends ViewComponent {
 				Alignment.BOTTOM_LEFT);
 
 		// Save DPU Template Button
-		Button buttonSaveDPU = new Button();
+		buttonSaveDPU = new Button();
 		buttonSaveDPU.setCaption("Save");
 		buttonSaveDPU.setHeight("25px");
 		buttonSaveDPU.setWidth("100px");
-		buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
+		buttonSaveDPU.setEnabled(false);
+		
 		buttonSaveDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -771,11 +842,12 @@ class DPU extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 
 				saveDPUTemplate();
-
+				
 				//refresh data in dialog and dpu tree
 				dpuTree.refresh();
 				setGeneralTabValues();
-
+				if(tabname!="configuration")
+					buttonSaveDPU.setEnabled(false);
 				// refresh configuration
 				try {
 					selectedDpuWrap.configuredDialog();
@@ -784,7 +856,13 @@ class DPU extends ViewComponent {
 							"Failed to load configuration. The dialog defaul configuration is used.",
 							e.getMessage(), Type.WARNING_MESSAGE);
 					LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+				} catch (DPUWrapException e) {
+					Notification.show(
+							"Unexpected error. The configuration dialog may not be loaded correctly.",
+							e.getMessage(), Type.WARNING_MESSAGE);
+					LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 				}
+				
 			}
 		});
 		buttonDpuBar.addComponent(buttonSaveDPU);
@@ -820,6 +898,16 @@ class DPU extends ViewComponent {
 		} else {
 			groupVisibility.setValue(selecteDpuVisibility);
 			groupVisibility.setEnabled(true);
+			groupVisibility.addValueChangeListener(new ValueChangeListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					buttonSaveDPU.setEnabled(permissions.hasPermission(selectedDpu, "save"));
+					
+				}
+			});
 		}
 	}
 
@@ -907,6 +995,27 @@ class DPU extends ViewComponent {
 	}
 
 	public boolean isChanged() {
+		
+		boolean configChanged = false;
+		try {
+			configChanged = selectedDpuWrap.getDialog().hasConfigChanged();
+		} catch (FileNotFoundException e) {
+			Notification.show(
+					"File not found. ",
+					e.getMessage(), Type.ERROR_MESSAGE);
+			LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+		} catch (ModuleException e) {
+			Notification.show(
+					"Module Exception. ",
+					e.getMessage(), Type.ERROR_MESSAGE);
+			LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+		} catch (DPUWrapException e) {
+			Notification.show(
+					"DPUWrap Exception. ",
+					e.getMessage(), Type.ERROR_MESSAGE);
+			LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+		}
+		
 
 		if (!dpuName.getValue().equals(selectedDpu.getName())) {
 			return true;
@@ -915,6 +1024,8 @@ class DPU extends ViewComponent {
 		} else if (!groupVisibility.getValue().equals(selectedDpu.getVisibility())) {
 			return true;
 		} else if (!jarPath.getValue().equals(selectedDpu.getJarPath())) {
+			return true;
+		} else if (configChanged) {
 			return true;
 		} else {
 			return false;
@@ -1033,6 +1144,11 @@ class DPU extends ViewComponent {
 				selectedDpuWrap.saveConfig();
 			} catch (ConfigException e) {
 				selectedDpuWrap.getDPUTemplateRecord().setRawConf(null);
+			} catch (DPUWrapException e) {
+				Notification.show(
+						"Unexpected error. The configuration may have not been saved.",
+						e.getMessage(), Type.WARNING_MESSAGE);
+				LOG.error("Unexpected error while saving configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
 			}
 
 			// store into DB

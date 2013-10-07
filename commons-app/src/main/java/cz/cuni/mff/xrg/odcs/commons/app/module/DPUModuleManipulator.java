@@ -87,10 +87,14 @@ public class DPUModuleManipulator {
 		try {
 			FileUtils.copyFile(sourceFile, newDPUFile);
 		} catch (IOException e) {
-			// release
-			newDPUDir.delete();
-			// failed to copy file
 			LOG.error("Failed to copy file, when creating new DPU.", e);
+			// release
+			try {
+				FileUtils.deleteDirectory(newDPUDir);
+			} catch (IOException ex) {
+				LOG.error("Failed to delete directory after DPU.", ex);
+			}
+			// failed to copy file
 			throw new DPUCreateException("Failed to create DPU file.");
 		}
 
@@ -106,10 +110,15 @@ public class DPUModuleManipulator {
 		try {
 			dpuObject = moduleFacade.getInstance(newTemplate);
 		} catch (ModuleException e) {
-			// release
-			newDPUDir.delete();
-			newDPUFile.delete();
 			LOG.error("Failed to load new DPU bundle.", e);
+			// release
+			newDPUFile.delete();
+			try {
+				FileUtils.deleteDirectory(newDPUDir);
+			} catch (IOException ex) {
+				LOG.error("Failed to delete directory after DPU.", ex);
+			}
+			moduleFacade.unLoad(newTemplate);
 			throw new DPUCreateException(
 					"Failed to load DPU bacuse of exception:" + e.getMessage());
 		}
@@ -123,8 +132,12 @@ public class DPUModuleManipulator {
 		final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
 		if (dpuType == null) {
 			// release
-			newDPUDir.delete();
 			newDPUFile.delete();
+			try {
+				FileUtils.deleteDirectory(newDPUDir);
+			} catch (IOException e) {
+				LOG.error("Failed to delete directory after DPU.", e);
+			}		
 			moduleFacade.unLoad(newTemplate);
 			throw new DPUCreateException("DPU has unspecified type.");
 		}
@@ -143,8 +156,12 @@ public class DPUModuleManipulator {
 				}
 			} catch (DPUValidatorException e) {
 				// release
-				newDPUDir.delete();
 				newDPUFile.delete();
+				try {
+					FileUtils.deleteDirectory(newDPUDir);
+				} catch (IOException ex) {
+					LOG.error("Failed to delete directory after DPU.", ex);
+				}
 				moduleFacade.unLoad(newTemplate);
 				throw new DPUCreateException(e.getMessage());
 			}
@@ -155,8 +172,12 @@ public class DPUModuleManipulator {
 			dpuFacade.save(newTemplate);
 		} catch (Throwable e) {
 			// release
-			newDPUDir.delete();
 			newDPUFile.delete();
+			try {
+				FileUtils.deleteDirectory(newDPUDir);
+			} catch (IOException ex) {
+				LOG.error("Failed to delete directory after DPU.", ex);
+			}		
 			moduleFacade.unLoad(newTemplate);
 			//
 			LOG.error("Failed to save new DPU record", e);
@@ -303,7 +324,6 @@ public class DPUModuleManipulator {
 				throw new DPUReplaceException(e.getMessage());
 			}
 		}
-
 		dpuFacade.save(dpu);
 
 		// we delete the backup
@@ -326,10 +346,22 @@ public class DPUModuleManipulator {
 	 */
 	public void delete(DPUTemplateRecord dpu) {
 		dpuFacade.delete(dpu);
-		moduleFacade.delete(dpu);
-
-		// notify the rest of the application
-		notifier.deleted(dpu);
+		if (dpu.getParent() == null) {
+			moduleFacade.delete(dpu);
+			// 	notify the rest of the application
+			notifier.deleted(dpu);
+			// and delete the directory if DPU is root
+			final File dpuDirectory = new File(moduleFacade.getDPUDirectory(),
+					dpu.getJarDirectory());
+			
+			try {
+				FileUtils.deleteDirectory(dpuDirectory);
+			} catch (IOException e) {
+				LOG.error("Failed to delete directory after DPU remove.", e);
+			}			
+		} else {
+			// non-root do not delete jar
+		}
 	}
 
 	/**

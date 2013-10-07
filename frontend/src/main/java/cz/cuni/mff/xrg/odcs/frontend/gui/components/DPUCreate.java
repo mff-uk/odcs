@@ -17,8 +17,10 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedListener;
+import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
@@ -134,94 +136,7 @@ public class DPUCreate extends Window {
 
 		fileUploadReceiver = new FileUploadReceiver();
 
-		HorizontalLayout uploadFileLayout = new HorizontalLayout();
-		uploadFileLayout.setSpacing(true);
-
-		//JAR file uploader
-		selectFile = new Upload(null, fileUploadReceiver);
-		selectFile.setImmediate(true);
-		selectFile.setButtonCaption("Choose file");
-		selectFile.addStyleName("horizontalgroup");
-		selectFile.setHeight("40px");
-
-		selectFile.addStartedListener(new StartedListener() {
-			/**
-			 * Upload start listener. If selected file has JAR extension then an
-			 * upload status window with upload progress bar will be shown. If
-			 * selected file has other extension, then upload will be
-			 * interrupted and error notification will be shown.
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void uploadStarted(final StartedEvent event) {
-				String filename = event.getFilename();
-				String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
-				String jar = "jar";
-
-				if (!jar.equals(extension)) {
-					selectFile.interruptUpload();
-					fl = 1;
-					Notification.show(
-							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-				if (uploadInfoWindow.getParent() == null) {
-					UI.getCurrent().addWindow(uploadInfoWindow);
-				}
-				uploadInfoWindow.setClosable(false);
-			}
-		});
-
-		selectFile.addFinishedListener(new Upload.FinishedListener() {
-			/**
-			 * Upload finished listener. Upload window will be closed after
-			 * upload finished. If an upload process wasn't interrupted then
-			 * will be show the name of an uploaded file on the DPU template
-			 * creation dialogue.
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void uploadFinished(final FinishedEvent event) {
-
-				uploadInfoWindow.setClosable(true);
-				uploadInfoWindow.close();
-				if (fl == 0) {
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue(event.getFilename());
-					uploadFile.setReadOnly(true);
-				} else {
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue("");
-					uploadFile.setReadOnly(true);
-					fl = 0;
-				}
-			}
-		});
-		// Upload status window
-		uploadInfoWindow = new UploadInfoWindow(selectFile);
-
-		uploadFileLayout.addComponent(selectFile);
-
-		uploadFile = new TextField();
-		uploadFile.setWidth("210px");
-		uploadFile.setReadOnly(true);
-		//set mandatory to uploadFile text field.
-		uploadFile.addValidator(new Validator() {
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class
-						&& !((String) value).isEmpty()) {
-					return;
-				}
-				throw new InvalidValueException("Upload file must be filled!");
-
-			}
-		});
-
-		uploadFileLayout.addComponent(uploadFile);
+		HorizontalLayout uploadFileLayout = buildUploadLayout();
 
 		dpuGeneralSettingsLayout.addComponent(uploadFileLayout, 1, 3);
 
@@ -269,12 +184,15 @@ public class DPUCreate extends Window {
 					dpuWrap = new DPUTemplateWrap(
 							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
 				} catch (DPUCreateException e) {
-					uploadFile.setReadOnly(false);
-					uploadFile.setValue("");
-					uploadFile.setReadOnly(true);
+
+					dpuGeneralSettingsLayout.removeComponent(1, 3);
+					dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
 					Notification.show("Failed to create DPU",
 							e.getMessage(),
 							Notification.Type.ERROR_MESSAGE);
+					
+
+					
 					return;
 				}
 				// set additional variables
@@ -309,4 +227,107 @@ public class DPUCreate extends Window {
 		this.setContent(mainLayout);
 		setSizeUndefined();
 	}
+	
+	private HorizontalLayout buildUploadLayout(){
+		
+		HorizontalLayout uploadFileLayout = new HorizontalLayout();
+		uploadFileLayout.setSpacing(true);
+
+		//JAR file uploader
+		selectFile = new Upload(null, fileUploadReceiver);
+		selectFile.setImmediate(true);
+		selectFile.setButtonCaption("Choose file");
+		selectFile.addStyleName("horizontalgroup");
+		selectFile.setHeight("40px");
+
+		selectFile.addStartedListener(new StartedListener() {
+			/**
+			 * Upload start listener. If selected file has JAR extension then an
+			 * upload status window with upload progress bar will be shown. If
+			 * selected file has other extension, then upload will be
+			 * interrupted and error notification will be shown.
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void uploadStarted(final StartedEvent event) {
+				String filename = event.getFilename();
+				String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
+				String jar = "jar";
+
+				if (!jar.equals(extension)) {
+					selectFile.interruptUpload();
+					Notification.show(
+							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+				if (uploadInfoWindow.getParent() == null) {
+					UI.getCurrent().addWindow(uploadInfoWindow);
+				}
+				uploadInfoWindow.setClosable(false);
+			}
+		});
+
+		//If upload failed, upload window will be closed 
+		selectFile.addFailedListener(new Upload.FailedListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void uploadFailed(FailedEvent event) {
+
+				uploadInfoWindow.setClosable(true);
+				uploadInfoWindow.close();
+				dpuGeneralSettingsLayout.removeComponent(1, 3);
+				dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
+				
+			}
+		});
+		
+		//If upload finish successful, upload window will be closed and the name 
+		//of the uploaded file will be shown
+		selectFile.addSucceededListener(new Upload.SucceededListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void uploadSucceeded(final SucceededEvent event) {
+
+				uploadInfoWindow.setClosable(true);
+				uploadInfoWindow.close();
+				uploadFile.setReadOnly(false);
+				uploadFile.setValue(event.getFilename());
+				uploadFile.setReadOnly(true);
+
+			}
+		});
+		// Upload status window
+		uploadInfoWindow = new UploadInfoWindow(selectFile);
+
+		uploadFileLayout.addComponent(selectFile);
+
+		uploadFile = new TextField();
+		uploadFile.setWidth("210px");
+		uploadFile.setReadOnly(true);
+		//set mandatory to uploadFile text field.
+		uploadFile.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value.getClass() == String.class
+						&& !((String) value).isEmpty()) {
+					return;
+				}
+				throw new InvalidValueException("Upload file must be filled!");
+
+			}
+		});
+
+		uploadFileLayout.addComponent(uploadFile);
+
+		
+		return uploadFileLayout;
+				
+				
+	}
+	
 }

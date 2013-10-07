@@ -10,7 +10,7 @@ import com.vaadin.data.Validator;
  */
 public final class MaxLengthValidator implements Validator {
 
-	public static int NAME_LENGTH = 255;
+	public static int NAME_LENGTH = 2048;
 	public static int DPU_NAME_LENGTH = 45;
 	public static int DESCRIPTION_LENGTH = 512;
 	private int maxLength = 1000;
