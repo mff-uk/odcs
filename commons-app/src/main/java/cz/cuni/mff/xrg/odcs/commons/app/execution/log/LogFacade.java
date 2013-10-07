@@ -348,13 +348,12 @@ public class LogFacade {
         List<LogMessage> data;
         @SuppressWarnings("unchecked")
         StringBuilder query = new StringBuilder("SELECT e FROM LogMessage e"
-                + " LEFT JOIN e.properties p"
                 + " WHERE e.levelString IN :lvl"
-                + " AND ((KEY(p) = :propKey AND p = :propVal)");
+                + " AND (e.properties[:propKey] = :propVal)");
         if (dpu != null) {
-            query.append(" OR (KEY(p) = :propKeyDpu AND p = :propValDpu))");
+            query.append(" AND (e.properties[:propKeyDpu] = :propValDpu)");
         } else {
-            query.append(')');
+            //query.append(')');
         }
         if (source != null) {
             query.append(" AND (e.source LIKE :source)");
