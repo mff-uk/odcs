@@ -43,7 +43,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 			if (config == null) {
 				throw new ConfigException(
 						"Missing configuration and failed to create default."
-								+ "No configuration loaded into dialog.");
+								+ "No configuration has been loaded into dialog.");
 			}
 		}
 		// in every case set the configuration

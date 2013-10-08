@@ -118,10 +118,10 @@ public class DPUDetail extends Window {
 			LOG.error("Failed to load dialog for {}", dpuInstance
 					.getDPUInstanceRecord().getId(), e);
 		} catch (FileNotFoundException e) {
-			Notification.show("Failed to load DPU.", e.getMessage(),
+			Notification.show("Missing DPU jar file.", e.getMessage(),
 					Type.ERROR_MESSAGE);
-		} catch (Exception ex) {
-			Notification.show("Failed to load DPU.", ex.getMessage(), Type.ERROR_MESSAGE);
+		} catch (DPUWrapException ex) {
+			Notification.show("Failed to load DPU,", ex.getMessage(), Type.ERROR_MESSAGE);
 		}
 
 

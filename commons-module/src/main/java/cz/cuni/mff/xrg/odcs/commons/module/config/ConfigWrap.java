@@ -75,8 +75,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		} catch (ClassNotFoundException e) {
 			throw new ConfigException("Can't re-cast configuration object.", e);
 		} catch (Exception e) {
-			throw new ConfigException(
-					"Unexpected exception configuration object.", e);
+			throw new ConfigException(e);
 		}
 		return config;
 	}
