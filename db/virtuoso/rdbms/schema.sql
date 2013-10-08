@@ -55,6 +55,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
   "jar_directory" VARCHAR(255),
   "jar_name" VARCHAR(255),  
   "jar_description" VARCHAR(512),
+  "config_checked" SMALLINT,
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_DPU_TEMPLATE_jar_directory" ON "DB"."INTLIB"."DPU_TEMPLATE" ("jar_directory");

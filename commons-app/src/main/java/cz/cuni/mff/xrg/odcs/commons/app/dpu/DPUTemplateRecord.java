@@ -12,11 +12,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import javax.persistence.*;
 
 /**
- * Representation of template for creating {@link DPUInstanceRecord}s.
- * The purpose of templating DPUs is to unburden user from manually edit and
+ * Representation of template for creating {@link DPUInstanceRecord}s. The
+ * purpose of templating DPUs is to unburden user from manually edit and
  * configure all DPU properties when creating pipelines. Template's properties
- * are propagated to {@link DPUInstanceRecord} everytime it is created as
- * an instance of given {@link DPUTemplateRecord}. Reference to template is
+ * are propagated to {@link DPUInstanceRecord} everytime it is created as an
+ * instance of given {@link DPUTemplateRecord}. Reference to template is
  * preserved in each DPU instance, so that updates of configuration can be
  * propagated to template's children.
  * 
@@ -25,65 +25,78 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "dpu_template")
-public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedEntity {
+public class DPUTemplateRecord extends DPURecord
+		implements OwnedEntity, SharedEntity {
 
 	/**
 	 * Visibility in DPUTree.
 	 */
 	@Enumerated(EnumType.ORDINAL)
-	@Column(name="visibility")
+	@Column(name = "visibility")
 	private VisibilityType visibility;
-	
+
 	/**
 	 * Description obtained from jar file manifest.
 	 */
-	@Column(name="jar_description")
+	@Column(name = "jar_description")
 	private String jarDescription;
-	
-    /**
-     * DPURecord type, determined by associated jar file.
-     */
+
+	/**
+	 * DPURecord type, determined by associated jar file.
+	 * It's transitive for non-root templates.
+	 */
 	@Enumerated(EnumType.ORDINAL)
-    private DPUType type;	
-	
-    /**
-     * Name of directory where {@link #jarName} is located.
+	private DPUType type;
+
+	/**
+	 * Name of directory where {@link #jarName} is located.
+	 * It's transitive for non-root templates.
 	 * 
-     * @see AppConfig
-     */
-	@Column(name="jar_directory")
-    private String jarDirectory;	
-	
-    /**
-     * DPU's jar file name.
+	 * @see AppConfig
+	 */
+	@Column(name = "jar_directory")
+	private String jarDirectory;
+
+	/**
+	 * DPU's jar file name.
+	 * It's transitive for non-root templates.
 	 * 
-     * @see AppConfig
-     */
-	@Column(name="jar_name")
-    private String jarName;		
-	
+	 * @see AppConfig
+	 */
+	@Column(name = "jar_name")
+	private String jarName;
+
 	/**
 	 * Parent {@link DPUTemplateRecord}. If parent is set, this DPURecord is
 	 * rendered under its parent in DPU tree.
 	 */
 	@ManyToOne(optional = true)
-	@JoinColumn(name="parent_id", nullable = true)
+	@JoinColumn(name = "parent_id", nullable = true)
 	private DPUTemplateRecord parent;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User owner;
-		
+
+	/**
+	 * True if the stored configuration for given DPU and all it's instances are
+	 * valid.
+	 * It's transitive for non-root templates.
+	 */
+	@Column(name = "config_checked")
+	private boolean configChecked;
+
 	/**
 	 * Empty ctor for JPA.
 	 */
-	public DPUTemplateRecord() { }
-	
+	public DPUTemplateRecord() {
+	}
+
 	/**
 	 * Creates new {@link DPUTemplateRecord}.
 	 * 
 	 * @param name Template name.
-	 * @param type {@link DPUType} of the template. 
+	 * @param type {@link DPUType} of the template.
 	 */
 	public DPUTemplateRecord(String name, DPUType type) {
 		super(name);
@@ -94,7 +107,7 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	 * Copy constructor. New instance always has private visibility, no matter
 	 * what setting was in original DPU.
 	 * 
-	 * @param dpu 
+	 * @param dpu
 	 */
 	public DPUTemplateRecord(DPUTemplateRecord dpu) {
 		super(dpu);
@@ -105,30 +118,32 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 		jarName = dpu.jarName;
 		parent = dpu.parent;
 	}
-	
+
 	/**
 	 * Create template from given instance.
+	 * 
 	 * @param dpuInstance
 	 */
 	public DPUTemplateRecord(DPUInstanceRecord dpuInstance) {
 		super(dpuInstance);
 		this.visibility = VisibilityType.PRIVATE;
 		this.type = dpuInstance.getType();
-	
+
 		// copy jarDescription from template of previous one ..
 		this.jarDescription = dpuInstance.getTemplate() == null
-				? null : dpuInstance.getTemplate().getJarDescription();
+				? null
+				: dpuInstance.getTemplate().getJarDescription();
 	}
-	
+
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
-	
+
 	@Override
 	public User getOwner() {
 		return owner;
 	}
-	
+
 	@Override
 	public VisibilityType getVisibility() {
 		return visibility;
@@ -145,24 +160,26 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 	public void setJarDescription(String jarDescription) {
 		this.jarDescription = jarDescription;
 	}
-	
+
 	public DPUTemplateRecord getParent() {
 		return parent;
 	}
-	
+
 	public void setParent(DPUTemplateRecord parent) {
 		if (parent == null) {
-			// we are going under someone .. we use it's name and directory 
+			// we are going under someone .. we use it's name and directory
 			jarDirectory = null;
 			jarName = null;
 			type = null;
+			configChecked = false;
 		} else {
-			// we will be the top one .. if we are not now, 
-			// store jar name and directory
+			// we will be the top one .. if we are not now,
+			// store jar name and directory etc .. 
 			if (this.parent != null) {
 				jarDirectory = parent.jarDirectory;
 				jarName = parent.jarName;
 				type = parent.type;
+				configChecked = parent.configChecked;
 			}
 		}
 		this.parent = parent;
@@ -175,7 +192,7 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 			parent.setType(type);
 		}
 	}
-	
+
 	@Override
 	public DPUType getType() {
 		if (parent == null) {
@@ -185,16 +202,17 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 		}
 	}
 
-    /**
-     * Load DPU's instance from associated jar file.
-     * @param moduleFacade ModuleFacade used to load DPU.
-     * @throws ModuleException
-     */
+	/**
+	 * Load DPU's instance from associated jar file.
+	 * 
+	 * @param moduleFacade ModuleFacade used to load DPU.
+	 * @throws ModuleException
+	 */
 	@Override
-    public void loadInstance(ModuleFacade moduleFacade) throws ModuleException {
-    	instance = moduleFacade.getInstance(this);
-    }	
-	
+	public void loadInstance(ModuleFacade moduleFacade) throws ModuleException {
+		instance = moduleFacade.getInstance(this);
+	}
+
 	@Override
 	public String getJarPath() {
 		if (parent == null) {
@@ -211,6 +229,7 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 
 	/**
 	 * Return name of jar-sub directory.
+	 * 
 	 * @return
 	 */
 	public String getJarDirectory() {
@@ -219,12 +238,13 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 			return jarDirectory;
 		} else {
 			return parent.getJarDirectory();
-		}		
+		}
 	}
-	
+
 	/**
 	 * Set jar directory for given DPU template. If the DPU has parent then
 	 * nothing happened.
+	 * 
 	 * @param jarDirectory
 	 */
 	public void setJarDirectory(String jarDirectory) {
@@ -232,12 +252,13 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 			// top level DPU
 			this.jarDirectory = jarDirectory;
 		} else {
-			// ignore .. 
-		}		
-	}	
-	
+			// ignore ..
+		}
+	}
+
 	/**
 	 * Return name of given jar file.
+	 * 
 	 * @return
 	 */
 	public String getJarName() {
@@ -248,10 +269,11 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 			return parent.getJarName();
 		}
 	}
-	
+
 	/**
-	 * Set jar name for given DPU template. If the DPU has parent then
-	 * nothing happened.
+	 * Set jar name for given DPU template. If the DPU has parent then nothing
+	 * happened.
+	 * 
 	 * @param jarName
 	 */
 	public void setJarName(String jarName) {
@@ -259,16 +281,49 @@ public class DPUTemplateRecord extends DPURecord implements OwnedEntity, SharedE
 			// top level DPU
 			this.jarName = jarName;
 		} else {
-			// ignore .. 
-		}		
+			// ignore ..
+		}
 	}
-	
+
 	/**
 	 * Return true if DPU jar can be replaced.
+	 * 
 	 * @return
 	 */
 	public boolean jarFileReplacable() {
 		return parent == null;
 	}
-	
+
+	/**
+	 * If true then every configuration for every DPU that has this
+	 * {@link DPUTemplateRecord} as parent and for every
+	 * {@link DPUInstanceRecord} that that use this or descendants of this
+	 * template is valid.
+	 * 
+	 * @return
+	 */
+	public boolean isConfigChecked() {
+		if (parent == null) {
+			return configChecked;
+		} else {
+			return parent.isConfigChecked();
+		}
+	}
+
+	/**
+	 * Set {@link #configChecked} for given DPU template. If the DPU has parent
+	 * then nothing happened. Setting to false corresponds with request for 
+	 * validation.
+	 * 
+	 * @param jarName
+	 */
+	public void setConfigChecked(boolean configChecked) {
+		if (parent == null) {
+			// top level DPU
+			this.configChecked = configChecked;
+		} else {
+			// ignore ..
+		}
+	}
+
 }
