@@ -58,6 +58,8 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 		pipelineExec.setSchedule(schedule);
 		// will wake up other pipelines on end ..
 		pipelineExec.setSilentMode(false);
+		// set user .. copy owner of schedule
+		pipelineExec.setOwner(schedule.getOwner());
 
 		// save data into DB -> in next DB check Engine start the execution
 		pipelineFacade.save(pipelineExec);

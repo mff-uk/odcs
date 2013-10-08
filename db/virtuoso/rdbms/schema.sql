@@ -128,6 +128,7 @@ CREATE TABLE "DB"."INTLIB"."EXEC_PIPELINE"
   "debugnode_id" INTEGER,
   "stop" SMALLINT,
   "t_last_change" DATETIME,
+  "owner_id" INTEGER,
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_EXEC_PIPELINE_status" ON "DB"."INTLIB"."EXEC_PIPELINE" ("status");

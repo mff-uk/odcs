@@ -75,7 +75,7 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testExecutionsOfPipeline() {
 		Pipeline pipe = facade.createPipeline();
-		PipelineExecution exec = new PipelineExecution(pipe);
+		PipelineExecution exec = facade.createExecution(pipe);
 		
 		facade.save(pipe);
 		facade.save(exec);
@@ -163,7 +163,7 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testExecutionsContext() {
 		Pipeline pipe = facade.createPipeline();
-		PipelineExecution exec = new PipelineExecution(pipe);		
+		PipelineExecution exec = facade.createExecution(pipe);		
 		facade.save(pipe);
 		facade.save(exec);
 		em.flush();
@@ -172,7 +172,7 @@ public class PipelineFacadeTest {
 		ExecutionContextInfo context = exec.getContext();
 		
 		assertNotNull(exec.getContext());
-		assertNotNull(context.getId());
+		assertNotNull(context.getId());		
 	}
 	
 	@Test

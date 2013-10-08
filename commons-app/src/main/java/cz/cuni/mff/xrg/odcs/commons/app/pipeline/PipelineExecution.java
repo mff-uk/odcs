@@ -25,7 +25,8 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Unique id of pipeline execution.
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
 	@SequenceGenerator(name = "seq_exec_pipeline", allocationSize = 1)
 	private Long id;
 
@@ -91,7 +92,7 @@ public class PipelineExecution implements Serializable {
 	private boolean silentMode;
 
 	/**
-	 * True if pipeline should or has been stoped on user request.
+	 * True if pipeline should or has been stopped on user request.
 	 */
 	@Column(name = "stop")
 	private boolean stop;
@@ -102,6 +103,13 @@ public class PipelineExecution implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "t_last_change")
 	private Date lastChange;
+
+	/**
+	 * Owner ie. author of the execution.
+	 */
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "owner_id", nullable = true)
+	private User owner;
 
 	/**
 	 * No-arg constructor for JPA
@@ -218,15 +226,14 @@ public class PipelineExecution implements Serializable {
 		return stop;
 	}
 
-	public void setOwner(User user) {
-		// TODO Add user
-	}	
-	
-	public User getOwner() {
-		// TODO Add user
-		return null;
+	public void setOwner(User owner) {
+		this.owner = owner;
 	}
-	
+
+	public User getOwner() {
+		return owner;
+	}
+
 	public void stop() {
 		status = PipelineExecutionStatus.CANCELLING;
 		stop = true;

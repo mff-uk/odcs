@@ -71,7 +71,8 @@ public class IntlibHelper {
 	 */
 	public static PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
 
-		final PipelineExecution pipelineExec = new PipelineExecution(pipeline);
+		final PipelineExecution pipelineExec = App.getPipelines().createExecution(pipeline); 
+				
 		pipelineExec.setDebugging(inDebugMode);
 		if (inDebugMode && debugNode != null) {
 			pipelineExec.setDebugNode(debugNode);

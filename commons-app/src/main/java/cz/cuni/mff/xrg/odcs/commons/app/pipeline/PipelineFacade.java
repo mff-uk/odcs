@@ -176,9 +176,12 @@ public class PipelineFacade {
 	 */
 	public PipelineExecution createExecution(Pipeline pipeline) {
 		PipelineExecution execution = new PipelineExecution(pipeline);
+		if (authCtx != null) {
+			execution.setOwner(authCtx.getUser());
+		}
 		return execution;
 	}
-
+	
 	/**
 	 * Fetches all {@link PipelineExecution}s from database.
 	 *

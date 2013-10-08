@@ -25,6 +25,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
@@ -351,7 +352,13 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.addGeneratedColumn("user", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				return "";
+				User owner = (User) source.getItem(itemId)
+						.getItemProperty("owner").getValue();
+				if (owner == null) {
+					return "";
+				} else {				
+					return owner.getFullName();
+				}
 			}
 		});
 		monitorTable.addGeneratedColumn("obsolete", new CustomTable.ColumnGenerator() {
