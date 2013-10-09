@@ -37,9 +37,9 @@ import static org.eclipse.persistence.platform.database.DatabasePlatform.DEFAULT
  */
 public class VirtuosoPlatform extends DatabasePlatform {
 
-    
-    private static final String QUANTIFIER = " TOP %d, %d ";
-    
+	/**
+	 * Constructor setting up constant properties.
+	 */
     public VirtuosoPlatform(){
         super();
         this.pingSQL = "SELECT 1";
@@ -48,7 +48,10 @@ public class VirtuosoPlatform extends DatabasePlatform {
     }
 
 	/**
-	 * SELECT SQL statement redefinition for Virtuoso.
+	 * SELECT SQL statement redefinition for Virtuoso. We need to build custom
+	 * TOP clause, which is specific for Virtuoso. Otherwise, if TOP clause is
+	 * not needed, the default implementation in {@link DatabasePlatform} will
+	 * do.
 	 * 
 	 * @param call
 	 * @param printer
@@ -65,8 +68,8 @@ public class VirtuosoPlatform extends DatabasePlatform {
             firstRow = statement.getQuery().getFirstResult();
         }
 
-		// check whether we should use row limiting at all
-		// (quite unnecessary actually)
+		// Check whether we should use row limiting at all. If not, no TOP
+		// clause is needed and we can delegate the call to parent.
         if (max <= 0 || !(this.shouldUseRownumFiltering())) {
             super.printSQLSelectStatement(call, printer, statement);
             return;
