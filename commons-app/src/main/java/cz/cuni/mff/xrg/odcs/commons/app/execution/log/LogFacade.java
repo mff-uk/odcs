@@ -138,9 +138,10 @@ public class LogFacade {
         List<LogMessage> resultList = Collections.checkedList(
                 em.createQuery("SELECT e FROM LogMessage e"
                 + " LEFT JOIN e.properties p"
+                + " LEFT JOIN e.properties p2"
                 + " WHERE e.levelString IN :lvl"
                 + " AND ((KEY(p) = :propKey AND p = :propVal)"
-                + "			OR (KEY(p) = :propKeyDpu AND p = :propValDpu))")
+                + "			AND (KEY(p2) = :propKeyDpu AND p2 = :propValDpu))")
                 .setParameter("lvl", lvls)
                 .setParameter("propKey", LogMessage.MDPU_EXECUTION_KEY_NAME)
                 .setParameter("propVal", Long.toString(exec.getId()))
@@ -348,10 +349,12 @@ public class LogFacade {
         List<LogMessage> data;
         @SuppressWarnings("unchecked")
         StringBuilder query = new StringBuilder("SELECT e FROM LogMessage e"
+                + " LEFT JOIN e.properties p"
+                + " LEFT JOIN e.properties p2"
                 + " WHERE e.levelString IN :lvl"
-                + " AND (e.properties[:propKey] = :propVal)");
+                + " AND (KEY(p) = :propKey AND p = :propVal)");
         if (dpu != null) {
-            query.append(" AND (e.properties[:propKeyDpu] = :propValDpu)");
+            query.append("AND (KEY(p2) = :propKeyDpu AND p2 = :propValDpu)");
         } else {
             //query.append(')');
         }

@@ -68,11 +68,11 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 		}
 		
 		// in other cases be restrictive
-		LOG.debug(String.format(
-				"Method hasPermission not supported for object <?> and permission <?>.",
+		LOG.debug(
+				"Method hasPermission not supported for object <{}> and permission <{}>.",
 				target,
 				perm
-		));
+		);
 		return false;
 	}
 

@@ -152,7 +152,7 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 	 */
 	private void handleRetries(int attempts, RepositoryException ex) {
 		
-		LOG.warn(String.format("Database is down after %d attempts.", attempts));
+		LOG.warn("Database is down after {} attempts.", attempts);
 		if (attempts == 1) {
 			// TODO send notification after first error only
 			//notify(ex);
@@ -169,7 +169,7 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 				LOG.error("Thread interrupted while sleeping.", e);
 			}
 		} else if (!loop) {
-			LOG.error(String.format("Giving up on database after %d retries.", attempts));
+			LOG.error("Giving up on database after {} retries.", attempts);
 			throw new RDFRepositoryException(ex);
 		}
 	}

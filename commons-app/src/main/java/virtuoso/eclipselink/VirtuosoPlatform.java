@@ -8,8 +8,8 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -37,15 +37,64 @@ import static org.eclipse.persistence.platform.database.DatabasePlatform.DEFAULT
  */
 public class VirtuosoPlatform extends DatabasePlatform {
 
-    
-    private static final String LIMIT = " LIMIT ";
-    
+	/**
+	 * Constructor setting up constant properties.
+	 */
     public VirtuosoPlatform(){
         super();
         this.pingSQL = "SELECT 1";
         this.startDelimiter = "\"";
         this.endDelimiter = "\"";
     }
+
+	/**
+	 * SELECT SQL statement redefinition for Virtuoso. We need to build custom
+	 * TOP clause, which is specific for Virtuoso. Otherwise, if TOP clause is
+	 * not needed, the default implementation in {@link DatabasePlatform} will
+	 * do.
+	 * 
+	 * @param call
+	 * @param printer
+	 * @param statement 
+	 */
+	@Override
+	public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        
+		// get max rows
+		int max = 0;
+		int firstRow = 0;
+        if (statement.getQuery() != null) {
+            max = statement.getQuery().getMaxRows();
+            firstRow = statement.getQuery().getFirstResult();
+        }
+
+		// Check whether we should use row limiting at all. If not, no TOP
+		// clause is needed and we can delegate the call to parent.
+        if (max <= 0 || !(this.shouldUseRownumFiltering())) {
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
+        }
+		
+		// alias table fields
+        statement.setUseUniqueFieldAliases(true);
+		
+		// define row limiting parameters
+        printer.printString("SELECT TOP " + firstRow + "," + max);
+		
+        // need to trim the SELECT from the SQL
+        Writer writer = printer.getWriter();
+        printer.setWriter(new StringWriter());
+        call.setFields(statement.printSQL(printer));
+        String sql = printer.getWriter().toString();
+        printer.setWriter(writer);
+        printer.printString(sql.substring(6, sql.length()));
+
+		// disable default row limiting
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
+	}
+	
+	
     
     /**
      * Appends an MySQL specific date if usesNativeSQL is true otherwise use the ODBC format.

@@ -76,7 +76,7 @@ public class NamespacePrefixFacade {
 		try {
 			prefix = (NamespacePrefix) q.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.info(String.format("RDF namespace prefix with username %s was not found.", name));
+			LOG.info("RDF namespace prefix with username {} was not found.", name);
 		}
 		
 		return prefix;
@@ -104,20 +104,11 @@ public class NamespacePrefixFacade {
 	 */
 	@Transactional
 	public void delete(NamespacePrefix prefix) {
-		NamespacePrefix px;
-		if (!em.contains(prefix)) {
-			px = getPrefix(prefix.getId());
-		} else {
-			px = prefix;
+		// we might be trying to remove detached entity
+		if (!em.contains(prefix) && prefix.getId() != null) {
+			prefix = getPrefix(prefix.getId());
 		}
-		if (px == null) {
-			LOG.warn(String.format(
-				"Namespace prefix with name %s could not be deleted, because it was not found.",
-				prefix.getName()
-			));
-		} else {
-			em.remove(px);
-		}
+		em.remove(prefix);
 	}
 	
 }
