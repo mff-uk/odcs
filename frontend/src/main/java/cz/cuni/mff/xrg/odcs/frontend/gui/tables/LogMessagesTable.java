@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.PropertiesFilter;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Date;
 
 import java.util.List;
 import java.util.Set;
@@ -104,23 +105,20 @@ public class LogMessagesTable extends CustomComponent {
 
 			@Override
 			public InputStream getStream() {
-				List<LogMessage> data = getData(pipelineExecution, null, Level.ALL);
-				StringBuilder sb = new StringBuilder();
-				for(LogMessage log : data) {
-					//17:42:17.661 [http-bio-8084-exec-21] DEBUG v.ConfigurableDataSource - Creating new JDBC DriverManager Connection to [jdbc:virtuoso://localhost:1111/charset=UTF-8]
-					sb.append(log.getDate());
-					sb.append(' ');
-					sb.append(log.getThread());
-					sb.append(' ');
-					sb.append(log.getLevelString());
-					sb.append(' ');
-					sb.append(log.getSource());
-					sb.append(' ');
-					sb.append(log.getMessage());
-					sb.append('\r');
-					sb.append('\n');
+				DPUInstanceRecord dpu = (DPUInstanceRecord)dpuSelector.getValue();
+				Level level = (Level)levelSelector.getValue();
+				
+				String message = (String)messageTable.getFilterFieldValue("message");
+				String source = (String)messageTable.getFilterFieldValue("source");
+				Object date = messageTable.getFilterFieldValue("date");
+				Date start = null;
+				Date end = null;
+				if(date != null) {
+					DateInterval di = (DateInterval)date;
+					start = di.getFrom();
+					end = di.getTo();
 				}
-				return new ByteArrayInputStream(sb.toString().getBytes());
+				return App.getLogs().getLogsAsStream(pipelineExecution, dpu, level, message, source, start, end);	
 			}
 		});
 		fileDownloader.extend(download);
@@ -136,21 +134,25 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param dpu {@link DPUInstanceRecord} or null.
 	 */
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, boolean isRefresh) {
-		this.dpu = dpu;
-		if (pipelineExecution != exec && !isRefresh) {
-			levelSelector.setValue(exec.isDebugging() ? Level.ALL : Level.INFO);
-		}
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
 		if (!isRefresh) {
 			this.pipelineExecution = exec;
 			c.removeDefaultFilters();
 			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
-//			if (dpu != null) {
-//				c.addDefaultFilter(new PropertiesFilter(LogMessage.MDC_DPU_INSTANCE_KEY_NAME, dpu.getId()));
-//			}
+		}
+		this.dpu = dpu;
+		if (!isRefresh) {
+			Level newValue = exec.isDebugging() ? Level.ALL : Level.INFO;
+			if (newValue.equals(levelSelector.getValue())) {
+				c.refresh();
+			} else {
+				levelSelector.setValue(newValue);
+			}
+		} else {
+			c.refresh();
 		}
 		refreshDpuSelector();
-		c.refresh();
+
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
@@ -245,9 +247,6 @@ public class LogMessagesTable extends CustomComponent {
 		messageTable.setColumnHeader("dpuInstanceId", "DPU Instance");
 		messageTable.setSortEnabled(false);
 		messageTable.setFilterBarVisible(true);
-		levelSelector.setValue(Level.INFO);
-
-		//messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
 	/*

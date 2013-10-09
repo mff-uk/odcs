@@ -4,6 +4,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
@@ -1708,6 +1709,134 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return map;
 	}
 
+	private long getSizeForConstruct(String constructQuery) throws InvalidQueryException {
+		long size = 0;
+
+		RepositoryConnection connection = null;
+
+		try {
+			connection = repository.getConnection();
+
+			GraphQuery graphQuery = connection.prepareGraphQuery(
+					QueryLanguage.SPARQL,
+					constructQuery);
+
+			graphQuery.setDataset(getDataSetForGraph());
+			try {
+				GraphQueryResult result = graphQuery.evaluate();
+
+				while (result.hasNext()) {
+					result.next();
+					size++;
+				}
+
+			} catch (QueryEvaluationException ex) {
+
+				throw new InvalidQueryException(
+						"This query is probably not valid. " + ex
+						.getMessage(),
+						ex);
+			}
+
+		} catch (MalformedQueryException ex) {
+			throw new InvalidQueryException(
+					"This query is probably not valid as construct query. "
+					+ ex.getMessage(), ex);
+		} catch (RepositoryException ex) {
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn(
+							"Failed to close connection to RDF repository while querying. "
+							+ ex.getMessage(), ex);
+				}
+			}
+		}
+
+		return size;
+	}
+
+	private long getSizeForSelect(QueryPart queryPart) throws InvalidQueryException {
+
+		final String sizeVar = "selectSize";
+		final String sizeQuery = String.format(
+				"%s select count(*) as ?%s where {%s}", queryPart
+				.getQueryPrefixes(),
+				sizeVar, queryPart.getQueryWithoutPrefixes());
+		try {
+			RepositoryConnection connection = repository.getConnection();
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(
+					QueryLanguage.SPARQL, sizeQuery);
+
+			tupleQuery.setDataset(getDataSetForGraph());
+			try {
+				TupleQueryResult tupleResult = tupleQuery.evaluate();
+				if (tupleResult.hasNext()) {
+					String selectSize = tupleResult.next()
+							.getValue(sizeVar).stringValue();
+					long resultSize = Long.parseLong(selectSize);
+					return resultSize;
+				}
+				throw new InvalidQueryException(
+						"Query: " + queryPart.getQuery() + " has no bindings for information about its size");
+			} catch (QueryEvaluationException ex) {
+				throw new InvalidQueryException(
+						"This query is probably not valid. " + ex
+						.getMessage(),
+						ex);
+			}
+
+
+		} catch (MalformedQueryException ex) {
+			throw new InvalidQueryException(
+					"This query is probably not valid. "
+					+ ex.getMessage(), ex);
+		} catch (RepositoryException ex) {
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
+		}
+
+		return 0;
+	}
+
+	/**
+	 * For given valid SELECT of CONSTRUCT query return its size {count of rows
+	 * returns for given query).
+	 *
+	 * @param query Valid SELECT/CONTRUCT query for asking.
+	 * @return
+	 * @throws InvalidQueryException if query is not valid.
+	 */
+	@Override
+	public long getResultSizeForQuery(String query) throws InvalidQueryException {
+
+		long size = 0;
+
+		QueryPart queryPart = new QueryPart(query);
+		SPARQLQueryType type = queryPart.getSPARQLQueryType();
+
+		switch (type) {
+			case SELECT:
+				size = getSizeForSelect(queryPart);
+				break;
+			case CONSTRUCT:
+				size = getSizeForConstruct(query);
+				break;
+			case UNKNOWN:
+				throw new InvalidQueryException(
+						"Given query: " + query + "have to be SELECT or CONSTRUCT type.");
+		}
+
+		return size;
+
+
+	}
+
 	/**
 	 * Make select query over repository data and return MyTupleQueryResult
 	 * class as result.
@@ -1739,7 +1868,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				MyTupleQueryResult result = new MyTupleQueryResult(
 						connection,
 						tupleResult);
-
 				return result;
 
 			} catch (QueryEvaluationException ex) {
