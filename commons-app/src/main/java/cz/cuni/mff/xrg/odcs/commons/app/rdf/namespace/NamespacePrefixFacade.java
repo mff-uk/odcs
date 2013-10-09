@@ -104,19 +104,11 @@ public class NamespacePrefixFacade {
 	 */
 	@Transactional
 	public void delete(NamespacePrefix prefix) {
-		NamespacePrefix px;
-		if (!em.contains(prefix)) {
-			px = getPrefix(prefix.getId());
-		} else {
-			px = prefix;
+		// we might be trying to remove detached entity
+		if (!em.contains(prefix) && prefix.getId() != null) {
+			prefix = getPrefix(prefix.getId());
 		}
-		if (px == null) {
-			LOG.warn("Namespace prefix with name {} could not be deleted, because it was not found.",
-				prefix.getName()
-			);
-		} else {
-			em.remove(px);
-		}
+		em.remove(prefix);
 	}
 	
 }

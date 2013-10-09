@@ -128,15 +128,10 @@ public class PipelineFacade {
 	@PreAuthorize("hasPermission(#pipeline, 'delete')")
 	public void delete(Pipeline pipeline) {
 		// we might be trying to remove detached entity
-		// lets fetch it again and then try to remove
-		// TODO this is just a workaround -> resolve in future release!
-		Pipeline p = pipeline.getId() == null
-			? pipeline : getPipeline(pipeline.getId());
-		if (p != null) {			
-			em.remove(p);
-		} else {
-			LOG.warn("Pipeline with ID " + pipeline.getId() + " was not found and so cannot be deleted!");
+		if (!em.contains(pipeline) && pipeline.getId() != null) {
+			pipeline = getPipeline(pipeline.getId());
 		}
+		em.remove(pipeline);
 	}
 	
 	/**
@@ -382,15 +377,10 @@ public class PipelineFacade {
 	@Transactional
 	public void delete(PipelineExecution exec) {
 		// we might be trying to remove detached entity
-		// lets fetch it again and then try to remove
-		// TODO this is just a workaround -> resolve in future release!
-		PipelineExecution e = exec.getId() == null
-				? exec : getExecution(exec.getId());
-		if (e != null) {
-			em.remove(e);
-		} else {
-			LOG.warn("Pipeline execution with ID " + exec.getId() + " was not found and so cannot be deleted!");
+		if (!em.contains(exec) && exec.getId() != null) {
+			exec = getExecution(exec.getId());
 		}
+		em.remove(exec);
 	}
 
 }

@@ -211,14 +211,10 @@ public class DPUFacade {
 	@PreAuthorize("hasPermission(#dpu,'delete')")
 	public void delete(DPUTemplateRecord dpu) {
 		// we might be trying to remove detached entity
-		// lets fetch it again and then try to remove
-		// TODO this is just a workaround -> resolve in future release!
-		DPUTemplateRecord d = dpu.getId() == null ? dpu : getTemplate(dpu.getId());
-		if (d != null) {
-			em.remove(d);
-		} else {
-			LOG.warn("DPURecord with ID " + dpu.getId() + " was not found and so cannot be deleted!");
+		if (!em.contains(dpu) && dpu.getId() != null) {
+			dpu = getTemplate(dpu.getId());
 		}
+		em.remove(dpu);
 	}
 
 	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
@@ -280,15 +276,10 @@ public class DPUFacade {
 	@Transactional
 	public void delete(DPUInstanceRecord dpu) {
 		// we might be trying to remove detached entity
-		// lets fetch it again and then try to remove
-		// TODO this is just a workaround -> resolve in future release!
-		DPUInstanceRecord d = dpu.getId() == null
-				? dpu : getDPUInstance(dpu.getId());
-		if (d != null) {
-			em.remove(d);
-		} else {
-			LOG.warn("DPURecord instance with ID " + dpu.getId() + " was not found and so cannot be deleted!");
+		if (!em.contains(dpu) && dpu.getId() != null) {
+			dpu = getDPUInstance(dpu.getId());
 		}
+		em.remove(dpu);
 	}
 
 	/* **************** Methods for Record (messages) management ***************** */
@@ -378,6 +369,10 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void delete(MessageRecord record) {
+		// we might be trying to remove detached entity
+		if (!em.contains(record) && record.getId() != null) {
+			record = getDPURecord(record.getId());
+		}
 		em.remove(record);
 	}
 

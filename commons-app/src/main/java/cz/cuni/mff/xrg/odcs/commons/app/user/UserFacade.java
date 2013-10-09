@@ -129,15 +129,10 @@ public class UserFacade {
 	@PreAuthorize("hasPermission(#user, 'delete')")
 	public void delete(User user) {
 		// we might be trying to remove detached entity
-		// lets fetch it again and then try to remove
-		// TODO this is just a workaround -> resolve in future release!
-		User p = user.getId() == null
-			? user : getUser(user.getId());
-		if (p != null) {			
-			em.remove(p);
-		} else {
-			LOG.warn("User with ID " + user.getId() + " was not found and so cannot be deleted!");
+		if (!em.contains(user) && user.getId() != null) {
+			user = getUser(user.getId());
 		}
+		em.remove(user);
 	}
 
 }
