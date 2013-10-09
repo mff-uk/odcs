@@ -7,13 +7,23 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
- * Customized <code>DataSource</code> for Intlib application configurable with
+ * Customized <code>DataSource</code> for ODCS application configurable with
  * {@link AppConfig} and with prefilled Virtuoso JDBC Driver.
  *
+ * <p><b>NOTE: This class is not an actual connection pool; it does not actually
+ * pool Connections.</b> It just serves as simple replacement for a full-blown
+ * connection pool, implementing the same standard interface, but creating new
+ * Connections on every call.
+ * 
+ * <p> TODO replace with connection pool
+ * 
  * @author Jan Vojt
  */
 public class ConfigurableDataSource extends DriverManagerDataSource {
 	
+	/**
+	 * Class name to be used as JDBC driver.
+	 */
 	public static final String DRIVER_CLASS_NAME = "virtuoso.jdbc4.Driver";
 
 	/**
