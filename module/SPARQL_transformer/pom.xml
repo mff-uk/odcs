@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>SPARQL_transformer</artifactId>
 	<packaging>bundle</packaging>
-	<name>SPARQL_transformer</name>
+	<description>SPARQL Transformer.</description>
 
 	<properties>
 		<dpu.package>cz.cuni.mff.xrg.odcs.transformer.SPARQL</dpu.package>

@@ -9,7 +9,7 @@
     </parent>
     <artifactId>RDF_extractor</artifactId>
     <packaging>bundle</packaging>
-    <name>RDF_extractor</name>
+    <description>Extracts RDF data.</description>
     
     <properties>       
         <dpu.package>cz.cuni.mff.xrg.odcs.extractor.rdf</dpu.package>

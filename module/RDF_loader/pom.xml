@@ -9,6 +9,7 @@
     </parent>
     <artifactId>RDF_loader</artifactId>
     <packaging>bundle</packaging>
+    <description>Loads RDF data.</description>
 
     <properties>       
         <dpu.package>cz.cuni.mff.xrg.odcs.loader.rdf</dpu.package>
