@@ -76,7 +76,7 @@ public class NamespacePrefixFacade {
 		try {
 			prefix = (NamespacePrefix) q.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.info(String.format("RDF namespace prefix with username %s was not found.", name));
+			LOG.info("RDF namespace prefix with username {} was not found.", name);
 		}
 		
 		return prefix;
@@ -111,10 +111,9 @@ public class NamespacePrefixFacade {
 			px = prefix;
 		}
 		if (px == null) {
-			LOG.warn(String.format(
-				"Namespace prefix with name %s could not be deleted, because it was not found.",
+			LOG.warn("Namespace prefix with name {} could not be deleted, because it was not found.",
 				prefix.getName()
-			));
+			);
 		} else {
 			em.remove(px);
 		}

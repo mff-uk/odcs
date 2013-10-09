@@ -64,12 +64,12 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		try {
 			retries = config.getInteger(ConfigProperty.VIRTUOSO_RETRIES);
 		} catch (MissingConfigPropertyException ex) {
-			LOG.info(String.format("Missing config property ?, using default value ?.", ex.getProperty(), retries));
+			LOG.info("Missing config property {}, using default value {}.", ex.getProperty(), retries);
 		}
 		try {
 			wait = config.getInteger(ConfigProperty.VIRTUOSO_WAIT);
 		} catch (MissingConfigPropertyException ex) {
-			LOG.info(String.format("Missing config property ?, using default value ?.", ex.getProperty(), wait));
+			LOG.info("Missing config property {}, using default value {}.", ex.getProperty(), wait);
 		}
 	}
 
@@ -182,7 +182,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 	 */
 	private void handleRetries(int attempts, PersistenceException ex) {
 		
-		LOG.warn(String.format("Database is down after %d attempts.", attempts));
+		LOG.warn("Database is down after {} attempts.", attempts);
 		if (attempts == 1) {
 			// send notification after first error only
 			notify(ex);
@@ -199,7 +199,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 				LOG.error("Thread interrupted while sleeping.", e);
 			}
 		} else if (!loop) {
-			LOG.error(String.format("Giving up on database after %d retries.", attempts));
+			LOG.error("Giving up on database after {} retries.", attempts);
 			throw ex;
 		}
 	}

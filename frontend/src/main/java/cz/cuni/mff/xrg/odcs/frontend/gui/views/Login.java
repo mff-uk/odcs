@@ -112,7 +112,7 @@ public class Login extends ViewComponent {
 
 		} catch (AuthenticationException ex) {
 			password.setValue("");
-			LOG.info(String.format("Invalid credentials for username ?.", login.getValue()));
+			LOG.info("Invalid credentials for username {}.", login.getValue());
 			Notification.show(String.format("Invalid credentials for username %s.", login.getValue()), Notification.Type.ERROR_MESSAGE);
 		} 
     }

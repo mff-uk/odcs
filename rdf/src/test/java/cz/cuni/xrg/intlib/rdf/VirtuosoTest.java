@@ -218,10 +218,11 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 			isLoaded = true;
 
 		} catch (RDFException e) {
-			LOG.error(String.format(
-					"INSERT triple: %s %s %s to SPARQL endpoint failed", subject
-					.stringValue(), predicate.stringValue(), object
-					.stringValue()));
+			LOG.error("INSERT triple: {} {} {} to SPARQL endpoint failed",
+					subject.stringValue(),
+					predicate.stringValue(),
+					object.stringValue()
+			);
 
 		} finally {
 			try {

@@ -99,7 +99,7 @@ public class UserFacade {
 		try {
 			user = (User) q.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.info(String.format("User with username ? was not found.", username));
+			LOG.info("User with username {} was not found.", username);
 		}
 		
 		return user;
