@@ -48,7 +48,13 @@ public abstract class DPURecord {
 	 */
 	@Column(name="configuration", nullable = true)
 	private byte[] serializedConfiguration;
-		
+	
+	/**
+	 * If true configuration is in valid state.
+	 */
+	@Column(name="config_valid")
+	private boolean configValid;
+	
 	/**
 	 * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
 	 */
@@ -86,8 +92,9 @@ public abstract class DPURecord {
     		this.serializedConfiguration = 
     				dpuRecord.serializedConfiguration.clone();
     	}
+    	this.configValid = dpuRecord.configValid;
     }
-        
+
     public String getName() {
         return name;
     }

@@ -33,6 +33,7 @@ CREATE TABLE "DB"."INTLIB"."DPU_INSTANCE"
   "description" VARCHAR(512),
   "tool_tip" VARCHAR(255),
   "configuration" LONG VARBINARY,
+  "config_valid" SMALLINT,
 -- DPUInstaceRecord
   "dpu_id" INTEGER,
   PRIMARY KEY ("id")
@@ -48,14 +49,14 @@ CREATE TABLE "DB"."INTLIB"."DPU_TEMPLATE"
   "description" VARCHAR(512),  
   "configuration" LONG VARBINARY,
   "parent_id" INTEGER,
+  "config_valid" SMALLINT,
 -- DPUTemplateRecord
   "user_id" INTEGER,
   "visibility" SMALLINT,
   "type" SMALLINT,
   "jar_directory" VARCHAR(255),
   "jar_name" VARCHAR(255),  
-  "jar_description" VARCHAR(512),
-  "config_checked" SMALLINT,
+  "jar_description" VARCHAR(512),  
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_DPU_TEMPLATE_jar_directory" ON "DB"."INTLIB"."DPU_TEMPLATE" ("jar_directory");

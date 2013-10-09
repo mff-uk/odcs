@@ -79,14 +79,6 @@ public class DPUTemplateRecord extends DPURecord
 	private User owner;
 
 	/**
-	 * True if the stored configuration for given DPU and all it's instances are
-	 * valid.
-	 * It's transitive for non-root templates.
-	 */
-	@Column(name = "config_checked")
-	private boolean configChecked;
-
-	/**
 	 * Empty ctor for JPA.
 	 */
 	public DPUTemplateRecord() {
@@ -171,7 +163,6 @@ public class DPUTemplateRecord extends DPURecord
 			jarDirectory = null;
 			jarName = null;
 			type = null;
-			configChecked = false;
 		} else {
 			// we will be the top one .. if we are not now,
 			// store jar name and directory etc .. 
@@ -179,7 +170,6 @@ public class DPUTemplateRecord extends DPURecord
 				jarDirectory = parent.jarDirectory;
 				jarName = parent.jarName;
 				type = parent.type;
-				configChecked = parent.configChecked;
 			}
 		}
 		this.parent = parent;
@@ -292,38 +282,6 @@ public class DPUTemplateRecord extends DPURecord
 	 */
 	public boolean jarFileReplacable() {
 		return parent == null;
-	}
-
-	/**
-	 * If true then every configuration for every DPU that has this
-	 * {@link DPUTemplateRecord} as parent and for every
-	 * {@link DPUInstanceRecord} that that use this or descendants of this
-	 * template is valid.
-	 * 
-	 * @return
-	 */
-	public boolean isConfigChecked() {
-		if (parent == null) {
-			return configChecked;
-		} else {
-			return parent.isConfigChecked();
-		}
-	}
-
-	/**
-	 * Set {@link #configChecked} for given DPU template. If the DPU has parent
-	 * then nothing happened. Setting to false corresponds with request for 
-	 * validation.
-	 * 
-	 * @param jarName
-	 */
-	public void setConfigChecked(boolean configChecked) {
-		if (parent == null) {
-			// top level DPU
-			this.configChecked = configChecked;
-		} else {
-			// ignore ..
-		}
 	}
 
 }
