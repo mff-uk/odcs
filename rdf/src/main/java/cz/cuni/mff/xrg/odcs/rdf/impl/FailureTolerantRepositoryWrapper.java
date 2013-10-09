@@ -110,7 +110,13 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 
 	@Override
 	public RepositoryConnection getConnection() throws RepositoryException {
-		return repository.getConnection();
+		int attempts = 0;
+		while (true) try {
+			attempts++;
+			return repository.getConnection();
+		} catch (RepositoryException ex) {
+			handleRetries(attempts, ex);
+		}
 	}
 
 	@Override
