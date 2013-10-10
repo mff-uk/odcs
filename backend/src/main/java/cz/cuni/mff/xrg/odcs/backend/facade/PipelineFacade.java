@@ -79,7 +79,8 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		while (true) try {
 			attempts++;
 			return super.getPipeline(id);
-		} catch (PersistenceException ex) {
+		} catch (RuntimeException ex) {
+			// presume DB error
 			handleRetries(attempts, ex);
 		}
 	}
@@ -92,9 +93,11 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 			attempts++;
 			super.save(pipeline);
 			return;
-		} catch (EntityNotFoundException ex) {
+		} catch (IllegalArgumentException ex) {
+			// given pipeline is a removed entity
 			throw ex;
-		} catch (PersistenceException ex) {
+		} catch (RuntimeException ex) {
+			// presume DB error
 			handleRetries(attempts, ex);
 		}
 	}
@@ -105,7 +108,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		while (true) try {
 			attempts++;
 			return super.getExecution(id);
-		} catch (PersistenceException ex) {
+		} catch (RuntimeException ex) {
 			handleRetries(attempts, ex);
 		}
 	}
@@ -116,7 +119,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		while (true) try {
 			attempts++;
 			return super.getExecutions(pipeline);
-		} catch (PersistenceException ex) {
+		} catch (RuntimeException ex) {
 			handleRetries(attempts, ex);
 		}
 	}
@@ -129,9 +132,10 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 			attempts++;
 			super.save(exec);
 			return;
-		} catch (EntityNotFoundException ex) {
+		} catch (IllegalArgumentException ex) {
+			// given execution is a removed entity
 			throw ex;
-		} catch (PersistenceException ex) {
+		} catch (RuntimeException ex) {
 			handleRetries(attempts, ex);
 		}
 	}
@@ -144,6 +148,9 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 			attempts++;
 			super.delete(exec);
 			return;
+		} catch (IllegalArgumentException ex) {
+			// given execution is not persisted
+			throw ex;
 		} catch (PersistenceException ex) {
 			handleRetries(attempts, ex);
 		}
@@ -155,6 +162,9 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		while (true) try {
 			attempts++;
 			return super.getAllExecutions();
+		} catch (IllegalArgumentException ex) {
+			// invalid SQL query was called
+			throw ex;
 		} catch (PersistenceException ex) {
 			handleRetries(attempts, ex);
 		}
@@ -166,12 +176,15 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		while (true) try {
 			attempts++;
 			return super.getLastExecTime(pipeline, status);
-		} catch (PersistenceException ex) {
+		} catch (IllegalArgumentException ex) {
+			// invalid SQL query was called
+			throw ex;
+		} catch (RuntimeException ex) {
 			handleRetries(attempts, ex);
 		}
 	}
 	
-	
+	// TODO refactor following methods into ErrorHandler
 	
 	/**
 	 * Logic for deciding whether to continue db reconnect attempts. If we
@@ -180,7 +193,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 	 * @param attempts number of attempts so far
 	 * @param ex exception to be thrown in case we give up
 	 */
-	private void handleRetries(int attempts, PersistenceException ex) {
+	private void handleRetries(int attempts, RuntimeException ex) {
 		
 		LOG.warn("Database is down after {} attempts.", attempts);
 		if (attempts == 1) {
@@ -209,7 +222,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 	 * 
 	 * @param ex 
 	 */
-	private void notify(PersistenceException ex) {
+	private void notify(RuntimeException ex) {
 		if (emailSender != null) {
 			synchronized (PipelineFacade.class) {
 				if (emailsSent <= 0) {
