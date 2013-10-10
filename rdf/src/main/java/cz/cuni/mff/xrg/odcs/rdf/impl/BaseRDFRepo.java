@@ -2770,4 +2770,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		ValueFactory factory = repository.getValueFactory();
 		return factory.createLiteral(literalLabel);
 	}
+	
+	@Override
+	public void clean() {
+		// TODO Jirka: please provide the functionality here according
+		// to clean documentaion in MergableDataUnit
+	}
+	
 }

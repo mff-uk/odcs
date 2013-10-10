@@ -46,6 +46,13 @@ public interface ManagableDataUnit extends DataUnit {
 	public void release();	
 	
 	/**
+	 * Delete all the data from the {@link DataUnit} but does not close
+	 * or destroy it. After this call the state of {@link DataUnit} should
+	 * be the same as if it was newly created. 
+	 */
+	public void clean();
+	
+	/**
 	 * Save DataUnit context into given directory. In case of any problem throws
 	 * exception. The directory doesn't have to exist. The directory can be the
 	 * same as the DataUnit working directory!
