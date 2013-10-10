@@ -4,22 +4,15 @@ package virtuoso;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 
 /**
  * Customized <code>DataSource</code> for ODCS application configurable with
  * {@link AppConfig} and with prefilled Virtuoso JDBC Driver.
- *
- * <p><b>NOTE: This class is not an actual connection pool; it does not actually
- * pool Connections.</b> It just serves as simple replacement for a full-blown
- * connection pool, implementing the same standard interface, but creating new
- * Connections on every call.
- * 
- * <p> TODO replace with connection pool
  * 
  * @author Jan Vojt
  */
-public class ConfigurableDataSource extends DriverManagerDataSource {
+public class ConfigurableDataSource extends BasicDataSource {
 	
 	/**
 	 * Class name to be used as JDBC driver.
@@ -32,12 +25,11 @@ public class ConfigurableDataSource extends DriverManagerDataSource {
 	 * @param config application configuration
 	 */
 	public ConfigurableDataSource(AppConfig config) {
-		super(
-			buildUrl(config),
-			config.getString(ConfigProperty.VIRTUOSO_USER),
-			config.getString(ConfigProperty.VIRTUOSO_PASSWORD)
-		);
+		setUrl(buildUrl(config));
+		setUsername(config.getString(ConfigProperty.VIRTUOSO_USER));
+		setPassword(config.getString(ConfigProperty.VIRTUOSO_PASSWORD));
 		setDriverClassName(DRIVER_CLASS_NAME);
+		setDefaultAutoCommit(false);
 	}
 	
 	/**
