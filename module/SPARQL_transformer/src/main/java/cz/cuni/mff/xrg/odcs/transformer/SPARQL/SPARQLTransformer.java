@@ -42,7 +42,7 @@ public class SPARQLTransformer
 
 	private List<PlaceHolder> getPlaceHolders(String constructQuery) {
 
-		String regex = "graph\\s+\\?[gG_][\\w-_]+";
+		String regex = "graph\\s+\\?[gG]_[\\w-_]+";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(constructQuery);
 
