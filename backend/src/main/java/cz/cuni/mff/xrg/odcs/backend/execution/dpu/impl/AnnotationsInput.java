@@ -147,7 +147,7 @@ public class AnnotationsInput extends PreExecutorBase {
 			String name) {
 		LinkedList<ManagableDataUnit> result = new LinkedList<ManagableDataUnit>();
 		for (ManagableDataUnit item : candidates) {
-			if (item.getURI().compareToIgnoreCase(name) == 0) {
+			if (item.getDataUnitName().compareToIgnoreCase(name) == 0) {
 				result.add(item);
 			}
 		}
@@ -211,7 +211,7 @@ public class AnnotationsInput extends PreExecutorBase {
 			}
 		} else {
 			LOG.debug("Assign DataUnit URI: {} for field: {}", nameMatch
-					.getFirst().getURI(), field.getName());
+					.getFirst().getDataUnitName(), field.getName());
 			// use first with required name
 			return setDataUnit(field, dpuInstance, nameMatch.getFirst(),
 					context);

@@ -70,7 +70,7 @@ class DataUnitMerger {
 		while (iterRight.hasNext()) {
 			
 			DataUnit rightDataUnit = iterRight.next();
-			String rightDataUnitName = rightDataUnit.getURI();
+			String rightDataUnitName = rightDataUnit.getDataUnitName();
 			// name for new DataUnit, use right's name as default
 			String leftDataUnitName = rightDataUnitName;
 			// get command
@@ -103,7 +103,7 @@ class DataUnitMerger {
 			ManagableDataUnit leftDataUnit = null;
 			// first check for existing one
 			for(ManagableDataUnit item : left.getDataUnits()) {
-				if (item.getURI().compareTo(leftDataUnitName) == 0 && 
+				if (item.getDataUnitName().compareTo(leftDataUnitName) == 0 && 
 						item.getType() == rightDataUnit.getType()) {
 					LOG.debug("merge into existing dataUnit: {}", rightDataUnitName);
 					// DataUnit with same name and type already exist, use it
