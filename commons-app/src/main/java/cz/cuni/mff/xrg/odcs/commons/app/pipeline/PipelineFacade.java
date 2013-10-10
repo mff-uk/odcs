@@ -96,11 +96,11 @@ public class PipelineFacade {
 	 * Find pipeline in database by ID and return it.
 	 *
 	 * @param id of Pipeline
-	 * @return Pipeline
+	 * @return Pipeline the found pipeline or null if the pipeline with given ID
+	 *					does not exist
 	 */
 	@PostAuthorize("hasPermission(returnObject,'view')")
 	public Pipeline getPipeline(long id) {
-
 		return em.find(Pipeline.class, id);
 	}
 

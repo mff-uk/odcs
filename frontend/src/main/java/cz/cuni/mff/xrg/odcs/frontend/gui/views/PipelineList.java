@@ -28,7 +28,10 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 
+import java.text.DateFormat;
 import java.util.List;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -161,7 +164,9 @@ class PipelineList extends ViewComponent {
 				Pipeline ppl = (Pipeline) container.getEntity(itemId);
 				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl);
 				if (latestExec != null) {
-					return latestExec.getStart();
+					DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
+
+					return df.format(latestExec.getStart());
 				} else {
 					return null;
 				}
