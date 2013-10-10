@@ -221,6 +221,14 @@
 			<artifactId>jdbc-driver</artifactId>
 			<version>4</version>
 		</dependency>
+		
+		<dependency> <!-- Contains DataSource with connection pooling. -->
+			<artifactId>commons-dbcp</artifactId>
+			<groupId>commons-dbcp</groupId>
+			<type>jar</type>
+			<version>1.4</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
@@ -228,7 +236,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<plugin>
