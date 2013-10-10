@@ -222,7 +222,7 @@
 			<version>4</version>
 		</dependency>
 		
-		<dependency>
+		<dependency> <!-- Contains DataSource with connection pooling. -->
 			<artifactId>commons-dbcp</artifactId>
 			<groupId>commons-dbcp</groupId>
 			<type>jar</type>
