@@ -6,7 +6,7 @@ package cz.cuni.mff.xrg.odcs.commons.data;
  *
  * Each DataUnit has URI, this can can't be changed by DPU directly. It's
  * assigned once when DataUnit is created. The URI can be obtained using
- * {@link #getURI()}
+ * {@link #getDataUnitName()}
  *
  * @author Petyr
  *
@@ -26,6 +26,6 @@ public interface DataUnit {
 	 *
 	 * @return String name of data unit.
 	 */
-	public String getURI();
+	public String getDataUnitName();
 
 }
