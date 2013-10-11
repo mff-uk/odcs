@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.thoughtworks.xstream.XStream;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
@@ -20,6 +23,8 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
  */
 public class ConfigWrap<C extends DPUConfigObject> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ConfigWrap.class);
+	
 	/**
 	 * Configuration's class.
 	 */
@@ -104,6 +109,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		} catch (IOException e) {
 			throw new ConfigException("Can't serialize configuration.", e);
 		}
+		LOG.trace("Configuration {} serialized as {}", config.getClass().getName(), result);
 		return result;
 	}
 }
