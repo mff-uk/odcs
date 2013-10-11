@@ -413,6 +413,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		
 		if (isNew) {
 			refresh();
+			showExecutionDetail(execution.getId());
 			//Item item = c.addItemAt(0, execution.getId());
 			//item.getItemProperty("status").setValue(execution.getStatus());
 			//item.getItemProperty("start").setValue(execution.getStart());
@@ -439,7 +440,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			monitorTable.setValue(selectedRow);
 			lastLoad = now;
 		}
-		//TODO: Force refresh to running execution on run time.
+
 		for(Entry<Date, Label> entry : runTimeLabels.entrySet()) {
 			long duration = (new Date()).getTime() - entry.getKey().getTime();
 			entry.getValue().setValue(IntlibHelper.formatDuration(duration));
