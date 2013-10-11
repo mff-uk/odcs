@@ -63,9 +63,11 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 
 import java.io.FileNotFoundException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,7 +138,6 @@ class DPU extends ViewComponent {
 	 */
 	private DPUTemplateWrap selectedDpuWrap = null;
 	private static final Logger LOG = LoggerFactory.getLogger(ViewComponent.class);
-	private boolean saveAllow = false;
 	private Button buttonSaveDPU;
 	private String tabname;
 
@@ -151,11 +152,6 @@ class DPU extends ViewComponent {
 	public DPU() {
 	}
 
-	@Override
-	public boolean isModified() {
-		return ((selectedDpu != null) && (selectedDpu.getId() != null)
-				&& (isChanged()) && (saveAllow));
-	}
 
 	@Override
 	public boolean saveChanges() {
@@ -307,7 +303,7 @@ class DPU extends ViewComponent {
 			public void itemClick(final ItemClickEvent event) {
 				//if the previous selected
 				if ((selectedDpu != null) && (selectedDpu.getId() != null)
-						&& (isChanged()) && (saveAllow)) {
+						&& (isChanged()) && (buttonSaveDPU.isEnabled())) {
 
 					//open confirmation dialog
 					ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
@@ -694,6 +690,12 @@ class DPU extends ViewComponent {
 		instancesTable.setSelectable(true);
 		instancesTable.setCaption("Pipelines:");
 		instancesTable.setContainerDataSource(tableData);
+		
+		//sorting by id
+		Object property = "id";
+		instancesTable.setSortContainerPropertyId(property);
+		instancesTable.setSortAscending(true);
+		instancesTable.sort();
 
 		instancesTable.setWidth("100%");
 		instancesTable.setImmediate(true);
@@ -931,8 +933,10 @@ class DPU extends ViewComponent {
 
 		}
 		// getting all Pipelines with specified DPU in it
-		List<Pipeline> pipelines = App.getPipelines().getPipelinesUsingDPU(selectedDpu);
+		Set<Pipeline> pipelines	= new HashSet<Pipeline>(App.getPipelines().getPipelinesUsingDPU(selectedDpu));
+
 		for (Pipeline pitem : pipelines) {
+			
 
 			Object num = result.addItem();
 
@@ -1034,8 +1038,6 @@ class DPU extends ViewComponent {
 
 	private void selectNewDPU(DPUTemplateRecord dpu) {
 		selectedDpu = dpu;
-		saveAllow = permissions.hasPermission(selectedDpu, "save");
-
 
 		//If DPURecord that != null was selected then it's details will be shown.
 		if ((selectedDpu != null) && (selectedDpu.getId() != null)) {
