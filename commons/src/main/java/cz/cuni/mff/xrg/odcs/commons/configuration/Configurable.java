@@ -20,7 +20,9 @@ public interface Configurable <C extends DPUConfigObject> {
 	void configure(byte[] c) throws ConfigException;
 	
 	/**
-	 * Return serialized configuration object.
+	 * Return serialized configuration object. If no configuration has 
+	 * been previously set by {@link #configure(byte[])} then serialized default
+	 * configuration should be returned.
 	 * @return Serialized configuration.
 	 * @throws ConfigException If the configuration can't be serialized.
 	 */

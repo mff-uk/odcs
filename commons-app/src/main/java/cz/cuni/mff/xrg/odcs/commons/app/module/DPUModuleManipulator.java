@@ -17,6 +17,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
+import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
 
 /**
  * Class provide one-place access to create/update/delete actions for DPUs. It
@@ -142,6 +144,25 @@ public class DPUModuleManipulator {
 			throw new DPUCreateException("DPU has unspecified type.");
 		}
 
+		// is configurable
+		if (dpuObject instanceof Configurable) {
+			Configurable configurable = (Configurable)dpuObject;
+			try {
+				newTemplate.setRawConf(configurable.getConf());
+			} catch (ConfigException e) {
+				// failed to load default configuration .. 
+				newDPUFile.delete();
+				try {
+					FileUtils.deleteDirectory(newDPUDir);
+				} catch (IOException ex) {
+					LOG.error("Failed to delete directory after DPU.", ex);
+				}
+				moduleFacade.unLoad(newTemplate);
+				//
+				throw new DPUCreateException("Failed to obtain DPU's default configuration.");
+			}			
+		}		
+		
 		// set other DPUs variables
 		newTemplate.setType(dpuType);
 		newTemplate.setDescription("");
