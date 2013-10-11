@@ -95,7 +95,7 @@ public class RDFQueryView extends CustomComponent {
 
 		queryText = new TextArea();
 		queryText.setWidth("100%");
-		queryText.setHeight("100%");
+		queryText.setHeight("210px");
 		queryText.setImmediate(true);
 		queryLine.addComponent(queryText);
 
@@ -113,6 +113,7 @@ public class RDFQueryView extends CustomComponent {
 		}
 		formatSelect.setImmediate(true);
 		formatSelect.setNullSelectionAllowed(false);
+		formatSelect.select(RDFFormatType.RDFXML);
 		queryControls.addComponent(formatSelect);
 
 		queryDownloadButton = new Button("Run Query and Download");
@@ -163,7 +164,8 @@ public class RDFQueryView extends CustomComponent {
 		resultTable = new IntlibPagedTable();
 		resultTable.setWidth("100%");
 		resultTable.setImmediate(true);
-		resultTable.setPageLength(20);
+		resultTable.setPageLength(15);
+		resultTable.setSortEnabled(false);
 		mainLayout.addComponent(resultTable);
 		resultTableControls = resultTable.createControls();
 		resultTableControls.setImmediate(true);
@@ -253,10 +255,16 @@ public class RDFQueryView extends CustomComponent {
 		setUpTableDownload(selectedDpu, selectedDataUnit, query);
 
 		//New RDFLazyQueryContainer
-		RDFLazyQueryContainer container = new RDFLazyQueryContainer(new RDFQueryDefinition(20, "id", query, selector.getContext(), selectedDpu, selectedDataUnit), new RDFQueryFactory());
+		RDFLazyQueryContainer container = new RDFLazyQueryContainer(new RDFQueryDefinition(15, "id", query, selector.getContext(), selectedDpu, selectedDataUnit), new RDFQueryFactory());
 		if (container.size() > 0) {
-			for (Object propertyId : container.getItem(container.getIdByIndex(0)).getItemPropertyIds()) {
-				container.addContainerProperty(propertyId, String.class, null, true, true);
+			if(isSelectQuery(query)) {
+				for (Object propertyId : container.getItem(container.getIdByIndex(0)).getItemPropertyIds()) {
+					container.addContainerProperty(propertyId, String.class, null, true, true);
+				}
+			} else {
+				container.addContainerProperty("subject", String.class, null, true, true);
+				container.addContainerProperty("predicate", String.class, null, true, true);
+				container.addContainerProperty("object", String.class, null, true, true);
 			}
 		}
 
@@ -387,19 +395,27 @@ public class RDFQueryView extends CustomComponent {
 		tableDataUnit = selectedDataUnit;
 		tableQuery = query;
 		try {
+			Object first = null;
 			if (isSelectQuery(query)) {
 				downloadFormatSelect.removeAllItems();
 				for (SelectFormatType t : SelectFormatType.values()) {
+					if(first == null) {
+						first = t;
+					}
 					downloadFormatSelect.addItem(t);
 				}
 			} else {
 				downloadFormatSelect.removeAllItems();
 				for (RDFFormatType type : RDFFormatType.values()) {
 					if (type != RDFFormatType.AUTO) {
+						if(first == null) {
+						first = type;
+						}
 						downloadFormatSelect.addItem(type);
 					}
 				}
 			}
+			downloadFormatSelect.select(first);
 		} catch (InvalidQueryException ex) {
 			//Should not happen, only correct queries are shown in table.
 		}
