@@ -35,8 +35,7 @@ import org.springframework.context.ApplicationListener;
  * @author Petyr
  * 
  */
-public class Engine
-		implements ApplicationListener<EngineEvent> {
+public class Engine implements ApplicationListener<EngineEvent> {
 
 	/**
 	 * Provide access to DPURecord implementation.
@@ -48,27 +47,26 @@ public class Engine
 	 * Publisher instance.
 	 */
 	@Autowired
-	protected ApplicationEventPublisher eventPublisher;	
-	
+	protected ApplicationEventPublisher eventPublisher;
+
 	/**
 	 * Application's configuration.
 	 */
 	@Autowired
-	protected AppConfig appConfig;	
-	
+	protected AppConfig appConfig;
+
 	/**
-	 * Bean factory used to create beans for single 
-	 * pipeline execution.
+	 * Bean factory used to create beans for single pipeline execution.
 	 */
 	@Autowired
 	private BeanFactory beanFactory;
-	
+
 	/**
 	 * Pipeline facade.
 	 */
 	@Autowired
 	private PipelineFacade pipelineFacade;
-	
+
 	/**
 	 * Thread pool.
 	 */
@@ -83,14 +81,14 @@ public class Engine
 	 * True if startUp method has already been called.
 	 */
 	protected Boolean startUpDone;
-	
+
 	protected static Logger LOG = LoggerFactory.getLogger(Engine.class);
 
 	public Engine() {
 		this.executorService = Executors.newCachedThreadPool();
 		this.startUpDone = false;
 	}
-	
+
 	/**
 	 * Setup engine from given configuration.
 	 */
@@ -99,9 +97,9 @@ public class Engine
 
 		workingDirectory = new File(
 				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-		
+
 		LOG.info("Working dir: {}", workingDirectory.toString());
-		
+
 		// make sure that our working directory exist
 		if (workingDirectory.isDirectory()) {
 			workingDirectory.mkdirs();
@@ -115,7 +113,7 @@ public class Engine
 	 * @param execution
 	 */
 	protected void run(PipelineExecution execution) {
-		Executor executor = beanFactory.getBean(Executor.class);		
+		Executor executor = beanFactory.getBean(Executor.class);
 		executor.bind(execution);
 		// execute
 		this.executorService.execute(executor);
@@ -143,76 +141,79 @@ public class Engine
 	 * Also setup engine according to it's configuration.
 	 */
 	protected void startUp() {
-		// setup 
+		// setup
 		setupConfig();
-		
+
 		startUpDone = true;
 		// list executions
-		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions();
-		for (PipelineExecution execution : toExecute) {
-			if (execution.getStatus() == PipelineExecutionStatus.RUNNING) {
-				// hanging pipeline ..
+		List<PipelineExecution> running = pipelineFacade
+				.getAllExecutions(PipelineExecutionStatus.RUNNING);
+		for (PipelineExecution execution : running) {
+			// hanging pipeline ..
 
-				// schedule new pipeline start
-				execution.setStatus(PipelineExecutionStatus.SCHEDULED);
+			// schedule new pipeline start
+			execution.setStatus(PipelineExecutionStatus.SCHEDULED);
 
-				// TODO Petyr: Run from last position
+			// TODO Petyr: Run from last position
 
-				// remove all from the previous execution
-				ExecutionContextInfo context = execution.getContextReadOnly();
-				if (context == null) {
-					// no context, just set update pipeline status
-				} else {
-					// delete old context files
-					File root = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-					File executionRoot = new File(root, context.getRootPath());					
-					try {
-						
-						FileUtils.deleteDirectory(executionRoot);
-					} catch (IOException e) {
+			// remove all from the previous execution
+			ExecutionContextInfo context = execution.getContextReadOnly();
+			if (context == null) {
+				// no context, just set update pipeline status
+			} else {
+				// delete old context files
+				File root = new File(
+						appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+				File executionRoot = new File(root, context.getRootPath());
+				try {
+
+					FileUtils.deleteDirectory(executionRoot);
+				} catch (IOException e) {
+					LOG.error(
+							"Failed to delete old context directory. For execution: {}",
+							execution.getId(), e);
+					// there should be at least one PDU in pipeline
+					if (execution.getPipeline().getGraph().getNodes().isEmpty()) {
+						//
 						LOG.error(
-								"Failed to delete old context directory. For execution: {}",
-								execution.getId(), e);
-						// there should be at least one PDU in pipeline
-						if (execution.getPipeline().getGraph().getNodes()
-								.isEmpty()) {
-							//
-							LOG.error(
-									"There are no DPUs on pipeline. Execution: {} Pipeline: {}",
-									execution.getId(), execution.getPipeline()
-											.getId());
-						} else {
-							eventPublisher.publishEvent(
-									PipelineFailedEvent.create(
-											"Failed to recover.",
-											"The working directory can't be deleted."
-											, null, execution, this));
-						}
-						// set pipeline execution to failed
-						execution.setStatus(PipelineExecutionStatus.FAILED);
-						execution.setEnd(new Date());
+								"There are no DPUs on pipeline. Execution: {} Pipeline: {}",
+								execution.getId(), execution.getPipeline()
+										.getId());
+					} else {
+						eventPublisher.publishEvent(PipelineFailedEvent.create(
+								"Failed to recover.",
+								"The working directory can't be deleted.",
+								null, execution, this));
 					}
-					// reset context
-					context.reset();
-					// send message .. about restart
-					eventPublisher.publishEvent(new PipelineRestart(execution, this));
+					// set pipeline execution to failed
+					execution.setStatus(PipelineExecutionStatus.FAILED);
+					execution.setEnd(new Date());
 				}
-				
-				try {
-					pipelineFacade.save(execution);
-				} catch (EntityNotFoundException ex) {
-					LOG.warn("Seems like someone deleted our pipeline run.", ex);
-				}
-			} else if (execution.getStatus() == PipelineExecutionStatus.CANCELLING) {
-				// just switch to cancelled .. 
-				
-				execution.setStatus(PipelineExecutionStatus.CANCELLED);
-				execution.setEnd(new Date());
-				try {
-					pipelineFacade.save(execution);
-				} catch (EntityNotFoundException ex) {
-					LOG.warn("Seems like someone deleted our pipeline run.", ex);
-				}
+				// reset context
+				context.reset();
+				// send message .. about restart
+				eventPublisher
+						.publishEvent(new PipelineRestart(execution, this));
+			}
+
+			try {
+				pipelineFacade.save(execution);
+			} catch (EntityNotFoundException ex) {
+				LOG.warn("Seems like someone deleted our pipeline run.", ex);
+			}
+		}
+
+		List<PipelineExecution> cancelling = pipelineFacade
+				.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+		for (PipelineExecution execution : cancelling) {
+			// just switch to cancelled ..
+
+			execution.setStatus(PipelineExecutionStatus.CANCELLED);
+			execution.setEnd(new Date());
+			try {
+				pipelineFacade.save(execution);
+			} catch (EntityNotFoundException ex) {
+				LOG.warn("Seems like someone deleted our pipeline run.", ex);
 			}
 		}
 	}

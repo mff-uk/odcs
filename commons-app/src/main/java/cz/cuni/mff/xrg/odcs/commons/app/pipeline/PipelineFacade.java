@@ -194,6 +194,26 @@ public class PipelineFacade {
 	}
 
 	/**
+	 * Fetches all {@link PipelineExecution}s with given state from database.
+	 *
+	 * @param status
+	 * @return list of executions
+	 */
+	public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
+
+		@SuppressWarnings("unchecked")
+		List<PipelineExecution> resultList = Collections.checkedList(
+			em.createQuery("SELECT e FROM PipelineExecution e" + 
+					" WHERE e.status = :status"
+					).setParameter("status", status)
+					.getResultList(),
+			PipelineExecution.class
+		);
+		
+		return resultList;
+	}
+	
+	/**
 	 * Find pipeline execution in database by ID and return it.
 	 *
 	 * @param id of PipelineExecution

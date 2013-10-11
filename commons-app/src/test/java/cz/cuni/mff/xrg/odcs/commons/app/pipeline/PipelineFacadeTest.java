@@ -73,6 +73,24 @@ public class PipelineFacadeTest {
 	
 	@Test
 	@Transactional
+	public void testGetAllExecutions() {
+		List<PipelineExecution> execsPrev = facade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+		assertNotNull(execsPrev);
+		
+		Pipeline pipe = facade.createPipeline();
+		PipelineExecution exec = facade.createExecution(pipe);
+		exec.setStatus(PipelineExecutionStatus.CANCELLING);
+		
+		facade.save(pipe);
+		facade.save(exec);
+		
+		List<PipelineExecution> execs = facade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+		assertNotNull(execs);
+		assertEquals(execsPrev.size() + 1, execs.size());
+	}
+	
+	@Test
+	@Transactional
 	public void testExecutionsOfPipeline() {
 		Pipeline pipe = facade.createPipeline();
 		PipelineExecution exec = facade.createExecution(pipe);
