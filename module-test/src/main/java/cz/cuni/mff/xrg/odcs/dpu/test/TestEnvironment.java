@@ -82,12 +82,8 @@ public class TestEnvironment {
 	 * @return Test environment.
 	 */
 	public static TestEnvironment create() {
-		TestEnvironment env = new TestEnvironment();
 		// we use tmp path and time to create tmp directory
-		env.workingDirectory = new File(
-				FileUtils.getTempDirectory().toString(), "odcs_test_"
-						+ Long.toString((new Date()).getTime()));
-		return env;
+		return create(FileUtils.getTempDirectory());
 	}
 
 	/**
@@ -98,7 +94,9 @@ public class TestEnvironment {
 	 */
 	public static TestEnvironment create(File directory) {
 		TestEnvironment env = new TestEnvironment();
-		env.workingDirectory = directory;
+		final String testDirName = "odcs_test_"
+				+ Long.toString((new Date()).getTime());
+		env.workingDirectory = new File(directory, testDirName);
 		return env;
 	}
 
