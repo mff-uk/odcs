@@ -22,9 +22,9 @@ public class SPARQLTest {
 		// prepare test environment
 		TestEnvironment env = TestEnvironment.create();
 		// prepare data units
-		RDFDataUnit input = env.createRdfInputFromResource("input",
+		RDFDataUnit input = env.createRdfInputFromResource("input", false,
 				"metadata.ttl", RDFFormat.TURTLE);
-		RDFDataUnit output = env.createRdfOutput("output");
+		RDFDataUnit output = env.createRdfOutput("output", false);
 		
 		// some triples has been loaded 
 		assertTrue(input.getTripleCount() > 0);
