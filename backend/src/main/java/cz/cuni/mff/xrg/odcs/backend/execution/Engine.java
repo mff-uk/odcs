@@ -203,6 +203,16 @@ public class Engine
 				} catch (EntityNotFoundException ex) {
 					LOG.warn("Seems like someone deleted our pipeline run.", ex);
 				}
+			} else if (execution.getStatus() == PipelineExecutionStatus.CANCELLING) {
+				// just switch to cancelled .. 
+				
+				execution.setStatus(PipelineExecutionStatus.CANCELLED);
+				execution.setEnd(new Date());
+				try {
+					pipelineFacade.save(execution);
+				} catch (EntityNotFoundException ex) {
+					LOG.warn("Seems like someone deleted our pipeline run.", ex);
+				}
 			}
 		}
 	}
