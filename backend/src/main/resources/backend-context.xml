@@ -48,6 +48,11 @@
 	
 	<!-- replace facades from commons -->
 	<bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.PipelineFacade" />
+	<bean id="userFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.UserFacade" />
+	<bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.ScheduleFacade" />
+	<bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.NamespacePrefixFacade" />
+	<bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.DPUFacade" />
+	<bean id="logFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.LogFacade" />
 
 	<!-- component for sending email based on events -->
 	<bean id="emailCommunicator" class="cz.cuni.mff.xrg.odcs.backend.communication.EmailCommunicator" />
