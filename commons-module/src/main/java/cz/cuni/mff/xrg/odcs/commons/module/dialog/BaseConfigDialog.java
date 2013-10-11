@@ -41,19 +41,13 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 
 	@Override
 	public void setConfig(byte[] conf) throws ConfigException {
-		LOG.trace("setConfig: start");
-		
 		C config = configWrap.deserialize(conf);		
 		boolean originalConfigNull = config == null;
 		
 		if (originalConfigNull) {
 			// null -> try to use default configuration
-			LOG.trace("setConfig: creating default configuration");
-			
 			config = configWrap.createInstance();
 			if (config == null) {
-				LOG.trace("setConfig: failed to deserialize");
-				
 				throw new ConfigException(
 						"Missing configuration and failed to create default."
 								+ "No configuration has been loaded into dialog.");
@@ -65,8 +59,6 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 		lastSetConfig = conf;
 		
 		if (!config.isValid()) {
-			LOG.trace("setConfig: deserialised configuration is invalid");
-			
 			if (originalConfigNull) {
 				// newly created configuration is invalid
 				throw new ConfigException(
@@ -77,8 +69,6 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 						"Invalid configuration loaded into dialog.");
 			}
 		}
-		
-		LOG.trace("setConfig: stop");
 	}
 
 	@Override
@@ -89,7 +79,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 			throw new ConfigException("Configuration dialog return null.");
 		}
 		
-		if (configuration.isValid()) {
+		if (!configuration.isValid()) {
 			throw new ConfigException("Cofiguration dialog returns invalid configuration.");
 		}
 
