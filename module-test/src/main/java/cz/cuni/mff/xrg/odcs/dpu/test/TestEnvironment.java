@@ -22,6 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
+import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -38,6 +39,16 @@ public class TestEnvironment {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(TestEnvironment.class);
 
+	/**
+	 * Configuration used to access virtuoso. If tests use Virtuoso then this
+	 * must be set before first test. This value is shared by multiple
+	 * tests.
+	 */
+	public static VirtuosoConfig virtuosoConfig = new VirtuosoConfig();
+
+	/**
+	 * Context used for testing.
+	 */
 	private TestContext context;
 
 	/**
@@ -140,11 +151,13 @@ public class TestEnvironment {
 	 * Create input {@link RdfDataUnit} that is used in test environment.
 	 * 
 	 * @param name Name.
+	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @param file File with data.
 	 * @return Created input data unit.
 	 */
-	public RDFDataUnit createRdfInput(String name) throws RDFException {
-		RDFDataUnit rdf = createRdfDataUnit(name);
+	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso)
+			throws RDFException {
+		RDFDataUnit rdf = createRdfDataUnit(name, useVirtuoso);
 		addInput(name, rdf);
 		return rdf;
 	}
@@ -156,21 +169,23 @@ public class TestEnvironment {
 	 * The data are loaded from file in test\resources.
 	 * 
 	 * @param name Name.
+	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @param resorceName Name of resource file.
 	 * @param format Format of input file.
 	 * @return Created input data unit.
 	 */
 	public RDFDataUnit createRdfInputFromResource(String name,
-			String resorceName,
+			boolean useVirtuoso,
+			String resourceName,
 			RDFFormat format) throws RDFException {
-		RDFDataUnit rdf = createRdfDataUnit(name);
+		RDFDataUnit rdf = createRdfDataUnit(name, useVirtuoso);
 		// construct path to the resource
 		URL url = Thread.currentThread().getContextClassLoader()
-				.getResource(resorceName);
+				.getResource(resourceName);
 		// check ..
 		if (url == null) {
 			throw new RDFException("Missing input file in resource for: "
-					+ resorceName);
+					+ resourceName);
 		}
 		File inputFile = new File(url.getPath());
 		// return file
@@ -184,10 +199,12 @@ public class TestEnvironment {
 	 * return it.
 	 * 
 	 * @param name Name.
+	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @return Created RDFDataUnit.
 	 */
-	public RDFDataUnit createRdfOutput(String name) throws RDFException {
-		RDFDataUnit rdf = createRdfDataUnit(name);
+	public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
+			throws RDFException {
+		RDFDataUnit rdf = createRdfDataUnit(name, useVirtuoso);
 		addOutput(name, rdf);
 		return rdf;
 	}
@@ -328,15 +345,53 @@ public class TestEnvironment {
 		}
 	}
 
-	private RDFDataUnit createRdfDataUnit(String name) {
-		String number = Integer.toString(dataUnitIdCounter++);
-		String repoPath = workingDirectory.toString() + File.separatorChar
-				+ "dataUnit" + File.separatorChar + number;
-		String id = "dpu-test_" + number + "_" + name;
-		String namedGraph = GraphUrl.translateDataUnitId(id);
+	/**
+	 * Create RDF data unit.
+	 * 
+	 * @param name
+	 * @param useVirtuoso
+	 * @return
+	 */
+	private RDFDataUnit createRdfDataUnit(String name, boolean useVirtuoso) {
+		if (useVirtuoso) {
+			return createVirtuosoRdfDataUnit(name);
+		} else {
+			return createLocalRdfDataUnit(name);
+		}
+	}
+
+	/**
+	 * Create RDF data unit with given name that is stored in local file.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	private RDFDataUnit createLocalRdfDataUnit(String name) {
+		final String number = Integer.toString(dataUnitIdCounter++);
+		final String repoPath = workingDirectory.toString()
+				+ File.separatorChar + "dataUnit" + File.separatorChar + number;
+		final String id = "dpu-test_" + number + "_" + name;
+		final String namedGraph = GraphUrl.translateDataUnitId(id);
 
 		return RDFDataUnitFactory.createLocalRDFRepo(repoPath, id, name,
 				namedGraph);
+	}
+
+	/**
+	 * Create RDF data unit with given name that is stored in virtuoso.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	private RDFDataUnit createVirtuosoRdfDataUnit(String name) {
+		final String number = Integer.toString(dataUnitIdCounter++);
+		final String id = "dpu-test_" + number + "_" + name;
+		final String namedGraph = GraphUrl.translateDataUnitId(id);
+		final String dataUnitName = id;
+
+		return RDFDataUnitFactory.createVirtuosoRDFRepo(virtuosoConfig.host,
+				virtuosoConfig.port, virtuosoConfig.user,
+				virtuosoConfig.password, namedGraph, dataUnitName, null);
 	}
 
 }
