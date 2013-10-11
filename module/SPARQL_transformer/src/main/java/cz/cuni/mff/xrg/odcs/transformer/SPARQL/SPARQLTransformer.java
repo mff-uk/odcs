@@ -42,7 +42,7 @@ public class SPARQLTransformer
 
 	private List<PlaceHolder> getPlaceHolders(String constructQuery) {
 
-		String regex = "graph\\s+\\?[gG_][\\w-_]+";
+		String regex = "graph\\s+\\?[gG]_[\\w-_]+";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(constructQuery);
 
@@ -71,7 +71,7 @@ public class SPARQLTransformer
 	}
 
 	private void replaceAllPlaceHolders(List<RDFDataUnit> inputs,
-			List<PlaceHolder> placeHolders, DPUContext context) {
+			List<PlaceHolder> placeHolders, DPUContext context) throws DPUException {
 
 		for (PlaceHolder next : placeHolders) {
 			boolean isReplased = false;
@@ -90,7 +90,8 @@ public class SPARQLTransformer
 				String DPUName = next.getDPUName();
 				final String message = "Graph for DPU name " + DPUName + " was not replased";
 
-				context.sendMessage(MessageType.WARNING, message);
+				context.sendMessage(MessageType.ERROR, message);
+				throw new DPUException(message);
 			}
 
 		}
@@ -98,7 +99,7 @@ public class SPARQLTransformer
 	}
 
 	private String getContructQuery(String originalConstructQuery,
-			List<RDFDataUnit> inputs, DPUContext context) {
+			List<RDFDataUnit> inputs, DPUContext context) throws DPUException {
 
 		String result = originalConstructQuery;
 
