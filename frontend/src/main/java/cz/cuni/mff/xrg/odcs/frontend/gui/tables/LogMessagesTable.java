@@ -242,7 +242,9 @@ public class LogMessagesTable extends CustomComponent {
 				return null;
 			}
 		});
+		messageTable.setSortContainerPropertyId("id");
 		messageTable.setContainerDataSource(container);
+		messageTable.sort();
 		messageTable.setVisibleColumns("date", "level", "dpuInstanceId", "message", "source");
 		messageTable.setColumnHeader("dpuInstanceId", "DPU Instance");
 		messageTable.setSortEnabled(false);
