@@ -40,7 +40,7 @@ public class ContainerFactory {
 	 * @return
 	 */
 	public Container createPipelines() {
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, 10, "id", true, true, true);
+		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, 20, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"id"}, new boolean[]{true});
 		container.addContainerProperty("id", Long.class, 0, true, true);
