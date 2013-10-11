@@ -1,27 +1,24 @@
 package cz.cuni.mff.xrg.odcs.backend.facade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-
-import java.util.Date;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Facade for managing pipelines, which tolerates database crashes. This facade
+ * Facade for managing schedules, which tolerates database crashes. This facade
  * is specially altered for servicing backend, where we do not want to trash
  * all progress of unfinished pipeline runs just because of a short database
  * outage.
- * 
+ *
  * <p>
  * TODO The concept of crash-proof facades could be solved nicer and with less
  *		code using AOP.
- *
+ * 
  * @author Jan Vojt
  */
-public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade {
+public class ScheduleFacade extends cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade {
 	
 	/**
 	 * Handler taking care of DB outages.
@@ -30,11 +27,11 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 	private ErrorHandler handler;
 
 	@Override
-	public Pipeline getPipeline(long id) {
+	public List<Schedule> getAllSchedules() {
 		int attempts = 0;
 		while (true) try {
 			attempts++;
-			return super.getPipeline(id);
+			return super.getAllSchedules();
 		} catch (RuntimeException ex) {
 			// presume DB error
 			handler.handle(attempts, ex);
@@ -42,15 +39,62 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 	}
 
 	@Override
-	@Transactional
-	public void save(Pipeline pipeline) {
+	public List<Schedule> getSchedulesFor(Pipeline pipeline) {
 		int attempts = 0;
 		while (true) try {
 			attempts++;
-			super.save(pipeline);
+			return super.getSchedulesFor(pipeline);
+		} catch (RuntimeException ex) {
+			// presume DB error
+			handler.handle(attempts, ex);
+		}
+	}
+
+	@Override
+	public List<Schedule> getFollowers(Pipeline pipeline) {
+		int attempts = 0;
+		while (true) try {
+			attempts++;
+			return super.getFollowers(pipeline);
+		} catch (RuntimeException ex) {
+			// presume DB error
+			handler.handle(attempts, ex);
+		}
+	}
+
+	@Override
+	public List<Schedule> getAllTimeBased() {
+		int attempts = 0;
+		while (true) try {
+			attempts++;
+			return super.getAllTimeBased();
+		} catch (RuntimeException ex) {
+			// presume DB error
+			handler.handle(attempts, ex);
+		}
+	}
+
+	@Override
+	public Schedule getSchedule(long id) {
+		int attempts = 0;
+		while (true) try {
+			attempts++;
+			return super.getSchedule(id);
+		} catch (RuntimeException ex) {
+			// presume DB error
+			handler.handle(attempts, ex);
+		}
+	}
+
+	@Override
+	public void save(Schedule schedule) {
+		int attempts = 0;
+		while (true) try {
+			attempts++;
+			super.save(schedule);
 			return;
 		} catch (IllegalArgumentException ex) {
-			// given pipeline is a removed entity
+			// given schedule is a removed entity
 			throw ex;
 		} catch (RuntimeException ex) {
 			// presume DB error
@@ -59,37 +103,14 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 	}
 
 	@Override
-	public PipelineExecution getExecution(long id) {
+	public void delete(Schedule schedule) {
 		int attempts = 0;
 		while (true) try {
 			attempts++;
-			return super.getExecution(id);
-		} catch (RuntimeException ex) {
-			handler.handle(attempts, ex);
-		}
-	}
-
-	@Override
-	public List<PipelineExecution> getExecutions(Pipeline pipeline) {
-		int attempts = 0;
-		while (true) try {
-			attempts++;
-			return super.getExecutions(pipeline);
-		} catch (RuntimeException ex) {
-			handler.handle(attempts, ex);
-		}
-	}
-
-	@Override
-	@Transactional
-	public void save(PipelineExecution exec) {
-		int attempts = 0;
-		while (true) try {
-			attempts++;
-			super.save(exec);
+			super.delete(schedule);
 			return;
 		} catch (IllegalArgumentException ex) {
-			// given execution is a removed entity
+			// given schedule is not persisted
 			throw ex;
 		} catch (RuntimeException ex) {
 			handler.handle(attempts, ex);
@@ -97,43 +118,14 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 	}
 
 	@Override
-	@Transactional
-	public void delete(PipelineExecution exec) {
+	public void deleteNotification(ScheduleNotificationRecord notify) {
 		int attempts = 0;
 		while (true) try {
 			attempts++;
-			super.delete(exec);
+			super.deleteNotification(notify);
 			return;
 		} catch (IllegalArgumentException ex) {
-			// given execution is not persisted
-			throw ex;
-		} catch (RuntimeException ex) {
-			handler.handle(attempts, ex);
-		}
-	}
-	
-	@Override
-	public List<PipelineExecution> getAllExecutions() {
-		int attempts = 0;
-		while (true) try {
-			attempts++;
-			return super.getAllExecutions();
-		} catch (IllegalArgumentException ex) {
-			// invalid SQL query was called
-			throw ex;
-		} catch (RuntimeException ex) {
-			handler.handle(attempts, ex);
-		}
-	}
-
-	@Override
-	public Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status) {
-		int attempts = 0;
-		while (true) try {
-			attempts++;
-			return super.getLastExecTime(pipeline, status);
-		} catch (IllegalArgumentException ex) {
-			// invalid SQL query was called
+			// given notification is not persisted
 			throw ex;
 		} catch (RuntimeException ex) {
 			handler.handle(attempts, ex);

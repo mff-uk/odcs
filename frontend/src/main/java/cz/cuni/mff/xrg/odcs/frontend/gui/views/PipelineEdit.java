@@ -198,7 +198,9 @@ class PipelineEdit extends ViewComponent {
 					return;
 				}
 				ShowDebugEvent sde = (ShowDebugEvent) event;
-				openDebug(sde.getPipeline(), sde.getDebugNode());
+				if(savePipeline()) {
+					openDebug(sde.getPipeline(), sde.getDebugNode());
+				}
 			}
 		});
 		pc.addListener(new Listener() {
@@ -373,9 +375,10 @@ class PipelineEdit extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
-				savePipeline();
-				pipeline = App.getApp().getPipelines().getPipeline(pipeline.getId());
-				pc.showPipeline(pipeline);
+				if(savePipeline()) {
+					pipeline = App.getApp().getPipelines().getPipeline(pipeline.getId());
+					pc.showPipeline(pipeline);
+				}
 			}
 		});
 		buttonBar.addComponent(buttonSave);

@@ -124,15 +124,16 @@ class PipelineList extends ViewComponent {
 
 		tablePipelines = new IntlibPagedTable();
 		tablePipelines.setWidth("99%");
-		tablePipelines.setPageLength(10);
+		
+		mainLayout.addComponent(tablePipelines);
+		mainLayout.addComponent(tablePipelines.createControls());
+		tablePipelines.setPageLength(20);
+		tablePipelines.setSortContainerPropertyId("id");
+		tablePipelines.setSortAscending(false);
 		// assign data source
 		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines();
 		tablePipelines.setContainerDataSource(container);
-
-
-		mainLayout.addComponent(tablePipelines);
-		mainLayout.addComponent(tablePipelines.createControls());
-		tablePipelines.setPageLength(10);
+		tablePipelines.sort();
 		// add column
 		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 		tablePipelines.setImmediate(true);

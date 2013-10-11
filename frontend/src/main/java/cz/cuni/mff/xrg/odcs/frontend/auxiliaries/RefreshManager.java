@@ -58,7 +58,7 @@ public class RefreshManager {
 					return;
 				}
 				execution = App.getPipelines().getExecution(execution.getId());
-				boolean isRunFinished = !(execution.getStatus() == PipelineExecutionStatus.SCHEDULED || execution.getStatus() == PipelineExecutionStatus.RUNNING);
+				boolean isRunFinished = !(execution.getStatus() == PipelineExecutionStatus.SCHEDULED || execution.getStatus() == PipelineExecutionStatus.RUNNING || execution.getStatus() == PipelineExecutionStatus.CANCELLING);
 
 				if (debug.isRefreshingAutomatically()) {
 					lastExecutionStatus = true;
