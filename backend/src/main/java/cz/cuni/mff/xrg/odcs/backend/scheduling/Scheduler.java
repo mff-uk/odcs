@@ -71,7 +71,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 	 * @param pipelineFinishedEvent
 	 */
 	private synchronized void onPipelineFinished(PipelineFinished pipelineFinishedEvent) {
-		LOG.debug("onPipelineFinished started");
+		LOG.trace("onPipelineFinished started");
 		if (pipelineFinishedEvent.sucess()) {
 			// success continue
 		} else {
@@ -91,14 +91,14 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 				}
 			}
 		}
-		LOG.debug("onPipelineFinished finished");
+		LOG.trace("onPipelineFinished finished");
 	}
 	
 	/**
 	 * Check database for time-based schedules.
 	 */
 	private synchronized void onTimeCheck() {
-		LOG.debug("onTimeCheck started");
+		LOG.trace("onTimeCheck started");
 		// check DB for pipelines based on time scheduling
 		Date now = new Date();
 		// get all pipelines that are time based
@@ -117,7 +117,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 				execute(schedule);
 			}
 		}
-		LOG.debug("onTimeCheck finished");
+		LOG.trace("onTimeCheck finished");
 	}	
 	
 	@Override
@@ -126,11 +126,11 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 		if (event instanceof PipelineFinished) {
 			PipelineFinished pipelineFinishedEvent = (PipelineFinished) event;
 			// ...
-			LOG.debug("Recieved PipelineFinished event");
+			LOG.trace("Recieved PipelineFinished event");
 			onPipelineFinished(pipelineFinishedEvent);
 		} else if (event instanceof SchedulerCheckDatabase) {
 			// ...
-			LOG.debug("Recieved SchedulerCheckDatabase event");
+			LOG.trace("Recieved SchedulerCheckDatabase event");
 			onTimeCheck();
 		} else {
 			// unknown event .. ignore
