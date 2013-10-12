@@ -210,10 +210,60 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 	Frontend also automatically reload new jar-file but also update
 	jar-file description. Just open dialog for another data processing unit
 	and then return back and if there has been no error then you see the changes. <br/>
-	With this we believe you do not have to reload yout new data processing unit 
-	implementation manualy anymore.
+	With this we believe you do not have to reload your new data processing unit 
+	implementation manually anymore.
 	<br/>
 	
+	<h2>DPU testing</h2>
+	ODCS provide possibility to write test for DPUs. The DPU tests use JUnit as an environment.
+	The base class for testing is <code>TestEnvironment</code> this class provide 
+	environment in which DPU can be executed.
+	The preparation of test environment can be split into several steps:
+	<ul>
+		<li>Select directory where test directory will be created, or you can 
+			ODCS use operating system temp directory.</li>
+		<li>Add input and output data units.</li>
+		<li>Prepare DPU instance and configure it.</li>
+		<li>Run the execution.</li>
+		<li>Check the results.</li>
+	</ul>
+	The following code shows simple test used for core DPU SPARQL Transformer.
+<div class="code"> <pre> <code>	
+@Test
+public void constructAllTest() throws Exception {
+	// prepare dpu instance and configure it
+	SPARQLTransformer trans = new SPARQLTransformer();
+	SPARQLTransformerConfig config = new SPARQLTransformerConfig();
+	config.isConstructType = true;
+	config.SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+	trans.configureDirectly(config);
+
+	// prepare test environment, we use system tmp directory
+	TestEnvironment env = TestEnvironment.create();
+	// prepare input and output data units
+	
+	// here we can simply pre-fill input data unit with content from 
+	// resource file
+	RDFDataUnit input = env.createRdfInputFromResource("input", false,
+			"metadata.ttl", RDFFormat.TURTLE);
+	RDFDataUnit output = env.createRdfOutput("output", false);
+	
+	// first test - check that something has been loaded into input data unit 
+	assertTrue(input.getTripleCount() > 0);
+	
+	try {
+		// run the execution
+		env.run(trans);
+
+		// verify result
+		assertTrue(input.getTripleCount() == output.getTripleCount());
+	} finally {
+		// release resources
+		env.release();
+	}
+}	
+</code> </pre> </div>
+
 	</body>
 </html>
  
