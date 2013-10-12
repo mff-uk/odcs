@@ -157,6 +157,10 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 		return owner;
 	}
 
+	public Set<Pipeline> getConflicts() {
+		return conflicts;
+	}	
+	
 	@Override
 	public String getResourceId() {
 		return Pipeline.class.toString();
