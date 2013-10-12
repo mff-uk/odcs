@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.commons.dpu;
 import java.io.File;
 import java.util.Date;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 /**

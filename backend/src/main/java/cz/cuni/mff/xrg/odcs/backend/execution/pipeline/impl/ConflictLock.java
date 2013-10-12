@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.osgi.framework.adaptor.EventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.Ordered;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PreExecutor;
-import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;

@@ -20,7 +20,6 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
-import static cz.cuni.xrg.intlib.rdf.LocalRDFRepoTest.rdfRepo;
 import static org.junit.Assert.*;
 
 /**

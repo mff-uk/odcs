@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 import java.io.File;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;

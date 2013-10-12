@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
