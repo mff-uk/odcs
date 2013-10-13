@@ -81,7 +81,7 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	/**
 	 * List pipelines that must not run in order to run this pipeline.
 	 */
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany
 	@JoinTable(name = "ppl_ppl_conflicts",
 			joinColumns = @JoinColumn(name = "pipeline_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "pipeline_conflict_id", referencedColumnName = "id"))

@@ -42,7 +42,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 	/**
 	 * User email.
 	 */
-	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "email_id")
     private EmailAddress email;
 	
@@ -61,7 +61,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 	/**
 	 * User roles representing sets of privileges.
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@Column(name = "role_id")
 	@Enumerated(EnumType.ORDINAL)
 	@CollectionTable(name = "usr_user_role", joinColumns = @JoinColumn(name = "user_id"))

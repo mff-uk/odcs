@@ -14,9 +14,9 @@ import javax.persistence.*;
 public class ScheduleNotificationRecord extends NotificationRecord {
 
 	/**
-	 * Scheduler to notify (notification about paticular scheduled 
+	 * Scheduler to notify (notification about particular scheduled 
 	 * pipeline execution). Applicable if notification rule set in 
-	 * Scheduler dialog 
+	 * Scheduler dialog.
 	 */
 	@OneToOne
 	@JoinColumn(name = "schedule_id", nullable = false)
@@ -25,7 +25,7 @@ public class ScheduleNotificationRecord extends NotificationRecord {
 	/**
 	 * E-mails the notification will be sent to.
 	 */
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sch_sch_notification_email",
 			joinColumns = @JoinColumn(name = "notification_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "email_id", referencedColumnName = "id"))

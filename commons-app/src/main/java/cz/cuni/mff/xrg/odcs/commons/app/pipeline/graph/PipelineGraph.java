@@ -44,12 +44,20 @@ public class PipelineGraph implements Serializable {
 
 	/**
 	 * Set of nodes which represent DPUs
+	 * 
+	 * <p>
+	 * Nodes are eagerly loaded, because they are needed every time graph is
+	 * loaded.
 	 */
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch=FetchType.EAGER, orphanRemoval = true)
     private Set<Node> nodes = new HashSet<>();
 
     /**
      * Set of edges which represent data flow between DPUs.
+	 * 
+	 * <p>
+	 * Edges are eagerly loaded, because they are needed every time graph is
+	 * loaded.
      */
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="graph", fetch= FetchType.EAGER, orphanRemoval = true)
     private Set<Edge> edges = new HashSet<>();

@@ -82,6 +82,10 @@ public class LogMessage implements Serializable {
 	 * Properties associated with this log message. They can provide additional
 	 * information about the message, such as DPU instance or pipeline execution
 	 * which produced and logged message.
+	 * 
+	 * <p>
+	 * Properties are eagerly loaded, because they are used every time log is
+	 * displayed.
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@MapKeyColumn(name = "mapped_key")
