@@ -157,8 +157,8 @@ CREATE SEQUENCE `seq_ppl_model` START WITH 100;
 CREATE TABLE `PPL_MODEL`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(255),
-  `description` VARCHAR(512),
+  `name` VARCHAR(2048),
+  `description` TEXT,
   `user_id` INTEGER,
   PRIMARY KEY (`id`)
 );
