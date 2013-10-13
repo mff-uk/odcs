@@ -158,7 +158,7 @@ class PipelineEdit extends ViewComponent {
 				if (c instanceof TabSheet) {
 					return "margin-left: 0px; margin-top: 20px;";
 				} else if (c instanceof VerticalLayout) {
-					return "position: fixed; left: 20px; top: 280px;";
+					return "position: absolute; left: 20px; top: 260px;";
 				} else if (c instanceof HorizontalLayout) {
 					return "position: fixed; bottom: 16px; left: 20px; height: 30px; background: #eee; padding: 10px;";
 				}
