@@ -8,8 +8,8 @@ sourcedir="${basedir}/../virtuoso/rdbms"
 targetdir="${basedir}/../../commons-app/src/test/resources/db"
 
 toreplace=(
-'"DB"."INTLIB".~'
-'DB.INTLIB.~'
+'"DB"."ODCS".~'
+'DB.ODCS.~'
 'IDENTITY~AUTO_INCREMENT'
 '"~`'
 'LONG VARBINARY~BLOB'
