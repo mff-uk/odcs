@@ -11,6 +11,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
@@ -42,6 +43,7 @@ import org.springframework.context.ApplicationContext;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import ru.xpoft.vaadin.DiscoveryNavigator;
+import virtuoso.jdbc4.VirtuosoException;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -127,14 +129,14 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void error(com.vaadin.server.ErrorEvent event) {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
-//					if(cause.getClass() == VirtuosoException.class && ((VirtuosoException)cause).getErrorCode() == VirtuosoException.IOERROR) {
-//						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
-//						return;
-//					}
+					if(cause.getClass() == VirtuosoException.class && ((VirtuosoException)cause).getErrorCode() == VirtuosoException.IOERROR && cause.getMessage().contains("Connection refused")) {
+						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
+						return;
+					}
 
 					// Display the error message in a custom fashion
 					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
-					Notification.show(cause.getMessage(), text, Notification.Type.ERROR_MESSAGE);
+					Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
 					// and log ...
 					LOG.error("Uncaught exception", cause);
 				} else {
