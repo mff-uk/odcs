@@ -94,11 +94,11 @@ public class DataUnitSelector extends CustomComponent {
 				}
 			}
 		});
-		mainLayout.addComponent(dataUnitSelector, 1, 1, 5, 1);
+		mainLayout.addComponent(dataUnitSelector, 1, 1, 4, 1);
 		
 		dataUnitGraph = new Label();
 		dataUnitGraph.setWidth(100, Unit.PERCENTAGE);
-		mainLayout.addComponent(dataUnitGraph, 1, 2, 4, 2);
+		mainLayout.addComponent(dataUnitGraph, 1, 2, 5, 2);
 		
 		browse = new Button("Browse");
 		browse.addClickListener(new Button.ClickListener() {
