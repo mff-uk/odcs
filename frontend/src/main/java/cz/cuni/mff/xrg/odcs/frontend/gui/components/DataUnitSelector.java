@@ -171,6 +171,7 @@ public class DataUnitSelector extends CustomComponent {
 	 * available.
 	 */
 	private void refreshDpuSelector() {
+		dpuSelector.removeAllItems();
 		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
 		for (DPUInstanceRecord dpu : contextDpuIndexes) {
 			if (!dpuSelector.containsId(dpu)) {

@@ -158,7 +158,7 @@ class PipelineEdit extends ViewComponent {
 				if (c instanceof TabSheet) {
 					return "margin-left: 0px; margin-top: 20px;";
 				} else if (c instanceof VerticalLayout) {
-					return "position: absolute; left: 20px; top: 260px;";
+					return "position: fixed; left: 20px; top: 280px;";
 				} else if (c instanceof HorizontalLayout) {
 					return "position: fixed; bottom: 16px; left: 20px; height: 30px; background: #eee; padding: 10px;";
 				}
@@ -287,6 +287,7 @@ class PipelineEdit extends ViewComponent {
 		layout.addComponent(tabSheet);
 
 		VerticalLayout left = new VerticalLayout();
+		left.setStyleName("changingposition");
 		left.setWidth(250, Unit.PIXELS);
 		dpuTree = new DPUTree(true);
 		dpuTree.setStyleName("dpuTree");

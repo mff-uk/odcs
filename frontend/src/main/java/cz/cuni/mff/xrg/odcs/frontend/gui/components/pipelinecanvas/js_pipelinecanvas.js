@@ -1686,5 +1686,10 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			lastPositionX = e.pageX;
 			lastPositionY = e.pageY;
 		});
+		
+		$(".v-scrollable").scroll(function(){
+			$(".changingposition").css("top",Math.max(0,280-$(".v-scrollable").scrollTop()));
+		});
 	});
+	
 };
