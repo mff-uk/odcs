@@ -515,7 +515,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		actionBar.add(rectAb);
 		
 //		actionBar.on("mouseleave", function() {
-//			actionBar.setVisible(false);
+//			setVisibleActionBar(actionBar, false);
 //		});
 
 		// New Connection command
@@ -529,7 +529,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdConnection.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			if (stageMode === DEVELOP_MODE) {
 				writeMessage(messageLayer, 'action bar clicked');
@@ -568,7 +568,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdDetail.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'DPU detail requested');
 			rpcProxy.onDetailRequested(dpu.id);
@@ -595,7 +595,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdRemove.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'DPU removed');
 			removeDpu(dpu);
@@ -623,7 +623,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdDebug.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'Debug requested');
 			rpcProxy.onDebugRequested(dpu.id);
@@ -648,7 +648,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			startScale: 1
 		});
 		cmdFormat.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'Format clicked');
 			stageMode = MULTISELECT_MODE;
@@ -674,7 +674,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			startScale: 1
 		});
 		cmdCopy.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'Copy clicked');
 			var mousePosition = stage.getMousePosition();
@@ -699,11 +699,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		// Handling the visibility of actionBar
 		group.on('mouseenter', function(evt) {
 			if (stageMode === DEVELOP_MODE) {
-				actionBar.setVisible(true);
-				actionBar.moveToTop();
-				visibleActionBar = actionBar;
+				setVisibleActionBar(actionBar, true);
 				writeMessage(messageLayer, 'mouseentered');
-				dpuLayer.draw();
 				evt.cancelBubble = true;
 			} else if (stageMode === MULTISELECT_MODE && dpu.isInMultiselect && !evt.ctrlKey) {
 				formattingActionBar.setVisible(true);
@@ -717,7 +714,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		group.on('mouseleave', function() {
-			//actionBar.setVisible(false);
+			//setVisibleActionBar(actionBar, false);
 			//dpuLayer.draw();
 			if (stageMode === MULTISELECT_MODE) {
 				//formattingActionBar.setVisible(false);
@@ -738,7 +735,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			writeMessage(messageLayer, 'dragstart');
 			isDragging = true;
 			dragId = id;
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 		});
 		group.on('dragend', function(evt) {
 			if (checkMode()) {
@@ -756,8 +753,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			} else {
 				rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y));
 				writeMessage(messageLayer, 'x: ' + endPosition.x + ', y: ' + endPosition.y);
-				actionBar.setVisible(true);
-				dpuLayer.draw();
+				setVisibleActionBar(actionBar, true);
 			}
 		});
 
@@ -782,7 +778,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				if (evt.ctrlKey) {
 					writeMessage(messageLayer, 'Format by CTRL');
 					stageMode = MULTISELECT_MODE;
-					actionBar.setVisible(false);
+					setVisibleActionBar(actionBar, false);
 					if(selectedDpu !== null) {
 						var selectedDpuId = selectedDpu.id;
 						setSelectedDpu(null);
@@ -864,6 +860,24 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		}
 		dpuLayer.draw();
 	}
+	
+	function setVisibleActionBar(actionBar, value) {
+		if(value) {
+			if(visibleActionBar !== null) {
+				visibleActionBar.setVisible(false);	
+			}
+			visibleActionBar = actionBar;
+			actionBar.setVisible(true);
+			actionBar.moveToTop();
+		} else {
+			if(visibleActionBar !== null) {
+				visibleActionBar.setVisible(false);	
+				visibleActionBar = null;
+			}
+			actionBar.setVisible(false);
+		}
+		dpuLayer.draw();
+	}
 
 	/**
 	 * Cancels multiselect mode and unselects all selected DPUs.
@@ -909,7 +923,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdLeft.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			multiselectAlign('left');
 			evt.cancelBubble = true;
 		});
@@ -935,7 +949,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdRight.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			multiselectAlign('right');
 			evt.cancelBubble = true;
 		});
@@ -961,7 +975,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdTop.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			multiselectAlign('top');
 			evt.cancelBubble = true;
 		});
@@ -987,7 +1001,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdBottom.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			multiselectAlign('bottom');
 			evt.cancelBubble = true;
 		});
@@ -1013,7 +1027,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdHorizontal.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			multiselectDistribute('horizontal');
 			evt.cancelBubble = true;
 		});
@@ -1039,7 +1053,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdVertical.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			multiselectDistribute('vertical');
 			evt.cancelBubble = true;
 		});
@@ -1273,7 +1287,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdName.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			rpcProxy.onDataUnitNameEditRequested(id);
 			evt.cancelBubble = true;
@@ -1298,7 +1312,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		cmdDelete.on('click', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			removeConnection(id);
 			rpcProxy.onConnectionRemoved(id);
@@ -1314,7 +1328,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		actionBar.add(cmdDelete);
 
 		actionBar.on('mouseleave', function(evt) {
-			actionBar.setVisible(false);
+			setVisibleActionBar(actionBar, false);
 			lineLayer.draw();
 			evt.cancelBubble = true;
 		});
@@ -1553,10 +1567,10 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	
 	function computeTextWidth(linePoints, dataUnitName, context) {
 		var minWidth = 200;
-		//60 is padding
+		//30 is padding
 		var dpuBetween = linePoints[2] - linePoints[0] - 30;
-		var textWidth = context.measureText(dataUnitName).width;
-		return Math.max(minWidth, Math.min(dpuBetween, textWidth));
+		var textWidth = context.measureText(dataUnitName).width + 12;
+		return Math.min(Math.max(minWidth, dpuBetween), textWidth);
 	}
 
 	function createTooltip(text) {
