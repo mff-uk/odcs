@@ -286,6 +286,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	 **/
 	function moveLine(dpuId) {
 		var dpu = dpus[dpuId];
+		if(dpu == null) {
+			return;
+		}
 		var dpuGroup = dpu.group;
 		for (lineId in dpu.connectionFrom) {
 			var conn = connections[dpu.connectionFrom[lineId]];
