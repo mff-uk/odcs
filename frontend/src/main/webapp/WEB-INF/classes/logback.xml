@@ -10,7 +10,7 @@
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-	    <file>${LOG_DIRECTORY}/frontend.log</file>	    
+	    <file>${frontend.logdirectory}/frontend.log</file>	    
 	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 	    	<fileNamePattern>frontend.%d.log</fileNamePattern>
 	   		<maxHistory>3</maxHistory>
