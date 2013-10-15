@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.rdf.impl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
@@ -50,7 +52,7 @@ public class SPARQLQueryValidator implements Validator {
 	 */
 	public boolean hasSameType() {
 		if (requireSPARQLType) {
-			QueryPart queryPart=new QueryPart(query);
+			QueryPart queryPart = new QueryPart(query);
 			SPARQLQueryType queryType = queryPart.getSPARQLQueryType();
 			if (isSameType(queryType, requiredType)) {
 				return true;
@@ -59,6 +61,53 @@ public class SPARQLQueryValidator implements Validator {
 			}
 		} else {
 			return true;
+		}
+	}
+
+	private static String getQueryForCaseSELECT_COUNT(String myQuery) {
+		String countRegex = "count([\\s]+)?\\([\\s\\w-_\\?\\*]+\\)";
+		Pattern pattern = Pattern.compile(countRegex);
+		Matcher countMatcher = pattern.matcher( myQuery);
+
+		boolean hasResult = countMatcher.find();
+
+		String result = myQuery;
+
+		while (hasResult) {
+
+			String nextCount = myQuery.substring(countMatcher.start(),
+					countMatcher.end());
+
+			int start = nextCount.indexOf("(") + 1;
+			int end = nextCount.lastIndexOf(")");
+
+			boolean hasNext = (start < end) && (start != -1);
+
+			if (hasNext) {
+				String nextCountReplace = nextCount.substring(
+						start, end);
+
+				result = result.replace(nextCount, nextCountReplace);
+
+			}
+
+			hasResult = countMatcher.find();
+
+		}
+
+		return result;
+	}
+
+	private String getQueryForExtendedSPARQL() {
+		QueryPart queryPart = new QueryPart(query);
+
+		if (isSameType(queryPart.getSPARQLQueryType(), SPARQLQueryType.SELECT)) {
+
+			String result = getQueryForCaseSELECT_COUNT(query);
+
+			return result;
+		} else {
+			return query;
 		}
 	}
 
@@ -85,11 +134,14 @@ public class SPARQLQueryValidator implements Validator {
 		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
 		Repository repository = emptyRepo.getDataRepository();
 
+		String extendedQuery = getQueryForExtendedSPARQL();
+
 		RepositoryConnection connection = null;
 		try {
 			connection = repository.getConnection();
 
-			Query myQuery = connection.prepareQuery(QueryLanguage.SPARQL, query);
+			Query myQuery = connection.prepareQuery(QueryLanguage.SPARQL,
+					extendedQuery);
 
 
 		} catch (MalformedQueryException e) {
