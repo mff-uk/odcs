@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.openrdf.rio.RDFFormat;
@@ -41,8 +42,7 @@ public class TestEnvironment {
 
 	/**
 	 * Configuration used to access virtuoso. If tests use Virtuoso then this
-	 * must be set before first test. This value is shared by multiple
-	 * tests.
+	 * must be set before first test. This value is shared by multiple tests.
 	 */
 	public static VirtuosoConfig virtuosoConfig = new VirtuosoConfig();
 
@@ -60,6 +60,11 @@ public class TestEnvironment {
 	 * Time of last execution.
 	 */
 	private Date lastExecution;
+
+	/**
+	 * Jar-path.
+	 */
+	private String jarPath;
 
 	/**
 	 * Used {@link ManagableDataUnit}s
@@ -112,6 +117,15 @@ public class TestEnvironment {
 	}
 
 	// - - - - - - - - - methods for environment setup - - - - - - - - - //
+
+	/**
+	 * Set path that is used like jar-path during execution.
+	 * 
+	 * @param jarPath
+	 */
+	public void setJarPath(String jarPath) {
+		this.jarPath = jarPath;
+	}
 
 	public void setLastExecution(Date lastExecution) {
 		this.lastExecution = lastExecution;
@@ -225,7 +239,7 @@ public class TestEnvironment {
 	 */
 	public <T extends DPU> boolean run(DPU dpuInstance) throws Exception {
 		// prepare context
-		context = new TestContext(workingDirectory, lastExecution);
+		context = new TestContext(workingDirectory, lastExecution, jarPath);
 
 		// prepare dpu instance - set annotations
 		connectDataUnits(dpuInstance);
@@ -391,7 +405,8 @@ public class TestEnvironment {
 
 		return RDFDataUnitFactory.createVirtuosoRDFRepo(virtuosoConfig.host,
 				virtuosoConfig.port, virtuosoConfig.user,
-				virtuosoConfig.password, namedGraph, dataUnitName, null);
+				virtuosoConfig.password, namedGraph, dataUnitName,
+				new Properties());
 	}
 
 }

@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
 import static org.junit.Assert.*;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openrdf.rio.RDFFormat;
 
@@ -10,6 +11,15 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class SPARQLTest {
 
+	@BeforeClass
+	public static void virtuoso() {
+		// Adjust this to your virtuoso configuration.
+		TestEnvironment.virtuosoConfig.host = "localhost";
+		TestEnvironment.virtuosoConfig.port = "1111";
+		TestEnvironment.virtuosoConfig.user = "dba";
+		TestEnvironment.virtuosoConfig.password = "dba";
+	}
+	
 	@Test
 	public void constructAllTest() throws Exception {
 		// prepare dpu
@@ -40,4 +50,35 @@ public class SPARQLTest {
 		}
 	}
 
+	@Test
+	public void constructAllTestVirtuoso() throws Exception {
+		// prepare dpu
+		SPARQLTransformer trans = new SPARQLTransformer();
+		SPARQLTransformerConfig config = new SPARQLTransformerConfig();
+		config.isConstructType = true;
+		config.SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+		trans.configureDirectly(config);
+
+		// prepare test environment
+		TestEnvironment env = TestEnvironment.create();
+		// prepare data units
+		RDFDataUnit input = env.createRdfInputFromResource("input", true,
+				"metadata.ttl", RDFFormat.TURTLE);
+		RDFDataUnit output = env.createRdfOutput("output", true);
+		
+		// some triples has been loaded 
+		assertTrue(input.getTripleCount() > 0);
+		// run
+		try {
+			env.run(trans);
+
+			// verify result
+			assertTrue(input.getTripleCount() == output.getTripleCount());
+		} finally {
+			// release resources
+			env.release();
+		}
+	}
+	
+	
 }
