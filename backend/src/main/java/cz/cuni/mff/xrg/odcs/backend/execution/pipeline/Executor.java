@@ -207,7 +207,7 @@ public class Executor implements Runnable {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Execute {@link PostExecutor} from {@link Executor#postExecutors}. If any
 	 * {@link PostExecutor} return false then return false. If there are no
@@ -231,8 +231,8 @@ public class Executor implements Runnable {
 			}
 		}
 		return true;
-	}	
-	
+	}
+
 	/**
 	 * Should be called in case that the execution failed. Does not save the
 	 * {@link PipelineExecution} into database.
@@ -304,17 +304,17 @@ public class Executor implements Runnable {
 	private void execute() {
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
-		
+
 		// execute pre-executors
 		if (!executePreExecutors(dependencyGraph)) {
 			// cancel the execution
 			executionFailed();
 			return;
 		}
-		
+
 		boolean executionFailed = false;
 		boolean executionCancelled = false;
-		
+
 		// execute each node
 		for (Node node : dependencyGraph) {
 
@@ -327,6 +327,9 @@ public class Executor implements Runnable {
 					.getBean(cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor.class);
 			dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime);
 
+			LOG.info("Starting execution of dpu {} = {}", node.getDpuInstance()
+					.getId(), node.getDpuInstance().getName());
+			
 			Thread executorThread = new Thread(dpuExecutor);
 			executorThread.start();
 
@@ -380,10 +383,10 @@ public class Executor implements Runnable {
 			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
 		}
-		
+
 		// ending ..
 		// set time then the pipeline's execution finished
-		
+
 		if (executionFailed) {
 			if (executionCancelled) {
 				executionCancelled();
@@ -394,9 +397,9 @@ public class Executor implements Runnable {
 			executionSuccessful();
 		}
 
-		// all set 
+		// all set
 		if (!executePostExecutors(dependencyGraph)) {
-			// failed .. 
+			// failed ..
 			executionFailed();
 		}
 	}
@@ -424,25 +427,26 @@ public class Executor implements Runnable {
 		}
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
 
-		// log start of the pipeline
-		LOG.debug("Pipeline execution started");
+		LOG.info("Starting execution of pipeline {} = {}",executionId,
+				execution.getPipeline().getName());
 		
+
 		// execute the pipeline it self
 		execute();
-		
+
 		// set end time
-		execution.setEnd(new Date());		
+		execution.setEnd(new Date());
 		// save the execution
 		try {
 			pipelineFacade.save(execution);
 		} catch (EntityNotFoundException ex) {
 			LOG.warn("Seems like someone deleted our pipeline run.", ex);
 		}
-		
+
 		// publish information for the rest of the application
 		// that the execution finished ..
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
-		
+
 		// unregister MDC execution filter
 		MdcExecutionLevelFilter.remove(executionId);
 		// clear all threads markers
