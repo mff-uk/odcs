@@ -263,6 +263,32 @@ public void constructAllTest() throws Exception {
 	}
 }	
 </code> </pre> </div>
+	There is also possibility to use Virtuoso for RDF data during testing. The connection to 
+	virtuoso for purpose of DPU tests must be configured separately in test class as show
+	following example.
+<div class="code"> <pre> <code>	
+	@BeforeClass
+	public static void virtuoso() {
+		// Adjust this to your virtuoso configuration.
+		TestEnvironment.virtuosoConfig.host = "localhost";
+		TestEnvironment.virtuosoConfig.port = "1111";
+		TestEnvironment.virtuosoConfig.user = "dba";
+		TestEnvironment.virtuosoConfig.password = "dba";
+	}
+</code> </pre> </div>
+	Then you can simply use 
+	<code>env.createRdfOutput("output", true);</code> instead of 
+	<code>env.createRdfOutput("output", false);</code> (ie. just change boolean value)
+	and test environment will use given virtuoso instance instead of
+	local RDF storage.
+	<br/> <br/>
+	User can also specify additional information that can be used during tests as
+	<ul>
+		<li>path to jar file</li>
+		<li>time of last execution</li>
+	</ul>
+	See methods on <code>TestEnvironment</code> class.
+
 
 	</body>
 </html>

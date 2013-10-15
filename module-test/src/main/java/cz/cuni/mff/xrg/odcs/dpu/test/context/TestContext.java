@@ -28,13 +28,19 @@ public class TestContext implements DPUContext {
 	 */
 	private Date lastExecution;
 	
+	/**
+	 * Jar path.
+	 */
+	private String jarPath;
+	
 	private boolean publishedWarning = false; 
 	
 	private boolean publishedError = false;
 	
-	public TestContext(File rootDirectory, Date lastExecution) {
+	public TestContext(File rootDirectory, Date lastExecution, String jarPath) {
 		this.rootDirectory = rootDirectory;
 		this.lastExecution = lastExecution;
+		this.jarPath = jarPath;
 	}
 	
 	@Override
@@ -103,7 +109,11 @@ public class TestContext implements DPUContext {
 
 	@Override
 	public File getJarPath() {
-		throw new RuntimeException("Jar file is not accessible during tests!");
+		if (jarPath == null) {
+			throw new RuntimeException("Jar-path has not been set! Use TestEnvironment.setJarPath");
+		} else {
+			return new File(jarPath);
+		}
 	}
 
 	@Override
