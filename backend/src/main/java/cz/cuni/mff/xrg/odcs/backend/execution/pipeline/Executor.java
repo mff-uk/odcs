@@ -458,7 +458,7 @@ public class Executor implements Runnable {
 	 */
 	private void stopExecution(Thread executorThread,
 			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor) {
-		LOG.debug("Terminating the DPU thread ...");
+		LOG.debug("Cancelling the DPU execution ...");
 		// set cancel flag
 		dpuExecutor.cancel();
 		// interrupt executorThread, and wait for it ...
@@ -469,7 +469,7 @@ public class Executor implements Runnable {
 		} catch (InterruptedException e) {
 			// if we are interrupt stop waiting
 		}
-		LOG.debug("DPU thread terminated");
+		LOG.debug("DPU thread calncelled");
 	}
 
 }
