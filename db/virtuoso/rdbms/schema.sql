@@ -272,14 +272,14 @@ CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."ODCS"."SCH_EMAIL" ("e_user", "e_domai
 CREATE TABLE "DB"."ODCS"."SCH_SCH_NOTIFICATION_EMAIL"
 (
   "notification_id" INTEGER,
-  "email_id" SMALLINT,
+  "email_id" INTEGER,
   PRIMARY KEY ("notification_id", "email_id")
 );
 
 CREATE TABLE "DB"."ODCS"."SCH_USR_NOTIFICATION_EMAIL"
 (
   "notification_id" INTEGER IDENTITY,
-  "email_id" SMALLINT,
+  "email_id" INTEGER,
   PRIMARY KEY ("notification_id", "email_id")
 );
 CREATE INDEX "ix_SCH_USR_NOTIFICATION_EMAIL_email_id" ON "DB"."ODCS"."SCH_USR_NOTIFICATION_EMAIL" ("email_id");

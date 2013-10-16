@@ -253,14 +253,14 @@ CREATE INDEX `ix_SCH_EMAIL_email` ON `SCH_EMAIL` (`e_user`, `e_domain`);
 CREATE TABLE `SCH_SCH_NOTIFICATION_EMAIL`
 (
   `notification_id` INTEGER,
-  `email_id` SMALLINT,
+  `email_id` INTEGER,
   PRIMARY KEY (`notification_id`, `email_id`)
 );
 
 CREATE TABLE `SCH_USR_NOTIFICATION_EMAIL`
 (
   `notification_id` INTEGER AUTO_INCREMENT,
-  `email_id` SMALLINT,
+  `email_id` INTEGER,
   PRIMARY KEY (`notification_id`, `email_id`)
 );
 CREATE INDEX `ix_SCH_USR_NOTIFICATION_EMAIL_email_id` ON `SCH_USR_NOTIFICATION_EMAIL` (`email_id`);
