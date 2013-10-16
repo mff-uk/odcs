@@ -20,7 +20,7 @@ public class UserNotificationRecord extends NotificationRecord {
 	/**
 	 * User owning configuration.
 	 */
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	

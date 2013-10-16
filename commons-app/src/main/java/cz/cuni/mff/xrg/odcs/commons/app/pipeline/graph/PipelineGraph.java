@@ -38,7 +38,7 @@ public class PipelineGraph implements Serializable {
 	/**
 	 * Pipeline this graph belongs to
 	 */
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="pipeline_id", unique=true, nullable=false)
 	private Pipeline pipeline;
 

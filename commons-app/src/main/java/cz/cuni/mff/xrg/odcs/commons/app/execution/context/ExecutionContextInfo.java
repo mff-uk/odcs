@@ -68,7 +68,7 @@ public class ExecutionContextInfo implements Serializable {
 	 * Id of respective execution. Used to create relative path to the context
 	 * directory.
 	 */
-	@OneToOne(mappedBy = "context")
+	@OneToOne(mappedBy = "context", fetch = FetchType.LAZY)
 	private PipelineExecution execution;
 
 	/**
@@ -81,7 +81,7 @@ public class ExecutionContextInfo implements Serializable {
 	/**
 	 * Contexts for DPU's. Indexed by {@link DPUInstanceRecord}.
 	 */
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@MapKeyJoinColumn(name = "dpu_instance_id", referencedColumnName = "id")
 	@JoinColumn(name = "exec_context_pipeline_id")
 	private Map<DPUInstanceRecord, ProcessingUnitInfo> contexts;

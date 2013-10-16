@@ -70,11 +70,11 @@ public class DPUTemplateRecord extends DPURecord
 	 * Parent {@link DPUTemplateRecord}. If parent is set, this DPURecord is
 	 * rendered under its parent in DPU tree.
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_id", nullable = true)
 	private DPUTemplateRecord parent;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User owner;
 

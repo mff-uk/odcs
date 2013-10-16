@@ -18,7 +18,7 @@ public class ScheduleNotificationRecord extends NotificationRecord {
 	 * pipeline execution). Applicable if notification rule set in 
 	 * Scheduler dialog.
 	 */
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_id", nullable = false)
 	private Schedule schedule;
 	

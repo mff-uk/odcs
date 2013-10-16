@@ -39,14 +39,14 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Pipeline being executed.
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pipeline_id")
 	private Pipeline pipeline;
 
 	/**
 	 * Node where execution should end. Only for debug mode.
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "debugnode_id", nullable = true)
 	private Node debugNode;
 
@@ -73,14 +73,14 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Execution context, can be null.
 	 */
-	@OneToOne(cascade = CascadeType.ALL, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "context_id", nullable = true)
 	private ExecutionContextInfo context;
 
 	/**
 	 * Schedule that planned this execution. Null for execution created by user.
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_id", nullable = true)
 	private Schedule schedule;
 
@@ -107,7 +107,7 @@ public class PipelineExecution implements Serializable {
 	/**
 	 * Owner ie. author of the execution.
 	 */
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id", nullable = true)
 	private User owner;
 

@@ -68,20 +68,20 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	@Column
 	private String description;
 
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline")
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.LAZY)
 	private PipelineGraph graph;
 	
 	/**
 	 * User who created and owns this pipeline.
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User owner;
 
 	/**
 	 * List pipelines that must not run in order to run this pipeline.
 	 */
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "ppl_ppl_conflicts",
 			joinColumns = @JoinColumn(name = "pipeline_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "pipeline_conflict_id", referencedColumnName = "id"))

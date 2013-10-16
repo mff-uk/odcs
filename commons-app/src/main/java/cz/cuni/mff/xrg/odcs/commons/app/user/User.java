@@ -42,7 +42,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 	/**
 	 * User email.
 	 */
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "email_id")
     private EmailAddress email;
 	
@@ -61,7 +61,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 	/**
 	 * User roles representing sets of privileges.
 	 */
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.LAZY)
 	@Column(name = "role_id")
 	@Enumerated(EnumType.ORDINAL)
 	@CollectionTable(name = "usr_user_role", joinColumns = @JoinColumn(name = "user_id"))
@@ -71,7 +71,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
 	 * User notification settings used as a default for execution schedules.
 	 * Overridden by specific settings in {@link ScheduleNotificationRecord}.
 	 */
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserNotificationRecord notification;
 
 	/**

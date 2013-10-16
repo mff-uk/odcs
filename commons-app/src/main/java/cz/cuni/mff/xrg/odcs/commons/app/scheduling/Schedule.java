@@ -44,7 +44,7 @@ public class Schedule implements Serializable {
 	/**
 	 * Pipeline to execute.
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pipeline_id", nullable = false)
 	private Pipeline pipeline;
 
@@ -102,7 +102,7 @@ public class Schedule implements Serializable {
 	 * Pipeline after which this job is supposed to run. Applicable only if
 	 * {@link #type} is {@link ScheduleType#AFTER_PIPELINE}.
 	 */
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "exec_schedule_after",
 			joinColumns =
 			@JoinColumn(name = "schedule_id", referencedColumnName = "id"),
@@ -114,10 +114,10 @@ public class Schedule implements Serializable {
 	 * Notification settings for this schedule.
 	 * May be null, if so {@link UserNotificationRecord} is to be used.
 	 */
-	@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ScheduleNotificationRecord notification;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User owner;
 

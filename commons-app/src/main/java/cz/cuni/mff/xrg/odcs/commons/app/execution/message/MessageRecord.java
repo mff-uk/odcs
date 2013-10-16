@@ -45,14 +45,14 @@ public class MessageRecord implements Serializable {
 	/**
 	 * DPURecord which emitted the message.
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "dpu_id", nullable = true)
 	private DPUInstanceRecord dpuInstance;
 
 	/**
 	 * Pipeline execution during which message was emitted.
 	 */
-	@OneToOne(optional = false)
+	@OneToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "execution_id")
 	private PipelineExecution execution;
 

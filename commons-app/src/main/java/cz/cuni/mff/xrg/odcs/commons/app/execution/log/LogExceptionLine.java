@@ -1,12 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 /**
  * Represents a single line of exception's stacktrace in RDBMS.
@@ -21,7 +17,7 @@ public class LogExceptionLine implements Serializable {
 	 * Log message which produced this stacktrace.
 	 */
 	@Id
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "event_id")
 	private LogMessage message;
 	

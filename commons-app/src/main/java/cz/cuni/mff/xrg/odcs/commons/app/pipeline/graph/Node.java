@@ -27,11 +27,11 @@ public class Node implements Serializable {
 	@SuppressWarnings("unused")
 	private Long id;
 
-	@OneToOne(optional = false, cascade = CascadeType.ALL)
+	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "instance_id", unique = true, nullable = false)
 	private DPUInstanceRecord dpuInstance;
 
-	@OneToOne(optional = false, cascade = CascadeType.ALL)
+	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "position_id", unique = true)
 	private Position position;
 
