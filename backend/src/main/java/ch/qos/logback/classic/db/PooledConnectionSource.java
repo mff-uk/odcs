@@ -3,17 +3,24 @@ package ch.qos.logback.classic.db;
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import virtuoso.ConfigurableDataSource;
 
 /**
- * Connection source for logback. Database login is loaded from {@link AppConfig}.
+ * Connection source for logback. Uses {@link BasicDataSource} as connection
+ * pool manager. Database login is loaded from {@link AppConfig}.
  *
  * @author Jan Vojt
  */
-public class ConfigurableConnectionSource extends DriverManagerConnectionSource {
+public class PooledConnectionSource extends DriverManagerConnectionSource {
+	
+	private DataSource pool;
 	
 	/**
-	 * Initialize database login properties.
+	 * Setup connection pool.
 	 */
 	@Override
 	public void start() {
@@ -24,14 +31,22 @@ public class ConfigurableConnectionSource extends DriverManagerConnectionSource 
 		// However, this is too complicated, so we use this simple but ugly
 		// manual initialization of dataSource instead. :(
 		AppConfig appConfig = AppConfig.loadFromHome();
-		ConfigurableDataSource dataSource = new ConfigurableDataSource(
+		BasicDataSource dataSource = new ConfigurableDataSource(
 				appConfig.getSubConfiguration(ConfigProperty.VIRTUOSO_RDBMS)
 		);
-
-		setDriverClass(ConfigurableDataSource.DRIVER_CLASS_NAME);
-		setUrl(dataSource.getUrl());
-		setUser(dataSource.getUsername());
-		setPassword(dataSource.getPassword());
+		setDriverClass(dataSource.getDriverClassName());
+		pool = dataSource;
 		super.start();
-	}	
+	}
+
+	/**
+	 * Gets a connection from the connection pool.
+	 * 
+	 * @return database connection
+	 * @throws SQLException 
+	 */
+	@Override
+	public Connection getConnection() throws SQLException {
+		return pool.getConnection();
+	}
 }

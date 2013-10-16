@@ -14,7 +14,7 @@
 	    <!-- execution level based filtering -->
 		<filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter" />
 		
-		<connectionSource class="ch.qos.logback.classic.db.ConfigurableConnectionSource" />
+		<connectionSource class="ch.qos.logback.classic.db.PooledConnectionSource" />
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
