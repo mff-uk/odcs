@@ -37,58 +37,21 @@ FOREACH HEXADECIMAL BLOB INSERT INTO DB.ODCS.DPU_INSTANCE(id,name,use_dpu_descri
 63756E692E6D66662E7872672E6F6463732E6C6F616465722E66696C652E4669
 6C654C6F61646572436F6E6669673E0A3C2F6F626A6563742D73747265616D3E
 END
+
+
+
 -- Table DB.ODCS.DPU_INSTANCE 2 rows output.
 -- SELECT * FROM DB.ODCS.DPU_TEMPLATE
-FOREACH HEXADECIMAL BLOB INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(1,'SPARQL Extractor',0,'',?,NULL,1,1,0,'RDF_extractor','RDF_extractor-1.0.0.jar','Extracts RDF data.');
-3C6F626A6563742D73747265616D3E0A20203C637A2E63756E692E6D66662E78
-72672E6F6463732E6C6F616465722E66696C652E46696C654C6F61646572436F
-6E6669673E0A202020203C46696C65506174683E2F746D702F64627065646961
-2E7264663C2F46696C65506174683E0A202020203C52444646696C65466F726D
-61743E524446584D4C3C2F52444646696C65466F726D61743E0A202020203C44
-6966664E616D653E66616C73653C2F446966664E616D653E0A20203C2F637A2E
-63756E692E6D66662E7872672E6F6463732E6C6F616465722E66696C652E4669
-6C654C6F61646572436F6E6669673E0A3C2F6F626A6563742D73747265616D3E
-END
-FOREACH HEXADECIMAL BLOB INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(2,'RDF File Extractor',0,'',?,NULL,1,1,0,'File_extractor','File_extractor-1.0.0.jar','Extracts RDF data from a file.');
-3C6F626A6563742D73747265616D3E0A20203C637A2E63756E692E6D66662E78
-72672E6F6463732E6C6F616465722E66696C652E46696C654C6F61646572436F
-6E6669673E0A202020203C46696C65506174683E2F746D702F64627065646961
-2E7264663C2F46696C65506174683E0A202020203C52444646696C65466F726D
-61743E524446584D4C3C2F52444646696C65466F726D61743E0A202020203C44
-6966664E616D653E66616C73653C2F446966664E616D653E0A20203C2F637A2E
-63756E692E6D66662E7872672E6F6463732E6C6F616465722E66696C652E4669
-6C654C6F61646572436F6E6669673E0A3C2F6F626A6563742D73747265616D3E
-END
-FOREACH HEXADECIMAL BLOB INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(3,'SPARQL Transformer',0,'',?,NULL,1,1,1,'SPARQL_transformer','SPARQL_transformer-1.0.0.jar','SPARQL Transformer.');
-3C6F626A6563742D73747265616D3E0A20203C637A2E63756E692E6D66662E78
-72672E6F6463732E6C6F616465722E66696C652E46696C654C6F61646572436F
-6E6669673E0A202020203C46696C65506174683E2F746D702F64627065646961
-2E7264663C2F46696C65506174683E0A202020203C52444646696C65466F726D
-61743E524446584D4C3C2F52444646696C65466F726D61743E0A202020203C44
-6966664E616D653E66616C73653C2F446966664E616D653E0A20203C2F637A2E
-63756E692E6D66662E7872672E6F6463732E6C6F616465722E66696C652E4669
-6C654C6F61646572436F6E6669673E0A3C2F6F626A6563742D73747265616D3E
-END
-FOREACH HEXADECIMAL BLOB INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(4,'SPARQL Loader',0,'',?,NULL,1,1,2,'RDF_loader','RDF_loader-1.0.0.jar','Loads RDF data.');
-3C6F626A6563742D73747265616D3E0A20203C637A2E63756E692E6D66662E78
-72672E6F6463732E6C6F616465722E66696C652E46696C654C6F61646572436F
-6E6669673E0A202020203C46696C65506174683E2F746D702F64627065646961
-2E7264663C2F46696C65506174683E0A202020203C52444646696C65466F726D
-61743E524446584D4C3C2F52444646696C65466F726D61743E0A202020203C44
-6966664E616D653E66616C73653C2F446966664E616D653E0A20203C2F637A2E
-63756E692E6D66662E7872672E6F6463732E6C6F616465722E66696C652E4669
-6C654C6F61646572436F6E6669673E0A3C2F6F626A6563742D73747265616D3E
-END
-FOREACH HEXADECIMAL BLOB INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(5,'RDF File Loader',0,'',?,NULL,1,1,2,'File_loader','File_loader-1.0.0.jar','Loads RDF data into file.');
-3C6F626A6563742D73747265616D3E0A20203C637A2E63756E692E6D66662E78
-72672E6F6463732E6C6F616465722E66696C652E46696C654C6F61646572436F
-6E6669673E0A202020203C46696C65506174683E2F746D702F64627065646961
-2E7264663C2F46696C65506174683E0A202020203C52444646696C65466F726D
-61743E524446584D4C3C2F52444646696C65466F726D61743E0A202020203C44
-6966664E616D653E66616C73653C2F446966664E616D653E0A20203C2F637A2E
-63756E692E6D66662E7872672E6F6463732E6C6F616465722E66696C652E4669
-6C654C6F61646572436F6E6669673E0A3C2F6F626A6563742D73747265616D3E
-END
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(1,'SPARQL Extractor',0,'','<object-stream> <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> <SPARQL__endpoint>http://</SPARQL__endpoint> <Host__name></Host__name> <Password></Password> <GraphsUri class="linked-list"> <string></string> </GraphsUri> <SPARQL__query></SPARQL__query> <ExtractFail>true</ExtractFail> <UseStatisticalHandler>true</UseStatisticalHandler> </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> </object-stream>',NULL,1,1,0,'RDF_extractor','RDF_extractor-1.0.0.jar','Extracts RDF data.');
+
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(2,'RDF File Extractor',0,'','<object-stream> <cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig> <Path></Path> <FileSuffix></FileSuffix> <RDFFormatValue>AUTO</RDFFormatValue> <fileExtractType>PATH_TO_FILE</fileExtractType> <OnlyThisSuffix>false</OnlyThisSuffix> <UseStatisticalHandler>false</UseStatisticalHandler> </cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig> </object-stream>',NULL,1,1,0,'File_extractor','File_extractor-1.0.0.jar','Extracts RDF data from a file.');
+
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(3,'SPARQL Transformer',0,'','<object-stream> <cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig> <SPARQL__Update__Query></SPARQL__Update__Query> <isConstructType>false</isConstructType> </cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig> </object-stream>',NULL,1,1,1,'SPARQL_transformer','SPARQL_transformer-1.0.0.jar','SPARQL Transformer.');
+
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(4,'SPARQL Loader',0,'',' <object-stream> <cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig> <SPARQL__endpoint>http://</SPARQL__endpoint> <Host__name></Host__name> <Password></Password> <GraphsUri class="linked-list"> <string></string> </GraphsUri> <graphOption>OVERRIDE</graphOption> <insertOption>STOP_WHEN_BAD_PART</insertOption> <chunkSize>100</chunkSize> </cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig> </object-stream>',NULL,1,1,2,'RDF_loader','RDF_loader-1.0.0.jar','Loads RDF data.');
+
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(5,'RDF File Loader',0,'','<object-stream> <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> <FilePath></FilePath> <RDFFileFormat>AUTO</RDFFileFormat> <DiffName>false</DiffName> </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> </object-stream>',NULL,1,1,2,'File_loader','File_loader-1.0.0.jar','Loads RDF data into file.');
+
 -- Table DB.ODCS.DPU_TEMPLATE 5 rows output.
 -- SELECT * FROM DB.ODCS.EXEC_CONTEXT_DPU
 -- Table DB.ODCS.EXEC_CONTEXT_DPU 0 rows output.

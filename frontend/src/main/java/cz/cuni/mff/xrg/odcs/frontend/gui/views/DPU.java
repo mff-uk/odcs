@@ -431,19 +431,7 @@ class DPU extends ViewComponent {
 				// use some .. dummy component
 			} else {
 				// configure
-				try {
-					selectedDpuWrap.configuredDialog();
-				} catch (ConfigException e) {
-					Notification.show(
-							"Failed to load configuration. The dialog defaul configuration is used.",
-							e.getMessage(), Type.WARNING_MESSAGE);
-					LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-				} catch (DPUWrapException e) {
-					Notification.show(
-							"Unexpected error. The configuration dialog may not be loaded correctly.",
-							e.getMessage(), Type.WARNING_MESSAGE);
-					LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-				}
+				conigureDPUDialog();
 				// add dialog
 //				configDialog.setEnabled(permissions.hasPermission(selectedDpu, "save"));
 
@@ -844,27 +832,14 @@ class DPU extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 
 				saveDPUTemplate();
-				
+		
 				//refresh data in dialog and dpu tree
 				dpuTree.refresh();
 				setGeneralTabValues();
 				if(tabname!="configuration")
 					buttonSaveDPU.setEnabled(false);
 				// refresh configuration
-				try {
-					selectedDpuWrap.configuredDialog();
-				} catch (ConfigException e) {
-					Notification.show(
-							"Failed to load configuration. The dialog defaul configuration is used.",
-							e.getMessage(), Type.WARNING_MESSAGE);
-					LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-				} catch (DPUWrapException e) {
-					Notification.show(
-							"Unexpected error. The configuration dialog may not be loaded correctly.",
-							e.getMessage(), Type.WARNING_MESSAGE);
-					LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-				}
-				
+				conigureDPUDialog();
 			}
 		});
 		buttonDpuBar.addComponent(buttonSaveDPU);
@@ -1160,9 +1135,29 @@ class DPU extends ViewComponent {
 
 
 		}
-
 	}
-
+	
+	/**
+	 * Load configuration into DPU's configuration dialog. In case
+	 * of exception show notification.
+	 */
+	private void conigureDPUDialog() { 
+		// refresh configuration
+		try {
+			selectedDpuWrap.configuredDialog();
+		} catch (ConfigException e) {
+			Notification.show(
+					"Configuration problem",
+					e.getMessage(), Type.WARNING_MESSAGE);
+			LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+		} catch (DPUWrapException e) {
+			Notification.show(
+					"Unexpected error. The configuration dialog may not be loaded correctly.",
+					e.getMessage(), Type.WARNING_MESSAGE);
+			LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+		}
+	}
+	
 	/**
 	 * Generate column in table {@link #instancesTable}. with buttons:Detail,
 	 * Delete, Status.

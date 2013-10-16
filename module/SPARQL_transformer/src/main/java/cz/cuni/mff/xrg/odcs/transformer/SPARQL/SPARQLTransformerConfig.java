@@ -15,6 +15,6 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 
 	@Override
 	public boolean isValid() {
-		return !SPARQL_Update_Query.isEmpty();
+		return SPARQL_Update_Query != null;
 	}
 }
