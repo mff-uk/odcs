@@ -39,19 +39,6 @@ public class AppConfig {
 	 */
 	private AppConfig() {
 	}
-
-	/**
-	 * Factory building configuration from <code>Properties</code>.
-	 * 
-	 * @param properties
-	 * @return configuration
-	 */
-	public static AppConfig loadFrom(Properties properties) {
-		LOG.log(Level.INFO, "Loading configuration from Properties.");
-		AppConfig config = new AppConfig();
-		config.prop = properties;
-		return config;
-	}
 	
 	/**
 	 * Constructor reads configuration file.
