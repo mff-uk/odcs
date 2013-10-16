@@ -358,7 +358,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 				if (owner == null) {
 					return "";
 				} else {
-					return owner.getFullName();
+					return owner.getUsername();
 				}
 			}
 		});
