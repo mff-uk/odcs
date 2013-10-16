@@ -50,7 +50,7 @@ public class SPARQLTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void constructAllTestVirtuoso() throws Exception {
 		// prepare dpu
 		SPARQLTransformer trans = new SPARQLTransformer();
