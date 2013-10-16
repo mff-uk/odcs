@@ -14,11 +14,10 @@ public class ShowDebugEvent extends Event {
 	private Node debugNode;
 
 	/**
-	 * Default constructor. Inform, that debug was requested for given
-	 * {@link Pipeline} and {@link Node}.
+	 * Default constructor. Inform, that debug was requested for current
+	 * {@link Pipeline} and given {@link Node}.
 	 *
 	 * @param source Source component.
-	 * @param pipeline {@link Pipeline} to debug.
 	 * @param debugNode {@link Node} where debug should end.
 	 */
 	public ShowDebugEvent(Component source, Node debugNode) {

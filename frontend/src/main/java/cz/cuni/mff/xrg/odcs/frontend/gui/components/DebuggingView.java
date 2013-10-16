@@ -182,6 +182,7 @@ public class DebuggingView extends CustomComponent {
 		this.debugDpu = instance;
 		refreshContent();
 		if (refreshAutomatically != null && refreshAutomatically.getValue()) {
+			refreshAutomatically.setVisible(true);
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(this, execution));
 		}
 	}
