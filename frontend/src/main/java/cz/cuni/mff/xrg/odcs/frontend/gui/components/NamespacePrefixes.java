@@ -264,8 +264,8 @@ public class NamespacePrefixes {
 							.getValue();
 					prefixDel = App.getApp().getNamespacePrefixes().getPrefix(prefixId);
 					//open confirmation dialog
-					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting user",
-							"Delete the  " + prefixDel.getName() + " user?", "Delete", "Cancel",
+					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting prefix",
+							"Delete the  " + prefixDel.getName() + " prefix?", "Delete", "Cancel",
 							new ConfirmDialog.Listener() {
 						private static final long serialVersionUID = 1L;
 

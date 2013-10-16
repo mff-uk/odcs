@@ -35,7 +35,9 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 
 	@Override
 	public void loadDataUnit(File directory, String dataUnitId) {
-		AppConfig appConfig = App.getAppConfig();
+		AppConfig appConfig = App.getAppConfig().getSubConfiguration(
+				ConfigProperty.VIRTUOSO_RDF
+		);
 
 		// load configuration from appConfig
 		final String hostName = appConfig
@@ -53,7 +55,7 @@ class VirtuosoRdfBrowser extends DataUnitBrowser {
 				password,
 				GraphUrl.translateDataUnitId(dataUnitId),
 				"",
-				App.getApp().getBean(AppConfig.class).getProperties());
+				appConfig.getProperties());
 
 		data = virtosoRepository.getRDFTriplesInRepository();
 		// close repository

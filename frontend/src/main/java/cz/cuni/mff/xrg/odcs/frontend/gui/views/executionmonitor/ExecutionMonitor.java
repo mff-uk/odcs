@@ -71,9 +71,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private HorizontalSplitPanel hsplit;
 	private Panel mainLayout;
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionMonitor.class);
-	
 	private HashMap<Date, Label> runTimeLabels = new HashMap<>();
-	
+	private Long selectedRowId = null;
 	/**
 	 * Table contains pipeline executions.
 	 */
@@ -118,6 +117,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		try {
 			Long execId = Long.parseLong(strExecId);
 			showExecutionDetail(execId);
+			selectedRowId = execId;
+			monitorTable.setValue(selectedRowId);
 		} catch (NumberFormatException e) {
 			LOG.warn("Invalid parameter for execution monitor.", e);
 		}
@@ -232,7 +233,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		Button refreshButton = new Button("Refresh", new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				refresh();
+				refresh(false);
 			}
 		});
 		refreshButton.setWidth("120px");
@@ -276,7 +277,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setColumnWidth("actions", 200);
 
 		//sorting by execution date
-		Object property = "start";
+		Object property = "id";
 		monitorTable.setSortContainerPropertyId(property);
 		monitorTable.setSortAscending(false);
 
@@ -334,7 +335,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
 				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
-				if(duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
+				if (duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
 					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
 					duration = (new Date()).getTime() - start.getTime();
 					Label durationLabel = new Label(IntlibHelper.formatDuration(duration));
@@ -356,8 +357,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 						.getItemProperty("owner").getValue();
 				if (owner == null) {
 					return "";
-				} else {				
-					return owner.getFullName();
+				} else {
+					return owner.getUsername();
 				}
 			}
 		});
@@ -390,6 +391,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 				//debugging view open
 				if (!monitorTable.isSelected(event.getItemId())) {
 					Long executionId = (long) event.getItem().getItemProperty("id").getValue();
+					selectedRowId = executionId;
 					showExecutionDetail(executionId);
 				} else {
 				}
@@ -407,7 +409,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		App.getApp().getRefreshManager().addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
 			@Override
 			public void refresh(Refresher source) {
-				ExecutionMonitor.this.refresh();
+				ExecutionMonitor.this.refresh(false);
 				LOG.debug("ExecutionMonitor refreshed.");
 			}
 		});
@@ -417,9 +419,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 	private void refresh(PipelineExecution execution, boolean isNew) {
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) monitorTable.getContainerDataSource().getContainer();
-		
+
 		if (isNew) {
-			refresh();
+			selectedRowId = execution.getId();
+			refresh(true);
 			showExecutionDetail(execution.getId());
 			//Item item = c.addItemAt(0, execution.getId());
 			//item.getItemProperty("status").setValue(execution.getStatus());
@@ -434,25 +437,27 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	/**
 	 * Calls for refresh {@link #monitorTable}.
 	 */
-	public void refresh() {
+	public void refresh(boolean showFirstPage) {
 		Date now = new Date();
 		boolean hasModifiedExecutions = App.getApp().getPipelines().hasModifiedExecutions(lastLoad);
 		if (hasModifiedExecutions) {
 			runTimeLabels.clear();
 			int page = monitorTable.getCurrentPage();
-			Object selectedRow = monitorTable.getValue();
+			if (selectedRowId == null) {
+				selectedRowId = (Long) monitorTable.getValue();
+			}
 			IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) monitorTable.getContainerDataSource().getContainer();
 			c.refresh();
-			monitorTable.setCurrentPage(page);
-			monitorTable.setValue(selectedRow);
+			monitorTable.setCurrentPage(showFirstPage ? 1 : page);
+			monitorTable.setValue(selectedRowId);
 			lastLoad = now;
 		}
 
-		for(Entry<Date, Label> entry : runTimeLabels.entrySet()) {
+		for (Entry<Date, Label> entry : runTimeLabels.entrySet()) {
 			long duration = (new Date()).getTime() - entry.getKey().getTime();
 			entry.getValue().setValue(IntlibHelper.formatDuration(duration));
 		}
-		
+
 	}
 
 	/**
@@ -483,24 +488,26 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
 					break;
 				case "showlog":
+					selectedRowId = (Long) itemId;
 					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
 				case "debug":
+					selectedRowId = (Long) itemId;
 					monitorTable.setValue(itemId);
 					showExecutionDetail(execId);
 					break;
 				case "rerun":
 					PipelineExecution exec = App.getApp().getPipelines().getExecution(execId);
 					PipelineExecution newExec = IntlibHelper.runPipeline(exec.getPipeline(), false);
-					if(newExec != null) {
+					if (newExec != null) {
 						refresh(newExec, true);
 					}
 					break;
 				case "redebug":
 					PipelineExecution execDebug = App.getApp().getPipelines().getExecution(execId);
 					PipelineExecution newExec2 = IntlibHelper.runPipeline(execDebug.getPipeline(), true);
-					if(newExec2 != null) {
+					if (newExec2 != null) {
 						refresh(newExec2, true);
 					}
 					break;
@@ -519,17 +526,17 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			PipelineExecution pipelineExec = App.getPipelines().getExecution(exeId);
 			getDebugView(pipelineExec);
 		}
-		if(hsplit.isLocked()) {
+		if (hsplit.isLocked()) {
 			hsplit.setSplitPosition(55, Unit.PERCENTAGE);
 			hsplit.setHeight("-1px");
 			hsplit.setLocked(false);
 		}
 	}
-	
+
 	/**
-	 * Builds debugging view upon first call, sets the pipeline execution
-	 * to show inside it and returns the view.
-	 * 
+	 * Builds debugging view upon first call, sets the pipeline execution to
+	 * show inside it and returns the view.
+	 *
 	 * @param exec pipeline execution to show in debugging view
 	 * @return debugging view window
 	 */

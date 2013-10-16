@@ -15,14 +15,17 @@ public enum ConfigProperty {
 	
 	BACKEND_DEFAULTRDF("backend.defaultRdf"),
 	
-	VIRTUOSO_HOSTNAME("virtuoso.hostname"),
-	VIRTUOSO_PORT("virtuoso.port"),
-	VIRTUOSO_USER("virtuoso.user"),
-	VIRTUOSO_PASSWORD("virtuoso.password"),
-	VIRTUOSO_CHARSET("virtuoso.charset"),
+	// namespaces for virtuoso configuration
+	VIRTUOSO_RDBMS("virtuoso.rdbms"),
+	VIRTUOSO_RDF("virtuoso.rdf"),
 	
-	VIRTUOSO_RETRIES("virtuoso.retries"),
-	VIRTUOSO_WAIT("virtuoso.wait"),
+	VIRTUOSO_HOSTNAME("hostname"),
+	VIRTUOSO_PORT("port"),
+	VIRTUOSO_USER("user"),
+	VIRTUOSO_PASSWORD("password"),
+	VIRTUOSO_CHARSET("charset"),
+	VIRTUOSO_RETRIES("retries"),
+	VIRTUOSO_WAIT("wait"),
 	
 	MODULE_PATH("module.path"),
 	MODULE_FRONT_EXPOSE("module.frontend.expose"),

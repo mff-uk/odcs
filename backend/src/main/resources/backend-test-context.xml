@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans.xsd
- 		http://www.springframework.org/schema/context 
- 		http://www.springframework.org/schema/context/spring-context.xsd"
-	xmlns:context="http://www.springframework.org/schema/context">
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- listener for watching events -->
 	<bean class="cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener" />
@@ -13,16 +12,16 @@
 	<bean class="cz.cuni.mff.xrg.odcs.backend.spring.DummyDataUnitFactory" />
 	<!-- we use configuration that load from our resource -->
 	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
-	    <constructor-arg></constructor-arg>
-	</bean>
+	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
+	
 	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
+		<constructor-arg ref="configuration" />
 		<constructor-arg value="BACKEND" />
 	</bean>
 	
 	<!-- scan for pre/post executors -->
 	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl" />
-
+	
 	<context:annotation-config />
 	
 </beans>

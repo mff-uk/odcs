@@ -65,7 +65,9 @@ public class RDFDataUnitHelper {
 				}
 
 			case RDF_Virtuoso:
-				AppConfig appConfig = App.getAppConfig();
+				AppConfig appConfig = App.getAppConfig().getSubConfiguration(
+						ConfigProperty.VIRTUOSO_RDF
+				);
 
 				// load configuration from appConfig
 				final String hostName =
@@ -85,7 +87,7 @@ public class RDFDataUnitHelper {
 						password,
 						GraphUrl.translateDataUnitId(dataUnitId),
 						"",
-						App.getApp().getBean(AppConfig.class).getProperties());
+						appConfig.getProperties());
 
 				return virtuosoRepository;
 
