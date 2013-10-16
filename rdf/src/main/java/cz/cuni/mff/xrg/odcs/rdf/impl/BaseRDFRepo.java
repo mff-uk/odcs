@@ -2773,8 +2773,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	
 	@Override
 	public void clean() {
-		// TODO Jirka: please provide the functionality here according
 		// to clean documentaion in MergableDataUnit
+		cleanAllData();
 	}
 	
 }
