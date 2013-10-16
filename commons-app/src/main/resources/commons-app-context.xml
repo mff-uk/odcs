@@ -8,11 +8,11 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 	
 	<!-- application configuration -->
-	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" />
+	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
 	
 	<!-- data source with db login properties loaded from application configuration -->
 	<bean id="dataSource" class="virtuoso.ConfigurableDataSource">
-		<constructor-arg ref="configuration" />
+		<constructor-arg value="#{configuration.getSubConfiguration(cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty.VIRTUOSO_RDBMS)}" />
 	</bean>
 	
 	<!-- EntityManager factory -->

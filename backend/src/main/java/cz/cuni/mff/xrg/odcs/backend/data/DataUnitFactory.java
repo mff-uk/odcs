@@ -63,25 +63,21 @@ public class DataUnitFactory {
 				return localRepository;
 			case RDF_Virtuoso:
 				// load configuration from appConfig
-				final String hostName = appConfig
-						.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
-				final String port = appConfig
-						.getString(ConfigProperty.VIRTUOSO_PORT);
-				final String user = appConfig
-						.getString(ConfigProperty.VIRTUOSO_USER);
-				final String password = appConfig
-						.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+				AppConfig config = appConfig.getSubConfiguration(
+						ConfigProperty.VIRTUOSO_RDF
+				);
 
 				// create repository
-				RDFDataUnit virtosoRepository = RDFDataUnitFactory
-						.createVirtuosoRDFRepo(
-						hostName,
-						port,
-						user,
-						password,
+				RDFDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
+						config .getString(ConfigProperty.VIRTUOSO_HOSTNAME),
+						config.getString(ConfigProperty.VIRTUOSO_PORT),
+						config.getString(ConfigProperty.VIRTUOSO_USER),
+						config.getString(ConfigProperty.VIRTUOSO_PASSWORD),
 						GraphUrl.translateDataUnitId(id),
 						name,
-						appConfig.getProperties());
+						config.getProperties()
+				);
+				
 				return virtosoRepository;
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");

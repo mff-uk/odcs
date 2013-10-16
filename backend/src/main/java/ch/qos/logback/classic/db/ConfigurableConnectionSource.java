@@ -2,6 +2,7 @@ package ch.qos.logback.classic.db;
 
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import virtuoso.ConfigurableDataSource;
 
 /**
@@ -22,7 +23,10 @@ public class ConfigurableConnectionSource extends DriverManagerConnectionSource 
 		// Spring context initialization and replace logging appender afterwards.
 		// However, this is too complicated, so we use this simple but ugly
 		// manual initialization of dataSource instead. :(
-		ConfigurableDataSource dataSource = new ConfigurableDataSource(new AppConfig());
+		AppConfig appConfig = AppConfig.loadFromHome();
+		ConfigurableDataSource dataSource = new ConfigurableDataSource(
+				appConfig.getSubConfiguration(ConfigProperty.VIRTUOSO_RDBMS)
+		);
 
 		setDriverClass(ConfigurableDataSource.DRIVER_CLASS_NAME);
 		setUrl(dataSource.getUrl());

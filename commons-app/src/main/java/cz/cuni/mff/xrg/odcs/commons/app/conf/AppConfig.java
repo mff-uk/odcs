@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,14 +33,33 @@ public class AppConfig {
 	 * Logging gateway.
 	 */
 	private static final Logger LOG = Logger.getLogger(AppConfig.class.getName());
+
+	/**
+	 * Use factory methods for constructing configurations.
+	 */
+	private AppConfig() {
+	}
+
+	/**
+	 * Factory building configuration from <code>Properties</code>.
+	 * 
+	 * @param properties
+	 * @return configuration
+	 */
+	public static AppConfig loadFrom(Properties properties) {
+		LOG.log(Level.INFO, "Loading configuration from Properties.");
+		AppConfig config = new AppConfig();
+		config.prop = properties;
+		return config;
+	}
 	
 	/**
 	 * Constructor reads configuration file.
 	 */
-	public AppConfig() {
+	public static AppConfig loadFromHome() {
 		LOG.log(Level.INFO, "Loading configuration from: {0}", confPath);
 		try {
-			loadFromStream(new FileInputStream(confPath));
+			return loadFrom(new FileInputStream(confPath));
 		} catch (FileNotFoundException ex) {
 			throw new ConfigFileNotFoundException(ex);
 		}
@@ -50,10 +70,10 @@ public class AppConfig {
 	 * 
 	 * @param resource configuration
 	 */
-	public AppConfig(Resource resource) {
+	public static AppConfig loadFrom(Resource resource) {
 		LOG.log(Level.INFO, "Loading configuration from classpath resource.");
 		try {
-			loadFromStream(resource.getInputStream());
+			return loadFrom(resource.getInputStream());
 		} catch (IOException ex) {
 			throw new ConfigFileNotFoundException(ex);
 		}
@@ -64,14 +84,17 @@ public class AppConfig {
 	 * 
 	 * @param stream 
 	 */
-	private void loadFromStream(InputStream stream) {
+	public static AppConfig loadFrom(InputStream stream) {
+		AppConfig config = new AppConfig();
 		try {
-			prop.load(stream);
+			config.prop.load(stream);
 		} catch (IOException ex) {
 			throw new ConfigFileNotFoundException(ex);
 		} catch (IllegalArgumentException ex) {
 			throw new MalformedConfigFileException(ex);
 		}
+		
+		return config;
 	}
 	
 	/**
@@ -114,9 +137,33 @@ public class AppConfig {
 	}
 	
 	/**
+	 * Creates a new configuration containing only a subset of this
+	 * configuration properties matching given namespace. The keys of newly
+	 * created configuration are trimmed off namespace prefix.
+	 * 
+	 * @param namespace
+	 * @return new configuration
+	 */
+	public AppConfig getSubConfiguration(ConfigProperty namespace) {
+		
+		AppConfig subConfig = new AppConfig();
+		String strNamespace = namespace.toString().concat(".");
+		
+		for (Map.Entry<Object, Object> e : prop.entrySet()) {
+			if (e.getKey().toString().startsWith(strNamespace)) {
+				String newNamespace = e.getKey().toString()
+										.substring(strNamespace.length());
+				subConfig.prop.setProperty(newNamespace, e.getValue().toString());
+			}
+		}
+		
+		return subConfig;
+	}
+	
+	/**
 	 * @return defensive copy of wrapped properties.
 	 */
 	public Properties getProperties() {
-		return new Properties(prop);
+		return (Properties) prop.clone();
 	}
 }
