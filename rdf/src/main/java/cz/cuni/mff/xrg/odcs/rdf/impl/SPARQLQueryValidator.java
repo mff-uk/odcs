@@ -65,9 +65,9 @@ public class SPARQLQueryValidator implements Validator {
 	}
 
 	private static String getQueryForCaseSELECT_COUNT(String myQuery) {
-		String countRegex = "count([\\s]+)?\\([\\s\\w-_\\?\\*]+\\)";
+		String countRegex = "count([\\s]+)?\\([\\s\\w-_\\?\\*]+\\)(([\\s]+)?as[\\s]?\\?[\\w-_\\*]+)?";
 		Pattern pattern = Pattern.compile(countRegex);
-		Matcher countMatcher = pattern.matcher( myQuery);
+		Matcher countMatcher = pattern.matcher(myQuery);
 
 		boolean hasResult = countMatcher.find();
 
