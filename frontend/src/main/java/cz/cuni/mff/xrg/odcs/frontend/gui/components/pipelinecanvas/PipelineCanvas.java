@@ -397,9 +397,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @throws NullPointerException
 	 */
 	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
-		pip.setGraph(graph);
-		App.getApp().getPipelines().save(pip);
 		Node debugNode = graph.getNodeById(dpuId);
-		fireEvent(new ShowDebugEvent(this, pip, debugNode));
+		fireEvent(new ShowDebugEvent(this, debugNode));
 	}
 }

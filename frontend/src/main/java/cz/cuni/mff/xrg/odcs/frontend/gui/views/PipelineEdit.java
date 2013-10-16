@@ -205,7 +205,7 @@ class PipelineEdit extends ViewComponent {
 				}
 				ShowDebugEvent sde = (ShowDebugEvent) event;
 				if (savePipeline()) {
-					openDebug(sde.getPipeline(), sde.getDebugNode());
+					openDebug(pipeline, sde.getDebugNode());
 				}
 			}
 		});

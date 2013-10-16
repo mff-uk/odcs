@@ -267,6 +267,9 @@ public class PipelineGraph implements Serializable {
 	 */
 	public void moveNode(int dpuId, int newX, int newY) {
 		Node node = getNodeById(dpuId);
+                if(node == null) {
+                    throw new IllegalArgumentException("Node with supplied id was not found!");
+                }
 		node.setPosition(new Position(newX, newY));
 	}
 
