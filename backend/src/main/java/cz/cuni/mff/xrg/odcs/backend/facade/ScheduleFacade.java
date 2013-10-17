@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for managing schedules, which tolerates database crashes. This facade
@@ -86,7 +87,7 @@ public class ScheduleFacade extends cz.cuni.mff.xrg.odcs.commons.app.scheduling.
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void save(Schedule schedule) {
 		int attempts = 0;
 		while (true) try {
@@ -102,7 +103,7 @@ public class ScheduleFacade extends cz.cuni.mff.xrg.odcs.commons.app.scheduling.
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void delete(Schedule schedule) {
 		int attempts = 0;
 		while (true) try {
@@ -117,7 +118,7 @@ public class ScheduleFacade extends cz.cuni.mff.xrg.odcs.commons.app.scheduling.
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void deleteNotification(ScheduleNotificationRecord notify) {
 		int attempts = 0;
 		while (true) try {
@@ -132,7 +133,7 @@ public class ScheduleFacade extends cz.cuni.mff.xrg.odcs.commons.app.scheduling.
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void execute(Schedule schedule) {
 		int attempts = 0;
 		while (true) try {

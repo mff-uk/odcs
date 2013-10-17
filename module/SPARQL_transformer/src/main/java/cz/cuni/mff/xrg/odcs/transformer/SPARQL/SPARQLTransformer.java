@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openrdf.model.Graph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,6 +32,8 @@ public class SPARQLTransformer
 		extends ConfigurableBase<SPARQLTransformerConfig>
 		implements ConfigDialogProvider<SPARQLTransformerConfig> {
 
+	private final Logger LOG = LoggerFactory.getLogger(SPARQLTransformer.class);
+	
 	@InputDataUnit
 	public RDFDataUnit intputDataUnit;
 
@@ -127,6 +131,7 @@ public class SPARQLTransformer
 		final String updateQuery = config.SPARQL_Update_Query;
 		final boolean isConstructQuery = config.isConstructType;
 
+				
 		try {
 			if (isConstructQuery) {
 
@@ -152,6 +157,9 @@ public class SPARQLTransformer
 			throw new DPUException(ex.getMessage(), ex);
 		}
 
+		final long beforeTriplesCount = intputDataUnit.getTripleCount();
+		final long afterTriplesCount = outputDataUnit.getTripleCount();
+		LOG.info("Transformed {} triples into {}", beforeTriplesCount, afterTriplesCount);
 	}
 
 	@Override

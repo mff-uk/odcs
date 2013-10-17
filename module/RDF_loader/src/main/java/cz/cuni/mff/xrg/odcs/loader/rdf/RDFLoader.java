@@ -16,6 +16,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Jiri Tomes
  * @author Petyr
@@ -24,6 +27,8 @@ import java.util.List;
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		implements ConfigDialogProvider<RDFLoaderConfig> {
 
+	private final Logger LOG = LoggerFactory.getLogger(RDFLoader.class);
+	
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -52,6 +57,9 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final InsertType insertType = config.insertOption;
 		final long chunkSize = config.chunkSize;
 
+		final long triplesCount = rdfDataUnit.getTripleCount();
+		LOG.info("Loading {} triples", triplesCount);		
+		
 		try {
 
 			rdfDataUnit.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,

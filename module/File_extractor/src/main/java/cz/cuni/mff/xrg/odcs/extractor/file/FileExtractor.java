@@ -10,7 +10,10 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -21,6 +24,8 @@ import org.openrdf.rio.RDFFormat;
 public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		implements ConfigDialogProvider<FileExtractorConfig> {
 
+	private final Logger LOG = LoggerFactory.getLogger(FileExtractor.class);
+	
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -43,6 +48,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
 		rdfDataUnit.extractFromFile(extractType, format, path, fileSuffix,
 				baseURI, onlyThisSuffix, useStatisticHandler);
+		
+		final long triplesCount = rdfDataUnit.getTripleCount();
+		LOG.info("Extracted {} triples", triplesCount);
 	}
 
 	@Override

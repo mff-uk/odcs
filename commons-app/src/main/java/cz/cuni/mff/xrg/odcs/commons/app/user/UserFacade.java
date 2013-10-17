@@ -36,9 +36,14 @@ public class UserFacade {
 	private EntityManager em;
 	
 	/**
+	 * Factory for a new User.
+	 * 
+	 * @param username
+	 * @param password
+	 * @param email
 	 * @return new user instance
 	 */
-	public User createUser(String fullname, String password, EmailAddress email) {
+	public User createUser(String username, String password, EmailAddress email) {
 		
 		String passHash = null;
 		try {
@@ -47,7 +52,7 @@ public class UserFacade {
 			throw new RuntimeException("Could not hash user password.", ex);
 		}
 		
-		User user = new User(fullname, passHash, email);
+		User user = new User(username, passHash, email);
 		
 		// set default notification setting
 		UserNotificationRecord notify = new UserNotificationRecord();

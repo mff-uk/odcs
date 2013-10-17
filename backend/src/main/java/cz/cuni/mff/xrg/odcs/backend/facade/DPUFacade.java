@@ -7,6 +7,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.io.File;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for managing DPUs, which tolerates database crashes. This facade
@@ -88,7 +89,7 @@ public class DPUFacade extends cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade {
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void save(DPUTemplateRecord dpu) {
 		int attempts = 0;
 		while (true) try {
@@ -104,7 +105,7 @@ public class DPUFacade extends cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade {
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void saveNoPermission(DPUTemplateRecord dpu) {
 		int attempts = 0;
 		while (true) try {
@@ -120,7 +121,7 @@ public class DPUFacade extends cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade {
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void delete(DPUTemplateRecord dpu) {
 		int attempts = 0;
 		while (true) try {
@@ -159,7 +160,7 @@ public class DPUFacade extends cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade {
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void save(DPUInstanceRecord dpu) {
 		int attempts = 0;
 		while (true) try {
@@ -175,7 +176,7 @@ public class DPUFacade extends cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade {
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void delete(DPUInstanceRecord dpu) {
 		int attempts = 0;
 		while (true) try {
@@ -238,7 +239,7 @@ public class DPUFacade extends cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade {
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void save(MessageRecord record) {
 		int attempts = 0;
 		while (true) try {
@@ -254,7 +255,7 @@ public class DPUFacade extends cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade {
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void delete(MessageRecord record) {
 		int attempts = 0;
 		while (true) try {

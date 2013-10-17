@@ -192,15 +192,15 @@ public class DPUFacade {
 	}
 
 	/**
-	 * Save DPU template without using permissions.
+	 * Save DPU template without without checking permissions of currently
+	 * logged user. This is useful when we are updating data in database with
+	 * the contents in the JAR file.
+	 * 
 	 * @param dpu
 	 */
+	@Transactional
 	public void saveNoPermission(DPUTemplateRecord dpu) {
-		if (dpu.getId() == null) {
-			em.persist(dpu);
-		} else {
-			em.merge(dpu);
-		}
+		save(dpu);
 	}	
 	
 	/**

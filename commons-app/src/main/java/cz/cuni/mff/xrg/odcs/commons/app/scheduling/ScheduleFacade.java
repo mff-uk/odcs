@@ -108,7 +108,7 @@ public class ScheduleFacade {
 		
 		if (enabled != null) {
 			sql += " AND s.enabled = :enabled";
-			parameters.put(":enabled", enabled);
+			parameters.put("enabled", enabled);
 		}
 		
 		Query query = em.createQuery(sql);
@@ -239,6 +239,7 @@ public class ScheduleFacade {
 	 * 
 	 * @param pipeline to follow
 	 */
+	@Transactional
 	public void executeFollowers(Pipeline pipeline) {
 
 		List<Schedule> toRun = getFollowers(pipeline, true);
