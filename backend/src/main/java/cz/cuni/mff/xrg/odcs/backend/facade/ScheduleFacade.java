@@ -51,11 +51,11 @@ public class ScheduleFacade extends cz.cuni.mff.xrg.odcs.commons.app.scheduling.
 	}
 
 	@Override
-	public List<Schedule> getFollowers(Pipeline pipeline) {
+	public List<Schedule> getFollowers(Pipeline pipeline, Boolean enabled) {
 		int attempts = 0;
 		while (true) try {
 			attempts++;
-			return super.getFollowers(pipeline);
+			return super.getFollowers(pipeline, enabled);
 		} catch (RuntimeException ex) {
 			// presume DB error
 			handler.handle(attempts, ex);
@@ -131,4 +131,20 @@ public class ScheduleFacade extends cz.cuni.mff.xrg.odcs.commons.app.scheduling.
 			handler.handle(attempts, ex);
 		}
 	}
+
+	@Override
+	public void execute(Schedule schedule) {
+		int attempts = 0;
+		while (true) try {
+			attempts++;
+			super.execute(schedule);
+			return;
+		} catch (IllegalArgumentException ex) {
+			// given notification is not persisted
+			throw ex;
+		} catch (RuntimeException ex) {
+			handler.handle(attempts, ex);
+		}
+	}
+	
 }

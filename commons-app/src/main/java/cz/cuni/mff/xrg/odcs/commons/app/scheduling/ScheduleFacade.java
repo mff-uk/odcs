@@ -13,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import java.util.*;
+import javax.persistence.Query;
 
 /**
  * Facade providing actions with plan.
@@ -31,6 +35,9 @@ public class ScheduleFacade {
 	
 	@Autowired(required = false)
 	private AuthenticationContext authCtx;
+	
+	@Autowired
+	private PipelineFacade pipelineFacade;
 	
 	/**
 	 * Schedule factory. Explicitly call {@link #save(cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule)}
@@ -83,22 +90,50 @@ public class ScheduleFacade {
 	 * Fetches all {@link Schedule}s that should be activated after given
 	 * pipeline execution.
 	 *
-	 * @param pipeline
-	 * @return
+	 * @param pipeline pipeline to follow
+	 * @param enabled <ul>
+	 *		<li>if true return only followers with enabled schedules,</li>
+	 *		<li>if false return only followers with disabled schedules,</li>
+	 *		<li>if null return all followers.</li></ul>
+	 * @return schedules configured to follow given pipeline
 	 */
-	public List<Schedule> getFollowers(Pipeline pipeline) {
+	public List<Schedule> getFollowers(Pipeline pipeline, Boolean enabled) {
+		
+		String sql = "SELECT s FROM Schedule s JOIN s.afterPipelines p"
+					+ " WHERE p.id = :pipeline AND s.type = :type";
+		
+		Map<String, Object> parameters = new HashMap<>(3);
+		parameters.put("pipeline", pipeline.getId());
+		parameters.put("type", ScheduleType.AFTER_PIPELINE);
+		
+		if (enabled != null) {
+			sql += " AND s.enabled = :enabled";
+			parameters.put(":enabled", enabled);
+		}
+		
+		Query query = em.createQuery(sql);
+		
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
+		}
+
 		@SuppressWarnings("unchecked")
 		List<Schedule> resultList = Collections.checkedList(
-			em.createQuery(
-				"SELECT s FROM Schedule s"
-					+ "	JOIN s.afterPipelines p"
-					+ " WHERE p.id = :pipeline AND s.type = :type"
-				).setParameter("pipeline", pipeline.getId())
-				.setParameter("type", ScheduleType.AFTER_PIPELINE)
-				.getResultList(),
+				query.getResultList(),
 				Schedule.class
 		);
+		
 		return resultList;
+	}
+	
+	/**
+	 * Fetches all schedules configured to follow given pipeline.
+	 * 
+	 * @param pipeline
+	 * @return 
+	 */
+	public List<Schedule> getFollowers(Pipeline pipeline) {
+		return getFollowers(pipeline, (Boolean) null);
 	}
 	
 	/**
@@ -170,4 +205,46 @@ public class ScheduleFacade {
 		em.remove(notify);
 	}
 	
+	/**
+	 * Create execution for given schedule. Also if the schedule is runOnce then
+	 * disable it. Ignore enable/disable option for schedule.
+	 * 
+	 * @param schedule
+	 */
+	@Transactional
+	public void execute(Schedule schedule) {
+		// update schedule
+		schedule.setLastExecution(new Date());
+		// if the schedule is run one then disable it
+		if (schedule.isJustOnce()) {
+			schedule.setEnabled(false);
+		}
+		// create PipelineExecution
+		PipelineExecution pipelineExec = new PipelineExecution(
+				schedule.getPipeline());
+		// set related scheduler
+		pipelineExec.setSchedule(schedule);
+		// will wake up other pipelines on end ..
+		pipelineExec.setSilentMode(false);
+		// set user .. copy owner of schedule
+		pipelineExec.setOwner(schedule.getOwner());
+
+		// save data into DB -> in next DB check Engine start the execution
+		pipelineFacade.save(pipelineExec);
+		save(schedule);
+	}
+
+	/**
+	 * Executes all pipelines scheduled to follow given pipeline.
+	 * 
+	 * @param pipeline to follow
+	 */
+	public void executeFollowers(Pipeline pipeline) {
+
+		List<Schedule> toRun = getFollowers(pipeline, true);
+
+		for (Schedule schedule : toRun) {
+			execute(schedule);
+		}
+	}
 }

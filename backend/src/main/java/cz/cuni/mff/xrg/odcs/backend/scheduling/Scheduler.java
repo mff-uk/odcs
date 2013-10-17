@@ -15,6 +15,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Take care about execution of scheduled plans.
@@ -25,7 +28,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
 class Scheduler implements ApplicationListener<ApplicationEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
-	
+		
 	/**
 	 * Pipeline facade.
 	 */
@@ -37,34 +40,6 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 	 */
 	@Autowired
 	private ScheduleFacade scheduleFacade;
-	
-	/**
-	 * Create execution for given schedule. Also if the schedule is runOnce then
-	 * disable it. Ignore enable/disable option for schedule.
-	 * 
-	 * @param schedule
-	 */
-	private void execute(Schedule schedule) {
-		// update schedule
-		schedule.setLastExecution(new Date());
-		// if the schedule is run one then disable it
-		if (schedule.isJustOnce()) {
-			schedule.setEnabled(false);
-		}
-		// create PipelineExecution
-		PipelineExecution pipelineExec = new PipelineExecution(
-				schedule.getPipeline());
-		// set related scheduler
-		pipelineExec.setSchedule(schedule);
-		// will wake up other pipelines on end ..
-		pipelineExec.setSilentMode(false);
-		// set user .. copy owner of schedule
-		pipelineExec.setOwner(schedule.getOwner());
-
-		// save data into DB -> in next DB check Engine start the execution
-		pipelineFacade.save(pipelineExec);
-		scheduleFacade.save(schedule);
-	}
 	
 	/**
 	 * Run pipelines that should be executed after given pipeline.
@@ -82,14 +57,9 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 		if (pipelineFinishedEvent.getExecution().getSilentMode()) {
 			// pipeline run in silent mode .. ignore
 		} else {
-			List<Schedule> toRun = scheduleFacade.getFollowers(
-					pipelineFinishedEvent.getExecution().getPipeline());
-			// for each .. run
-			for (Schedule schedule : toRun) {
-				if (schedule.isEnabled()) {
-					execute(schedule);
-				}
-			}
+			scheduleFacade.executeFollowers(
+					pipelineFinishedEvent.getExecution().getPipeline()
+			);
 		}
 		LOG.trace("onPipelineFinished finished");
 	}
@@ -113,8 +83,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 				LOG.debug("Executing id:{} name: {} time of execution is {}", 
 					schedule.getId(), schedule.getName(), 
 					nextExecution);
-				
-				execute(schedule);
+				scheduleFacade.execute(schedule);
 			}
 		}
 		LOG.trace("onTimeCheck finished");

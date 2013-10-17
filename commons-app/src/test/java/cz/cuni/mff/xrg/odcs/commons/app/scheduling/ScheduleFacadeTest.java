@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import java.util.Date;
 
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -112,5 +113,19 @@ public class ScheduleFacadeTest {
 		Schedule ret = scheduler.getSchedule(1L);
 		assertNotNull(ret);
 		assertNull(ret.getNotification());
+	}
+	
+	@Test @Transactional
+	public void testChangeLastExecution() {
+		Date now = new Date();
+		Schedule sch = scheduler.getSchedule(1L);
+		sch.setLastExecution(now);
+		scheduler.save(sch);
+		
+		em.flush();
+		em.clear();
+		
+		Schedule ret = scheduler.getSchedule(1L);
+		assertEquals(now, ret.getLastExecution());
 	}
 }
