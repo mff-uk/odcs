@@ -143,7 +143,7 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh);
+		//executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh);
 
 		//Content of text log file
 		logMessagesTable.setDpu(pipelineExec, null, isRefresh);
@@ -166,7 +166,7 @@ public class DebuggingView extends CustomComponent {
 	 */
 	public void refreshContent() {
 		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
-		fillContent(false);
+		fillContent(true);
 		setCompositionRoot(mainLayout);
 	}
 
@@ -180,7 +180,7 @@ public class DebuggingView extends CustomComponent {
 	public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
 		this.pipelineExec = execution;
 		this.debugDpu = instance;
-		refreshContent();
+		fillContent(false);
 		if (refreshAutomatically != null && refreshAutomatically.getValue()) {
 			refreshAutomatically.setVisible(true);
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(this, execution));
@@ -193,7 +193,7 @@ public class DebuggingView extends CustomComponent {
 	 * @return Execution is finished.
 	 */
 	public boolean isRunFinished() {
-		return !(pipelineExec.getStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getStatus() == PipelineExecutionStatus.RUNNING);
+		return !(pipelineExec.getStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getStatus() == PipelineExecutionStatus.RUNNING || pipelineExec.getStatus() == PipelineExecutionStatus.CANCELLING);
 	}
 
 	public boolean isRefreshingAutomatically() {
