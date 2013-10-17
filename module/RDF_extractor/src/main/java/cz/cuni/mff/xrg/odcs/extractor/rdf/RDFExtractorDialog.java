@@ -191,7 +191,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.setHeight("100%");
 		gridLayoutCore.setMargin(true);
 		gridLayoutCore.setColumns(2);
-		gridLayoutCore.setRows(4);
+		gridLayoutCore.setRows(5);
 		gridLayoutCore.setColumnExpandRatio(0, 0.10f);
 		gridLayoutCore.setColumnExpandRatio(1, 0.90f);
 
@@ -323,6 +323,52 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		//Named Graph component
 		initializeNamedGraphList();
 		gridLayoutCore.addComponent(gridLayoutGraph, 1, 3);
+		
+		
+		// labelConstr
+		labelConstr = new Label();
+		labelConstr.setImmediate(false);
+		labelConstr.setWidth("100%");
+		labelConstr.setHeight("-1px");
+		labelConstr.setValue("SPARQL  Construct:");
+		gridLayoutCore.addComponent(labelConstr, 0, 4);
+
+		// textAreaConstr
+		textAreaConstr = new TextArea();
+		textAreaConstr.setNullRepresentation("");
+		textAreaConstr.setImmediate(true);
+		textAreaConstr.setWidth("100%");
+		textAreaConstr.setHeight("100px");
+		textAreaConstr.setInputPrompt(
+				"CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
+
+		textAreaConstr.addValueChangeListener(
+				new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+
+				final String query = textAreaConstr.getValue().trim();
+				if (query.isEmpty()) {
+					isQueryValid = true;
+					return;
+				}
+
+				cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator validator = new SPARQLQueryValidator(
+						query, SPARQLQueryType.CONSTRUCT);
+
+				if (!validator.isQueryValid()) {
+
+					isQueryValid = false;
+					errorMessage = validator.getErrorMessage();
+
+				} else {
+					isQueryValid = true;
+				}
+			}
+		});
+
+		gridLayoutCore.addComponent(textAreaConstr, 1, 4);
+
 
 
 		return gridLayoutCore;
@@ -515,62 +561,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
 
-		// SPARQL Construct component
-		gridLayoutConstr = new GridLayout();
-		gridLayoutConstr.setImmediate(true);
-		gridLayoutConstr.setWidth("100%");
-		gridLayoutConstr.setHeight("-1px");
-		gridLayoutConstr.setMargin(false);
-		gridLayoutConstr.setSpacing(true);
-		gridLayoutConstr.setColumns(2);
-		gridLayoutConstr.setColumnExpandRatio(0, 0.20f);
-		gridLayoutConstr.setColumnExpandRatio(1, 0.80f);
-
-		// labelConstr
-		labelConstr = new Label();
-		labelConstr.setImmediate(false);
-		labelConstr.setWidth("100%");
-		labelConstr.setHeight("-1px");
-		labelConstr.setValue("SPARQL  Construct:");
-		gridLayoutConstr.addComponent(labelConstr, 0, 0);
-
-		// textAreaConstr
-		textAreaConstr = new TextArea();
-		textAreaConstr.setNullRepresentation("");
-		textAreaConstr.setImmediate(true);
-		textAreaConstr.setWidth("100%");
-		textAreaConstr.setHeight("100px");
-		textAreaConstr.setInputPrompt(
-				"CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
-
-		textAreaConstr.addValueChangeListener(
-				new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-
-				final String query = textAreaConstr.getValue().trim();
-				if (query.isEmpty()) {
-					isQueryValid = true;
-					return;
-				}
-
-				cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator validator = new SPARQLQueryValidator(
-						query, SPARQLQueryType.CONSTRUCT);
-
-				if (!validator.isQueryValid()) {
-
-					isQueryValid = false;
-					errorMessage = validator.getErrorMessage();
-
-				} else {
-					isQueryValid = true;
-				}
-			}
-		});
-
-		gridLayoutConstr.addComponent(textAreaConstr, 1, 0);
-
-		verticalLayoutDetails.addComponent(gridLayoutConstr);
 
 		// labelOpt
 		labelOpt = new Label();
