@@ -29,7 +29,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		implements ConfigDialogProvider<RDFExtractorConfig> {
 
 	private final Logger LOG = LoggerFactory.getLogger(RDFExtractor.class);
-	
+
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -57,15 +57,16 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
 					constructQuery, hostName, password, RDFFormat.N3,
-					useStatisticHandler, extractFail);			
+					useStatisticHandler, extractFail);
 		} catch (MalformedURLException ex) {
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
 			throw new DPUException(ex);
 		} catch (RDFDataUnitException ex) {
+			context.sendMessage(MessageType.ERROR, ex.getMessage());
 			throw new DPUException(ex.getMessage(), ex);
 		}
-		
+
 		final long triplesCount = rdfDataUnit.getTripleCount();
 		LOG.info("Extracted {} triples", triplesCount);
 	}
@@ -74,5 +75,4 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	public AbstractConfigDialog<RDFExtractorConfig> getConfigurationDialog() {
 		return new RDFExtractorDialog();
 	}
-
 }
