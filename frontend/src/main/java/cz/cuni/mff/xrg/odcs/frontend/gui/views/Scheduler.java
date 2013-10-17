@@ -162,6 +162,7 @@ class Scheduler extends ViewComponent {
 		schedulerTable.setImmediate(true);
 		schedulerTable.setVisibleColumns(visibleCols); // Set visible columns
 		schedulerTable.setColumnHeaders(headers);
+		schedulerTable.setFilterBarVisible(true);
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
@@ -180,6 +181,7 @@ class Scheduler extends ViewComponent {
 		});
 		schedulerTable.setFilterDecorator(new filterDecorator());
 		schedulerTable.setFilterFieldVisible("commands", false);
+		schedulerTable.setFilterFieldVisible("duration", false);
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
 		schedulerTable.setPageLength(20);
@@ -325,6 +327,7 @@ class Scheduler extends ViewComponent {
 		schedulerTable.setCurrentPage(page);
 		schedulerTable.setVisibleColumns(visibleCols);
 		schedulerTable.setFilterFieldVisible("commands", false);
+		schedulerTable.setFilterFieldVisible("duration", false);
 
 	}
 
