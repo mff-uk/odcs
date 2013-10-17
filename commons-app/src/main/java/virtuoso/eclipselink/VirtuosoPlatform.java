@@ -64,8 +64,10 @@ public class VirtuosoPlatform extends DatabasePlatform {
 		int max = 0;
 		int firstRow = 0;
         if (statement.getQuery() != null) {
-            max = statement.getQuery().getMaxRows();
             firstRow = statement.getQuery().getFirstResult();
+			// EclipseLink converts maximum number of rows to maximum row index,
+			// so we need to convert back. See GH-625.
+            max = statement.getQuery().getMaxRows() - firstRow;
         }
 
 		// Check whether we should use row limiting at all. If not, no TOP
