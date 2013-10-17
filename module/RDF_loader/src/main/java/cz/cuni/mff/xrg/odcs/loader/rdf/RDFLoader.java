@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
@@ -28,7 +29,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		implements ConfigDialogProvider<RDFLoaderConfig> {
 
 	private final Logger LOG = LoggerFactory.getLogger(RDFLoader.class);
-	
+
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -58,13 +59,14 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final long chunkSize = config.chunkSize;
 
 		final long triplesCount = rdfDataUnit.getTripleCount();
-		LOG.info("Loading {} triples", triplesCount);		
-		
+		LOG.info("Loading {} triples", triplesCount);
+
 		try {
 
 			rdfDataUnit.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
 		} catch (RDFDataUnitException ex) {
+			context.sendMessage(MessageType.ERROR, ex.getMessage());
 			throw new DPUException(ex.getMessage(), ex);
 		}
 	}
@@ -73,5 +75,4 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	public AbstractConfigDialog<RDFLoaderConfig> getConfigurationDialog() {
 		return new RDFLoaderDialog();
 	}
-
 }
