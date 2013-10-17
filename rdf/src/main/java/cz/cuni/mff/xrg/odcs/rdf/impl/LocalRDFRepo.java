@@ -199,7 +199,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		try {
 			sourceConnection = secondRepository.getConnection();
 
-			if (!sourceConnection.isEmpty()) {
+			if (sourceConnection != null) {
 
 				List<Statement> sourceStatemens = second
 						.getTriples();
