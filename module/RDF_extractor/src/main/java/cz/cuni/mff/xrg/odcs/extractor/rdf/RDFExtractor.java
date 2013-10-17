@@ -16,6 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,6 +28,8 @@ import org.openrdf.rio.RDFFormat;
 public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		implements ConfigDialogProvider<RDFExtractorConfig> {
 
+	private final Logger LOG = LoggerFactory.getLogger(RDFExtractor.class);
+	
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -53,7 +57,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
 					constructQuery, hostName, password, RDFFormat.N3,
-					useStatisticHandler, extractFail);
+					useStatisticHandler, extractFail);			
 		} catch (MalformedURLException ex) {
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
@@ -61,6 +65,9 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		} catch (RDFDataUnitException ex) {
 			throw new DPUException(ex.getMessage(), ex);
 		}
+		
+		final long triplesCount = rdfDataUnit.getTripleCount();
+		LOG.info("Extracted {} triples", triplesCount);
 	}
 
 	@Override

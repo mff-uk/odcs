@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
@@ -19,6 +22,8 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		implements ConfigDialogProvider<FileLoaderConfig> {
 
+	private final Logger LOG = LoggerFactory.getLogger(FileLoader.class);
+	
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -34,6 +39,9 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		final boolean isNameUnique = config.DiffName;
 		final boolean canFileOverwritte = true;
 
+		final long triplesCount = rdfDataUnit.getTripleCount();
+		LOG.info("Loading {} triples", triplesCount);
+		
 		try {
 			rdfDataUnit.loadToFile(filePath, formatType,
 					canFileOverwritte, isNameUnique);
