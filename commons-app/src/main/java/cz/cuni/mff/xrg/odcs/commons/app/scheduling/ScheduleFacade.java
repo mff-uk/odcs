@@ -239,6 +239,7 @@ public class ScheduleFacade {
 	 * 
 	 * @param pipeline to follow
 	 */
+	@Transactional
 	public void executeFollowers(Pipeline pipeline) {
 
 		List<Schedule> toRun = getFollowers(pipeline, true);

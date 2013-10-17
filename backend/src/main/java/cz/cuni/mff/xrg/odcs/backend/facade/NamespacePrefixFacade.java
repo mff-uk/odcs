@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.backend.facade;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for managing RDF prefixes, which tolerates database crashes. This facade
@@ -60,7 +61,7 @@ public class NamespacePrefixFacade extends cz.cuni.mff.xrg.odcs.commons.app.rdf.
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void save(NamespacePrefix prefix) {
 		int attempts = 0;
 		while (true) try {
@@ -76,7 +77,7 @@ public class NamespacePrefixFacade extends cz.cuni.mff.xrg.odcs.commons.app.rdf.
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void delete(NamespacePrefix prefix) {
 		int attempts = 0;
 		while (true) try {

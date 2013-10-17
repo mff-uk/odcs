@@ -195,6 +195,7 @@ public class DPUFacade {
 	 * Save DPU template without using permissions.
 	 * @param dpu
 	 */
+	@Transactional
 	public void saveNoPermission(DPUTemplateRecord dpu) {
 		if (dpu.getId() == null) {
 			em.persist(dpu);

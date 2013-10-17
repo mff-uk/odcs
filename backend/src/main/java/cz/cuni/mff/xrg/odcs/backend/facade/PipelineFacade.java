@@ -41,8 +41,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		}
 	}
 
-	@Override
-	@Transactional
+	@Override @Transactional
 	public void save(Pipeline pipeline) {
 		int attempts = 0;
 		while (true) try {
@@ -80,8 +79,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		}
 	}
 
-	@Override
-	@Transactional
+	@Override @Transactional
 	public void save(PipelineExecution exec) {
 		int attempts = 0;
 		while (true) try {
@@ -96,8 +94,7 @@ public class PipelineFacade extends cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pi
 		}
 	}
 
-	@Override
-	@Transactional
+	@Override @Transactional
 	public void delete(PipelineExecution exec) {
 		int attempts = 0;
 		while (true) try {

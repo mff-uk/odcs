@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.backend.facade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for managing users, which tolerates database crashes. This facade
@@ -60,7 +61,7 @@ public class UserFacade extends cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void save(User user) {
 		int attempts = 0;
 		while (true) try {
@@ -76,7 +77,7 @@ public class UserFacade extends cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade
 		}
 	}
 
-	@Override
+	@Override @Transactional
 	public void delete(User user) {
 		int attempts = 0;
 		while (true) try {
