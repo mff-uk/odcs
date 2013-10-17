@@ -110,18 +110,17 @@ public class UserCreate extends Window {
 
 					String inputFullName = (String) value;
 					
-					Pattern namePattern =  Pattern.compile("([a-zA-Z]+\\s*)+", Pattern.UNICODE_CASE);
-					Matcher m = namePattern.matcher(inputFullName);
-					m.find();
+					Pattern namePattern1 =  Pattern.compile("([A-Za-zŽžÝýŮůÚúŤťŠšŘřÓóŇňÍíĚěÉéĎďČčÁáÄäÖößÜüÀàÈèÙùÂâÊêÎîÔôÛûÇçËëÏïÜüŸÿ]+\\s*)+", Pattern.UNICODE_CASE);
+					Matcher m = namePattern1.matcher(inputFullName);
 					if (!m.matches()) {
-						ex = new InvalidValueException("User full name must start with a letter and can only consists of letters and spaces.");
+						ex = new InvalidValueException("Full user name must start with a letter and can only consists of letters and spaces.");
 						throw ex;
 					}
 
 					
 					if((m.end() - m.start()) < 2) {
 
-						ex = new InvalidValueException("User full name must contains more than one symbol");
+						ex = new InvalidValueException("Full user name must contains more than one symbol");
 						throw ex;
 					}	
 
@@ -351,6 +350,8 @@ public class UserCreate extends Window {
 
 					EmailAddress email = new EmailAddress(userEmail.getValue().trim());
 					user = App.getApp().getUsers().createUser(userName.getValue().trim(), userPassword, email);
+					user.setFullName(userFullName.getValue().trim());
+
 				} else {
 					user = selectUser;
 					user.setFullName(userFullName.getValue().trim());
