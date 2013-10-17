@@ -108,7 +108,7 @@ public class ScheduleFacade {
 		
 		if (enabled != null) {
 			sql += " AND s.enabled = :enabled";
-			parameters.put(":enabled", enabled);
+			parameters.put("enabled", enabled);
 		}
 		
 		Query query = em.createQuery(sql);
