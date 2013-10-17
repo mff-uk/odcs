@@ -54,15 +54,25 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			final boolean useStatisticHandler = config.UseStatisticalHandler;
 			final boolean extractFail = config.ExtractFail;
 
+			LOG.debug("endpointURL: {}", endpointURL);
+			LOG.debug("defaultGraphsUri: {}", defaultGraphsUri);
+			LOG.debug("constructQuery: {}", constructQuery);
+			LOG.debug("hostName: {}", hostName);
+			LOG.debug("password: {}", password);
+			LOG.debug("useStatisticHandler: {}", useStatisticHandler);
+			LOG.debug("extractFail: {}", extractFail);
+			
 			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
 					constructQuery, hostName, password, RDFFormat.N3,
 					useStatisticHandler, extractFail);			
 		} catch (MalformedURLException ex) {
+			LOG.debug("RDFDataUnitException", ex);
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
 					+ ex.getMessage());
 			throw new DPUException(ex);
 		} catch (RDFDataUnitException ex) {
+			LOG.debug("RDFDataUnitException", ex);
 			throw new DPUException(ex.getMessage(), ex);
 		}
 		

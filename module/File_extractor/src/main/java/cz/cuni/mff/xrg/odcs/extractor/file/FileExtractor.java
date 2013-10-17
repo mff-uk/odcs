@@ -46,6 +46,14 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		RDFFormatType formatType = config.RDFFormatValue;
 		final RDFFormat format = RDFFormatType.getRDFFormatByType(formatType);
 
+		LOG.debug("extractType: {}", extractType);
+		LOG.debug("format: {}", format);
+		LOG.debug("path: {}", path);
+		LOG.debug("fileSuffix: {}", fileSuffix);
+		LOG.debug("baseURI: {}", baseURI);
+		LOG.debug("onlyThisSuffix: {}", onlyThisSuffix);
+		LOG.debug("useStatisticHandler: {}", useStatisticHandler);
+		
 		rdfDataUnit.extractFromFile(extractType, format, path, fileSuffix,
 				baseURI, onlyThisSuffix, useStatisticHandler);
 		
