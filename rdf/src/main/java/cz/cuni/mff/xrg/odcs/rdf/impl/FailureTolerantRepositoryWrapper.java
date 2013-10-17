@@ -19,8 +19,8 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(FailureTolerantRepositoryWrapper.class);
 	
-	private static final String RETRIES_KEY = "virtuoso.retries";
-	private static final String WAIT_KEY = "virtuoso.wait";
+	private static final String RETRIES_KEY = "retries";
+	private static final String WAIT_KEY = "wait";
 	
 	/**
 	 * Wrapped RDF repository.
