@@ -105,12 +105,13 @@ public class DebuggingView extends CustomComponent {
 		HorizontalLayout optionLine = new HorizontalLayout();
 		optionLine.setWidth(100, Unit.PERCENTAGE);
 
-		if (!isRunFinished()) {
-			refreshAutomatically = new CheckBox("Refresh automatically", true);
-			refreshAutomatically.setImmediate(true);
-			optionLine.addComponent(refreshAutomatically);
-			optionLine.setComponentAlignment(refreshAutomatically, Alignment.MIDDLE_RIGHT);
-		}
+		//if (!isRunFinished()) {
+		refreshAutomatically = new CheckBox("Refresh automatically", true);
+		refreshAutomatically.setImmediate(true);
+		refreshAutomatically.setVisible(false);
+		optionLine.addComponent(refreshAutomatically);
+		optionLine.setComponentAlignment(refreshAutomatically, Alignment.MIDDLE_RIGHT);
+		//}
 		mainLayout.addComponent(optionLine);
 
 		VerticalLayout logLayout = new VerticalLayout();
@@ -159,9 +160,9 @@ public class DebuggingView extends CustomComponent {
 			queryTab.setEnabled(false);
 		}
 
-		if (isRunFinished() && refreshAutomatically != null) {
-			refreshAutomatically.setVisible(false);
-		}
+		
+		refreshAutomatically.setVisible(!isRunFinished());
+		
 	}
 
 	/**
@@ -184,8 +185,7 @@ public class DebuggingView extends CustomComponent {
 		this.pipelineExec = execution;
 		this.debugDpu = instance;
 		fillContent(false);
-		if (refreshAutomatically != null && refreshAutomatically.getValue()) {
-			refreshAutomatically.setVisible(true);
+		if (!isRunFinished()) {
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(this, execution));
 		}
 	}

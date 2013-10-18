@@ -15,7 +15,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
@@ -23,8 +22,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.frontend.AuthenticationService;
-import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
@@ -123,6 +120,11 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param dpu {@link DPUInstanceRecord} or null.
 	 */
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
+		if(fetchData != null) {
+			fetchData.interrupt();
+		}
+		preparedRefreshedTable = null;
+		
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
 		this.pipelineExecution = exec;
 		if (dpuNames == null) {
@@ -376,6 +378,10 @@ public class LogMessagesTable extends CustomComponent {
 				setTableFilters(fetchTable, dpu, level, message, source, date);
 				fetchTable.setCurrentPage(fetchTable.getTotalAmountOfPages());
 
+				if(isInterrupted()) {
+					return;
+				}
+				
 				UI.getCurrent().access(new Runnable() {
 					@Override
 					public void run() {
