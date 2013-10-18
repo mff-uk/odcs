@@ -154,7 +154,8 @@ public class Executor implements Runnable {
 			}
 		}
 
-		// update state
+		// update state and set start time
+		this.execution.setStart(new Date());
 		this.execution.setStatus(PipelineExecutionStatus.RUNNING);
 
 		try {
@@ -406,8 +407,7 @@ public class Executor implements Runnable {
 
 	@Override
 	public void run() {
-		// set start time
-		execution.setStart(new Date());
+		// the execution start time has been already set in bind function
 		try {
 			// contextInfo is in pipeline so by saving pipeline we also save
 			// context
