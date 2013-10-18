@@ -92,7 +92,8 @@ public class DebuggingView extends CustomComponent {
 				if(event.getClass() == OpenLogsEvent.class) {
 					OpenLogsEvent ole = (OpenLogsEvent)event;
 					debugDpu = dpuFacade.getDPUInstance(ole.getDpuId());
-					logMessagesTable.setDpu(pipelineExec, debugDpu, true);
+					logMessagesTable.setDpu(pipelineExec, debugDpu);
+					logMessagesTable.refresh(true, false);
 					tabs.setSelectedTab(logsTab);
 				}
 			}
@@ -143,10 +144,12 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		//executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh);
+		executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh);
 
 		//Content of text log file
-		logMessagesTable.setDpu(pipelineExec, null, isRefresh);
+		if(!isRefresh) {
+			logMessagesTable.setDpu(pipelineExec, null);
+		}
 
 		//Query View
 		if (isInDebugMode && isRunFinished()) {
@@ -221,5 +224,9 @@ public class DebuggingView extends CustomComponent {
 		for (Listener l : ls) {
 			l.componentEvent(new Event(this));
 		}
+	}
+	
+	public LogMessagesTable getLogMessagesTable() {
+		return logMessagesTable;
 	}
 }

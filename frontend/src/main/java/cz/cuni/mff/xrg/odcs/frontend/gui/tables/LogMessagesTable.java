@@ -120,59 +120,70 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param exec {@link PipelineExecution} which log to show.
 	 * @param dpu {@link DPUInstanceRecord} or null.
 	 */
-	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, boolean isRefresh) {
+	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
-		if (!isRefresh) {
-			this.pipelineExecution = exec;
-			if (dpuNames == null) {
-				dpuNames = new HashMap<>();
-			} else {
-				dpuNames.clear();
-			}
-			for (Node node : pipelineExecution.getPipeline().getGraph().getNodes()) {
-				DPUInstanceRecord nodeDpu = node.getDpuInstance();
-				dpuNames.put(nodeDpu.getId(), nodeDpu.getName());
-			}
-			c.removeDefaultFilters();
-			c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
-		}
-		this.dpu = dpu;
-		if (!isRefresh) {
-			Level newValue = exec.isDebugging() ? Level.ALL : Level.INFO;
-			if (newValue.equals(messageTable.getFilterFieldValue("level"))) {
-				c.refresh();
-			} else {
-				messageTable.setFilterFieldValue("level", newValue);
-			}
-			messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+		this.pipelineExecution = exec;
+		if (dpuNames == null) {
+			dpuNames = new HashMap<>();
 		} else {
+			dpuNames.clear();
+		}
+		for (Node node : pipelineExecution.getPipeline().getGraph().getNodes()) {
+			DPUInstanceRecord nodeDpu = node.getDpuInstance();
+			dpuNames.put(nodeDpu.getId(), nodeDpu.getName());
+		}
+		c.removeDefaultFilters();
+		c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
 
+		this.dpu = dpu;
+		Level newValue = exec.isDebugging() ? Level.ALL : Level.INFO;
+		if (newValue.equals(messageTable.getFilterFieldValue("level"))) {
+			c.refresh();
+		} else {
+			messageTable.setFilterFieldValue("level", newValue);
+		}
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+		refreshDpuSelector((ComboBox) messageTable.getFilterField("dpuInstanceId"));
+	}
+
+	public boolean refresh(boolean immediate, boolean getNewData) {
+		if (immediate) {
+			IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
+			c.refresh();
+			return true;
+		} else {
+			
 			DPUInstanceRecord selectedDpu = (DPUInstanceRecord) messageTable.getFilterFieldValue("dpuInstanceId");
 			Level level = (Level) messageTable.getFilterFieldValue("level");
 			String message = (String) messageTable.getFilterFieldValue("message");
 			String source = (String) messageTable.getFilterFieldValue("source");
 			Object date = messageTable.getFilterFieldValue("date");
 
+			boolean result = false;
+
 			if (preparedRefreshedTable != null) {
 				if (filterValuesStayedSame(selectedDpu, level, message, source, date)) {
-					LOG.debug("Refresh log started " + (new Date()).getTime());
+					LOG.debug("Data refresh updated to client.");
 					mainLayout.removeComponent(messageTable);
 					mainLayout.removeComponent(mtControls);
 					messageTable = preparedRefreshedTable;
 					mtControls = messageTable.createControls();
 					mainLayout.addComponent(messageTable, 0);
 					mainLayout.addComponent(mtControls, 1);
-					LOG.debug("Refresh log ended " + (new Date()).getTime());
+					result = true;
+				} else {
+					getNewData = true;
 				}
 				preparedRefreshedTable = null;
 			}
 
-			if (preparedRefreshedTable == null && (fetchData == null || !fetchData.isAlive())) {
+			if (getNewData && preparedRefreshedTable == null && (fetchData == null || !fetchData.isAlive())) {
+				LOG.debug("Data refresh requested.");
 				Authentication authentication = App.getApp().getAuthCtx().getAuthentication();
 				startFetchThread(pipelineExecution, selectedDpu, level, message, source, date, authentication);
 			}
+			return result && !getNewData;
 		}
-		refreshDpuSelector((ComboBox) messageTable.getFilterField("dpuInstanceId"));
 	}
 
 	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {

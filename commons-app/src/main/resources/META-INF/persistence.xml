@@ -40,7 +40,7 @@
 			<!-- We want weaving (e.g. for lazyloading). Dynamic (=runtime) weaving needs Java agent, static (=compile-time) should suffice for our needs. -->
 			<property name="eclipselink.weaving" value="static"/>
 			
-			<property name="eclipselink.logging.level" value="WARNING"/>
+			<property name="eclipselink.logging.level.sql" value="WARNING"/>
 			
 		</properties>
 		<!-- Disable shared cache across different EntityManagers, for details see http://wiki.eclipse.org/EclipseLink/Examples/JPA/Caching. -->
