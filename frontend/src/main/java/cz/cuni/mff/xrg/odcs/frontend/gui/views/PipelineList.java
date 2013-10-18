@@ -29,6 +29,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -122,7 +124,17 @@ class PipelineList extends ViewComponent {
 //		topLine.setExpandRatio(topLineFiller, 1.0f);
 		mainLayout.addComponent(topLine);
 
-		tablePipelines = new IntlibPagedTable();
+		tablePipelines = new IntlibPagedTable() {
+
+			@Override
+			public Collection<?> getSortableContainerPropertyIds() {
+				ArrayList<String> sortableIds = new ArrayList<>(2);
+				sortableIds.add("id");
+				sortableIds.add("name");
+				return sortableIds;
+			}
+			
+		};
 		tablePipelines.setWidth("99%");
 		
 		mainLayout.addComponent(tablePipelines);
