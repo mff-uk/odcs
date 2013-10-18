@@ -33,6 +33,8 @@ import org.vaadin.addons.lazyquerycontainer.CompositeItem;
  * @author Bogo
  */
 public class RecordsTable extends CustomComponent {
+	
+	private static final int PAGE_LENGTH = 20;
 
 	private boolean isInitialized = false;
 	private VerticalLayout mainLayout;
@@ -71,7 +73,7 @@ public class RecordsTable extends CustomComponent {
 		messageTable.setSizeFull();
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(20);
+		messageTable.setPageLength(PAGE_LENGTH);
 		loadMessageTable();
 		setCompositionRoot(mainLayout);
 	}
@@ -96,7 +98,7 @@ public class RecordsTable extends CustomComponent {
 	 *
 	 */
 	private void loadMessageTable() {
-		Container container = App.getApp().getBean(ContainerFactory.class).createExecutionMessages();
+		Container container = App.getApp().getBean(ContainerFactory.class).createExecutionMessages(PAGE_LENGTH);
 		messageTable.setSortEnabled(true);
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {

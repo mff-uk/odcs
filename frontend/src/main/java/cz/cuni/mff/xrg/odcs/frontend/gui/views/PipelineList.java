@@ -51,6 +51,7 @@ class PipelineList extends ViewComponent {
 	 * View name.
 	 */
 	public static final String NAME = "PipelineList";
+	private static final int PAGE_LENGTH = 20;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
@@ -139,11 +140,11 @@ class PipelineList extends ViewComponent {
 		
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
-		tablePipelines.setPageLength(20);
+		tablePipelines.setPageLength(PAGE_LENGTH);
 		tablePipelines.setSortContainerPropertyId("id");
 		tablePipelines.setSortAscending(false);
 		// assign data source
-		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines();
+		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines(PAGE_LENGTH);
 		tablePipelines.setContainerDataSource(container);
 		tablePipelines.sort();
 		// add column

@@ -53,6 +53,8 @@ import org.vaadin.addons.lazyquerycontainer.CompositeItem;
  * @author Bogo
  */
 public class LogMessagesTable extends CustomComponent {
+	
+	private static final int PAGE_LENGTH = 28;
 
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
@@ -208,7 +210,7 @@ public class LogMessagesTable extends CustomComponent {
 		table.setSelectable(true);
 
 		table.setSizeFull();
-		table.setPageLength(28);
+		table.setPageLength(PAGE_LENGTH);
 		table.setSelectable(true);
 		table.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
@@ -237,7 +239,7 @@ public class LogMessagesTable extends CustomComponent {
 		dpuSelector.setImmediate(true);
 		filterGenerator = createFilterGenerator(dpuSelector, levelSelector);
 
-		IntlibLazyQueryContainer container = App.getApp().getBean(ContainerFactory.class).createLogMessages();
+		IntlibLazyQueryContainer container = App.getApp().getBean(ContainerFactory.class).createLogMessages(PAGE_LENGTH);
 		if (executionId != null) {
 			container.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId));
 		}

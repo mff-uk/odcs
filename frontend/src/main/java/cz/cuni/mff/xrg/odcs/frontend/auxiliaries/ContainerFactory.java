@@ -39,8 +39,8 @@ public class ContainerFactory {
 	 * @param data data for container
 	 * @return
 	 */
-	public Container createPipelines() {
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, 20, "id", true, true, true);
+	public Container createPipelines(int pageLength) {
+		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, pageLength, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"id"}, new boolean[]{true});
 		container.addContainerProperty("id", Long.class, 0, true, true);
@@ -55,9 +55,9 @@ public class ContainerFactory {
 	 * 
 	 * @return container with pipeline executions
 	 */
-	public Container createExecutions() {
+	public Container createExecutions(int pageLength) {
 		
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(em, PipelineExecution.class, 20, "id", true, true, true);
+		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(em, PipelineExecution.class, pageLength, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"start"}, new boolean[]{true}
 		);
@@ -96,8 +96,8 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public Container createExecutionMessages() {
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(em, MessageRecord.class, 20, "id", true, true, true);
+	public Container createExecutionMessages(int pageLength) {
+		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(em, MessageRecord.class, pageLength, "id", true, true, true);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
 				new Object[]{"time"}, new boolean[]{true});
 		container.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(1);
@@ -121,8 +121,8 @@ public class ContainerFactory {
 		return container;
 	}
 
-	public IntlibLazyQueryContainer createLogMessages() {
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(em, LogMessage.class, 28, "id", true, true, true);
+	public IntlibLazyQueryContainer createLogMessages(int pageLength) {
+		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(em, LogMessage.class, pageLength, "id", true, true, true);
 		container.addContainerProperty("id", Long.class, 0, true, true);
 		container.addContainerProperty("thread", String.class, "", true, true);
 		container.addContainerProperty("level", Level.class, Level.ALL, true, true);
