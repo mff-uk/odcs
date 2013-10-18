@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.backend.execution;
 
+import cz.cuni.mff.xrg.odcs.backend.data.ContextDeleter;
+import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEventType;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
@@ -67,6 +69,9 @@ public class Engine implements ApplicationListener<EngineEvent> {
 	@Autowired
 	private PipelineFacade pipelineFacade;
 
+	@Autowired
+	private DataUnitFactory dataUnitFactory;
+	
 	/**
 	 * Thread pool.
 	 */
@@ -203,11 +208,13 @@ public class Engine implements ApplicationListener<EngineEvent> {
 			}
 		}
 
+		ContextDeleter deleter = new ContextDeleter(dataUnitFactory, appConfig);
 		List<PipelineExecution> cancelling = pipelineFacade
 				.getAllExecutions(PipelineExecutionStatus.CANCELLING);
 		for (PipelineExecution execution : cancelling) {
-			// just switch to cancelled ..
-
+			// delete execution data
+			deleter.deleteContext(execution);
+			// switch to cancelled ..
 			execution.setStatus(PipelineExecutionStatus.CANCELLED);
 			execution.setEnd(new Date());
 			try {

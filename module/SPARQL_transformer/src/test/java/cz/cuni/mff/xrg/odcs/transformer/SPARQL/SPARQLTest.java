@@ -50,7 +50,7 @@ public class SPARQLTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void constructAllTestVirtuoso() throws Exception {
 		// prepare dpu
 		SPARQLTransformer trans = new SPARQLTransformer();
@@ -76,7 +76,7 @@ public class SPARQLTest {
 			assertTrue(input.getTripleCount() == output.getTripleCount());
 		} finally {
 			// release resources
-			env.release();
+			//env.release();
 		}
 	}
 	

@@ -104,6 +104,8 @@ class FileNotifierServer implements Runnable {
 		}
 		// register directories to watch
 		register(Paths.get(moduleFacade.getDPUDirectory()));
+		
+		
 		// start watching .. the function run asynchronously
 		watcherThread = new Thread(this);
 		watcherThread.start();
