@@ -6,6 +6,7 @@ import com.github.wolfie.refresher.Refresher.RefreshListener;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable;
 
 import java.util.HashMap;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,10 @@ public class RefreshManager {
 	public static RefreshListener getDebugRefresher(final DebuggingView debug, final PipelineExecution exec) {
 		return new Refresher.RefreshListener() {
 			boolean isWorking = true;
+			boolean lastFinished = false;
 			PipelineExecution execution = exec;
 			boolean lastExecutionStatus = false;
+			boolean isLogsSet = false;
 
 			@Override
 			public void refresh(Refresher source) {
@@ -63,13 +66,20 @@ public class RefreshManager {
 				if (debug.isRefreshingAutomatically()) {
 					lastExecutionStatus = true;
 					debug.refreshContent();
+					LogMessagesTable logs = debug.getLogMessagesTable();
+					isLogsSet = logs.refresh(false, !lastFinished);
 					//Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
 				} else {
 					lastExecutionStatus = false;
 				}
 				isRunFinished &= lastExecutionStatus;
-				if (isRunFinished) {
+				if(lastFinished && isLogsSet) {
 					isWorking = false;
+					LOG.debug("Refresh stopped.");
+				}
+				if (isRunFinished) {
+					lastFinished = true;
+					LOG.debug("Execution finished.");
 				}
 				LOG.debug("DebuggingView refreshed.");
 			}

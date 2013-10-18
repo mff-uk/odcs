@@ -73,6 +73,7 @@ public class ContainerFactory {
 		container.addContainerProperty("duration", String.class, "");
 		container.addContainerProperty("status", PipelineExecutionStatus.class, null);
 		container.addContainerProperty("isDebugging", Boolean.class, false);
+		container.addContainerProperty("lastChange", Timestamp.class, null);
 
 		return container;
 	}

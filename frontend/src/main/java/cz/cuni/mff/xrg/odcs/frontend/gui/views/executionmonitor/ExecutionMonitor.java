@@ -97,6 +97,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	 * editor.
 	 */
 	public ExecutionMonitor() {
+		lastLoad = new Date(0L);
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
-		setCompositionRoot(mainLayout);
+		setCompositionRoot(mainLayout);	
 
 		String strExecId = event.getParameters();
 		if (strExecId == null || strExecId.isEmpty()) {
@@ -164,7 +165,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				//App.getApp().getRefreshThread().refreshExecution(null, null);
 				App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 
 				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
@@ -192,7 +192,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		logLayout.setExpandRatio(buttonBar, 0);
 
 		if (pipelineExec.getStatus() == RUNNING || pipelineExec.getStatus() == SCHEDULED) {
-			//App.getApp().getRefreshThread().refreshExecution(pipelineExec, debugView);
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(dView, pipelineExec));
 		}
 		return logLayout;
@@ -262,7 +261,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTableLayout.addComponent(topLine);
 
 		tableData = cf.createExecutions();
-		lastLoad = new Date();
 
 		//table with pipeline execution records
 		monitorTable = new IntlibPagedTable();
@@ -334,6 +332,10 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
+				Date recordLastChange = (Date)source.getItem(itemId).getItemProperty("lastChange").getValue();
+				if(recordLastChange != null && recordLastChange.after(lastLoad)) {
+					lastLoad = recordLastChange;
+				}
 				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
 				if (duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
 					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
@@ -438,7 +440,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	 * Calls for refresh {@link #monitorTable}.
 	 */
 	public void refresh(boolean showFirstPage) {
-		Date now = new Date();
 		boolean hasModifiedExecutions = App.getApp().getPipelines().hasModifiedExecutions(lastLoad);
 		if (hasModifiedExecutions) {
 			runTimeLabels.clear();
@@ -450,7 +451,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			c.refresh();
 			monitorTable.setCurrentPage(showFirstPage ? 1 : page);
 			monitorTable.setValue(selectedRowId);
-			lastLoad = now;
 		}
 
 		for (Entry<Date, Label> entry : runTimeLabels.entrySet()) {

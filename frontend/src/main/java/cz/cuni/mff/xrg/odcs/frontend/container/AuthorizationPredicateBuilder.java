@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
+import java.util.Collection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.springframework.security.core.Authentication;
 
 /**
  * Builder of predicate with authentication logic deciding about permissions on

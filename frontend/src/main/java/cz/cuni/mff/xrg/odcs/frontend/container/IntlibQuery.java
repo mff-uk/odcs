@@ -211,7 +211,7 @@ public class IntlibQuery<E> implements Query, Serializable {
 			rootFilter = new And(rootFilter, filter);
 		}
 
-		// build authorization predicate
+		//build authorization predicate
 		AuthenticationContext authCtx = App.getApp().getAuthCtx();
 		PredicateBuilder apb = new AuthorizationPredicateBuilder<>(authCtx, root, cq, cb, entityClass);
 		Predicate authPredicate = apb.build();
