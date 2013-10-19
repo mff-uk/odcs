@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,14 +293,14 @@ public class PipelineFacade {
 	 *
 	 * @param pipeline
 	 * @param statuses Set of execution statuses, used to filter pipelines.
-	 * @return
+	 * @return last execution or null
 	 */
 	public PipelineExecution getLastExec(Pipeline pipeline,
 			Set<PipelineExecutionStatus> statuses) {
 		
-		@SuppressWarnings("unchecked")
-		List<PipelineExecution> resultList = Collections.checkedList(
-				em.createQuery(
+		PipelineExecution lastExec = null;
+		try {
+			lastExec = (PipelineExecution) em.createQuery(
 				"SELECT e FROM PipelineExecution e"
 				+ " WHERE e.pipeline = :pipe"
 				+ " AND e.status IN :status"
@@ -307,40 +308,38 @@ public class PipelineFacade {
 				+ " ORDER BY e.end DESC")
 				.setParameter("pipe", pipeline)
 				.setParameter("status", statuses)
-				.getResultList(),
-				PipelineExecution.class);
-		
-		if (resultList.isEmpty()) {
-			return null;
-		} else {
-			return resultList.get(0);
+				.setMaxResults(1)
+				.getSingleResult();
+		} catch (NoResultException ex) {
+			// return null
 		}
+		
+		return lastExec;
 	}
 
 	/**
 	 * Return latest execution of given pipeline. Ignore null values.
 	 *
 	 * @param pipeline
-	 * @return
+	 * @return last execution or null
 	 */
 	public PipelineExecution getLastExec(Pipeline pipeline) {
 		
-		@SuppressWarnings("unchecked")
-		List<PipelineExecution> resultList = Collections.checkedList(
-				em.createQuery(
+		PipelineExecution lastExec = null;
+		try {
+			lastExec = (PipelineExecution) em.createQuery(
 				"SELECT e FROM PipelineExecution e"
 				+ " WHERE e.pipeline = :pipe"
 				+ " AND e.start IS NOT NULL"
 				+ " ORDER BY e.start DESC")
 				.setParameter("pipe", pipeline)
-				.getResultList(),
-				PipelineExecution.class);
-		
-		if (resultList.isEmpty()) {
-			return null;
-		} else {
-			return resultList.get(0);
+				.setMaxResults(1)
+				.getSingleResult();
+		} catch (NoResultException ex) {
+			// return null
 		}
+		
+		return lastExec;
 	}
 
 	/**
@@ -349,14 +348,14 @@ public class PipelineFacade {
 	 *
 	 * @param schedule
 	 * @param statuses Set of execution statuses, used to filter pipelines.
-	 * @return
+	 * @return last execution or null
 	 */
 	public PipelineExecution getLastExec(Schedule schedule,
 			Set<PipelineExecutionStatus> statuses) {
 		
-		@SuppressWarnings("unchecked")
-		List<PipelineExecution> resultList = Collections.checkedList(
-				em.createQuery(
+		PipelineExecution lastExec = null;
+		try {
+			lastExec = (PipelineExecution) em.createQuery(
 				"SELECT e FROM PipelineExecution e"
 				+ " WHERE e.schedule = :schedule"
 				+ " AND e.status IN :status"
@@ -364,14 +363,13 @@ public class PipelineFacade {
 				+ " ORDER BY e.end DESC")
 				.setParameter("schedule", schedule)
 				.setParameter("status", statuses)
-				.getResultList(),
-				PipelineExecution.class);
-		
-		if (resultList.isEmpty()) {
-			return null;
-		} else {
-			return resultList.get(0);
+				.setMaxResults(1)
+				.getSingleResult();
+		} catch(NoResultException ex) {
+			// return null
 		}
+		
+		return lastExec;
 	}
 
 	/**
@@ -397,7 +395,7 @@ public class PipelineFacade {
 				+ "FROM PipelineExecution e")
 				.setParameter("last", lastLoad)
 				.getSingleResult();
-
+		
 		return r.equals("1");
 	}
 
