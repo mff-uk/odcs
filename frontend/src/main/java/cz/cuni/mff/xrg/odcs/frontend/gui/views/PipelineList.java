@@ -141,12 +141,12 @@ class PipelineList extends ViewComponent {
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(PAGE_LENGTH);
-		tablePipelines.setSortContainerPropertyId("id");
-		tablePipelines.setSortAscending(false);
+		//tablePipelines.setSortContainerPropertyId("id");
+		//tablePipelines.setSortAscending(false);
 		// assign data source
 		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines(PAGE_LENGTH);
 		tablePipelines.setContainerDataSource(container);
-		tablePipelines.sort();
+		//tablePipelines.sort();
 		// add column
 		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 		tablePipelines.setImmediate(true);
