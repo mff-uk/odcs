@@ -97,6 +97,16 @@ public class ConfigWrap<C extends DPUConfigObject> {
 			return null;
 		}
 		byte[] result = null;
+		
+		// print debug info ..
+		// UNCOMMENCT ME !!
+		/*
+		java.util.Properties prop = System.getProperties();
+		for (Object key : prop.keySet()) {			
+			LOG.debug("Property '{}' = '{}' ", key, prop.get(key) );
+		}
+		*/
+		
 		// serialise object into byte[]
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {
 			// use XStream for serialisation	
