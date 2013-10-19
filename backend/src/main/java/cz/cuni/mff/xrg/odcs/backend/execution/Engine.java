@@ -157,6 +157,11 @@ public class Engine implements ApplicationListener<EngineEvent> {
 	 * Also setup engine according to it's configuration.
 	 */
 	protected void startUp() {
+		if (startUpDone) {
+			LOG.warn("Ignoring second startUp call");
+			return;
+		}
+		
 		// setup
 		setupConfig();
 
