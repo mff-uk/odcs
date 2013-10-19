@@ -58,9 +58,11 @@ public class ContainerFactory {
 	public Container createExecutions(int pageLength) {
 		
 		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer<>(em, PipelineExecution.class, pageLength, "id", true, true, true);
+		container.getQueryView().getQueryDefinition().setMaxNestedPropertyDepth(1);
 		container.getQueryView().getQueryDefinition().setDefaultSortState(
-				new Object[]{"start"}, new boolean[]{true}
+				new Object[]{"id"}, new boolean[]{false}
 		);
+		
 
 		container.addContainerProperty("id", Long.class, "");
 		// Type used for date needs to be java.sql.Timestamp, because there

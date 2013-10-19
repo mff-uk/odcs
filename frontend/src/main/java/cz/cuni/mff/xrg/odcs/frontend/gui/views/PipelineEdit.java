@@ -591,7 +591,7 @@ class PipelineEdit extends ViewComponent {
 	 * @param debug {@link DebuggingView} to show.
 	 */
 	private void openDebug(final Pipeline pip, final Node debugNode) {
-		PipelineExecution pExec = IntlibHelper.runPipeline(pip, true, null); //debugNode);
+		PipelineExecution pExec = IntlibHelper.runPipeline(pip, true, debugNode);
 		if (pExec == null) {
 			//Solved by dialog if backend is offline in method runPipeline.
 			//Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);

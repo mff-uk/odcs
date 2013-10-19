@@ -274,24 +274,24 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setColumnWidth("isDebugging", 50);
 		monitorTable.setColumnWidth("duration", 60);
 		monitorTable.setColumnWidth("actions", 200);
+		monitorTable.setSortEnabled(true);
 
 		//sorting by execution date
-		Object property = "id";
-		monitorTable.setSortContainerPropertyId(property);
-		monitorTable.setSortAscending(false);
+//		Object property = "id";
+//		monitorTable.setSortContainerPropertyId(property);
+//		monitorTable.setSortAscending(false);
 
 		//Container must be set before sorting, or else data aren't sorted when loaded.
 		monitorTable.setContainerDataSource(tableData);
-		monitorTable.sort();
 
-		monitorTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Pipeline pipeline = (Pipeline) source.getItem(itemId)
-						.getItemProperty("pipeline").getValue();
-				return pipeline.getName();
-			}
-		});
+//		monitorTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				Pipeline pipeline = (Pipeline) source.getItem(itemId)
+//						.getItemProperty("pipeline").getValue();
+//				return pipeline.getName();
+//			}
+//		});
 
 		//Status column. Contains status icons.
 		monitorTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
