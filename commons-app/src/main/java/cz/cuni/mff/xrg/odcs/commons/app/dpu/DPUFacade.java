@@ -55,6 +55,19 @@ public class DPUFacade {
 	}
 
 	/**
+	 * Create copy of DPU template, as the owner the current user is set.
+	 * @param template
+	 * @return
+	 */
+	public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
+		DPUTemplateRecord copy = new DPUTemplateRecord(original);
+		if (authCtx != null) {
+			copy.setOwner(authCtx.getUser());
+		}
+		return copy;
+	}
+	
+	/**
 	 * Creates a new DPURecord with the same properties and configuration as in given
 	 * {@link DPUInstance}. Note that newly created DPURecord is only returned, but
 	 * not managed by database. To persist it, {@link #save(DPURecord)} must be called

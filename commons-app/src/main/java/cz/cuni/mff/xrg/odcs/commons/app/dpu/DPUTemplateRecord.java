@@ -103,12 +103,19 @@ public class DPUTemplateRecord extends DPURecord
 	 */
 	public DPUTemplateRecord(DPUTemplateRecord dpu) {
 		super(dpu);
-		visibility = VisibilityType.PRIVATE;
-		jarDescription = dpu.jarDescription;
+		visibility = VisibilityType.PRIVATE;		
 		type = dpu.type;
-		jarDescription = dpu.jarDirectory;
-		jarName = dpu.jarName;
 		parent = dpu.parent;
+		if (parent == null) {
+			jarDirectory = dpu.jarDirectory;
+			jarName = dpu.jarName;
+			jarDescription = dpu.jarDescription;
+		} else {
+			jarDirectory = null;
+			jarName = null;
+			jarDescription = null;
+		}
+		
 	}
 
 	/**
@@ -146,11 +153,21 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	public String getJarDescription() {
-		return jarDescription;
+		if (parent == null) {
+			// top level DPU
+			return jarDescription;
+		} else {
+			return parent.getJarDescription();
+		}
 	}
 
 	public void setJarDescription(String jarDescription) {
-		this.jarDescription = jarDescription;
+		if (parent == null) {
+			// top level DPU
+			this.jarDescription = jarDescription;
+		} else {
+			// ignore ..
+		}
 	}
 
 	public DPUTemplateRecord getParent() {

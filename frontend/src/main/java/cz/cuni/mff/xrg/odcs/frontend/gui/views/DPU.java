@@ -87,7 +87,7 @@ import ru.xpoft.vaadin.VaadinView;
 @Scope("prototype")
 @VaadinView(DPU.NAME)
 class DPU extends ViewComponent {
-
+	
 	/**
 	 * View name.
 	 */
@@ -719,9 +719,11 @@ class DPU extends ViewComponent {
 		buttonCopyDPU.setCaption("Copy");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
-		buttonCopyDPU.setEnabled(permissions.hasPermission(selectedDpu, "copy"));
 		if (selectedDpu.getParent() != null) {
-			buttonCopyDPU.setEnabled(true);
+			// check permissions .. 
+			buttonCopyDPU.setEnabled(permissions.hasPermission(selectedDpu, "copy"));
+		} else {
+			buttonCopyDPU.setEnabled(false);
 		}
 		buttonCopyDPU
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -749,12 +751,12 @@ class DPU extends ViewComponent {
 					i++;
 				}
 
-				DPUTemplateRecord copyDpuTemplate = new DPUTemplateRecord(selectedDpu);
+				DPUTemplateRecord copyDpuTemplate = App.getApp().getDPUs().createCopy(selectedDpu);				
 				copyDpuTemplate.setName(nameOfDpuCopy);
 				copyDpuTemplate.setParent(selectedDpu.getParent());
 				App.getApp().getDPUs().save(copyDpuTemplate);
 
-				//refresh data in dpu tree
+				// refresh data in dpu tree
 				dpuTree.refresh();
 
 			}
