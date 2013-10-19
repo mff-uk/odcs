@@ -103,7 +103,7 @@ public class Pipeline implements OwnedEntity, Resource, Serializable {
 	public Pipeline(Pipeline pipeline) {
 		name = pipeline.getName();
 		description = pipeline.getDescription();
-		graph = new PipelineGraph(pipeline.graph);
+		graph = new PipelineGraph(pipeline.getGraph());
 		graph.setPipeline(this);
 	}
 
