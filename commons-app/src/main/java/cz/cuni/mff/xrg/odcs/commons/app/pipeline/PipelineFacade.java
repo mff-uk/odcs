@@ -170,6 +170,7 @@ public class PipelineFacade {
 	 * @return
 	 */
 	public PipelineExecution createExecution(Pipeline pipeline) {
+		
 		PipelineExecution execution = new PipelineExecution(pipeline);
 		if (authCtx != null) {
 			execution.setOwner(authCtx.getUser());
@@ -245,12 +246,14 @@ public class PipelineFacade {
 	
 	/**
 	 * Fetch executions for given pipeline in given status.
+	 * 
 	 * @param pipeline Pipeline which executions should be fetched.
 	 * @param status Execution status, in which execution should be.
 	 * @return PipelineExecutions
 	 * 
 	 */
 	public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
+		
 		@SuppressWarnings("unchecked")
 		List<PipelineExecution> resultList = Collections.checkedList(
 				em.createQuery(
@@ -262,122 +265,143 @@ public class PipelineFacade {
 				.getResultList(),
 				PipelineExecution.class
 		);
+		
 		return resultList;
 	}
 
 	/**
 	 * Return end time of latest execution of given status for given pipeline.
+	 * 
 	 * Ignore null values.
 	 * @param pipeline
 	 * @param status Execution status, used to filter pipelines.
 	 * @return
 	 */
 	public Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status) {
+		
             HashSet statuses = new HashSet(1);
             statuses.add(status);
             PipelineExecution exec = getLastExec(pipeline, statuses);
-            if (exec == null) {
-                return null;
-            } else {
-                return exec.getEnd();
-            }
+			
+            return (exec == null) ? null : exec.getEnd();
 	}
-        
-        /**
-	 * Return latest execution of given statuses for given pipeline.
-	 * Ignore null values.
+
+	/**
+	 * Return latest execution of given statuses for given pipeline. Ignore null
+	 * values.
+	 *
 	 * @param pipeline
 	 * @param statuses Set of execution statuses, used to filter pipelines.
 	 * @return
 	 */
-        public PipelineExecution getLastExec(Pipeline pipeline, Set<PipelineExecutionStatus> statuses) {
-            @SuppressWarnings("unchecked")
+	public PipelineExecution getLastExec(Pipeline pipeline,
+			Set<PipelineExecutionStatus> statuses) {
+		
+		@SuppressWarnings("unchecked")
 		List<PipelineExecution> resultList = Collections.checkedList(
 				em.createQuery(
-				"SELECT e FROM PipelineExecution e" +
-				" WHERE e.pipeline = :pipe" +
-				" AND e.status IN :status" +
-				" AND e.end IS NOT NULL" +
-				" ORDER BY e.end DESC")
+				"SELECT e FROM PipelineExecution e"
+				+ " WHERE e.pipeline = :pipe"
+				+ " AND e.status IN :status"
+				+ " AND e.end IS NOT NULL"
+				+ " ORDER BY e.end DESC")
 				.setParameter("pipe", pipeline)
 				.setParameter("status", statuses)
 				.getResultList(),
-				PipelineExecution.class
-		);
+				PipelineExecution.class);
+		
 		if (resultList.isEmpty()) {
 			return null;
 		} else {
 			return resultList.get(0);
 		}
-        }
-	
-        /**
-	 * Return latest execution of given pipeline.
-	 * Ignore null values.
+	}
+
+	/**
+	 * Return latest execution of given pipeline. Ignore null values.
+	 *
 	 * @param pipeline
 	 * @return
 	 */
-        public PipelineExecution getLastExec(Pipeline pipeline) {
-            @SuppressWarnings("unchecked")
+	public PipelineExecution getLastExec(Pipeline pipeline) {
+		
+		@SuppressWarnings("unchecked")
 		List<PipelineExecution> resultList = Collections.checkedList(
 				em.createQuery(
-				"SELECT e FROM PipelineExecution e" +
-				" WHERE e.pipeline = :pipe" +
-				" AND e.start IS NOT NULL" +
-				" ORDER BY e.start DESC")
+				"SELECT e FROM PipelineExecution e"
+				+ " WHERE e.pipeline = :pipe"
+				+ " AND e.start IS NOT NULL"
+				+ " ORDER BY e.start DESC")
 				.setParameter("pipe", pipeline)
 				.getResultList(),
-				PipelineExecution.class
-		);
+				PipelineExecution.class);
+		
 		if (resultList.isEmpty()) {
 			return null;
 		} else {
 			return resultList.get(0);
 		}
-        }
+	}
+
 	/**
-	 * Return latest execution of given statuses for given schedule.
-	 * Ignore null values.
+	 * Return latest execution of given statuses for given schedule. Ignore null
+	 * values.
+	 *
 	 * @param schedule
 	 * @param statuses Set of execution statuses, used to filter pipelines.
 	 * @return
 	 */
-        public PipelineExecution getLastExec(Schedule schedule, Set<PipelineExecutionStatus> statuses) {
-            @SuppressWarnings("unchecked")
-            List<PipelineExecution> resultList = Collections.checkedList(
-                    em.createQuery(
-                    "SELECT e FROM PipelineExecution e"
-                    + " WHERE e.schedule = :schedule"
-                    + " AND e.status IN :status"
-                    + " AND e.end IS NOT NULL"
-                    + " ORDER BY e.end DESC")
-                    .setParameter("schedule", schedule)
-                    .setParameter("status", statuses)
-                    .getResultList(),
-                    PipelineExecution.class);
-            if (resultList.isEmpty()) {
-                return null;
-            } else {
-                return resultList.get(0);
-            }
-        }
-        
-        public boolean hasModifiedExecutions(Date lastLoad) {
-            @SuppressWarnings("unchecked")
-            
-                    Object r = em.createQuery(
-                    "SELECT CASE\n" +
-                    "    WHEN MAX(e.lastChange) > :last THEN 1\n" +
-                    "    ELSE 0\n" +
-                    "END " +
-                    "FROM PipelineExecution e")
-                    .setParameter("last", lastLoad)
-                    .getSingleResult();
+	public PipelineExecution getLastExec(Schedule schedule,
+			Set<PipelineExecutionStatus> statuses) {
+		
+		@SuppressWarnings("unchecked")
+		List<PipelineExecution> resultList = Collections.checkedList(
+				em.createQuery(
+				"SELECT e FROM PipelineExecution e"
+				+ " WHERE e.schedule = :schedule"
+				+ " AND e.status IN :status"
+				+ " AND e.end IS NOT NULL"
+				+ " ORDER BY e.end DESC")
+				.setParameter("schedule", schedule)
+				.setParameter("status", statuses)
+				.getResultList(),
+				PipelineExecution.class);
+		
+		if (resultList.isEmpty()) {
+			return null;
+		} else {
+			return resultList.get(0);
+		}
+	}
 
-			return r.equals("1");
-        }
-        
-        /**
+	/**
+	 * Tells whether there were any changes to pipeline executions since
+	 * the last load.
+	 * 
+	 * <p>
+	 * This method is provided purely for performance optimization of refreshing
+	 * execution statuses. Functionality is backed by database trigger 
+	 * &quot;update_last_change&quot;.
+	 * 
+	 * @param lastLoad
+	 * @return 
+	 */
+	public boolean hasModifiedExecutions(Date lastLoad) {
+		
+		@SuppressWarnings("unchecked")
+		Object r = em.createQuery(
+				"SELECT CASE\n"
+				+ "    WHEN MAX(e.lastChange) > :last THEN 1\n"
+				+ "    ELSE 0\n"
+				+ "END "
+				+ "FROM PipelineExecution e")
+				.setParameter("last", lastLoad)
+				.getSingleResult();
+
+		return r.equals("1");
+	}
+
+	/**
 	 * Persists new {@link PipelineExecution} or updates it if it was already
 	 * persisted before.
 	 *
