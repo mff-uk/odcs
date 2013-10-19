@@ -2,8 +2,7 @@ package cz.cuni.mff.xrg.odcs.backend.execution;
 
 import cz.cuni.mff.xrg.odcs.backend.data.ContextDeleter;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
-import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEvent;
-import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEventType;
+import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
@@ -41,7 +40,7 @@ import org.springframework.scheduling.annotation.Scheduled;
  * @author Petyr
  * 
  */
-public class Engine implements ApplicationListener<EngineEvent> {
+public class Engine implements ApplicationListener<CheckDatabaseEvent> {
 
 	/**
 	 * Provide access to DPURecord implementation.
@@ -259,32 +258,9 @@ public class Engine implements ApplicationListener<EngineEvent> {
 		}
 	}
 
-	/**
-	 * Take care about engine event.
-	 * 
-	 * @param type
-	 */
-	protected synchronized void onEvent(EngineEventType type) {
-		switch (type) {
-		case CHECK_DATABASE:
-			checkDatabase();
-			break;
-		case STARTUP:
-			if (startUpDone) {
-				// already called
-			} else {
-				//startUp();
-			}
-			break;
-		default:
-			// do nothing
-			break;
-		}
-	}
-
 	@Override
-	public void onApplicationEvent(EngineEvent event) {
-		onEvent(event.getType());
+	public void onApplicationEvent(CheckDatabaseEvent event) {
+		checkDatabase();
 	}
 
 }

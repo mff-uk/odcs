@@ -2,8 +2,6 @@ package cz.cuni.mff.xrg.odcs.backend;
 
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
 import cz.cuni.mff.xrg.odcs.backend.communication.Server;
-import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEvent;
-import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEventType;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -17,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-
 
 /**
  * Backend entry point.
@@ -139,11 +135,7 @@ public class AppEntry {
 			context.close();			
 			return;
 		}
-				
-		// publish event for engine about start of the execution,
-		// so backend can recover for unexpected shutdown 
-		context.publishEvent(new EngineEvent(EngineEventType.STARTUP, AppEntry.class));
-				
+
 		// start server
 		if (initNetworkServer()) {
 			// continue

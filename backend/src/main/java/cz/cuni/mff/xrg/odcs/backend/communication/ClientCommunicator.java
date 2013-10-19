@@ -6,8 +6,7 @@ import java.net.Socket;
 
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEvent;
-import cz.cuni.mff.xrg.odcs.backend.execution.event.EngineEventType;
+import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.Messages;
 
 /**
@@ -65,7 +64,7 @@ class ClientCommunicator implements Runnable {
             case CHECK_DATABASE:
                 // send event to engine to check database
                 // as a source use Server class instance (the one who create us)
-                eventPublisher.publishEvent(new EngineEvent(EngineEventType.CHECK_DATABASE, server));
+                eventPublisher.publishEvent(new CheckDatabaseEvent(server));
                 break;
             case HEARTBEAT:
             	// just heart beat, do not do anything

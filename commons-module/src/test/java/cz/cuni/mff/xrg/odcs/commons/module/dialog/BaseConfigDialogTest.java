@@ -2,8 +2,6 @@ package cz.cuni.mff.xrg.odcs.commons.module.dialog;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
