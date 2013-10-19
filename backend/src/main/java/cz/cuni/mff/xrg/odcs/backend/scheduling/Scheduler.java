@@ -10,14 +10,12 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.backend.scheduling.event.SchedulerCheckDatabase;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * Take care about execution of scheduled plans.
@@ -65,8 +63,11 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 	}
 	
 	/**
-	 * Check database for time-based schedules.
+	 * Check database for time-based schedules. 
+	 * Run every 30 seconds.
 	 */
+	@Async
+	@Scheduled(fixedDelay = 30000) 
 	private synchronized void onTimeCheck() {
 		LOG.trace("onTimeCheck started");
 		// check DB for pipelines based on time scheduling
@@ -91,18 +92,11 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 	
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-
 		if (event instanceof PipelineFinished) {
 			PipelineFinished pipelineFinishedEvent = (PipelineFinished) event;
 			// ...
 			LOG.trace("Recieved PipelineFinished event");
 			onPipelineFinished(pipelineFinishedEvent);
-		} else if (event instanceof SchedulerCheckDatabase) {
-			// ...
-			LOG.trace("Recieved SchedulerCheckDatabase event");
-			onTimeCheck();
-		} else {
-			// unknown event .. ignore
 		}
 	}
 	

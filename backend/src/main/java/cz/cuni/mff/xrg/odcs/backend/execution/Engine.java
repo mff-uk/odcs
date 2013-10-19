@@ -32,6 +32,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * Responsible for running and supervision queue of PipelineExecution tasks.
@@ -128,16 +130,23 @@ public class Engine implements ApplicationListener<EngineEvent> {
 
 	/**
 	 * Check database for new task (PipelineExecutions to run). Can run
-	 * concurrently.
+	 * concurrently. Check database every 20 seconds.
 	 */
+	@Async
+	@Scheduled(fixedDelay = 20000) 
 	protected synchronized void checkDatabase() {
-		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions();
+		if (!startUpDone) {
+			// we does not start any execution
+			// before start up method is executed
+			startUp();
+			startUpDone = true;
+			return;
+		}
+		LOG.trace("Checking for new executions.");
+		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions(PipelineExecutionStatus.SCHEDULED);
 		// run pipeline executions ..
 		for (PipelineExecution item : toExecute) {
-			if (item.getStatus() == PipelineExecutionStatus.SCHEDULED) {
-				// run scheduled pipeline
-				run(item);
-			}
+			run(item);
 		}
 	}
 
@@ -259,7 +268,7 @@ public class Engine implements ApplicationListener<EngineEvent> {
 			if (startUpDone) {
 				// already called
 			} else {
-				startUp();
+				//startUp();
 			}
 			break;
 		default:
