@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -26,6 +27,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -211,9 +213,25 @@ public class Engine implements ApplicationListener<EngineEvent> {
 		ContextDeleter deleter = new ContextDeleter(dataUnitFactory, appConfig);
 		List<PipelineExecution> cancelling = pipelineFacade
 				.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+		
 		for (PipelineExecution execution : cancelling) {
-			// delete execution data
-			deleter.deleteContext(execution);
+			MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, execution.getId().toString());
+			
+			if (execution.isDebugging()) {
+				// no deletion
+			} else {
+				// delete execution data
+				deleter.deleteContext(execution);
+				// and directory
+				File rootDir = new File(
+						appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+				File toDelete = new File(rootDir, execution.getContext().getRootPath());
+				try {
+					FileUtils.deleteDirectory(toDelete);
+				} catch (IOException e) {
+					LOG.warn("Can't delete directory after execution", e);
+				}
+			}
 			// switch to cancelled ..
 			execution.setStatus(PipelineExecutionStatus.CANCELLED);
 			execution.setEnd(new Date());
@@ -222,6 +240,8 @@ public class Engine implements ApplicationListener<EngineEvent> {
 			} catch (EntityNotFoundException ex) {
 				LOG.warn("Seems like someone deleted our pipeline run.", ex);
 			}
+			
+			MDC.remove(LogMessage.MDPU_EXECUTION_KEY_NAME);
 		}
 	}
 
