@@ -161,7 +161,7 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
-		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
+		tablePipelines.addGeneratedColumn("", new ActionColumnGenerator());
 		tablePipelines.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
@@ -259,7 +259,7 @@ class PipelineList extends ViewComponent {
 	 * @author Petyr
 	 *
 	 */
-	class actionColumnGenerator implements CustomTable.ColumnGenerator {
+	private class ActionColumnGenerator implements CustomTable.ColumnGenerator {
 
 		@Override
 		public Object generateCell(final CustomTable source, final Object itemId,
