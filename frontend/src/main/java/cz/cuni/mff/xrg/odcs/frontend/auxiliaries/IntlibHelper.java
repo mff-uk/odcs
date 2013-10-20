@@ -176,18 +176,4 @@ public class IntlibHelper {
 		}
 		return formatDuration(duration);
 	}
-
-	/**
-	 * Gets set of {@link PipelineExecutionStatus} which are finished and
-	 * therefore has valid duration.
-	 *
-	 * @return Set of {@link PipelineExecutionStatus} which are finished.
-	 */
-	public static Set<PipelineExecutionStatus> getFinishedStatuses() {
-		HashSet<PipelineExecutionStatus> statuses = new HashSet<>(3);
-		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
-		statuses.add(PipelineExecutionStatus.FINISHED_WARNING);
-		statuses.add(PipelineExecutionStatus.FAILED);
-		return statuses;
-	}
 }

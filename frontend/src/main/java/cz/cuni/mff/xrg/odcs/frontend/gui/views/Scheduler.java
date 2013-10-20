@@ -24,6 +24,7 @@ import com.vaadin.ui.Window.CloseListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
@@ -66,7 +67,7 @@ class Scheduler extends ViewComponent {
 	private Long schId;
 	static String filter;
 	private Schedule scheduleDel;
-
+	
 	/**
 	 * The constructor should first build the main layout, set the composition
 	 * root and then do any custom initialization.
@@ -202,6 +203,8 @@ class Scheduler extends ViewComponent {
 
 	/**
 	 * Container with data for table {@link #schedulerTable}.
+	 * 
+	 * TODO why static?
 	 *
 	 * @param data List of {@link Schedule}.
 	 * @return result IndexedContainer with data for {@link #schedulerTable}.
@@ -307,10 +310,8 @@ class Scheduler extends ViewComponent {
 			result.getContainerProperty(num, "pipeline").setValue(
 					item.getPipeline().getName());
 
-			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, IntlibHelper.getFinishedStatuses());
+			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, PipelineExecutionStatus.FINISHED);
 			result.getContainerProperty(num, "duration").setValue(IntlibHelper.getDuration(exec));
-
-
 		}
 
 		return result;

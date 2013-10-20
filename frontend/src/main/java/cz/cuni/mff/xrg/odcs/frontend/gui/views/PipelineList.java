@@ -167,7 +167,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
 				Pipeline ppl = (Pipeline) container.getEntity(itemId);
-				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl, IntlibHelper.getFinishedStatuses());
+				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl, PipelineExecutionStatus.FINISHED);
 				return IntlibHelper.getDuration(latestExec);
 			}
 		});
