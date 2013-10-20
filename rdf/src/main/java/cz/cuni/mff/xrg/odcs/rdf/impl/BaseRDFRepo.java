@@ -125,6 +125,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private RepositoryConnection repoConnection;
 
 	/**
+	 * If is thrown RDFException and need reconnect singleton connection
+	 * instance.
+	 */
+	private boolean hasBrokenConnection = false;
+
+	/**
 	 *
 	 * @return default size of statements for chunk to load to SPARQL endpoint.
 	 */
@@ -648,19 +654,20 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			}
 
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			throw new RDFException("Repository connection failed. " + ex
 					.getMessage(), ex);
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository. "
-							+ ex.getMessage(), ex);
-				}
-			}
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn("Failed to close connection to RDF repository. "
+		 + ex.getMessage(), ex);
+		 }
+		 }
 
-		}*/
+		 }*/
 	}
 
 	private long getPartsCount(long chunkSize) {
@@ -686,6 +693,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					graph);
 
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.debug(ex.getMessage(), ex);
 			repoResult = new RepositoryResult<>(
 					new EmptyIteration<Statement, RepositoryException>());
@@ -989,7 +997,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						} else {
 							connection.add(handler.getStatements());
 						}
-					} catch (IOException | RepositoryException ex) {
+					} catch (IOException ex) {
+						logger.error(ex.getMessage(), ex);
+					} catch (RepositoryException ex) {
+						hasBrokenConnection = true;
 						logger.error(ex.getMessage(), ex);
 					} catch (RDFHandlerException | RDFParseException ex) {
 						logger.error(ex.getMessage(), ex);
@@ -1012,7 +1023,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throw new RDFException(e.getMessage(), e);
 
 		} catch (RepositoryException e) {
-
+			hasBrokenConnection = true;
 			final String message = "Repository connection failed: " + e
 					.getMessage();
 
@@ -1021,16 +1032,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throw new RDFException(message, e);
 
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while extracting from SPQRQL endpoint.",
-							ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while extracting from SPQRQL endpoint.",
+		 ex);
+		 }
+		 }
+		 }*/
 
 	}
 
@@ -1091,20 +1102,22 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			throw new RDFException(
 					"Connection to repository is not available. "
 					+ ex.getMessage(), ex);
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while executing SPARQL transform. "
-							+ ex.getMessage(), ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while executing SPARQL transform. "
+		 + ex.getMessage(), ex);
+		 }
+		 }
+		 }
+		 */
 
 	}
 
@@ -1129,18 +1142,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			}
 
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.debug(ex.getMessage());
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while counting triples. "
-							+ ex.getMessage(), ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while counting triples. "
+		 + ex.getMessage(), ex);
+		 }
+		 }
+		 }*/
 
 
 		return size;
@@ -1173,18 +1187,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			}
 
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.debug(ex.getMessage());
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while looking for triple. "
-							+ ex.getMessage(), ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while looking for triple. "
+		 + ex.getMessage(), ex);
+		 }
+		 }
+		 }*/
 
 		return hasTriple;
 	}
@@ -1208,18 +1223,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			connection.commit();
 
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.debug(ex.getMessage());
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while cleaning up. "
-							+ ex.getMessage(), ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while cleaning up. "
+		 + ex.getMessage(), ex);
+		 }
+		 }
+		 }*/
 
 	}
 
@@ -1245,6 +1261,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				}
 
 			} catch (RepositoryException ex) {
+				hasBrokenConnection = true;
 				logger.debug(ex.getMessage(), ex);
 			}
 
@@ -1292,6 +1309,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				return builder.toString();
 			}
 		} catch (RepositoryException e) {
+			hasBrokenConnection = true;
 			logger.debug(e.getMessage(), e);
 		}
 
@@ -1431,21 +1449,22 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		} catch (RDFHandlerException ex) {
 			logger.error("RDF handler failed. " + ex.getMessage(), ex);
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while querying. "
-							+ ex.getMessage(), ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while querying. "
+		 + ex.getMessage(), ex);
+		 }
+		 }
+		 }*/
 
 		throw new InvalidQueryException(
 				"Creating File with RDF data fault.");
@@ -1513,19 +1532,20 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while querying. "
-							+ ex.getMessage(), ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while querying. "
+		 + ex.getMessage(), ex);
+		 }
+		 }
+		 }*/
 
 		throw new InvalidQueryException(
 				"Getting GraphQueryResult using SPARQL construct query failed.");
@@ -1597,20 +1617,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					ex);
 
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		} catch (IOException ex) {
 			logger.error("Stream were not closed. " + ex.getMessage(), ex);
 		} finally {
 			/*if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while querying."
-							+ ex.getMessage(), ex);
-				}
-			}*/
+			 try {
+			 connection.close();
+			 } catch (RepositoryException ex) {
+			 logger.warn(
+			 "Failed to close connection to RDF repository while querying."
+			 + ex.getMessage(), ex);
+			 }
+			 }*/
 		}
 
 		throw new InvalidQueryException(
@@ -1721,6 +1742,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					"This query is probably not valid as construct query. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		} finally {
@@ -1775,6 +1797,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		}
@@ -1860,6 +1883,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
 		}
@@ -2251,20 +2275,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} catch (RDFHandlerException ex) {
 			throw new RDFException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			throw new RDFException(
 					"Repository connection failed while trying to load into XML file."
 					+ ex.getMessage(), ex);
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while trying to load into XML file."
-							+ ex.getMessage(), ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn(
+		 "Failed to close connection to RDF repository while trying to load into XML file."
+		 + ex.getMessage(), ex);
+		 }
+		 }
+		 }*/
 	}
 
 	private void extractDataFileFromHTTPSource(String path, String baseURI,
@@ -2301,7 +2326,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			}
 
 
-		} catch (IOException | RepositoryException | RDFParseException ex) {
+		} catch (IOException | RDFParseException ex) {
+			throw new RDFException(ex.getMessage(), ex);
+		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			throw new RDFException(ex.getMessage(), ex);
 		}
 	}
@@ -2417,19 +2445,20 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} catch (IOException | RDFParseException ex) {
 			logger.debug(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
 			logger.debug(ex.getMessage(), ex);
 			throw new RDFException(
 					"Error by adding file to repository " + ex.getMessage(), ex);
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository.",
-							ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 logger.warn("Failed to close connection to RDF repository.",
+		 ex);
+		 }
+		 }
+		 }*/
 	}
 
 	private StatisticalHandler parseFileUsingStatisticalHandler(
@@ -2486,19 +2515,20 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			connection.commit();
 
 		} catch (RepositoryException e) {
+			hasBrokenConnection = true;
 			logger.debug(e.getMessage());
 
 		} catch (IOException | RDFParseException ex) {
 			throw new RDFException(ex.getMessage(), ex);
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 throw new RuntimeException(ex);
+		 }
+		 }
+		 }*/
 	}
 
 	protected void addStatement(Statement statement, Resource... graphs) {
@@ -2518,18 +2548,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			connection.commit();
 
 		} catch (RepositoryException e) {
+			hasBrokenConnection = true;
 			logger.debug(e.getMessage());
 
 
 		} /*finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-		}*/
+		 if (connection != null) {
+		 try {
+		 connection.close();
+		 } catch (RepositoryException ex) {
+		 throw new RuntimeException(ex);
+		 }
+		 }
+		 }*/
 	}
 
 	protected void createNewFile(File file) {
@@ -2575,6 +2606,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					logger.debug("Repository with data graph <" + getDataGraph()
 							.stringValue() + "> destroyed SUCCESSFULL.");
 				} catch (RepositoryException ex) {
+					hasBrokenConnection = true;
 					logger.debug(
 							"Repository was not destroyed - potencial problems with locks .");
 					logger.debug(ex.getMessage());
@@ -2756,17 +2788,24 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private RepositoryConnection getConnection() throws RepositoryException {
-		if (repoConnection != null && repoConnection.isOpen()) {
-			return repoConnection;
+
+		if (!hasBrokenConnection) {
+			if (repoConnection != null && repoConnection.isOpen()) {
+				return repoConnection;
+			} else {
+				repoConnection = repository.getConnection();
+				return repoConnection;
+			}
 		} else {
 			repoConnection = repository.getConnection();
+			hasBrokenConnection = false;
 			return repoConnection;
 		}
 
 	}
 
 	private void closeConnection() throws RepositoryException {
-		if (repoConnection != null) {
+		if (!hasBrokenConnection && repoConnection != null) {
 			repoConnection.close();
 		}
 	}
