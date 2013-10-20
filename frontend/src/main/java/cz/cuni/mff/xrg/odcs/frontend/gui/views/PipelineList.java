@@ -31,8 +31,10 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -55,6 +57,12 @@ class PipelineList extends ViewComponent {
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
+	
+	/**
+	 * Cache for last pipeline execution, so we do not load from DB every time
+	 * table cell with duration, start, ..., is needed.
+	 */
+	private Map<Pipeline, PipelineExecution> execCache = new HashMap<>();
 	
 	@Autowired
 	private PipelineFacade pipelineFacade;
@@ -176,7 +184,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
 				Pipeline ppl = (Pipeline) container.getEntity(itemId);
-				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl);
+				PipelineExecution latestExec = getLastExecution(ppl);
 				if (latestExec != null) {
 					DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
 
@@ -191,7 +199,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
 				Pipeline ppl = (Pipeline) container.getEntity(itemId);
-				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl);
+				PipelineExecution latestExec = getLastExecution(ppl);
 				if (latestExec != null) {
 					PipelineExecutionStatus type = latestExec.getStatus();
 					ThemeResource img = IntlibHelper.getIconForExecutionStatus(type);
@@ -237,6 +245,7 @@ class PipelineList extends ViewComponent {
 	 */
 	@Transactional
 	private void refreshData() {
+		clearExecCache();
 		int page = tablePipelines.getCurrentPage();
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) tablePipelines.getContainerDataSource().getContainer();
 		c.refresh();
@@ -251,6 +260,28 @@ class PipelineList extends ViewComponent {
 			//TODO: Differentiate by user maybe ?!
 			return true;
 		}
+	}
+	
+	/**
+	 * Clears the pipeline cache.
+	 */
+	private void clearExecCache() {
+		execCache = new HashMap<>();
+	}
+	
+	/**
+	 * Get last pipeline execution from cache. If execution is not found in
+	 * cache, it is loaded from DB and cached.
+	 * 
+	 * @param ppl pipeline
+	 * @return last execution for given pipeline
+	 */
+	private PipelineExecution getLastExecution(Pipeline ppl) {
+		PipelineExecution exec = execCache.get(ppl);
+		if (exec == null) {
+			execCache.put(ppl, pipelineFacade.getLastExec(ppl));
+		}
+		return exec;
 	}
 
 	/**
