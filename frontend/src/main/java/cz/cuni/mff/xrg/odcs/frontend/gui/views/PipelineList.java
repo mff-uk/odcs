@@ -55,8 +55,12 @@ class PipelineList extends ViewComponent {
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
+	
 	@Autowired
 	private PipelineFacade pipelineFacade;
+	
+	@Autowired
+	private ContainerFactory containerFactory;
 
 	@Override
 	public boolean isModified() {
@@ -141,12 +145,7 @@ class PipelineList extends ViewComponent {
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(PAGE_LENGTH);
-		//tablePipelines.setSortContainerPropertyId("id");
-		//tablePipelines.setSortAscending(false);
-		// assign data source
-		Container container = App.getApp().getBean(ContainerFactory.class).createPipelines(PAGE_LENGTH);
-		tablePipelines.setContainerDataSource(container);
-		//tablePipelines.sort();
+		
 		// add column
 		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 		tablePipelines.setImmediate(true);
@@ -166,8 +165,9 @@ class PipelineList extends ViewComponent {
 		tablePipelines.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Long pipelineId = (Long) source.getItem(itemId).getItemProperty("id").getValue();
-				PipelineExecution latestExec = pipelineFacade.getLastExec(pipelineFacade.getPipeline(pipelineId), IntlibHelper.getFinishedStatuses());
+				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
+				Pipeline ppl = (Pipeline) container.getEntity(itemId);
+				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl, IntlibHelper.getFinishedStatuses());
 				return IntlibHelper.getDuration(latestExec);
 			}
 		});
@@ -205,7 +205,6 @@ class PipelineList extends ViewComponent {
 		});
 
 		// set columns
-		tablePipelines.setVisibleColumns("id", "name", "description", "", "duration", "lastExecTime", "lastExecStatus");
 		tablePipelines.setColumnHeader("duration", "Last run time");
 		tablePipelines.setColumnHeader("lastExecTime", "Last execution time");
 		tablePipelines.setColumnHeader("lastExecStatus", "Last status");
@@ -225,6 +224,11 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
+		
+		// assign data source
+		Container container = containerFactory.createPipelines(PAGE_LENGTH);
+		tablePipelines.setContainerDataSource(container);
+		tablePipelines.setVisibleColumns("id", "name", "description", "", "duration", "lastExecTime", "lastExecStatus");
 
 		return mainLayout;
 	}
