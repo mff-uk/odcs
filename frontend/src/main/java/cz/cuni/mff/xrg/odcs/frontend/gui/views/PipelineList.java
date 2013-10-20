@@ -147,7 +147,6 @@ class PipelineList extends ViewComponent {
 		tablePipelines.setPageLength(PAGE_LENGTH);
 		
 		// add column
-		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 		tablePipelines.setImmediate(true);
 		tablePipelines.addGeneratedColumn("description", new CustomTable.ColumnGenerator() {
 			@Override
@@ -162,6 +161,7 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
+		tablePipelines.addGeneratedColumn("", new actionColumnGenerator());
 		tablePipelines.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
@@ -228,7 +228,6 @@ class PipelineList extends ViewComponent {
 		// assign data source
 		Container container = containerFactory.createPipelines(PAGE_LENGTH);
 		tablePipelines.setContainerDataSource(container);
-		tablePipelines.setVisibleColumns("id", "name", "description", "", "duration", "lastExecTime", "lastExecStatus");
 
 		return mainLayout;
 	}
