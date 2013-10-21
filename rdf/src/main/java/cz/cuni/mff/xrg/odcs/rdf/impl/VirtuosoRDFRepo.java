@@ -61,13 +61,15 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		setDataGraph(defaultGraph);
 
 		repository = new FailureTolerantRepositoryWrapper(
-				new VirtuosoRepository(URL_Host_List, user, password, defaultGraph),
-				config
-		);
+				new VirtuosoRepository(URL_Host_List, user, password,
+				defaultGraph),
+				config);
 
 		try {
 			repository.initialize();
-			logger.info("Virtuoso repository with data graph <{}> successfully incicialized.", defaultGraph);
+			logger.info(
+					"Virtuoso repository with data graph <{}> successfully incicialized.",
+					defaultGraph);
 
 		} catch (RepositoryException ex) {
 			logger.warn("Your Virtuoso might be offline.", ex);
@@ -137,8 +139,8 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				String targetGraphName = getDataGraph().stringValue();
 
 				String mergeQuery = String
-						.format("ADD <%s> TO <%s>", sourceGraphName,
-						targetGraphName);
+						.format("DEFINE sql:log-enable 2 \n"
+						+ "ADD <%s> TO <%s>", sourceGraphName, targetGraphName);
 
 				try {
 					GraphQuery result = targetConnection.prepareGraphQuery(
