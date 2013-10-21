@@ -50,9 +50,8 @@ import org.vaadin.addons.lazyquerycontainer.CompositeItem;
  * @author Bogo
  */
 public class LogMessagesTable extends CustomComponent {
-	
-	private static final int PAGE_LENGTH = 28;
 
+	private static final int PAGE_LENGTH = 28;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
 	private HorizontalLayout mtControls;
@@ -120,11 +119,11 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param dpu {@link DPUInstanceRecord} or null.
 	 */
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu) {
-		if(fetchData != null) {
+		if (fetchData != null) {
 			fetchData.interrupt();
 		}
 		preparedRefreshedTable = null;
-		
+
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
 		this.pipelineExecution = exec;
 		if (dpuNames == null) {
@@ -151,12 +150,13 @@ public class LogMessagesTable extends CustomComponent {
 	}
 
 	public boolean refresh(boolean immediate, boolean getNewData) {
+		pipelineExecution = App.getPipelines().getExecution(pipelineExecution.getId());
 		if (immediate) {
 			IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
 			c.refresh();
 			return true;
 		} else {
-			
+
 			DPUInstanceRecord selectedDpu = (DPUInstanceRecord) messageTable.getFilterFieldValue("dpuInstanceId");
 			Level level = (Level) messageTable.getFilterFieldValue("level");
 			String message = (String) messageTable.getFilterFieldValue("message");
@@ -167,6 +167,7 @@ public class LogMessagesTable extends CustomComponent {
 
 			if (preparedRefreshedTable != null) {
 				if (filterValuesStayedSame(selectedDpu, level, message, source, date)) {
+					refreshDpuSelector((ComboBox) preparedRefreshedTable.getFilterField("dpuInstanceId"));
 					LOG.debug("Data refresh updated to client.");
 					mainLayout.removeComponent(messageTable);
 					mainLayout.removeComponent(mtControls);
@@ -378,10 +379,10 @@ public class LogMessagesTable extends CustomComponent {
 				setTableFilters(fetchTable, dpu, level, message, source, date);
 				fetchTable.setCurrentPage(fetchTable.getTotalAmountOfPages());
 
-				if(isInterrupted()) {
+				if (isInterrupted()) {
 					return;
 				}
-				
+
 				UI.getCurrent().access(new Runnable() {
 					@Override
 					public void run() {
