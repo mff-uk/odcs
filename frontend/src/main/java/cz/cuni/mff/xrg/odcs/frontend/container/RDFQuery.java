@@ -39,6 +39,9 @@ public class RDFQuery implements Query {
 	@Override
 	public int size() {
 		RDFDataUnit repository = RDFDataUnitHelper.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
+		if(repository == null) {
+			throw new RuntimeException("Unable to load RDFDataUnit.");
+		}
 		try {
 			return (int) repository.getResultSizeForQuery(baseQuery);
 		} catch (InvalidQueryException ex) {
@@ -62,6 +65,9 @@ public class RDFQuery implements Query {
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
 		RDFDataUnit repository = RDFDataUnitHelper.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
+		if(repository == null) {
+			throw new RuntimeException("Unable to load RDFDataUnit.");
+		}
 		String query = baseQuery + String.format(" LIMIT %d", batchSize);
 		int offset = startIndex / batchSize;
 		if (offset > 0) {
