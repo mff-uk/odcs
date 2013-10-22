@@ -46,6 +46,8 @@ class CleanUp implements PostExecutor {
 		// first release contexts
 		for (Context item : contexts.values()) {
 			if (execution.isDebugging()) {
+				// save data
+				item.save();
 				// just release leave
 				item.release();
 			} else {
