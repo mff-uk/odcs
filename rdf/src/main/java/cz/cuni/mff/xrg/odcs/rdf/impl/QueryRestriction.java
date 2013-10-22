@@ -78,7 +78,7 @@ public class QueryRestriction {
 	 *
 	 * @return query transformed by given restriction
 	 */
-	public String getRestrectedQuery() {
+	public String getRestrictedQuery() {
 
 		String regex = "((limit|offset)(\\s)*[0-9]+(\\s)*)+";
 		Pattern pattern = Pattern.compile(regex);
