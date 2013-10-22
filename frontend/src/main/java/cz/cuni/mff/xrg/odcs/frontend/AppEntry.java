@@ -1,12 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,7 +29,6 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
-//import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshThread;
 
 import java.util.Date;
 
@@ -53,8 +50,7 @@ import virtuoso.jdbc4.VirtuosoException;
  * @author Petyr
  *
  */
-@Push(PushMode.AUTOMATIC)
-@Theme("IntLibTheme")
+@Theme("OdcsTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);

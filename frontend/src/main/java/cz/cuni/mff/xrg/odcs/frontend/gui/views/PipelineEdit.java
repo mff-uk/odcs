@@ -159,8 +159,8 @@ class PipelineEdit extends ViewComponent {
 			protected String getCss(Component c) {
 				if (c instanceof TabSheet) {
 					return "margin-left: 0px; margin-top: 20px;";
-				} else if (c instanceof VerticalLayout) {
-					return "position: fixed; left: 20px; top: 280px;";
+				} else if (c instanceof Panel) {
+					return "position: fixed; left: 20px; top: 280px; max-height:600px; overflow-y:auto; max-width: 300px";
 				} else if (c instanceof HorizontalLayout) {
 					if(c.equals(buttonBar)) {
 					return "position: fixed; bottom: 20px; left: 20px; height: 30px; background: #eee; padding: 10px;";
@@ -292,15 +292,18 @@ class PipelineEdit extends ViewComponent {
 		
 		layout.addComponent(tabSheet);
 		
-		VerticalLayout left = new VerticalLayout();
-		left.setStyleName("changingposition");
-		left.setWidth(250, Unit.PIXELS);
+		Panel leftPanel = new Panel();
+		//VerticalLayout left = new VerticalLayout();
+		leftPanel.setStyleName("changingposition");
+		//left.setWidth(250, Unit.PIXELS);
 		dpuTree = new DPUTree(true);
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setSizeUndefined();
 		dpuTree.setDragable(true);
-		left.addComponentAsFirst(dpuTree);
-		layout.addComponent(left);
+		//left.addComponentAsFirst(dpuTree);
+		leftPanel.setContent(dpuTree);
+		leftPanel.setSizeUndefined();
+		layout.addComponent(leftPanel);
 		
 		
 		
