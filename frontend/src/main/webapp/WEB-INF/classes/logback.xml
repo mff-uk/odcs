@@ -10,14 +10,21 @@
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-	    <file>${frontend.logdirectory}/frontend.log</file>	    
-	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-	    	<fileNamePattern>frontend.%d.log</fileNamePattern>
-	   		<maxHistory>3</maxHistory>
-    	</rollingPolicy>    	
+		<file>${frontend.log.directory}/frontend.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${frontend.log.directory}/frontend.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<!-- how long should we keep the history -->
+			<maxHistory>${frontend.log.keepDays}</maxHistory>
+			<!-- restrict with size 10MB  -->
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
 		<encoder>
 			<pattern>%d [%thread] %-5level %logger{50} - %msg%n</pattern>
-		</encoder>		
+		</encoder>
 	</appender>
 		
 	<!-- TODO define logger for EclipseLink -->
