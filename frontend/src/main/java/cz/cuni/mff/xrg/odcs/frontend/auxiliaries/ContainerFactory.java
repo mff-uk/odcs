@@ -72,6 +72,7 @@ public class ContainerFactory {
 		// For details see github issue #135.
 		container.addContainerProperty("start", Timestamp.class, null);
 		container.addContainerProperty("pipeline.name", String.class, "");
+		container.addContainerProperty("owner.username", String.class, "");
 		container.addContainerProperty("duration", String.class, "");
 		container.addContainerProperty("status", PipelineExecutionStatus.class, null);
 		container.addContainerProperty("isDebugging", Boolean.class, false);

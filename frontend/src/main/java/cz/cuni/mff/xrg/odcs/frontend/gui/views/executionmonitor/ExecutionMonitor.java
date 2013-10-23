@@ -32,6 +32,8 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -78,7 +80,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private Container tableData;
 	private Long exeId;
 	private static final String[] visibleCols = new String[]{
-		"start", "pipeline.name", "duration", "user", "status",
+		"start", "pipeline.name", "duration", "owner.username", "status",
 		"isDebugging", "obsolete", "actions", "report"
 	};
 	static String[] headers = new String[]{
@@ -261,7 +263,20 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		tableData = cf.createExecutions(PAGE_LENGTH);
 
 		//table with pipeline execution records
-		monitorTable = new IntlibPagedTable();
+		monitorTable = new IntlibPagedTable() {
+
+			@Override
+			public Collection<?> getSortableContainerPropertyIds() {
+				ArrayList<String> sortableIds = new ArrayList<>(2);
+				sortableIds.add("start");
+				sortableIds.add("pipeline.name");
+				sortableIds.add("status");
+				sortableIds.add("isDebugging");
+				sortableIds.add("owner.username");
+				return sortableIds;
+			}
+			
+		};
 		monitorTable.setSelectable(true);
 		monitorTable.setWidth("100%");
 		monitorTable.setHeight("100%");
@@ -350,18 +365,18 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		//Actions column. Contains actions buttons: Debug data, Show log, Cancel.
 		monitorTable.addGeneratedColumn("actions",
 				new GenerateActionColumnMonitor(this));
-		monitorTable.addGeneratedColumn("user", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				User owner = (User) source.getItem(itemId)
-						.getItemProperty("owner").getValue();
-				if (owner == null) {
-					return "";
-				} else {
-					return owner.getUsername();
-				}
-			}
-		});
+//		monitorTable.addGeneratedColumn("user", new CustomTable.ColumnGenerator() {
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				User owner = (User) source.getItem(itemId)
+//						.getItemProperty("owner.username").getValue();
+//				if (owner == null) {
+//					return "";
+//				} else {
+//					return owner.getUsername();
+//				}
+//			}
+//		});
 		monitorTable.addGeneratedColumn("obsolete", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {

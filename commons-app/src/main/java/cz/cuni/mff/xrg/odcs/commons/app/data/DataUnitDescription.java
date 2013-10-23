@@ -84,5 +84,11 @@ public class DataUnitDescription {
 	public boolean getOptional() {
 		return this.optional;
 	}
+        
+        @Override
+        public String toString() {
+            return name;
+        }
+        
 	
 }
