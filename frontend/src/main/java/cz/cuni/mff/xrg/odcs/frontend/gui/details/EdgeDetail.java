@@ -10,8 +10,10 @@ import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 
@@ -36,8 +38,8 @@ public class EdgeDetail extends Window {
 
 	private final static Logger LOG = LoggerFactory.getLogger(EdgeDetail.class);
 	private final Edge edge;
-	private List<String> outputUnits;
-	private List<String> inputUnits;
+	private List<DataUnitDescription> outputUnits;
+	private List<DataUnitDescription> inputUnits;
 	private List<MutablePair<List<Integer>, Integer>> mappings;
 	private ListSelect outputSelect;
 	private ListSelect inputSelect;
@@ -73,9 +75,10 @@ public class EdgeDetail extends Window {
 		outputSelect.setWidth(250, Unit.PIXELS);
 		outputSelect.setImmediate(true);
 		outputSelect.setRows(10);
-		outputUnits = edgeCompiler.getOutputNames(edge.getFrom().getDpuInstance());
+		DPUExplorer explorer = new DPUExplorer(); 
+		outputUnits = explorer.getOutputs(edge.getFrom().getDpuInstance());
 
-		for (String unit : outputUnits) {
+		for (DataUnitDescription unit : outputUnits) {
 			outputSelect.addItem(unit);
 		}
 		edgeSettingsLayout.addComponent(outputSelect, 0, 0, 0, 4);
@@ -88,9 +91,10 @@ public class EdgeDetail extends Window {
 		inputSelect.setNullSelectionAllowed(false);
 		inputSelect.setImmediate(true);
 		inputSelect.setRows(10);
-		inputUnits = edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
+		
+		inputUnits = explorer.getInputs(edge.getTo().getDpuInstance());  //edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
 
-		for (String unit : inputUnits) {
+		for (DataUnitDescription unit : inputUnits) {
 			inputSelect.addItem(unit);
 		}
 		edgeSettingsLayout.addComponent(inputSelect, 1, 0, 1, 4);
@@ -141,7 +145,7 @@ public class EdgeDetail extends Window {
 		mappingsSelect.setNewItemsAllowed(false);
 		mappingsSelect.setImmediate(true);
 		// inputUnits and outputUnits are already set !
-		mappings = edgeCompiler.decompileMapping(edge.getScript(), outputUnits, inputUnits);
+		mappings = edgeCompiler.decompile(edge.getScript(), outputUnits, inputUnits);
 
 		for (MutablePair<List<Integer>, Integer> mapping : mappings) {
 			addMappingToList(mapping);
@@ -229,7 +233,7 @@ public class EdgeDetail extends Window {
 			return false;
 		}
 		String script =
-				edgeCompiler.compileScript(mappings, outputUnits, inputUnits);
+				edgeCompiler.compile(mappings, outputUnits, inputUnits);
 		edge.setScript(script);
 		return true;
 	}
@@ -246,11 +250,11 @@ public class EdgeDetail extends Window {
 
 	private boolean addMappingToList(MutablePair<List<Integer>, Integer> mapping) throws UnsupportedOperationException {
 		Iterator<Integer> iter = mapping.left.iterator();
-		String leftSide = outputUnits.get(iter.next());
+		String leftSide = outputUnits.get(iter.next()).getName();
 		while (iter.hasNext()) {
-			leftSide += ", " + outputUnits.get(iter.next());
+			leftSide += ", " + outputUnits.get(iter.next()).getName();
 		}
-		String strMapping = String.format("%s -> %s", leftSide, inputUnits.get(mapping.right));
+		String strMapping = String.format("%s -> %s", leftSide, inputUnits.get(mapping.right).getName());
 		map.put(strMapping, mapping);
 		Item result = mappingsSelect.addItem(strMapping);
 		return result != null;
