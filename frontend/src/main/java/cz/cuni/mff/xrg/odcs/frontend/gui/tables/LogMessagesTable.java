@@ -138,6 +138,7 @@ public class LogMessagesTable extends CustomComponent {
 		c.removeDefaultFilters();
 		c.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, pipelineExecution.getId()));
 
+		LOG.debug("Start of reloading the log container");
 		this.dpu = dpu;
 		Level newValue = exec.isDebugging() ? Level.ALL : Level.INFO;
 		if (newValue.equals(messageTable.getFilterFieldValue("level"))) {
@@ -147,6 +148,7 @@ public class LogMessagesTable extends CustomComponent {
 		}
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 		refreshDpuSelector((ComboBox) messageTable.getFilterField("dpuInstanceId"));
+		LOG.debug("End of reloading the log container");
 	}
 
 	public boolean refresh(boolean immediate, boolean getNewData) {

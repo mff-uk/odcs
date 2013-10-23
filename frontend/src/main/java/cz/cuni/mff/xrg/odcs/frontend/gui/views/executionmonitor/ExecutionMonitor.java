@@ -515,6 +515,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	}
 
 	private void showExecutionDetail(Long executionId) {
+		LOG.debug("Start of loading of execution detail.");
 		App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 		exeId = executionId;
 		if (logLayout == null) {
@@ -529,6 +530,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			hsplit.setHeight("-1px");
 			hsplit.setLocked(false);
 		}
+		LOG.debug("End of loading of execution detail.");
 	}
 
 	/**

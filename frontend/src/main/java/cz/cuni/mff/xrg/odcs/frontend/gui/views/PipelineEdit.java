@@ -160,7 +160,7 @@ class PipelineEdit extends ViewComponent {
 				if (c instanceof TabSheet) {
 					return "margin-left: 0px; margin-top: 20px;";
 				} else if (c instanceof Panel) {
-					return "position: fixed; left: 20px; top: 280px; max-height:600px; overflow-y:auto; max-width: 300px";
+					return "position: fixed; left: 20px; top: 280px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
 				} else if (c instanceof HorizontalLayout) {
 					if(c.equals(buttonBar)) {
 					return "position: fixed; bottom: 20px; left: 20px; height: 30px; background: #eee; padding: 10px;";
