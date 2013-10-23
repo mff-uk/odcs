@@ -386,7 +386,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 *
 	 * @return
 	 */
-	public DPUExplorer getDPUExplorere() {
+	public DPUExplorer getDPUExplorer() {
 		return (DPUExplorer) context.getBean(DPUExplorer.class);
 	}
 

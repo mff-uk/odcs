@@ -167,7 +167,7 @@ public final class EdgeCompiler {
 		for (int index = 0; index < sources.size(); ++index) {
 			boolean used = false;
 			// we need to know in which mapping is used
-			String source = targets.get(index).getName();
+			String source = sources.get(index).getName();
 			for (MutablePair<List<Integer>, Integer> item : mappings) {
 				if (item.left.contains(index)) {
 					if (used) {

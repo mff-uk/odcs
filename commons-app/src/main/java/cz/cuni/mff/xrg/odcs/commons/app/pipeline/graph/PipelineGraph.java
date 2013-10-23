@@ -301,12 +301,6 @@ public class PipelineGraph implements Serializable {
 		if(from.equals(to)) {
 			return "Loops are not allowed!";
 		}
-                
-                DPUExplorer explorer = new DPUExplorer();
-                if(explorer.getInputs(to.getDpuInstance()).isEmpty()) {
-                    return "Target DPU has no inputs.";
-                }
-		
 		//Same edge check
 		if(sameEdgeExists(from, to)) {
 			return "Same edge already exists in graph!";

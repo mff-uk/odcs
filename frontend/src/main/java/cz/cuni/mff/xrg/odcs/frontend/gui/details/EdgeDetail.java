@@ -45,6 +45,9 @@ public class EdgeDetail extends Window {
 	private ListSelect inputSelect;
 	private ListSelect mappingsSelect;
 	private HashMap<String, MutablePair<List<Integer>, Integer>> map;
+	
+	private DPUExplorer explorer = App.getApp().getDPUExplorer();
+	
 	/**
 	 * Class for working with edge's script.
 	 */
@@ -75,7 +78,6 @@ public class EdgeDetail extends Window {
 		outputSelect.setWidth(250, Unit.PIXELS);
 		outputSelect.setImmediate(true);
 		outputSelect.setRows(10);
-		DPUExplorer explorer = new DPUExplorer(); 
 		outputUnits = explorer.getOutputs(edge.getFrom().getDpuInstance());
 
 		for (DataUnitDescription unit : outputUnits) {
@@ -102,21 +104,21 @@ public class EdgeDetail extends Window {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				//Iterate whole collection to preserve order and identify same mapping with different order of selecting.
-				Set<String> outputs = new HashSet<>(); //Set<String>)outputSelect.getValue();
-				Collection<String> outputItems = (Collection<String>) outputSelect.getItemIds();
-				for (String outputItem : outputItems) {
+				Set<DataUnitDescription> outputs = new HashSet<>(); //Set<String>)outputSelect.getValue();
+				Collection<DataUnitDescription> outputItems = (Collection<DataUnitDescription>) outputSelect.getItemIds();
+				for (DataUnitDescription outputItem : outputItems) {
 					if (outputSelect.isSelected(outputItem)) {
 						outputs.add(outputItem);
 					}
 				}
-				String input = (String) inputSelect.getValue();
+				DataUnitDescription input = (DataUnitDescription) inputSelect.getValue();
 				if (outputs.isEmpty() || input == null) {
 					Notification.show("At least one output and exactly one input must be selected!", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
 
 				List<Integer> left = new ArrayList<>(outputs.size());
-				for (String output : outputs) {
+				for (DataUnitDescription output : outputs) {
 					left.add(outputUnits.indexOf(output));
 				}
 				MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
