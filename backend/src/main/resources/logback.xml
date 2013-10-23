@@ -1,52 +1,55 @@
 <configuration>
-	
-    <!-- load properties from file
-    <property file="config.properties" />
-    	then we can use ${VAR_NAME} in <file> for file appender     
-     -->
-    
-	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">	    
-	    <!-- requiredKey must by in MDC to pass this filter, 
-	    	so only messages related to executions will pass-->	    
+
+	<!-- load properties from file <property file="config.properties" /> then 
+		we can use ${VAR_NAME} in <file> for file appender -->
+
+	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">
+		<!-- requiredKey must by in MDC to pass this filter, so only messages related 
+			to executions will pass -->
 		<filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter">
-		   <requiredKey>execution</requiredKey>
-		</filter>	    
-	    <!-- execution level based filtering -->
+			<requiredKey>execution</requiredKey>
+		</filter>
+		<!-- execution level based filtering -->
 		<filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter" />
-		
+
 		<connectionSource class="ch.qos.logback.classic.db.PooledConnectionSource" />
 	</appender>
 
-	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<!-- allow access from multiple JWM -->
-		<prudent>true</prudent>
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>backend.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-	    	<!-- daily rollover -->
-	    	<fileNamePattern>backend.%d.log</fileNamePattern>
-	    	<!-- keep 3 days' worth of history -->
-	   		<maxHistory>3</maxHistory>
-    	</rollingPolicy>
+			<!-- daily rollover -->
+			<fileNamePattern>backend.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<!-- how long should we keep the history -->
+			<maxHistory>14</maxHistory>
+			<!-- restrict with size 10MB -->
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
 		<encoder>
 			<pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{50} - %msg%n</pattern>
-		</encoder>	
+		</encoder>
 	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>
-		    <pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{30} - %msg%n</pattern>
+			<pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{30} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
 	<!-- TODO define logger for EclipseLink -->
-	
+
 	<logger name="org.springframework" level="WARN" />
-	
+
 	<root level="ALL">
 		<appender-ref ref="DB" />
 		<appender-ref ref="FILE" />
-		<appender-ref ref="STDOUT" />				
+		<appender-ref ref="STDOUT" />
 	</root>
 
 </configuration>
