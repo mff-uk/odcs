@@ -135,7 +135,7 @@ public class AppLock {
 			return false;
 		}
 
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		Runtime.getRuntime().addShutdownHook(new Thread("AppLock-ShutdownHook") {
 			@Override
 			public void run() {
 				AppLock.releaseLock();

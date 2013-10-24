@@ -109,7 +109,8 @@ public class AppEntry {
 			return false;
 		}
 		// start server in another thread
-		serverThread = new Thread(server);
+		serverThread = new Thread(server, "TCP/IP server");
+		serverThread.setDaemon(true);
 		serverThread.start();	
 		return true;
 	}

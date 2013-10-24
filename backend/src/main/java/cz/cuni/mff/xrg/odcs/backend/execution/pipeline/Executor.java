@@ -331,7 +331,8 @@ public class Executor implements Runnable {
 			LOG.info("Starting execution of dpu {} = {}", node.getDpuInstance()
 					.getId(), node.getDpuInstance().getName());
 			
-			Thread executorThread = new Thread(dpuExecutor);
+			final String threadName = "dpu: " + node.getDpuInstance().getName();
+			Thread executorThread = new Thread(dpuExecutor, threadName);
 			executorThread.start();
 
 			// repeat until the executorThread is running

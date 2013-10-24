@@ -107,7 +107,8 @@ class FileNotifierServer implements Runnable {
 		
 		
 		// start watching .. the function run asynchronously
-		watcherThread = new Thread(this);
+		watcherThread = new Thread(this, "File notifier server");
+		watcherThread.setDaemon(true);
 		watcherThread.start();
 	}
 
