@@ -2787,7 +2787,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		cleanAllData();
 	}
 
-	private RepositoryConnection getConnection() throws RepositoryException {
+	protected RepositoryConnection getConnection() throws RepositoryException {
 
 		if (!hasBrokenConnection) {
 			if (repoConnection != null && repoConnection.isOpen()) {
@@ -2804,8 +2804,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	private void closeConnection() throws RepositoryException {
-		if (!hasBrokenConnection && repoConnection != null) {
+	protected void closeConnection() throws RepositoryException {
+		if (!hasBrokenConnection && repoConnection != null
+				&& repoConnection.isOpen()) {
+
 			repoConnection.close();
 		}
 	}

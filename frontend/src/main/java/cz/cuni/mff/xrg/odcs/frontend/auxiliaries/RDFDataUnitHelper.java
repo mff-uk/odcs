@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.browser;
+package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;

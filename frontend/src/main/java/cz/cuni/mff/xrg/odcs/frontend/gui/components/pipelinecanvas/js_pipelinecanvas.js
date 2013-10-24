@@ -371,7 +371,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			return;
 		}
 		if (con.dataUnitNameText === null) {
-			linePoints = con.line.getPoints();
+			var linePoints = con.line.getPoints();
 			var points = [linePoints[0].x, linePoints[0].y, linePoints[1].x, linePoints[1].y];
 			con.dataUnitNameText = createDataUnitNameText(id, dataUnitName, points);
 		} else {
@@ -1252,7 +1252,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		var dataUnitNameText = null;
-		if (dataUnitName !== null) {
+		if (dataUnitName !== null && dataUnitName !== "") {
 			dataUnitNameText = createDataUnitNameText(id, dataUnitName, linePoints);
 		}
 
@@ -1349,7 +1349,6 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		lineLayer.add(hitLine);
 		if (dataUnitNameText !== null) {
 			con.dataUnitNameText = dataUnitNameText;
-			lineLayer.add(dataUnitNameText);
 		}
 		lineLayer.draw();
 	}

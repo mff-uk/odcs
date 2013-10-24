@@ -37,7 +37,7 @@
 
 		<h3 id="filesPom">pom.xml</h3>
 		<div>The pom.xml file contains Maven configuration needed to build the DPU bundle.  
-		TODOs in the <code><a href="https://github.com/mff-uk/odcs/blob/master/module/DPU_Template/pom.xml">pom.xml</a></code> template file have assigned number to make it easy for you to follow them.
+		TODOs in the <code><a href="https://github.com/mff-uk/odcs/blob/master/module/DPU_Template/pom.xml">pom.xml</a></code> template file have assigned numbers to make it easy for you to follow them.
 		In next few lines we go through all of them and give brief comment 
 		to each of them:
 		<ul>
@@ -46,7 +46,7 @@
 				this name to identify the output DPU bundle's filename.This 
 				value should contains only a-z, A-Z, 0-9 and _ as whitespace. </li>				
 			<li><b>TODO 2. version: </b> The version of the DPU </li>
-			<li><b>TODO 3. DPU description: </b> DPU's description is visible 
+			<li><b>TODO 3. DPU description (optional): </b> DPU's description is visible 
 				to the users. Provide all necessary information about your 
 				intended DPU usage here. Provide contact details on the author
 				 of the DPU.</li>
@@ -56,17 +56,17 @@
 				<span class="module_name">mainClass</span>: </b> 
 				Fill the DPU's main class name. The main class must be placed in 
 				the package specified in the previous step. Main class is the class which is called when DPU should be executed by ODCleanStore.  </li>
-			<li id="odcl_dpu_path"> <b>TODO 6: Put path to the ODCleanStore data processing unit's directory here:</b> 
-				If you want use <a href="#auto_copy">copy-to-odcs</a> or <a href="#auto_reload">publish-to-odcs</a> maven profile put here path to the ODCS DPU's folder.
-				In default it is something like <i>{path_to_odcs_projet}\target\dpu</i> </li>
-			<li> <b>TODO 7. Dependencies</b> Add your 
+			<li id="odcl_dpu_path"> <b>TODO 6 (optional): Put path to the ODCleanStore data processing unit's directory here:</b> 
+				If you want to use <a href="#auto_copy">copy-to-odcs</a> or <a href="#auto_reload">publish-to-odcs</a> maven profiles, put here path to the ODCS DPU's folder.
+				In default it is something like <i>{path_to_odcs_project}\target\dpu</i> </li>
+			<li> <b>TODO 7 (optional). Dependencies</b> Add your 
 				project dependencies here. See the included examples 
 				for inspiration. You can either set up a dependency pointing to certain remote Maven artifact or you may set up a local repository residing on your local disc if you do not have access to any remote maven repository to which you may upload the dependencies you requires and are not available on public maven repositories. <span class="warn"> Do not add dependencies elsewhere as they may not 
 		be visible to the Maven.</span> </div></li>
 		</ul>
 
 		<h3 id="filesDpuTemplate">DPUTemplate.java</h3> <div>
-		When the pom.xml file is adjust, open the Maven project in the favourite IDE, e.g., Netbeans.
+		When the pom.xml file is adjusted, open the Maven project in the favourite IDE, e.g., Netbeans.
 		
 		Find the <code><a href="https://github.com/mff-uk/odcs/blob/master/module/DPU_Template/src/main/java/com/example/DPUTemplate.java">DPUTemplate.java</a></code> file, which is the DPU's main class. The name of the class and file must be the same as <code>mainClass</code> introduced in <code>pom.xml</code>. Thus, 
 		rename the file and class in it according to 
@@ -89,7 +89,7 @@
 		</ul>	
 			<p>See the sample
 			implementation of the main method for a <a href="https://github.com/mff-uk/odcs/blob/master/module/SPARQL_transformer/src/main/java/cz/cuni/mff/xrg/odcs/transformer/SPARQL/SPARQLTransformer.java">SPARQL transformer</a> executing 
-            the given SPARQL queries over the input data unit and producing corresponding output data unit.</p>
+            the given SPARQL queries over the input data unit and producing corresponding output data unit, so that you know how to define input/output data units.</p>
 			
 		
 		<h3 id="filesDpuTemplateConfig">DPUTemplateConfig.java</h3>	<div>
@@ -187,10 +187,10 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 	<h2>Deploying the DPU bundle to ODCleanStore web application</h2>
 	The created bundle (DPU jar file) can be loaded to the ODCleanStore web application on 
 	the menu item "DPU Templates", button "Create DPU Template". <br/> <br/>	
-	ODCleanStore provide Maven <a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html">profiles</a> that should make your life easier. The following sections
-	assume that you have properly <a href="#odcl_dpu_path">set path</a> to the ODCleanStore data processing unit's directory.
-	<br/> <br/>
-	<p style="color: red">Use following mechanism only for development purpose as it bypasses ODCleanStore standard protection mechanism as automatic configuration validation.</p>
+	
+	
+	For development purposes, ODCleanStore provide Maven <a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html">profiles</a> that should make your life easier. The following sections
+	assume that you have properly <a href="#odcl_dpu_path">set path</a> to the ODCleanStore data processing unit's directory. Use following mechanism only for development purpose as it bypasses ODCleanStore's standard protection mechanism, such as automatic configuration validation.</p>
 	
 	
 	<h3 id="auto_copy">Automatic copy</h3>
@@ -198,12 +198,12 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 	is automatically copied into ODCleanStore data processing unit's directory.
 	The jar is reloaded when the application starts. This is good if you want 
 	to have up to date data processing unit loaded into ODCleanStore that is not 
-	currently running. This do not update the jar-file on runtime. To update
+	currently running. This does not update the jar-file on runtime. To update
 	the jar file you have to turn ODCleanStore off and on again.
 	
 	<h3 id="auto_reload">Automatic reload</h3>
 	<b>Use this only if you have not changed your bundle version or name!</b>
-	If your run Maven with profile <i>publish-to-odcs</i> then the output jar file
+	If you run Maven with profile <i>publish-to-odcs</i> then the output jar file
 	is automatically copied into ODCleanStore data processing unit's directory.
 	If backend is running it automatically reload the jar-file. So you to 
 	not have to restart backend anymore. 
@@ -215,19 +215,19 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 	<br/>
 	
 	<h2>DPU testing</h2>
-	ODCS provide possibility to write test for DPUs. The DPU tests use JUnit as an environment.
-	The base class for testing is <code>TestEnvironment</code> this class provide 
-	environment in which DPU can be executed.
-	The preparation of test environment can be split into several steps:
+	ODCleanStore provides possibility to write tests for DPUs and launch tests outside of the ODCleanStore platform. The DPU tests use JUnit as an environment.
+	The base class for testing is <code>TestEnvironment</code> -- this class provides 
+	environment in which DPUs can be executed.
+	The preparation of the test environment can be split into several steps:
 	<ul>
-		<li>Select directory where test directory will be created, or you can 
+		<li>Select directory where testing files may be created, or you can 
 			ODCS use operating system temp directory.</li>
 		<li>Add input and output data units.</li>
 		<li>Prepare DPU instance and configure it.</li>
 		<li>Run the execution.</li>
 		<li>Check the results.</li>
 	</ul>
-	The following code shows simple test used for core DPU SPARQL Transformer.
+	The following code shows simple test used for core DPU SPARQL Transformer - SPARQL Transformer is populate with certain testing data and produces certain output data which may be checked. 
 <div class="code"> <pre> <code>	
 @Test
 public void constructAllTest() throws Exception {
@@ -264,7 +264,7 @@ public void constructAllTest() throws Exception {
 }	
 </code> </pre> </div>
 	There is also possibility to use Virtuoso for RDF data during testing. The connection to 
-	virtuoso for purpose of DPU tests must be configured separately in test class as show
+	virtuoso for purpose of DPU tests must be configured separately in test class as shows the
 	following example.
 <div class="code"> <pre> <code>	
 	@BeforeClass
@@ -278,16 +278,16 @@ public void constructAllTest() throws Exception {
 </code> </pre> </div>
 	Then you can simply use 
 	<code>env.createRdfOutput("output", true);</code> instead of 
-	<code>env.createRdfOutput("output", false);</code> (ie. just change boolean value)
+	<code>env.createRdfOutput("output", false);</code> (i.e., just change boolean value)
 	and test environment will use given virtuoso instance instead of
 	local RDF storage.
 	<br/> <br/>
-	User can also specify additional information that can be used during tests as
+	User can also specify additional information that can be used during tests, such as
 	<ul>
-		<li>path to jar file</li>
+		<li>path to jar files where the DPU is packed as OSGi bundleß</li>
 		<li>time of last execution</li>
 	</ul>
-	See methods on <code>TestEnvironment</code> class.
+	See methods are on the <code>TestEnvironment</code> class.
 
 
 	</body>

@@ -24,6 +24,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
@@ -81,11 +82,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private Long exeId;
 	private static final String[] visibleCols = new String[]{
 		"start", "pipeline.name", "duration", "owner.username", "status",
-		"isDebugging", "obsolete", "actions", "report"
+		"isDebugging", "schedule", "actions", "report"
 	};
 	static String[] headers = new String[]{
 		"Date", "Name", "Run time", "User", "Status",
-		"Debug", "Obsolete", "Actions", "Report"
+		"Debug", "Scheduled", "Actions", "Report"
 	};
 	private Date lastLoad;
 
@@ -109,7 +110,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
-		setCompositionRoot(mainLayout);	
+		setCompositionRoot(mainLayout);
 
 		String strExecId = event.getParameters();
 		if (strExecId == null || strExecId.isEmpty()) {
@@ -250,6 +251,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 				monitorTable.resetFilters();
 				monitorTable.setFilterFieldVisible("actions", false);
 				monitorTable.setFilterFieldVisible("duration", false);
+				monitorTable.setFilterFieldVisible("schedule", false);
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
@@ -264,7 +266,6 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 		//table with pipeline execution records
 		monitorTable = new IntlibPagedTable() {
-
 			@Override
 			public Collection<?> getSortableContainerPropertyIds() {
 				ArrayList<String> sortableIds = new ArrayList<>(2);
@@ -275,13 +276,12 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 				sortableIds.add("owner.username");
 				return sortableIds;
 			}
-			
 		};
 		monitorTable.setSelectable(true);
 		monitorTable.setWidth("100%");
 		monitorTable.setHeight("100%");
 		monitorTable.setImmediate(true);
-		monitorTable.setColumnWidth("obsolete", 60);
+		monitorTable.setColumnWidth("schedule", 60);
 		monitorTable.setColumnWidth("status", 50);
 		monitorTable.setColumnWidth("isDebugging", 50);
 		monitorTable.setColumnWidth("duration", 60);
@@ -345,8 +345,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
-				Date recordLastChange = (Date)source.getItem(itemId).getItemProperty("lastChange").getValue();
-				if(recordLastChange != null && recordLastChange.after(lastLoad)) {
+				Date recordLastChange = (Date) source.getItem(itemId).getItemProperty("lastChange").getValue();
+				if (recordLastChange != null && recordLastChange.after(lastLoad)) {
 					lastLoad = recordLastChange;
 				}
 				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
@@ -377,10 +377,12 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 //				}
 //			}
 //		});
-		monitorTable.addGeneratedColumn("obsolete", new CustomTable.ColumnGenerator() {
+		monitorTable.addGeneratedColumn("schedule", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				return "";
+				Schedule schedule = (Schedule) source.getItem(itemId).getItemProperty(columnId).getValue();
+				Embedded emb = IntlibHelper.getIconForScheduled(schedule != null);
+				return emb;
 			}
 		});
 		monitorTable.addGeneratedColumn("report", new CustomTable.ColumnGenerator() {
@@ -399,6 +401,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setFilterBarVisible(true);
 		monitorTable.setFilterFieldVisible("actions", false);
 		monitorTable.setFilterFieldVisible("duration", false);
+		monitorTable.setFilterFieldVisible("schedule", false);
 		monitorTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
 			@Override

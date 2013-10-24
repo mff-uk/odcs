@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend.container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
-import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.impl.QueryFilterManager;

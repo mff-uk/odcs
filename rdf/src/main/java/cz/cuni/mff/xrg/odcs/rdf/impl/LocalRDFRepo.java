@@ -98,17 +98,29 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	@Override
 	public void delete() {
 		if (repository.isInitialized()) {
-			File dataDir = repository.getDataDir();
-			deleteDataDirectory(dataDir);
 			cleanAllData();
 		}
+		File dataDir = repository.getDataDir();
 		release();
+		while (repository.isInitialized()) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException ex) {
+				logger.debug("Thread sleeping interupted " + ex.getMessage());
+			}
+		}
+		deleteDataDirectory(dataDir);
 	}
 
 	@Override
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
 				.toString());
+		try {
+			closeConnection();
+		} catch (RepositoryException e) {
+			logger.debug("Connection problems with close: " + e.getMessage());
+		}
 		shutDown();
 		logger.info("Relelased LocalRdf: {}", WorkingRepoDirectory
 				.toString());

@@ -51,7 +51,7 @@ public final class SimpleTreeFilter implements Filter {
 		final SimpleTreeFilter o = (SimpleTreeFilter) obj;
 
 		// Checks the properties one by one
-		if (filterString != o.filterString && o.filterString != null
+		if (!filterString.equals(o.filterString) && o.filterString != null
 				&& !o.filterString.equals(filterString)) {
 			return false;
 		}
