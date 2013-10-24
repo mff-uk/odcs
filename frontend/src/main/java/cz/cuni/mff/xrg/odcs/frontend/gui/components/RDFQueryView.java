@@ -10,7 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
-import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryDefinition;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryFactory;

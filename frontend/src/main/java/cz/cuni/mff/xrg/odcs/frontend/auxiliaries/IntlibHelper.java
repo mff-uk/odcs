@@ -10,10 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.CANCELLING;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.vaadin.dialogs.ConfirmDialog;
 
 /**
