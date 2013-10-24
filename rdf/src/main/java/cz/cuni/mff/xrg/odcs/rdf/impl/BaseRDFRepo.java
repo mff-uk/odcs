@@ -125,6 +125,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private RepositoryConnection repoConnection;
 
 	/**
+	 * If DPU execution is stopped or not.
+	 */
+	private boolean isExecutionCanceled = false;
+
+	/**
 	 * If is thrown RDFException and need reconnect singleton connection
 	 * instance.
 	 */
@@ -620,8 +625,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						try {
 							loadDataParts(endpointURL, tempGraph, insertType,
 									chunkSize);
-							moveDataToTarget(endpointURL, tempGraph,
-									endpointGraph);
+							if (isExecutionCanceled) {
+								setExecutionCanceled(false);
+							} else {
+								moveDataToTarget(endpointURL, tempGraph,
+										endpointGraph);
+							}
 
 						} catch (InsertPartException e) {
 							throw new RDFException(e.getMessage(), e);
@@ -2810,5 +2819,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			repoConnection.close();
 		}
+	}
+
+	/**
+	 * Stop execution of data unit. And clean obtained data, if is possible. If
+	 * is called during execution atomic methods (as extraction from file), data
+	 * unit will be stoped after execution this called atomic method.
+	 */
+	@Override
+	public void interruptExecution() {
+		setExecutionCanceled(true);
+	}
+
+	private void setExecutionCanceled(boolean isCanceled) {
+		isExecutionCanceled = isCanceled;
 	}
 }
