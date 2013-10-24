@@ -30,8 +30,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +62,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	@Autowired
 	private ApplicationContext context;
 	private MenuLayout main;
-	private Date lastAction = null;
 	private Client backendClient;
 	private RefreshManager refreshManager;
 	private String storedNavigation = null;
@@ -109,13 +106,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
-//				if (refreshThread != null) {
-//					refreshThread.interrupt();
-//				}
 				if (backendClient != null) {
 					backendClient.close();
 				}
-
 			}
 		});
 
@@ -159,16 +152,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 					return false;
 				}
 				setNavigationHistory(event);
-				setActive();
-//				if(refreshThread == null || !refreshThread.isAlive()) {
-//					setupRefreshThread();
-//					LOG.debug("Starting new refresh thread.");
-//				}
 
 				if (!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
 					refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
 					refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
-					//refreshThread.refreshExecution(null, null);
 				}
 				return true;
 			}
@@ -292,13 +279,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	}
 
 	/**
-	 * Sets last action date to current time.
-	 */
-	public void setActive() {
-		lastAction = new Date();
-	}
-
-	/**
 	 * Returns facade, which provides services for managing pipelines.
 	 *
 	 * @return pipeline facade
@@ -393,18 +373,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	/**
 	 * Fetches spring bean.
 	 *
-	 * @param name
-	 * @return bean
-	 * @deprecated use {@link #getBean(java.lang.Class) instead
-	 */
-	@Deprecated
-	public Object getBean(String name) {
-		return context.getBean(name);
-	}
-
-	/**
-	 * Fetches spring bean.
-	 *
 	 * @param type
 	 * @return bean
 	 */
@@ -427,15 +395,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	public DPUModuleManipulator getDPUManipulator() {
 		return getBean(DPUModuleManipulator.class);
-	}
-
-	/**
-	 * Gets time of last action.
-	 *
-	 * @return Time of last action.
-	 */
-	public Date getLastAction() {
-		return lastAction;
 	}
 
 	public Client getBackendClient() {
