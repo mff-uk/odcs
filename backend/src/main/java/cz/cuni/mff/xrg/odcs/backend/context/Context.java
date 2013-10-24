@@ -125,13 +125,59 @@ public class Context implements DPUContext {
 		this.canceled = false;
 	}
 	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+	
+	public DPUInstanceRecord getDPU() {
+		return dpuInstance;
+	}
+	
+	void setDPU(DPUInstanceRecord dpu) {
+		this.dpuInstance = dpu;
+	}
+	
+	public ExecutionContextInfo getContextInfo() {
+		return contextInfo;
+	}
+	
+	void setContextInfo(ExecutionContextInfo contextInfo) {
+		this.contextInfo = contextInfo;
+	}
+	
+	public Date getLastSuccExec() {
+		return lastSuccExec;
+	}
+	
+	void setLastSuccExec(Date lastSuccExec) {
+		this.lastSuccExec = lastSuccExec;
+	}
+	
+	DataUnitManager getOutputsManager() {
+		return outputsManager;
+	}
+	
+	void setOutputsManager(DataUnitManager manager) {
+		this.outputsManager = manager;
+	}
+	
+	DataUnitManager getInputsManager() {
+		return inputsManager;
+	}
+	
+	void setInputsManager(DataUnitManager manager) {
+		this.inputsManager = manager;
+	}
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+	
 	/**
 	 * Bind the context to the {@link PipelineExecution} and {@link DPUInstanceRecord}.
 	 * Must be called before future using of the {@link Context} class.
 	 * @param dpuInstance
 	 * @param context
 	 * @param lastSuccExec
+	 * @deprecated use direct setters instead
 	 */
+	@Deprecated
 	public void bind(DPUInstanceRecord dpuInstance, 
 			ExecutionContextInfo contextInfo, Date lastSuccExec) {
 		this.dpuInstance = dpuInstance;
@@ -148,15 +194,17 @@ public class Context implements DPUContext {
 	/**
 	 * Save all data units.
 	 */
+	@Deprecated
 	public void sealInputs() {
 		for (ManagableDataUnit item : inputsManager.getDataUnits()) {
 			item.madeReadOnly();
 		}
-	}	
+	}
 	
 	/**
 	 * Save all data units.
 	 */
+	@Deprecated
 	public void save() {
 		inputsManager.save();
 		outputsManager.save();
@@ -165,6 +213,7 @@ public class Context implements DPUContext {
 	/**
 	 * Release all locks from context and DataUnits do not delete data.
 	 */
+	@Deprecated
 	public void release() {
 		inputsManager.release();
 		outputsManager.release();		
@@ -174,6 +223,7 @@ public class Context implements DPUContext {
 	 * Release all lock from context and DataUnits. Also delete all stored
 	 * {@link DataUnit}s and related contex's directories.
 	 */
+	@Deprecated
 	public void delete() {
 		inputsManager.delete();
 		outputsManager.delete();
@@ -185,6 +235,7 @@ public class Context implements DPUContext {
 	 * 
 	 * @throws DataUnitCreateException
 	 */
+	@Deprecated
 	public void reload() throws DataUnitException {
 		inputsManager.reload();
 		outputsManager.reload();		
@@ -196,6 +247,7 @@ public class Context implements DPUContext {
 	 * @param instruction
 	 * @throws ContextException
 	 */
+	@Deprecated
 	public void addContext(Context context, String instruction)
 			throws ContextException {
 		// create merger class
@@ -237,7 +289,9 @@ public class Context implements DPUContext {
 	/**
 	 * Return respective {@link DPUInstanceRecord}
 	 * @return
+	 * @deprecated use {@link #getDPU()} instead
 	 */
+	@Deprecated
 	public DPUInstanceRecord getDpuInstance() {
 		return dpuInstance;
 	}
@@ -297,6 +351,7 @@ public class Context implements DPUContext {
 	 * 
 	 * @param directory
 	 */
+	@Deprecated
 	private void deleteDirectory(File directory) {
 		if (directory.exists()) {
 			try {
@@ -310,6 +365,7 @@ public class Context implements DPUContext {
 	/**
 	 * Delete all DPU context's directories.
 	 */
+	@Deprecated
 	private void deleteDirectories() {
 		// DPU' tmp directory
 		final File workingDir = getWorkingDir();
@@ -410,5 +466,5 @@ public class Context implements DPUContext {
 		result.mkdirs();
 		return result;
 	}
-	
+		
 }

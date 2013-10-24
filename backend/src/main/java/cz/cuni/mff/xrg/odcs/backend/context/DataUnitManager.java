@@ -186,6 +186,7 @@ final class DataUnitManager {
 	 * Call delete on all stored DataUnits and them delete them from 
 	 * this instance.
 	 */
+	@Deprecated
 	public void delete() {
 		for (ManagableDataUnit item : dataUnits) {
 			item.delete();
@@ -197,6 +198,7 @@ final class DataUnitManager {
 	 * Call release on all stored DataUnit and them delete them from
 	 * this instance.
 	 */
+	@Deprecated
 	public void release() {
 		for (ManagableDataUnit item : dataUnits) {
 			item.release();
