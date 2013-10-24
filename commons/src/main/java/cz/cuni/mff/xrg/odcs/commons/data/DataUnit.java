@@ -21,11 +21,17 @@ public interface DataUnit {
 	public DataUnitType getType();
 
 	/**
-	 * Return dataUnit's URI. The DataUnit URI should be set in constructor. 
+	 * Return dataUnit's URI. The DataUnit URI should be set in constructor.
 	 * Otherwise it should be immutable.
 	 *
 	 * @return String name of data unit.
 	 */
 	public String getDataUnitName();
 
+	/**
+	 * Stop execution of data unit. And clean obtained data, if is possible. If
+	 * is called during execution atomic methods (as extraction from file), data
+	 * unit will be stoped after execution this called atomic method.
+	 */
+	public void interruptExecution();
 }
