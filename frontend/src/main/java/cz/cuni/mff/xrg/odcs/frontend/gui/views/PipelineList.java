@@ -127,6 +127,8 @@ class PipelineList extends ViewComponent {
 				tablePipelines.resetFilters();
 				tablePipelines.setFilterFieldVisible("", false);
 				tablePipelines.setFilterFieldVisible("duration", false);
+				tablePipelines.setFilterFieldVisible("lastExecTime", false);
+				tablePipelines.setFilterFieldVisible("lastExecStatus", false);
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
@@ -236,6 +238,10 @@ class PipelineList extends ViewComponent {
 		// assign data source
 		Container container = containerFactory.createPipelines(PAGE_LENGTH);
 		tablePipelines.setContainerDataSource(container);
+		tablePipelines.setFilterFieldVisible("", false);
+		tablePipelines.setFilterFieldVisible("duration", false);
+		tablePipelines.setFilterFieldVisible("lastExecTime", false);
+		tablePipelines.setFilterFieldVisible("lastExecStatus", false);
 
 		return mainLayout;
 	}

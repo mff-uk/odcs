@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.browser;
+package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -45,15 +45,16 @@ public class RDFDataUnitHelper {
 		// 
 		String dataUnitId =
 				context.generateDataUnitId(dpuInstance, info.getIndex());
-		// storage directory
-		File dpuStorage =
-				new File(App.getAppConfig().getString(
-				ConfigProperty.GENERAL_WORKINGDIR),
-				context.getDataUnitStoragePath(dpuInstance, info.getIndex()));
+
 
 		switch (info.getType()) {
 			case RDF_Local:
 				try {
+					// storage directory
+					File dpuStorage =
+							new File(App.getAppConfig().getString(
+							ConfigProperty.GENERAL_WORKINGDIR),
+							context.getDataUnitStoragePath(dpuInstance, info.getIndex()));
 					LocalRDFRepo repository = RDFDataUnitFactory
 							.createLocalRDFRepo("");
 					// load data from storage
@@ -66,8 +67,7 @@ public class RDFDataUnitHelper {
 
 			case RDF_Virtuoso:
 				AppConfig appConfig = App.getAppConfig().getSubConfiguration(
-						ConfigProperty.VIRTUOSO_RDF
-				);
+						ConfigProperty.VIRTUOSO_RDF);
 
 				// load configuration from appConfig
 				final String hostName =

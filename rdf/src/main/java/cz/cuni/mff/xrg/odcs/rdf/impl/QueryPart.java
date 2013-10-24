@@ -17,7 +17,7 @@ public class QueryPart {
 	private int prefixEndIndex;
 
 	public QueryPart(String query) {
-		this.query = query;
+		setQuery(query);
 		setPrefixEndIndex();
 
 	}
@@ -64,6 +64,10 @@ public class QueryPart {
 	 */
 	public String getQuery() {
 		return query;
+	}
+
+	private void setQuery(String newQuery) {
+		this.query = newQuery;
 	}
 
 	/**

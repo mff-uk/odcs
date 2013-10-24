@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import com.vaadin.data.Container;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -9,10 +10,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
-import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryDefinition;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryFactory;
+import cz.cuni.mff.xrg.odcs.frontend.container.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tepi.filtertable.FilterGenerator;
 
 /**
  * Simple query view for browsing and querying debug data. User selects DPU and
@@ -166,6 +169,37 @@ public class RDFQueryView extends CustomComponent {
 		resultTable.setImmediate(true);
 		resultTable.setPageLength(15);
 		resultTable.setSortEnabled(false);
+		resultTable.setFilterBarVisible(true);
+		resultTable.setFilterGenerator(new FilterGenerator() {
+
+			@Override
+			public Container.Filter generateFilter(Object propertyId, Object value) {
+				return new RDFRegexFilter((String)propertyId, (String)value);
+			}
+
+			@Override
+			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
+				return null;
+			}
+
+			@Override
+			public AbstractField<?> getCustomFilterComponent(Object propertyId) {
+				return null; 
+			}
+
+			@Override
+			public void filterRemoved(Object propertyId) {
+			}
+
+			@Override
+			public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
+			}
+
+			@Override
+			public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+				return null;
+			}
+		});
 		mainLayout.addComponent(resultTable);
 		resultTableControls = resultTable.createControls();
 		resultTableControls.setImmediate(true);

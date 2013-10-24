@@ -45,7 +45,7 @@
 			<param-name>widgetset</param-name>
 			<param-value>cz.cuni.mff.xrg.odcs.frontend.AppWidgetSet</param-value>
 		</init-param>
-		<async-supported>true</async-supported>
+		<async-supported>false</async-supported>
 	</servlet>
 
 	<servlet-mapping>

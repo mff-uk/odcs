@@ -5,6 +5,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -38,6 +39,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private Stack<PipelineGraph> historyStack;
 	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
 	private boolean isModified = false;
+	
+	private DPUExplorer explorer = App.getApp().getDPUExplorer();
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -169,11 +172,18 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void addConnection(int dpuFrom, int dpuTo) {
 		String result = graph.validateNewEdge(dpuFrom, dpuTo);
+		Node to = graph.getNodeById(dpuTo);
+		if(result == null) {
+		    if(explorer.getInputs(to.getDpuInstance()).isEmpty()) {
+				result = "Target DPU has no inputs.";
+            }
+		}
 		if (result == null) {
 			int connectionId = graph.addEdge(dpuFrom, dpuTo);
 			EdgeCompiler edgeCompiler = new EdgeCompiler(App.getApp().getModules());
 			Edge edge = graph.getEdgeById(connectionId);
-			edgeCompiler.addDefaultMapping(edge);
+			DPUInstanceRecord from = graph.getNodeById(dpuFrom).getDpuInstance();
+			edgeCompiler.setDefaultMapping(edge, explorer.getOutputs(from), explorer.getInputs(to.getDpuInstance()));
 
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edge.getScript());
 		} else {

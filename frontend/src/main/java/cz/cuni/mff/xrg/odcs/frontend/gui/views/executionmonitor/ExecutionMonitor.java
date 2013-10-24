@@ -14,7 +14,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.CANCELLED;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FAILED;
@@ -33,11 +32,11 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +80,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private Container tableData;
 	private Long exeId;
 	private static final String[] visibleCols = new String[]{
-		"start", "pipeline.name", "duration", "user", "status",
+		"start", "pipeline.name", "duration", "owner.username", "status",
 		"isDebugging", "obsolete", "actions", "report"
 	};
 	static String[] headers = new String[]{
@@ -264,7 +263,20 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		tableData = cf.createExecutions(PAGE_LENGTH);
 
 		//table with pipeline execution records
-		monitorTable = new IntlibPagedTable();
+		monitorTable = new IntlibPagedTable() {
+
+			@Override
+			public Collection<?> getSortableContainerPropertyIds() {
+				ArrayList<String> sortableIds = new ArrayList<>(2);
+				sortableIds.add("start");
+				sortableIds.add("pipeline.name");
+				sortableIds.add("status");
+				sortableIds.add("isDebugging");
+				sortableIds.add("owner.username");
+				return sortableIds;
+			}
+			
+		};
 		monitorTable.setSelectable(true);
 		monitorTable.setWidth("100%");
 		monitorTable.setHeight("100%");
@@ -353,18 +365,18 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		//Actions column. Contains actions buttons: Debug data, Show log, Cancel.
 		monitorTable.addGeneratedColumn("actions",
 				new GenerateActionColumnMonitor(this));
-		monitorTable.addGeneratedColumn("user", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				User owner = (User) source.getItem(itemId)
-						.getItemProperty("owner").getValue();
-				if (owner == null) {
-					return "";
-				} else {
-					return owner.getUsername();
-				}
-			}
-		});
+//		monitorTable.addGeneratedColumn("user", new CustomTable.ColumnGenerator() {
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				User owner = (User) source.getItem(itemId)
+//						.getItemProperty("owner.username").getValue();
+//				if (owner == null) {
+//					return "";
+//				} else {
+//					return owner.getUsername();
+//				}
+//			}
+//		});
 		monitorTable.addGeneratedColumn("obsolete", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
@@ -518,6 +530,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	}
 
 	private void showExecutionDetail(Long executionId) {
+		LOG.debug("Start of loading of execution detail.");
 		App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 		exeId = executionId;
 		if (logLayout == null) {
@@ -532,6 +545,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 			hsplit.setHeight("-1px");
 			hsplit.setLocked(false);
 		}
+		LOG.debug("End of loading of execution detail.");
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -300,7 +301,6 @@ public class PipelineGraph implements Serializable {
 		if(from.equals(to)) {
 			return "Loops are not allowed!";
 		}
-		
 		//Same edge check
 		if(sameEdgeExists(from, to)) {
 			return "Same edge already exists in graph!";

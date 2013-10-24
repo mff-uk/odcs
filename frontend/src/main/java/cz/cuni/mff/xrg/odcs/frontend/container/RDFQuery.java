@@ -1,12 +1,15 @@
 package cz.cuni.mff.xrg.odcs.frontend.container;
 
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification;
-import cz.cuni.mff.xrg.odcs.frontend.browser.RDFDataUnitHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.QueryFilterManager;
+import cz.cuni.mff.xrg.odcs.rdf.impl.QueryRestriction;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
+import cz.cuni.mff.xrg.odcs.rdf.impl.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,8 +42,12 @@ public class RDFQuery implements Query {
 	@Override
 	public int size() {
 		RDFDataUnit repository = RDFDataUnitHelper.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
+		if (repository == null) {
+			throw new RuntimeException("Unable to load RDFDataUnit.");
+		}
 		try {
-			return (int) repository.getResultSizeForQuery(baseQuery);
+			String filteredQuery = setWhereCriteria(baseQuery);
+			return (int) repository.getResultSizeForQuery(filteredQuery);
 		} catch (InvalidQueryException ex) {
 			Notification.show("Query Validator",
 					"Query is not valid: "
@@ -62,14 +69,23 @@ public class RDFQuery implements Query {
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
 		RDFDataUnit repository = RDFDataUnitHelper.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
-		String query = baseQuery + String.format(" LIMIT %d", batchSize);
+		if (repository == null) {
+			throw new RuntimeException("Unable to load RDFDataUnit.");
+		}
+		
+		String filteredQuery = setWhereCriteria(baseQuery);
+		
+		QueryRestriction restriction = new QueryRestriction(filteredQuery);
+		restriction.setLimit(batchSize);
+		//String query = baseQuery + String.format(" LIMIT %d", batchSize);
 		int offset = startIndex / batchSize;
 		if (offset > 0) {
-			query += String.format(" OFFSET %d", offset * batchSize);
+			//query += String.format(" OFFSET %d", offset * batchSize);
+			restriction.setOffset(offset * batchSize);
 		}
-
-		boolean isSelectQuery = false;
-		Object data = null;
+		String query = restriction.getRestrictedQuery();
+		boolean isSelectQuery;
+		Object data;
 		try {
 			isSelectQuery = isSelectQuery(query);
 
@@ -114,6 +130,19 @@ public class RDFQuery implements Query {
 			repository.shutDown();
 		}
 		return null;
+	}
+
+	private String setWhereCriteria(String query) {
+		List<Filter> filters = qd.getFilters();
+		QueryFilterManager filterManager = new QueryFilterManager(query);
+		for (Filter filter : filters) {
+			if (filter.getClass() == RDFRegexFilter.class) {
+				RDFRegexFilter rdfRegexFilter = (RDFRegexFilter) filter;
+				RegexFilter rf = new RegexFilter(rdfRegexFilter.getColumnName(), rdfRegexFilter.getRegex());
+				filterManager.addFilter(rf);
+			}
+		}
+		return filterManager.getFilteredQuery();
 	}
 
 	private Item toItem(RDFTriple triple) {
