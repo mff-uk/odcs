@@ -1,7 +1,10 @@
 <configuration>
 
-	<!-- load properties from file <property file="config.properties" /> then 
-		we can use ${VAR_NAME} in <file> for file appender -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{30} - %msg%n</pattern>
+		</encoder>
+	</appender>
 
 	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">
 		<!-- requiredKey must by in MDC to pass this filter, so only messages related 
@@ -34,22 +37,15 @@
 		</encoder>
 	</appender>
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
-			by default -->
-		<encoder>
-			<pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{30} - %msg%n</pattern>
-		</encoder>
-	</appender>
-
-	<!-- TODO define logger for EclipseLink -->
-
 	<logger name="org.springframework" level="WARN" />
+	<logger name="org.eclipse.persistence" level="INFO" />
+	<logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
 
-	<root level="ALL">
+	<root level="ALL">	
 		<appender-ref ref="DB" />
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
+	
 
 </configuration>

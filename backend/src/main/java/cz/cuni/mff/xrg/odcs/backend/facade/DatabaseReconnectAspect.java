@@ -116,7 +116,6 @@ class DatabaseReconnectAspect {
 				emailSent = false;
 				return result;
 			} catch (RuntimeException ex) {
-				LOG.info("call failed ");
 				LOG.warn("Database is down after {} attempts.", attempts);
 				if (retries != -1 && attempts > retries) {
 					// we have wait for too long
