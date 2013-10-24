@@ -3,9 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
 	<import resource="classpath:commons-app-context.xml" />
 
@@ -13,6 +15,11 @@
 	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
 	<task:executor id="taskExecutor" pool-size="4" />
 	<task:scheduler id="taskScheduler" pool-size="64" />
+
+	<!-- enable aspects -->
+	<aop:aspectj-autoproxy />
+		 
+	<bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.facade.DatabaseReconnectAspect" />
 	
 	<!-- module configuration needs to be defined here, because it differs from 
 		frontend -->
@@ -47,16 +54,7 @@
 
 	<!-- scheduler -->
 	<bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler" />
-
-	<!-- replace facades from commons -->
-	<bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.PipelineFacade" />
-	<bean id="userFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.UserFacade" />
-	<bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.ScheduleFacade" />
-	<bean id="prefixFacade"
-		class="cz.cuni.mff.xrg.odcs.backend.facade.NamespacePrefixFacade" />
-	<bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.DPUFacade" />
-	<bean id="logFacade" class="cz.cuni.mff.xrg.odcs.backend.facade.LogFacade" />
-
+	 
 	<!-- component for sending email based on events -->
 	<bean id="emailCommunicator"
 		class="cz.cuni.mff.xrg.odcs.backend.communication.EmailCommunicator" />
@@ -65,9 +63,6 @@
 	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager">
 		<constructor-arg name="refreshDatabase" value="false" />
 	</bean>
-
-	<!-- error handler for DB outages -->
-	<bean class="cz.cuni.mff.xrg.odcs.backend.facade.NotifyWaitErrorHandler" />
 
 	<!-- autodiscovery for DPU's pre/post executors -->
 	<context:component-scan
