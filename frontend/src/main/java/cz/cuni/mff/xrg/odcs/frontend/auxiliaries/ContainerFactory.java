@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
 import java.sql.Timestamp;
@@ -77,6 +78,7 @@ public class ContainerFactory {
 		container.addContainerProperty("status", PipelineExecutionStatus.class, null);
 		container.addContainerProperty("isDebugging", Boolean.class, false);
 		container.addContainerProperty("lastChange", Timestamp.class, null);
+		container.addContainerProperty("schedule", Schedule.class, null);
 
 		return container;
 	}

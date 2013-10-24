@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
@@ -68,8 +69,8 @@ public class IntlibHelper {
 	 */
 	public static PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
 
-		final PipelineExecution pipelineExec = App.getPipelines().createExecution(pipeline); 
-				
+		final PipelineExecution pipelineExec = App.getPipelines().createExecution(pipeline);
+
 		pipelineExec.setDebugging(inDebugMode);
 		if (inDebugMode && debugNode != null) {
 			pipelineExec.setDebugNode(debugNode);
@@ -172,5 +173,13 @@ public class IntlibHelper {
 			duration = exec.getDuration();
 		}
 		return formatDuration(duration);
+	}
+
+	public static Embedded getIconForScheduled(boolean isScheduled) {
+		ThemeResource img = new ThemeResource(isScheduled ? "icons/scheduled.png" : "icons/not_scheduled.png");
+		String description = isScheduled ? "Scheduled" : "Manual";
+		Embedded emb = new Embedded(description, img);
+		emb.setDescription(description);
+		return emb;
 	}
 }
