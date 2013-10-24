@@ -8,6 +8,8 @@ import com.vaadin.ui.UI;
 /**
  * Simple extender of {@link Navigator} class, allowing to display PipelineEdit
  * view correctly.
+ * 
+ * Used when pipeline edit is shown, so that size is adjusted based on content. Otherwise content is set to the width of the screen. 
  *
  * @author Bogo
  */
