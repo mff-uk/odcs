@@ -7,7 +7,7 @@
         <artifactId>module-core</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>RDF_loader</artifactId>
+    <artifactId>SPARQL_Loader</artifactId>
     <packaging>bundle</packaging>
     <description>Loads RDF data.</description>
 

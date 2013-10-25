@@ -1,0 +1,162 @@
+/*
+    Document   : styles
+    Created on : Apr 17, 2013, 1:40:25 PM
+    Author     : Bogo
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+@import "../reindeer/legacy-styles.css";
+
+/* Menubar */
+.v-menubar {
+	background-image: none !important;
+	font-size: 13pt;
+	background-color: black !important;
+	line-height: 50px; 
+	text-align: left;
+	margin-top: -5px;
+	/*color: red;*/
+}
+
+.backendStatus {
+	padding-right: 5.5em;
+	padding-left: 1em;
+}
+
+.v-app {
+    background-color: #ffffff;
+}
+
+.pipelineSettingsLayout {
+	padding-left: 30px;
+	background-color: #dddddd;
+}
+
+.dpuTreeLayout {
+	/*padding-left: 30px;*/
+	background-color: #dddddd;
+}
+.dpuDetailLayout{
+	background-color: #fbfbfb;
+}
+
+.viewLayout {
+	background-color: #ffffff;
+}
+
+.loginPanel {
+	background-color: #000000;
+}
+
+.username {
+	color: #dddddd;
+	text-align: right;
+}
+
+.dpuTree {
+	/*background-color: #dddddd;*/
+}
+
+.dpuDetailMainLayout {
+}
+
+.dpuDetailButtonBar {
+	padding-top: 15px;
+}
+
+.v-select-optiongroup-horizontalgroup .v-select-option {
+    display: inline-block;
+}
+
+.v-select-optiongroup-horizontalgroup {
+    white-space: nowrap;
+}
+
+
+.v-select-optiongroup-horizontalgroup
+.v-select-option.v-radiobutton {
+    padding-right: 10px;
+}
+
+
+
+.v-label-warning {
+	color: red;
+}
+
+/*.vLayoutScroll > div{
+overflow: auto !important;
+}*/
+
+.v-link a:visited {
+	color: gray;
+}
+
+
+
+.v-nativebutton-selectedtab {
+
+
+	border-top: 1px solid #aaa;
+	border-left: 1px solid #aaa;
+	border-bottom: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+	box-shadow: 0.3px -0.3px 6px gray inset;
+	background-color: #aaa;
+}
+
+.v-nativebutton .v-nativebutton-left-text .v-nativebutton-caption {
+      white-space: pre;
+      text-side: left;
+}
+
+.v-nativebutton-multiline{
+	
+
+	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	background-color: #ddd;
+	text-side: left;
+}
+
+.v-verticallayout-settings{
+	padding-left: 15px;
+	padding-right: 25px;
+	padding-top: 15px;
+	background-color: #fff;
+
+	 
+}
+
+.scheduling{
+		padding-left: 15px;
+		padding-right: 25px;
+		padding-top: 15px;
+	    background-color: #eeeeee;
+}
+
+.select-hide-tb {
+	overflow: auto !important;
+	
+}
+
+.v-select-select {
+	overflow: auto !important;
+}
+
+.v-panel-deco {
+	height: 0px;
+	border: none;
+	visibility: hidden;
+}
+
+.v-panel-deco-viewLayout {
+	visibility: hidden;
+}
+
+
+
+  
