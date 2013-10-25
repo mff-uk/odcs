@@ -22,23 +22,11 @@ import ru.xpoft.vaadin.SpringVaadinServlet;
  */
 public class IntlibApplicationServlet extends SpringVaadinServlet {
 
-	/**
-	 * The push handler.
-	 */
-	IntlibPushHandler handler;
-
 	@Override
 	protected VaadinServletService createServletService(
 			DeploymentConfiguration deploymentConfiguration)
 			throws ServiceException {
 		VaadinServletService service = super.createServletService(deploymentConfiguration);
-
-		final AtmosphereFramework framework = DefaultBroadcasterFactory.getDefault()
-				.lookup("/*").getBroadcasterConfig().getAtmosphereConfig().framework();
-
-		// replace the handler registered by vaadin with this one
-		handler = new IntlibPushHandler(service);
-		framework.addAtmosphereHandler("/*", handler);
 
 		return service;
 	}

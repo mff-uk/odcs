@@ -61,7 +61,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			LOG.debug("password: {}", password);
 			LOG.debug("useStatisticHandler: {}", useStatisticHandler);
 			LOG.debug("extractFail: {}", extractFail);
-			
+
 			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
 					constructQuery, hostName, password, RDFFormat.N3,
@@ -73,7 +73,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			throw new DPUException(ex);
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage());
-			return;
+			throw new DPUException(ex.getMessage(), ex);
 		}
 
 		final long triplesCount = rdfDataUnit.getTripleCount();

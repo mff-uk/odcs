@@ -2451,8 +2451,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			connection.commit();
 
-		} catch (IOException | RDFParseException ex) {
+		} catch (IOException ex) {
 			logger.debug(ex.getMessage(), ex);
+			throw new RDFException("IO Exception: " + ex.getMessage(), ex);
+		} catch (RDFParseException ex) {
+			logger.debug(ex.getMessage(), ex);
+			throw new RDFException("Problem with parsing triples: " + ex
+					.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
 			logger.debug(ex.getMessage(), ex);
