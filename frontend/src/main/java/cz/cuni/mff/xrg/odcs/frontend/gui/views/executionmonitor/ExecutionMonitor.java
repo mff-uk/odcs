@@ -435,16 +435,15 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		return mainLayout;
 	}
 
-	private void refresh(PipelineExecution execution, boolean isNew) {
+	private void refresh(PipelineExecution execution, boolean isNew, boolean isDebug) {
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) monitorTable.getContainerDataSource().getContainer();
 
 		if (isNew) {
 			selectedRowId = execution.getId();
 			refresh(true);
-			showExecutionDetail(execution.getId());
-			//Item item = c.addItemAt(0, execution.getId());
-			//item.getItemProperty("status").setValue(execution.getStatus());
-			//item.getItemProperty("start").setValue(execution.getStart());
+			if(isDebug) {
+				showExecutionDetail(execution.getId());
+			}
 		} else {
 			Item item = c.getItem(execution.getId());
 			item.getItemProperty("status").setValue(execution.getStatus());
@@ -500,7 +499,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					App.getApp().getPipelines().save(pipelineExec);
 					senderButton.setVisible(false);
 					// this load new data from database
-					refresh(pipelineExec, false);
+					refresh(pipelineExec, false, false);
 					Notification.show("Pipeline execution cancelled.", Notification.Type.HUMANIZED_MESSAGE);
 					break;
 				case "showlog":
@@ -517,14 +516,14 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					PipelineExecution exec = App.getApp().getPipelines().getExecution(execId);
 					PipelineExecution newExec = IntlibHelper.runPipeline(exec.getPipeline(), false);
 					if (newExec != null) {
-						refresh(newExec, true);
+						refresh(newExec, true, false);
 					}
 					break;
 				case "redebug":
 					PipelineExecution execDebug = App.getApp().getPipelines().getExecution(execId);
 					PipelineExecution newExec2 = IntlibHelper.runPipeline(execDebug.getPipeline(), true);
 					if (newExec2 != null) {
-						refresh(newExec2, true);
+						refresh(newExec2, true, true);
 					}
 					break;
 			}
