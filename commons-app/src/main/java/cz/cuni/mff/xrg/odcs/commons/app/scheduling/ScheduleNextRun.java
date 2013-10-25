@@ -173,7 +173,8 @@ class ScheduleNextRun {
 		if (schedule.isStrictlyTimed() && !checkStrict(nextRun, tolerance)) {
 			// schedule in to the future, we miss execution time
 			nextRun = calculateNext(schedule.getFirstExecution(), new Date(),
-					schedule.getPeriod(), schedule.getPeriodUnit());
+					schedule.getPeriod(), schedule.getPeriodUnit(),
+					tolerance);
 		}
 		return nextRun;
 	}
