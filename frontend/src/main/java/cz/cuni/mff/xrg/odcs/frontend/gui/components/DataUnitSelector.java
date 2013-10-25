@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Bogo
  */
 public class DataUnitSelector extends CustomComponent {
-	
+
 	private PipelineExecution pipelineExec;
 	GridLayout mainLayout;
 	ComboBox dpuSelector;
@@ -38,26 +38,26 @@ public class DataUnitSelector extends CustomComponent {
 	private ComboBox dataUnitSelector;
 	private Button browse;
 	private Label dataUnitGraph;
-	
+
 	public DataUnitSelector(PipelineExecution execution) {
 		pipelineExec = execution;
 		buildMainLayout();
 	}
-	
+
 	private void buildMainLayout() {
 		loadExecutionContextReader();
-		
+
 		mainLayout = new GridLayout(6, 3);
 		mainLayout.setSpacing(true);
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 		dpuSelector = buildDpuSelector();
 		mainLayout.addComponent(dpuSelector, 0, 1);
-		
+
 		Label dpuSelectorLabel = new Label("Select DPU:");
 		mainLayout.addComponent(dpuSelectorLabel, 0, 0);
-		
+
 		Label dataUnitLabel = new Label("Select Data Unit:");
-		
+
 		inputDataUnits = new CheckBox("Input");
 		inputDataUnits.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
@@ -66,7 +66,7 @@ public class DataUnitSelector extends CustomComponent {
 			}
 		});
 		inputDataUnits.setEnabled(false);
-		
+
 		outputDataUnits = new CheckBox("Output");
 		outputDataUnits.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
@@ -75,11 +75,11 @@ public class DataUnitSelector extends CustomComponent {
 			}
 		});
 		outputDataUnits.setEnabled(false);
-		
+
 		HorizontalLayout dataUnitTopLine = new HorizontalLayout(dataUnitLabel, inputDataUnits, outputDataUnits);
 		dataUnitTopLine.setSpacing(true);
 		mainLayout.addComponent(dataUnitTopLine, 1, 0, 5, 0);
-		
+
 		dataUnitSelector = new ComboBox();
 		dataUnitSelector.setWidth(100, Unit.PERCENTAGE);
 		dataUnitSelector.setEnabled(false);
@@ -95,11 +95,11 @@ public class DataUnitSelector extends CustomComponent {
 			}
 		});
 		mainLayout.addComponent(dataUnitSelector, 1, 1, 4, 1);
-		
+
 		dataUnitGraph = new Label();
 		dataUnitGraph.setWidth(100, Unit.PERCENTAGE);
 		mainLayout.addComponent(dataUnitGraph, 1, 2, 5, 2);
-		
+
 		browse = new Button("Browse");
 		browse.addClickListener(new Button.ClickListener() {
 			@Override
@@ -109,17 +109,17 @@ public class DataUnitSelector extends CustomComponent {
 		});
 		browse.setEnabled(false);
 		mainLayout.addComponent(browse, 5, 1);
-		
+
 		setCompositionRoot(mainLayout);
 	}
-	
+
 	public void refresh(PipelineExecution exec) {
 		pipelineExec = exec;
 		if (loadExecutionContextReader()) {
 			refreshDpuSelector();
 		}
 	}
-	
+
 	private void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
 		for (Listener l : ls) {
@@ -150,7 +150,7 @@ public class DataUnitSelector extends CustomComponent {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				Object value = event.getProperty().getValue();
-				
+
 				if (value != null && value.getClass() == DPUInstanceRecord.class) {
 					debugDpu = (DPUInstanceRecord) value;
 					dataUnitSelector.removeAllItems();
@@ -166,7 +166,7 @@ public class DataUnitSelector extends CustomComponent {
 		});
 		return dpuSelector;
 	}
-	
+
 	private void setDataUnitCheckBoxes(DPUType type) {
 		switch (type) {
 			case LOADER:
@@ -199,7 +199,7 @@ public class DataUnitSelector extends CustomComponent {
 			}
 		}
 	}
-	
+
 	private void refreshDataUnitSelector() {
 		if (debugDpu == null) {
 			dataUnitSelector.removeAllItems();
@@ -213,13 +213,16 @@ public class DataUnitSelector extends CustomComponent {
 			if ((isInput && inputDataUnits.getValue()) || (!isInput && outputDataUnits.getValue())) {
 				if (!dataUnitSelector.containsId(dataUnit)) {
 					dataUnitSelector.addItem(dataUnit);
-					if (first == null) {
-						first = dataUnit;
-					}
+				}
+				if (first == null) {
+					first = dataUnit;
 				}
 			} else {
 				if (dataUnitSelector.containsId(dataUnit)) {
 					dataUnitSelector.removeItem(dataUnit);
+					if(dataUnit.equals(selected)) {
+						selected = null;
+					}
 				}
 			}
 		}
@@ -230,26 +233,26 @@ public class DataUnitSelector extends CustomComponent {
 		}
 		refreshEnabled();
 	}
-	
+
 	private void refreshEnabled() {
 		inputDataUnits.setEnabled(debugDpu != null);
 		outputDataUnits.setEnabled(debugDpu != null);
 		dataUnitSelector.setEnabled(debugDpu != null);
 		browse.setEnabled(dataUnitSelector.isEnabled() && !dataUnitSelector.getItemIds().isEmpty());
 	}
-	
+
 	public DPUInstanceRecord getSelectedDPU() {
 		return debugDpu;
 	}
-	
+
 	public DataUnitInfo getSelectedDataUnit() {
 		return (DataUnitInfo) dataUnitSelector.getValue();
 	}
-	
+
 	public ExecutionContextInfo getContext() {
 		return ctxReader;
 	}
-	
+
 	void setSelectedDPU(DPUInstanceRecord dpu) {
 		debugDpu = dpu;
 		refreshDpuSelector();
@@ -259,7 +262,7 @@ public class DataUnitSelector extends CustomComponent {
 	 * Event sent to Listeners when browse is requested from this component.
 	 */
 	public class BrowseRequestedEvent extends Component.Event {
-		
+
 		public BrowseRequestedEvent(Component cmp) {
 			super(cmp);
 		}
@@ -269,7 +272,7 @@ public class DataUnitSelector extends CustomComponent {
 	 * Event sent to Listeners when this component requests disable.
 	 */
 	public class DisableEvent extends Component.Event {
-		
+
 		public DisableEvent(Component cmp) {
 			super(cmp);
 		}
@@ -279,7 +282,7 @@ public class DataUnitSelector extends CustomComponent {
 	 * Event sent to Listeners when this component requests enable.
 	 */
 	public class EnableEvent extends Component.Event {
-		
+
 		public EnableEvent(Component cmp) {
 			super(cmp);
 		}
