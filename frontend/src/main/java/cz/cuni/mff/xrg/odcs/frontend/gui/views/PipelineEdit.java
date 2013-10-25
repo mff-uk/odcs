@@ -190,7 +190,6 @@ class PipelineEdit extends ViewComponent {
 					dpuTree.refresh();
 					dpuTree.markAsDirty();
 					setupButtons();
-					App.getApp().push();
 				} else if (klass == Edge.class) {
 					setupButtons();
 				}
