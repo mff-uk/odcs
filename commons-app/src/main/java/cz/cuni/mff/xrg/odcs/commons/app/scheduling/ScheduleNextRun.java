@@ -23,21 +23,46 @@ class ScheduleNextRun {
 	/**
 	 * Return T = start + (period * x) where x is minimal as T > reference.
 	 * 
-	 * @param start Start time.
-	 * @param reference Time we have to pass.
-	 * @param period Period to add.
-	 * @param periodUnit Period unit.
+	 * @param start
+	 *            Start time.
+	 * @param reference
+	 *            Time we have to pass.
+	 * @param period
+	 *            Period to add.
+	 * @param periodUnit
+	 *            Period unit.
 	 * @return
 	 */
-	private static Date calculateNext(Date start,
-			Date reference,
-			int period,
+	private static Date calculateNext(Date start, Date reference, int period,
 			PeriodUnit periodUnit) {
+		return calculateNext(start, reference, period, periodUnit, 0);
+	}
+
+	/**
+	 * Return T = start + (period * x) where x is minimal for which holds T > 
+	 * reference - strictTollerance.
+	 * 
+	 * @param start
+	 *            Start time.
+	 * @param reference
+	 *            Time we have to pass.
+	 * @param period
+	 *            Period to add.
+	 * @param periodUnit
+	 *            Period unit.
+	 * @param strictTollerance
+	 * @return
+	 */
+	private static Date calculateNext(Date start, Date reference, int period,
+			PeriodUnit periodUnit, int strictTollerance) {
 		Calendar calendarResult = Calendar.getInstance();
 		Calendar calendarReference = Calendar.getInstance();
 		// set
 		calendarResult.setTime(start);
 		calendarReference.setTime(reference);
+		// subtract time for strict timing
+		calendarReference.add(Calendar.MINUTE, -strictTollerance);
+
 		// iterate
 		while (!calendarResult.after(calendarReference)) {
 			// increase
@@ -52,7 +77,7 @@ class ScheduleNextRun {
 				calendarResult.add(Calendar.DAY_OF_YEAR, period);
 				break;
 			case HOUR:
-				calendarResult.add(Calendar.HOUR_OF_DAY, period);
+				calendarResult.add(Calendar.HOUR, period);
 				break;
 			case MINUTE:
 				calendarResult.add(Calendar.MINUTE, period);
@@ -62,6 +87,7 @@ class ScheduleNextRun {
 				break;
 			}
 		}
+				
 		return calendarResult.getTime();
 	}
 
@@ -125,7 +151,8 @@ class ScheduleNextRun {
 					// schedule to the future
 					nextRun = calculateNext(schedule.getFirstExecution(),
 							new Date(), schedule.getPeriod(),
-							schedule.getPeriodUnit());
+							schedule.getPeriodUnit(),
+							schedule.getStrictToleranceMinutes());
 				}
 			}
 

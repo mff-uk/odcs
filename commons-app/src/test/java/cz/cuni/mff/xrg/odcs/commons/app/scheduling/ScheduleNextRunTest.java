@@ -108,8 +108,8 @@ public class ScheduleNextRunTest {
 	}		
 	
 	/**
-	 * First execution is in past, strict mode, no just once. In this
-	 * case we should run in the next period.
+	 * First execution is in past, strict mode, no just once. We are over
+	 * the tolerance. In this case we should run in the next period.
 	 */
 	@Test
 	public void firstInFutureStrict() {
@@ -239,4 +239,64 @@ public class ScheduleNextRunTest {
 		assertEquals(calendar.getTime(), nextRunScheduled);
 	}	
 	
+	/**
+	 * There were no execution, we miss the first execution (and tolerance)
+	 * now it's the time for next run. 
+	 * 
+	 */
+	@Test
+	public void firstInPastStrict() {
+		Schedule schedule = new Schedule();		
+		schedule.setEnabled(true);
+		schedule.setType(ScheduleType.PERIODICALLY);
+		schedule.setStrictlyTimed(true);
+		schedule.setStrictToleranceMinutes(5);
+		schedule.setJustOnce(false);
+		// prepare times -> the first execution should be two hour ago
+		//	and some minutes .. -> as nextRunSchedule would be now .. 
+		//	so it will not pass the before() test
+		Calendar calendarFirst = Calendar.getInstance();
+		calendarFirst.setTime(new Date());
+		calendarFirst.add(Calendar.HOUR, -2);
+		calendarFirst.add(Calendar.MINUTE, -2);
+				
+		// set schedule
+		schedule.setFirstExecution(calendarFirst.getTime());
+		schedule.setPeriod(1);
+		schedule.setPeriodUnit(PeriodUnit.HOUR);
+		// as the period is one hour .. we should run now .. 
+				
+		Date nextRunScheduled = ScheduleNextRun.calculateNextRun(schedule);
+		Date now = new Date();
+		assertTrue(nextRunScheduled.before(now));
+	}
+	
+	/**
+	 * Last execution was in year X .. the next should be in X + 1. So test
+	 * of over year scheduling.
+	 */
+	public void overYearTest() {
+		Schedule schedule = new Schedule();		
+		schedule.setEnabled(true);
+		schedule.setType(ScheduleType.PERIODICALLY);
+		schedule.setStrictlyTimed(true);
+		schedule.setStrictToleranceMinutes(10);
+		schedule.setJustOnce(false);
+		// prepare times -> run one hour in future
+		Calendar calendarFirst = Calendar.getInstance();
+		calendarFirst.set(2000, 12, 30, 7, 0);
+				
+		// set schedule
+		schedule.setFirstExecution(calendarFirst.getTime());
+		schedule.setPeriod(3);
+		schedule.setPeriodUnit(PeriodUnit.DAY);
+		
+		Date nextRunScheduled = ScheduleNextRun.calculateNextRun(schedule);
+		
+		// calculate nextTime
+		Calendar calendarNext = Calendar.getInstance();
+		calendarNext.set(2001, 1, 2, 7, 0);
+		
+		assertEquals(calendarNext.getTime(), nextRunScheduled);
+	}
 }
