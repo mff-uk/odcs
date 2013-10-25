@@ -1,13 +1,19 @@
-package cz.cuni.mff.xrg.odcs.backend.data;
+package cz.cuni.mff.xrg.odcs.backend.execution;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -15,35 +21,109 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**
- * Reconstruct context and delete all created dataUnits.
+ * Delete context of given execution that has been interrupted by backend
+ * unexpected shutdown.
  * 
  * @author Petyr
  * 
  */
-public class ContextDeleter {
+class ExecutionSanitizer {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ContextDeleter.class);
-	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ExecutionSanitizer.class);
+
+	/**
+	 * Application's configuration.
+	 */
+	@Autowired
+	protected AppConfig appConfig;
+
+	@Autowired
 	private DataUnitFactory dataUnitFactory;
 	
-	private AppConfig appConfig;
-	
-	public ContextDeleter(DataUnitFactory dataUnitFactory, AppConfig appConfig) {
-		this.dataUnitFactory = dataUnitFactory;
-		this.dataUnitFactory = dataUnitFactory;
+	/**
+	 * Executions root directory.
+	 */
+	private File rootDirectory;
+
+	@PostConstruct
+	private void propertySetter() {
+		this.rootDirectory = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
 	}
-	
+
+	/**
+	 * Fix possible problems with given execution. Logs of this method are
+	 * logged with the execution id of given {@link PipelineExecution}
+	 * 
+	 * Method does not save the changes into databse! So called must secure
+	 * persisting of changes into database.
+	 * 
+	 * @param execution
+	 */
+	public void sanitize(PipelineExecution execution) {
+		switch (execution.getStatus()) {
+		case CANCELLING:
+			sanitizeCancelling(execution);
+			return;
+		case RUNNING:
+			sanitizeRunning(execution);
+			return;
+		default:
+			// nothing happened
+			return;
+		}
+	}
+
+	/**
+	 * Restart given {@link PipelineExecution} back to
+	 * {@link PipelineExecutionStatus#SCHEDULED} state.
+	 * 
+	 * @param execution
+	 */
+	private void sanitizeRunning(PipelineExecution execution) {
+		LOG.info("Execution has been re-scheduled after backend shutdown.");
+		// set state back to scheduled
+		execution.setStatus(PipelineExecutionStatus.SCHEDULED);
+	}
+
+	/**
+	 * Complete the canceling process on given {@link PipelineExecution} and set
+	 * {@link PipelineExecutionStatus#CANCELLED} state.
+	 * 
+	 * @param execution
+	 */
+	private void sanitizeCancelling(PipelineExecution execution) {
+		if (execution.isDebugging()) {
+			// no deletion
+		} else {
+			// delete execution data
+			deleteContext(execution);
+			// and directory
+			File toDelete = new File(rootDirectory, execution.getContext()
+					.getRootPath());
+			try {
+				FileUtils.deleteDirectory(toDelete);
+			} catch (IOException e) {
+				LOG.warn("Can't delete directory after execution", e);
+			}
+		}
+		// set canceled state
+		execution.setStatus(PipelineExecutionStatus.CANCELLED);
+		execution.setEnd(new Date());
+	}
+
 	/**
 	 * Delete all dataUnits of given execution.
 	 * 
 	 * @param execution
 	 */
-	public void deleteContext(PipelineExecution execution) {
+	private void deleteContext(PipelineExecution execution) {
 		LOG.info("Deleting context for: {}", execution.getPipeline().getName());
 		ExecutionContextInfo context = execution.getContext();
 		if (context == null) {
@@ -57,9 +137,8 @@ public class ContextDeleter {
 			ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpu);
 			deleteContext(context, dpu, dpuInfo);
 		}
-
 	}
-
+	
 	/**
 	 * Delete dataUnits related to single DPU.
 	 * 
@@ -93,6 +172,6 @@ public class ContextDeleter {
 				LOG.warn("Failed to reinstantiate dataUnit", e);
 			}
 		}
-	}
-
+	}	
+	
 }

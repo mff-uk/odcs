@@ -13,8 +13,8 @@
 
 	<!-- we use annotations to run tasks -->
 	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
-	<task:executor id="taskExecutor" pool-size="4" />
-	<task:scheduler id="taskScheduler" pool-size="64" />
+	<task:executor id="taskExecutor" pool-size="16" />
+	<task:scheduler id="taskScheduler" pool-size="4" />
 
 	<!-- enable aspects -->
 	<aop:aspectj-autoproxy />
@@ -32,11 +32,22 @@
 
 	<!-- engine itself, take care about executing of PipelineExecution -->
 	<bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.execution.ExecutionSanitizer" />
 
-	<!-- prototypes for contexts -->
+	<!-- context, prototype, facade and related stuff -->
 	<bean id="dpuContext" class="cz.cuni.mff.xrg.odcs.backend.context.Context"
 		scope="prototype" lazy-init="true" />
-
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextFacade" />
+	<!-- we do not use component-scan as we need lookup method  -->
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCloser" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCreator"> 
+		<lookup-method name="createPureContext" bean="dpuContext"/>
+	</bean>
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextDeleter" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSealer" />
+		
 	<!-- pipeline executor -->
 	<bean id="pipelineExecutor"
 		class="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor"

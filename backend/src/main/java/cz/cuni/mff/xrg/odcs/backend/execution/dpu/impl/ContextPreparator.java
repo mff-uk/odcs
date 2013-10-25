@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,8 +10,9 @@ import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
+import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PreExecutor;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
@@ -22,13 +24,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * data from precedents' context to the context of the current DPU, that is
  * specified by {@link Node}.
  * 
- * Executed for every state.
+ * We execute this only for {@link DPUExecutionState#PREPROCESSING}
+ * state as for any other state the context has been already prepared.
  * 
  * @author Petyr
  * 
  */
 @Component
-class ContextPreparator implements PreExecutor {
+class ContextPreparator extends PreExecutorBase {
 
 	/**
 	 * Pre-executor order.
@@ -41,6 +44,13 @@ class ContextPreparator implements PreExecutor {
 	@Autowired
 	private ApplicationEventPublisher eventPublish;	
 	
+	@Autowired
+	private ContextFacade contextFacade;
+	
+	public ContextPreparator() {
+		super(Arrays.asList(DPUExecutionState.PREPROCESSING));	
+	}
+	
 	@Override
 	public int getOrder() {
 		return ORDER;
@@ -50,13 +60,21 @@ class ContextPreparator implements PreExecutor {
 	 * In case of error log the error, publish message and the return false.
 	 */
 	@Override
-	public boolean preAction(Node node,
+	protected boolean execute(Node node,
 			Map<Node, Context> contexts,
 			Object dpuInstance,
 			PipelineExecution execution,
 			ProcessingUnitInfo unitInfo) {
 		// get current context
 		Context context = contexts.get(node);
+
+		// ! ! ! !
+		// the context can contains data from previous 
+		// PREPROCESSING phase that has been interrupted
+		// so some DataUnit can already been created and may contains some
+		// data .. we solve this in contextFacade.merge
+		// which solve this
+		
 		// looks for edges that lead to our node
 		Set<Edge> edges = execution.getPipeline().getGraph().getEdges();
 		for (Edge edge : edges) {
@@ -79,7 +97,7 @@ class ContextPreparator implements PreExecutor {
 				}
 				// else add data
 				try {
-					context.addContext(sourceContext, edge.getScript());
+					contextFacade.merge(context, sourceContext, edge.getScript());
 				} catch (ContextException e) {
 					eventPublish.publishEvent(
 							DPUEvent.createPreExecutorFailed(context, this,

@@ -20,8 +20,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
+import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -152,16 +154,18 @@ public class Executor implements Runnable {
 					LOG.error("Failed to delete execution directory.");
 				}
 			}
-		}
 
-		// update state and set start time
-		this.execution.setStart(new Date());
-		this.execution.setStatus(PipelineExecutionStatus.RUNNING);
+			// update state and set start time
+			this.execution.setStart(new Date());
+			this.execution.setStatus(PipelineExecutionStatus.RUNNING);
 
-		try {
-			pipelineFacade.save(this.execution);
-		} catch (EntityNotFoundException ex) {
-			LOG.warn("Seems like someone deleted our pipeline run.", ex);
+			try {
+				pipelineFacade.save(this.execution);
+			} catch (EntityNotFoundException ex) {
+				LOG.warn("Seems like someone deleted our pipeline run.", ex);
+			}
+		} else {
+			// we continue in run ... so just continue
 		}
 
 		// load last execution time
@@ -178,8 +182,7 @@ public class Executor implements Runnable {
 			this.lastSuccessfulExTime = lastSucess;
 		} else {
 			// get last successful execution time
-			this.lastSuccessfulExTime = lastSucess.after(lastSucessWarn)
-					? lastSucess
+			this.lastSuccessfulExTime = lastSucess.after(lastSucessWarn) ? lastSucess
 					: lastSucessWarn;
 		}
 	}
@@ -190,7 +193,8 @@ public class Executor implements Runnable {
 	 * {@link PreExecutor} ({@link Executor#preExecutors} == null) then
 	 * instantly return true.
 	 * 
-	 * @param graph Dependency graph used for execution.
+	 * @param graph
+	 *            Dependency graph used for execution.
 	 * @return
 	 */
 	private boolean executePreExecutors(DependencyGraph graph) {
@@ -215,7 +219,8 @@ public class Executor implements Runnable {
 	 * {@link PostExecutor} ({@link Executor#postExecutors} == null) then
 	 * instantly return true.
 	 * 
-	 * @param graph Dependency graph that has been used for execution.
+	 * @param graph
+	 *            Dependency graph that has been used for execution.
 	 * @return
 	 */
 	private boolean executePostExecutors(DependencyGraph graph) {
@@ -326,7 +331,15 @@ public class Executor implements Runnable {
 
 			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor = beanFactory
 					.getBean(cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor.class);
-			dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime);
+			
+			try {
+				dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime);
+			} catch (ContextException e) {
+				// failed to create context .. fail the execution
+				eventPublisher.publishEvent(PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));
+				executionFailed = true;
+				break;
+			}
 
 			LOG.info("Starting execution of dpu {} = {}", node.getDpuInstance()
 					.getId(), node.getDpuInstance().getName());
@@ -409,16 +422,6 @@ public class Executor implements Runnable {
 	@Override
 	public void run() {
 		// the execution start time has been already set in bind function
-		try {
-			// contextInfo is in pipeline so by saving pipeline we also save
-			// context
-			pipelineFacade.save(execution);
-		} catch (EntityNotFoundException ex) {
-			LOG.warn("Seems like someone deleted our pipeline run.", ex);
-			// no work was done yet, we can finish without cleaning up
-			return;
-		}
-
 		// add marker to logs from this thread -> both must be specified !!
 		final String executionId = Long.toString(execution.getId());
 		if (!execution.isDebugging()) {
@@ -428,9 +431,8 @@ public class Executor implements Runnable {
 		}
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
 
-		LOG.info("Starting execution of pipeline {} = {}",executionId,
+		LOG.info("Starting execution of pipeline {} = {}", executionId,
 				execution.getPipeline().getName());
-		
 
 		// execute the pipeline it self
 		execute();
@@ -457,9 +459,10 @@ public class Executor implements Runnable {
 	/**
 	 * Stops pipeline execution. Usually invoke by user action.
 	 * 
-	 * @param executorThread thread servicing execution which needs to be
-	 *            stopped
-	 * @param dpuExecutor Executor for given DPUs.
+	 * @param executorThread
+	 *            thread servicing execution which needs to be stopped
+	 * @param dpuExecutor
+	 *            Executor for given DPUs.
 	 */
 	private void stopExecution(Thread executorThread,
 			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor) {

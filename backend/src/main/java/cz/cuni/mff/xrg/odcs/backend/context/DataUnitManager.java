@@ -216,7 +216,11 @@ final class DataUnitManager {
 	 * @throws DataUnitException 
 	 */
 	public void reload() throws DataUnitException {
-		ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpuInstance);		
+		ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpuInstance);
+		if (dpuInfo == null) {
+			// no data for this DPU
+			return;
+		}
 		List<DataUnitInfo> dataUnitsInfo = dpuInfo.getDataUnits();
 		// check every DataUnit in contextInfo
 		for (DataUnitInfo info : dataUnitsInfo) {

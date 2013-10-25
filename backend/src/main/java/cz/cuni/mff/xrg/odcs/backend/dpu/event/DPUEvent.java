@@ -174,7 +174,7 @@ public class DPUEvent extends ApplicationEvent {
 	public static DPUEvent createPreExecutorFailed(Context context,
 			PreExecutor source,
 			String longMessage) {
-		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: ", 
+		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),
 				context.getDpuInstance().getName(),
 				longMessage);
@@ -197,7 +197,7 @@ public class DPUEvent extends ApplicationEvent {
 			PreExecutor source,
 			String longMessage,
 			Throwable throwable) {
-		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: ", 
+		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),
 				context.getDpuInstance().getName(),
 				longMessage,
@@ -219,7 +219,7 @@ public class DPUEvent extends ApplicationEvent {
 	public static DPUEvent createPostExecutorFailed(Context context,
 			PostExecutor source,
 			String longMessage) {
-		LOG.error("Post-executor '{}' failed for DPU '{}' with message: ", 
+		LOG.error("Post-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),
 				context.getDpuInstance().getName(),
 				longMessage);

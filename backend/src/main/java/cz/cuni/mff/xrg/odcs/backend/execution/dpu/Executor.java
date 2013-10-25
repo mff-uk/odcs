@@ -11,6 +11,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
+import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
+import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -28,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,12 +63,6 @@ public final class Executor implements Runnable {
 	private ModuleFacade moduleFacade;
 
 	/**
-	 * Bean factory used for context creation.
-	 */
-	@Autowired
-	private BeanFactory beanFactory;
-
-	/**
 	 * List of all {@link PreExecutor}s to execute before running DPU. Can be
 	 * null.
 	 */
@@ -91,6 +88,9 @@ public final class Executor implements Runnable {
 	@Autowired
 	private LogFacade logFacade;
 
+	@Autowired
+	private ContextFacade contextFacade;
+	
 	/**
 	 * Node to execute.
 	 */
@@ -134,24 +134,28 @@ public final class Executor implements Runnable {
 
 	/**
 	 * Bind executor to the given {@link PipelineExecution} and
-	 * {@link DPUInstanceRecord} by calling
+	 * {@link DPUInstanceRecord} by calling.
+	 * 
+	 * Can throw {@link ContextException} it the creation of {@link Context}
+	 * failed. In such case does not publish any message.
 	 * 
 	 * @param node Node to execute.
 	 * @param contexts Contexts of other DPU's.
 	 * @param execution Pipeline execution.
 	 * @param lastExecutionTime Time of last successful execution. Can be null.
+	 * @return False if can't bind.
 	 */
 	public void bind(Node node,
 			Map<Node, Context> contexts,
 			PipelineExecution execution,
-			Date lastExecutionTime) {
+			Date lastExecutionTime) throws ContextException {
 		this.node = node;
 		this.contexts = contexts;
 		this.execution = execution;
-		// create context, bind it to this execution and add it to the contexts
-		this.context = beanFactory.getBean(Context.class);
-		this.context.bind(node.getDpuInstance(), execution.getContext(),
+		// obtain context, bind it to this execution and add it to the contexts
+		this.context = contextFacade.create(node.getDpuInstance(), execution.getContext(),
 				lastExecutionTime);
+		// if we have context then add it to the context storage
 		this.contexts.put(node, context);
 	}
 
@@ -289,7 +293,7 @@ public final class Executor implements Runnable {
 
 		switch (unitInfo.getState()) {
 		case PREPROCESSING:
-			// ok continue with execution
+			// this is ok .. we continue
 			break;
 		case ABORTED:
 		case FAILED:
@@ -299,6 +303,8 @@ public final class Executor implements Runnable {
 		case FINISHED:
 			// dpu finished .. yes this can be
 			// we also do not prevent DPU with such state to get here
+			LOG.info("DPU has already been executed, skipping the execution.");
+			// the context has already been loaded with given data
 			return true;
 		case RUNNING:
 			// wrong state, probably from last interrupted execution
@@ -346,6 +352,9 @@ public final class Executor implements Runnable {
 			LOG.error("Seems like someone deleted our pipeline run.", ex);
 		}
 
+		// publish message, this is standart end of execution
+		eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
+		
 		// return execution result .. this can't be changed to positive by post
 		// executors but they may change the state in unitInfo
 		return executionResult;
@@ -379,23 +388,30 @@ public final class Executor implements Runnable {
 				executionSuccessful = false;
 				return;
 			case FINISHED:
-				// we will continue as we need to run pre/post
-				// Processors as the create DataUnits
+				// we will continue as we need to run pre/post Processors
+				// so they create DataUnits
+				break;
 			case PREPROCESSING:
+				// some context data may have been already created, 
+				// so we delete (clear) context
+				// then new DataUnits will be automatically cleared after creation
+				contextFacade.delete(context);
+				break;
 			case RUNNING:
-				// for these state we continue in execution
+				// the context has already been initialized 
+				// and loaded in #bind method, as the
+				// ContextPreparator run only on PREPROCESSING
+				// we can safely continue
 				break;
 			}
 		}
-
+		
+		
 		// run dpu, also set executionSuccessful according to
 		// the execution result
 		executionSuccessful = execute(unitInfo);
 		// also check for DPU messages
 		executionSuccessful &= !context.errorMessagePublished();
-
-		// publish message
-		eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
 	}
 
 	/**

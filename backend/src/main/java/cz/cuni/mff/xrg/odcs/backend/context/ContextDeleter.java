@@ -16,8 +16,9 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**
  * Delete and close data for given {@link Context} if data are not loaded then
- * load them first and then delete them. Also related content from
- * {@link ExecutionContextInfo}
+ * load them first (use {@link ContextRestorer} and then delete them. 
+ * Also delete related content from {@link ExecutionContextInfo}. The
+ * context is in same state as if newly created (empty).
  * 
  * @author Petyr
  * 
@@ -31,9 +32,7 @@ class ContextDeleter {
 	private AppConfig appConfig;
 
 	/**
-	 * Delete data from given {@link Context} and then close it. Does not reload
-	 * data into context before delete them. To ensure that all data in context
-	 * has been delete use {@link ContextRestorer} first.
+	 * @see ContextDeleter
 	 * 
 	 * @param context
 	 */
@@ -65,6 +64,9 @@ class ContextDeleter {
 		final File tmpPath = new File(backendWorkingDir,
 				contextInfo.getDataUnitRootTmpPath(dpu));
 		deleteDirectory(tmpPath);
+		
+		// delete execution context info
+		deleteContextInfo(contextInfo);
 	}
 
 	/**
@@ -93,6 +95,14 @@ class ContextDeleter {
 				LOG.error("Can't delete directory {}", directory.toString(), e);
 			}
 		}
+	}
+	
+	/**
+	 * Delete data from given {@link ExecutionContextInfo}.
+	 * @param conteInfo
+	 */
+	private void deleteContextInfo(ExecutionContextInfo contexInfo) {
+		contexInfo.reset();
 	}
 
 }

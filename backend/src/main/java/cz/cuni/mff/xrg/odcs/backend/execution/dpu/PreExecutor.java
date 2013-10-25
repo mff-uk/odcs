@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.core.Ordered;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -18,6 +19,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * 
  * The PreExecutors are executed in order that is defined by
  * {@link Ordered}
+ * 
+ * As the {@link PreExecutor}s are executed on every DPU .. even on 
+ * those that have been finished previously (pause/resume .. or backend 
+ * has been shutdown) .. they should not modify the content. If they 
+ * do please filter their usage for non {@link DPUExecutionState#FINISHED}
+ * state.
+ * 
  * 
  * @author Petyr
  * 

@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +14,9 @@ import org.springframework.stereotype.Component;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PreExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -31,16 +30,16 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
  * suitable DataUnit. If there is no {@link DataUnit} suitable then publish
  * event and return false.
  * 
- * Not executed for state {@link DPUExecutionState#FINISHED} as in this
- * case the inputs are not need.
+ * Executed for every state. If the DPU has been already finished 
+ * then we will still need {@link DataUnit}s at the end of the execution.
  * 
  * @author Petyr
  * 
  */
 @Component
-public class AnnotationsInput extends PreExecutorBase {
+public class AnnotationsInput implements PreExecutor {
 
-	public static final int ORDER = Restarter.ORDER + 1000;
+	public static final int ORDER = AnnotationsOutput.ORDER + 1000;
 	
 	private static final Logger LOG = LoggerFactory
 			.getLogger(AnnotationsInput.class);
@@ -56,10 +55,6 @@ public class AnnotationsInput extends PreExecutorBase {
 	 */
 	@Autowired
 	private ApplicationEventPublisher eventPublish;
-	
-	public AnnotationsInput() {
-		super(Arrays.asList(DPUExecutionState.FINISHED), false);
-	}
 
 	@Override
 	public int getOrder() {
@@ -67,7 +62,7 @@ public class AnnotationsInput extends PreExecutorBase {
 	}
 
 	@Override
-	protected boolean execute(Node node,
+	public boolean preAction(Node node,
 			Map<Node, Context> contexts,
 			Object dpuInstance,
 			PipelineExecution execution,

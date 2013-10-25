@@ -141,6 +141,9 @@ class ContextMerger {
 					LOG.debug("creating new dataUnit: {}", rightDataUnitName);
 					leftDataUnit = left.addDataUnit(rightDataUnit.getType(),
 							leftDataUnitName);
+					// and clear it .. for sure that there is 
+					// not data from previous executions
+					leftDataUnit.clean();
 				} catch (DataUnitCreateException e) {
 					throw new ContextException(
 							"Failed to create input object.", e);
