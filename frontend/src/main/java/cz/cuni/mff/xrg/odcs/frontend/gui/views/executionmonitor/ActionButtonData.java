@@ -8,7 +8,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor;
  *
  * @author Maria Kukhar
  */
-public class ActionButtonData {
+class ActionButtonData {
 
 	public String action;
 	public Object data;

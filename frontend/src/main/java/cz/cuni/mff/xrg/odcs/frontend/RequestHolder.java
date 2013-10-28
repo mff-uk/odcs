@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- *
+ * Stores HTTPServletRequest object, which is needed by SPring authentication.
  * @author Jan Vojt
  */
 public class RequestHolder {
