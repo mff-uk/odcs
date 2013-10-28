@@ -34,8 +34,16 @@ public class SPARQLTransformer
 	
 	private final Logger LOG = LoggerFactory.getLogger(SPARQLTransformer.class);
 	
-	@InputDataUnit
+	@InputDataUnit(name = "input")
 	public RDFDataUnit intputDataUnit;
+       
+        
+        //two other optional inputs, which may be used in the queries
+        @InputDataUnit(name = "optional1",optional = true)
+	public RDFDataUnit intputOptional1;
+         @InputDataUnit(name = "optional2",optional = true)
+	public RDFDataUnit intputOptional2;
+
 	
 	@OutputDataUnit
 	public RDFDataUnit outputDataUnit;
@@ -44,85 +52,7 @@ public class SPARQLTransformer
 		super(SPARQLTransformerConfig.class);
 	}
 	
-	private List<PlaceHolder> getPlaceHolders(String constructQuery) {
-		
-		String regex = "graph\\s+\\?[gG]_[\\w-_]+";
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(constructQuery);
-		
-		boolean hasResult = matcher.find();
-		
-		List<PlaceHolder> placeholders = new ArrayList<>();
-		
-		while (hasResult) {
-			
-			int start = matcher.start();
-			int end = matcher.end();
-			
-			int partIndex = constructQuery.substring(start, end).indexOf("_") + 1;
-			
-			start += partIndex;
-			
-			String DPUName = constructQuery.substring(start, end);
-			
-			PlaceHolder placeHolder = new PlaceHolder(DPUName);
-			placeholders.add(placeHolder);
-			
-			hasResult = matcher.find();
-		}
-		
-		return placeholders;
-	}
 	
-	private void replaceAllPlaceHolders(List<RDFDataUnit> inputs,
-			List<PlaceHolder> placeHolders, DPUContext context) throws DPUException {
-		
-		for (PlaceHolder next : placeHolders) {
-			boolean isReplased = false;
-			
-			for (RDFDataUnit input : inputs) {
-				if (input.getDataUnitName().equals(next.getDPUName())) {
-
-					//set RIGHT data graph for DPU
-					next.setGraphName(input.getDataGraph().toString());
-					isReplased = true;
-					break;
-				}
-			}
-			
-			if (!isReplased) {
-				String DPUName = next.getDPUName();
-				final String message = "Graph for DPU name " + DPUName + " was not replased";
-				
-				context.sendMessage(MessageType.ERROR, message);
-				throw new DPUException(message);
-			}
-			
-		}
-		
-	}
-	
-	private String getContructQuery(String originalConstructQuery,
-			List<RDFDataUnit> inputs, DPUContext context) throws DPUException {
-		
-		String result = originalConstructQuery;
-		
-		List<PlaceHolder> placeHolders = getPlaceHolders(originalConstructQuery);
-		
-		if (!placeHolders.isEmpty()) {
-			replaceAllPlaceHolders(inputs, placeHolders, context);
-		}
-		
-		for (PlaceHolder next : placeHolders) {
-			
-			String graphName = "<" + next.getGraphName() + ">";
-			
-			result = result.replaceAll("\\?[g|G]_" + next
-					.getDPUName(), graphName);
-		}
-		
-		return result;
-	}
 	
 	@Override
 	public void execute(DPUContext context)
@@ -140,7 +70,7 @@ public class SPARQLTransformer
 				inputs.add(intputDataUnit);
 
 				//creating newConstruct replaced query
-				String constructQuery = getContructQuery(updateQuery, inputs,
+				String constructQuery = new PlaceholdersHelper().getContructQuery(updateQuery, inputs,
 						context);
 
 				//execute given construct query
