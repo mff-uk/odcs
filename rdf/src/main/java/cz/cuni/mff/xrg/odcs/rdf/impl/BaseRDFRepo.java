@@ -722,7 +722,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return partsCount;
 	}
 
-	private RepositoryResult<Statement> getRepoResult() {
+	@Override
+	public RepositoryResult<Statement> getRepositoryResult() {
 
 		RepositoryResult<Statement> repoResult = null;
 
@@ -748,7 +749,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			InsertType insertType, long chunkSize)
 			throws RDFException {
 
-		RepositoryResult<Statement> lazy = getRepoResult();
+		RepositoryResult<Statement> lazy = getRepositoryResult();
 
 		String part = getInsertQueryPart(chunkSize, lazy);
 
@@ -1292,7 +1293,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		if (repository != null) {
 
 			try {
-				RepositoryResult<Statement> lazy = getRepoResult();
+				RepositoryResult<Statement> lazy = getRepositoryResult();
 
 				while (lazy.hasNext()) {
 					Statement next = lazy.next();
