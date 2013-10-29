@@ -15,9 +15,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Statement;
 
 import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -312,4 +314,13 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * @throws InvalidQueryException if query is not valid.
 	 */
 	public long getResultSizeForQuery(String query) throws InvalidQueryException;
+
+	/**
+	 * Return iterable collection of all statemens in repository. Needed for
+	 * adding/merge large collection when is not possible to return all
+	 * statements (RDF triples) at once in method as in {@link #getTriples() }.
+	 *
+	 * @return Iterable collection of Statements need for lazy
+	 */
+	public RepositoryResult<Statement> getRepositoryResult();
 }
