@@ -15,6 +15,7 @@ import org.openrdf.model.*;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
 import org.openrdf.sail.memory.MemoryStore;
@@ -203,56 +204,52 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			throw new IllegalArgumentException(
 					"Instance of RDFDataRepository is null");
 		}
-		Repository secondRepository = second.getDataRepository();
 
-		RepositoryConnection sourceConnection = null;
 		RepositoryConnection targetConnection = null;
 
+		RepositoryResult<Statement> lazySource = null;
+
 		try {
-			sourceConnection = secondRepository.getConnection();
+			lazySource = second.getRepositoryResult();
 
-			if (sourceConnection != null) {
+			targetConnection = repository.getConnection();
 
-				List<Statement> sourceStatemens = second
-						.getTriples();
+			if (targetConnection != null) {
 
-				targetConnection = repository.getConnection();
+				logger.info("Merging " + second.getTripleCount()
+						+ " triples from <" + second.getDataGraph()
+						.stringValue() + "> "
+						+ "TO <" + getDataGraph().stringValue() + ">.");
 
-				if (targetConnection != null) {
-
-					logger.info("Merging " + second.getTripleCount()
-							+ " triples from <" + second.getDataGraph()
-							.stringValue() + "> "
-							+ "TO <" + getDataGraph().stringValue() + ">.");
+				while (lazySource.hasNext()) {
+					Statement nextSourceStatement = lazySource.next();
 
 					if (graph != null) {
-						targetConnection.add(sourceStatemens, graph);
+						targetConnection.add(nextSourceStatement, graph);
 					} else {
-						targetConnection.add(sourceStatemens);
+						targetConnection.add(nextSourceStatement);
 					}
-
-					logger.info("Merged SUCESSFULL");
 				}
 
+				logger.info("Merged SUCESSFULL");
 			}
+
+
 		} catch (RepositoryException ex) {
 			logger.error(ex.getMessage(), ex);
 
 		} finally {
-			if (sourceConnection != null) {
-				try {
-					sourceConnection.close();
-				} catch (RepositoryException ex) {
-					logger.error(ex.getMessage(), ex);
+			try {
+				if (lazySource != null) {
+					lazySource.close();
 				}
-			}
-			if (targetConnection != null) {
-				try {
+				if (targetConnection != null) {
 					targetConnection.close();
-				} catch (RepositoryException ex) {
-					logger.error(ex.getMessage(), ex);
 				}
+			} catch (RepositoryException ex) {
+				logger.error(ex.getMessage(), ex);
 			}
+
 		}
 	}
 
