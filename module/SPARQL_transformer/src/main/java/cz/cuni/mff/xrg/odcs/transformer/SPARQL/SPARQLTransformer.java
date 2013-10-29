@@ -43,6 +43,8 @@ public class SPARQLTransformer
 	public RDFDataUnit intputOptional1;
          @InputDataUnit(name = "optional2",optional = true)
 	public RDFDataUnit intputOptional2;
+          @InputDataUnit(name = "optional3",optional = true)
+	public RDFDataUnit intputOptional3;
 
 	
 	@OutputDataUnit
