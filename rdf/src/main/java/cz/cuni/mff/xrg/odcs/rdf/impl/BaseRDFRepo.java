@@ -6,6 +6,8 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
+
+import static cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.GraphNotEmptyException;
@@ -256,20 +258,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws RDFException {
 
-		if (path == null) {
-			final String message = "Mandatory target path in extractor is null.";
-
-			logger.debug(message);
-			throw new RDFException(message);
-
-		} else if (path.isEmpty()) {
-
-			final String message = "Mandatory target path in extractor have to be not empty.";
-
-			logger.debug(message);
-			throw new RDFException(message);
-
-		}
+		testNullParameter(path, "Mandatory target path in extractor is null.");
+		testEmptyParameter(path,
+				"Mandatory target path in extractor have to be not empty.");
 
 		File dirFile = new File(path);
 
@@ -278,37 +269,110 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
 				break;
 			case PATH_TO_DIRECTORY:
+				extractDataFromDirectorySource(dirFile, suffix, useSuffix,
+						format, baseURI, useStatisticHandler, false);
+				break;
+
 			case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
-				if (dirFile.isDirectory()) {
-					File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
-
-					boolean skipFiles = false;
-
-					if (extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
-						skipFiles = true;
-					}
-
-					addFilesInDirectoryToRepository(format, files, baseURI,
-							useStatisticHandler, skipFiles,
-							graph);
-				} else {
-					throw new RDFException(
-							"Path to directory \"" + path + "\" doesnt exist");
-				}
+				extractDataFromDirectorySource(dirFile, suffix, useSuffix,
+						format, baseURI, useStatisticHandler, true);
 				break;
 			case PATH_TO_FILE:
 			case UPLOAD_FILE:
-				if (dirFile.isFile()) {
-					addFileToRepository(format, dirFile, baseURI,
-							useStatisticHandler,
-							graph);
-				} else {
-					throw new RDFException(
-							"Path to file \"" + path + "\"doesnt exist");
-				}
+				extractDataFromFileSource(dirFile, format, baseURI,
+						useStatisticHandler);
 				break;
 		}
 
+	}
+
+	private void testNullParameter(Object param, String message) throws RDFException {
+		if (param == null) {
+			logger.debug(message);
+			throw new RDFException(message);
+		}
+	}
+
+	private void testEmptyParameter(Object param, String message) throws RDFException {
+
+		if (param != null) {
+			boolean isEmpty = true;
+
+			if (param instanceof String) {
+				isEmpty = ((String) param).isEmpty();
+			} else if (param instanceof List) {
+				isEmpty = ((List) param).isEmpty();
+			}
+
+			if (isEmpty) {
+				logger.debug(message);
+				throw new RDFException(message);
+			}
+		}
+
+	}
+
+	private void testPositiveParameter(long param, String message) throws RDFException {
+		if (param <= 0) {
+			logger.debug(message);
+			throw new RDFException(message);
+		}
+	}
+
+	private void testEndpointSyntax(URL endpointURL) throws RDFException {
+
+		String message = null;
+
+		if (endpointURL != null) {
+			final String endpointName = endpointURL.toString().toLowerCase();
+
+			if (!endpointName.startsWith("http://")) {
+				message = "Endpoint url name have to started with prefix \"http://\".";
+			} else if (endpointName.contains(" ")) {
+				message = "Endpoint url constains white spaces";
+			}
+			if (message != null) {
+				logger.debug(message);
+				throw new RDFException(message);
+			}
+		} else {
+			message = "Mandatory URL path is null. SPARQL Endpoint URL must be specified";
+			logger.debug(message);
+			throw new RDFException(message);
+
+
+		}
+	}
+
+	private void extractDataFromFileSource(File dirFile, RDFFormat format,
+			String baseURI, boolean useStatisticHandler) throws RDFException {
+
+		if (dirFile.isFile()) {
+			addFileToRepository(format, dirFile, baseURI,
+					useStatisticHandler,
+					graph);
+		} else {
+			throw new RDFException(
+					"Path to file \"" + dirFile.getAbsolutePath() + "\"doesnt exist");
+		}
+	}
+
+	private void extractDataFromDirectorySource(File dirFile, String suffix,
+			boolean useSuffix, RDFFormat format, String baseURI,
+			boolean useStatisticHandler, boolean skipFiles)
+			throws RDFException {
+
+		if (dirFile.isDirectory()) {
+			File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
+
+			addFilesInDirectoryToRepository(format, files, baseURI,
+					useStatisticHandler, skipFiles,
+					graph);
+		} else {
+			throw new RDFException(
+					"Path to directory \"" + dirFile.getAbsolutePath()
+					+ "\" doesnt exist");
+		}
 	}
 
 	@Override
@@ -375,20 +439,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
 
-		if (filePath == null) {
-
-			final String message = "Mandatory file path in File_loader is null.";
-
-			logger.debug(message);
-			throw new RDFException(message);
-
-
-		} else if (filePath.isEmpty()) {
-
-			final String message = "Mandatory file path in File_loader is empty.";
-			logger.debug(message);
-			throw new RDFException(message);
-		}
+		testNullParameter(filePath,
+				"Mandatory file path in File_loader is null.");
+		testEmptyParameter(filePath,
+				"Mandatory file path in File_loader is empty.");
 
 		File dataFile = new File(filePath);
 		File directory = new File(dataFile.getParent());
@@ -524,49 +578,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throws RDFException {
 
 		//check that SPARQL endpoint URL is correct
-		if (endpointURL == null) {
-			final String message = "SPARQL Endpoint URL must be specified";
+		testEndpointSyntax(endpointURL);
 
-			logger.debug(message);
-			throw new RDFException(message);
+		testNullParameter(namedGraph, "Named graph must be specifed");
+		testEmptyParameter(namedGraph, "Named graph must be specifed");
 
-		} else {
-
-			final String endpointName = endpointURL.toString().toLowerCase();
-
-			String message = null;
-
-			if (!endpointName.startsWith("http://")) {
-				message = "Endpoint url name have to started with prefix \"http://\".";
-			} else if (endpointName.contains(" ")) {
-				message = "Endpoint url constains white spaces";
-			}
-			if (message != null) {
-				logger.debug(message);
-				throw new RDFException(message);
-			}
-
-		}
-
-		if (namedGraph == null) {
-			final String message = "Named graph must be specifed";
-
-			logger.debug(message);
-			throw new RDFException(message);
-
-		} else if (namedGraph.isEmpty()) {
-			final String message = "Named graph must be specifed";
-
-			logger.debug(message);
-			throw new RDFException(message);
-		}
-
-		if (chunkSize <= 0) {
-			final String message = "Chunk size must be number greater than 0";
-			logger.debug(message);
-			throw new RDFException(message);
-		}
-
+		testPositiveParameter(chunkSize,
+				"Chunk size must be number greater than 0");
 
 		authenticate(userName, password);
 
@@ -580,86 +598,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				final String endpointGraph = namedGraph.get(i);
 
-				try {
-					switch (graphType) {
-						case MERGE:
-							break;
-						case OVERRIDE: {
-							//TODO check use of clear/drop graph
-							clearEndpointGraph(endpointURL, endpointGraph);
-						}
-						break;
-						case FAIL: {
-
-							//if target graph is not empty, exception is thrown
-
-							long SPARQLGraphSize = getSPARQLEnpointGraphSize(
-									endpointURL, endpointGraph);
-
-
-							if (SPARQLGraphSize > 0) {
-								throw new GraphNotEmptyException(
-										"Graph <" + endpointGraph + "> is not empty (has "
-										+ SPARQLGraphSize
-										+ " triples) - Loading to SPARQL endpoint FAILs.");
-							}
-
-						}
-
-						break;
-
-					}
-				} catch (GraphNotEmptyException ex) {
-					logger.error(ex.getMessage());
-
-
-					throw new RDFException(ex.getMessage(), ex);
-				}
+				//clean target graph if nessasarry - via using given WriteGraphType 
+				prepareGraphTargetForLoading(endpointURL, endpointGraph,
+						graphType);
 
 				//starting to load data to target SPARQL endpoint
-
-				final String tempGraph = endpointGraph + "/temp";
-
-				switch (insertType) {
-					case STOP_WHEN_BAD_PART:
-						try {
-							loadDataParts(endpointURL, tempGraph, insertType,
-									chunkSize);
-							if (isExecutionCanceled) {
-								setExecutionCanceled(false);
-							} else {
-								moveDataToTarget(endpointURL, tempGraph,
-										endpointGraph);
-							}
-
-						} catch (InsertPartException e) {
-							throw new RDFException(e.getMessage(), e);
-						} finally {
-							clearEndpointGraph(endpointURL, tempGraph);
-						}
-						break;
-					case SKIP_BAD_PARTS:
-						loadDataParts(endpointURL, endpointGraph, insertType,
-								chunkSize);
-						break;
-					case REPEAT_IF_BAD_PART:
-						while (true) {
-							try {
-								loadDataParts(endpointURL, tempGraph, insertType,
-										chunkSize);
-								moveDataToTarget(endpointURL, tempGraph,
-										endpointGraph);
-								break; //loaded sucessfull - leave infinite loop
-
-							} catch (InsertPartException e) {
-								//log message with destription of insert part problem.
-								logger.debug(e.getMessage());
-							} finally {
-								clearEndpointGraph(endpointURL, tempGraph);
-							}
-						}
-						break;
-				}
+				loadGraphDataToEndpoint(endpointURL, endpointGraph, chunkSize,
+						insertType);
 			}
 
 		} catch (RepositoryException ex) {
@@ -677,6 +622,92 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		 }
 
 		 }*/
+	}
+
+	private void loadGraphDataToEndpoint(URL endpointURL, String endpointGraph,
+			long chunkSize, InsertType insertType) throws RDFException {
+
+		final String tempGraph = endpointGraph + "/temp";
+
+		switch (insertType) {
+			case STOP_WHEN_BAD_PART:
+				try {
+					loadDataParts(endpointURL, tempGraph, insertType,
+							chunkSize);
+					if (isExecutionCanceled) {
+						setExecutionCanceled(false);
+					} else {
+						moveDataToTarget(endpointURL, tempGraph,
+								endpointGraph);
+					}
+
+				} catch (InsertPartException e) {
+					throw new RDFException(e.getMessage(), e);
+				} finally {
+					clearEndpointGraph(endpointURL, tempGraph);
+				}
+				break;
+			case SKIP_BAD_PARTS:
+				loadDataParts(endpointURL, endpointGraph, insertType,
+						chunkSize);
+				break;
+			case REPEAT_IF_BAD_PART:
+				while (true) {
+					try {
+						loadDataParts(endpointURL, tempGraph, insertType,
+								chunkSize);
+						moveDataToTarget(endpointURL, tempGraph,
+								endpointGraph);
+						break; //loaded sucessfull - leave infinite loop
+
+					} catch (InsertPartException e) {
+						//log message with destription of insert part problem.
+						logger.debug(e.getMessage());
+					} finally {
+						clearEndpointGraph(endpointURL, tempGraph);
+					}
+				}
+				break;
+		}
+	}
+
+	private void prepareGraphTargetForLoading(URL endpointURL,
+			String endpointGraph,
+			WriteGraphType graphType) throws RDFException {
+
+		try {
+			switch (graphType) {
+				case MERGE:
+					break;
+				case OVERRIDE: {
+					// clear graph
+					clearEndpointGraph(endpointURL, endpointGraph);
+				}
+				break;
+				case FAIL: {
+					//if target graph is not empty, exception is thrown
+
+					long SPARQLGraphSize = getSPARQLEnpointGraphSize(
+							endpointURL, endpointGraph);
+
+
+					if (SPARQLGraphSize > 0) {
+						throw new GraphNotEmptyException(
+								"Graph <" + endpointGraph + "> is not empty (has "
+								+ SPARQLGraphSize
+								+ " triples) - Loading to SPARQL endpoint FAILs.");
+					}
+
+				}
+
+				break;
+
+			}
+		} catch (GraphNotEmptyException ex) {
+			logger.error(ex.getMessage());
+
+			throw new RDFException(ex.getMessage(), ex);
+		}
 	}
 
 	private long getPartsCount(long chunkSize) {
@@ -906,45 +937,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			RDFFormat format,
 			boolean useStatisticHandler, boolean extractFail) throws RDFException {
 
-		if (endpointURL == null) {
-			final String message = "Mandatory URL path in extractor from SPARQL is null.";
+		testEndpointSyntax(endpointURL);
 
-			logger.debug(message);
-			throw new RDFException(message);
+		testNullParameter(endpointGraphsURI,
+				"Mandatory graph's name(s) in extractor from SPARQL is null.");
+		testEmptyParameter(endpointGraphsURI,
+				"Mandatory graph's name(s) in extractor from SPARQL is empty.");
 
-		} else if (!endpointURL.toString().toLowerCase().startsWith("http")) {
-
-			final String message = "Mandatory URL path in extractor from SPARQL "
-					+ "have to started with http.";
-
-			logger.debug(message);
-			throw new RDFException(message);
-
-		}
-
-		if (endpointGraphsURI == null) {
-			final String message = "Mandatory graph's name(s) in extractor from SPARQL is null.";
-
-			logger.debug(message);
-			throw new RDFException(message);
-
-		} else if (endpointGraphsURI.isEmpty()) {
-			final String message = "Mandatory graph's name(s) in extractor from SPARQL is empty.";
-
-			logger.debug(message);
-			throw new RDFException(message);
-		}
-
-		if (query == null) {
-			final String message = "Mandatory construct query is null.";
-			logger.debug(message);
-			throw new RDFException(message);
-		} else if (query.isEmpty()) {
-			final String message = "Construct query is empty";
-
-			logger.debug(message);
-			throw new RDFException(message);
-		}
+		testNullParameter(query, "Mandatory construct query is null");
+		testEmptyParameter(query, "Construct query is empty");
 
 		final int graphSize = endpointGraphsURI.size();
 
@@ -958,79 +959,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				final String endpointGraph = endpointGraphsURI.get(i);
 
+				extractDataFromEnpointGraph(endpointURL, endpointGraph, query,
+						format, connection, useStatisticHandler, extractFail);
 
-				InputStreamReader inputStreamReader = getEndpointStreamReader(
-						endpointURL, endpointGraph, query, format);
-
-				if (!useStatisticHandler) {
-
-					if (extractFail) {
-						TripleCountHandler handler = new TripleCountHandler(
-								connection);
-
-						if (graph != null) {
-							handler.enforceContext(graph);
-						}
-						RDFParser parser = getRDFParser(format, handler);
-						try {
-							parser.parse(inputStreamReader, endpointGraph);
-							caseNoTriples(handler);
-						} catch (RDFHandlerException e) {
-							logger.debug(e.getMessage(), e);
-						}
-					} else {
-						if (graph != null) {
-							connection.add(inputStreamReader, endpointGraph,
-									format, graph);
-						} else {
-							connection.add(inputStreamReader, endpointGraph,
-									format);
-						}
-
-					}
-
-				} else {
-					StatisticalHandler handler = new StatisticalHandler();
-
-					RDFParser parser = getRDFParser(format, handler);
-
-					try {
-						parser.parse(inputStreamReader, endpointGraph);
-
-						if (extractFail) {
-							caseNoTriples(handler);
-						}
-
-						if (graph != null) {
-							connection.add(handler.getStatements(), graph);
-						} else {
-							connection.add(handler.getStatements());
-						}
-					} catch (IOException ex) {
-						logger.error(ex.getMessage(), ex);
-					} catch (RepositoryException ex) {
-						hasBrokenConnection = true;
-						logger.error(ex.getMessage(), ex);
-					} catch (RDFHandlerException | RDFParseException ex) {
-						logger.error(ex.getMessage(), ex);
-						throw new RDFException(ex.getMessage(), ex);
-					}
-
-
-				}
 			}
-		} catch (IOException e) {
-
-			final String message = "Http connection can can not open stream. ";
-			logger.debug(message);
-
-			throw new RDFException(message + e.getMessage(), e);
-
-		} catch (RDFParseException e) {
-			logger.debug(e.getMessage());
-
-			throw new RDFException(e.getMessage(), e);
-
 		} catch (RepositoryException e) {
 			hasBrokenConnection = true;
 			final String message = "Repository connection failed: " + e
@@ -1052,6 +984,104 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		 }
 		 }*/
 
+	}
+
+	private void extractDataFromEnpointGraph(URL endpointURL,
+			String endpointGraph, String query, RDFFormat format,
+			RepositoryConnection connection,
+			boolean useStatisticHandler, boolean extractFail) throws RDFException {
+
+		InputStreamReader inputStreamReader = getEndpointStreamReader(
+				endpointURL, endpointGraph, query, format);
+
+		if (!useStatisticHandler) {
+
+			if (extractFail) {
+				TripleCountHandler handler = new TripleCountHandler(
+						connection);
+
+				if (graph != null) {
+					handler.enforceContext(graph);
+				}
+				RDFParser parser = getRDFParser(format, handler);
+				try {
+					parser.parse(inputStreamReader, endpointGraph);
+					caseNoTriples(handler);
+				} catch (RDFHandlerException | IOException | RDFParseException e) {
+					logger.debug(e.getMessage(), e);
+					throw new RDFException(e.getMessage(), e);
+				}
+			} else {
+				try {
+					if (graph != null) {
+						connection.add(inputStreamReader, endpointGraph,
+								format, graph);
+					} else {
+						connection.add(inputStreamReader, endpointGraph,
+								format);
+					}
+				} catch (IOException e) {
+					final String message = "Http connection can can not open stream. ";
+					logger.debug(message);
+
+					throw new RDFException(message + e.getMessage(), e);
+				} catch (RDFParseException e) {
+					logger.debug(e.getMessage());
+
+					throw new RDFException(e.getMessage(), e);
+
+				} catch (RepositoryException ex) {
+					hasBrokenConnection = true;
+					final String message = "Repository connection failed: " + ex
+							.getMessage();
+
+					logger.debug(message);
+
+					throw new RDFException(message, ex);
+				}
+
+			}
+
+		} else {
+			StatisticalHandler handler = new StatisticalHandler();
+
+			RDFParser parser = getRDFParser(format, handler);
+
+			try {
+				parser.parse(inputStreamReader, endpointGraph);
+
+				if (extractFail) {
+					caseNoTriples(handler);
+				}
+
+				if (graph != null) {
+					connection.add(handler.getStatements(), graph);
+				} else {
+					connection.add(handler.getStatements());
+				}
+			} catch (IOException ex) {
+				final String message = "Http connection can can not open stream. ";
+				logger.error(message);
+
+				throw new RDFException(message + ex.getMessage(), ex);
+
+			} catch (RepositoryException ex) {
+				hasBrokenConnection = true;
+				final String message = "Repository connection failed: " + ex
+						.getMessage();
+
+				logger.error(message);
+
+				throw new RDFException(message, ex);
+
+
+			} catch (RDFHandlerException | RDFParseException ex) {
+				logger.error(ex.getMessage(), ex);
+				throw new RDFException(ex.getMessage(), ex);
+			}
+
+
+		}
 	}
 
 	private RDFParser getRDFParser(RDFFormat format, RDFHandler handler) {
@@ -1397,6 +1427,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
+	private MyRDFHandler getHandlerForConstructQuery(File file,
+			RDFFormatType formatType) throws IOException {
+
+		createNewFile(file);
+
+		FileOutputStream os = new FileOutputStream(file);
+
+		MyRDFHandler goal = new MyRDFHandler(os, formatType);
+
+		return goal;
+
+	}
+
 	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
@@ -1430,11 +1473,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			try {
 
 				File file = new File(filePath);
-				createNewFile(file);
-
-				FileOutputStream os = new FileOutputStream(file);
-
-				MyRDFHandler goal = new MyRDFHandler(os, formatType);
+				MyRDFHandler goal = getHandlerForConstructQuery(file, formatType);
 
 				graphQuery.evaluate(goal);
 
@@ -1449,7 +1488,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						.getMessage(),
 						ex);
 			} catch (IOException ex) {
-				logger.error("Stream were not closed. " + ex.getMessage(),
+				logger.error("Problems with file stream : " + ex.getMessage(),
 						ex);
 			}
 
