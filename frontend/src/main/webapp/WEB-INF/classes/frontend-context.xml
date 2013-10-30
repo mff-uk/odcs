@@ -35,6 +35,6 @@
 	<!-- Factory for constructing data containers for Vaadin tables. -->
 	<bean id="containerFactory" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory" />
 	
-	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
+	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype" />
 	
 </beans>
