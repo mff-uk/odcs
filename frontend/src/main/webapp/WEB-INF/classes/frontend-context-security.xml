@@ -11,7 +11,7 @@
 	<b:bean id="authenticationService" class="cz.cuni.mff.xrg.odcs.frontend.AuthenticationService" />
 	
 	<b:bean id="logoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
-		<b:property name="invalidateHttpSession" value="true" />
+		<b:property name="invalidateHttpSession" value="false" />
 	</b:bean>
 
 </b:beans>
