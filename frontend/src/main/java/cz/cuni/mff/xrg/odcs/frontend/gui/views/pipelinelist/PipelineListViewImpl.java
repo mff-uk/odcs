@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views;
+package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
@@ -8,46 +8,29 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
-import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
-
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
-import org.vaadin.dialogs.ConfirmDialog;
-import ru.xpoft.vaadin.VaadinView;
 
-@Component
-@Scope("prototype")
-@VaadinView(PipelineList.NAME)
-class PipelineList extends ViewComponent {
+/**
+ *
+ * @author Bogo
+ */
+public class PipelineListViewImpl extends CustomComponent implements PipelineListView {
 
 	/**
 	 * View name.
@@ -57,28 +40,16 @@ class PipelineList extends ViewComponent {
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
-	
-	/**
-	 * Cache for last pipeline execution, so we do not load from DB every time
-	 * table cell with duration, start, ..., is needed.
-	 */
-	private Map<Pipeline, PipelineExecution> execCache = new HashMap<>();
-	
-	@Autowired
-	private PipelineFacade pipelineFacade;
-	
-	@Autowired
-	private ContainerFactory containerFactory;
+	/* Only the presenter registers one listener... */
+	PipelineListViewListener listener;
+	Container container;
 
-	@Override
 	public boolean isModified() {
 		//There are no editable fields.
 		return false;
 	}
 
-	@Override
-	@Transactional
-	public void enter(ViewChangeEvent event) {
+	public PipelineListViewImpl() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
@@ -132,15 +103,10 @@ class PipelineList extends ViewComponent {
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
-		//topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
 
-//		Label topLineFiller = new Label();
-//		topLine.addComponentAsFirst(topLineFiller);
-//		topLine.setExpandRatio(topLineFiller, 1.0f);
 		mainLayout.addComponent(topLine);
 
 		tablePipelines = new IntlibPagedTable() {
-
 			@Override
 			public Collection<?> getSortableContainerPropertyIds() {
 				ArrayList<String> sortableIds = new ArrayList<>(2);
@@ -148,14 +114,13 @@ class PipelineList extends ViewComponent {
 				sortableIds.add("name");
 				return sortableIds;
 			}
-			
 		};
 		tablePipelines.setWidth("99%");
-		
+
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(PAGE_LENGTH);
-		
+
 		// add column
 		tablePipelines.setImmediate(true);
 		tablePipelines.addGeneratedColumn("description", new CustomTable.ColumnGenerator() {
@@ -177,8 +142,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
 				Pipeline ppl = (Pipeline) container.getEntity(itemId);
-				PipelineExecution latestExec = pipelineFacade.getLastExec(ppl, PipelineExecutionStatus.FINISHED);
-				return IntlibHelper.getDuration(latestExec);
+				return listener.getLastExecDetail(ppl, "duration");
 			}
 		});
 		tablePipelines.addGeneratedColumn("lastExecTime", new CustomTable.ColumnGenerator() {
@@ -186,14 +150,7 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
 				Pipeline ppl = (Pipeline) container.getEntity(itemId);
-				PipelineExecution latestExec = getLastExecution(ppl);
-				if (latestExec != null) {
-					DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
-
-					return df.format(latestExec.getStart());
-				} else {
-					return null;
-				}
+				return listener.getLastExecDetail(ppl, "time");
 			}
 		});
 		tablePipelines.addGeneratedColumn("lastExecStatus", new CustomTable.ColumnGenerator() {
@@ -201,12 +158,11 @@ class PipelineList extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				IntlibLazyQueryContainer container = (IntlibLazyQueryContainer) ((IntlibPagedTable) source).getContainerDataSource().getContainer();
 				Pipeline ppl = (Pipeline) container.getEntity(itemId);
-				PipelineExecution latestExec = getLastExecution(ppl);
-				if (latestExec != null) {
-					PipelineExecutionStatus type = latestExec.getStatus();
-					ThemeResource img = IntlibHelper.getIconForExecutionStatus(type);
-					Embedded emb = new Embedded(type.name(), img);
-					emb.setDescription(type.name());
+				PipelineExecutionStatus status = (PipelineExecutionStatus) listener.getLastExecDetail(ppl, "status");
+				if (status != null) {
+					ThemeResource img = IntlibHelper.getIconForExecutionStatus(status);
+					Embedded emb = new Embedded(status.name(), img);
+					emb.setDescription(status.name());
 					return emb;
 				} else {
 					return null;
@@ -234,14 +190,6 @@ class PipelineList extends ViewComponent {
 				}
 			}
 		});
-		
-		// assign data source
-		Container container = containerFactory.createPipelines(PAGE_LENGTH);
-		tablePipelines.setContainerDataSource(container);
-		tablePipelines.setFilterFieldVisible("", false);
-		tablePipelines.setFilterFieldVisible("duration", false);
-		tablePipelines.setFilterFieldVisible("lastExecTime", false);
-		tablePipelines.setFilterFieldVisible("lastExecStatus", false);
 
 		return mainLayout;
 	}
@@ -251,43 +199,26 @@ class PipelineList extends ViewComponent {
 	 */
 	@Transactional
 	private void refreshData() {
-		clearExecCache();
+		listener.event("refresh");
 		int page = tablePipelines.getCurrentPage();
 		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) tablePipelines.getContainerDataSource().getContainer();
 		c.refresh();
 		tablePipelines.setCurrentPage(page);
 	}
 
-	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
-		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipeline, status);
-		if (execs.isEmpty()) {
-			return false;
-		} else {
-			//TODO: Differentiate by user maybe ?!
-			return true;
-		}
+	@Override
+	public void setDataSource(Container c) {
+		// assign data source
+		tablePipelines.setContainerDataSource(c);
+		tablePipelines.setFilterFieldVisible("", false);
+		tablePipelines.setFilterFieldVisible("duration", false);
+		tablePipelines.setFilterFieldVisible("lastExecTime", false);
+		tablePipelines.setFilterFieldVisible("lastExecStatus", false);
 	}
-	
-	/**
-	 * Clears the pipeline cache.
-	 */
-	private void clearExecCache() {
-		execCache = new HashMap<>();
-	}
-	
-	/**
-	 * Get last pipeline execution from cache. If execution is not found in
-	 * cache, it is loaded from DB and cached.
-	 * 
-	 * @param ppl pipeline
-	 * @return last execution for given pipeline
-	 */
-	private PipelineExecution getLastExecution(Pipeline ppl) {
-		PipelineExecution exec = execCache.get(ppl);
-		if (exec == null) {
-			execCache.put(ppl, pipelineFacade.getLastExec(ppl));
-		}
-		return exec;
+
+	@Override
+	public void setListener(PipelineListViewListener listener) {
+		this.listener = listener;
 	}
 
 	/**
@@ -324,8 +255,8 @@ class PipelineList extends ViewComponent {
 
 			// get item
 			CompositeItem item = (CompositeItem) source.getItem(itemId);
-			Long pipelineId = (Long) item.getItemProperty("id").getValue();
-			final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
+			final Long pipelineId = (Long) item.getItemProperty("id").getValue();
+			//final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
 			Button copyButton = new Button();
 			copyButton.setCaption("copy");
 			copyButton.setWidth("80px");
@@ -333,16 +264,8 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
-					String copiedPipelineName = "Copy of " + pipeline.getName();
-					if (copiedPipelineName.length() > MaxLengthValidator.NAME_LENGTH) {
-						Notification.show(String.format("Name of copied pipeline would exceed limit of %d characters, new pipeline has same name as original.", MaxLengthValidator.NAME_LENGTH), Notification.Type.WARNING_MESSAGE);
-					} else {
-						nPipeline.setName(copiedPipelineName);
-					}
-					pipelineFacade.save(nPipeline);
+					listener.pipelineEvent(pipelineId, "copy");
 					refreshData();
-					//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
 				}
 			});
 			layout.addComponent(copyButton);
@@ -355,32 +278,8 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					String message = "Would you really like to delete the " + pipeline.getName() + " pipeline and all associated records (DPU instances e.g.)?";
-					if (isExecInSystem(pipeline, PipelineExecutionStatus.RUNNING)) {
-						message += "\nPipeline is running currently, the current run will be cancelled!";
-					}
-					if (isExecInSystem(pipeline, PipelineExecutionStatus.SCHEDULED)) {
-						message += "\nPipeline is scheduled currently, the scheduled execution will be deleted!";
-					}
-					if (!App.getSchedules().getSchedulesFor(pipeline).isEmpty()) {
-						message += "\nThere is/are scheduler rules with the pipeline, it/they will be deleted!";
-					}
-
-					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
-						@Override
-						public void onClose(ConfirmDialog cd) {
-							if (cd.isConfirmed()) {
-								pipelineFacade.delete(pipeline);
-								// now we have to remove pipeline from table
-								source.removeItem(itemId);
-								refreshData();
-								//tablePipelines.setVisibleColumns("id", "name", "duration", "description","");
-							}
-						}
-					});
-
-
-
+					listener.pipelineEvent(pipelineId, "delete");
+					refreshData();
 				}
 			});
 			layout.addComponent(deleteButton);
@@ -392,7 +291,7 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					IntlibHelper.runPipeline(pipeline, false);
+					listener.pipelineEvent(pipelineId, "run");
 				}
 			});
 			layout.addComponent(runButton);
@@ -404,10 +303,7 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					PipelineExecution exec = IntlibHelper.runPipeline(pipeline, true);
-					if (exec != null) {
-						App.getApp().getNavigator().navigateTo(ViewNames.EXECUTION_MONITOR.getUrl() + "/" + exec.getId());
-					}
+					listener.pipelineEvent(pipelineId, "debug");
 				}
 			});
 			layout.addComponent(runDebugButton);
@@ -420,10 +316,7 @@ class PipelineList extends ViewComponent {
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					// open scheduler dialog
-					SchedulePipeline sch = new SchedulePipeline();
-					sch.setSelectePipeline(pipeline);
-					App.getApp().addWindow(sch);
+					listener.pipelineEvent(pipelineId, "schedule");
 				}
 			});
 			layout.addComponent(schedulerButton);
