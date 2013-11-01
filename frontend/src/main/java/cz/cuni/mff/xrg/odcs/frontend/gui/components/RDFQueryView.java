@@ -169,7 +169,7 @@ public class RDFQueryView extends CustomComponent {
 		resultTable.setImmediate(true);
 		resultTable.setPageLength(15);
 		resultTable.setSortEnabled(false);
-		resultTable.setFilterBarVisible(true);
+		//resultTable.setFilterBarVisible(true);
 		resultTable.setFilterGenerator(new FilterGenerator() {
 
 			@Override
@@ -295,10 +295,12 @@ public class RDFQueryView extends CustomComponent {
 				for (Object propertyId : container.getItem(container.getIdByIndex(0)).getItemPropertyIds()) {
 					container.addContainerProperty(propertyId, String.class, null, true, true);
 				}
+				resultTable.setFilterBarVisible(true);
 			} else {
 				container.addContainerProperty("subject", String.class, null, true, true);
 				container.addContainerProperty("predicate", String.class, null, true, true);
 				container.addContainerProperty("object", String.class, null, true, true);
+				resultTable.setFilterBarVisible(false);
 			}
 		}
 
