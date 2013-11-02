@@ -710,9 +710,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
-	private long getPartsCount(long chunkSize) {
+	protected long getPartsCount(RDFDataUnit dataUnit, long chunkSize) {
 
-		long triples = getTripleCount();
+		long triples = dataUnit.getTripleCount();
 		long partsCount = triples / chunkSize;
 
 		if (partsCount * chunkSize != triples) {
@@ -754,7 +754,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		String part = getInsertQueryPart(chunkSize, lazy);
 
 		long counter = 0;
-		long partsCount = getPartsCount(chunkSize);
+		long partsCount = getPartsCount(this, chunkSize);
 
 		while (part != null) {
 			counter++;
