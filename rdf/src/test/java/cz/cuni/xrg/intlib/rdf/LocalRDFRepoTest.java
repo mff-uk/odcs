@@ -863,7 +863,7 @@ public class LocalRDFRepoTest {
 						transformOverRepository(localRepository);
 						loadToFile(localRepository);
 
-						localRepository.release();
+						localRepository.delete();
 
 					} catch (IOException ex) {
 						throw new RuntimeException(ex);
