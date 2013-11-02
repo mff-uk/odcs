@@ -19,7 +19,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
-import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.sail.nativerdf.NativeStore;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -64,14 +64,13 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			String namedGraph, String dataUnitName) {
 		setReadOnly(false);
 
-		long timeToStart = 1000L;
 		File dataFile = new File(repoPath, fileName);
-		MemoryStore memStore = new MemoryStore(dataFile);
-		memStore.setPersist(true);
-		memStore.setSyncDelay(timeToStart);
+
+		NativeStore nativeStore = new NativeStore(dataFile);
+		nativeStore.setForceSync(false);
 
 		logger = LoggerFactory.getLogger(LocalRDFRepo.class);
-		repository = new SailRepository(memStore);
+		repository = new SailRepository(nativeStore);
 		repository.setDataDir(dataFile);
 
 		setDataGraph(namedGraph);
