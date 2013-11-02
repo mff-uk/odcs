@@ -123,11 +123,6 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
 				.toString());
-		try {
-			closeConnection();
-		} catch (RepositoryException e) {
-			logger.debug("Connection problems with close: " + e.getMessage());
-		}
 		shutDown();
 		logger.info("Relelased LocalRdf: {}", WorkingRepoDirectory
 				.toString());
