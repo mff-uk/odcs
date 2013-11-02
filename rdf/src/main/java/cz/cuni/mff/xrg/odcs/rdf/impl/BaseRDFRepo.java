@@ -2656,6 +2656,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			@Override
 			public void run() {
 				try {
+					closeConnection();
 					repository.shutDown();
 					logger.debug("Repository with data graph <" + getDataGraph()
 							.stringValue() + "> destroyed SUCCESSFULL.");
