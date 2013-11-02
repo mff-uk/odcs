@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openrdf.model.*;
@@ -33,6 +34,11 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * Default name for data file.
 	 */
 	private final static String dumpName = "dump_dat.ttl";
+
+	/**
+	 * How many triples is possible to merge at once.
+	 */
+	private final static long DEFAULT_MERGE_PART_SIZE = 1000;
 
 	/**
 	 * Directory root, where is repository stored.
@@ -221,15 +227,25 @@ public class LocalRDFRepo extends BaseRDFRepo {
 						.stringValue() + "> "
 						+ "TO <" + getDataGraph().stringValue() + ">.");
 
-				while (lazySource.hasNext()) {
-					Statement nextSourceStatement = lazySource.next();
+				long addedParts = 0;
+				long partsCount = getPartsCount(second, DEFAULT_MERGE_PART_SIZE);
 
-					if (graph != null) {
-						targetConnection.add(nextSourceStatement, graph);
-					} else {
-						targetConnection.add(nextSourceStatement);
-					}
+				List<Statement> statements = getNextDataPart(lazySource,
+						DEFAULT_MERGE_PART_SIZE);
+
+				while (!statements.isEmpty()) {
+					addedParts++;
+
+					final String processing = getPartsProcessing(addedParts,
+							partsCount);
+
+					mergeNextDataPart(targetConnection, statements,
+							processing);
+
+					statements = getNextDataPart(lazySource,
+							DEFAULT_MERGE_PART_SIZE);
 				}
+
 
 				logger.info("Merged SUCESSFULL");
 			}
@@ -250,6 +266,54 @@ public class LocalRDFRepo extends BaseRDFRepo {
 				logger.error(ex.getMessage(), ex);
 			}
 
+		}
+	}
+
+	private List<Statement> getNextDataPart(
+			RepositoryResult<Statement> lazySource,
+			long chunkSize) throws RepositoryException {
+
+		List<Statement> result = new ArrayList<>();
+
+		long count = 0;
+
+		while (lazySource.hasNext()) {
+			if (count < chunkSize) {
+				Statement nextStatement = lazySource.next();
+				result.add(nextStatement);
+				count++;
+			} else {
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	private String getPartsProcessing(long addedParts, long partsCount) {
+		final String processing = String.valueOf(addedParts) + "/" + String
+				.valueOf(partsCount);
+
+		return processing;
+	}
+
+	private void mergeNextDataPart(
+			RepositoryConnection targetConnection, List<Statement> statements,
+			String processing)
+			throws RepositoryException {
+
+		addStatementsCollection(targetConnection, statements);
+		statements.clear();
+		logger.debug(
+				"Merging data part " + processing + " were successful");
+	}
+
+	private void addStatementsCollection(RepositoryConnection targetConnection,
+			List<Statement> statements) throws RepositoryException {
+		if (graph != null) {
+			targetConnection.add(statements, graph);
+		} else {
+			targetConnection.add(statements);
 		}
 	}
 
