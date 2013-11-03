@@ -527,7 +527,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		ParamController.testNullParameter(namedGraph,
 				"Named graph must be specifed");
-		ParamController.testEmptyParameter(namedGraph, "Named graph must be specifed");
+		ParamController.testEmptyParameter(namedGraph,
+				"Named graph must be specifed");
 
 		ParamController.testPositiveParameter(chunkSize,
 				"Chunk size must be number greater than 0");
@@ -656,9 +657,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
-	protected long getPartsCount(RDFDataUnit dataUnit, long chunkSize) {
+	@Override
+	public long getPartsCount(long chunkSize) {
 
-		long triples = dataUnit.getTripleCount();
+		long triples = getTripleCount();
 		long partsCount = triples / chunkSize;
 
 		if (partsCount * chunkSize != triples) {
@@ -700,7 +702,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		String part = getInsertQueryPart(chunkSize, lazy);
 
 		long counter = 0;
-		long partsCount = getPartsCount(this, chunkSize);
+		long partsCount = getPartsCount(chunkSize);
 
 		while (part != null) {
 			counter++;
@@ -2051,7 +2053,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		logger.debug(finish);
 	}
 
-	private InputStreamReader getEndpointStreamReader(URL endpointURL,
+	@Override
+	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
 			RDFFormat format) throws RDFException {
 
