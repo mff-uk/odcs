@@ -193,14 +193,14 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * in second defined repository.
 	 *
 	 *
-	 * @param second Type of repository contains RDF data as implementation of
+	 * @param sourceDataUnit Type of repository contains RDF data as implementation of
 	 *               RDFDataUnit interface.
 	 * @throws IllegalArgumentException if second repository as param is null.
 	 */
 	@Override
-	public void mergeRepositoryData(RDFDataUnit second) throws IllegalArgumentException {
+	public void mergeRepositoryData(RDFDataUnit sourceDataUnit) throws IllegalArgumentException {
 
-		if (second == null) {
+		if (sourceDataUnit == null) {
 			throw new IllegalArgumentException(
 					"Instance of RDFDataRepository is null");
 		}
@@ -210,16 +210,16 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		RepositoryResult<Statement> lazySource = null;
 
 		try {
-			lazySource = second.getRepositoryResult();
+			lazySource = sourceDataUnit.getRepositoryResult();
 
 			targetConnection = repository.getConnection();
 
 			if (targetConnection != null) {
 
-				logger.info("Merging " + second.getTripleCount()
-						+ " triples from <" + second.getDataGraph()
+				logger.info("Merging " + sourceDataUnit.getTripleCount()
+						+ " triples from <" + sourceDataUnit.getDataGraph()
 						.stringValue() + "> "
-						+ "TO <" + getDataGraph().stringValue() + ">.");
+						+ "to <" + getDataGraph().stringValue() + ">.");
 
 				long addedParts = 0;
 				long partsCount = getPartsCount(second, DEFAULT_MERGE_PART_SIZE);

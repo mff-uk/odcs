@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.impl;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
@@ -586,7 +587,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		testPositiveParameter(chunkSize,
 				"Chunk size must be number greater than 0");
 
-		authenticate(userName, password);
+		Authentificator.authenticate(userName, password);
 
 		RepositoryConnection connection = null;
 
@@ -954,7 +955,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		try {
 			connection = getConnection();
-			authenticate(hostName, password);
+			Authentificator.authenticate(hostName, password);
 
 			for (int i = 0; i < graphSize; i++) {
 
@@ -2266,28 +2267,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private String getEncoder(RDFFormat format) throws RDFException {
 		String encoder = getEncodedString(format.getDefaultMIMEType());
 		return encoder;
-	}
-
-	private void authenticate(String hostName, String password) {
-
-		boolean usePassword = !(hostName.isEmpty() && password.isEmpty());
-
-		if (usePassword) {
-
-			final String myName = hostName;
-			final String myPassword = password;
-
-			Authenticator autentisator = new Authenticator() {
-				@Override
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(myName, myPassword
-							.toCharArray());
-				}
-			};
-
-			Authenticator.setDefault(autentisator);
-
-		}
 	}
 
 	private void writeDataIntoFile(File dataFile, RDFFormatType formatType)
