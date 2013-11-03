@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -47,7 +48,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements OwnedEntity, Resource, Serializable {
+public class Pipeline implements OwnedEntity, Resource, Serializable, DataObject {
 
 	/**
 	 * Unique ID for each pipeline
