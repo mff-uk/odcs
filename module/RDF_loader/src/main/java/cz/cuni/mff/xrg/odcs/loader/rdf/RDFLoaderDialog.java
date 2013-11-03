@@ -8,13 +8,8 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.impl.BaseRDFRepo;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.shared.ui.combobox.FilteringMode;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,7 +71,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	/**
 	 * ComboBox to set SPARQL endpoint.
 	 */
-	private ComboBox comboBoxSparql;
+	private TextField comboBoxSparql;
 
 	private Validator.InvalidValueException ex;
 
@@ -271,22 +266,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		dataPartsOption.setValue(stop.getDescription());
 	}
 
-	/**
-	 * IndexedContainer with the data for {@link #comboBoxSparql}
-	 */
-	public static IndexedContainer getFridContainer() {
-
-
-		String[] visibleCols = new String[]{"endpoint"};
-
-		IndexedContainer result = new IndexedContainer();
-
-		for (String p : visibleCols) {
-			result.addContainerProperty(p, String.class, "");
-		}
-
-		return result;
-	}
 
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
@@ -365,54 +344,17 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		gridLayoutAdm.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
 
 		// SPARQL endpoint ComboBox
-		Container cont = getFridContainer();
-		comboBoxSparql = new ComboBox();
-		comboBoxSparql.setContainerDataSource(cont);
-		comboBoxSparql.setImmediate(false);
+		comboBoxSparql = new TextField();
+		comboBoxSparql.setImmediate(true);
 		comboBoxSparql.setWidth("100%");
 		comboBoxSparql.setHeight("-1px");
-		comboBoxSparql.setNewItemsAllowed(true);
-		comboBoxSparql.setTextInputAllowed(true);
-		comboBoxSparql.setItemCaptionPropertyId("endpoint");
-		comboBoxSparql.setItemCaptionMode(
-				AbstractSelect.ItemCaptionMode.PROPERTY);
 		comboBoxSparql.setInputPrompt("http://example:8894/sparql");
 
-		comboBoxSparql.setFilteringMode(FilteringMode.CONTAINS);
-		comboBoxSparql.setImmediate(true);
 
-
-		// Disallow null selections
-		comboBoxSparql.setNullSelectionAllowed(false);
-
-		// Check if the caption for new item already exists in the list of item
-		// captions before approving it as a new item.
-
-		comboBoxSparql.setNewItemHandler(new AbstractSelect.NewItemHandler() {
-			@Override
-			public void addNewItem(final String newItemCaption) {
-				boolean newItem = true;
-				for (final Object itemId : comboBoxSparql.getItemIds()) {
-					if (newItemCaption.equalsIgnoreCase(comboBoxSparql
-							.getItemCaption(itemId))) {
-						newItem = false;
-						break;
-					}
-				}
-				if (newItem) {
-					// Adds new option
-					if (comboBoxSparql.addItem(newItemCaption.trim()) != null) {
-						final Item item = comboBoxSparql.getItem(newItemCaption
-								.trim());
-						item.getItemProperty("endpoint")
-								.setValue(newItemCaption.trim());
-						comboBoxSparql.setValue(newItemCaption.trim());
-					}
-				}
-			}
-		});
 		//comboBoxSparql is mandatory fields
 		comboBoxSparql.addValidator(new Validator() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value == null) {
@@ -582,6 +524,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/kb");
 			textFieldGraph.addValidator(new Validator() {
+
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void validate(Object value) throws Validator.InvalidValueException {
 					if (value != null) {
@@ -611,6 +556,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			buttonGraphRem.setCaption("-");
 			buttonGraphRem.setData(row);
 			buttonGraphRem.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(Button.ClickEvent event) {
 					saveEditedTexts();
@@ -634,6 +582,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		buttonGraphAdd.setWidth("55px");
 		buttonGraphAdd.setHeight("-1px");
 		buttonGraphAdd.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				saveEditedTexts();
@@ -704,6 +655,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		chunkParts.setInputPrompt(
 				"Chunk size of triples which inserted at once");
 		chunkParts.addValidator(new Validator() {
+	
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void validate(Object value) throws Validator.InvalidValueException {
 				if (value != null) {
@@ -739,6 +693,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		chunkDefault.setWidth("90px");
 		chunkDefault.setHeight("-1px");
 		chunkDefault.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				String value = String.valueOf(BaseRDFRepo.getDefaultChunkSize());
@@ -811,9 +768,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		try {
 			String endp = conf.SPARQL_endpoint.trim();
 
-			if ((endp != null) && (comboBoxSparql.addItem(endp) != null)) {
-				final Item item = comboBoxSparql.getItem(endp);
-				item.getItemProperty("endpoint").setValue(endp);
+			if (endp != null) {
+
 				comboBoxSparql.setValue(endp);
 			}
 			textFieldNameAdm.setValue(conf.Host_name.trim());
