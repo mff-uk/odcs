@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openrdf.model.*;
@@ -18,7 +19,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
-import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.sail.nativerdf.NativeStore;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -33,6 +34,11 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * Default name for data file.
 	 */
 	private final static String dumpName = "dump_dat.ttl";
+
+	/**
+	 * How many triples is possible to merge at once.
+	 */
+	private final static long DEFAULT_MERGE_PART_SIZE = 1000;
 
 	/**
 	 * Directory root, where is repository stored.
@@ -58,14 +64,13 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			String namedGraph, String dataUnitName) {
 		setReadOnly(false);
 
-		long timeToStart = 1000L;
 		File dataFile = new File(repoPath, fileName);
-		MemoryStore memStore = new MemoryStore(dataFile);
-		memStore.setPersist(true);
-		memStore.setSyncDelay(timeToStart);
+
+		NativeStore nativeStore = new NativeStore(dataFile);
+		nativeStore.setForceSync(false);
 
 		logger = LoggerFactory.getLogger(LocalRDFRepo.class);
-		repository = new SailRepository(memStore);
+		repository = new SailRepository(nativeStore);
 		repository.setDataDir(dataFile);
 
 		setDataGraph(namedGraph);
@@ -117,11 +122,6 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	public void release() {
 		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
 				.toString());
-		try {
-			closeConnection();
-		} catch (RepositoryException e) {
-			logger.debug("Connection problems with close: " + e.getMessage());
-		}
 		shutDown();
 		logger.info("Relelased LocalRdf: {}", WorkingRepoDirectory
 				.toString());
@@ -221,15 +221,25 @@ public class LocalRDFRepo extends BaseRDFRepo {
 						.stringValue() + "> "
 						+ "to <" + getDataGraph().stringValue() + ">.");
 
-				while (lazySource.hasNext()) {
-					Statement nextSourceStatement = lazySource.next();
+				long addedParts = 0;
+				long partsCount = getPartsCount(second, DEFAULT_MERGE_PART_SIZE);
 
-					if (graph != null) {
-						targetConnection.add(nextSourceStatement, graph);
-					} else {
-						targetConnection.add(nextSourceStatement);
-					}
+				List<Statement> statements = getNextDataPart(lazySource,
+						DEFAULT_MERGE_PART_SIZE);
+
+				while (!statements.isEmpty()) {
+					addedParts++;
+
+					final String processing = getPartsProcessing(addedParts,
+							partsCount);
+
+					mergeNextDataPart(targetConnection, statements,
+							processing);
+
+					statements = getNextDataPart(lazySource,
+							DEFAULT_MERGE_PART_SIZE);
 				}
+
 
 				logger.info("Merged SUCESSFULL");
 			}
@@ -250,6 +260,54 @@ public class LocalRDFRepo extends BaseRDFRepo {
 				logger.error(ex.getMessage(), ex);
 			}
 
+		}
+	}
+
+	private List<Statement> getNextDataPart(
+			RepositoryResult<Statement> lazySource,
+			long chunkSize) throws RepositoryException {
+
+		List<Statement> result = new ArrayList<>();
+
+		long count = 0;
+
+		while (lazySource.hasNext()) {
+			if (count < chunkSize) {
+				Statement nextStatement = lazySource.next();
+				result.add(nextStatement);
+				count++;
+			} else {
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	private String getPartsProcessing(long addedParts, long partsCount) {
+		final String processing = String.valueOf(addedParts) + "/" + String
+				.valueOf(partsCount);
+
+		return processing;
+	}
+
+	private void mergeNextDataPart(
+			RepositoryConnection targetConnection, List<Statement> statements,
+			String processing)
+			throws RepositoryException {
+
+		addStatementsCollection(targetConnection, statements);
+		statements.clear();
+		logger.debug(
+				"Merging data part " + processing + " were successful");
+	}
+
+	private void addStatementsCollection(RepositoryConnection targetConnection,
+			List<Statement> statements) throws RepositoryException {
+		if (graph != null) {
+			targetConnection.add(statements, graph);
+		} else {
+			targetConnection.add(statements);
 		}
 	}
 
