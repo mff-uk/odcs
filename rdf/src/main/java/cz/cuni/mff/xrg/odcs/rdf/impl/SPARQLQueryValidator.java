@@ -164,7 +164,7 @@ public class SPARQLQueryValidator implements Validator {
 			}
 		}
 
-		emptyRepo.release();
+		emptyRepo.delete();
 
 		return isValid;
 

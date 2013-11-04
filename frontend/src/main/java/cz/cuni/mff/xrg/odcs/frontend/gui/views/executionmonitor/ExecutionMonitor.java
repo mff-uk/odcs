@@ -27,7 +27,6 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
@@ -84,11 +83,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private Container tableData;
 	private Long exeId;
 	private static final String[] visibleCols = new String[]{
-		"start", "pipeline.name", "duration", "owner.username", "status",
+		"id", "start", "pipeline.name", "duration", "owner.username", "status",
 		"isDebugging", "schedule", "actions", "report"
 	};
 	static String[] headers = new String[]{
-		"Date", "Name", "Run time", "User", "Status",
+		"ID", "Date", "Name", "Run time", "User", "Status",
 		"Debug", "Scheduled", "Actions", "Report"
 	};
 	private Date lastLoad;
@@ -289,6 +288,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setColumnWidth("isDebugging", 50);
 		monitorTable.setColumnWidth("duration", 60);
 		monitorTable.setColumnWidth("actions", 200);
+		monitorTable.setColumnWidth("id", 50);
 		monitorTable.setSortEnabled(true);
 
 		//Container must be set before sorting, or else data aren't sorted when loaded.
@@ -339,13 +339,16 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					lastLoad = recordLastChange;
 				}
 				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
-				if (duration == -1 && (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue() == RUNNING) {
+				PipelineExecutionStatus status = (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue();
+				if (duration == -1 && (status == RUNNING || status == PipelineExecutionStatus.CANCELLING)) {
 					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
-					duration = (new Date()).getTime() - start.getTime();
-					Label durationLabel = new Label(IntlibHelper.formatDuration(duration));
-					durationLabel.setImmediate(true);
-					runTimeLabels.put(start, durationLabel);
-					return durationLabel;
+					if(start != null) {
+						duration = (new Date()).getTime() - start.getTime();
+						Label durationLabel = new Label(IntlibHelper.formatDuration(duration));
+						durationLabel.setImmediate(true);
+						runTimeLabels.put(start, durationLabel);
+						return durationLabel;
+					}
 				}
 				return IntlibHelper.formatDuration(duration);
 			}

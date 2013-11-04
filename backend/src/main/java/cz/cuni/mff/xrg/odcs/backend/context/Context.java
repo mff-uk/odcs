@@ -173,7 +173,7 @@ public class Context implements DPUContext {
 	 * Bind the context to the {@link PipelineExecution} and {@link DPUInstanceRecord}.
 	 * Must be called before future using of the {@link Context} class.
 	 * @param dpuInstance
-	 * @param context
+	 * @param contextInfo
 	 * @param lastSuccExec
 	 * @deprecated use direct setters instead
 	 */
@@ -221,7 +221,7 @@ public class Context implements DPUContext {
 
 	/**
 	 * Release all lock from context and DataUnits. Also delete all stored
-	 * {@link DataUnit}s and related contex's directories.
+	 * {@link DataUnit}s and related context's directories.
 	 */
 	@Deprecated
 	public void delete() {
@@ -314,6 +314,7 @@ public class Context implements DPUContext {
 	
 	/**
 	 * 	Return true if the warning message has been publish using this context.
+     * @return 
 	 */
 	public boolean warningMessagePublished() {
 		return this.warningMessage;
@@ -389,8 +390,8 @@ public class Context implements DPUContext {
 	
 	@Override
 	public void sendMessage(MessageType type, String shortMessage) {
-		eventPublisher.publishEvent(new DPUMessage(shortMessage, "", type,
-				this, this));	
+        // jest re-call the other function
+        sendMessage(type, shortMessage, "");
 	}
 	
 	@Override

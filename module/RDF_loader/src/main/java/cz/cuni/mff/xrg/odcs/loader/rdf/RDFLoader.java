@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		implements ConfigDialogProvider<RDFLoaderConfig> {
 
-	private final Logger LOG = LoggerFactory.getLogger(RDFLoader.class);
+	private final Logger logger = LoggerFactory.getLogger(RDFLoader.class);
 
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -59,12 +59,14 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final long chunkSize = config.chunkSize;
 
 		final long triplesCount = rdfDataUnit.getTripleCount();
-		LOG.info("Loading {} triples", triplesCount);
+		logger.info("Loading {} triples", triplesCount);
 
 		try {
+			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context);
 
-			rdfDataUnit.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
+			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
+
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage());
 			throw new DPUException(ex.getMessage(), ex);

@@ -56,7 +56,7 @@ public class SPARQLUpdateValidator implements Validator {
 			}
 		}
 		
-		emptyRepo.release();
+		emptyRepo.delete();
 
 		return isValid;
 	}

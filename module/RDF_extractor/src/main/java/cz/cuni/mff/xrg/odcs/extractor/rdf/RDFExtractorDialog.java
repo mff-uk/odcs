@@ -14,9 +14,8 @@ import java.util.List;
 
 import com.vaadin.data.*;
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.util.*;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.shared.ui.combobox.FilteringMode;
+
 
 /**
  * Configuration dialog for DPU SPARQL Extractor.
@@ -45,7 +44,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	private Label labelOpt;
 
-	private GridLayout gridLayoutConstr;
 
 	/**
 	 * TextArea to set SPARQL construct query.
@@ -55,8 +53,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private Label labelConstr;
 
 	private GridLayout gridLayoutCore;
-
-	private GridLayout gridLayoutAdm;
 
 	private Label labelGraph;
 
@@ -79,7 +75,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	/**
 	 * ComboBox to set SPARQL endpoint.
 	 */
-	private ComboBox comboBoxSparql;
+	private TextField textFieldSparql;
 
 	private Label labelSparql;
 
@@ -121,20 +117,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		ex = new InvalidValueException("Valid");
 	}
 
-	/**
-	 * IndexedContainer with the data for {@link #comboBoxSparql}
-	 */
-	public static IndexedContainer getFridContainer() {
-
-		String[] visibleCols = new String[]{"endpoint"};
-		IndexedContainer result = new IndexedContainer();
-
-		for (String p : visibleCols) {
-			result.addContainerProperty(p, String.class, "");
-		}
-
-		return result;
-	}
 
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
@@ -204,54 +186,24 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(labelSparql, 0, 0);
 		gridLayoutCore.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
 
-		// SPARQL endpoint ComboBox
-		Container cont = getFridContainer();
-		comboBoxSparql = new ComboBox();
-		comboBoxSparql.setContainerDataSource(cont);
-		comboBoxSparql.setImmediate(false);
-		comboBoxSparql.setWidth("100%");
-		comboBoxSparql.setHeight("-1px");
-		comboBoxSparql.setNewItemsAllowed(true);
-		comboBoxSparql.setTextInputAllowed(true);
-		comboBoxSparql.setItemCaptionPropertyId("endpoint");
-		comboBoxSparql.setInputPrompt("http://example:8894/sparql");
-		comboBoxSparql
-				.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+		// SPARQL endpoint Text Field
+		textFieldSparql = new TextField();
+		textFieldSparql.setImmediate(true);
+		textFieldSparql.setWidth("100%");
+		textFieldSparql.setHeight("-1px");
+		textFieldSparql.setInputPrompt("http://example:8894/sparql");
 
-		comboBoxSparql.setFilteringMode(FilteringMode.CONTAINS);
-		comboBoxSparql.setImmediate(true);
 
-		// Disallow null selections
-		comboBoxSparql.setNullSelectionAllowed(false);
 
 		// Check if the caption for new item already exists in the list of item
 		// captions before approving it as a new item.
 
-		comboBoxSparql.setNewItemHandler(new AbstractSelect.NewItemHandler() {
-			@Override
-			public void addNewItem(final String newItemCaption) {
-				boolean newItem = true;
-				for (final Object itemId : comboBoxSparql.getItemIds()) {
-					if (newItemCaption.equalsIgnoreCase(comboBoxSparql
-							.getItemCaption(itemId))) {
-						newItem = false;
-						break;
-					}
-				}
-				if (newItem) {
-					// Adds new option
-					if (comboBoxSparql.addItem(newItemCaption.trim()) != null) {
-						final Item item = comboBoxSparql
-								.getItem(newItemCaption.trim());
-						item.getItemProperty("endpoint").setValue(
-								newItemCaption.trim());
-						comboBoxSparql.setValue(newItemCaption.trim());
-					}
-				}
-			}
-		});
-		//comboBoxSparql is mandatory fields
-		comboBoxSparql.addValidator(new Validator() {
+	
+		//textFieldSparql is mandatory fields
+		textFieldSparql.addValidator(new Validator() {
+
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value == null) {
@@ -272,10 +224,11 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 					}
 
 				}
-
 			}
+
+			
 		});
-		gridLayoutCore.addComponent(comboBoxSparql, 1, 0);
+		gridLayoutCore.addComponent(textFieldSparql, 1, 0);
 
 		// labelNameAdm
 		labelNameAdm = new Label();
@@ -344,6 +297,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		textAreaConstr.addValueChangeListener(
 				new Property.ValueChangeListener() {
+					private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 
@@ -461,6 +416,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/source1");
 			textFieldGraph.addValidator(new Validator() {
+
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void validate(Object value) throws InvalidValueException {
 					if (value != null) {
@@ -493,6 +451,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			buttonGraphRem.setCaption("-");
 			buttonGraphRem.setData(row);
 			buttonGraphRem.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(Button.ClickEvent event) {
 					saveEditedTexts();
@@ -515,6 +476,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		buttonGraphAdd.setWidth("55px");
 		buttonGraphAdd.setHeight("-1px");
 		buttonGraphAdd.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				saveEditedTexts();
@@ -596,21 +560,21 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * and configuring DPU
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
-	 *                         {@link #comboBoxSparql} contains null value.
+	 *                         {@link #textFieldSparql} contains null value.
 	 * @return config Object holding configuration which is used in
 	 *         {@link #setConfiguration} to initialize fields in the
 	 *         configuration dialog.
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
-		if (!comboBoxSparql.isValid() | !areGraphsNameValid()) {
+		if (!textFieldSparql.isValid() | !areGraphsNameValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(errorMessage);
 		} else {
 			saveEditedTexts();
 			RDFExtractorConfig config = new RDFExtractorConfig();
-			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
+			config.SPARQL_endpoint = (String) textFieldSparql.getValue();
 			config.Host_name = textFieldNameAdm.getValue().trim();
 			config.Password = passwordFieldPass.getValue();
 			config.SPARQL_query = textAreaConstr.getValue().trim();
@@ -631,7 +595,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * @throws ConfigException Exception which might be thrown when components
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
@@ -644,11 +608,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		try {
 			String endp = conf.SPARQL_endpoint.trim();
 
-			if ((endp != null) && (comboBoxSparql.addItem(endp) != null)) {
-				final Item item = comboBoxSparql.getItem(endp);
-				item.getItemProperty("endpoint").setValue(endp);
-				comboBoxSparql.setValue(endp);
+			if (endp != null) {
+				textFieldSparql.setValue(endp);
 			}
+
 			textFieldNameAdm.setValue(conf.Host_name.trim());
 			passwordFieldPass.setValue(conf.Password);
 			textAreaConstr.setValue(conf.SPARQL_query.trim());
@@ -671,7 +634,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();
 		description.append("Extract from SPARQL: ");
-		description.append((String) comboBoxSparql.getValue());
+		description.append((String) textFieldSparql.getValue());
 		return description.toString();
 	}
 }
