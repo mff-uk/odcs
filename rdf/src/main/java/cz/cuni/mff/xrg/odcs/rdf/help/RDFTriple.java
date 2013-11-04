@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.help;
 
 /**
  * Class for representing RDF Triple for browsing in frontend.

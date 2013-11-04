@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
-import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
+import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.ArrayList;

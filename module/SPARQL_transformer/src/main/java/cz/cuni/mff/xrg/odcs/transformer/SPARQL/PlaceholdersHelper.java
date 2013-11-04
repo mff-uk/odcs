@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.rdf.impl.PlaceHolder;
+import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.ArrayList;
 import java.util.List;

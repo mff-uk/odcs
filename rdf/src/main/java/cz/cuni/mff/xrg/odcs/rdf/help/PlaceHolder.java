@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.help;
 
 /**
  * Class responsible for keeping mapping between DPU name a graph name for this

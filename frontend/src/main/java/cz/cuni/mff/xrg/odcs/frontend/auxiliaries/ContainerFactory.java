@@ -14,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
-import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
+import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.persistence.EntityManager;

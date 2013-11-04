@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.help;
 
 import java.util.HashMap;
 import java.util.Map;
