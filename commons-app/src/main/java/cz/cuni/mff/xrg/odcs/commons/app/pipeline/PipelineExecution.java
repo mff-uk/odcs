@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -20,7 +21,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "exec_pipeline")
-public class PipelineExecution implements Serializable {
+public class PipelineExecution implements Serializable, DataObject {
 
 	/**
 	 * Unique id of pipeline execution.
