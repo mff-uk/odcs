@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.openrdf.model.*;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
@@ -43,6 +44,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
+import org.openrdf.rio.helpers.RioSettingImpl;
 import org.slf4j.Logger;
 
 /**
@@ -1512,7 +1514,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			try {
 
-				GraphQueryResult result = graphQuery.evaluate();
+				MyGraphQueryResult result = new MyGraphQueryResult(graphQuery
+						.evaluate());
 
 				logger.debug(
 						"Query " + constructQuery + " has not null result.");
@@ -1967,7 +1970,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph) throws RDFException {
+	private long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph)
+			throws RDFException {
 		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
 
 		InputStreamReader inputStreamReader = getEndpointStreamReader(
