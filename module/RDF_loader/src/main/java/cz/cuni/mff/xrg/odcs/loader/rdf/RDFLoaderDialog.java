@@ -251,13 +251,13 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private void mapInsertItems() {
 		InsertItem skip = new InsertItem(InsertType.SKIP_BAD_PARTS,
 				"Continue with the loading "
-				+ "process, resulting data will be incomplete. ");
+				+ "process, resulting data will be incomplete");
 		InsertItem stop = new InsertItem(InsertType.STOP_WHEN_BAD_PART,
 				"Stop the loading process and "
-				+ "end with an error.");
+				+ "end with an error");
 
 		InsertItem repeat = new InsertItem(InsertType.REPEAT_IF_BAD_PART,
-				"Repait loading process again from zero.");
+				"Repeat the loading process once again");
 
 		insertItems.add(stop);
 		insertItems.add(skip);
