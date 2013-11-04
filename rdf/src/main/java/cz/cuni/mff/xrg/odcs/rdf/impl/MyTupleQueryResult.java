@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.impl;
 
-import java.util.Collection;
+import info.aduna.iteration.Iterations;
 import java.util.List;
 import java.util.Set;
 import org.openrdf.query.BindingSet;
@@ -39,29 +39,17 @@ public class MyTupleQueryResult implements TupleQueryResult {
 	}
 
 	@Override
-	public BindingSet singleResult() throws QueryEvaluationException {
-		return result.singleResult();
-	}
-
-	@Override
 	public void close() throws QueryEvaluationException {
 		closeConnection();
 		result.close();
 	}
 
-	@Override
-	public <C extends Collection<? super BindingSet>> C addTo(C arg0) throws QueryEvaluationException {
-		return result.addTo(arg0);
-	}
-
-	@Override
 	public List<BindingSet> asList() throws QueryEvaluationException {
-		return result.asList();
+		return Iterations.asList(result);
 	}
 
-	@Override
 	public Set<BindingSet> asSet() throws QueryEvaluationException {
-		return result.asSet();
+		return Iterations.asSet(result);
 	}
 
 	@Override
