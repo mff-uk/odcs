@@ -16,7 +16,8 @@ public enum MessageRecordType {
 	/**
 	 * Log information from DPURecord.
 	 */
-	,DPU_LOG
+	,@Deprecated
+         DPU_LOG
 	/**
 	 * Closer unspecified information from DPURecord.
 	 */
