@@ -91,31 +91,6 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
 
 	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param format              Specifies concrete {@link RDFFormat} (e.g.,
-	 *                            RDFXML, Turtle, ..) if RDF format can not be
-	 *                            detected from file suffix.
-	 * @param extractType         One of defined enum type for extraction data
-	 *                            from file.
-	 * @param path                String path to file/directory
-	 * @param suffix              String suffix of fileName (example: ".ttl",
-	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI prefix
-	 *                            namespace used by all triples.
-	 * @param useSuffix           boolean value, if extract files only with
-	 *                            defined suffix or not.
-	 * @param useStatisticHandler boolean value, if during extraction needed
-	 *                            detail statistic about RDF triples and
-	 *                            detailed log or not.
-	 * @throws RDFException when extraction fail.
-	 */
-	public void extractFromFile(RDFFormat format, FileExtractType extractType,
-			String path, String suffix,
-			String baseURI,
-			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
-
-	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
 	 * @param filePath   Path to file, where RDF data will be saved.
