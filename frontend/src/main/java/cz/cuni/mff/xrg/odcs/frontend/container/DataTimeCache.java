@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.container;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +23,12 @@ public class DataTimeCache<T> {
 	 */
 	private final Map<Long, T> cache = new HashMap<>();
 	
+    /**
+     * List with ids. Contains ids from {@link #cache} as we need
+     * them in order.
+     */
+    private final List<Long> cacheIds = new LinkedList<>();
+    
 	/**
 	 * Time when data were added.
 	 */
@@ -39,6 +45,7 @@ public class DataTimeCache<T> {
 	 */
 	public void invalidate() {
 		cache.clear();
+        cacheIds.clear();
 		accessKey = null;
 	}
 	
@@ -62,6 +69,7 @@ public class DataTimeCache<T> {
 	 */
 	public void set(Long id, T object) {
 		cache.put(id, object);
+        cacheIds.add(id);
 	}
 	
 	/**
@@ -96,7 +104,7 @@ public class DataTimeCache<T> {
 	 * @return
 	 */
 	public List<Long> getKeys() {
-		return new ArrayList<>(cache.keySet());
+		return cacheIds;
 	}
 	
 }

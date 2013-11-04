@@ -38,6 +38,8 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 
     private final Map<Object, GeneralProperty<?, T>> properties = new HashMap<>();
 
+    private final List<Object> propertiesIds = new LinkedList<>();
+    
     private final DataQueryBuilder<T> queryBuilder;
 
     private final Set<Filter> filters = new HashSet<>();
@@ -67,6 +69,8 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
         for (String id : classAccessor.all()) {
             properties.put(id, new GeneralProperty(classAccessor.getType(id),
                 id, this));
+            // we also add id
+            propertiesIds.add(id);
         }
         // check if we can sort and filter
         this.filterable = this.queryBuilder instanceof DataQueryBuilder.Filterable<?>;
@@ -146,7 +150,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
     public Collection<?> getContainerPropertyIds() {
         LOG.trace("getContainerPropertyIds()");
         // ...
-        return properties.keySet();
+        return propertiesIds;
     }
 
     @Override
@@ -482,6 +486,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
     }
 
     // - - - - - - - - - - - - - ContainerDescription - - - - - - - - - - - -
+    
     @Override
     public List<String> getFilterables() {
         if (filterable) {
