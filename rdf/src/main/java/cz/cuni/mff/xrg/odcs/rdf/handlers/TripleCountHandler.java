@@ -72,6 +72,17 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	@Override
+	public void startRDF() throws RDFHandlerException {
+		try {
+			super.startRDF();
+			logger.debug("Starting parsing - SUCCESSFUL");
+		} catch (RDFHandlerException e) {
+			logger.debug("Starting parsing - FAIL");
+			throw new RDFHandlerException(e.getMessage(), e);
+		}
+	}
+
+	@Override
 	public void endRDF() throws RDFHandlerException {
 		try {
 			super.endRDF();
@@ -81,8 +92,6 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 			logger.error(e.getMessage());
 			logger.debug("TOTAL ADDED:" + getTripleCount() + " triples");
 			logger.debug("Ending parsing - FAIL");
-		} finally {
-			printFindedProblems();
 		}
 	}
 
