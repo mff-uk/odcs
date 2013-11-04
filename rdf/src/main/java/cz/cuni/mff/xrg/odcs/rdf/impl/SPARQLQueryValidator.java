@@ -64,53 +64,53 @@ public class SPARQLQueryValidator implements Validator {
 		}
 	}
 
-	private static String getQueryForCaseSELECT_COUNT(String myQuery) {
-		String countRegex = "count([\\s]+)?\\([\\s\\w-_\\?\\*]+\\)(([\\s]+)?as[\\s]?\\?[\\w-_\\*]+)?";
-		Pattern pattern = Pattern.compile(countRegex);
-		Matcher countMatcher = pattern.matcher(myQuery);
+	/*
+	 private String getQueryForCaseSELECT_COUNT(String myQuery) {
+	 String countRegex = "count([\\s]+)?\\([\\s\\w-_\\?\\*]+\\)(([\\s]+)?as[\\s]?\\?[\\w-_\\*]+)?";
+	 Pattern pattern = Pattern.compile(countRegex);
+	 Matcher countMatcher = pattern.matcher(myQuery);
 
-		boolean hasResult = countMatcher.find();
+	 boolean hasResult = countMatcher.find();
 
-		String result = myQuery;
+	 String result = myQuery;
 
-		while (hasResult) {
+	 while (hasResult) {
 
-			String nextCount = myQuery.substring(countMatcher.start(),
-					countMatcher.end());
+	 String nextCount = myQuery.substring(countMatcher.start(),
+	 countMatcher.end());
 
-			int start = nextCount.indexOf("(") + 1;
-			int end = nextCount.lastIndexOf(")");
+	 int start = nextCount.indexOf("(") + 1;
+	 int end = nextCount.lastIndexOf(")");
 
-			boolean hasNext = (start < end) && (start != -1);
+	 boolean hasNext = (start < end) && (start != -1);
 
-			if (hasNext) {
-				String nextCountReplace = nextCount.substring(
-						start, end);
+	 if (hasNext) {
+	 String nextCountReplace = nextCount.substring(
+	 start, end);
 
-				result = result.replace(nextCount, nextCountReplace);
+	 result = result.replace(nextCount, nextCountReplace);
 
-			}
+	 }
 
-			hasResult = countMatcher.find();
+	 hasResult = countMatcher.find();
 
-		}
+	 }
 
-		return result;
-	}
+	 return result;
+	 }
 
-	private String getQueryForExtendedSPARQL() {
-		QueryPart queryPart = new QueryPart(query);
+	 private String getQueryForExtendedSPARQL() {
+	 QueryPart queryPart = new QueryPart(query);
 
-		if (isSameType(queryPart.getSPARQLQueryType(), SPARQLQueryType.SELECT)) {
+	 if (isSameType(queryPart.getSPARQLQueryType(), SPARQLQueryType.SELECT)) {
 
-			String result = getQueryForCaseSELECT_COUNT(query);
+	 String result = getQueryForCaseSELECT_COUNT(query);
 
-			return result;
-		} else {
-			return query;
-		}
-	}
-
+	 return result;
+	 } else {
+	 return query;
+	 }
+	 }*/
 	/**
 	 * Method for detection right syntax of sparql query.
 	 *
@@ -134,16 +134,11 @@ public class SPARQLQueryValidator implements Validator {
 		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
 		Repository repository = emptyRepo.getDataRepository();
 
-		String extendedQuery = getQueryForExtendedSPARQL();
-
 		RepositoryConnection connection = null;
 		try {
 			connection = repository.getConnection();
 
-			Query myQuery = connection.prepareQuery(QueryLanguage.SPARQL,
-					extendedQuery);
-
-
+			connection.prepareQuery(QueryLanguage.SPARQL, query);
 		} catch (MalformedQueryException e) {
 			message = e.getCause().getMessage();
 			isValid = false;
