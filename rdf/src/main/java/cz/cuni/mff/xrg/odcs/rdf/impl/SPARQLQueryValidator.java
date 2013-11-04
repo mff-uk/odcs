@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.rdf.impl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.openrdf.query.*;
 import org.openrdf.repository.Repository;

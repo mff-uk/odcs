@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import org.openrdf.model.*;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
@@ -44,7 +43,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
-import org.openrdf.rio.helpers.RioSettingImpl;
 import org.slf4j.Logger;
 
 /**
