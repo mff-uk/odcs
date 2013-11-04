@@ -51,6 +51,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.*;
+import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 
 /**
@@ -186,9 +187,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		if (file == null) {
 			throw new RDFException("Given file for extraction is null");
 		}
-		extractFromFile(format, FileExtractType.PATH_TO_FILE, file
-				.getAbsolutePath(), "",
-				baseURI, false, useStatisticalHandler);
+
+		extractFromFile(FileExtractType.PATH_TO_FILE, format, file
+				.getAbsolutePath(), "", baseURI, false, useStatisticalHandler);
 	}
 
 	/**
@@ -236,34 +237,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	@Override
 	public void extractFromFile(FileExtractType extractType,
 			RDFFormat format,
-			String path, String suffix,
-			String baseURI, boolean useSuffix, boolean useStatisticHandler)
-			throws RDFException {
-
-
-		extractFromFile(format, extractType, path, suffix, baseURI,
-				useSuffix, useStatisticHandler);
-	}
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param format              Specifies {@link RDFFormatRDF} (e.g., RDFXML,
-	 *                            Turtle, ..)
-	 * @param extractType         One of defined enum type for extraction data
-	 *                            from file.
-	 * @param path                String path to file/directory
-	 * @param suffix              String suffix of fileName (example: ".ttl",
-	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI
-	 * @param useSuffix           boolean value, if extract files only with
-	 *                            defined suffix or not.
-	 * @param useStatisticHandler boolean value if detailed log and statistic
-	 *                            are available or not.
-	 * @throws RDFException when extraction fail.
-	 */
-	@Override
-	public void extractFromFile(RDFFormat format, FileExtractType extractType,
 			String path, String suffix,
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws RDFException {
@@ -952,99 +925,51 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		InputStreamReader inputStreamReader = getEndpointStreamReader(
 				endpointURL, endpointGraph, query, format);
 
-		if (!useStatisticHandler) {
+		TripleCountHandler handler;
+
+		if (useStatisticHandler) {
+			handler = new StatisticalHandler(connection);
+		} else {
+			handler = new TripleCountHandler(connection);
+		}
+
+		handler.setGraphContext(graph);
+
+		RDFParser parser = getRDFParser(format, handler);
+
+		try {
+			parser.parse(inputStreamReader, endpointGraph);
 
 			if (extractFail) {
-				TripleCountHandler handler = new TripleCountHandler(
-						connection);
-
-				if (graph != null) {
-					handler.enforceContext(graph);
-				}
-				RDFParser parser = getRDFParser(format, handler);
-				try {
-					parser.parse(inputStreamReader, endpointGraph);
-					caseNoTriples(handler);
-				} catch (RDFHandlerException | IOException | RDFParseException e) {
-					logger.debug(e.getMessage(), e);
-					throw new RDFException(e.getMessage(), e);
-				}
-			} else {
-				try {
-					if (graph != null) {
-						connection.add(inputStreamReader, endpointGraph,
-								format, graph);
-					} else {
-						connection.add(inputStreamReader, endpointGraph,
-								format);
-					}
-				} catch (IOException e) {
-					final String message = "Http connection can can not open stream. ";
-					logger.debug(message);
-
-					throw new RDFException(message + e.getMessage(), e);
-				} catch (RDFParseException e) {
-					logger.debug(e.getMessage());
-
-					throw new RDFException(e.getMessage(), e);
-
-				} catch (RepositoryException ex) {
-					hasBrokenConnection = true;
-					final String message = "Repository connection failed: " + ex
-							.getMessage();
-
-					logger.debug(message);
-
-					throw new RDFException(message, ex);
-				}
-
+				caseNoTriples(handler);
 			}
 
-		} else {
-			StatisticalHandler handler = new StatisticalHandler();
+		} catch (IOException ex) {
+			final String message = "Http connection can can not open stream. ";
+			logger.error(message);
 
-			RDFParser parser = getRDFParser(format, handler);
+			throw new RDFException(message + ex.getMessage(), ex);
 
-			try {
-				parser.parse(inputStreamReader, endpointGraph);
-
-				if (extractFail) {
-					caseNoTriples(handler);
-				}
-
-				if (graph != null) {
-					connection.add(handler.getStatements(), graph);
-				} else {
-					connection.add(handler.getStatements());
-				}
-			} catch (IOException ex) {
-				final String message = "Http connection can can not open stream. ";
-				logger.error(message);
-
-				throw new RDFException(message + ex.getMessage(), ex);
-
-			} catch (RepositoryException ex) {
-				hasBrokenConnection = true;
-				final String message = "Repository connection failed: " + ex
-						.getMessage();
-
-				logger.error(message);
-
-				throw new RDFException(message, ex);
-
-
-			} catch (RDFHandlerException | RDFParseException ex) {
-				logger.error(ex.getMessage(), ex);
-				throw new RDFException(ex.getMessage(), ex);
-			}
-
-
+		} catch (RDFHandlerException | RDFParseException ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new RDFException(ex.getMessage(), ex);
 		}
+
 	}
 
-	private RDFParser getRDFParser(RDFFormat format, RDFHandler handler) {
+	private RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler) {
 		RDFParser parser = Rio.createParser(format);
 		parser.setRDFHandler(handler);
+
+		ParserConfig config = parser.getParserConfig();
+
+		config.addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
+
+		parser.setParserConfig(config);
+
+		if (handler instanceof StatisticalHandler) {
+			setErrorsListenerToParser(parser, (StatisticalHandler) handler);
+		}
 
 		return parser;
 	}
@@ -2296,24 +2221,17 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			if (!useStatisticHandler) {
 
-				addInputStreamToRepository(connection, inputStreamReader,
-						baseURI, format, graph);
+				parseFileUsingStandardHandler(format, inputStreamReader, baseURI,
+						connection);
 			} else {
-				StatisticalHandler handler = parseFileUsingStatisticalHandler(
-						format, inputStreamReader, baseURI);
-
-				if (graph != null) {
-					connection.add(handler.getStatements(), graph);
-				} else {
-					connection.add(handler.getStatements());
-				}
-
-				inputStreamReader.close();
-
+				parseFileUsingStandardHandler(format, inputStreamReader, baseURI,
+						connection);
 			}
 
+			inputStreamReader.close();
 
-		} catch (IOException | RDFParseException ex) {
+
+		} catch (IOException ex) {
 			throw new RDFException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
@@ -2378,19 +2296,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
-	private void addInputStreamToRepository(RepositoryConnection connection,
-			InputStreamReader inputStreamReader, String baseURI,
-			RDFFormat format,
-			Resource... graphs) throws IOException, RDFParseException, RepositoryException {
-
-		if (graphs != null) {
-			connection.add(inputStreamReader, baseURI, format, graphs);
-		} else {
-			connection.add(inputStreamReader, baseURI, format);
-		}
-
-	}
-
 	private void addFileToRepository(RDFFormat fileFormat, File dataFile,
 			String baseURI,
 			boolean useStatisticHandler, Resource... graphs) throws RDFException {
@@ -2403,7 +2308,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		RepositoryConnection connection = null;
 
-
 		try (InputStreamReader is = new InputStreamReader(new FileInputStream(
 				dataFile), Charset.forName(encode))) {
 
@@ -2411,20 +2315,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			if (!useStatisticHandler) {
 
-				addInputStreamToRepository(connection, is, baseURI, fileFormat,
-						graphs);
-
+				parseFileUsingStandardHandler(fileFormat, is, baseURI,
+						connection);
 			} else {
 
-				StatisticalHandler handler = parseFileUsingStatisticalHandler(
-						fileFormat, is, baseURI);
-
-				if (graphs != null) {
-					connection.add(handler.getStatements(), graphs);
-				} else {
-					connection.add(handler.getStatements());
-				}
-
+				parseFileUsingStatisticalHandler(fileFormat, is, baseURI,
+						connection);
 			}
 
 			connection.commit();
@@ -2432,10 +2328,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} catch (IOException ex) {
 			logger.debug(ex.getMessage(), ex);
 			throw new RDFException("IO Exception: " + ex.getMessage(), ex);
-		} catch (RDFParseException ex) {
-			logger.debug(ex.getMessage(), ex);
-			throw new RDFException("Problem with parsing triples: " + ex
-					.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
 			logger.debug(ex.getMessage(), ex);
@@ -2453,39 +2345,60 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		 }*/
 	}
 
-	private StatisticalHandler parseFileUsingStatisticalHandler(
+	private void parseFileUsingStatisticalHandler(RDFFormat fileFormat,
+			InputStreamReader is, String baseURI,
+			RepositoryConnection connection) throws RDFException {
+
+		StatisticalHandler handler = new StatisticalHandler(connection);
+		parseFileUsingHandler(handler, fileFormat, is, baseURI);
+	}
+
+	private void parseFileUsingStandardHandler(RDFFormat fileFormat,
+			InputStreamReader is, String baseURI,
+			RepositoryConnection connection) throws RDFException {
+
+		TripleCountHandler handler = new TripleCountHandler(connection);
+		parseFileUsingHandler(handler, fileFormat, is, baseURI);
+	}
+
+	private void parseFileUsingHandler(TripleCountHandler handler,
 			RDFFormat fileFormat,
 			InputStreamReader is, String baseURI) throws RDFException {
 
-		StatisticalHandler handler = new StatisticalHandler();
+		handler.setGraphContext(graph);
+		RDFParser parser = getRDFParser(fileFormat, handler);
 
-		RDFParser parser = Rio.createParser(fileFormat);
-		parser.setRDFHandler(handler);
-
-		parser.setStopAtFirstError(false);
-		parser.setParseErrorListener(new ParseErrorListener() {
-			@Override
-			public void warning(String msg, int lineNo, int colNo) {
-				logger.warn(msg + "line:" + lineNo + "column:" + colNo);
-			}
-
-			@Override
-			public void error(String msg, int lineNo, int colNo) {
-				logger.error(msg + "line:" + lineNo + "column:" + colNo);
-			}
-
-			@Override
-			public void fatalError(String msg, int lineNo, int colNo) {
-				logger.error(msg + "line:" + lineNo + "column:" + colNo);
-			}
-		});
 		try {
 			parser.parse(is, baseURI);
 		} catch (IOException | RDFParseException | RDFHandlerException ex) {
 			throw new RDFException(ex.getMessage(), ex);
-		} finally {
-			return handler;
 		}
+	}
+
+	private void setErrorsListenerToParser(RDFParser parser,
+			final StatisticalHandler handler) {
+
+		if (parser == null || handler == null) {
+			return;
+
+		}
+
+		parser.setParseErrorListener(new ParseErrorListener() {
+			@Override
+			public void warning(String msg, int lineNo, int colNo) {
+				handler.addWarning(msg, lineNo, colNo);
+			}
+
+			@Override
+			public void error(String msg, int lineNo, int colNo) {
+				handler.addError(msg, lineNo, colNo);
+			}
+
+			@Override
+			public void fatalError(String msg, int lineNo, int colNo) {
+				handler.addError(msg, lineNo, colNo);
+			}
+		});
 	}
 
 	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
