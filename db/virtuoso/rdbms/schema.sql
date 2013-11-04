@@ -523,6 +523,22 @@ ALTER TABLE "DB"."ODCS"."USR_USER_ROLE"
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
+-- TRIGGERS      ###############################################################
+
+CREATE TRIGGER delete_instance_logs BEFORE DELETE ON "DB"."ODCS"."DPU_INSTANCE" REFERENCING old AS o
+{
+	DELETE FROM "DB"."ODCS"."LOGGING_EVENT_PROPERTY"
+		WHERE mapped_key = 'dpuInstance'
+			AND mapped_value = make_string(o.id);
+
+	DELETE FROM "DB"."ODCS"."EXEC_RECORD"
+		WHERE dpu_id = o.id;
+
+
+	DELETE FROM "DB"."ODCS"."EXEC_CONTEXT_DPU"
+		WHERE dpu_instance_id = o.id;
+};
+
 -- workaround for bug in virtuoso's implementation of cascades on delete
 -- see https://github.com/openlink/virtuoso-opensource/issues/56
 CREATE TRIGGER delete_node_fix BEFORE DELETE ON "DB"."ODCS"."PPL_NODE" REFERENCING old AS n

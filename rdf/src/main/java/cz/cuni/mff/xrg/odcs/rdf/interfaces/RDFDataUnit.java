@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -323,4 +324,27 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * @return Iterable collection of Statements need for lazy
 	 */
 	public RepositoryResult<Statement> getRepositoryResult();
+
+	/**
+	 *
+	 * @param chunkSize size of triples/statements in one part.
+	 * @return Count of parts as split data in reposioty by defined chunkSize .
+	 */
+	public long getPartsCount(long chunkSize);
+
+	/**
+	 *
+	 * @param endpointURL      URL of endpoint we can to connect to.
+	 * @param endpointGraphURI Name of graph as URI string we want to
+	 *                         extract/load RDF data.
+	 * @param query            SPARQL query to execute on sparql endpoint
+	 * @param format           RDF data format for given returned RDF data.
+	 * @return Result of given SPARQL query apply to given graph. If it produce
+	 *         some RDF data, there are in specified RDF format.
+	 * @throws RDFException if unknown host, connection problems, no permission
+	 *                      for this action.
+	 */
+	public InputStreamReader getEndpointStreamReader(URL endpointURL,
+			String endpointGraphURI, String query,
+			RDFFormat format) throws RDFException;
 }

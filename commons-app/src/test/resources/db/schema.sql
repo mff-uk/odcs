@@ -504,6 +504,9 @@ ALTER TABLE `USR_USER_ROLE`
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
+-- TRIGGERS      ###############################################################
+
+
 -- workaround for bug in virtuoso's implementation of cascades on delete
 -- see https://github.com/openlink/virtuoso-opensource/issues/56
 
@@ -542,6 +545,7 @@ CREATE TABLE `LOGGING_EVENT_PROPERTY`
   FOREIGN KEY (event_id) REFERENCES `LOGGING_EVENT`(event_id)
 );
 CREATE INDEX `ix_LOGGING_EVENT_PROPERTY_mapped_key` ON `LOGGING_EVENT_PROPERTY` (`mapped_key`);
+CREATE INDEX `ix_LOGGING_EVENT_PROPERTY_mapped_value` ON `LOGGING_EVENT_PROPERTY` (`mapped_value`);
 
 CREATE TABLE `LOGGING_EVENT_EXCEPTION`
 (

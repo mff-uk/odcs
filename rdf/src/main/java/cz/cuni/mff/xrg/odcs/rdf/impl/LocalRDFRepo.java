@@ -222,7 +222,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 						+ "to <" + getDataGraph().stringValue() + ">.");
 
 				long addedParts = 0;
-				long partsCount = getPartsCount(second, DEFAULT_MERGE_PART_SIZE);
+				long partsCount = sourceDataUnit.getPartsCount(DEFAULT_MERGE_PART_SIZE);
 
 				List<Statement> statements = getNextDataPart(lazySource,
 						DEFAULT_MERGE_PART_SIZE);

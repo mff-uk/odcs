@@ -15,6 +15,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.GraphNotEmptyException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import info.aduna.iteration.EmptyIteration;
@@ -259,8 +260,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String baseURI, boolean useSuffix, boolean useStatisticHandler)
 			throws RDFException {
 
-		testNullParameter(path, "Mandatory target path in extractor is null.");
-		testEmptyParameter(path,
+		ParamController.testNullParameter(path,
+				"Mandatory target path in extractor is null.");
+		ParamController.testEmptyParameter(path,
 				"Mandatory target path in extractor have to be not empty.");
 
 		File dirFile = new File(path);
@@ -285,64 +287,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				break;
 		}
 
-	}
-
-	private void testNullParameter(Object param, String message) throws RDFException {
-		if (param == null) {
-			logger.debug(message);
-			throw new RDFException(message);
-		}
-	}
-
-	private void testEmptyParameter(Object param, String message) throws RDFException {
-
-		if (param != null) {
-			boolean isEmpty = true;
-
-			if (param instanceof String) {
-				isEmpty = ((String) param).isEmpty();
-			} else if (param instanceof List) {
-				isEmpty = ((List) param).isEmpty();
-			}
-
-			if (isEmpty) {
-				logger.debug(message);
-				throw new RDFException(message);
-			}
-		}
-
-	}
-
-	private void testPositiveParameter(long param, String message) throws RDFException {
-		if (param <= 0) {
-			logger.debug(message);
-			throw new RDFException(message);
-		}
-	}
-
-	private void testEndpointSyntax(URL endpointURL) throws RDFException {
-
-		String message = null;
-
-		if (endpointURL != null) {
-			final String endpointName = endpointURL.toString().toLowerCase();
-
-			if (!endpointName.startsWith("http://")) {
-				message = "Endpoint url name have to started with prefix \"http://\".";
-			} else if (endpointName.contains(" ")) {
-				message = "Endpoint url constains white spaces";
-			}
-			if (message != null) {
-				logger.debug(message);
-				throw new RDFException(message);
-			}
-		} else {
-			message = "Mandatory URL path is null. SPARQL Endpoint URL must be specified";
-			logger.debug(message);
-			throw new RDFException(message);
-
-
-		}
 	}
 
 	private void extractDataFromFileSource(File dirFile, RDFFormat format,
@@ -440,9 +384,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
 
-		testNullParameter(filePath,
+		ParamController.testNullParameter(filePath,
 				"Mandatory file path in File_loader is null.");
-		testEmptyParameter(filePath,
+		ParamController.testEmptyParameter(filePath,
 				"Mandatory file path in File_loader is empty.");
 
 		File dataFile = new File(filePath);
@@ -579,12 +523,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throws RDFException {
 
 		//check that SPARQL endpoint URL is correct
-		testEndpointSyntax(endpointURL);
+		ParamController.testEndpointSyntax(endpointURL);
 
-		testNullParameter(namedGraph, "Named graph must be specifed");
-		testEmptyParameter(namedGraph, "Named graph must be specifed");
+		ParamController.testNullParameter(namedGraph,
+				"Named graph must be specifed");
+		ParamController.testEmptyParameter(namedGraph,
+				"Named graph must be specifed");
 
-		testPositiveParameter(chunkSize,
+		ParamController.testPositiveParameter(chunkSize,
 				"Chunk size must be number greater than 0");
 
 		Authentificator.authenticate(userName, password);
@@ -711,9 +657,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
-	protected long getPartsCount(RDFDataUnit dataUnit, long chunkSize) {
+	@Override
+	public long getPartsCount(long chunkSize) {
 
-		long triples = dataUnit.getTripleCount();
+		long triples = getTripleCount();
 		long partsCount = triples / chunkSize;
 
 		if (partsCount * chunkSize != triples) {
@@ -755,7 +702,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		String part = getInsertQueryPart(chunkSize, lazy);
 
 		long counter = 0;
-		long partsCount = getPartsCount(this, chunkSize);
+		long partsCount = getPartsCount(chunkSize);
 
 		while (part != null) {
 			counter++;
@@ -939,15 +886,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			RDFFormat format,
 			boolean useStatisticHandler, boolean extractFail) throws RDFException {
 
-		testEndpointSyntax(endpointURL);
+		ParamController.testEndpointSyntax(endpointURL);
 
-		testNullParameter(endpointGraphsURI,
+		ParamController.testNullParameter(endpointGraphsURI,
 				"Mandatory graph's name(s) in extractor from SPARQL is null.");
-		testEmptyParameter(endpointGraphsURI,
+		ParamController.testEmptyParameter(endpointGraphsURI,
 				"Mandatory graph's name(s) in extractor from SPARQL is empty.");
 
-		testNullParameter(query, "Mandatory construct query is null");
-		testEmptyParameter(query, "Construct query is empty");
+		ParamController.testNullParameter(query,
+				"Mandatory construct query is null");
+		ParamController.testEmptyParameter(query, "Construct query is empty");
 
 		final int graphSize = endpointGraphsURI.size();
 
@@ -2105,7 +2053,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		logger.debug(finish);
 	}
 
-	private InputStreamReader getEndpointStreamReader(URL endpointURL,
+	@Override
+	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
 			RDFFormat format) throws RDFException {
 
