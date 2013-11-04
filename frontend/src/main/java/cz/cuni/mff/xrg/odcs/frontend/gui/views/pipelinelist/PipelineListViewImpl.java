@@ -12,6 +12,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
@@ -25,6 +26,7 @@ import java.util.Collection;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
+import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  *
@@ -254,7 +256,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 
 			// get item
-			CompositeItem item = (CompositeItem) source.getItem(itemId);
+			final CompositeItem item = (CompositeItem) source.getItem(itemId);
 			final Long pipelineId = (Long) item.getItemProperty("id").getValue();
 			//final Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
 			Button copyButton = new Button();
@@ -278,8 +280,19 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					listener.pipelineEvent(pipelineId, "delete");
-					refreshData();
+					String message = "Would you really like to delete the " + item.getItemProperty("name").getValue() + " pipeline and all associated records (DPU instances e.g.)?";
+
+					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
+						@Override
+						public void onClose(ConfirmDialog cd) {
+							if (cd.isConfirmed()) {
+								listener.pipelineEvent(pipelineId, "delete");
+								// now we have to remove pipeline from table
+								source.removeItem(itemId);
+								refreshData();
+							}
+						}
+					});
 				}
 			});
 			layout.addComponent(deleteButton);
