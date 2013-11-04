@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineList;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import com.vaadin.navigator.View;
 
@@ -34,8 +35,8 @@ public class ViewsFactory {
 		case PIPELINE_EDIT:
 		case PIPELINE_EDIT_NEW:
 			return new PipelineEdit();
-		case PIPELINE_LIST:
-			return new PipelineList();
+		//case PIPELINE_LIST:
+			//return new PipelineListView();
 		case SCHEDULER:
 			return new Scheduler();
                 case LOGIN:
