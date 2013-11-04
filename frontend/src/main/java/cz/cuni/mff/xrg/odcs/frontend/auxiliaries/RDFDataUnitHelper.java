@@ -10,8 +10,8 @@ import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Virtuoso;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 

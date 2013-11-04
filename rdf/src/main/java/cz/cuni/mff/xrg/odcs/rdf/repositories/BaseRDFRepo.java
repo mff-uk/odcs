@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
@@ -16,6 +16,14 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
+import cz.cuni.mff.xrg.odcs.rdf.impl.MyGraphQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.MyRDFHandler;
+import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.QueryPart;
+import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
+import cz.cuni.mff.xrg.odcs.rdf.impl.StatisticalHandler;
+import cz.cuni.mff.xrg.odcs.rdf.impl.TripleCountHandler;
+import cz.cuni.mff.xrg.odcs.rdf.impl.UniqueNameGenerator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import info.aduna.iteration.EmptyIteration;

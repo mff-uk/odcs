@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.data;
 
 import cz.cuni.mff.xrg.odcs.rdf.impl.FailureTolerantRepositoryWrapper;
-import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -6,7 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.*;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.impl.BaseRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;

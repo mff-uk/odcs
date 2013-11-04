@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.impl;
 
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
 
