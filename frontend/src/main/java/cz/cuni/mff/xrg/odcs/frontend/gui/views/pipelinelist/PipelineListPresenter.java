@@ -29,11 +29,6 @@ public class PipelineListPresenter implements PipelineListViewListener {
 	
 	PipelineListView view;
 	
-		/**
-	 * Cache for last pipeline execution, so we do not load from DB every time
-	 * table cell with duration, start, ..., is needed.
-	 */
-	private Map<Pipeline, PipelineExecution> execCache = new HashMap<>();
 	@Autowired
 	private PipelineFacade pipelineFacade;
 	@Autowired
@@ -89,12 +84,12 @@ public class PipelineListPresenter implements PipelineListViewListener {
 	@Override
 	public Object getLastExecDetail(Pipeline ppl, String detail) {
 		switch(detail) {
-			case "duration":
-				return getLastExecutionDuration(ppl);
-			case "status":
-				return getLastExecutionStatus(ppl);
-			case "time":
-				return getLastExecutionTime(ppl);
+//			case "duration":
+//				return getLastExecutionDuration(ppl);
+//			case "status":
+//				return getLastExecutionStatus(ppl);
+//			case "time":
+//				return getLastExecutionTime(ppl);
 			default: 
 				return null;
 				
@@ -114,55 +109,10 @@ public class PipelineListPresenter implements PipelineListViewListener {
 		}
 	}
 
-	/**
-	 * Clears the pipeline cache.
-	 */
-	private void clearExecCache() {
-		execCache = new HashMap<>();
-	}
 
-	/**
-	 * Get last pipeline execution from cache. If execution is not found in
-	 * cache, it is loaded from DB and cached.
-	 *
-	 * @param ppl pipeline
-	 * @return last execution for given pipeline
-	 */
-	private PipelineExecution getLastExecution(Pipeline ppl) {
-		PipelineExecution exec = execCache.get(ppl);
-		if (exec == null) {
-			execCache.put(ppl, pipelineFacade.getLastExec(ppl));
-		}
-		return exec;
-	}
 
 	void refresh() {
-		clearExecCache();
-	}
 
-	String getLastExecutionDuration(Pipeline ppl) {
-		PipelineExecution latestExec = pipelineFacade.getLastExec(ppl, PipelineExecutionStatus.FINISHED);
-		return IntlibHelper.getDuration(latestExec);
-	}
-
-	Object getLastExecutionTime(Pipeline ppl) {
-		PipelineExecution latestExec = getLastExecution(ppl);
-		if (latestExec != null) {
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
-			return df.format(latestExec.getStart());
-		} else {
-			return null;
-		}
-	}
-
-	Object getLastExecutionStatus(Pipeline ppl) {
-		PipelineExecution latestExec = getLastExecution(ppl);
-		if (latestExec != null) {
-			PipelineExecutionStatus type = latestExec.getStatus();
-			return type;
-		} else {
-			return null;
-		}
 	}
 
 	void copyPipeline(long id) {

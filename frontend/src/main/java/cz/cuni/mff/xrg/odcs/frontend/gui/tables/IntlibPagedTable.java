@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -10,7 +11,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import org.tepi.filtertable.paged.PagedFilterTable;
 import org.tepi.filtertable.paged.PagedFilterTableContainer;
@@ -180,7 +184,45 @@ public class IntlibPagedTable extends PagedFilterTable {
 		return controlBar;
 	}
 
+	@Override
+	public Collection<?> getSortableContainerPropertyIds() {
+		return getContainerDataSource().getSortableContainerPropertyIds();
+	}
+
+	@Override
+	public void addGeneratedColumn(Object id, ColumnGenerator generatedColumn) {
+		super.addGeneratedColumn(id, generatedColumn);
+		setFilterFieldVisible(id, false);
+	}
+
+	@Override
+	public void setContainerDataSource(Container newDataSource) {
+		super.setContainerDataSource(newDataSource);
+		if(newDataSource.getClass() == ReadOnlyContainer.class) {
+			ReadOnlyContainer container = (ReadOnlyContainer)newDataSource;
+			for(Object id : newDataSource.getContainerPropertyIds()) {
+				setColumnHeader(id, container.getColumnName((String)id));
+			}
+		}
+	}
+	
+	
+	
+
+
 	public void setFilterLayout() {
+		 PagedFilterTableContainer pagedContainer = getContainerDataSource();
+		 if(pagedContainer != null) {
+			 Container c = pagedContainer.getContainer();
+			 if(c != null && c.getClass() == ReadOnlyContainer.class) {
+				 ReadOnlyContainer container = (ReadOnlyContainer)c;
+				 List<String> filterables = container.getFilterables();
+				 for(Object columnId : getVisibleColumns()) {
+					 setFilterFieldVisible(columnId, filterables.contains((String)columnId));
+				 }
+			 }
+		 }
+		
 		for (Object id : getVisibleColumns()) {
 			Component filterField = getFilterField(id);
 			if (filterField != null) {

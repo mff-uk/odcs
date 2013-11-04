@@ -39,4 +39,6 @@
 	
 	<bean id="pipelineListPresenter" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenter" scope="prototype" />
 	
+	<bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
+	
 </beans>

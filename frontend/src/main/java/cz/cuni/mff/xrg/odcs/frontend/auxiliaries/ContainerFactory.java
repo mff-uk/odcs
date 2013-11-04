@@ -4,22 +4,27 @@ import java.util.List;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -33,6 +38,11 @@ public class ContainerFactory {
 	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private DbPipeline dbPipeline;
+	@Autowired
+	private PipelineAccessor pipelineAccessor;
 
 	/**
 	 * Create container for Pipelines and fill it with given data.
@@ -41,14 +51,17 @@ public class ContainerFactory {
 	 * @return
 	 */
 	public Container createPipelines(int pageLength) {
-		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, pageLength, "id", true, true, true);
-		container.getQueryView().getQueryDefinition().setDefaultSortState(
-				new Object[]{"id"}, new boolean[]{false});
-		container.addContainerProperty("id", Long.class, null, true, true);
-		container.addContainerProperty("name", String.class, "", true, true);
-		container.addContainerProperty("description", String.class, "", true, true);
-
-		return container;
+		
+		ReadOnlyContainer c = new ReadOnlyContainer(dbPipeline, pipelineAccessor);
+		return c;
+//		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, pageLength, "id", true, true, true);
+//		container.getQueryView().getQueryDefinition().setDefaultSortState(
+//				new Object[]{"id"}, new boolean[]{false});
+//		container.addContainerProperty("id", Long.class, null, true, true);
+//		container.addContainerProperty("name", String.class, "", true, true);
+//		container.addContainerProperty("description", String.class, "", true, true);
+//
+//		return container;
 	}
 	
 	/**
