@@ -29,8 +29,8 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.CSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.JSON;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.TSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.XML;
-import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLQueryValidator;
 
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

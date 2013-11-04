@@ -6,7 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.*;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLQueryValidator;
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

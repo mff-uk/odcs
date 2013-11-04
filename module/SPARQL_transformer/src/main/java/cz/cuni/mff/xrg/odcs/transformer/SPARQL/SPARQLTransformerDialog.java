@@ -10,8 +10,8 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLQueryValidator;
-import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLUpdateValidator;
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLUpdateValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
 
 /**
