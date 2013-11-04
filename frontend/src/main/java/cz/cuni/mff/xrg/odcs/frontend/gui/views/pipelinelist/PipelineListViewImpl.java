@@ -29,6 +29,7 @@ import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 import org.vaadin.dialogs.ConfirmDialog;
 
 /**
+ * Vaadin implementation for PipelineListView. 
  *
  * @author Bogo
  */

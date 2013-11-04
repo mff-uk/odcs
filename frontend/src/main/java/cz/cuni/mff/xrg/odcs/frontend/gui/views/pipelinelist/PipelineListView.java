@@ -4,6 +4,7 @@ import com.vaadin.data.Container;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 /**
+ * Interface for PipelineList. 
  *
  * @author Bogo
  */

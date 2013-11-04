@@ -8,6 +8,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.xpoft.vaadin.VaadinView;
 
+/**
+ * Wrapper of MVP classes before the navigation is changed to work on presenters.
+ * 
+ * @author Bogo
+ */
 @Component
 @Scope("prototype")
 @VaadinView(PipelineList.NAME)
