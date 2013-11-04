@@ -83,11 +83,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 	private Container tableData;
 	private Long exeId;
 	private static final String[] visibleCols = new String[]{
-		"start", "pipeline.name", "duration", "owner.username", "status",
+		"id", "start", "pipeline.name", "duration", "owner.username", "status",
 		"isDebugging", "schedule", "actions", "report"
 	};
 	static String[] headers = new String[]{
-		"Date", "Name", "Run time", "User", "Status",
+		"ID", "Date", "Name", "Run time", "User", "Status",
 		"Debug", "Scheduled", "Actions", "Report"
 	};
 	private Date lastLoad;
@@ -288,6 +288,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		monitorTable.setColumnWidth("isDebugging", 50);
 		monitorTable.setColumnWidth("duration", 60);
 		monitorTable.setColumnWidth("actions", 200);
+		monitorTable.setColumnWidth("id", 50);
 		monitorTable.setSortEnabled(true);
 
 		//Container must be set before sorting, or else data aren't sorted when loaded.
