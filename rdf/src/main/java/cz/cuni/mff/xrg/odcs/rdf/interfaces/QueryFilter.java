@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
-import cz.cuni.mff.xrg.odcs.rdf.impl.QueryFilterManager;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 
 /**
  * Interface responsible for filtering queries. Methods are using to managing

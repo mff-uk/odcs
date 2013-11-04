@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.query.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

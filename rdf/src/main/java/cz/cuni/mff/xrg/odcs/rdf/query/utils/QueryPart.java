@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.query.utils;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import java.util.regex.Matcher;

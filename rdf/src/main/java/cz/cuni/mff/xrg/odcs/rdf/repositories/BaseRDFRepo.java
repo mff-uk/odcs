@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.MyRDFHandler;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.impl.QueryPart;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
