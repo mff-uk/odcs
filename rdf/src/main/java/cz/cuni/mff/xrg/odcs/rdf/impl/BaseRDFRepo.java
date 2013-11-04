@@ -1765,7 +1765,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		final String sizeVar = "selectSize";
 		final String sizeQuery = String.format(
-				"%s select count(*) as ?%s where {%s}", queryPart
+				"%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
 				.getQueryPrefixes(),
 				sizeVar, queryPart.getQueryWithoutPrefixes());
 		try {
