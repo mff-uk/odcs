@@ -65,6 +65,9 @@
 	<!-- Service or exploring DPUs -->
 	<bean id="DPUExplorer" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer" />
 	
+    <!-- Application DAO -->
+    <bean id="DbPipeline" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipelineImpl" />
+    
 	<context:annotation-config />
 
 	<tx:annotation-driven />
