@@ -18,6 +18,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizator;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.rdf.impl.RDFTriple;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -43,6 +45,8 @@ public class ContainerFactory {
 	private DbPipeline dbPipeline;
 	@Autowired
 	private PipelineAccessor pipelineAccessor;
+	@Autowired
+	private ContainerAuthorizator containerAuth;
 
 	/**
 	 * Create container for Pipelines and fill it with given data.
@@ -53,6 +57,7 @@ public class ContainerFactory {
 	public Container createPipelines(int pageLength) {
 		
 		ReadOnlyContainer c = new ReadOnlyContainer(dbPipeline, pipelineAccessor);
+		containerAuth.authorize(c, pipelineAccessor.getEntityClass());
 		return c;
 //		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, pageLength, "id", true, true, true);
 //		container.getQueryView().getQueryDefinition().setDefaultSortState(

@@ -35,10 +35,13 @@
 	<!-- Factory for constructing data containers for Vaadin tables. -->
 	<bean id="containerFactory" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory" />
 	
-	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype" />
-	
 	<bean id="pipelineListPresenter" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenter" scope="prototype" />
 	
 	<bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
+
+	<!-- Imposes authorization filters on container. -->
+	<bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
+	
+	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
 	
 </beans>
