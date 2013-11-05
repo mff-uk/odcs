@@ -38,5 +38,6 @@ public class PipelineList extends ViewComponent implements ModifiableComponent {
 	/**
 	 * View name.
 	 */
+        //TODO do we need this?
 	public static final String NAME = "PipelineList";
 }
