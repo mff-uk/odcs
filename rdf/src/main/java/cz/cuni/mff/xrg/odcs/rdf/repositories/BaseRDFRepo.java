@@ -2038,9 +2038,36 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				if (httpResponseCode == HTTP_UNAUTORIZED_RESPONSE) {
 					message.append(
 							". Your USERNAME and PASSWORD for connection is wrong.");
-				} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
+//				} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
+//
+//					try (InputStream errorStream = httpConnection
+//							.getErrorStream()) {
+//
+//						try (BufferedReader reader = new BufferedReader(
+//								new InputStreamReader(
+//								errorStream, Charset.forName(encode)))) {
+//
+//							StringBuilder inputStringBuilder = new StringBuilder();
+//							String line = reader.readLine();
+//							while (line != null) {
+//								inputStringBuilder.append(line);
+//								inputStringBuilder.append('\n');
+//								line = reader.readLine();
+//							}
+//
+//							String cause = ". Caused by " + inputStringBuilder
+//									.toString();
+//
+//							message.append(cause);
+//
+//							throw new InsertPartException(message.toString());
+//						}
+//					}
 
-					try (InputStream errorStream = httpConnection
+
+				} else {
+					//message.append(". You probably dont have enought PERMISSION for this action.");
+                                        try (InputStream errorStream = httpConnection
 							.getErrorStream()) {
 
 						try (BufferedReader reader = new BufferedReader(
@@ -2060,24 +2087,22 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 							message.append(cause);
 
-							throw new InsertPartException(message.toString());
+							//throw new InsertPartException(message.toString());
 						}
 					}
-
-
-				} else {
-					message.append(
-							". You probably dont have enought PERMISSION for this action.");
+                                    
 				}
 
-				throw new RDFException(message.toString());
+                                
+				throw new RDFException(message.toString() + "\n\n" + "URL endpoint: " + endpointURL.toString() + " POST content: " + parameters);
+                                //throw new RDFException(message.toString());
 			}
 
 		} catch (UnknownHostException e) {
 			final String message = "Unknown host: ";
 			throw new RDFException(message + e.getMessage(), e);
 		} catch (IOException e) {
-			final String message = "Endpoint URL stream can not open. ";
+			final String message = "Endpoint URL stream cannot be opened. ";
 			logger.debug(message);
 			if (httpConnection != null) {
 				httpConnection.disconnect();
@@ -2094,7 +2119,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		} catch (IOException e) {
 
-			final String message = "Http connection can can not open stream. ";
+			final String message = "Http connection cannot open the stream. ";
 			logger.debug(message);
 
 			throw new RDFException(message + e.getMessage(), e);
