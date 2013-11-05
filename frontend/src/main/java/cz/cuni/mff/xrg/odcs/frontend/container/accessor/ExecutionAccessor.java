@@ -10,11 +10,11 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor;
 
 public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 	
-	private List<String> all = Arrays.asList("id", "start", "pipeline.name", "owner.username", "duration", "status", "isDebugging", "lastChange", "schedule");
+	private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "owner.username", "duration", "status", "isDebugging", "lastChange", "schedule");
 
-	private List<String> sortable = Arrays.asList("pipeline.name", "owner.username", "duration");
+	private final List<String> sortable = Arrays.asList("pipeline.name", "owner.username", "duration");
 
-	private List<String> filtrable = Arrays.asList("pipeline.name", "owner.username", "status", "isDebugging", "schedule");
+	private final List<String> filtrable = Arrays.asList("pipeline.name", "owner.username", "status", "isDebugging", "schedule");
 	
 	@Override
 	public List<String> all() {
