@@ -16,7 +16,6 @@ import com.vaadin.data.*;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.converter.Converter;
 
-
 /**
  * Configuration dialog for DPU SPARQL Extractor.
  *
@@ -43,7 +42,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private CheckBox extractFail;
 
 	private Label labelOpt;
-
 
 	/**
 	 * TextArea to set SPARQL construct query.
@@ -116,7 +114,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private void inicialize() {
 		ex = new InvalidValueException("Valid");
 	}
-
 
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
@@ -198,10 +195,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		// Check if the caption for new item already exists in the list of item
 		// captions before approving it as a new item.
 
-	
+
 		//textFieldSparql is mandatory fields
 		textFieldSparql.addValidator(new Validator() {
-
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -225,8 +221,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 				}
 			}
-
-			
 		});
 		gridLayoutCore.addComponent(textFieldSparql, 1, 0);
 
@@ -276,8 +270,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		//Named Graph component
 		initializeNamedGraphList();
 		gridLayoutCore.addComponent(gridLayoutGraph, 1, 3);
-		
-		
+
+
 		// labelConstr
 		labelConstr = new Label();
 		labelConstr.setImmediate(false);
@@ -297,7 +291,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		textAreaConstr.addValueChangeListener(
 				new Property.ValueChangeListener() {
-					private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
@@ -416,7 +410,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/source1");
 			textFieldGraph.addValidator(new Validator() {
-
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -451,7 +444,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			buttonGraphRem.setCaption("-");
 			buttonGraphRem.setData(row);
 			buttonGraphRem.addClickListener(new Button.ClickListener() {
-
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -476,7 +468,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		buttonGraphAdd.setWidth("55px");
 		buttonGraphAdd.setHeight("-1px");
 		buttonGraphAdd.addClickListener(new Button.ClickListener() {
-
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -544,9 +535,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		verticalLayoutDetails.addComponent(extractFail);
 
 		//Statistical handler
-		//TODO MARIA - set parameters and placement for this component
-		useHandler = new CheckBox("Use statistical handler");
-		useHandler.setValue(false);
+		// set parameters and placement for this component
+		useHandler = new CheckBox("Use statistical and error handler");
+		useHandler.setValue(true);
 		useHandler.setWidth("-1px");
 		useHandler.setHeight("-1px");
 		verticalLayoutDetails.addComponent(useHandler);
@@ -595,7 +586,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * @throws ConfigException Exception which might be thrown when components
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
