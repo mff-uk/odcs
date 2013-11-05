@@ -4,7 +4,6 @@ import com.vaadin.data.Container;
 import com.vaadin.ui.Notification;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
@@ -12,8 +11,8 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListView.PipelineListViewListener;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -24,20 +23,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PipelineListPresenter implements PipelineListViewListener {
 
 	PipelineListView view;
+
+	
+    //TODO pipelineFacade, containerFactory should be defined only on the model
 	@Autowired
 	private PipelineFacade pipelineFacade;
-	@Autowired
+	
+        @Autowired
 	private ContainerFactory containerFactory;
-	private static final int PAGE_LENGTH = 20;
-
+		
 	public PipelineListPresenter() {
 	}
-
+	
+        /**
+         * Prepares the view - data source for the view and listener for the event of the view
+         * @param view 
+         */
 	public void setView(PipelineListView view) {
 		this.view = view;
 
 		view.setListener(this);
-		view.setDataSource(getDataSource(PAGE_LENGTH));
+		view.setDataSource(getDataSource(Utils.PAGE_LENGTH));
 	}
 
 	@Override
@@ -75,19 +81,11 @@ public class PipelineListPresenter implements PipelineListViewListener {
 		}
 	}
 
-	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
-		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipeline, status);
-		if (execs.isEmpty()) {
-			return false;
-		} else {
-			//TODO: Differentiate by user maybe ?!
-			return true;
-		}
-	}
-
+        //TODO not doing anything? 
 	void refresh() {
 	}
 
+        //TODO move to the Model
 	void copyPipeline(long id) {
 		Pipeline pipeline = pipelineFacade.getPipeline(id);
 		Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
@@ -126,6 +124,7 @@ public class PipelineListPresenter implements PipelineListViewListener {
 		App.getApp().addWindow(sch);
 	}
 
+        //TODO should be defined as public method on the Model class
 	private Container getDataSource(int pageLength) {
 		return containerFactory.createPipelines(pageLength);
 	}

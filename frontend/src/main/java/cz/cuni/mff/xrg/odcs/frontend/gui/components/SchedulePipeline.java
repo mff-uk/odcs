@@ -240,8 +240,7 @@ public class SchedulePipeline extends Window {
 		coreLayout.setSpacing(true);
 		coreLayout.setMargin(true);
 
-		container = App.getApp().getBean(ContainerFactory.class).createPipelines(20);
-
+		container = App.getApp().getBean(ContainerFactory.class).createPipelinesList(20);
 
 		pipelines = App.getApp().getPipelines().getAllPipelines();
 
