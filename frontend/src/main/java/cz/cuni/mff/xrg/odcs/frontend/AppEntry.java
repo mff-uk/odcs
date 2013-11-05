@@ -240,7 +240,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 					lastBackendStatus = isRunning;
 					main.refreshBackendStatus(lastBackendStatus);
 				}
-				LOG.debug("Backend status refreshed.");
+				// LOG.debug("Backend status refreshed.");
 			}
 		});
 	}

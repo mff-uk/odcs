@@ -9,9 +9,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.FilterType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DbQueryBuilderImpl<T> implements DbQueryBuilder<T> {
 
+    private final static Logger LOG = LoggerFactory.getLogger(DbQueryBuilderImpl.class);   
 	/**
 	 * Entity manager used to create query.
 	 */
@@ -238,6 +241,7 @@ class DbQueryBuilderImpl<T> implements DbQueryBuilder<T> {
 		stringQuery.append(from);
 		stringQuery.append(where);
 		stringQuery.append(sort);
+        LOG.debug("Assembled query: {}", stringQuery.toString());
 		return stringQuery.toString();
 	}
 
