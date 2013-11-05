@@ -54,7 +54,7 @@ import ru.xpoft.vaadin.VaadinView;
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @VaadinView(PipelineEdit.NAME)
-class PipelineEdit extends ViewComponent {
+public class PipelineEdit extends ViewComponent {
 
 	/**
 	 * View name.

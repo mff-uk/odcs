@@ -41,7 +41,7 @@
 		<module>commons-module</module>
 		<module>commons-web</module>		
 		<!-- application -->
-		<module>frontend</module>
+		<!--<module>frontend</module>-->
 		<module>backend</module>
 		<!-- application additional libraries -->
 		<module>lib</module>
