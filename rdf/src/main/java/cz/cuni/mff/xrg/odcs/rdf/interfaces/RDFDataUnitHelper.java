@@ -33,6 +33,15 @@ public interface RDFDataUnitHelper {
 	public void addTriple(Resource subject, URI predicate, Value object);
 
 	/**
+	 * Remove one RDF triple (statement) if contains in repository.
+	 *
+	 * @param subject   One of type for subject - URI,BlankNode.
+	 * @param predicate URI for subject.
+	 * @param object    One of type for object - URI,BlankNode or Literal.
+	 */
+	public void removeTriple(Resource subject, URI predicate, Value object);
+
+	/**
 	 * Create new blank node with the defined id.
 	 *
 	 * @param id String value of ID, e.g., b12345
