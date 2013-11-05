@@ -69,7 +69,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 	@AfterClass
 	public static void cleaning() {
-		rdfRepo.release();
+		rdfRepo.delete();
 	}
 
 	@Test
@@ -135,6 +135,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 		for (int i = 0; i < THREAD_SIZE; i++) {
 
+			final String namedGraph = "http://myDefault" + i;
 			Thread task = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -145,16 +146,17 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 							port,
 							user,
 							password,
-							"http://myDefault",
+							namedGraph,
 							"",
 							new Properties());
 
-					addParalelTripleToRepository(virtuosoRepo);
-					extractFromFileToRepository(virtuosoRepo);
-					transformOverRepository(virtuosoRepo);
-					loadToFile(virtuosoRepo);
-
-					virtuosoRepo.release();
+					synchronized (virtuosoRepo) {
+						addParalelTripleToRepository(virtuosoRepo);
+						extractFromFileToRepository(virtuosoRepo);
+						transformOverRepository(virtuosoRepo);
+						loadToFile(virtuosoRepo);
+					}
+					virtuosoRepo.delete();
 
 
 				}
@@ -220,8 +222,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 			LOG.error("INSERT triple: {} {} {} to SPARQL endpoint failed",
 					subject.stringValue(),
 					predicate.stringValue(),
-					object.stringValue()
-			);
+					object.stringValue());
 
 		} finally {
 			try {

@@ -670,7 +670,7 @@ public class LocalRDFRepoTest {
 	public void cleanUp() {
 		deleteDirectory(pathRepo.toFile());
 		deleteDirectory(new File(outDir.toString()));
-		rdfRepo.release();
+		rdfRepo.delete();
 
 	}
 
@@ -858,10 +858,12 @@ public class LocalRDFRepoTest {
 								.createLocalRDFRepo(path
 								.toString(), "local", "", "http://default");
 
-						addParalelTripleToRepository(localRepository);
-						extractFromFileToRepository(localRepository);
-						transformOverRepository(localRepository);
-						loadToFile(localRepository);
+						synchronized (localRepository) {
+							addParalelTripleToRepository(localRepository);
+							extractFromFileToRepository(localRepository);
+							transformOverRepository(localRepository);
+							loadToFile(localRepository);
+						}
 
 						localRepository.delete();
 
@@ -903,7 +905,7 @@ public class LocalRDFRepoTest {
 
 		try {
 			repository.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY,null,
+					FileExtractType.PATH_TO_DIRECTORY, null,
 					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
 		} catch (RDFException e) {
 			fail(e.getMessage());
