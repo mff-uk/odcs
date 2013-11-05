@@ -111,6 +111,11 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+        // will use ExecetuionView instead .. 
+        
+        //ExecutionView.ExecutionPresenter presenter = App.getApp().getBean(ExecutionView.ExecutionPresenter.class);
+        //setCompositionRoot(presenter.enter());
+        
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 
