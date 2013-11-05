@@ -22,7 +22,7 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 
 	public boolean OnlyThisSuffix = false;
 
-	public boolean UseStatisticalHandler = false;
+	public boolean UseStatisticalHandler = true;
 
 	@Override
 	public boolean isValid() {

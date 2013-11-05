@@ -14,14 +14,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 
 /**
  * Contains settings for OSGIModuleFacade;
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 class OSGIModuleFacadeConfig {
 
-	private static final Logger LOG = LoggerFactory.getLogger(OSGIModuleFacadeConfig.class);
-	
+	private static final Logger LOG = LoggerFactory.getLogger(
+			OSGIModuleFacadeConfig.class);
+
 	/**
 	 * Name for directory where DPUs are stored.
 	 */
@@ -49,12 +50,17 @@ class OSGIModuleFacadeConfig {
 			+ "cz.cuni.mff.xrg.odcs.commons.dpu.annotation;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.message;version=\"1.0.0\","
 			+ "org.openrdf.rio,"
-			+ "org.apache.log4j,org.slf4j;version=\"1.7.5\","
+			+ "org.apache.log4j;version=\"1.7.5\","
+			+ "org.slf4j;version=\"1.7.5\","
+			+ "cz.cuni.mff.xrg.odcs.commons.httpconnection.utils;version=\"1.0.0\","
 			// RDF package
 			+ "cz.cuni.mff.xrg.odcs.rdf.enums;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.exceptions;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.impl;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.interfaces;version=\"1.0.0\","
+			+ "cz.cuni.mff.xrg.odcs.rdf.repositories;version=\"1.0.0\","
+			+ "cz.cuni.mff.xrg.odcs.rdf.validators;version=\"1.0.0\","
+			+ "cz.cuni.mff.xrg.odcs.rdf.help;version=\"1.0.0\","
 			// library for configuration serialisation
 			+ "com.thoughtworks.xstream,"
 			// java packages
@@ -84,13 +90,13 @@ class OSGIModuleFacadeConfig {
 
 	/**
 	 * Append new packages to the current one, insert separator if needed.
-	 * 
+	 *
 	 * @param packages The current packages, can be empty.
-	 * @param toAdd String with list of new packages. Must not start nor end
-	 *            with separator. 
+	 * @param toAdd    String with list of new packages. Must not start nor end
+	 *                 with separator.
 	 */
 	private void appendPackages(StringBuilder packages, String toAdd) {
-		final int length = packages.length(); 
+		final int length = packages.length();
 		if (length == 0 || packages.charAt(length - 1) == ',') {
 			// no separator need
 		} else {
@@ -103,7 +109,7 @@ class OSGIModuleFacadeConfig {
 
 	/**
 	 * Module configuration is constructed directly from {@link AppConfig}.
-	 * 
+	 *
 	 * @param conf
 	 */
 	public OSGIModuleFacadeConfig(AppConfig conf, Application app) {
@@ -147,7 +153,7 @@ class OSGIModuleFacadeConfig {
 
 	/**
 	 * The path does not end on file separator
-	 * 
+	 *
 	 * @return
 	 */
 	public String getDPUDirectory() {
@@ -167,7 +173,7 @@ class OSGIModuleFacadeConfig {
 	/**
 	 * Return list that contains path to directories with libraries. The path
 	 * does not end on file separator.
-	 * 
+	 *
 	 * @return
 	 */
 	public List<String> getDpuLibFolder() {
@@ -180,5 +186,4 @@ class OSGIModuleFacadeConfig {
 
 		return result;
 	}
-
 }
