@@ -15,6 +15,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -29,14 +30,17 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	/**
 	 * View name.
 	 */
+        //TODO do we need the NAME? Not used in the app
 	public static final String NAME = "PipelineList";
-	private static final int PAGE_LENGTH = 20;
+	//private static final int PAGE_LENGTH = 20;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
 	/* Only the presenter registers one listener... */
-	PipelineListViewListener listener;
-	Container container;
+	//TODO why not private?
+        PipelineListViewListener listener;
+	//TODO why not private?
+        Container container;
 
 	public boolean isModified() {
 		//There are no editable fields.
@@ -72,6 +76,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// navigate to PIPELINE_EDIT/New
+                                // TODO this should be solved by the presenter, he should navigate further
 				App.getApp()
 						.getNavigator()
 						.navigateTo(ViewNames.PIPELINE_EDIT_NEW.getUrl());
@@ -95,11 +100,11 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		mainLayout.addComponent(topLine);
 
 		tablePipelines = new IntlibPagedTable();
-		tablePipelines.setWidth("99%");
+		tablePipelines.setWidth("99%"); //TODO why 99%?
 
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
-		tablePipelines.setPageLength(PAGE_LENGTH);
+		tablePipelines.setPageLength(Utils.PAGE_LENGTH);
 
 		// add column
 		tablePipelines.setImmediate(true);
@@ -126,10 +131,12 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				//if (event.isDoubleClick()) {
+                                //TODO navigation should be done by presenter
 				if (!tablePipelines.isSelected(event.getItemId())) {
 					ValueItem item = (ValueItem) event.getItem();
 					long pipelineId = (long) item.getItemProperty("id")
 							.getValue();
+                                        //TODO navigation must be done by the presenter
 					App.getApp().getNavigator().navigateTo(ViewNames.PIPELINE_EDIT.getUrl() + "/" + pipelineId);
 				}
 			}
@@ -140,6 +147,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 	/**
 	 * Refresh data on the pipeline list table
+         * //TODO this should work opposite - presenter pushes new container to the view (thus presenter also calls refreshData)
+         * 
 	 */
 	@Transactional
 	private void refreshData() {
@@ -163,6 +172,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 	/**
 	 * Generate column in table with buttons.
+         * 
+         * TODO Should be separated to extra component "field of action buttons", which is displayed in every row
 	 *
 	 * @author Petyr
 	 *
@@ -205,7 +216,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 				@Override
 				public void buttonClick(ClickEvent event) {
 					listener.pipelineEvent(pipelineId, "copy");
-					refreshData();
+					//TODO presenter should initiate refresh of data
+                                        refreshData();
 				}
 			});
 			layout.addComponent(copyButton);
@@ -226,7 +238,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 							if (cd.isConfirmed()) {
 								listener.pipelineEvent(pipelineId, "delete");
 								// now we have to remove pipeline from table
+                                                                //TODO this should be done by adjusting the container and setting a new container to the table - is that possible?
 								source.removeItem(itemId);
+                                                                //TODO refresh should be called by the presenter, view should not refresh itself
 								refreshData();
 							}
 						}
