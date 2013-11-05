@@ -13,11 +13,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListView.PipelineListViewListener;
-import java.text.DateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -26,22 +22,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Bogo
  */
 public class PipelineListPresenter implements PipelineListViewListener {
-	
+
 	PipelineListView view;
-	
 	@Autowired
 	private PipelineFacade pipelineFacade;
 	@Autowired
 	private ContainerFactory containerFactory;
-	
 	private static final int PAGE_LENGTH = 20;
-	
+
 	public PipelineListPresenter() {
 	}
-	
+
 	public void setView(PipelineListView view) {
 		this.view = view;
-		
+
 		view.setListener(this);
 		view.setDataSource(getDataSource(PAGE_LENGTH));
 	}
@@ -53,8 +47,8 @@ public class PipelineListPresenter implements PipelineListViewListener {
 
 	@Override
 	public void pipelineEvent(long id, String event) {
-		switch(event) {
-			case "copy": 
+		switch (event) {
+			case "copy":
 				copyPipeline(id);
 				break;
 			case "delete":
@@ -74,30 +68,12 @@ public class PipelineListPresenter implements PipelineListViewListener {
 
 	@Override
 	public void event(String name) {
-		switch(name) {
-			case "refresh": 
+		switch (name) {
+			case "refresh":
 				refresh();
 				break;
 		}
 	}
-
-	@Override
-	public Object getLastExecDetail(Pipeline ppl, String detail) {
-		switch(detail) {
-//			case "duration":
-//				return getLastExecutionDuration(ppl);
-//			case "status":
-//				return getLastExecutionStatus(ppl);
-//			case "time":
-//				return getLastExecutionTime(ppl);
-			default: 
-				return null;
-				
-		}
-	}
-	
-	
-
 
 	private boolean isExecInSystem(Pipeline pipeline, PipelineExecutionStatus status) {
 		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipeline, status);
@@ -109,10 +85,7 @@ public class PipelineListPresenter implements PipelineListViewListener {
 		}
 	}
 
-
-
 	void refresh() {
-
 	}
 
 	void copyPipeline(long id) {
@@ -156,5 +129,4 @@ public class PipelineListPresenter implements PipelineListViewListener {
 	private Container getDataSource(int pageLength) {
 		return containerFactory.createPipelines(pageLength);
 	}
-	
 }
