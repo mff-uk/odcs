@@ -160,6 +160,15 @@ public class PipelineFacade {
 		return resultList;
 	}
 	
+    /**
+     * Execute the given pipeline.
+     * @param pipeline 
+     * @param debug 
+     */
+    public void run(Pipeline pipeline, boolean debug) {
+        throw new UnsupportedOperationException();
+    }
+    
 	/* ******************** Methods for managing PipelineExecutions ********* */
 
 	/**
@@ -428,4 +437,12 @@ public class PipelineFacade {
 		em.remove(exec);
 	}
 
+    /**
+     * Stop the execution.
+     * @param execution 
+     */
+    public void stopExecution(PipelineExecution execution) {
+        execution.stop();
+        save(execution);
+    }
 }

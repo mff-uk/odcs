@@ -60,7 +60,7 @@ public class ExecutionMonitorPresenter implements ExecutionView.ExecutionPresent
     @Override
     public void refresh() {
         // TODO check for database change
-        pipelineContainer.refresh();
+        //pipelineContainer.refresh();
     }
 
     @Override
