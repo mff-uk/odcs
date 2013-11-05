@@ -1095,7 +1095,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			URI predicate, Value object) {
 		boolean hasTriple = false;
 
-
 		RepositoryConnection connection = null;
 		Statement statement = new StatementImpl(subject, predicate, object);
 
@@ -2444,7 +2443,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			connection = getConnection();
 			if (graphs != null) {
-
 				connection.add(statement, graphs);
 			} else {
 				connection.add(statement);
@@ -2621,6 +2619,33 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public void addTriple(Resource subject, URI predicate, Value object) {
 		Statement statement = new StatementImpl(subject, predicate, object);
 		addStatement(statement, graph);
+
+	}
+
+	/**
+	 * Remove one RDF triple (statement) if contains in repository.
+	 *
+	 * @param subject   One of type for subject - URI,BlankNode.
+	 * @param predicate URI for subject.
+	 * @param object    One of type for object - URI,BlankNode or Literal.
+	 */
+	@Override
+	public void removeTriple(Resource subject, URI predicate, Value object) {
+		if (isTripleInRepository(subject, predicate, object)) {
+
+			try {
+				RepositoryConnection connection = getConnection();
+				if (graph != null) {
+					connection.remove(subject, predicate, object, graph);
+				} else {
+					connection.remove(subject, predicate, object);
+				}
+			} catch (RepositoryException ex) {
+				hasBrokenConnection = true;
+				logger.debug(ex.getMessage());
+			}
+		}
+
 
 	}
 
