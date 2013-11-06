@@ -10,7 +10,9 @@ import org.vaadin.addons.lazyquerycontainer.QueryFactory;
 /**
  *
  * @author Bogo
+ * @deprecated used by IntlibLazyQueryContainer which is deprecated
  */
+@Deprecated
 public class IntlibQueryFactory implements QueryFactory, Serializable {
 
 	/**

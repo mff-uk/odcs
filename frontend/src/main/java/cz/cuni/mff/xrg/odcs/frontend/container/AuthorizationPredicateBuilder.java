@@ -21,7 +21,9 @@ import org.springframework.security.core.Authentication;
  *
  * @author Jan Vojt
  * @param <E> entity class selected in query
+ * @deprecated data access moved into commons.app
  */
+@Deprecated
 public class AuthorizationPredicateBuilder<E> implements PredicateBuilder {
 
 	private AuthenticationContext authCtx;

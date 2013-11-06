@@ -41,14 +41,18 @@
 	<bean id="pipelineListViewImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListViewImpl" scope="prototype" />
 	
 	<bean id="dpuPresenter" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter" scope="prototype" />
-	
+
+    <!-- accessors -->
 	<bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
 	<bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
 
 	<!-- Imposes authorization filters on container. -->
 	<bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
 	
-	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype" />
+    <!-- tranlator for vaadin's filters -->
+    <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator" />
+    
+	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
 	
 	<bean id="navigator" class="cz.cuni.mff.xrg.odcs.frontend.ViewNavigator" scope="session" />
 	

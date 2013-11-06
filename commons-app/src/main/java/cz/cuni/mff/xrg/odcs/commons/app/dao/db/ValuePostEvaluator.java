@@ -5,7 +5,9 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
  * 
  * @author Jan Vojt
  * @param <T> type of wrapped value
+ * @deprecated unused class, will be removed
  */
+@Deprecated
 public interface ValuePostEvaluator<T> {
 
 	/**

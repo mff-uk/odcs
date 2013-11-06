@@ -42,7 +42,9 @@ import org.vaadin.addons.lazyquerycontainer.Query;
  * Intlib version of EntityQuery with support for more types and custom filters.
  *
  * @author Bogo
+ * @deprecated used by IntlibLazyQueryContainer which is deprecated
  */
+@Deprecated
 public class IntlibQuery<E> implements Query, Serializable {
 
 	/**

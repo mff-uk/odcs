@@ -7,7 +7,9 @@ import javax.persistence.criteria.Predicate;
  * Interface for building predicates used by {@link CriteriaBuilder}.
  *
  * @author Jan Vojt
+ * @deprecated used by AuthorizationPredicateBuilder that is deprecated
  */
+@Deprecated
 public interface PredicateBuilder {
 
 	/**

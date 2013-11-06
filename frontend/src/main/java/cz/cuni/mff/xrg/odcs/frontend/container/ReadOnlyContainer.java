@@ -24,9 +24,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 import java.util.LinkedList;
 
+/**
+ * Implementation of read only container that use 
+ * {@link DataAccessRead} as data source.
+ * 
+ * @author Petyr
+ * @param <T> 
+ */
 public class ReadOnlyContainer<T extends DataObject> implements Container,
     Container.Indexed, Container.Filterable, Container.Sortable,
-    // required by PagedFilterTableContainer container
     Container.ItemSetChangeNotifier, ContainerDescription {
 
     private final static Logger LOG = LoggerFactory
@@ -45,8 +51,6 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
     private final Set<Filter> filters = new HashSet<>();
 
     private final List<ItemSetChangeListener> changeListeners = new LinkedList<>();
-
-    private final FilterApplicator filterApplicator = new FilterApplicator();
 
     // - - - - - information about data access - - - - 
     private final boolean filterable;
@@ -112,6 +116,27 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
         return classAccessor;
     }
 
+    /**
+     * Invalidate caches and emit on change listeners.
+     */
+    public void refresh() {
+        final ReadOnlyContainer<T> container = this;
+        // invalidata cache
+        sizeCache.invalidate();
+        dataCache.invalidate();
+        
+        
+        for (ItemSetChangeListener listener : changeListeners) {
+            // emit change
+            listener.containerItemSetChange(new ItemSetChangeEvent() {
+                @Override
+                public Container getContainer() {
+                    return container;
+                }
+            }) ;
+        }
+    }
+    
     // - - - - - - - - - - - - - query - - - - - - - - - - - - - - - - - - -
     private DbQuery<T> getQuery() {
         updateBuilder();
@@ -124,17 +149,16 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
     }
 
     private void updateBuilder() {
-        final Class<T> entityClass = classAccessor.getEntityClass();
         if (!filterable) {
             return;
         }
         DataQueryBuilder.Filterable<T> filtrableBuilder
             = (DataQueryBuilder.Filterable<T>) queryBuilder;
         // clear filters and build news
-        filtrableBuilder.filterClear();
+        filtrableBuilder.claerFilters();
         // add filters
         for (Filter filter : filters) {
-            filterApplicator.apply(filtrableBuilder, entityClass, filter);
+            filtrableBuilder.addFilter(filter);
         }
     }
 
@@ -430,14 +454,13 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 
         switch (propertyId.length) {
             case 0: // remove sort
-                sortableBuilder.sort(null, null, false);
+                sortableBuilder.sort(null, false);
                 break;
             default:
                 LOG.warn("sort(Objet[], boolean[]) called with multiple targets."
                     + " Only first used others are ignored.");
-            case 1:
-                sortableBuilder.sort(classAccessor.getEntityClass(),
-                    (String) propertyId[0], ascending[0]);
+            case 1: // sort, but we need expresion for sorting first
+                sortableBuilder.sort( (String) propertyId[0], ascending[0]);
                 break;
         }
 

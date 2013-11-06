@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
 
 /**
@@ -9,13 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
  *
  * @param <T>
  */
-public interface DbQueryBuilder<T> extends DataQueryBuilder<T>, 
+public interface DbQueryBuilder<T extends DataObject> extends DataQueryBuilder<T>, 
     DataQueryBuilder.Filterable<T>, DataQueryBuilder.Sortable<T> {
-
-	public DbQueryBuilder<T> joinLeft(Class<?> toWhich,
-			String onPropertyName, Class<?> what);
-	
-	public DbQueryBuilder<T> joinLeftFetch(Class<?> toWhich,
-			String onPropertyName, Class<?> what);
 	
 }

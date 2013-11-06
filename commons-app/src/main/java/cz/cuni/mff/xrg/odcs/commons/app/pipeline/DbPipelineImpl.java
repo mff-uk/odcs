@@ -6,7 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 
 /**
- * Implementation of {@link DbPipeline}
+ * Implementation of {@link DbPipeline}.
  *
  * @author Petyr
  */

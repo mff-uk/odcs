@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
-import javax.persistence.Query;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryCount;
+import javax.persistence.TypedQuery;
 
 /**
  * Query for number of records. 
@@ -9,10 +11,16 @@ import javax.persistence.Query;
  *
  * @param <T>
  */
-public class DbQueryCount<T> extends DbQuery<T> {
+public class DbQueryCount<T extends DataObject> implements DataQueryCount<T> {
 
-	DbQueryCount(Query query) {
-		super(query);
+    private final TypedQuery<Long> query;
+    
+	DbQueryCount(TypedQuery<Long> query) {
+		this.query = query;
 	}
 
+    TypedQuery<Long> getQuery() {
+		return query;
+	}
+    
 }
