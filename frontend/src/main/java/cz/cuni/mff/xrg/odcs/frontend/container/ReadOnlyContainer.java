@@ -24,9 +24,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 import java.util.LinkedList;
 
+/**
+ * Implementation of read only container that use 
+ * {@link DataAccessRead} as data source.
+ * 
+ * @author Petyr
+ * @param <T> 
+ */
 public class ReadOnlyContainer<T extends DataObject> implements Container,
     Container.Indexed, Container.Filterable, Container.Sortable,
-    // required by PagedFilterTableContainer container
     Container.ItemSetChangeNotifier, ContainerDescription {
 
     private final static Logger LOG = LoggerFactory

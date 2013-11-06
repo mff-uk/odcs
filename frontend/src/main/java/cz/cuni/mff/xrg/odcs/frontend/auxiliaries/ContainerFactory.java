@@ -32,8 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Class support creating Vaadin container from List<?>.
  *
  * @author Petyr
- *
+ * @deprecated the container should be created in respective presenter
  */
+@Deprecated
 @Transactional(readOnly = true)
 public class ContainerFactory {
 

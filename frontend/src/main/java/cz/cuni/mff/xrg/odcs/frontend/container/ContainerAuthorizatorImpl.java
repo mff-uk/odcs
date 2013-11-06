@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Adds filters to container based on authorization logic.
  *
  * @author Jan Vojt
+ * @deprecated data access moved into commons.app
  */
+@Deprecated
 public class ContainerAuthorizatorImpl implements ContainerAuthorizator {
 
 	@Autowired

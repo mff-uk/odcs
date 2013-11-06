@@ -10,6 +10,8 @@ import org.vaadin.addons.lazyquerycontainer.QueryView;
  * 
  *
  * @author Bogo
+ * 
+ * TODO (petyr) we should use DbAccess and ReadOnly container instead to unify the data access
  */
 public class RDFLazyQueryContainer extends LazyQueryContainer {
 

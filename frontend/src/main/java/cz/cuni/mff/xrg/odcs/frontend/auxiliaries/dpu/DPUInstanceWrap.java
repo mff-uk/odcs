@@ -15,12 +15,12 @@ public class DPUInstanceWrap extends DPURecordWrap {
 	/**
 	 * Wrapped DPUTemplateRecord.
 	 */
-	private DPUInstanceRecord dpuInstance;
+	private final DPUInstanceRecord dpuInstance;
 
 	/**
 	 * Create wrap for DPUTemplateRecord.
 	 *
-	 * @param dpuInstance
+	 * @param dpuTemplate
 	 */
 	public DPUInstanceWrap(DPUInstanceRecord dpuTemplate) {
 		super(dpuTemplate);
