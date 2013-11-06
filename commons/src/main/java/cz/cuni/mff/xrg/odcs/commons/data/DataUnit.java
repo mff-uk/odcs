@@ -27,11 +27,4 @@ public interface DataUnit {
 	 * @return String name of data unit.
 	 */
 	public String getDataUnitName();
-
-	/**
-	 * Stop execution of data unit. And clean obtained data, if is possible. If
-	 * is called during execution atomic methods (as extraction from file), data
-	 * unit will be stoped after execution this called atomic method.
-	 */
-	public void interruptExecution();
 }
