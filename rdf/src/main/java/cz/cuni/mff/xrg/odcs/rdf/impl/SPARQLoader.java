@@ -1,7 +1,8 @@
-package cz.cuni.mff.xrg.odcs.loader.rdf;
+package cz.cuni.mff.xrg.odcs.rdf.impl;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
+import cz.cuni.mff.xrg.odcs.commons.test.context.TestContext;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.InsertType.*;
 
@@ -33,7 +34,8 @@ import org.openrdf.rio.RDFFormat;
 
 /**
  *
- * Responsible to load RDF data to SPARQL endpoint.
+ * Responsible to load RDF data to SPARQL endpoint. Need special for SPARQL
+ * loader DPU - separed implementation from {@link BaseRDFRepo}.
  *
  * @author Jiri Tomes
  */
@@ -45,9 +47,26 @@ public class SPARQLoader {
 
 	private DPUContext context;
 
+	/**
+	 * Constructor for using in DPUs calling.
+	 * 
+	 * @param rdfDataUnit Instance of RDFDataUnit repository neeed for loading
+	 * @param context     Given DPU context for DPU over it are executed.
+	 */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
+	}
+
+	/**
+	 * Constructor for testing load funkcionality.
+	 *
+	 * @param rdfDataUnit Instance of RDFDataUnit repository neeed for loading
+	 */
+	public SPARQLoader(RDFDataUnit rdfDataUnit) {
+		this.rdfDataUnit = rdfDataUnit;
+
+		this.context = new TestContext(null, null, null);
 	}
 
 	/**
