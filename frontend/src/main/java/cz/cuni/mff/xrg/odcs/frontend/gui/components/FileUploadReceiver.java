@@ -21,10 +21,10 @@ import com.vaadin.ui.Upload.Receiver;
 public class FileUploadReceiver implements Receiver {
 
 	private static final long serialVersionUID = 5099459605355200117L;
-	public File file;
+	private File file;
 	private FileOutputStream fstream = null;
-	public Path path;
-	public String fName;
+	private Path path;
+	private String fName;
 
 	/**
 	 * return an OutputStream
@@ -80,5 +80,13 @@ public class FileUploadReceiver implements Receiver {
 			return null;
 		}
 		return fos;
+	}
+	
+	public File getFile() {
+		return file;
+	}
+	
+	public Path getPath() {
+		return path;
 	}
 }

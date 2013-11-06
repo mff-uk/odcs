@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.vaadin.data.Container;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.frontend.ViewNavigator;
 
 /**
  * Interface for PipelineList.
@@ -16,23 +16,18 @@ public interface PipelineListView {
      */
     public void setDataSource(Container c);
 
+	public void refresh();
+
     /**
      * Interface the presenter implements so that it can process the events
      * emitted by the view
      */
-    interface PipelineListViewListener {
-
-        //TODO move to a different interface, it should not be in ViewListener interface
-        void navigation(String where);
+    interface PipelineListViewListener extends ViewNavigator.Navigatable {
 
         void pipelineEvent(long id, String event);
 
         void event(String name);
-
-         //TODO move to a different interface, it should not be in ViewListener interface
-         //TODO what is the purpose of the method?
-        Object getLastExecDetail(Pipeline ppl, String detail);
-    }
+	}
 
     /**
      * Registers the listener for the events of the view

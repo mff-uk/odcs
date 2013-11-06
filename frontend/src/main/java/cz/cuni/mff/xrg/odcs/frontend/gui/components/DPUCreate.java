@@ -18,7 +18,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
@@ -177,9 +176,9 @@ public class DPUCreate extends Window {
 				List<DPUValidator> validators = new LinkedList<>();
 				validators.add(new DPUDialogValidator());
 
-				final File sourceFile = fileUploadReceiver.file;
+				final File sourceFile = fileUploadReceiver.getFile();
 				// create new representation
-				DPUTemplateWrap dpuWrap = null;
+				DPUTemplateWrap dpuWrap;
 				try {
 					dpuWrap = new DPUTemplateWrap(
 							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
@@ -190,9 +189,6 @@ public class DPUCreate extends Window {
 					Notification.show("Failed to create DPU",
 							e.getMessage(),
 							Notification.Type.ERROR_MESSAGE);
-					
-
-					
 					return;
 				}
 				// set additional variables
