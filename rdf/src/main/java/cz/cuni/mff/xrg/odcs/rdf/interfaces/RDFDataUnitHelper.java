@@ -1,9 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
@@ -164,34 +162,6 @@ public interface RDFDataUnitHelper {
 	 * @throws RDFException when loading data to file fail.
 	 */
 	public void storeToFile(File file, RDFFormatType formatType) throws RDFException;
-
-	/**
-	 * Load RDF data from repository to SPARQL endpointURL to the collection of
-	 * URI graphs with endpoint authentication (name,password).
-	 *
-	 * TODO method too complex, not suitable for RDFDataUnit
-	 *
-	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-	 *                        RDF data.
-	 * @param defaultGraphURI List with names of graph where RDF data are
-	 *                        loading.
-	 * @param userName        String name needed for authentication.
-	 * @param password        String password needed for authentication.
-	 * @param graphType       One of way, how to solve loading RDF data to graph
-	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @param insertType      One of way, how solve loading RDF data parts to
-	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
-	 *                        STOP_WHEN_BAD_PART).
-	 * @param chunkSize       Size of insert part of triples which insert at
-	 *                        once to SPARQL endpoint.
-	 * @throws RDFException when loading data fail.
-	 */
-	@Deprecated
-	public void loadToSPARQLEndpoint(URL endpointURL,
-			List<String> endpointGraphsURI, String userName,
-			String password, WriteGraphType graphType, InsertType insertType,
-			long chunkSize)
-			throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
