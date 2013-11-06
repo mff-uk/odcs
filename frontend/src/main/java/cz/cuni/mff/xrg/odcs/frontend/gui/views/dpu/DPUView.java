@@ -3,13 +3,14 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 import com.vaadin.data.util.IndexedContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
 import java.io.File;
 
 /**
  *
  * @author Bogo
  */
-public interface DPUView {
+public interface DPUView extends MVPView {
 	
 	public void refresh();
 

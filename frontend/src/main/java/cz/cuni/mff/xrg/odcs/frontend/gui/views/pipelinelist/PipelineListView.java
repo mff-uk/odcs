@@ -2,13 +2,14 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.vaadin.data.Container;
 import cz.cuni.mff.xrg.odcs.frontend.ViewNavigator;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
 
 /**
  * Interface for PipelineList.
  *
  * @author Bogo
  */
-public interface PipelineListView {
+public interface PipelineListView extends MVPView {
 
     /**
      * Sets data source for the view

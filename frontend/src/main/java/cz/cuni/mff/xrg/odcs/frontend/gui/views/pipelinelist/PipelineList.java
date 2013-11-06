@@ -13,31 +13,31 @@ import ru.xpoft.vaadin.VaadinView;
  * 
  * @author Bogo
  */
-@Component
-@Scope("prototype")
-@VaadinView(PipelineList.NAME)
-public class PipelineList extends ViewComponent implements ModifiableComponent {
-
-	PipelineListViewImpl view;
-	@Autowired
-	PipelineListPresenter pipelineListPresenter;
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-		view = new PipelineListViewImpl();
-
-		pipelineListPresenter.setView(view);
-		setCompositionRoot(view);
-	}
-
-	@Override
-	public boolean isModified() {
-		return view.isModified(); 
-	}
-	
-	/**
-	 * View name.
-	 */
-        //TODO do we need this?
-	public static final String NAME = "PipelineList";
-}
+//@Component
+//@Scope("prototype")
+//@VaadinView(PipelineList.NAME)
+//public class PipelineList extends ViewComponent implements ModifiableComponent {
+//
+//	PipelineListViewImpl view;
+//	@Autowired
+//	PipelineListPresenter pipelineListPresenter;
+//
+//	@Override
+//	public void enter(ViewChangeEvent event) {
+//		view = new PipelineListViewImpl();
+//
+//		pipelineListPresenter.setView(view);
+//		setCompositionRoot(view);
+//	}
+//
+//	@Override
+//	public boolean isModified() {
+//		return view.isModified(); 
+//	}
+//	
+//	/**
+//	 * View name.
+//	 */
+//        //TODO do we need this?
+//	public static final String NAME = "PipelineList";
+//}

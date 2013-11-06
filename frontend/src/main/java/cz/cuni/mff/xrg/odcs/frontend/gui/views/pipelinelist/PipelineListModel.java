@@ -7,6 +7,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author tomasknap
  * @author Bogo
  */
-public class PipelineListModel {
+public class PipelineListModel implements MVPModel {
 
 	@Autowired
 	private PipelineFacade pipelineFacade;

@@ -130,7 +130,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	/**
 	 * Refresh data on the pipeline list table.
 	 */
-	@Transactional
 	@Override
 	public void refresh() {
 		int page = tablePipelines.getCurrentPage();
