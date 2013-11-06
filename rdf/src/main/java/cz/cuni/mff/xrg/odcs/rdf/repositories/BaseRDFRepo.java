@@ -2038,7 +2038,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				if (httpResponseCode == HTTP_UNAUTORIZED_RESPONSE) {
 					message.append(
 							". Your USERNAME and PASSWORD for connection is wrong.");
-//				} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
+				} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
+					message.append(
+							". Inserted data has wrong format.");
 //
 //					try (InputStream errorStream = httpConnection
 //							.getErrorStream()) {
@@ -2067,7 +2069,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				} else {
 					//message.append(". You probably dont have enought PERMISSION for this action.");
-                                        try (InputStream errorStream = httpConnection
+					try (InputStream errorStream = httpConnection
 							.getErrorStream()) {
 
 						try (BufferedReader reader = new BufferedReader(
@@ -2090,12 +2092,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 							//throw new InsertPartException(message.toString());
 						}
 					}
-                                    
+
 				}
 
-                                
-				throw new RDFException(message.toString() + "\n\n" + "URL endpoint: " + endpointURL.toString() + " POST content: " + parameters);
-                                //throw new RDFException(message.toString());
+
+				throw new InsertPartException(
+						message.toString() + "\n\n" + "URL endpoint: " + endpointURL
+						.toString() + " POST content: " + parameters);
+				//throw new RDFException(message.toString());
 			}
 
 		} catch (UnknownHostException e) {
