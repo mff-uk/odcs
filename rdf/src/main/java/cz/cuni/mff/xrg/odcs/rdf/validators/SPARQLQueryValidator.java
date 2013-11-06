@@ -4,7 +4,7 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 
 import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
@@ -17,7 +17,7 @@ import org.openrdf.repository.RepositoryException;
  * @author Jiri Tomes
  *
  */
-public class SPARQLQueryValidator implements Validator {
+public class SPARQLQueryValidator implements QueryValidator {
 
 	private String query;
 

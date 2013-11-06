@@ -5,7 +5,7 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
  *
  * @author Jiri Tomes
  */
-public interface Validator {
+public interface QueryValidator {
 
 	/**
 	 * Method for detection right syntax of query.

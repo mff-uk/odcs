@@ -12,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLUpdateValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 
 /**
  * Configuration dialog for DPU SPARQL Transformer.
@@ -133,7 +133,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 			public void valueChange(Property.ValueChangeEvent event) {
 				final String query = txtQuery.getValue().trim();
 
-				Validator updateValidator = new SPARQLUpdateValidator(query);
+				QueryValidator updateValidator = new SPARQLUpdateValidator(query);
 				SPARQLQueryValidator constructValidator = new SPARQLQueryValidator(
 						query, SPARQLQueryType.CONSTRUCT);
 

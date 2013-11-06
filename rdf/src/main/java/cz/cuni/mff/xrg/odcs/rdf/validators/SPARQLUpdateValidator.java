@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.validators;
 
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
@@ -15,7 +15,7 @@ import org.openrdf.repository.RepositoryException;
  *
  * @author Jiri Tomes
  */
-public class SPARQLUpdateValidator implements Validator {
+public class SPARQLUpdateValidator implements QueryValidator {
 
 	private String updateQuery;
 

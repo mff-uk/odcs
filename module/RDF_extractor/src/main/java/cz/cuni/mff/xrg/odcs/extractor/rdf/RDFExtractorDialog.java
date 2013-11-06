@@ -302,7 +302,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 					return;
 				}
 
-				cz.cuni.mff.xrg.odcs.rdf.interfaces.Validator validator = new SPARQLQueryValidator(
+				cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator validator = new SPARQLQueryValidator(
 						query, SPARQLQueryType.CONSTRUCT);
 
 				if (!validator.isQueryValid()) {
