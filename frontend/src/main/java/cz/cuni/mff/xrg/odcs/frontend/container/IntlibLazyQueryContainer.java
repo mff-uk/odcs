@@ -9,7 +9,9 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 /**
  *
  * @author Bogo
+ * @deprecated use other container (possibly ReadOnly)
  */
+@Deprecated
 public final class IntlibLazyQueryContainer<T> extends LazyQueryContainer {
 
 	/**

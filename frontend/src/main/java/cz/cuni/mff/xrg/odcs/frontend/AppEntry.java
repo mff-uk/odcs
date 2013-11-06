@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.DefaultConfirmDialogFactory;
@@ -259,7 +260,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Checks if there is logged in user and if its session is still valid.
 	 *
 	 * @return true if user and its session are valid, false otherwise
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	private boolean checkAuthentication() {
 		return getAuthCtx().isAuthenticated();
 	}
@@ -284,7 +287,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Returns facade, which provides services for managing pipelines.
 	 *
 	 * @return pipeline facade
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public PipelineFacade getPipelines() {
 		return (PipelineFacade) context.getBean("pipelineFacade");
 	}
@@ -303,7 +308,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with modules.
 	 *
 	 * @return modules facade
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public ModuleFacade getModules() {
 		return (ModuleFacade) context.getBean("moduleFacade");
 	}
@@ -312,7 +319,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with DPUs.
 	 *
 	 * @return dpus facade
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public DPUFacade getDPUs() {
 		return (DPUFacade) context.getBean("dpuFacade");
 	}
@@ -321,7 +330,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with Schedules.
 	 *
 	 * @return schedules facade
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public ScheduleFacade getSchedules() {
 		return (ScheduleFacade) context.getBean("scheduleFacade");
 	}
@@ -330,7 +341,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with Schedules.
 	 *
 	 * @return schedules facade
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public UserFacade getUsers() {
 		return (UserFacade) context.getBean("userFacade");
 	}
@@ -340,7 +353,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Prefix.
 	 *
 	 * @return NamespascePrefix facade
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public NamespacePrefixFacade getNamespacePrefixes() {
 		return (NamespacePrefixFacade) context.getBean("prefixFacade");
 	}
@@ -349,7 +364,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with Logs.
 	 *
 	 * @return log facade
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public LogFacade getLogs() {
 		return (LogFacade) context.getBean("logFacade");
 	}
@@ -358,7 +375,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return application configuration class.
 	 *
 	 * @return
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public AppConfig getAppConfiguration() {
 		return (AppConfig) context.getBean("configuration");
 	}
@@ -367,7 +386,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return class that can be used to explore DPUs.
 	 *
 	 * @return
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public DPUExplorer getDPUExplorer() {
 		return (DPUExplorer) context.getBean(DPUExplorer.class);
 	}
@@ -377,7 +398,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 *
 	 * @param type
 	 * @return bean
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public <T extends Object> T getBean(Class<T> type) {
 		return context.getBean(type);
 	}
@@ -390,11 +413,19 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Helper method for retrieving authentication context.
 	 *
 	 * @return authentication context for current user session
+     * @deprecated use autowire annotation instead
 	 */
+    @Deprecated
 	public AuthenticationContext getAuthCtx() {
 		return getBean(AuthenticationContext.class);
 	}
 
+    /**
+     * 
+     * @return
+     * @deprecated use autowire annotation instead
+     */
+    @Deprecated
 	public DPUModuleManipulator getDPUManipulator() {
 		return getBean(DPUModuleManipulator.class);
 	}

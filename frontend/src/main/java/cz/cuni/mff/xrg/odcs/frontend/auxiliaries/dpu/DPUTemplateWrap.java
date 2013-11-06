@@ -14,7 +14,7 @@ public class DPUTemplateWrap extends DPURecordWrap {
 	/**
 	 * Wrapped DPUTemplateRecord.
 	 */
-	private DPUTemplateRecord dpuTemplate;
+	private final DPUTemplateRecord dpuTemplate;
 
 	/**
 	 * Create wrap for DPUTemplateRecord.

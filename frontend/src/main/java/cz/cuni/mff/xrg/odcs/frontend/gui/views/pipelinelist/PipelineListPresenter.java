@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Notification;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -10,22 +11,48 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListView.PipelineListViewListener;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.BasePresenter;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.Model;
+import cz.cuni.mff.xrg.odcs.frontend.mvp.View;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import ru.xpoft.vaadin.VaadinView;
 
 /**
  * Presenter class for PipelineList. Handles events from PipelineListView.
  *
  * @author Bogo
  */
-public class PipelineListPresenter implements PipelineListViewListener {
+@Component
+@Scope("prototype")
+@VaadinView(PipelineListPresenter.NAME)
+@Model(PipelineListModel.class)
+@View(PipelineListViewImpl.class)
+public class PipelineListPresenter extends BasePresenter implements PipelineListViewListener {
 
+	/**
+	 * View name.
+	 */
+	//TODO do we need this?
+	public static final String NAME = "PipelineList";
 	private PipelineListView view;
-	@Autowired
 	private PipelineListModel pipelineModel;
 	@Autowired
 	private ViewNavigator navigator;
 
 	public PipelineListPresenter() {
+	}
+
+	@Override
+	public void setModel(MVPModel model) {
+		if (!PipelineListModel.class.isInstance(model)) {
+			return;
+		}
+		this.pipelineModel = (PipelineListModel) model;
 	}
 
 	/**
@@ -34,18 +61,21 @@ public class PipelineListPresenter implements PipelineListViewListener {
 	 *
 	 * @param view
 	 */
-	public void setView(PipelineListView view) {
-		this.view = view;
-
-		view.setListener(this);
-		view.setDataSource(pipelineModel.getDataSource(Utils.PAGE_LENGTH));
+	@Override
+	public void setView(MVPView view) {
+		if (!PipelineListView.class.isInstance(view)) {
+			return;
+		}
+		this.view = (PipelineListView) view;
+		this.view.setListener(this);
+		this.view.setDataSource(pipelineModel.getDataSource(Utils.PAGE_LENGTH));
 	}
 
 	@Override
 	public void navigation(String where) {
 		navigator.navigateTo(where);
 	}
-	
+
 	@Override
 	public void navigation(String where, Object parameter) {
 		navigator.navigateTo(where, parameter);
@@ -99,5 +129,4 @@ public class PipelineListPresenter implements PipelineListViewListener {
 		sch.setSelectePipeline(pipeline);
 		App.getApp().addWindow(sch);
 	}
-
 }

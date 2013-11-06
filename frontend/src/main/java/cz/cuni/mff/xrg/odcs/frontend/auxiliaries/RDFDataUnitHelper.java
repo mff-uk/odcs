@@ -7,7 +7,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Local;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Virtuoso;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;

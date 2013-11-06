@@ -8,7 +8,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
  * allowed to see.
  *
  * @author Jan Vojt
+ * @deprecated unused class, will be removed
  */
+@Deprecated
 public interface ContainerAuthorizator {
 	
 	/**

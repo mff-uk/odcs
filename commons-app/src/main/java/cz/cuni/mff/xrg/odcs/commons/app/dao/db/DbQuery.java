@@ -1,11 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
-import javax.persistence.Query;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccess;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQuery;
+import javax.persistence.TypedQuery;
 
 /**
  * Query can be created by {@link DatabaseQueryBuilder} and used in 
@@ -15,21 +13,19 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccess;
  *
  * @param <T>
  */
-public class DbQuery<T> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(DbQuery.class);
-	
-	private final Query query;
+public class DbQuery<T extends DataObject> implements DataQuery<T> {
+    
+	private final TypedQuery<T> query;
 	
 	/**
 	 * Create new query.
 	 * @param query
 	 */
-	DbQuery(Query query) {
+	DbQuery(TypedQuery<T> query) {
 		this.query = query;		
 	}
 	
-	Query getQuery() {
+	TypedQuery<T> getQuery() {
 		return query;
 	}
 	
@@ -39,10 +35,7 @@ public class DbQuery<T> {
 	 * @param count
 	 * @return
 	 */
-	public DbQuery<T> limit(int first, int count) {
-		
-		LOG.trace("Setting limists {}, {}", first, count);
-		
+	public DbQuery<T> limit(int first, int count) {		
 		query.setFirstResult(first);
 		query.setMaxResults(count);
 		return this;

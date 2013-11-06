@@ -4,8 +4,9 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao;
  * Types of filters that can be used in {@link DataQueryBuilder}. 
  * 
  * @author Petyr
- *
+ * @deprecated unused class, will be removed
  */
+@Deprecated
 public enum FilterType {
 	LIKE("LIKE"),
 	EQUAL("="),

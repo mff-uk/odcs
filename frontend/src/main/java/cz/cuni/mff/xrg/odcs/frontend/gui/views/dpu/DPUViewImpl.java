@@ -9,7 +9,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -36,15 +35,20 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ActionColumnGenerator;
 import java.io.FileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  *
  * @author Bogo
  */
+@Component
+@Scope("prototype")
 public class DPUViewImpl extends CustomComponent implements DPUView {
 
 	private DPUViewListener listener;
@@ -84,7 +88,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private static final Logger LOG = LoggerFactory.getLogger(ViewComponent.class);
 	private Button buttonSaveDPU;
 	private String tabname;
-	
+
 	public DPUViewImpl() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
@@ -792,7 +796,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 //		instancesTable.setColumnHeaders(headers);
 
 		instancesTable.addGeneratedColumn("actions",
-				new ActionColumnGenerator());
+				createActionColumn());
 
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());
@@ -841,65 +845,32 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 * @author Maria Kukhar
 	 *
 	 */
-	class ActionColumnGenerator implements
-			com.vaadin.ui.CustomTable.ColumnGenerator {
+	private ActionColumnGenerator createActionColumn() {
+		ActionColumnGenerator generator = new ActionColumnGenerator();
 
-		private static final long serialVersionUID = 1L;
+		generator.addButton("Detail", "70px", new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(long id) {
+				listener.pipelineAction(id, "detail");
+			}
+		});
 
-		@Override
-		public Object generateCell(final CustomTable source,
-				final Object itemId, Object columnId) {
+		//Delete button. Delete pipeline.
+		generator.addButton("Delete", "70px", new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(long id) {
+				listener.pipelineAction(id, "delete");
+			}
+		});
 
-			final Long pipeId = (Long) tableData.getContainerProperty(itemId, "id").getValue();
+		//Status button
+		generator.addButton("Status", "70px", new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(long id) {
+				listener.pipelineAction(id, "status");
+			}
+		});
 
-			HorizontalLayout layout = new HorizontalLayout();
-			//Detail button
-			Button detailButton = new Button();
-			detailButton.setCaption("Detail");
-			detailButton.setWidth("70px");
-			detailButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(Button.ClickEvent event) {
-					listener.pipelineAction(pipeId, "detail");
-				}
-			});
-			layout.addComponent(detailButton);
-
-
-			//Delete button. Delete pipeline.
-			Button deleteButton = new Button();
-			deleteButton.setCaption("Delete");
-			deleteButton.setWidth("70px");
-			deleteButton.addClickListener(new Button.ClickListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(Button.ClickEvent event) {
-					listener.pipelineAction(pipeId, "delete");
-					// now we have to remove pipeline from table
-					source.removeItem(itemId);
-				}
-			});
-			layout.addComponent(deleteButton);
-
-			//Status button
-			Button statusButton = new Button();
-			statusButton.setCaption("Status");
-			statusButton.setWidth("70px");
-			statusButton.addClickListener(new Button.ClickListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(Button.ClickEvent event) {
-					listener.pipelineAction(pipeId, "status");
-				}
-			});
-			layout.addComponent(statusButton);
-
-			return layout;
-		}
+		return generator;
 	}
 }

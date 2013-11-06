@@ -16,8 +16,9 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
  * Class cannot be instantiated.
  *
  * @author Petyr
- *
+ * @deprecated use spring's autowired functionality instead
  */
+@Deprecated
 public class App {
 
 	public static final int MAX_TABLE_COLUMN_LENGTH = 100;

@@ -115,9 +115,8 @@ class DPURecordWrap {
 			return;
 		}
 		// first we need load instance of the DPU
-		Object instance = null;
 		dpuRecord.loadInstance(App.getApp().getModules());
-		instance = dpuRecord.getInstance();
+		Object instance = dpuRecord.getInstance();
 		// now try to load the dialog
 		if (instance instanceof ConfigDialogProvider<?>) {
 			ConfigDialogProvider<DPUConfigObject> dialogProvider;
