@@ -37,11 +37,16 @@
 	
 	<bean id="pipelineListPresenter" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenter" scope="prototype" />
 	
+    <!-- accessors -->
 	<bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
+    <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
 
 	<!-- Imposes authorization filters on container. -->
 	<bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
 	
+    <!-- tranlator for vaadin's fgilters -->
+    <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator" />
+    
 	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
 	
 </beans>

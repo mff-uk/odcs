@@ -58,14 +58,14 @@ public class ContainerFactory {
     /**
      * Create container for Pipelines and fill it with given data.
      *
-     * @param data data for container
+     * @param pageLength
      * @return
      */
     public Container createPipelines(int pageLength) {
 
         ReadOnlyContainer c = new ReadOnlyContainer(dbPipeline, pipelineAccessor);
-        containerAuth.authorize(c, pipelineAccessor.getEntityClass());
         return c;
+        
 //		IntlibLazyQueryContainer container = new IntlibLazyQueryContainer(em, Pipeline.class, pageLength, "id", true, true, true);
 //		container.getQueryView().getQueryDefinition().setDefaultSortState(
 //				new Object[]{"id"}, new boolean[]{false});

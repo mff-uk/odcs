@@ -1,308 +1,197 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
+import java.util.LinkedList;
+import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.FilterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DbQueryBuilderImpl<T> implements DbQueryBuilder<T> {
+class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
 
-    private final static Logger LOG = LoggerFactory.getLogger(DbQueryBuilderImpl.class);   
-	/**
-	 * Entity manager used to create query.
-	 */
-	private final EntityManager entityManager;
+    /**
+     * Holds information about sorting.
+     */
+    private class SortInformation {
+        
+        String propertyName = null;
+        
+        boolean asc = true;
+        
+    }
+    
+    private final static Logger LOG = LoggerFactory.getLogger(DbQueryBuilderImpl.class);
 
-	/**
-	 * 'From' part start with space, does not end with a whitespace.
-	 */
-	private final StringBuilder from = new StringBuilder();
+    /**
+     * Entity manager used to create query.
+     */
+    private final EntityManager entityManager;
 
-	/**
-	 * 'Where' part, if not empty then contains key word 'WHERE' and start but
-	 * but not end with whitespace.
-	 */
-	private final StringBuilder where = new StringBuilder();
+    /**
+     * The main class we are querying on.
+     */
+    private final Class<T> entityClass;
 
-	/**
-	 * 'Sort' part empty or container keyword 'sort' and start with whitespace.
-	 */
-	private final StringBuilder sort = new StringBuilder();
+    /**
+     * Filters that should be used in query.
+     */
+    private final List<Object> filters = new LinkedList<>();
 
-	/**
-	 * Classes used in query.
-	 */
-	private final Set<Class<?>> usedClasses = new HashSet<>();
-
-	/**
-	 * Contains valued for used placeholders.
-	 */
-	private final Map<String, Object> placeHolderValues = new HashMap<>();
-
-	/**
-	 * Main class for query.
-	 */
-	private final Class<?> mainClass;
-
-	/**
-	 * Store cached query in string form.
-	 */
-	private String stringQueryCache = null;
-
-	/**
-	 * Store cached count query in string form.
-	 */
-	private String stringQueryCountCache = null;
-
-	DbQueryBuilderImpl(EntityManager entityManager, Class<T> clazz) {
-		this.entityManager = entityManager;
-		// prepare initial FROM content
-		from.append(" FROM ");
-		from.append(clazz.getSimpleName());
-		from.append(' ');
-		from.append(clazz.getSimpleName().toLowerCase());
-		// add to used classes
-		usedClasses.add(clazz);
-		// set main class
-		mainClass = clazz;
-	}
+    /**
+     * Store information about sorting for this query builder.
+     */
+    private final SortInformation sortInfo = new SortInformation();
+    
+    /**
+     * Authorizator.
+     */
+    private final Authorizator authorizator;
+    
+    /**
+     * Translator that can be used to translate given filter.
+     */
+    private final List<FilterTranslator> filterTranslators;
+    
+    DbQueryBuilderImpl(EntityManager entityManager, Class<T> entityClass, 
+        Authorizator authorizator, List<FilterTranslator> filterTranslators) {
+        this.entityManager = entityManager;
+        this.entityClass = entityClass;
+        this.authorizator = authorizator;
+        this.filterTranslators = filterTranslators;
+    }
 
     @Override
-	public DbQueryBuilder<T> joinLeft(Class<?> toWhich,
-			String onPropertyName, Class<?> what) {
-		if (usedClasses.contains(what)) {
-			// joining twice over same class
-			throw new RuntimeException("Multiple join over same table.");
-		}
+    public DbQuery<T> getQuery() {
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<T> cq = cb.createQuery(entityClass);
+        final Root<T> root = cq.from(entityClass);
 
-		if (!usedClasses.contains(toWhich)) {
-			// joining over unknown table
-			throw new RuntimeException("Joining to unknown table.");
-		}
+        cq.select(root);
 
-		// ad JOIN LEFT clause
-		usedClasses.add(what);
-		from.append(" LEFT JOIN ");
-		from.append(toWhich.getSimpleName().toLowerCase());
-		from.append('.');
-		from.append(onPropertyName);
-		from.append(' ');
-		from.append(what.getSimpleName().toLowerCase());
+        setWhereCriteria(cb, cq, root);
+        setOrderClause(cb, cq, root);
 
-		return this;
-	}
-	
-    @Override
-	public DbQueryBuilder<T> joinLeftFetch(Class<?> toWhich,
-			String onPropertyName, Class<?> what) {
-		if (usedClasses.contains(what)) {
-			// joining twice over same class
-			throw new RuntimeException("Multiple join over same table.");
-		}
-
-		if (!usedClasses.contains(toWhich)) {
-			// joining over unknown table
-			throw new RuntimeException("Joining to unknown table.");
-		}
-
-		// ad JOIN LEFT clause
-		usedClasses.add(what);
-		from.append(" LEFT JOIN FETCH ");
-		from.append(toWhich.getSimpleName().toLowerCase());
-		from.append('.');
-		from.append(onPropertyName);
-		from.append(' ');
-		from.append(what.getSimpleName().toLowerCase());
-
-		return this;
-	}
+        TypedQuery<T> query = entityManager.createQuery(cq);
+        return new DbQuery(query);
+    }
 
     @Override
-	public DbQueryBuilder<T> filterClear() {
-		// delete where clause and placeHolders that are used in filters
-		invalidateQueryCache();
-		where.setLength(0);
-		placeHolderValues.clear();
-		return this;
-	}
+    public DbQueryCount<T> getCountQuery() {
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final Root<T> root = cq.from(entityClass);
+
+        cq.select(cb.count(root));
+
+        // we just set where criteria
+        setWhereCriteria(cb, cq, root);
+
+        TypedQuery<Long> query = entityManager.createQuery(cq);
+        return new DbQueryCount(query);
+    }
 
     @Override
-	public DbQueryBuilder<T> filter(Class<?> clazz, FilterType type,
-			Object value) {
-		if (!usedClasses.contains(clazz)) {
-			// joining over unknown table
-			throw new RuntimeException("Usage of unknown table detected.");
-		}
-		invalidateQueryCache();
-		// prepare place holder
-		final String placeHolderName = 'p' + Integer.toString(placeHolderValues
-				.size());
-		placeHolderValues.put(placeHolderName, unwrapValue(value));
-		// prepare query
-		prepareWhereToAdd();
-		where.append(clazz.getSimpleName().toLowerCase());
-		where.append(' ');
-		where.append(type.toString());
-		where.append(" :");
-		where.append(placeHolderName);
-		return this;
-	}
+    public DataQueryBuilder<T> claerFilters() {
+        filters.clear();
+        return this;
+    }
 
     @Override
-	public DbQueryBuilder<T> filter(Class<?> clazz, String propertyName,
-			FilterType type, Object value) {
-		if (!usedClasses.contains(clazz)) {
-			// joining over unknown table
-			throw new RuntimeException("Usage of unknown table detected.");
-		}
-		invalidateQueryCache();
-		// prepare place holder
-		final String placeHolderName = 'p' + Integer.toString(placeHolderValues
-				.size());
-		placeHolderValues.put(placeHolderName, unwrapValue(value));
-		// prepare query
-		prepareWhereToAdd();
-		where.append(clazz.getSimpleName().toLowerCase());
-		where.append('.');
-		where.append(propertyName);
-		where.append(' ');
-		where.append(type.toString());
-		where.append(" :");
-		where.append(placeHolderName);
-		return this;
-	}
+    public DataQueryBuilder<T> addFilter(Object filter) {
+        filters.add(filter);
+        return this;
+    }
 
     @Override
-	public DbQueryBuilder<T> sort(Class<?> clazz, String propertyName,
-			boolean asc) {
-		invalidateQueryCache();
+    public DataQueryBuilder<T> sort(String propertyName, boolean asc) {
+        sortInfo.propertyName = propertyName;
+        sortInfo.asc = asc;
+        return this;
+    }
 
-		// in any case delete old data
-		sort.setLength(0);
+    private <E> void setWhereCriteria(final CriteriaBuilder cb, final CriteriaQuery<E> cq, Root<T> root) {
+        // here we use the authentication predicate
+        Predicate predicate = null;
+        if (authorizator != null) {
+            predicate = authorizator.getAuthorizationPredicate(cb, root, entityClass);
+        }
+        
+        for (Object filter : filters) {
+            Predicate filterPredicate = null;
+            if (filter instanceof Predicate) {
+                // we can use this directly
+                filterPredicate = (Predicate)filter;
+            } else if (filterTranslators != null) {            
+                // try to translate it
+                for (FilterTranslator translator : filterTranslators) {
+                    filterPredicate = translator.translate(filter, cb, root);
+                    if (filterPredicate != null) {
+                        break;
+                    }
+                }
+            }
+            // has been the filter translated ?
+            if (filterPredicate == null) {
+                throw new UnsupportedOperationException("Filter: " + filter.getClass().getName() + " is not supported.");
+            }
+            // add to our predicate
+            if (predicate == null) {
+                predicate = filterPredicate;
+            } else {
+                predicate = cb.and(predicate, filterPredicate);
+            }
+        }
+        
+        // apply filters
+        if (predicate != null) {
+            cq.where(predicate);
+        } else {
+            // nothing to set
+        }
+    }
+    
+    private <E> void setOrderClause(final CriteriaBuilder cb, final CriteriaQuery<E> cq, final Root<T> root) {
+        if (sortInfo.propertyName == null) {
+            return;
+        }
+        final Expression expr = (Expression) getPropertyPath(root, 
+            sortInfo.propertyName);
 
-		if (clazz == null) {
-			return this;
-		} else if (!usedClasses.contains(clazz)) {
-			// joining over unknown table
-			throw new RuntimeException("Usage of unknown table detected.");
-		}
+        // we sort only accroding to one column
+        if (sortInfo.asc) {
+            cq.orderBy(cb.asc(expr));
+        } else {
+            cq.orderBy(cb.desc(expr));
+        }
+    }
 
-		// build order by clause
-		sort.append(" ORDER BY ");
-		sort.append(clazz.getSimpleName().toLowerCase());
-		sort.append('.');
-		sort.append(propertyName);
-		if (asc) {
-			sort.append(" ASC");
-		} else {
-			sort.append(" DESC");
-		}
-		return this;
-	}
-
-    @Override
-	public DbQuery<T> getQuery() {
-		if (stringQueryCache == null) {
-			stringQueryCache = getStringQuery();
-		}
-		// create query and set placeholders
-		Query query = entityManager.createQuery(stringQueryCache);
-		setPlaceholders(query);
-		return new DbQuery<T>(query);
-	}
-
-    @Override
-	public DbQueryCount<T> getCountQuery() {
-		if (stringQueryCountCache == null) {
-			stringQueryCountCache = getStringQueryCount();
-		}
-		// create query and set placeholders
-		Query query = entityManager.createQuery(stringQueryCountCache);
-		setPlaceholders(query);
-		return new DbQueryCount<T>(query);
-	}
-
-	/**
-	 * Build query in string form.
-	 * 
-	 * @return
+    /**
+	 * Gets property path.
+	 *
+	 * @param root the root where path starts form
+	 * @param propertyId the property ID
+	 * @return the path to property
 	 */
-	String getStringQuery() {
-		StringBuilder stringQuery = new StringBuilder();
-		stringQuery.append("SELECT ");
-		stringQuery.append(mainClass.getSimpleName().toLowerCase());
-		stringQuery.append(from);
-		stringQuery.append(where);
-		stringQuery.append(sort);
-        LOG.debug("Assembled query: {}", stringQuery.toString());
-		return stringQuery.toString();
-	}
+	private Path<Object> getPropertyPath(final Root<?> root, final Object propertyId) {
+		final String[] propertyIdParts = ((String) propertyId).split("\\.");
 
-	/**
-	 * Builder count query in string form.
-	 * 
-	 * @return
-	 */
-	String getStringQueryCount() {
-		StringBuilder stringQuery = new StringBuilder();
-		stringQuery.append("SELECT Count(");
-		stringQuery.append(mainClass.getSimpleName().toLowerCase());
-		stringQuery.append(')');
-		stringQuery.append(from);
-		stringQuery.append(where);
-		return stringQuery.toString();
-	}
-
-	/**
-	 * Set placeholder for query.
-	 * 
-	 * @param query
-	 */
-	private void setPlaceholders(Query query) {
-		for (String name : placeHolderValues.keySet()) {
-			query.setParameter(name, placeHolderValues.get(name));
+		Path<Object> path = null;
+		for (final String part : propertyIdParts) {
+			if (path == null) {
+				path = root.get(part);
+			} else {
+				path = path.get(part);
+			}
 		}
+		return path;
 	}
-
-	/**
-	 * Delete (invalid) cached data.
-	 */
-	private void invalidateQueryCache() {
-		stringQueryCache = null;
-		stringQueryCountCache = null;
-	}
-
-	/**
-	 * Prepare {@link #where} for adding new expression.
-	 */
-	private void prepareWhereToAdd() {
-		// prepare query
-		if (where.length() == 0) {
-			where.append(" WHERE ");
-		} else {
-			where.append(" AND ");
-		}
-	}
-	
-	/**
-	 * Unwraps value to be used in a filter. If value is not wrapped, it is just
-	 * returned as-is.
-	 * 
-	 * @param value wrapper
-	 * @return unwrapped value
-	 */
-	private Object unwrapValue(Object value) {
-		if (value instanceof ValuePostEvaluator) {
-			return ((ValuePostEvaluator) value).evaluate();
-		}
-		return value;
-	}
-
 }

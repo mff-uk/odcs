@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Partial implementation of {@link DataAccess} interface.
@@ -18,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
  *
  * @param <T>
  */
-public class DbAccessBase<T extends DataObject> implements DbAcess<T> {
+public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 
 	/**
 	 * Entity manager for accessing database with persisted objects
@@ -26,15 +27,21 @@ public class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 	@PersistenceContext
 	protected EntityManager em;
 
+    @Autowired(required = false)
+    protected Authorizator authorizator;
+    
+    @Autowired(required = false)
+    protected List<FilterTranslator> translators;
+    
 	/**
 	 * Entity class.
 	 */
-	private final Class<T> entityClass;
-	
+	protected final Class<T> entityClass;
+	    
 	public DbAccessBase(Class<T> entityClass) {
 		this.entityClass = entityClass;
 	}
-
+    
 	@Override
 	public T create() {
 		throw new UnsupportedOperationException();
@@ -65,17 +72,20 @@ public class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 		em.remove(object);
 	}
 
+    @Transactional(readOnly = true)
     @Override
 	public T getInstance(long id) {
 		return em.find(entityClass, id);
 	}
 
+    @Transactional(readOnly = true)
 	@Override
 	public T getLightInstance(long id) {
 		return em.find(entityClass, id);
 	}
 
 	@SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
 	@Override
 	public T execute(DbQuery<T> query) {
 		// set max count of results
@@ -89,6 +99,7 @@ public class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 	}
 
 	@SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
 	@Override
 	public List<T> executeList(DbQuery<T> query) {
 		List<T> resultList = Collections.checkedList(
@@ -96,6 +107,7 @@ public class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 		return resultList;
 	}
 	
+    @Transactional(readOnly = true)
 	@Override
 	public long executeSize(DbQueryCount<T> query) {
 		 Long result = (Long) query.getQuery().getSingleResult();
@@ -104,7 +116,8 @@ public class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 	
 	@Override
 	public DbQueryBuilder<T> createQueryBuilder() {
-		return new DbQueryBuilderImpl<T>(em, entityClass);
+		return new DbQueryBuilderImpl<>(em, entityClass, 
+            authorizator, translators);
 	}
 	
 }

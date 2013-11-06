@@ -44,4 +44,11 @@ final class ValueTimeCache<T> {
 		this.value = value;
 	}
 	
+    /**
+     * Immediately invalidate cached data.
+     */
+    public void invalidate() {
+        value = null;
+    }
+        
 }

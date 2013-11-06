@@ -10,23 +10,23 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
  *
  * @param <T>
  */
-public interface DataQueryBuilder<T> {
+public interface DataQueryBuilder<T extends DataObject> {
 
     /**
      * Provide methods that can be used to apply sort in {@link DataQuery}
      *
      * @param <T>
      */
-    public interface Sortable<T> {
+    public interface Sortable<T extends DataObject> {
 
         /**
-         *
-         * @param clazz If null sort clause is removed.
-         * @param propertyName
+         * Remove previously applied sort and set new.
+         * @param propertyName Set to null to remove sorting.
          * @param asc
          * @return
          */
-        DataQueryBuilder<T> sort(Class<?> clazz, String propertyName, boolean asc);
+        DataQueryBuilder<T> sort(String propertyName, boolean asc);
+        
     }
 
     /**
@@ -34,35 +34,22 @@ public interface DataQueryBuilder<T> {
      *
      * @param <T>
      */
-    public interface Filterable<T> {
+    public interface Filterable<T extends DataObject> {
 
         /**
-         * Remove all filters from.
-         *
-         * @return
+         * Remove all user applied filters.
+         * @return 
          */
-        DataQueryBuilder<T> filterClear();
-
+        DataQueryBuilder<T> claerFilters();
+        
         /**
-         * Add filter.
+         * Add given filter as AND to existing filters.
          *
-         * @param clazz
-         * @param type
-         * @param value
+         * @param filter
          * @return
          */
-        DataQueryBuilder<T> filter(Class<?> clazz, FilterType type, Object value);
+        DataQueryBuilder<T> addFilter(Object filter);
 
-        /**
-         * Add filter.
-         *
-         * @param clazz
-         * @param propertyName
-         * @param type
-         * @param value
-         * @return
-         */
-        DataQueryBuilder<T> filter(Class<?> clazz, String propertyName, FilterType type, Object value);
     }
 
     /**
