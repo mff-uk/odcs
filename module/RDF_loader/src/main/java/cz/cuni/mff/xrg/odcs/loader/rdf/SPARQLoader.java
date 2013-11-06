@@ -15,9 +15,11 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -48,6 +50,97 @@ public class SPARQLoader {
 		this.context = context;
 	}
 
+	/**
+	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
+	 * with endpoint authentication (name,password).
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphURI name of graph where RDF data are loading.
+	 * @param name            String name needed for authentication.
+	 * @param password        String password needed for authentication.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
+	 * @throws RDFException when loading data fault.
+	 */
+	public void loadToSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
+			String name, String password, WriteGraphType graphType,
+			InsertType insertType) throws RDFException {
+		List<String> endpointGraphsURI = new ArrayList<>();
+		endpointGraphsURI.add(defaultGraphURI);
+
+		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
+				graphType, insertType, BaseRDFRepo.getDefaultChunkSize());
+	}
+
+	/**
+	 * Load RDF data from repository to SPARQL endpointURL to the collection of
+	 * URI graphs without endpoint authentication.
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphURI List with names of graph where RDF data are
+	 *                        loading.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
+	 * @throws RDFException when loading data to SPARQL endpoint fail.
+	 */
+	public void loadToSPARQLEndpoint(URL endpointURL,
+			List<String> endpointGraphsURI, WriteGraphType graphType,
+			InsertType insertType) throws RDFException {
+
+		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
+				graphType, insertType, BaseRDFRepo.getDefaultChunkSize());
+	}
+
+	/**
+	 * Load RDF data from repository to SPARQL endpointURL to the one URI graph
+	 * without endpoint authentication.
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphURI name of graph where RDF data are loading.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
+	 * @throws RDFException when loading data fail.
+	 */
+	public void loadToSPARQLEndpoint(URL endpointURL, String defaultGraphURI,
+			WriteGraphType graphType, InsertType insertType) throws RDFException {
+		List<String> endpointGraphsURI = new ArrayList<>();
+		endpointGraphsURI.add(defaultGraphURI);
+
+		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
+				graphType, insertType, BaseRDFRepo.getDefaultChunkSize());
+	}
+
+	/**
+	 * Load RDF data from repository to SPARQL endpointURL to the collection of
+	 * URI graphs with endpoint authentication (name,password).
+	 *
+	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
+	 *                        RDF data.
+	 * @param defaultGraphURI List with names of graph where RDF data are
+	 *                        loading.
+	 * @param userName        String name needed for authentication.
+	 * @param password        String password needed for authentication.
+	 * @param graphType       One of way, how to solve loading RDF data to graph
+	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
+	 * @param insertType      One of way, how solve loading RDF data parts to
+	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                        STOP_WHEN_BAD_PART).
+	 * @param chunkSize       Size of insert part of triples which insert at
+	 *                        once to SPARQL endpoint.
+	 * @throws RDFException when loading data fault.
+	 */
 	public void loadToSPARQLEndpoint(URL endpointURL,
 			List<String> namedGraph, String userName,
 			String password, WriteGraphType graphType, InsertType insertType,
@@ -74,7 +167,6 @@ public class SPARQLoader {
 			connection = rdfDataUnit.getDataRepository().getConnection();
 
 			for (int i = 0; i < namedGraph.size(); i++) {
-
 				final String endpointGraph = namedGraph.get(i);
 
 				//clean target graph if nessasarry - via using given WriteGraphType 
@@ -84,6 +176,11 @@ public class SPARQLoader {
 				//starting to load data to target SPARQL endpoint
 				loadGraphDataToEndpoint(endpointURL, endpointGraph, chunkSize,
 						insertType);
+
+				if (context.canceled()) {
+					throw new InsertPartException(
+							"Loading data to SPARQL endpoint " + endpointURL + " was canceled by user");
+				}
 			}
 
 		} catch (RepositoryException ex) {
@@ -112,10 +209,11 @@ public class SPARQLoader {
 				try {
 					loadDataParts(endpointURL, tempGraph, insertType,
 							chunkSize);
-					//TODO Udelat to s tim contextem.
-					moveDataToTarget(endpointURL, tempGraph,
+					if (!context.canceled()) {
+						moveDataToTarget(endpointURL, tempGraph,
 								endpointGraph);
-					
+					}
+
 
 				} catch (InsertPartException e) {
 					throw new RDFException(e.getMessage(), e);
@@ -132,8 +230,10 @@ public class SPARQLoader {
 					try {
 						loadDataParts(endpointURL, tempGraph, insertType,
 								chunkSize);
-						moveDataToTarget(endpointURL, tempGraph,
-								endpointGraph);
+						if (!context.canceled()) {
+							moveDataToTarget(endpointURL, tempGraph,
+									endpointGraph);
+						}
 						break; //loaded sucessfull - leave infinite loop
 
 					} catch (InsertPartException e) {
@@ -200,6 +300,11 @@ public class SPARQLoader {
 		while (part != null) {
 			counter++;
 
+			if (context.canceled()) {
+				//stop loading Parts
+				logger.error("Loading data was canceled by user !!!");
+				break;
+			}
 			final String query = part;
 			part = getInsertQueryPart(chunkSize, lazy);
 
@@ -275,7 +380,8 @@ public class SPARQLoader {
 		logger.debug(finish);
 	}
 
-	private long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph) throws RDFException {
+	private long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph)
+			throws RDFException {
 		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
 
 		InputStreamReader inputStreamReader = rdfDataUnit
