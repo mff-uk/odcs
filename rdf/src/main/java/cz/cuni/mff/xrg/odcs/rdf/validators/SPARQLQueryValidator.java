@@ -29,7 +29,7 @@ public class SPARQLQueryValidator implements QueryValidator {
 
 	public SPARQLQueryValidator(String query) {
 		this.query = query;
-		this.message = "No errors - valid query.";
+		this.message = "";
 		this.requireSPARQLType = false;
 		this.requiredType = SPARQLQueryType.UNKNOWN;
 
@@ -37,7 +37,7 @@ public class SPARQLQueryValidator implements QueryValidator {
 
 	public SPARQLQueryValidator(String query, SPARQLQueryType requiredType) {
 		this.query = query;
-		this.message = "No errors - valid query.";
+		this.message = "";
 		this.requireSPARQLType = true;
 		this.requiredType = requiredType;
 	}

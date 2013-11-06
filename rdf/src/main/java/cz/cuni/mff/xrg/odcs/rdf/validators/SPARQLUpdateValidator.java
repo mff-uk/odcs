@@ -23,9 +23,14 @@ public class SPARQLUpdateValidator implements QueryValidator {
 
 	public SPARQLUpdateValidator(String updateQuery) {
 		this.updateQuery = updateQuery;
-		this.message = "No errors - valid query.";
+		this.message = "";
 	}
 
+	/**
+	 * Method for detection right syntax of query.
+	 *
+	 * @return true, if query is valid, false otherwise.
+	 */
 	@Override
 	public boolean isQueryValid() {
 		boolean isValid = true;
@@ -56,12 +61,17 @@ public class SPARQLUpdateValidator implements QueryValidator {
 				}
 			}
 		}
-		
+
 		emptyRepo.delete();
 
 		return isValid;
 	}
 
+	/**
+	 * String message describes syntax problem of validation query.
+	 *
+	 * @return empty string, when query is valid.
+	 */
 	@Override
 	public String getErrorMessage() {
 		return message;
