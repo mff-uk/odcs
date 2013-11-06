@@ -6,6 +6,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLoader;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.io.File;
@@ -213,7 +214,8 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		boolean isLoaded = false;
 
 		try {
-			rdfRepo.loadToSPARQLEndpoint(endpoint, goalGraphName, user,
+			SPARQLoader loader = new SPARQLoader(rdfRepo);
+			loader.loadToSPARQLEndpoint(endpoint, goalGraphName, user,
 					password,
 					WriteGraphType.OVERRIDE, InsertType.SKIP_BAD_PARTS);
 			isLoaded = true;
