@@ -18,6 +18,8 @@ import org.openrdf.model.Statement;
 
 import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
 
@@ -263,4 +265,12 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
 			RDFFormat format) throws RDFException;
+
+	/**
+	 *
+	 * @return Shared connection to repository.
+	 * @throws RepositoryException If something went wrong during the creation
+	 *                             of the Connection.
+	 */
+	public RepositoryConnection getConnection() throws RepositoryException;
 }
