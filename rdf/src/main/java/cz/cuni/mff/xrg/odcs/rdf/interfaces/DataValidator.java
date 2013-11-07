@@ -14,4 +14,11 @@ public interface DataValidator {
 	 * @return true, if data are valid, false otherwise.
 	 */
 	public boolean areDataValid();
+
+	/**
+	 * String message describes syntax problem of data validation.
+	 *
+	 * @return empty string, when all data are valid.
+	 */
+	public String getErrorMessage();
 }
