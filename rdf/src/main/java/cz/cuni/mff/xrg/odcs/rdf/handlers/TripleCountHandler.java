@@ -156,45 +156,46 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		return isStatementAdded;
 	}
 
-	protected void printFindedProblems() {
-		if (hasWarnings()) {
-			logger.debug("\nWARNINGS list:");
+	protected String getWarningsAsString() {
+		StringBuilder result = new StringBuilder();
 
-			int warningCount = 0;
-			for (TripleProblem next : warnings) {
-				warningCount++;
-				Statement st = next.getStatement();
+		int warningCount = 0;
 
-				logger.warn(
-						"\n" + warningCount + "] No added triple contains WARNING:"
-						+ "\n Subject:" + st.getSubject().toString()
-						+ "\n Predicate:" + st.getPredicate().toString()
-						+ "\n Object:" + st.getObject().toString()
-						+ "\n PROBLEM message: " + next.getMessage()
-						+ "\n Find on source line: " + next.getLine()
-						+ "\n Find on source column: " + next.getColumn());
-
-			}
+		for (TripleProblem next : warnings) {
+			warningCount++;
+			result.append(getDescribedProblem(next, warningCount));
 		}
-		if (hasErrors()) {
-			logger.debug("\nERRORS list:");
 
-			int errorCount = 0;
-			for (TripleProblem next : errors) {
-				errorCount++;
-				Statement st = next.getStatement();
+		return result.toString();
+	}
 
-				logger.error(
-						"\n" + errorCount + "] No added triple contains ERROR:"
-						+ "\n Subject:" + st.getSubject().toString()
-						+ "\n Predicate:" + st.getPredicate().toString()
-						+ "\n Object:" + st.getObject().toString()
-						+ "\n PROBLEM message: " + next.getMessage()
-						+ "\n Find on source line: " + next.getLine()
-						+ "\n Find on source column: " + next.getColumn());
+	protected String getErorrsAsString() {
+		StringBuilder result = new StringBuilder();
 
-			}
+		int errorCount = 0;
+
+		for (TripleProblem next : errors) {
+			errorCount++;
+			result.append(getDescribedProblem(next, errorCount));
 		}
+
+		return result.toString();
+	}
+
+	private String getDescribedProblem(TripleProblem next, int errorCount) {
+
+		Statement statement = next.getStatement();
+		String problemType = next.getConflictType().toString();
+
+		String problem = "\n" + errorCount + "] No added triple contains " + problemType + ":"
+				+ "\n Subject:" + statement.getSubject().toString()
+				+ "\n Predicate:" + statement.getPredicate().toString()
+				+ "\n Object:" + statement.getObject().toString()
+				+ "\n PROBLEM message: " + next.getMessage()
+				+ "\n Find on source line: " + next.getLine()
+				+ "\n Find on source column: " + next.getColumn();
+
+		return problem;
 	}
 
 	protected boolean hasErrors() {
@@ -243,6 +244,8 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	public void setGraphContext(Resource... graphs) {
 		if (graphs != null) {
 			super.enforceContext(graphs);
+
+
 		}
 	}
 }

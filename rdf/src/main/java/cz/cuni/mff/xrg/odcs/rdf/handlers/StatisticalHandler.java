@@ -91,4 +91,38 @@ public class StatisticalHandler extends TripleCountHandler {
 			return false;
 		}
 	}
+
+	private void printFindedProblems() {
+		if (hasWarnings()) {
+			logger.debug("\nWARNINGS list:");
+
+			logger.warn(getWarningsAsString());
+
+		}
+		if (hasErrors()) {
+			logger.debug("\nERRORS list:");
+			logger.error(getErorrsAsString());
+		}
+	}
+
+	/**
+	 *
+	 * @return String representation of all finded problems with data
+	 *         validation. If all data are valid, return empty string.
+	 */
+	public String getFindedProblemsAsString() {
+		StringBuilder result = new StringBuilder();
+
+		if (hasWarnings()) {
+			result.append("\nWARNINGS list:");
+			result.append(getWarningsAsString());
+
+		}
+		if (hasErrors()) {
+			result.append("\nERRORS list:");
+			result.append(getErorrsAsString());
+		}
+
+		return result.toString();
+	}
 }
