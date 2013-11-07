@@ -58,7 +58,7 @@ public class RepositoryDataValidator implements DataValidator {
 				tempFile = File.createTempFile("temp", "file");
 				dataUnit
 						.loadToFile(tempFile.getAbsolutePath(), RDFFormatType.N3,
-						true, true);
+						true, false);
 
 				try (InputStreamReader fileStream = new InputStreamReader(
 						new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
@@ -67,7 +67,9 @@ public class RepositoryDataValidator implements DataValidator {
 							"tempRepo");
 
 					final StatisticalHandler handler = new StatisticalHandler(
-							tempRepo.getDataRepository().getConnection(), true);
+							tempRepo.getConnection(), true);
+
+					handler.setGraphContext(tempRepo.getDataGraph());
 
 					RDFParser parser = Rio.createParser(RDFFormat.N3);
 					parser.setRDFHandler(handler);
