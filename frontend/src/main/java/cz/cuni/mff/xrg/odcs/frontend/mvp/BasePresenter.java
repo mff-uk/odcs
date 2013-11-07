@@ -12,6 +12,7 @@ public abstract class BasePresenter extends ViewComponent {
 
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
+             
 		Class presenterClass = this.getClass();
 		Model modelAnnotation = (Model) presenterClass.getAnnotation(Model.class);
 		Class modelClass = modelAnnotation.value();

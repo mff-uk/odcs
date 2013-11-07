@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor;
+package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomTable;
@@ -7,7 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Generate column with action buttons.
+ * Generate column with action buttons. This class can be used
+ * just with one table instance. Using with multiple instances may
+ * result in unexpected behavior.
  *
  * @author Petyr
  */
@@ -18,6 +20,11 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
      */
     public static abstract class Action implements Button.ClickListener {
        
+        /**
+         * Source of the event ie. the table.
+         */
+        protected CustomTable source;
+                
         @Override
         public void buttonClick(Button.ClickEvent event) {
             // in button.data the row id is stored
@@ -84,6 +91,8 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
                 // we show button
                 Button button = new Button(template.name);
                 button.setWidth(template.width);
+                // set source }table]
+                template.action.source = source;
                 button.addClickListener(template.action);
                 // set button data as id
                 button.setData(itemId);

@@ -14,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ActionColumnGenerator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.dialogs.ConfirmDialog;

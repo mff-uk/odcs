@@ -35,7 +35,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ActionColumnGenerator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import java.io.FileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

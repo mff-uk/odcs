@@ -1,24 +1,22 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor;
+package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
-import com.vaadin.ui.CustomComponent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Presenter for {@link ExecutionView}.
+ * Presenter for {@link ExecutionListPresenter}.
  *
  * @author Petyr
  */
 @Component
 @Scope("prototype")
-public class ExecutionMonitorPresenter implements ExecutionView.ExecutionPresenter {
+public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Autowired
     private DbExecution dbExecution;
@@ -27,40 +25,27 @@ public class ExecutionMonitorPresenter implements ExecutionView.ExecutionPresent
     private PipelineFacade pipelineFacade;
     
     @Autowired
-    private ExecutionView view;
-    
-     @Autowired
-    private ContainerAuthorizator containerAuth;
-    
-    private ReadOnlyContainer<PipelineExecution> pipelineContainer;
+    private ExecutionListView view;
+        
+    private ExecutionListData dataObject;
     
     @Override
-    public CustomComponent enter() {
-        // create main container
-        final ExecutionAccessor acessor = new ExecutionAccessor();
-        pipelineContainer = new ReadOnlyContainer<>(dbExecution, acessor);
-        containerAuth.authorize(pipelineContainer, acessor.getEntityClass());
+    public Object enter() {
+        // prepare data object
+        dataObject = new ExecutionListData(new ReadOnlyContainer<>(dbExecution, 
+            new ExecutionAccessor()));
         // prepare view
-        CustomComponent viewComponent = view.enter(this);
-        view.setDisplay(pipelineContainer);
+        Object viewObject = view.enter(this);
+        // set data object
+        view.setDisplay(dataObject);
         // return main component
-        return viewComponent;
+        return viewObject;
     }
-    
-    @Override
-    public boolean isModified() {
-        return false;
-    }
-
-    @Override
-    public void save() {
-        // nothing to save here
-    }
-    
+        
     @Override
     public void refresh() {
         // TODO check for database change
-        //pipelineContainer.refresh();
+        dataObject.container.refresh();
     }
 
     @Override

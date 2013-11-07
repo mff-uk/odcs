@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor;
+package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.data.Property;
@@ -15,28 +15,28 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
-import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ActionColumnGenerator.Action;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Implementation of {@link ExecutionView}.
+ * Implementation of view for {@link ExecutionListPresenter}.
  *
  * @author Petyr
  */
 @Component
 @Scope("prototype")
-public class ExecutionViewImpl extends CustomComponent implements ExecutionView {
+public class ExecutionListViewImpl extends CustomComponent implements ExecutionListPresenter.ExecutionListView {
 
     // TODO: get from user settings
     private static final int PAGE_LENGTH = 20;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExecutionViewImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
 
     private IntlibPagedTable monitorTable;
 
@@ -52,7 +52,7 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
     private DebuggingView debugView;
     
     @Override
-    public CustomComponent enter(final ExecutionPresenter presenter) {
+    public Object enter(final ExecutionListPresenter presenter) {
         // build page
         buildPage(presenter);
         
@@ -62,8 +62,8 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
     }
 
     @Override
-    public void setDisplay(ReadOnlyContainer<PipelineExecution> executions) {
-        monitorTable.setContainerDataSource(executions);
+    public void setDisplay(ExecutionListPresenter.ExecutionListData dataObject) {
+        monitorTable.setContainerDataSource(dataObject.container);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
      *
      * @param presenter
      */
-    private void buildPage(final ExecutionPresenter presenter) {
+    private void buildPage(final ExecutionListPresenter presenter) {
         mainLayout = new Panel("");
         // split page into two parts
         hsplit = new HorizontalSplitPanel();
@@ -194,7 +194,7 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
      * @param presenter
      * @return
      */
-    private ActionColumnGenerator createColumnGenerator(final ExecutionPresenter presenter) {
+    private ActionColumnGenerator createColumnGenerator(final ExecutionListPresenter presenter) {
         ActionColumnGenerator generator = new ActionColumnGenerator();
         // add action buttons
 
