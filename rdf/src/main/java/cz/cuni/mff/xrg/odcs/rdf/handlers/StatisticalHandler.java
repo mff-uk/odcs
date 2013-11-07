@@ -9,8 +9,8 @@ import org.openrdf.rio.RDFHandlerException;
  *
  * @author Jiri Tomes
  *
- * Class allow monitor better the extraction process - information about loaded
- * triples and detail log.
+ * Class allow monitor better the extraction data process - information about
+ * parsed triples and detail error log.
  *
  */
 public class StatisticalHandler extends TripleCountHandler {
@@ -19,9 +19,29 @@ public class StatisticalHandler extends TripleCountHandler {
 
 	private long addedCount = 0;
 
+	/**
+	 * Default hadler contructor for parsing and adding data to repository.
+	 *
+	 * @param connection connection to repository where we add data.
+	 */
 	public StatisticalHandler(RepositoryConnection connection) {
 		super(connection);
 		logger = Logger.getLogger(StatisticalHandler.class);
+	}
+
+	/**
+	 * Handler constructor used for check data validation in repository.
+	 *
+	 * @param connection connection to repository where we add data.
+	 * @param checkData  true for logging validation, false for logging parsing
+	 *                   and adding - same as using constructor {@link
+	 * StatisticalHandler#StatisticalHandler(org.openrdf.repository.RepositoryConnection)
+	 *                   }
+	 *
+	 */
+	public StatisticalHandler(RepositoryConnection connection, boolean checkData) {
+		super(connection, checkData);
+		logger.debug("Starting data validating - SUCCESSFUL");
 	}
 
 	@Override
@@ -31,10 +51,15 @@ public class StatisticalHandler extends TripleCountHandler {
 		if (getTripleCount() % TRIPLE_LOGGED_SIZE == 0 && isStatementAdded()) {
 
 			addedCount += TRIPLE_LOGGED_SIZE;
-
-			logger.debug(String.format(
-					"Have been parsed and added %s TRIPLES yet.",
-					String.valueOf(addedCount)));
+			if (checkData) {
+				logger.debug(String.format(
+						"Have been valided %s TRIPLES yet.",
+						String.valueOf(addedCount)));
+			} else {
+				logger.debug(String.format(
+						"Have been parsed and added %s TRIPLES yet.",
+						String.valueOf(addedCount)));
+			}
 
 		}
 	}
@@ -45,9 +70,25 @@ public class StatisticalHandler extends TripleCountHandler {
 		printFindedProblems();
 	}
 
+	/**
+	 * Reset counting triples, finded errors and warnings.
+	 */
 	@Override
 	public void reset() {
 		super.reset();
 		addedCount = 0;
+	}
+
+	/**
+	 *
+	 * @return if during parsing data using handler were find some problems
+	 *         (invalid data) or not.
+	 */
+	public boolean hasFindedProblems() {
+		if (hasWarnings() || hasErrors()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
