@@ -12,7 +12,10 @@ import cz.cuni.mff.xrg.odcs.commons.web.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,7 +61,23 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final WriteGraphType graphType = config.graphOption;
 		final InsertType insertType = config.insertOption;
 		final long chunkSize = config.chunkSize;
+		final boolean validateDataBefore = config.validDataBefore;
 
+		if (validateDataBefore) {
+			DataValidator dataValidator = new RepositoryDataValidator(
+					rdfDataUnit);
+
+			if (!dataValidator.areDataValid()) {
+				final String message = "RDF Data to load are not valid - LOAD to SPARQL FAIL";
+				logger.info(message);
+				logger.error(dataValidator.getErrorMessage());
+
+				throw new RDFException(message);
+			} else {
+				logger.info("RDF Data for loading are VALID");
+				logger.info("Loading to SPARQL endpoint start just now");
+			}
+		}
 		final long triplesCount = rdfDataUnit.getTripleCount();
 		logger.info("Loading {} triples", triplesCount);
 
