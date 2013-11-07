@@ -34,8 +34,31 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 	private boolean isStatementAdded = false;
 
+	protected boolean checkData;
+
+	/**
+	 * Default hadler contructor for parsing and adding data to repository.
+	 *
+	 * @param connection connection to repository where we add data.
+	 */
 	public TripleCountHandler(RepositoryConnection connection) {
 		super(connection);
+		this.checkData = false;
+	}
+
+	/**
+	 * Handler constructor used for check data validation in repository.
+	 *
+	 * @param connection connection to repository where we add data.
+	 * @param checkData  true for logging validation, false for logging parsing
+	 *                   and adding - same as using constructor {@link
+	 * TripleCountHandler#TripleCountHandler(org.openrdf.repository.RepositoryConnection)
+	 *                   }.
+	 *
+	 */
+	public TripleCountHandler(RepositoryConnection connection, boolean checkData) {
+		super(connection);
+		this.checkData = checkData;
 	}
 
 	private long tripleCount = 0;
@@ -75,9 +98,17 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	public void startRDF() throws RDFHandlerException {
 		try {
 			super.startRDF();
-			logger.debug("Starting parsing - SUCCESSFUL");
+			if (checkData) {
+				logger.debug("Starting data validating - SUCCESSFUL");
+			} else {
+				logger.debug("Starting parsing - SUCCESSFUL");
+			}
 		} catch (RDFHandlerException e) {
-			logger.debug("Starting parsing - FAIL");
+			if (checkData) {
+				logger.debug("Starting data validating - FAIL");
+			} else {
+				logger.debug("Starting parsing - FAIL");
+			}
 			throw new RDFHandlerException(e.getMessage(), e);
 		}
 	}
@@ -95,12 +126,26 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		}
 	}
 
+	/**
+	 * Add next finded error during data parsing.
+	 *
+	 * @param message describe of finded error
+	 * @param line    number of line where error was find out
+	 * @param column  number of column where error was find out
+	 */
 	public void addError(String message, int line, int column) {
 		nextProblem = new TripleProblem(message, line, column,
 				ParsingConfictType.ERROR);
 		hasProblem = true;
 	}
 
+	/**
+	 * Add next finded warning during data parsing.
+	 *
+	 * @param message describe of finded warning
+	 * @param line    number of line where warning was find out
+	 * @param column  number of column where warning was find out
+	 */
 	public void addWarning(String message, int line, int column) {
 		nextProblem = new TripleProblem(message, line, column,
 				ParsingConfictType.WARNING);
@@ -112,7 +157,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	protected void printFindedProblems() {
-		if (!warnings.isEmpty()) {
+		if (hasWarnings()) {
 			logger.debug("\nWARNINGS list:");
 
 			int warningCount = 0;
@@ -131,7 +176,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 			}
 		}
-		if (!errors.isEmpty()) {
+		if (hasErrors()) {
 			logger.debug("\nERRORS list:");
 
 			int errorCount = 0;
@@ -152,18 +197,39 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		}
 	}
 
+	protected boolean hasErrors() {
+		return !errors.isEmpty();
+	}
+
+	protected boolean hasWarnings() {
+		return !warnings.isEmpty();
+	}
+
+	/**
+	 *
+	 * @return count of extracted triples.
+	 */
 	@Override
 	public long getTripleCount() {
 		return tripleCount;
 	}
 
+	/**
+	 * Reset counting triples, finded errors and warnings.
+	 */
 	@Override
 	public void reset() {
 		tripleCount = 0;
 		hasProblem = false;
+		warnings.clear();
+		errors.clear();
 
 	}
 
+	/**
+	 *
+	 * @return true if there is no triples, false otherwise.
+	 */
 	@Override
 	public boolean isEmpty() {
 		return tripleCount == 0;
