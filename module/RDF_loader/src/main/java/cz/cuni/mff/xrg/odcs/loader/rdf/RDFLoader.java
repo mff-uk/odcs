@@ -71,6 +71,8 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 				final String message = "RDF Data to load are not valid - LOAD to SPARQL FAIL";
 				logger.info(message);
 				logger.error(dataValidator.getErrorMessage());
+				context.sendMessage(MessageType.WARNING, dataValidator
+						.getErrorMessage());
 
 				throw new RDFException(message);
 			} else {
