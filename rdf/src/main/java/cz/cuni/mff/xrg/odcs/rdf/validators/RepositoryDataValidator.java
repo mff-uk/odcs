@@ -25,12 +25,16 @@ import org.openrdf.rio.helpers.BasicParserSettings;
  */
 public class RepositoryDataValidator implements DataValidator {
 
-	private static Logger logger = Logger.getLogger(RepositoryDataValidator.class);
+	private static Logger logger = Logger.getLogger(
+			RepositoryDataValidator.class);
 
 	private RDFDataUnit dataUnit;
 
+	private String message;
+
 	public RepositoryDataValidator(RDFDataUnit dataUnit) {
 		this.dataUnit = dataUnit;
+		this.message = "";
 	}
 
 	/**
@@ -95,13 +99,17 @@ public class RepositoryDataValidator implements DataValidator {
 					parser.parse(fileStream, "");
 
 					isValid = !handler.hasFindedProblems();
+					message = handler.getFindedProblemsAsString();
 				}
 
 
 			} catch (IOException | CannotOverwriteFileException | RDFException | RepositoryException e) {
-				logger.debug(e.getMessage());
+				message = e.getMessage();
+				logger.error(message);
+
 			} catch (RDFParseException | RDFHandlerException e) {
-				logger.debug("Problem with data parsing :" + e.getMessage());
+				message = "Problem with data parsing :" + e.getMessage();
+				logger.error(message);
 			} finally {
 				if (tempFile != null) {
 					tempFile.delete();
@@ -114,5 +122,10 @@ public class RepositoryDataValidator implements DataValidator {
 
 		return isValid;
 
+	}
+
+	@Override
+	public String getErrorMessage() {
+		return message;
 	}
 }
