@@ -41,7 +41,7 @@ public class StatisticalHandler extends TripleCountHandler {
 	 */
 	public StatisticalHandler(RepositoryConnection connection, boolean checkData) {
 		super(connection, checkData);
-		logger.debug("Starting data validating - SUCCESSFUL");
+		logger = Logger.getLogger(StatisticalHandler.class);
 	}
 
 	@Override
