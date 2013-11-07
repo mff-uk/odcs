@@ -7,7 +7,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 
-
 /**
  *
  * @author Petyr
@@ -29,6 +28,8 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 	public InsertType insertOption = InsertType.STOP_WHEN_BAD_PART;
 
 	public long chunkSize = 100;
+
+	public boolean validDataBefore = false;
 
 	@Override
 	public boolean isValid() {
