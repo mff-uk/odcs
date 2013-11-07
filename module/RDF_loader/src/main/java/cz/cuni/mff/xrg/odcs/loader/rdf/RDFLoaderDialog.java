@@ -101,6 +101,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private List<InsertItem> insertItems = new ArrayList<>();
 
+	private CheckBox validateDataBefore;
+
 	/**
 	 * Basic constructor.
 	 */
@@ -265,7 +267,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		dataPartsOption.setValue(stop.getDescription());
 	}
-
 
 	/**
 	 * Builds main layout contains {@link #tabSheet} with all dialog components.
@@ -524,7 +525,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/kb");
 			textFieldGraph.addValidator(new Validator() {
-
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -556,7 +556,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			buttonGraphRem.setCaption("-");
 			buttonGraphRem.setData(row);
 			buttonGraphRem.addClickListener(new Button.ClickListener() {
-
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -582,7 +581,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		buttonGraphAdd.setWidth("55px");
 		buttonGraphAdd.setHeight("-1px");
 		buttonGraphAdd.addClickListener(new Button.ClickListener() {
-
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -655,7 +653,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		chunkParts.setInputPrompt(
 				"Chunk size of triples which inserted at once");
 		chunkParts.addValidator(new Validator() {
-	
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -693,7 +690,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		chunkDefault.setWidth("90px");
 		chunkDefault.setHeight("-1px");
 		chunkDefault.addClickListener(new Button.ClickListener() {
-
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -704,6 +700,13 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		});
 		verticalLayoutDetails.addComponent(chunkDefault);
 
+		//add checkbox for data validation
+		validateDataBefore = new CheckBox("Validate data before loading");
+		validateDataBefore.setValue(false);
+		validateDataBefore.setWidth("-1px");
+		validateDataBefore.setHeight("-1px");
+
+		verticalLayoutDetails.addComponent(validateDataBefore);
 
 		return verticalLayoutDetails;
 	}
@@ -742,6 +745,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			config.Password = passwordFieldPass.getValue();
 			config.GraphsUri = griddata;
 			config.chunkSize = chunkSize;
+			config.validDataBefore = validateDataBefore.getValue();
 
 			return config;
 		}
@@ -756,7 +760,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 *                         null	null	null	null	null	null	null	null	null	null
+	 *                         null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
 	 *             {@link #passwordFieldPass}, {@link #optionGroupDetail},
 	 *             {@link #griddata} , in read-only mode or when requested operation is not
 	 *                         supported.
@@ -786,6 +791,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 			String chunkSize = String.valueOf(conf.chunkSize);
 			chunkParts.setValue(chunkSize);
+
+			validateDataBefore.setValue(conf.validDataBefore);
 
 			try {
 				griddata = conf.GraphsUri;
