@@ -42,8 +42,8 @@ public class IntlibHelper {
 			case RUNNING:
 				img = new ThemeResource("icons/running.png");
 				break;
-			case SCHEDULED:
-				img = new ThemeResource("icons/scheduled.png");
+			case QUEUED:
+				img = new ThemeResource("icons/queued.png");
 				break;
 			case CANCELLED:
 				img = new ThemeResource("icons/cancelled.png");

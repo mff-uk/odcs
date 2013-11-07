@@ -39,7 +39,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanva
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.SCHEDULED;
+import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import java.net.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -653,7 +653,7 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		
-		if (pExec.getStatus() == RUNNING || pExec.getStatus() == SCHEDULED) {
+		if (pExec.getStatus() == RUNNING || pExec.getStatus() == QUEUED) {
 			//App.getApp().getRefreshThread().refreshExecution(pExec, debug);
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debug, pExec));
 		}

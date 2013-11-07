@@ -22,7 +22,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FINISHED_SUCCESS;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FINISHED_WARNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.SCHEDULED;
+import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -199,7 +199,7 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 		logLayout.addComponent(buttonBar);
 		logLayout.setExpandRatio(buttonBar, 0);
 
-		if (pipelineExec.getStatus() == RUNNING || pipelineExec.getStatus() == SCHEDULED) {
+		if (pipelineExec.getStatus() == RUNNING || pipelineExec.getStatus() == QUEUED) {
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(dView, pipelineExec));
 		}
 		return logLayout;
@@ -650,8 +650,8 @@ public class ExecutionMonitor extends ViewComponent implements ClickListener {
 					case RUNNING:
 						img = new ThemeResource("icons/running.png");
 						break;
-					case SCHEDULED:
-						img = new ThemeResource("icons/scheduled.png");
+					case QUEUED:
+						img = new ThemeResource("icons/queued.png");
 						break;
 					case CANCELLED:
 						img = new ThemeResource("icons/cancelled.png");

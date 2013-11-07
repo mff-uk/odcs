@@ -82,14 +82,14 @@ class ExecutionSanitizer {
 
 	/**
 	 * Restart given {@link PipelineExecution} back to
-	 * {@link PipelineExecutionStatus#SCHEDULED} state.
+	 * {@link PipelineExecutionStatus#QUEUED} state.
 	 * 
 	 * @param execution
 	 */
 	private void sanitizeRunning(PipelineExecution execution) {
 		LOG.info("Execution has been re-scheduled after backend shutdown.");
 		// set state back to scheduled
-		execution.setStatus(PipelineExecutionStatus.SCHEDULED);
+		execution.setStatus(PipelineExecutionStatus.QUEUED);
 	}
 
 	/**

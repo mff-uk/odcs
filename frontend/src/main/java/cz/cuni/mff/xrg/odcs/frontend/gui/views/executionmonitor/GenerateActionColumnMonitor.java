@@ -48,8 +48,8 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 			testStatus = (PipelineExecutionStatus) propStatus.getValue();
 			testDebug = (boolean) prop2.getValue();
 
-			//If item execution status is SCHEDULED then for that item will be shown Cancel button
-			if (testStatus == PipelineExecutionStatus.SCHEDULED
+			//If item execution status is QUEUED then for that item will be shown Cancel button
+			if (testStatus == PipelineExecutionStatus.QUEUED
 					|| testStatus == PipelineExecutionStatus.RUNNING) {
 				Button stopButton = new Button("Cancel");
 				stopButton.setData(new ActionButtonData("cancel", itemId));
@@ -81,7 +81,7 @@ public class GenerateActionColumnMonitor implements CustomTable.ColumnGenerator 
 			}
 
 			//If item debug is true then for that item will be shown Debug data button
-			if (testDebug && !testStatus.equals(PipelineExecutionStatus.SCHEDULED)) {
+			if (testDebug && !testStatus.equals(PipelineExecutionStatus.QUEUED)) {
 				Button debugButton = new Button("Debug data");
 
 				debugButton.setData(new ActionButtonData("debug", itemId));

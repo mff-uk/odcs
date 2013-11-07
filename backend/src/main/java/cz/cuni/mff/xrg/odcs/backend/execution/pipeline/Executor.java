@@ -142,7 +142,7 @@ public class Executor implements Runnable {
 		File coreExecutionFile = new File(
 				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
 				execution.getContext().getRootPath());
-		if (execution.getStatus() == PipelineExecutionStatus.SCHEDULED) {
+		if (execution.getStatus() == PipelineExecutionStatus.QUEUED) {
 			// new run, check for directory
 			if (coreExecutionFile.exists() && coreExecutionFile.isDirectory()) {
 				// delete

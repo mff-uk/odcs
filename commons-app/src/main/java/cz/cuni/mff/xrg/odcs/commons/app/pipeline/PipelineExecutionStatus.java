@@ -13,7 +13,7 @@ public enum PipelineExecutionStatus {
     /**
      * Pipeline is scheduled for run and will run as soon as possible.
      */
-	SCHEDULED,
+	QUEUED,
 	/**
 	 * Pipeline is recently running.
 	 */

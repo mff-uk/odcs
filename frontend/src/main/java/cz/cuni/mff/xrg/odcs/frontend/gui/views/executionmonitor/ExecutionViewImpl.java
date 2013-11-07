@@ -209,7 +209,7 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
                 Property propStatus = source.getItem(id).getItemProperty("status");
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 // ...
-                return status == PipelineExecutionStatus.SCHEDULED
+                return status == PipelineExecutionStatus.QUEUED
                     || status == PipelineExecutionStatus.RUNNING;
             }
         });
@@ -226,7 +226,7 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
                 // ...
-                return !isDebug && status != PipelineExecutionStatus.SCHEDULED;
+                return !isDebug && status != PipelineExecutionStatus.QUEUED;
             }
         });
 
@@ -242,7 +242,7 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
                 // ...
-                return isDebug && status != PipelineExecutionStatus.SCHEDULED;
+                return isDebug && status != PipelineExecutionStatus.QUEUED;
             }
         });
 
@@ -320,7 +320,7 @@ public class ExecutionViewImpl extends CustomComponent implements ExecutionView 
         logLayout.setExpandRatio(buttonBar, 0);
         
         if (execution.getStatus() == PipelineExecutionStatus.RUNNING || 
-            execution.getStatus() == PipelineExecutionStatus.SCHEDULED) {
+            execution.getStatus() == PipelineExecutionStatus.QUEUED) {
 			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, 
                 RefreshManager.getDebugRefresher(debugView, execution));
 		}

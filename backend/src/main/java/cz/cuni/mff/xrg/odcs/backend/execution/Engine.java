@@ -117,7 +117,7 @@ public class Engine implements ApplicationListener<CheckDatabaseEvent> {
 			return;
 		}
 		LOG.trace("Checking for new executions.");
-		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions(PipelineExecutionStatus.SCHEDULED);
+		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions(PipelineExecutionStatus.QUEUED);
 		// run pipeline executions ..
 		for (PipelineExecution item : toExecute) {
 			run(item);

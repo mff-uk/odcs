@@ -126,7 +126,7 @@ public class PipelineExecution implements Serializable, DataObject {
 	 * @param pipeline
 	 */
 	public PipelineExecution(Pipeline pipeline) {
-		this.status = PipelineExecutionStatus.SCHEDULED;
+		this.status = PipelineExecutionStatus.QUEUED;
 		this.pipeline = pipeline;
 		this.isDebugging = false;
 		this.schedule = null;

@@ -196,7 +196,7 @@ public class DebuggingView extends CustomComponent {
 	 * @return Execution is finished.
 	 */
 	public boolean isRunFinished() {
-		return !(pipelineExec.getStatus() == PipelineExecutionStatus.SCHEDULED || pipelineExec.getStatus() == PipelineExecutionStatus.RUNNING || pipelineExec.getStatus() == PipelineExecutionStatus.CANCELLING);
+		return !(pipelineExec.getStatus() == PipelineExecutionStatus.QUEUED || pipelineExec.getStatus() == PipelineExecutionStatus.RUNNING || pipelineExec.getStatus() == PipelineExecutionStatus.CANCELLING);
 	}
 
 	public boolean isRefreshingAutomatically() {
