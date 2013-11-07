@@ -117,12 +117,24 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	public void endRDF() throws RDFHandlerException {
 		try {
 			super.endRDF();
-			logger.debug("Ending parsing - SUCCESSFUL");
-			logger.debug("TOTAL ADDED:" + getTripleCount() + " triples");
+			if (checkData) {
+				logger.debug("Ending data validating - SUCCESSFUL");
+				logger.debug("TOTAL VALIDATED:" + getTripleCount() + " triples");
+			} else {
+				logger.debug("Ending parsing - SUCCESSFUL");
+				logger.debug("TOTAL ADDED:" + getTripleCount() + " triples");
+			}
 		} catch (RDFHandlerException e) {
 			logger.error(e.getMessage());
-			logger.debug("TOTAL ADDED:" + getTripleCount() + " triples");
-			logger.debug("Ending parsing - FAIL");
+			if (checkData) {
+				logger.debug("Ending data validating - FAIL");
+				logger.debug("TOTAL VALIDATED:" + getTripleCount() + " triples");
+
+			} else {
+				logger.debug("Ending parsing - FAIL");
+				logger.debug("TOTAL ADDED:" + getTripleCount() + " triples");
+
+			}
 		}
 	}
 
