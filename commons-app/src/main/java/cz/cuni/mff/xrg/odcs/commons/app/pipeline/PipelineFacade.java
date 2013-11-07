@@ -22,7 +22,6 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
  * Facade providing actions with pipelines.
  *
@@ -30,416 +29,413 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class PipelineFacade {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
-	
-	/**
-	 * Entity manager for accessing database with persisted objects
-	 */
-	@PersistenceContext
-	private EntityManager em;
-	
-	@Autowired(required = false)
-	private AuthenticationContext authCtx;
+    private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
+    /**
+     * Entity manager for accessing database with persisted objects
+     */
+    @PersistenceContext
+    private EntityManager em;
+    @Autowired(required = false)
+    private AuthenticationContext authCtx;
 
-	/* ******************* Methods for managing Pipeline ******************** */
+    /* ******************* Methods for managing Pipeline ******************** */
+    /**
+     * Pipeline factory with preset currently logged-in {@link User} as owner.
+     * Created instance is not yet managed by {@link EntityManager}, thus needs
+     * to be saved with {@link #save(Pipeline)} method.
+     *
+     * @return newly created pipeline
+     */
+    public Pipeline createPipeline() {
+        Pipeline pipeline = new Pipeline();
+        pipeline.setGraph(new PipelineGraph());
+        if (authCtx != null) {
+            pipeline.setUser(authCtx.getUser());
+        }
+        return pipeline;
+    }
 
-	/**
-	 * Pipeline factory with preset currently logged-in {@link User} as owner.
-	 * Created instance is not yet managed by {@link EntityManager}, thus needs
-	 * to be saved with {@link #save(Pipeline)} method.
-	 *
-	 * @return newly created pipeline
-	 */
-	public Pipeline createPipeline() {
-		Pipeline pipeline = new Pipeline();
-		pipeline.setGraph(new PipelineGraph());
-		if (authCtx != null) {
-			pipeline.setUser(authCtx.getUser());
-		}
-		return pipeline;
-	}
-	
-	/**
-	 * Creates a clone of given pipeline and returns it as a new instance.
-	 * Original owner is not preserved, rather currently logged in user is set
-	 * as an owner of the newly created pipeline.
-	 * 
-	 * @param pipeline original pipeline to copy
-	 * @return newly copied pipeline
-	 */
-	@PreAuthorize("hasPermission(#pipeline, 'copy')")
-	public Pipeline copyPipeline(Pipeline pipeline) {
-		Pipeline nPipeline = new Pipeline(pipeline);
-		if (authCtx != null) {
-			nPipeline.setUser(authCtx.getUser());
-		}
-		return nPipeline;
-	}
+    /**
+     * Creates a clone of given pipeline and returns it as a new instance.
+     * Original owner is not preserved, rather currently logged in user is set
+     * as an owner of the newly created pipeline.
+     *
+     * @param pipeline original pipeline to copy
+     * @return newly copied pipeline
+     */
+    @PreAuthorize("hasPermission(#pipeline, 'copy')")
+    public Pipeline copyPipeline(Pipeline pipeline) {
+        Pipeline nPipeline = new Pipeline(pipeline);
+        if (authCtx != null) {
+            nPipeline.setUser(authCtx.getUser());
+        }
+        return nPipeline;
+    }
 
-	/**
-	 * Returns list of all pipelines persisted in the database.
-	 *
-	 * @return list of pipelines
-	 */
-	@PostFilter("hasPermission(filterObject,'view')")
-	public List<Pipeline> getAllPipelines() {
+    /**
+     * Returns list of all pipelines persisted in the database.
+     *
+     * @return list of pipelines
+     */
+    @PostFilter("hasPermission(filterObject,'view')")
+    public List<Pipeline> getAllPipelines() {
 
-		@SuppressWarnings("unchecked")
-		List<Pipeline> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM Pipeline e").getResultList(),
-				Pipeline.class
-		);
+        @SuppressWarnings("unchecked")
+        List<Pipeline> resultList = Collections.checkedList(
+                em.createQuery("SELECT e FROM Pipeline e").getResultList(),
+                Pipeline.class);
 
-		return resultList;
-	}
-	
-	/**
-	 * Find pipeline in database by ID and return it.
-	 *
-	 * @param id of Pipeline
-	 * @return Pipeline the found pipeline or null if the pipeline with given ID
-	 *					does not exist
-	 */
-	@PostAuthorize("hasPermission(returnObject,'view')")
-	public Pipeline getPipeline(long id) {
-		return em.find(Pipeline.class, id);
-	}
+        return resultList;
+    }
 
-	/**
-	 * Saves any modifications made to the pipeline into the database.
-	 *
-	 * @param pipeline
-	 */
-	@Transactional
-	@PreAuthorize("hasPermission(#pipeline,'save')")
-	public void save(Pipeline pipeline) {
-		if (pipeline.getId() == null) {
-			em.persist(pipeline);
-		} else {
-			em.merge(pipeline);
-		}
-	}
+    /**
+     * Find pipeline in database by ID and return it.
+     *
+     * @param id of Pipeline
+     * @return Pipeline the found pipeline or null if the pipeline with given ID
+     * does not exist
+     */
+    @PostAuthorize("hasPermission(returnObject,'view')")
+    public Pipeline getPipeline(long id) {
+        return em.find(Pipeline.class, id);
+    }
 
-	/**
-	 * Deletes pipeline from database.
-	 *
-	 * @param pipeline
-	 */
-	@Transactional
-	@PreAuthorize("hasPermission(#pipeline, 'delete')")
-	public void delete(Pipeline pipeline) {
-		// we might be trying to remove detached entity
-		if (!em.contains(pipeline) && pipeline.getId() != null) {
-			pipeline = getPipeline(pipeline.getId());
-		}
-		em.remove(pipeline);
-	}
-	
-	/**
-	 * Fetches all pipelines using give DPU template.
-	 * 
-	 * @param dpu template
-	 * @return pipelines using DPU template
-	 */
-	@PreAuthorize("hasPermission(#dpu, 'view')")
-	public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
+    /**
+     * Saves any modifications made to the pipeline into the database.
+     *
+     * @param pipeline
+     */
+    @Transactional
+    @PreAuthorize("hasPermission(#pipeline,'save')")
+    public void save(Pipeline pipeline) {
+        if (pipeline.getId() == null) {
+            em.persist(pipeline);
+        } else {
+            em.merge(pipeline);
+        }
+    }
 
-		@SuppressWarnings("unchecked")
-		List<Pipeline> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM Pipeline e"
-				+ " LEFT JOIN e.graph g"
-				+ " LEFT JOIN g.nodes n"
-				+ " LEFT JOIN n.dpuInstance i"
-				+ " LEFT JOIN i.template t"
-				+ " WHERE t = :dpu"
-				).setParameter("dpu", dpu)
-				.getResultList(),
-				Pipeline.class
-		);
+    /**
+     * Deletes pipeline from database.
+     *
+     * @param pipeline
+     */
+    @Transactional
+    @PreAuthorize("hasPermission(#pipeline, 'delete')")
+    public void delete(Pipeline pipeline) {
+        // we might be trying to remove detached entity
+        if (!em.contains(pipeline) && pipeline.getId() != null) {
+            pipeline = getPipeline(pipeline.getId());
+        }
+        em.remove(pipeline);
+    }
 
-		return resultList;
-	}
-	
+    /**
+     * Fetches all pipelines using give DPU template.
+     *
+     * @param dpu template
+     * @return pipelines using DPU template
+     */
+    @PreAuthorize("hasPermission(#dpu, 'view')")
+    public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
+
+        @SuppressWarnings("unchecked")
+        List<Pipeline> resultList = Collections.checkedList(
+                em.createQuery("SELECT e FROM Pipeline e"
+                + " LEFT JOIN e.graph g"
+                + " LEFT JOIN g.nodes n"
+                + " LEFT JOIN n.dpuInstance i"
+                + " LEFT JOIN i.template t"
+                + " WHERE t = :dpu").setParameter("dpu", dpu)
+                .getResultList(),
+                Pipeline.class);
+
+        return resultList;
+    }
+
+    public boolean hasPipelineWithName(String name) {
+        return em.createQuery("SELECT e FROM Pipeline e"
+                + " WHERE e.name = :name").setParameter("name", name)
+                .getResultList().size() > 0;
+    }
+
     /**
      * Execute the given pipeline.
-     * @param pipeline 
-     * @param debug 
+     *
+     * @param pipeline
+     * @param debug
      */
     public void run(Pipeline pipeline, boolean debug) {
         throw new UnsupportedOperationException();
     }
-    
-	/* ******************** Methods for managing PipelineExecutions ********* */
 
-	/**
-	 * Creates a new {@link PipelineExecution}, which represents a pipeline run.
-	 * Created instance is not yet managed by {@link EntityManager}, thus needs
-	 * to be saved with {@link #save(PipelineExecution)} method.
-	 *
-	 * @param pipeline
-	 * @return
-	 */
-	public PipelineExecution createExecution(Pipeline pipeline) {
-		
-		PipelineExecution execution = new PipelineExecution(pipeline);
-		if (authCtx != null) {
-			execution.setOwner(authCtx.getUser());
-		}
-		return execution;
-	}
-	
-	/**
-	 * Fetches all {@link PipelineExecution}s from database.
-	 *
-	 * @return list of executions
-	 */
-	public List<PipelineExecution> getAllExecutions() {
+    /* ******************** Methods for managing PipelineExecutions ********* */
+    /**
+     * Creates a new {@link PipelineExecution}, which represents a pipeline run.
+     * Created instance is not yet managed by {@link EntityManager}, thus needs
+     * to be saved with {@link #save(PipelineExecution)} method.
+     *
+     * @param pipeline
+     * @return
+     */
+    public PipelineExecution createExecution(Pipeline pipeline) {
 
-		@SuppressWarnings("unchecked")
-		List<PipelineExecution> resultList = Collections.checkedList(
-			em.createQuery("SELECT e FROM PipelineExecution e").getResultList(),
-			PipelineExecution.class
-		);
-		
-		return resultList;
-	}
+        PipelineExecution execution = new PipelineExecution(pipeline);
+        if (authCtx != null) {
+            execution.setOwner(authCtx.getUser());
+        }
+        return execution;
+    }
 
-	/**
-	 * Fetches all {@link PipelineExecution}s with given state from database.
-	 *
-	 * @param status
-	 * @return list of executions
-	 */
-	public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
+    /**
+     * Fetches all {@link PipelineExecution}s from database.
+     *
+     * @return list of executions
+     */
+    public List<PipelineExecution> getAllExecutions() {
 
-		@SuppressWarnings("unchecked")
-		List<PipelineExecution> resultList = Collections.checkedList(
-			em.createQuery("SELECT e FROM PipelineExecution e" + 
-					" WHERE e.status = :status"
-					).setParameter("status", status)
-					.getResultList(),
-			PipelineExecution.class
-		);
-		
-		return resultList;
-	}
-	
-	/**
-	 * Find pipeline execution in database by ID and return it.
-	 *
-	 * @param id of PipelineExecution
-	 * @return PipelineExecution
-	 */
-	public PipelineExecution getExecution(long id) {
-		return em.find(PipelineExecution.class, id);
-	}
+        @SuppressWarnings("unchecked")
+        List<PipelineExecution> resultList = Collections.checkedList(
+                em.createQuery("SELECT e FROM PipelineExecution e").getResultList(),
+                PipelineExecution.class);
 
-	/**
-	 * Fetch all executions for given pipeline.
-	 * 
-	 * @param pipeline
-	 * @return pipeline executions
-	 */
-	public List<PipelineExecution> getExecutions(Pipeline pipeline) {
+        return resultList;
+    }
 
-		@SuppressWarnings("unchecked")
-		List<PipelineExecution> resultList = Collections.checkedList(
-			em.createQuery("SELECT e FROM PipelineExecution e"
-				+ " WHERE e.pipeline = :pipe")
-			.setParameter("pipe", pipeline)
-			.getResultList(),
-			PipelineExecution.class
-		);
+    /**
+     * Fetches all {@link PipelineExecution}s with given state from database.
+     *
+     * @param status
+     * @return list of executions
+     */
+    public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
 
-		return resultList;
-	}
-	
-	/**
-	 * Fetch executions for given pipeline in given status.
-	 * 
-	 * @param pipeline Pipeline which executions should be fetched.
-	 * @param status Execution status, in which execution should be.
-	 * @return PipelineExecutions
-	 * 
-	 */
-	public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
-		
-		@SuppressWarnings("unchecked")
-		List<PipelineExecution> resultList = Collections.checkedList(
-				em.createQuery(
-				"SELECT e FROM PipelineExecution e" +
-				" WHERE e.pipeline = :pipe" +
-				" AND e.status = :status")
-				.setParameter("pipe", pipeline)
-				.setParameter("status", status)
-				.getResultList(),
-				PipelineExecution.class
-		);
-		
-		return resultList;
-	}
+        @SuppressWarnings("unchecked")
+        List<PipelineExecution> resultList = Collections.checkedList(
+                em.createQuery("SELECT e FROM PipelineExecution e"
+                + " WHERE e.status = :status").setParameter("status", status)
+                .getResultList(),
+                PipelineExecution.class);
 
-	/**
-	 * Return end time of latest execution of given status for given pipeline.
-	 * 
-	 * Ignore null values.
-	 * @param pipeline
-	 * @param status Execution status, used to filter pipelines.
-	 * @return
-	 */
-	public Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status) {
-		
-            HashSet statuses = new HashSet(1);
-            statuses.add(status);
-            PipelineExecution exec = getLastExec(pipeline, statuses);
-			
-            return (exec == null) ? null : exec.getEnd();
-	}
+        return resultList;
+    }
 
-	/**
-	 * Return latest execution of given statuses for given pipeline. Ignore null
-	 * values.
-	 *
-	 * @param pipeline
-	 * @param statuses Set of execution statuses, used to filter pipelines.
-	 * @return last execution or null
-	 */
-	public PipelineExecution getLastExec(Pipeline pipeline,
-			Set<PipelineExecutionStatus> statuses) {
-		
-		PipelineExecution lastExec = null;
-		try {
-			lastExec = (PipelineExecution) em.createQuery(
-				"SELECT e FROM PipelineExecution e"
-				+ " WHERE e.pipeline = :pipe"
-				+ " AND e.status IN :status"
-				+ " AND e.end IS NOT NULL"
-				+ " ORDER BY e.end DESC")
-				.setParameter("pipe", pipeline)
-				.setParameter("status", statuses)
-				.setMaxResults(1)
-				.getSingleResult();
-		} catch (NoResultException ex) {
-			// return null
-		}
-		
-		return lastExec;
-	}
+    /**
+     * Find pipeline execution in database by ID and return it.
+     *
+     * @param id of PipelineExecution
+     * @return PipelineExecution
+     */
+    public PipelineExecution getExecution(long id) {
+        return em.find(PipelineExecution.class, id);
+    }
 
-	/**
-	 * Return latest execution of given pipeline. Ignore null values.
-	 *
-	 * @param pipeline
-	 * @return last execution or null
-	 */
-	public PipelineExecution getLastExec(Pipeline pipeline) {
-		
-		PipelineExecution lastExec = null;
-		try {
-			lastExec = (PipelineExecution) em.createQuery(
-				"SELECT e FROM PipelineExecution e"
-				+ " WHERE e.pipeline = :pipe"
-				+ " AND e.start IS NOT NULL"
-				+ " ORDER BY e.start DESC")
-				.setParameter("pipe", pipeline)
-				.setMaxResults(1)
-				.getSingleResult();
-		} catch (NoResultException ex) {
-			// return null
-		}
-		
-		return lastExec;
-	}
+    /**
+     * Fetch all executions for given pipeline.
+     *
+     * @param pipeline
+     * @return pipeline executions
+     */
+    public List<PipelineExecution> getExecutions(Pipeline pipeline) {
 
-	/**
-	 * Return latest execution of given statuses for given schedule. Ignore null
-	 * values.
-	 *
-	 * @param schedule
-	 * @param statuses Set of execution statuses, used to filter pipelines.
-	 * @return last execution or null
-	 */
-	public PipelineExecution getLastExec(Schedule schedule,
-			Set<PipelineExecutionStatus> statuses) {
-		
-		PipelineExecution lastExec = null;
-		try {
-			lastExec = (PipelineExecution) em.createQuery(
-				"SELECT e FROM PipelineExecution e"
-				+ " WHERE e.schedule = :schedule"
-				+ " AND e.status IN :status"
-				+ " AND e.end IS NOT NULL"
-				+ " ORDER BY e.end DESC")
-				.setParameter("schedule", schedule)
-				.setParameter("status", statuses)
-				.setMaxResults(1)
-				.getSingleResult();
-		} catch(NoResultException ex) {
-			// return null
-		}
-		
-		return lastExec;
-	}
+        @SuppressWarnings("unchecked")
+        List<PipelineExecution> resultList = Collections.checkedList(
+                em.createQuery("SELECT e FROM PipelineExecution e"
+                + " WHERE e.pipeline = :pipe")
+                .setParameter("pipe", pipeline)
+                .getResultList(),
+                PipelineExecution.class);
 
-	/**
-	 * Tells whether there were any changes to pipeline executions since
-	 * the last load.
-	 * 
-	 * <p>
-	 * This method is provided purely for performance optimization of refreshing
-	 * execution statuses. Functionality is backed by database trigger 
-	 * &quot;update_last_change&quot;.
-	 * 
-	 * @param lastLoad
-	 * @return 
-	 */
-	public boolean hasModifiedExecutions(Date lastLoad) {
-		
-		@SuppressWarnings("unchecked")
-		Object r = em.createQuery(
-				"SELECT CASE\n"
-				+ "    WHEN MAX(e.lastChange) > :last THEN 1\n"
-				+ "    ELSE 0\n"
-				+ "END "
-				+ "FROM PipelineExecution e")
-				.setParameter("last", lastLoad)
-				.getSingleResult();
-		
-		return r.equals("1");
-	}
+        return resultList;
+    }
 
-	/**
-	 * Persists new {@link PipelineExecution} or updates it if it was already
-	 * persisted before.
-	 *
-	 * @param exec
-	 */
-	@Transactional
-	public void save(PipelineExecution exec) {
-		if (exec.getId() == null) {
-			em.persist(exec);
-		} else {
-			em.merge(exec);
-		}
-	}
+    /**
+     * Fetch executions for given pipeline in given status.
+     *
+     * @param pipeline Pipeline which executions should be fetched.
+     * @param status Execution status, in which execution should be.
+     * @return PipelineExecutions
+     *
+     */
+    public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
 
-	/**
-	 * Deletes pipeline from database.
-	 *
-	 * @param exec
-	 */
-	@Transactional
-	public void delete(PipelineExecution exec) {
-		// we might be trying to remove detached entity
-		if (!em.contains(exec) && exec.getId() != null) {
-			exec = getExecution(exec.getId());
-		}
-		em.remove(exec);
-	}
+        @SuppressWarnings("unchecked")
+        List<PipelineExecution> resultList = Collections.checkedList(
+                em.createQuery(
+                "SELECT e FROM PipelineExecution e"
+                + " WHERE e.pipeline = :pipe"
+                + " AND e.status = :status")
+                .setParameter("pipe", pipeline)
+                .setParameter("status", status)
+                .getResultList(),
+                PipelineExecution.class);
+
+        return resultList;
+    }
+
+    /**
+     * Return end time of latest execution of given status for given pipeline.
+     *
+     * Ignore null values.
+     *
+     * @param pipeline
+     * @param status Execution status, used to filter pipelines.
+     * @return
+     */
+    public Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status) {
+
+        HashSet statuses = new HashSet(1);
+        statuses.add(status);
+        PipelineExecution exec = getLastExec(pipeline, statuses);
+
+        return (exec == null) ? null : exec.getEnd();
+    }
+
+    /**
+     * Return latest execution of given statuses for given pipeline. Ignore null
+     * values.
+     *
+     * @param pipeline
+     * @param statuses Set of execution statuses, used to filter pipelines.
+     * @return last execution or null
+     */
+    public PipelineExecution getLastExec(Pipeline pipeline,
+            Set<PipelineExecutionStatus> statuses) {
+
+        PipelineExecution lastExec = null;
+        try {
+            lastExec = (PipelineExecution) em.createQuery(
+                    "SELECT e FROM PipelineExecution e"
+                    + " WHERE e.pipeline = :pipe"
+                    + " AND e.status IN :status"
+                    + " AND e.end IS NOT NULL"
+                    + " ORDER BY e.end DESC")
+                    .setParameter("pipe", pipeline)
+                    .setParameter("status", statuses)
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            // return null
+        }
+
+        return lastExec;
+    }
+
+    /**
+     * Return latest execution of given pipeline. Ignore null values.
+     *
+     * @param pipeline
+     * @return last execution or null
+     */
+    public PipelineExecution getLastExec(Pipeline pipeline) {
+
+        PipelineExecution lastExec = null;
+        try {
+            lastExec = (PipelineExecution) em.createQuery(
+                    "SELECT e FROM PipelineExecution e"
+                    + " WHERE e.pipeline = :pipe"
+                    + " AND e.start IS NOT NULL"
+                    + " ORDER BY e.start DESC")
+                    .setParameter("pipe", pipeline)
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            // return null
+        }
+
+        return lastExec;
+    }
+
+    /**
+     * Return latest execution of given statuses for given schedule. Ignore null
+     * values.
+     *
+     * @param schedule
+     * @param statuses Set of execution statuses, used to filter pipelines.
+     * @return last execution or null
+     */
+    public PipelineExecution getLastExec(Schedule schedule,
+            Set<PipelineExecutionStatus> statuses) {
+
+        PipelineExecution lastExec = null;
+        try {
+            lastExec = (PipelineExecution) em.createQuery(
+                    "SELECT e FROM PipelineExecution e"
+                    + " WHERE e.schedule = :schedule"
+                    + " AND e.status IN :status"
+                    + " AND e.end IS NOT NULL"
+                    + " ORDER BY e.end DESC")
+                    .setParameter("schedule", schedule)
+                    .setParameter("status", statuses)
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            // return null
+        }
+
+        return lastExec;
+    }
+
+    /**
+     * Tells whether there were any changes to pipeline executions since the
+     * last load.
+     *
+     * <p>
+     * This method is provided purely for performance optimization of refreshing
+     * execution statuses. Functionality is backed by database trigger
+     * &quot;update_last_change&quot;.
+     *
+     * @param lastLoad
+     * @return
+     */
+    public boolean hasModifiedExecutions(Date lastLoad) {
+
+        @SuppressWarnings("unchecked")
+        Object r = em.createQuery(
+                "SELECT CASE\n"
+                + "    WHEN MAX(e.lastChange) > :last THEN 1\n"
+                + "    ELSE 0\n"
+                + "END "
+                + "FROM PipelineExecution e")
+                .setParameter("last", lastLoad)
+                .getSingleResult();
+
+        return r.equals("1");
+    }
+
+    /**
+     * Persists new {@link PipelineExecution} or updates it if it was already
+     * persisted before.
+     *
+     * @param exec
+     */
+    @Transactional
+    public void save(PipelineExecution exec) {
+        if (exec.getId() == null) {
+            em.persist(exec);
+        } else {
+            em.merge(exec);
+        }
+    }
+
+    /**
+     * Deletes pipeline from database.
+     *
+     * @param exec
+     */
+    @Transactional
+    public void delete(PipelineExecution exec) {
+        // we might be trying to remove detached entity
+        if (!em.contains(exec) && exec.getId() != null) {
+            exec = getExecution(exec.getId());
+        }
+        em.remove(exec);
+    }
 
     /**
      * Stop the execution.
-     * @param execution 
+     *
+     * @param execution
      */
     public void stopExecution(PipelineExecution execution) {
         execution.stop();

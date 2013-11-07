@@ -40,9 +40,11 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEven
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import java.net.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import ru.xpoft.vaadin.VaadinView;
 
@@ -80,6 +82,9 @@ public class PipelineEdit extends ViewComponent {
 	Button buttonSaveAndClose;
 	Button buttonCancel;
 	HorizontalLayout buttonBar;
+	
+	@Autowired
+	private PipelineFacade pipelineFacade;
 
 	/**
 	 * Empty constructor.
@@ -790,6 +795,9 @@ public class PipelineEdit extends ViewComponent {
 		try {
 			pipelineName.validate();
 			pipelineDescription.validate();
+			if(pipelineFacade.hasPipelineWithName(pipelineName.getValue())) {
+				throw new Validator.InvalidValueException("Pipeline with same name already exists in the system.");
+			}
 		} catch (Validator.InvalidValueException e) {
 			Notification.show("Error saving pipeline", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			return false;
