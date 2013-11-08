@@ -15,42 +15,42 @@ public interface ExecutionListPresenter extends Presenter {
     /**
      * Refresh data from data sources.
      */
-    public void refresh();
+    public void refreshEventHandler();
 
     /**
      * Stop given execution.
      *
      * @param executionId
      */
-    public void stop(long executionId);
+    public void stopEventHandler(long executionId);
 
     /**
      * Show log for given execution.
      *
      * @param executionId
      */
-    public void showLog(long executionId);
+    public void showLogEventHandler(long executionId);
 
     /**
      * Show debug data for given execution.
      *
      * @param executionId
      */
-    public void showDebug(long executionId);
+    public void showDebugEventHandler(long executionId);
 
     /**
      * Re-run given execution.
      *
      * @param executionId
      */
-    public void run(long executionId);
+    public void runEventHandler(long executionId);
 
     /**
      * Re-run given execution in debug mode.
      *
      * @param executionId
      */
-    public void debug(long executionId);
+    public void debugEventHandler(long executionId);
 
     /**
      * View that can be used with the presenter.
@@ -84,9 +84,13 @@ public interface ExecutionListPresenter extends Presenter {
     /**
      * Data object for handling informations between view and presenter.
      */
-    public class ExecutionListData {
+    public final class ExecutionListData {
     
-        public final ReadOnlyContainer<PipelineExecution> container;
+        private final ReadOnlyContainer<PipelineExecution> container;
+
+        public ReadOnlyContainer<PipelineExecution> getContainer() {
+            return container;
+        }
         
         public ExecutionListData(ReadOnlyContainer<PipelineExecution> container) {
             this.container = container;

@@ -43,37 +43,37 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
     }
         
     @Override
-    public void refresh() {
+    public void refreshEventHandler() {
         // TODO check for database change
-        dataObject.container.refresh();
+        dataObject.getContainer().refresh();
     }
 
     @Override
-    public void stop(long executionId) {
+    public void stopEventHandler(long executionId) {
         pipelineFacade.stopExecution(getLightExecution(executionId));
-        refresh();
+        refreshEventHandler();
     }
 
     @Override
-    public void showLog(long executionId) {
+    public void showLogEventHandler(long executionId) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void showDebug(long executionId) {
+    public void showDebugEventHandler(long executionId) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void run(long executionId) {
+    public void runEventHandler(long executionId) {
         pipelineFacade.run(getLightExecution(executionId).getPipeline(), false);
-        refresh();
+        refreshEventHandler();
     }
 
     @Override
-    public void debug(long executionId) {
+    public void debugEventHandler(long executionId) {
         pipelineFacade.run(getLightExecution(executionId).getPipeline(), true);
-        refresh();
+        refreshEventHandler();
     }
 
     /**

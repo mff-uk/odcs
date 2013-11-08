@@ -36,7 +36,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     // TODO: get from user settings
     private static final int PAGE_LENGTH = 20;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
+    //private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
 
     private IntlibPagedTable monitorTable;
 
@@ -56,14 +56,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         // build page
         buildPage(presenter);
         
-        // TODO if an execution is selectedwe then should show the details 
+        // TODO if an execution is selected we then should show the details 
         
         return this;
     }
 
     @Override
     public void setDisplay(ExecutionListPresenter.ExecutionListData dataObject) {
-        monitorTable.setContainerDataSource(dataObject.container);
+        monitorTable.setContainerDataSource(dataObject.getContainer());
     }
 
     @Override
@@ -115,7 +115,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         Button btnRefresh = new Button("Refresh", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                presenter.refresh();
+                presenter.refreshEventHandler();
             }
         });
         btnRefresh.setWidth("120px");
@@ -201,7 +201,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         generator.addButton("Cancel", "90px", new Action() {
             @Override
             protected void action(long id) {
-                presenter.stop(id);
+                presenter.stopEventHandler(id);
             }
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
@@ -217,7 +217,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         generator.addButton("Show log", "110px", new Action() {
             @Override
             protected void action(long id) {
-                presenter.showLog(id);
+                presenter.showLogEventHandler(id);
             }
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
@@ -233,7 +233,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         generator.addButton("Debug data", "120px", new Action() {
             @Override
             protected void action(long id) {
-                presenter.showLog(id);
+                presenter.showLogEventHandler(id);
             }
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
@@ -249,7 +249,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         generator.addButton("Run pipeline", "90px", new Action() {
             @Override
             protected void action(long id) {
-                presenter.run(id);
+                presenter.runEventHandler(id);
             }
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
@@ -265,7 +265,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         generator.addButton("Debug pipeline", "90px", new Action() {
             @Override
             protected void action(long id) {
-                presenter.debug(id);
+                presenter.debugEventHandler(id);
             }
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
