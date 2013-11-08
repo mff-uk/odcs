@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.ui.Alignment;
@@ -10,6 +11,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.SingleComponentContainer;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
@@ -41,6 +43,10 @@ import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import ru.xpoft.vaadin.DiscoveryNavigator;
 import virtuoso.jdbc4.VirtuosoException;
 
+import cz.cuni.mff.xrg.odcs.frontend.navigation.PresenterNavigator;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Frontend application entry point. Also provide access to the application
  * services like database connection. To access the class use
@@ -69,9 +75,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private String lastView = null;
 	private String actualView = null;
 
+    private PresenterNavigator presenterNavigator;
+        
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-
+        
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
 		main = new MenuLayout();
@@ -102,8 +110,16 @@ public class AppEntry extends com.vaadin.ui.UI {
 		ConfirmDialog.setFactory(df);
 
 		// create a navigator to control the views
-		this.navigator = new DiscoveryNavigator(this, main.getViewLayout());
-
+		//this.navigator = new DiscoveryNavigator(this, main.getViewLayout());
+        
+        //this.navigator = new DiscoveryNavigator(this, main.getViewLayout());
+        
+        // we can't use autowired as navigator needs UI (us) as ctor parameter
+        presenterNavigator = context.getBean(PresenterNavigator.class);
+        presenterNavigator.bind(main.getViewLayout(), context);
+        
+        this.navigator = presenterNavigator;
+        
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {

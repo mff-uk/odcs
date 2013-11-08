@@ -6,6 +6,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Label;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import ru.xpoft.vaadin.VaadinView;
 @Component
 @Scope("prototype")
 @VaadinView(Initial.NAME)
+@Address(url = "")
 class Initial extends ViewComponent {
 
 	/**

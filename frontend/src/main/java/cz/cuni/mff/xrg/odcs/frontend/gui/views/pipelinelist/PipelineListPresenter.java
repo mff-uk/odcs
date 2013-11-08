@@ -16,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.Model;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.View;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -32,6 +33,7 @@ import ru.xpoft.vaadin.VaadinView;
 @VaadinView(PipelineListPresenter.NAME)
 @Model(PipelineListModel.class)
 @View(PipelineListViewImpl.class)
+@Address(url = "PipelineList")
 public class PipelineListPresenter extends BasePresenter implements PipelineListViewListener {
 
 	/**

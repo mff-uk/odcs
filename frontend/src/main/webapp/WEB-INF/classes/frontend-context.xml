@@ -55,5 +55,9 @@
 	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
 	
 	<bean id="navigator" class="cz.cuni.mff.xrg.odcs.frontend.ViewNavigator" scope="session" />
-	
+    
+    <bean id="navigatorPresenter" class="cz.cuni.mff.xrg.odcs.frontend.navigation.PresenterNavigator" scope="session">
+        <constructor-arg name="ui" ref="ui" />
+    </bean>
+    
 </beans>

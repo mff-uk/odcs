@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedE
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import java.net.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,7 @@ import ru.xpoft.vaadin.VaadinView;
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @VaadinView(PipelineEdit.NAME)
+@Address(url = "PipelineEdit")
 public class PipelineEdit extends ViewComponent {
 
 	/**
