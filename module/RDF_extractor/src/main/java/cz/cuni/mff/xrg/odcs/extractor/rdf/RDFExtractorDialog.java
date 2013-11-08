@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.vaadin.data.*;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.converter.Converter;
 
@@ -98,6 +100,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * CheckBox to setting use statistical handler
 	 */
 	private CheckBox useHandler;
+
+	private CheckBox failWhenErrors; // How to solve errors for Statistical handler
 
 	int n = 1;
 
@@ -535,12 +539,30 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		verticalLayoutDetails.addComponent(extractFail);
 
 		//Statistical handler
-		// set parameters and placement for this component
 		useHandler = new CheckBox("Use statistical and error handler");
 		useHandler.setValue(true);
 		useHandler.setWidth("-1px");
 		useHandler.setHeight("-1px");
+		useHandler.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (failWhenErrors != null) {
+					failWhenErrors.setVisible(useHandler.getValue());
+				}
+			}
+		});
+
+		//How to solve errors for Statistical handler
+		failWhenErrors = new CheckBox(
+				"If there is an error in some of the extracted triples,"
+				+ " extractor ends with an error");
+		failWhenErrors.setValue(false);
+		failWhenErrors.setWidth("-1px");
+		failWhenErrors.setHeight("-1px");
+		failWhenErrors.setVisible(useHandler.getValue());
+
 		verticalLayoutDetails.addComponent(useHandler);
+		verticalLayoutDetails.addComponent(failWhenErrors);
 
 		return verticalLayoutDetails;
 	}
@@ -572,6 +594,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			config.GraphsUri = griddata;
 			config.ExtractFail = extractFail.getValue();
 			config.UseStatisticalHandler = useHandler.getValue();
+			config.failWhenErrors = failWhenErrors.getValue();
 			config.ExtractFail = extractFail.getValue();
 
 			return config;
@@ -586,7 +609,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * @throws ConfigException Exception which might be thrown when components
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	null	null	null	null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
@@ -608,6 +631,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			textAreaConstr.setValue(conf.SPARQL_query.trim());
 			extractFail.setValue(conf.ExtractFail);
 			useHandler.setValue(conf.UseStatisticalHandler);
+			failWhenErrors.setValue(conf.failWhenErrors);
 			extractFail.setValue(conf.ExtractFail);
 
 			griddata = conf.GraphsUri;
