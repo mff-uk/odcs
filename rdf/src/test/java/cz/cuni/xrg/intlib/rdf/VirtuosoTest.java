@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.rdf;
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -112,13 +113,13 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		String suffix = "ted1.n3";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = true;
+		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
