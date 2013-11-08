@@ -22,8 +22,8 @@ import org.vaadin.dialogs.ConfirmDialog;
  *
  * @author Bogo
  */
-public class PipelineListViewImpl extends CustomComponent implements PipelineListPresenter.PipelineListView {
-
+public class PipelineListViewImpl { //extends CustomComponent implements PipelineListPresenter.PipelineListView {
+/*
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
@@ -118,12 +118,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		setCompositionRoot(mainLayout);
 	}
 
-	/**
-	 * Generate column in table with buttons.
-	 *
-	 * @author Petyr
-	 *
-	 */
 	private ActionColumnGenerator createColumnGenerator(final PipelineListPresenter presenter) {
 
 		ActionColumnGenerator generator = new ActionColumnGenerator();
@@ -193,5 +187,5 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	@Override
 	public void setDisplay(PipelineListPresenter.PipelineListData dataObject) {
 		tablePipelines.setContainerDataSource(dataObject.getContainer());
-	}
+	}*/
 }

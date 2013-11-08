@@ -49,7 +49,7 @@ import ru.xpoft.vaadin.VaadinView;
 @Scope("prototype")
 @VaadinView(Scheduler.NAME)
 @Address(url = "Scheduler")
-class Scheduler extends ViewComponent {
+public class Scheduler extends ViewComponent {
 
 	/**
 	 * View name.

@@ -1,62 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:context="http://www.springframework.org/schema/context"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-	<import resource="classpath:commons-app-context.xml" />
+    <import resource="classpath:commons-app-context.xml" />
 	
-	<!-- Scan Views for bean definitions. -->
-	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
+    <!-- Scan Views for bean definitions. -->
+    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
 
-	<!-- Application configuration is taken from war file, so we override it. -->
-	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFrom">
-		<constructor-arg value="/WEB-INF/config.properties" />
-	</bean>
+    <!-- Application configuration is taken from war file, so we override it. -->
+    <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFrom">
+        <constructor-arg value="/WEB-INF/config.properties" />
+    </bean>
 	
-	<!-- Module configuration needs to be defined here,
-	because it differs from backend -->
-	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
-		<constructor-arg value="FRONTEND" />
-	</bean>
+    <!-- Module configuration needs to be defined here,
+    because it differs from backend -->
+    <bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
+        <constructor-arg value="FRONTEND" />
+    </bean>
 	
-	<!-- bean for notification -->
-	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierClient" />
+    <!-- bean for notification -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierClient" />
 	
-	<!-- watcher for DPU changes -->
-	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager" >
-	    <constructor-arg name="refreshDatabase" value="true"/>
-	</bean>
+    <!-- watcher for DPU changes -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager" >
+        <constructor-arg name="refreshDatabase" value="true"/>
+    </bean>
 	
-	<!-- bean that provide functionality for manipulating with DPUs -->
-	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
+    <!-- bean that provide functionality for manipulating with DPUs -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
 		
-	<!-- Factory for constructing data containers for Vaadin tables. -->
-	<bean id="containerFactory" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory" />
+    <!-- Factory for constructing data containers for Vaadin tables. -->
+    <bean id="containerFactory" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory" />
 	
-	<bean id="pipelineListPresenterImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl" scope="prototype" />
+    <bean id="pipelineListPresenterImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl" scope="prototype" />
 	
-	<bean id="pipelineListViewImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListViewImpl" scope="prototype" />
+    <bean id="pipelineListViewImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListViewImpl" scope="prototype" />
 	
-	<bean id="dpuPresenter" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter" scope="prototype" />
+    <bean id="dpuPresenter" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter" scope="prototype" />
 
     <!-- accessors -->
-	<bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
-	<bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
+    <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
+    <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
 
-	<!-- Imposes authorization filters on container. -->
-	<bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
+    <!-- Imposes authorization filters on container. -->
+    <bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
 	
     <!-- tranlator for vaadin's filters -->
     <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator" />
     
-	<bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
-	
-	<bean id="navigator" class="cz.cuni.mff.xrg.odcs.frontend.ViewNavigator" scope="session" />
+    <bean id="menuLayout" class="cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout" scope="prototype" />
     
-    <bean id="navigatorPresenter" class="cz.cuni.mff.xrg.odcs.frontend.navigation.PresenterNavigator" scope="session">
-        <constructor-arg name="ui" ref="ui" />
-    </bean>
+    <!-- sessions scope -->   
+    
+    <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
+
+    <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
+    <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="session"/>
     
 </beans>

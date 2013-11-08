@@ -8,7 +8,6 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
@@ -31,7 +30,6 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
-import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedEvent;
@@ -42,12 +40,10 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-import java.net.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import ru.xpoft.vaadin.VaadinView;
 
 /**
  * Page for creating new pipeline or editing existing pipeline.
@@ -56,14 +52,9 @@ import ru.xpoft.vaadin.VaadinView;
  */
 @org.springframework.stereotype.Component
 @Scope("prototype")
-@VaadinView(PipelineEdit.NAME)
 @Address(url = "PipelineEdit")
 public class PipelineEdit extends ViewComponent {
 
-	/**
-	 * View name.
-	 */
-	public static final String NAME = "PipelineEdit";
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 	private VerticalLayout mainLayout;
 	private Label label;
@@ -693,7 +684,10 @@ public class PipelineEdit extends ViewComponent {
 	protected Pipeline loadPipeline(ViewChangeEvent event) {
 		// some information text ...
 		String pipeIdstr = event.getParameters();
-		if (pipeIdstr.compareTo(ViewNames.PIPELINE_EDIT_NEW.getParametr()) == 0) {
+		if (isInteger(pipeIdstr)) {
+			// use pipeIdstr as id
+			this.pipeline = loadPipeline(pipeIdstr);
+		} else {	
 			// create empty, for new record
 			this.pipeline = App.getApp().getPipelines().createPipeline();
 			pipeline.setName("");
@@ -703,13 +697,8 @@ public class PipelineEdit extends ViewComponent {
 			setupButtons(false);
 			pipelineName.setInputPrompt("Insert pipeline name");
 			pipelineDescription.setInputPrompt("Insert pipeline description");
-		} else if (isInteger(pipeIdstr)) {
-			// use pipeIdstr as id
-			this.pipeline = loadPipeline(pipeIdstr);
-		} else {
-			// wring pipeIdstr
-			this.pipeline = null;
-		}
+		} 
+		
 		if (pipeline != null) {
 			pc.showPipeline(pipeline);
 		}

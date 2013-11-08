@@ -32,13 +32,9 @@ import ru.xpoft.vaadin.VaadinView;
  */
 @org.springframework.stereotype.Component
 @Scope("prototype")
-@VaadinView(Login.NAME)
 @Address(url = "Login")
 public class Login extends ViewComponent {
 
-	/** View name. */
-	public static final String NAME = "Login";
-	
 	private static final Logger LOG = LoggerFactory.getLogger(Login.class);
 	
     private CssLayout mainLayout;

@@ -2,8 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.ui.Alignment;
@@ -11,7 +9,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.SingleComponentContainer;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
@@ -30,22 +27,21 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
-import cz.cuni.mff.xrg.odcs.frontend.gui.ViewNames;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.DependsOn;
 
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.DefaultConfirmDialogFactory;
-import ru.xpoft.vaadin.DiscoveryNavigator;
 import virtuoso.jdbc4.VirtuosoException;
 
-import cz.cuni.mff.xrg.odcs.frontend.navigation.PresenterNavigator;
-import java.util.Collection;
-import java.util.List;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -59,30 +55,32 @@ import java.util.List;
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
-	/**
-	 * Used to resolve URL request and select active view.
-	 */
-	private com.vaadin.navigator.Navigator navigator;
+
 	/**
 	 * Spring application context.
 	 */
 	@Autowired
 	private ApplicationContext context;
+	
+	@Autowired
 	private MenuLayout main;
+	
+	@Autowired
+	private ClassNavigatorHolder navigatorHolder;
+	
 	private Client backendClient;
 	private RefreshManager refreshManager;
 	private String storedNavigation = null;
 	private String lastView = null;
 	private String actualView = null;
-
-    private PresenterNavigator presenterNavigator;
         
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
         
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
-		main = new MenuLayout();
+		//main = new MenuLayout();
+		main.enter();
 		setContent(main);
 
 		ConfirmDialog.Factory df = new DefaultConfirmDialogFactory() {
@@ -110,16 +108,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 		ConfirmDialog.setFactory(df);
 
 		// create a navigator to control the views
-		//this.navigator = new DiscoveryNavigator(this, main.getViewLayout());
-        
-        //this.navigator = new DiscoveryNavigator(this, main.getViewLayout());
-        
-        // we can't use autowired as navigator needs UI (us) as ctor parameter
-        presenterNavigator = context.getBean(PresenterNavigator.class);
-        presenterNavigator.bind(main.getViewLayout(), context);
-        
-        this.navigator = presenterNavigator;
-        
+		// and set it into the navigator holder
+		ClassNavigatorImpl navInstance = new ClassNavigatorImpl(this, main.getViewLayout(), context);
+        ((ClassNavigatorHolder)navigatorHolder).setNavigator(navInstance);
+		        
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
@@ -155,24 +147,26 @@ public class AppEntry extends com.vaadin.ui.UI {
 		/**
 		 * Checking user every time request is made.
 		 */
-		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+		navInstance.addViewChangeListener(new ViewChangeListener() {
 			@Override
 			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
 				main.refreshUserBar();
-				
-				if (!event.getViewName().equals(ViewNames.LOGIN.getUrl()) && !checkAuthentication()) {
+								
+				// TODO adjust this once Login screen will be presenters 
+				//	to event.getNewView().equals(Login.class)
+				if (!(event.getNewView() instanceof Login) && !checkAuthentication()) {
 					storedNavigation = event.getViewName();
 					String parameters = event.getParameters();
 					if (parameters != null) {
 						storedNavigation += "/" + parameters;
 					}
-					getNavigator().navigateTo(ViewNames.LOGIN.getUrl());
+					navigatorHolder.navigateTo(Login.class);
 					getMain().refreshUserBar();
 					return false;
 				}
 				setNavigationHistory(event);
-
-				if (!event.getViewName().equals(ViewNames.EXECUTION_MONITOR.getUrl())) {
+								
+				if (!(event.getNewView() instanceof ExecutionMonitor)) {
 					refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
 					refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
 				}
@@ -185,7 +179,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		});
 
 		// attach a listener so that we'll get asked isViewChangeAllowed?
-		this.getNavigator().addViewChangeListener(new ViewChangeListener() {
+		navInstance.addViewChangeListener(new ViewChangeListener() {
 			private String pendingViewAndParameters;
 			private ModifiableComponent lastView;
 			boolean forceViewChange = false;
@@ -221,7 +215,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 							} else {
 								forceViewChange = true;
 							}
-							navigator.navigateTo(pendingViewAndParameters);
+							navigatorHolder.navigateTo(pendingViewAndParameters);
 						}
 					});
 					//Notification.show("Please apply or cancel your changes", Type.WARNING_MESSAGE);
@@ -264,11 +258,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	public void navigateAfterLogin() {
 		if (storedNavigation == null) {
-			getNavigator().navigateTo(ViewNames.INITIAL.getUrl());
+			navigatorHolder.navigateTo(Initial.class);
 		} else {
 			String navigationTarget = storedNavigation;
 			storedNavigation = null;
-			getNavigator().navigateTo(navigationTarget);
+			navigatorHolder.navigateTo(navigationTarget);
 		}
 	}
 
@@ -278,7 +272,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * @return true if user and its session are valid, false otherwise
      * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
 	private boolean checkAuthentication() {
 		return getAuthCtx().isAuthenticated();
 	}
@@ -293,9 +286,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	public void navigateToLastView() {
 		if(lastView != null) {
-			navigator.navigateTo(lastView);
+			navigatorHolder.navigateTo(lastView);
 		} else {
-			navigator.navigateTo("");
+			navigatorHolder.navigateTo("");
 		}
 	}
 
@@ -308,16 +301,6 @@ public class AppEntry extends com.vaadin.ui.UI {
     @Deprecated
 	public PipelineFacade getPipelines() {
 		return (PipelineFacade) context.getBean("pipelineFacade");
-	}
-
-	/**
-	 * Return application navigator.
-	 *
-	 * @return application navigator
-	 */
-	@Override
-	public Navigator getNavigator() {
-		return this.navigator;
 	}
 
 	/**

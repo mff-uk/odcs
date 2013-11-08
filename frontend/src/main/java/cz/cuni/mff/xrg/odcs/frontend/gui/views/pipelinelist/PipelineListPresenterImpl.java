@@ -5,7 +5,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.frontend.ViewNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
@@ -26,11 +25,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 @Address(url = "PipelineList")
-public class PipelineListPresenterImpl implements PipelineListPresenter {
+public class PipelineListPresenterImpl { //implements PipelineListPresenter {
 
-	/**
-	 * View name.
-	 */
+	/*
 	//TODO do we need this?
 	public static final String NAME = "PipelineList";
 	@Autowired
@@ -107,13 +104,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		}
 	}
 
-	/**
-	 * Get light copy of pipeline.
-	 *
-	 * @param pipelineId
-	 * @return
-	 */
 	private Pipeline getLightPipeline(long pipelineId) {
 		return pipelineFacade.getPipeline(pipelineId);
 	}
+	*/
 }

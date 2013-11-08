@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
+@Address(url = "ExecutionList")
 public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Autowired

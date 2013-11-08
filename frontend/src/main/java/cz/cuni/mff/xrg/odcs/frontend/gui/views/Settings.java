@@ -33,7 +33,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.springframework.context.annotation.Scope;
-import ru.xpoft.vaadin.VaadinView;
 
 /**
  * GUI for Settings page which opens from the main menu. For User role it
@@ -46,14 +45,9 @@ import ru.xpoft.vaadin.VaadinView;
  */
 @org.springframework.stereotype.Component
 @Scope("prototype")
-@VaadinView(Settings.NAME)
 @Address(url = "Administrator")
 public class Settings extends ViewComponent {
 
-	/**
-	 * View name.
-	 */
-	public static final String NAME = "Administrator";
 	private static final long serialVersionUID = 1L;
 	private GridLayout mainLayout;
 	private VerticalLayout accountLayout;

@@ -5,7 +5,9 @@ import com.vaadin.navigator.ViewChangeListener;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 
 /**
- * Wrap presenter class so it can be used in navigator as a view.
+ * Wrap presenter class so it can be used in navigator as a view. When
+ * compare with {@link #equals(java.lang.Object)} with class use wrapped 
+ * presenter.
  * 
  * @author Petyr
  */
@@ -40,5 +42,18 @@ class PresenterWrap implements View {
     public Object enterPresenter() {
         return presenter.enter(parameters);
     }
-    
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Class<?>) {
+			return (Class<?>)obj == presenter.getClass();
+		}
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return presenter.hashCode();
+	}
+
 }

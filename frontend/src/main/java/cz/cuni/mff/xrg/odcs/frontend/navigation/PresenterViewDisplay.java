@@ -21,6 +21,10 @@ class PresenterViewDisplay implements ViewDisplay {
     
     private SingleComponentContainer container = null;
 
+	public PresenterViewDisplay(SingleComponentContainer container) {
+		this.container = container;
+	}
+	
     @Override
     public void showView(View view) {
         if (container == null) {
@@ -47,14 +51,6 @@ class PresenterViewDisplay implements ViewDisplay {
             throw new IllegalArgumentException("View is not a component: "
                         + view);
         }
-    }
-
-    /**
-     * Set component.
-     * @param container 
-     */
-    public void setContainer(SingleComponentContainer container) {
-        this.container = container;
     }
     
 }
