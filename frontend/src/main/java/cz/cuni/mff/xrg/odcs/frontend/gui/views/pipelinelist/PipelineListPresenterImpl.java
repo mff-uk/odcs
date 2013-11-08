@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Notification;
+
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.ViewNavigator;
@@ -16,10 +17,12 @@ import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.Model;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.View;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import ru.xpoft.vaadin.VaadinView;
 
 /**
@@ -29,10 +32,10 @@ import ru.xpoft.vaadin.VaadinView;
  */
 @Component
 @Scope("prototype")
-@VaadinView(PipelineListPresenter.NAME)
+@VaadinView(PipelineListPresenterImpl.NAME)
 @Model(PipelineListModel.class)
 @View(PipelineListViewImpl.class)
-
+@Address(url = "PipelineList")
 public class PipelineListPresenterImpl extends BasePresenter implements PipelineListViewListener {
 
 	/**
@@ -48,7 +51,7 @@ public class PipelineListPresenterImpl extends BasePresenter implements Pipeline
 	public PipelineListPresenterImpl() {
             
         }
- 
+
 	@Override
 	public void setModel(MVPModel model) {
 		if (!PipelineListModel.class.isInstance(model)) {
