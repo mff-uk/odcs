@@ -30,7 +30,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
     private ExecutionListData dataObject;
     
     @Override
-    public Object enter() {
+    public Object enter(Object configuration) {
         // prepare data object
         dataObject = new ExecutionListData(new ReadOnlyContainer<>(dbExecution, 
             new ExecutionAccessor()));

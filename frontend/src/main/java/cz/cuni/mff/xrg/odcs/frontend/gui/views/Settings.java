@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.NamespacePrefixes;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.springframework.context.annotation.Scope;
 import ru.xpoft.vaadin.VaadinView;
@@ -46,6 +47,7 @@ import ru.xpoft.vaadin.VaadinView;
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @VaadinView(Settings.NAME)
+@Address(url = "Administrator")
 public class Settings extends ViewComponent {
 
 	/**

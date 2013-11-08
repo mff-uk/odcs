@@ -34,6 +34,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.*;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -58,6 +59,7 @@ import ru.xpoft.vaadin.VaadinView;
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @VaadinView(ExecutionMonitor.NAME)
+@Address(url = "ExecutionMonitor")
 public class ExecutionMonitor extends ViewComponent implements ClickListener {
 
 	@Autowired

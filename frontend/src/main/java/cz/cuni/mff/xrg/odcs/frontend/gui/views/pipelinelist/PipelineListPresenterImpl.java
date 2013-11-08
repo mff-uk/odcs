@@ -13,18 +13,19 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-/**
- * Presenter for {@link PipelineListPresenter}.
- *
- * @author Bogo
- */
+
+
+
 @Component
 @Scope("prototype")
+@Address(url = "PipelineList")
 public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 	/**
@@ -43,7 +44,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	private PipelineListData dataObject;
 
 	@Override
-	public Object enter() {
+	public Object enter(Object configuration) {
 		// prepare data object
 		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(dbPipeline, new PipelineAccessor()));
 		// prepare view

@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.Model;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.View;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -34,6 +35,7 @@ import ru.xpoft.vaadin.VaadinView;
 @VaadinView(DPUPresenter.NAME)
 @Model(DPUModel.class)
 @View(DPUViewImpl.class)
+@Address(url = "DPURecord")
 public class DPUPresenter extends BasePresenter implements DPUViewListener {
 
 	/**
