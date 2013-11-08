@@ -2,10 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.*;
 
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
@@ -149,38 +146,40 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	@Override
 	public void addFromFile(File file) throws RDFException {
-		extractFromFile(file, RDFFormat.RDFXML, "", false);
+		extractFromFile(file, RDFFormat.RDFXML, "",
+				HandlerExtractType.STANDARD_HANDLER);
 	}
 
 	@Override
 	public void addFromFile(File file, RDFFormat format) throws RDFException {
-		extractFromFile(file, format, "", false);
+		extractFromFile(file, format, "", HandlerExtractType.STANDARD_HANDLER);
 	}
 
 	@Override
 	public void addFromFile(File file, RDFFormat format,
-			boolean useStatisticalHandler) throws RDFException {
+			HandlerExtractType handlerExtractType) throws RDFException {
 
-		extractFromFile(file, format, "", useStatisticalHandler);
+		extractFromFile(file, format, "", handlerExtractType);
 	}
 
 	@Override
 	public void extractFromFile(File file, RDFFormat format, String baseURI)
 			throws RDFException {
 
-		extractFromFile(file, format, baseURI, false);
+		extractFromFile(file, format, baseURI,
+				HandlerExtractType.STANDARD_HANDLER);
 	}
 
 	@Override
 	public void extractFromFile(File file, RDFFormat format, String baseURI,
-			boolean useStatisticalHandler) throws RDFException {
+			HandlerExtractType handlerExtractType) throws RDFException {
 
 		if (file == null) {
 			throw new RDFException("Given file for extraction is null");
 		}
 
 		extractFromFile(FileExtractType.PATH_TO_FILE, format, file
-				.getAbsolutePath(), "", baseURI, false, useStatisticalHandler);
+				.getAbsolutePath(), "", baseURI, false, handlerExtractType);
 	}
 
 	/**
@@ -192,7 +191,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public void addFromTurtleFile(File file) throws RDFException {
-		extractFromFile(file, RDFFormat.TURTLE, "", false);
+		extractFromFile(file, RDFFormat.TURTLE, "",
+				HandlerExtractType.STANDARD_HANDLER);
 	}
 
 	/**
@@ -204,32 +204,35 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public void addFromRDFXMLFile(File file) throws RDFException {
-		extractFromFile(file, RDFFormat.RDFXML, "", false);
+		extractFromFile(file, RDFFormat.RDFXML, "",
+				HandlerExtractType.STANDARD_HANDLER);
 	}
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param extractType         One of defined enum type for extraction data
-	 *                            from file.
-	 * @param format              One of RDFFormat value for parsing triples, if
-	 *                            value is null RDFFormat is selected by
-	 *                            filename.
-	 * @param path                String path to file/directory
-	 * @param suffix              String suffix of fileName (example: ".ttl",
-	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI
-	 * @param useSuffix           boolean value, if extract files only with
-	 *                            defined suffix or not.
-	 * @param useStatisticHandler boolean value if detailed log and statistic
-	 *                            are awailable or not.
+	 * @param extractType        One of defined enum type for extraction data
+	 *                           from file.
+	 * @param format             One of RDFFormat value for parsing triples, if
+	 *                           value is null RDFFormat is selected by
+	 *                           filename.
+	 * @param path               String path to file/directory
+	 * @param suffix             String suffix of fileName (example: ".ttl",
+	 *                           ".xml", etc)
+	 * @param baseURI            String name of defined used URI
+	 * @param useSuffix          boolean value, if extract files only with
+	 *                           defined suffix or not.
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
 	 * @throws RDFException when extraction fail.
 	 */
 	@Override
 	public void extractFromFile(FileExtractType extractType,
 			RDFFormat format,
 			String path, String suffix,
-			String baseURI, boolean useSuffix, boolean useStatisticHandler)
+			String baseURI, boolean useSuffix,
+			HandlerExtractType handlerExtractType)
 			throws RDFException {
 
 		ParamController.testNullParameter(path,
@@ -241,32 +244,32 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		switch (extractType) {
 			case HTTP_URL:
-				extractDataFileFromHTTPSource(path, baseURI, useStatisticHandler);
+				extractDataFileFromHTTPSource(path, baseURI, handlerExtractType);
 				break;
 			case PATH_TO_DIRECTORY:
 				extractDataFromDirectorySource(dirFile, suffix, useSuffix,
-						format, baseURI, useStatisticHandler, false);
+						format, baseURI, handlerExtractType, false);
 				break;
 
 			case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
 				extractDataFromDirectorySource(dirFile, suffix, useSuffix,
-						format, baseURI, useStatisticHandler, true);
+						format, baseURI, handlerExtractType, true);
 				break;
 			case PATH_TO_FILE:
 			case UPLOAD_FILE:
 				extractDataFromFileSource(dirFile, format, baseURI,
-						useStatisticHandler);
+						handlerExtractType);
 				break;
 		}
 
 	}
 
 	private void extractDataFromFileSource(File dirFile, RDFFormat format,
-			String baseURI, boolean useStatisticHandler) throws RDFException {
+			String baseURI, HandlerExtractType handlerExtractType) throws RDFException {
 
 		if (dirFile.isFile()) {
 			addFileToRepository(format, dirFile, baseURI,
-					useStatisticHandler,
+					handlerExtractType,
 					graph);
 		} else {
 			throw new RDFException(
@@ -276,14 +279,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private void extractDataFromDirectorySource(File dirFile, String suffix,
 			boolean useSuffix, RDFFormat format, String baseURI,
-			boolean useStatisticHandler, boolean skipFiles)
+			HandlerExtractType handlerExtractType, boolean skipFiles)
 			throws RDFException {
 
 		if (dirFile.isDirectory()) {
 			File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
 
 			addFilesInDirectoryToRepository(format, files, baseURI,
-					useStatisticHandler, skipFiles,
+					handlerExtractType, skipFiles,
 					graph);
 		} else {
 			throw new RDFException(
@@ -465,7 +468,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query, "",
 				"",
-				RDFFormat.N3, false, false);
+				RDFFormat.N3, HandlerExtractType.STANDARD_HANDLER, false);
 	}
 
 	/**
@@ -533,27 +536,29 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		endpointGraphsURI.add(defaultGraphUri);
 
 		extractFromSPARQLEndpoint(endpointURL, endpointGraphsURI, query,
-				hostName, password, format, false, false);
+				hostName, password, format, HandlerExtractType.STANDARD_HANDLER,
+				false);
 	}
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
 	 * collection of URI graphs using authentication (name,password).
 	 *
-	 * @param endpointURL         Remote URL connection to SPARQL endpoint
-	 *                            contains RDF data.
-	 * @param defaultGraphsUri    List with names of graph where RDF data are
-	 *                            loading.
-	 * @param query               String SPARQL query.
-	 * @param hostName            String name needed for authentication.
-	 * @param password            String password needed for authentication.
-	 * @param format              Type of RDF format for saving data (example:
-	 *                            TURTLE, RDF/XML,etc.)
-	 * @param useStatisticHandler boolean value if detailed log and statistic
-	 *                            are awailable or not.
-	 * @param extractFail         boolean value, if true stop pipeline(cause
-	 *                            exception) when no triples were extracted. if
-	 *                            false step triple count extraction criterium.
+	 * @param endpointURL        Remote URL connection to SPARQL endpoint
+	 *                           contains RDF data.
+	 * @param defaultGraphsUri   List with names of graph where RDF data are
+	 *                           loading.
+	 * @param query              String SPARQL query.
+	 * @param hostName           String name needed for authentication.
+	 * @param password           String password needed for authentication.
+	 * @param format             Type of RDF format for saving data (example:
+	 *                           TURTLE, RDF/XML,etc.)
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
+	 * @param extractFail        boolean value, if true stop pipeline(cause
+	 *                           exception) when no triples were extracted. if
+	 *                           false step triple count extraction criterium.
 	 * @throws RDFException when extraction data fault.
 	 */
 	@Override
@@ -564,7 +569,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String hostName,
 			String password,
 			RDFFormat format,
-			boolean useStatisticHandler, boolean extractFail) throws RDFException {
+			HandlerExtractType handlerExtractType, boolean extractFail) throws RDFException {
 
 		ParamController.testEndpointSyntax(endpointURL);
 
@@ -590,7 +595,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				final String endpointGraph = endpointGraphsURI.get(i);
 
 				extractDataFromEnpointGraph(endpointURL, endpointGraph, query,
-						format, connection, useStatisticHandler, extractFail);
+						format, connection, handlerExtractType, extractFail);
 
 			}
 		} catch (RepositoryException e) {
@@ -619,17 +624,29 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private void extractDataFromEnpointGraph(URL endpointURL,
 			String endpointGraph, String query, RDFFormat format,
 			RepositoryConnection connection,
-			boolean useStatisticHandler, boolean extractFail) throws RDFException {
+			HandlerExtractType handlerExtractType, boolean extractFail) throws RDFException {
 
 		InputStreamReader inputStreamReader = getEndpointStreamReader(
 				endpointURL, endpointGraph, query, format);
 
 		TripleCountHandler handler;
 
-		if (useStatisticHandler) {
-			handler = new StatisticalHandler(connection);
-		} else {
-			handler = new TripleCountHandler(connection);
+		boolean failWhenMistake = false;
+
+		switch (handlerExtractType) {
+			case STANDARD_HANDLER:
+				handler = new TripleCountHandler(connection);
+				break;
+			case ERROR_HANDLER_CONTINUE_WHEN_MISTAKE:
+				handler = new StatisticalHandler(connection);
+				break;
+			case ERROR_HANDLER_FAIL_WHEN_MISTAKE:
+				handler = new StatisticalHandler(connection);
+				failWhenMistake = true;
+				break;
+			default:
+				handler = new TripleCountHandler(connection);
+				break;
 		}
 
 		handler.setGraphContext(graph);
@@ -641,6 +658,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			if (extractFail) {
 				caseNoTriples(handler);
+			}
+
+			if (handler instanceof StatisticalHandler) {
+				StatisticalHandler errorHandler = (StatisticalHandler) handler;
+
+				if (errorHandler.hasFindedProblems() && failWhenMistake) {
+
+					throw new RDFException(errorHandler
+							.getFindedProblemsAsString());
+				}
 			}
 
 		} catch (IOException ex) {
@@ -1813,7 +1840,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	private void extractDataFileFromHTTPSource(String path, String baseURI,
-			boolean useStatisticHandler) throws RDFException {
+			HandlerExtractType handlerExtractType) throws RDFException {
 		URL urlPath;
 		try {
 			urlPath = new URL(path);
@@ -1821,23 +1848,30 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throw new RDFException(ex.getMessage(), ex);
 		}
 
-		try (InputStreamReader inputStreamReader = new InputStreamReader(
-				urlPath.openStream(), Charset.forName(encode))) {
+		try {
+			try (InputStreamReader inputStreamReader = new InputStreamReader(
+					urlPath.openStream(), Charset.forName(encode))) {
 
-			RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
-			RepositoryConnection connection = getConnection();
+				RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
+				RepositoryConnection connection = getConnection();
 
-			if (!useStatisticHandler) {
-
-				parseFileUsingStandardHandler(format, inputStreamReader, baseURI,
-						connection);
-			} else {
-				parseFileUsingStandardHandler(format, inputStreamReader, baseURI,
-						connection);
+				switch (handlerExtractType) {
+					case STANDARD_HANDLER:
+						parseFileUsingStandardHandler(format, inputStreamReader,
+								baseURI, connection);
+						break;
+					case ERROR_HANDLER_CONTINUE_WHEN_MISTAKE:
+						parseFileUsingStatisticalHandler(format,
+								inputStreamReader,
+								baseURI, connection, false);
+						break;
+					case ERROR_HANDLER_FAIL_WHEN_MISTAKE:
+						parseFileUsingStatisticalHandler(format,
+								inputStreamReader,
+								baseURI, connection, true);
+						break;
+				}
 			}
-
-			inputStreamReader.close();
-
 
 		} catch (IOException ex) {
 			throw new RDFException(ex.getMessage(), ex);
@@ -1849,7 +1883,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files,
 			String baseURI,
-			boolean useStatisticHandler, boolean skipFiles, Resource... graphs)
+			HandlerExtractType handlerExtractType, boolean skipFiles,
+			Resource... graphs)
 			throws RDFException {
 
 		if (files == null) {
@@ -1861,8 +1896,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			try {
 				addFileToRepository(format, nextFile, baseURI,
-						useStatisticHandler,
-						graphs);
+						handlerExtractType, graphs);
+
 			} catch (RDFException e) {
 
 				if (skipFiles) {
@@ -1906,7 +1941,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private void addFileToRepository(RDFFormat fileFormat, File dataFile,
 			String baseURI,
-			boolean useStatisticHandler, Resource... graphs) throws RDFException {
+			HandlerExtractType handlerExtractType, Resource... graphs) throws RDFException {
 
 		//in case that RDF format is AUTO or not fixed.
 		if (fileFormat == null) {
@@ -1921,14 +1956,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			connection = getConnection();
 
-			if (!useStatisticHandler) {
-
-				parseFileUsingStandardHandler(fileFormat, is, baseURI,
-						connection);
-			} else {
-
-				parseFileUsingStatisticalHandler(fileFormat, is, baseURI,
-						connection);
+			switch (handlerExtractType) {
+				case STANDARD_HANDLER:
+					parseFileUsingStandardHandler(fileFormat, is, baseURI,
+							connection);
+					break;
+				case ERROR_HANDLER_CONTINUE_WHEN_MISTAKE:
+					parseFileUsingStatisticalHandler(fileFormat, is, baseURI,
+							connection, false);
+					break;
+				case ERROR_HANDLER_FAIL_WHEN_MISTAKE:
+					parseFileUsingStatisticalHandler(fileFormat, is, baseURI,
+							connection, true);
+					break;
 			}
 
 			connection.commit();
@@ -1955,10 +1995,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private void parseFileUsingStatisticalHandler(RDFFormat fileFormat,
 			InputStreamReader is, String baseURI,
-			RepositoryConnection connection) throws RDFException {
+			RepositoryConnection connection, boolean failWhenErrors) throws RDFException {
 
 		StatisticalHandler handler = new StatisticalHandler(connection);
 		parseFileUsingHandler(handler, fileFormat, is, baseURI);
+
+		if (handler.hasFindedProblems() && failWhenErrors) {
+			throw new RDFException(handler.getFindedProblemsAsString());
+		}
+
 	}
 
 	private void parseFileUsingStandardHandler(RDFFormat fileFormat,
