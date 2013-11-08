@@ -48,7 +48,7 @@ public class PipelineListPresenterImpl extends BasePresenter implements Pipeline
 	public PipelineListPresenterImpl() {
             
         }
-        
+ 
 	@Override
 	public void setModel(MVPModel model) {
 		if (!PipelineListModel.class.isInstance(model)) {
