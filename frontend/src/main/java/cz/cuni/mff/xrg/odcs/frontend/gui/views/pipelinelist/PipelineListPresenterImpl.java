@@ -32,6 +32,7 @@ import ru.xpoft.vaadin.VaadinView;
 @VaadinView(PipelineListPresenter.NAME)
 @Model(PipelineListModel.class)
 @View(PipelineListViewImpl.class)
+
 public class PipelineListPresenterImpl extends BasePresenter implements PipelineListViewListener {
 
 	/**
@@ -45,8 +46,8 @@ public class PipelineListPresenterImpl extends BasePresenter implements Pipeline
 	private ViewNavigator navigator;
 
 	public PipelineListPresenterImpl() {
-	}
-
+            
+        }
 	@Override
 	public void setModel(MVPModel model) {
 		if (!PipelineListModel.class.isInstance(model)) {
