@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +26,28 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 @Address(url = "PipelineList")
-public class PipelineListPresenterImpl { //implements PipelineListPresenter {
+public class PipelineListPresenterImpl implements PipelineListPresenter {
 
-	/*
+	
 	//TODO do we need this?
 	public static final String NAME = "PipelineList";
 	@Autowired
-	private ViewNavigator navigator;
+	private ClassNavigator navigator;
 	@Autowired
 	private PipelineFacade pipelineFacade;
 	@Autowired
 	private DbPipeline dbPipeline;
 	@Autowired
+	private PipelineAccessor pipelineAccessor;
+	@Autowired
 	private PipelineListView view;
+	
 	private PipelineListData dataObject;
 
 	@Override
 	public Object enter(Object configuration) {
 		// prepare data object
-		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(dbPipeline, new PipelineAccessor()));
+		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(dbPipeline, pipelineAccessor));
 		// prepare view
 		Object viewObject = view.enter(this);
 		// set data object
@@ -76,6 +80,7 @@ public class PipelineListPresenterImpl { //implements PipelineListPresenter {
 	@Override
 	public void deleteEventHandler(long id) {
 		pipelineFacade.delete(getLightPipeline(id));
+		refreshEventHandler();
 	}
 
 	@Override
@@ -91,21 +96,20 @@ public class PipelineListPresenterImpl { //implements PipelineListPresenter {
 	public void runEventHandler(long id, boolean inDebugMode) {
 		PipelineExecution exec = IntlibHelper.runPipeline(getLightPipeline(id), inDebugMode);
 		if (inDebugMode && exec != null) {
-			navigator.navigateTo(ExecutionMonitor.NAME, exec.getId());
+			navigator.navigateTo(ExecutionMonitor.class, exec.getId().toString());
 		}
 	}
 
 	@Override
-	public void navigateToEventHandler(String where, Object param) {
+	public void navigateToEventHandler(Class where, Object param) {
 		if (param == null) {
 			navigator.navigateTo(where);
 		} else {
-			navigator.navigateTo(where, param);
+			navigator.navigateTo(where, param.toString());
 		}
 	}
 
 	private Pipeline getLightPipeline(long pipelineId) {
 		return pipelineFacade.getPipeline(pipelineId);
 	}
-	*/
 }

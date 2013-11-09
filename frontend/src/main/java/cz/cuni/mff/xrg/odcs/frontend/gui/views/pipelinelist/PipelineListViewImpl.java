@@ -22,8 +22,8 @@ import org.vaadin.dialogs.ConfirmDialog;
  *
  * @author Bogo
  */
-public class PipelineListViewImpl { //extends CustomComponent implements PipelineListPresenter.PipelineListView {
-/*
+public class PipelineListViewImpl extends CustomComponent implements PipelineListPresenter.PipelineListView {
+
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
@@ -56,7 +56,7 @@ public class PipelineListViewImpl { //extends CustomComponent implements Pipelin
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				presenter.navigateToEventHandler(PipelineEdit.NAME, "New");
+				presenter.navigateToEventHandler(PipelineEdit.class, "New");
 			}
 		});
 		topLine.addComponent(btnCreatePipeline);
@@ -110,7 +110,7 @@ public class PipelineListViewImpl { //extends CustomComponent implements Pipelin
 				if (!tablePipelines.isSelected(event.getItemId())) {
 					ValueItem item = (ValueItem) event.getItem();
 					long pipelineId = (long) item.getItemProperty("id").getValue();
-					presenter.navigateToEventHandler(PipelineEdit.NAME, pipelineId);
+					presenter.navigateToEventHandler(PipelineEdit.class, pipelineId);
 				}
 			}
 		});
@@ -126,7 +126,7 @@ public class PipelineListViewImpl { //extends CustomComponent implements Pipelin
 		generator.addButton("Edit", "80px", new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
-				presenter.navigateToEventHandler(PipelineEdit.NAME, id);
+				presenter.navigateToEventHandler(PipelineEdit.class, id);
 			}
 		});
 
@@ -187,5 +187,5 @@ public class PipelineListViewImpl { //extends CustomComponent implements Pipelin
 	@Override
 	public void setDisplay(PipelineListPresenter.PipelineListData dataObject) {
 		tablePipelines.setContainerDataSource(dataObject.getContainer());
-	}*/
+	}
 }
