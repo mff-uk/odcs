@@ -1,19 +1,16 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +28,14 @@ public class PipelineFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
 	
-    /**
-     * Entity manager for accessing database with persisted objects
-     */
-    @PersistenceContext
-    private EntityManager em;
-	
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 	
 	@Autowired
 	private DbPipeline pipelineDao;
+	
+	@Autowired
+	private DbExecution executionDao;
 
     /* ******************* Methods for managing Pipeline ******************** */
     /**
@@ -75,13 +69,8 @@ public class PipelineFacade {
      */
     @PostFilter("hasPermission(filterObject,'view')")
     public List<Pipeline> getAllPipelines() {
-
-        @SuppressWarnings("unchecked")
-        List<Pipeline> resultList = Collections.checkedList(
-                em.createQuery("SELECT e FROM Pipeline e").getResultList(),
-                Pipeline.class);
-
-        return resultList;
+		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>("SELECT e FROM Pipeline e");
+		return pipelineDao.executeList(jpql);
     }
 
     /**
@@ -93,7 +82,7 @@ public class PipelineFacade {
      */
     @PostAuthorize("hasPermission(returnObject,'view')")
     public Pipeline getPipeline(long id) {
-        return em.find(Pipeline.class, id);
+		return pipelineDao.getInstance(id);
     }
 
     /**
@@ -104,11 +93,7 @@ public class PipelineFacade {
     @Transactional
     @PreAuthorize("hasPermission(#pipeline,'save')")
     public void save(Pipeline pipeline) {
-        if (pipeline.getId() == null) {
-            em.persist(pipeline);
-        } else {
-            em.merge(pipeline);
-        }
+		pipelineDao.save(pipeline);
     }
 
     /**
@@ -119,11 +104,7 @@ public class PipelineFacade {
     @Transactional
     @PreAuthorize("hasPermission(#pipeline, 'delete')")
     public void delete(Pipeline pipeline) {
-        // we might be trying to remove detached entity
-        if (!em.contains(pipeline) && pipeline.getId() != null) {
-            pipeline = getPipeline(pipeline.getId());
-        }
-        em.remove(pipeline);
+		pipelineDao.delete(pipeline);
     }
 
     /**
@@ -134,25 +115,25 @@ public class PipelineFacade {
      */
     @PreAuthorize("hasPermission(#dpu, 'view')")
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
-
-        @SuppressWarnings("unchecked")
-        List<Pipeline> resultList = Collections.checkedList(
-                em.createQuery("SELECT e FROM Pipeline e"
-                + " LEFT JOIN e.graph g"
-                + " LEFT JOIN g.nodes n"
-                + " LEFT JOIN n.dpuInstance i"
-                + " LEFT JOIN i.template t"
-                + " WHERE t = :dpu").setParameter("dpu", dpu)
-                .getResultList(),
-                Pipeline.class);
-
-        return resultList;
+		
+		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM Pipeline e"
+				+ " LEFT JOIN e.graph g"
+				+ " LEFT JOIN g.nodes n"
+				+ " LEFT JOIN n.dpuInstance i"
+				+ " LEFT JOIN i.template t"
+				+ " WHERE t = :dpu");
+		jpql.setParameter("dpu", dpu);
+		
+		return pipelineDao.executeList(jpql);
     }
 
     public boolean hasPipelineWithName(String name) {
-        return em.createQuery("SELECT e FROM Pipeline e"
-                + " WHERE e.name = :name").setParameter("name", name)
-                .getResultList().size() > 0;
+        JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
+				"SELECT COUNT(e) FROM Pipeline e"
+                + " WHERE e.name = :name");
+		jpql.setParameter("name", name);
+        return pipelineDao.executeSize(jpql) > 0;
     }
 
     /**
@@ -175,12 +156,7 @@ public class PipelineFacade {
      * @return
      */
     public PipelineExecution createExecution(Pipeline pipeline) {
-
-        PipelineExecution execution = new PipelineExecution(pipeline);
-        if (authCtx != null) {
-            execution.setOwner(authCtx.getUser());
-        }
-        return execution;
+		return executionDao.create(pipeline);
     }
 
     /**
@@ -189,13 +165,9 @@ public class PipelineFacade {
      * @return list of executions
      */
     public List<PipelineExecution> getAllExecutions() {
-
-        @SuppressWarnings("unchecked")
-        List<PipelineExecution> resultList = Collections.checkedList(
-                em.createQuery("SELECT e FROM PipelineExecution e").getResultList(),
-                PipelineExecution.class);
-
-        return resultList;
+		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM PipelineExecution e");
+		return executionDao.executeList(jpql);
     }
 
     /**
@@ -207,13 +179,12 @@ public class PipelineFacade {
     public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
 
         @SuppressWarnings("unchecked")
-        List<PipelineExecution> resultList = Collections.checkedList(
-                em.createQuery("SELECT e FROM PipelineExecution e"
-                + " WHERE e.status = :status").setParameter("status", status)
-                .getResultList(),
-                PipelineExecution.class);
-
-        return resultList;
+        JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM PipelineExecution e"
+                + " WHERE e.status = :status");
+		jpql.setParameter("status", status);
+		
+		return executionDao.executeList(jpql);
     }
 
     /**
@@ -223,7 +194,7 @@ public class PipelineFacade {
      * @return PipelineExecution
      */
     public PipelineExecution getExecution(long id) {
-        return em.find(PipelineExecution.class, id);
+		return executionDao.getInstance(id);
     }
 
     /**
@@ -233,16 +204,12 @@ public class PipelineFacade {
      * @return pipeline executions
      */
     public List<PipelineExecution> getExecutions(Pipeline pipeline) {
-
-        @SuppressWarnings("unchecked")
-        List<PipelineExecution> resultList = Collections.checkedList(
-                em.createQuery("SELECT e FROM PipelineExecution e"
-                + " WHERE e.pipeline = :pipe")
-                .setParameter("pipe", pipeline)
-                .getResultList(),
-                PipelineExecution.class);
-
-        return resultList;
+		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM PipelineExecution e"
+                + " WHERE e.pipeline = :pipe");
+		jpql.setParameter("pipe", pipeline);
+		
+		return executionDao.executeList(jpql);
     }
 
     /**
@@ -254,19 +221,15 @@ public class PipelineFacade {
      *
      */
     public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
-
-        @SuppressWarnings("unchecked")
-        List<PipelineExecution> resultList = Collections.checkedList(
-                em.createQuery(
-                "SELECT e FROM PipelineExecution e"
+		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM PipelineExecution e"
                 + " WHERE e.pipeline = :pipe"
-                + " AND e.status = :status")
-                .setParameter("pipe", pipeline)
-                .setParameter("status", status)
-                .getResultList(),
-                PipelineExecution.class);
+                + " AND e.status = :status");
+		
+		jpql.setParameter("pipe", pipeline)
+			.setParameter("status", status);
 
-        return resultList;
+        return executionDao.executeList(jpql);
     }
 
     /**
@@ -298,23 +261,17 @@ public class PipelineFacade {
     public PipelineExecution getLastExec(Pipeline pipeline,
             Set<PipelineExecutionStatus> statuses) {
 
-        PipelineExecution lastExec = null;
-        try {
-            lastExec = (PipelineExecution) em.createQuery(
-                    "SELECT e FROM PipelineExecution e"
+		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM PipelineExecution e"
                     + " WHERE e.pipeline = :pipe"
                     + " AND e.status IN :status"
                     + " AND e.end IS NOT NULL"
-                    + " ORDER BY e.end DESC")
-                    .setParameter("pipe", pipeline)
-                    .setParameter("status", statuses)
-                    .setMaxResults(1)
-                    .getSingleResult();
-        } catch (NoResultException ex) {
-            // return null
-        }
-
-        return lastExec;
+                    + " ORDER BY e.end DESC");
+		
+		jpql.setParameter("pipe", pipeline)
+			.setParameter("status", statuses);
+		
+		return executionDao.execute(jpql);
     }
 
     /**
@@ -325,21 +282,15 @@ public class PipelineFacade {
      */
     public PipelineExecution getLastExec(Pipeline pipeline) {
 
-        PipelineExecution lastExec = null;
-        try {
-            lastExec = (PipelineExecution) em.createQuery(
-                    "SELECT e FROM PipelineExecution e"
+		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM PipelineExecution e"
                     + " WHERE e.pipeline = :pipe"
                     + " AND e.start IS NOT NULL"
-                    + " ORDER BY e.start DESC")
-                    .setParameter("pipe", pipeline)
-                    .setMaxResults(1)
-                    .getSingleResult();
-        } catch (NoResultException ex) {
-            // return null
-        }
-
-        return lastExec;
+                    + " ORDER BY e.start DESC");
+		
+		jpql.setParameter("pipe", pipeline);
+		
+		return executionDao.execute(jpql);
     }
 
     /**
@@ -352,24 +303,18 @@ public class PipelineFacade {
      */
     public PipelineExecution getLastExec(Schedule schedule,
             Set<PipelineExecutionStatus> statuses) {
+		
+		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM PipelineExecution e"
+				+ " WHERE e.schedule = :schedule"
+				+ " AND e.status IN :status"
+				+ " AND e.end IS NOT NULL"
+				+ " ORDER BY e.end DESC");
+		
+		jpql.setParameter("schedule", schedule)
+			.setParameter("status", statuses);
 
-        PipelineExecution lastExec = null;
-        try {
-            lastExec = (PipelineExecution) em.createQuery(
-                    "SELECT e FROM PipelineExecution e"
-                    + " WHERE e.schedule = :schedule"
-                    + " AND e.status IN :status"
-                    + " AND e.end IS NOT NULL"
-                    + " ORDER BY e.end DESC")
-                    .setParameter("schedule", schedule)
-                    .setParameter("status", statuses)
-                    .setMaxResults(1)
-                    .getSingleResult();
-        } catch (NoResultException ex) {
-            // return null
-        }
-
-        return lastExec;
+        return executionDao.execute(jpql);
     }
 
     /**
@@ -385,18 +330,18 @@ public class PipelineFacade {
      * @return
      */
     public boolean hasModifiedExecutions(Date lastLoad) {
+		
+		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
+				"SELECT CASE"
+				+ " WHEN MAX(e.lastChange) > :last THEN 1"
+				+ " ELSE 0"
+				+ " END "
+				+ " FROM PipelineExecution e");
+		jpql.setParameter("last", lastLoad);
 
-        @SuppressWarnings("unchecked")
-        Object r = em.createQuery(
-                "SELECT CASE\n"
-                + "    WHEN MAX(e.lastChange) > :last THEN 1\n"
-                + "    ELSE 0\n"
-                + "END "
-                + "FROM PipelineExecution e")
-                .setParameter("last", lastLoad)
-                .getSingleResult();
-
-        return r.equals("1");
+		long size = executionDao.executeSize(jpql);
+		
+        return size>0;
     }
 
     /**
@@ -407,11 +352,7 @@ public class PipelineFacade {
      */
     @Transactional
     public void save(PipelineExecution exec) {
-        if (exec.getId() == null) {
-            em.persist(exec);
-        } else {
-            em.merge(exec);
-        }
+		executionDao.save(exec);
     }
 
     /**
@@ -421,11 +362,7 @@ public class PipelineFacade {
      */
     @Transactional
     public void delete(PipelineExecution exec) {
-        // we might be trying to remove detached entity
-        if (!em.contains(exec) && exec.getId() != null) {
-            exec = getExecution(exec.getId());
-        }
-        em.remove(exec);
+		executionDao.delete(exec);
     }
 
     /**
