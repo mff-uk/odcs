@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
+import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.enums.*;
 
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
@@ -720,20 +721,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		try {
 			connection = getConnection();
 
-
 			String newUpdateQuery = AddGraphToUpdateQuery(updateQuery);
 			Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
 					newUpdateQuery);
 
 
 			logger.debug(
-					"This SPARQL query for transform is valid and prepared for execution:");
+					"This SPARQL update query is valid and prepared for execution:");
 			logger.debug(newUpdateQuery);
 
 			myupdate.execute();
 			connection.commit();
 
-			logger.debug("SPARQL query for transform was executed succesfully");
+			logger.debug("SPARQL update query for was executed succesfully");
 
 		} catch (MalformedQueryException e) {
 
@@ -766,6 +766,74 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		 }
 		 }
 		 */
+
+	}
+
+	/**
+	 *
+	 * @return List of all application graphs keeps in Virtuoso storage in case
+	 *         of Virtuoso repository. When is used local repository as storage,
+	 *         this method return an empty list.
+	 */
+	@Override
+	public List<String> getApplicationGraphs() {
+		List<String> result = new ArrayList<>();
+
+		try {
+			String select = "select distinct ?g where {graph ?g {?s ?p ?o}}";
+			MyTupleQueryResult tupleResult = executeSelectQueryAsTuples(select);
+
+			String prefix = GraphUrl.getGraphPrefix();
+
+			for (BindingSet set : tupleResult.asList()) {
+
+				for (String name : set.getBindingNames()) {
+					String graphName = set.getValue(name).stringValue();
+
+					if (graphName.startsWith(prefix)) {
+						result.add(graphName);
+					}
+				}
+			}
+		} catch (InvalidQueryException | QueryEvaluationException e) {
+			logger.debug(e.getMessage());
+		}
+
+		return result;
+	}
+
+	/**
+	 * Delete all application graphs keeps in Virtuoso storage in case of
+	 * Virtuoso repository. When is used local repository as storage, this
+	 * method has no effect.
+	 */
+	@Override
+	public void deleteApplicationGraphs() {
+
+		List<String> graphs = getApplicationGraphs();
+
+		if (graphs.isEmpty()) {
+			logger.info("NO APPLICATIONS GRAPHS to DELETE");
+		} else {
+			for (String nextGraph : graphs) {
+				deleteNamedGraph(nextGraph);
+				System.out.println(nextGraph);
+			}
+			logger.info("TOTAL deleted: " + graphs.size() + " graphs");
+
+		}
+	}
+
+	private void deleteNamedGraph(String graphName) {
+
+		String deleteQuery = String.format(
+				"WITH <%s> DELETE {?x ?y ?z} WHERE {?x ?y ?z}", graphName);
+		try {
+			executeSPARQLUpdateQuery(deleteQuery);
+			logger.info("Graph " + graphName + " was sucessfully deleted");
+		} catch (RDFException e) {
+			logger.debug(e.getMessage());
+		}
 
 	}
 
@@ -1462,8 +1530,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		Matcher matcher = pattern.matcher(updateQuery.toLowerCase());
 
 		boolean hasResult = matcher.find();
+		boolean hasWith = updateQuery.toLowerCase().contains("with");
 
-		if (hasResult) {
+		if (hasResult && !hasWith) {
 
 			int index = matcher.start();
 
@@ -1504,41 +1573,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 		return updateQuery;
 
-
-	}
-
-	private long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph)
-			throws RDFException {
-		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
-
-		InputStreamReader inputStreamReader = getEndpointStreamReader(
-				endpointURL, endpointGraph,
-				countQuery, RDFFormat.RDFXML);
-
-		long count = -1;
-
-		try (Scanner scanner = new Scanner(inputStreamReader)) {
-
-			String regexp = ">[0-9]+<";
-			Pattern pattern = Pattern.compile(regexp);
-			boolean find = false;
-
-			while (scanner.hasNext() & !find) {
-				String line = scanner.next();
-				Matcher matcher = pattern.matcher(line);
-
-				if (matcher.find()) {
-					String number = line.substring(matcher.start() + 1, matcher
-							.end() - 1);
-					count = Long.parseLong(number);
-					find = true;
-
-				}
-
-			}
-		}
-
-		return count;
 
 	}
 
