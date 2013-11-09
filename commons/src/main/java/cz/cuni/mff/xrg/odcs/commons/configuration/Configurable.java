@@ -1,10 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.configuration;
 
-
 /**
  * Interface describes object that can be configured by using configuration.
  * 
  * @author Petyr
+ * @param <C> Configuration object that carries the configuration.
  *
  */
 public interface Configurable <C extends DPUConfigObject> {
