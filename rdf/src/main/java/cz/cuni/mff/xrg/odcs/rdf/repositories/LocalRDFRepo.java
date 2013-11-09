@@ -83,7 +83,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			repository.initialize();
 			logger.info("New local repository with data graph <"
 					+ getDataGraph().stringValue()
-					+ "> successfully incicialized.");
+					+ "> successfully initialized.");
 
 		} catch (RepositoryException ex) {
 			logger.debug(ex.getMessage());
@@ -244,7 +244,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 				}
 
 
-				logger.info("Merged SUCESSFULL");
+				logger.info("Merged SUCCESSFUL");
 			}
 
 

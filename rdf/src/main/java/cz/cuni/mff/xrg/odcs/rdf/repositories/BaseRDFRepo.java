@@ -72,7 +72,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final long RETRY_CONNECTION_TIME = 1000;
 
 	/**
-	 * Represent successfully connection using HTTP.
+	 * Represents successful connection using HTTP.
 	 */
 	protected static final int HTTP_OK_RESPONSE = 200;
 
@@ -733,7 +733,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			myupdate.execute();
 			connection.commit();
 
-			logger.debug("SPARQL update query for was executed succesfully");
+			logger.debug("SPARQL update query for was executed successfully");
 
 		} catch (MalformedQueryException e) {
 
@@ -2196,7 +2196,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					closeConnection();
 					repository.shutDown();
 					logger.debug("Repository with data graph <" + getDataGraph()
-							.stringValue() + "> destroyed SUCCESSFULL.");
+							.stringValue() + "> destroyed SUCCESSFUL.");
 				} catch (RepositoryException ex) {
 					hasBrokenConnection = true;
 					logger.debug(
