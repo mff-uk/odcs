@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import java.util.Map;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +110,18 @@ public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 		}
 	}
 
+	@Override
+    @Transactional(readOnly = true)
+	public T execute(JPQLDbQuery<T> query) {
+		TypedQuery<T> tq = em.createQuery(query.getQuery(), entityClass);
+		for (Map.Entry<String, Object> p : query.getParameters()) {
+			tq.setParameter(p.getKey(), p.getValue());
+		}
+		return execute(new DbQuery<>(tq));
+	}
+	
+	
+
 	@SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
 	@Override
@@ -115,12 +130,30 @@ public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 				query.getQuery().getResultList(), entityClass);
 		return resultList;
 	}
+
+	@Override
+    @Transactional(readOnly = true)
+	public List<T> executeList(JPQLDbQuery<T> query) {
+		TypedQuery<T> tq = em.createQuery(query.getQuery(), entityClass);
+		for (Map.Entry<String, Object> p : query.getParameters()) {
+			tq.setParameter(p.getKey(), p.getValue());
+		}
+		return executeList(new DbQuery<>(tq));
+	}
 	
     @Transactional(readOnly = true)
 	@Override
 	public long executeSize(DbQueryCount<T> query) {
 		 Long result = (Long) query.getQuery().getSingleResult();
 		 return result;
+	}
+
+	@Override
+    @Transactional(readOnly = true)
+	public long executeSize(JPQLDbQuery<T> query) {
+		TypedQuery<Long> tq = em.createQuery(query.getQuery(), Long.class);
+		Long result = tq.getSingleResult();
+		return result;
 	}
 	
 	@Override

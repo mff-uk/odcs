@@ -4,6 +4,7 @@ import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 
 /**
  * Read only access to data of given type.
@@ -43,6 +44,15 @@ public interface DataAccessRead<T extends DataObject> {
 	 * @return
 	 */
 	public T execute(DbQuery<T> query);
+	
+	/**
+	 * Execute query given as <code>String</code> and return a single object
+	 * retrieved from the query result.
+	 * 
+	 * @param query JPQL string
+	 * @return 
+	 */
+	public T execute(JPQLDbQuery<T> query);
 
 	/**
 	 * Execute given query and return result as list of objects.
@@ -51,6 +61,15 @@ public interface DataAccessRead<T extends DataObject> {
 	 * @return
 	 */
 	public List<T> executeList(DbQuery<T> query);
+	
+	/**
+	 * Execute query given as <code>String</code> and return a list of objects
+	 * retrieved from the query result.
+	 * 
+	 * @param query JPQL string
+	 * @return 
+	 */
+	public List<T> executeList(JPQLDbQuery<T> query);
 
 	/**
 	 * Execute count query and return result.
@@ -59,6 +78,15 @@ public interface DataAccessRead<T extends DataObject> {
 	 * @return
 	 */
 	public long executeSize(DbQueryCount<T> query);
+	
+	/**
+	 * Execute <code>COUNT</code> query given as <code>String</code> and return
+	 * number retrieved from the query result.
+	 * 
+	 * @param query
+	 * @return number of rows in the result
+	 */
+	public long executeSize(JPQLDbQuery<T> query);
 
 	/**
 	 * Create query builder that can be used to create query for this access.
