@@ -275,4 +275,19 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *                             of the Connection.
 	 */
 	public RepositoryConnection getConnection() throws RepositoryException;
+
+	/**
+	 *
+	 * @return List of all application graphs keeps in Virtuoso storage in case
+	 *         of Virtuoso repository. When is used local repository as storage,
+	 *         this method return an empty list.
+	 */
+	public List<String> getApplicationGraphs();
+
+	/**
+	 * Delete all application graphs keeps in Virtuoso storage in case of
+	 * Virtuoso repository. When is used local repository as storage, this
+	 * method has no effect.
+	 */
+	public void deleteApplicationGraphs();
 }
