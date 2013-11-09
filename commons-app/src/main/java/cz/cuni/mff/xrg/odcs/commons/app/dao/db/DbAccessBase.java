@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -21,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(DbAccessBase.class);
+	
 	/**
 	 * Entity manager for accessing database with persisted objects
 	 */
@@ -44,7 +48,12 @@ public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
     
 	@Override
 	public T create() {
-		throw new UnsupportedOperationException();
+		try {
+			return entityClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException ex) {
+			LOG.error("The class {} cannot be instatiated by no-arg constructor.", entityClass.getSimpleName(), ex);
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override

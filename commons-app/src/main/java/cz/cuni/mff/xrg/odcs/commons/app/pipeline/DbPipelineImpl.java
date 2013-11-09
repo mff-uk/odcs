@@ -24,7 +24,7 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
 
     @Override
     public Pipeline create() {
-        Pipeline newPipeline = new Pipeline();
+        Pipeline newPipeline = super.create();
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
         }

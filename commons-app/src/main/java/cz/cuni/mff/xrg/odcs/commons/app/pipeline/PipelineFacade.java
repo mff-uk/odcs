@@ -30,13 +30,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PipelineFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
+	
     /**
      * Entity manager for accessing database with persisted objects
      */
     @PersistenceContext
     private EntityManager em;
+	
     @Autowired(required = false)
     private AuthenticationContext authCtx;
+	
+	@Autowired
+	private DbPipeline pipelineDao;
 
     /* ******************* Methods for managing Pipeline ******************** */
     /**
@@ -47,12 +52,7 @@ public class PipelineFacade {
      * @return newly created pipeline
      */
     public Pipeline createPipeline() {
-        Pipeline pipeline = new Pipeline();
-        pipeline.setGraph(new PipelineGraph());
-        if (authCtx != null) {
-            pipeline.setUser(authCtx.getUser());
-        }
-        return pipeline;
+		return pipelineDao.create();
     }
 
     /**
@@ -65,11 +65,7 @@ public class PipelineFacade {
      */
     @PreAuthorize("hasPermission(#pipeline, 'copy')")
     public Pipeline copyPipeline(Pipeline pipeline) {
-        Pipeline nPipeline = new Pipeline(pipeline);
-        if (authCtx != null) {
-            nPipeline.setUser(authCtx.getUser());
-        }
-        return nPipeline;
+		return pipelineDao.copy(pipeline);
     }
 
     /**

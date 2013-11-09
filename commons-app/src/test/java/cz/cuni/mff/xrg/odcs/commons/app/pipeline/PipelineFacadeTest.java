@@ -217,4 +217,18 @@ public class PipelineFacadeTest {
 		assertNotNull(pipes);
 		assertEquals(0, pipes.size());
 	}
+	
+	@Test
+	public void testCopyPipeline() {
+		
+		Pipeline ppl = new Pipeline();
+		ppl.setName("pplName");
+		ppl.setDescription("pplDesc");
+		
+		Pipeline nPpl = facade.copyPipeline(ppl);
+		
+		assertNotSame(ppl, nPpl);
+		assertEquals(ppl.getName(), nPpl.getName());
+		assertEquals(ppl.getDescription(), nPpl.getDescription());
+	}
 }
