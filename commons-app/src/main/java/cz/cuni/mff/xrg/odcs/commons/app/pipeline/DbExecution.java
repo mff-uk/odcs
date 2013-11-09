@@ -9,4 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAcess;
  * @author Petyr
  */
 public interface DbExecution extends DbAcess<PipelineExecution> {
+	
+	public PipelineExecution create(Pipeline pipeline);
+	
 }
