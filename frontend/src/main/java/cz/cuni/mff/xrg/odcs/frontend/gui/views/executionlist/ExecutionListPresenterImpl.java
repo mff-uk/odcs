@@ -58,12 +58,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Override
     public void showLogEventHandler(long executionId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        view.showExecutionDetail(getLightExecution(executionId));
     }
 
     @Override
     public void showDebugEventHandler(long executionId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        view.showExecutionDetail(getLightExecution(executionId));
     }
 
     @Override
