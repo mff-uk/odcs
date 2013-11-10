@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,7 +43,11 @@ public class DailyReport {
 	/**
 	 * Get executions for lest 24 hours and based on the notifications settings
 	 * send daily reports.
+	 * 
+	 * Spring will run this at every midnight.
 	 */
+	@Async
+	@Scheduled(cron = "0 0 0 * * *")
 	private void execute() {
 		// today    
 		Calendar date = Calendar.getInstance();
