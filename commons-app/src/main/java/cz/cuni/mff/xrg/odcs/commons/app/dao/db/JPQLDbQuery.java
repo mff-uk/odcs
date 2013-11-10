@@ -51,33 +51,4 @@ public class JPQLDbQuery<T extends DataObject> implements DataQuery<T> {
 		}
 		return this;
 	}
-	
-	/**
-	 * Query parameter.
-	 * 
-	 * @param <V> 
-	 */
-	public class Parameter<V> {
-		
-		private String key;
-		
-		private V value;
-
-		public String getKey() {
-			return key;
-		}
-
-		public void setKey(String key) {
-			this.key = key;
-		}
-
-		public V getValue() {
-			return value;
-		}
-
-		public void setValue(V value) {
-			this.value = value;
-		}
-		
-	}
 }
