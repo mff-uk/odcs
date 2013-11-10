@@ -164,7 +164,7 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * address. For data deleting is necessarry to have endpoint with update
 	 * rights.
 	 *
-	 * @param endpointURL   URL address of endpoint connect to.
+	 * @param endpointURL   URL address of update endpoint connect to.
 	 * @param endpointGraph Graph name in URI format.
 	 * @throws RDFException When you dont have update right for this action, or
 	 *                      connection is lost before succesfully ending.
