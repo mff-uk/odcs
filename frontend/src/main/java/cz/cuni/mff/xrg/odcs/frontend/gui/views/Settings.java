@@ -9,6 +9,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -157,14 +158,18 @@ public class Settings extends ViewComponent {
 		recordsLayout.setWidth("100%");
 		recordsLayout.addComponent(new Label("Records"));
 
-		//layout with Release locked pipelines
+		//layout for Delete debug resources
 		pipelinesLayout = new VerticalLayout();
 		pipelinesLayout.setMargin(true);
 		pipelinesLayout.setSpacing(true);
 		pipelinesLayout.setImmediate(true);
 		pipelinesLayout.setStyleName("settings");
 		pipelinesLayout.setWidth("100%");
-		pipelinesLayout.addComponent(new Label("Pipelines"));
+		pipelinesLayout.addComponent(new Label("Delete all intermediate graphs created \n by the pipelines in the debug mode"));
+		Button clearButton = new Button();
+		clearButton.setCaption("Clear");
+		pipelinesLayout.addComponent(clearButton );
+		
 
 		//layout for Namespace Prefixes
 		prefixesLayout = new VerticalLayout();
@@ -275,8 +280,8 @@ public class Settings extends ViewComponent {
 		tabsLayout.addComponent(recordsButton);
 		tabsLayout.setComponentAlignment(recordsButton, Alignment.TOP_RIGHT);
 
-		//Release locked pipelines tab
-		pipelinesButton = new NativeButton("Release locked pipelines");
+		//Delete debug resources tab
+		pipelinesButton = new NativeButton("Delete debug resources");
 		pipelinesButton.setHeight("40px");
 		pipelinesButton.setWidth("170px");
 		pipelinesButton.setStyleName("multiline");
