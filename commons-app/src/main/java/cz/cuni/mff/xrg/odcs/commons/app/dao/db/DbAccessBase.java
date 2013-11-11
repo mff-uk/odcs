@@ -152,6 +152,9 @@ public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
     @Transactional(readOnly = true)
 	public long executeSize(JPQLDbQuery<T> query) {
 		TypedQuery<Long> tq = em.createQuery(query.getQuery(), Long.class);
+		for (Map.Entry<String, Object> p : query.getParameters()) {
+			tq.setParameter(p.getKey(), p.getValue());
+		}
 		Long result = tq.getSingleResult();
 		return result;
 	}
