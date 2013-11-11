@@ -151,12 +151,17 @@ public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 	@Override
     @Transactional(readOnly = true)
 	public long executeSize(JPQLDbQuery<T> query) {
-		TypedQuery<Long> tq = em.createQuery(query.getQuery(), Long.class);
+		
+		// We need to use abstract Number class here, because Virtuoso seems
+		// to return arbitrary instances of Number for INTEGER data type
+		// (Short, Long). See GH-745.
+		TypedQuery<Number> tq = em.createQuery(query.getQuery(), Number.class);
 		for (Map.Entry<String, Object> p : query.getParameters()) {
 			tq.setParameter(p.getKey(), p.getValue());
 		}
-		Long result = tq.getSingleResult();
-		return result;
+		
+		Number result = tq.getSingleResult();
+		return result.longValue();
 	}
 	
 	@Override
