@@ -128,11 +128,29 @@ public class PipelineFacade {
 		return pipelineDao.executeList(jpql);
     }
 
-    public boolean hasPipelineWithName(String name) {
-        JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
-				"SELECT COUNT(e) FROM Pipeline e"
-                + " WHERE e.name = :name");
-		jpql.setParameter("name", name);
+	/**
+	 * Checks for duplicate pipeline names. The name of pipeline in second
+	 * argument is ignored, if given. It is to be used when editing already
+	 * existing pipeline.
+	 * 
+	 * @param newName
+	 * @param pipeline to be renamed, or null
+	 * @return 
+	 */
+    public boolean hasPipelineWithName(String newName, Pipeline pipeline) {
+		
+		String query = "SELECT COUNT(e) FROM Pipeline e"
+                + " WHERE e.name = :name";
+		
+        JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>();
+		jpql.setParameter("name", newName);
+		
+		if (pipeline != null && pipeline.getId() != null) {
+			query += " AND e.id <> :pid";
+			jpql.setParameter("pid", pipeline.getId());
+		}
+		
+		jpql.setQuery(query);
         return pipelineDao.executeSize(jpql) > 0;
     }
 

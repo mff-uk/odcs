@@ -19,6 +19,12 @@ public class JPQLDbQuery<T extends DataObject> implements DataQuery<T> {
 
 	private final Map<String, Object> parameters = new HashMap<>();
 
+	/**
+	 * No-arg constructor allows setting parameters before the query is
+	 * completely constructed.
+	 */
+	public JPQLDbQuery() {}
+	
 	public JPQLDbQuery(String query) {
 		this.query = query;
 	}
