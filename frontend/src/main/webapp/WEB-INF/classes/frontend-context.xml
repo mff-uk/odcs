@@ -44,6 +44,11 @@
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
     <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
+	<bean id="logAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor" />
+	<bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor" />
+	
+	<bean id="logMessagesTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable" scope="prototype" />
+	<bean id="debugView" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
 
     <!-- Imposes authorization filters on container. -->
     <bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
@@ -55,7 +60,7 @@
     
     <!-- sessions scope -->   
     
-    <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="session" />
+    <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype" />
 
     <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
     <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="session"/>

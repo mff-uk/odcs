@@ -1,10 +1,16 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,6 +28,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Autowired
     private DbExecution dbExecution;
+	
+	@Autowired
+	private DbLogMessage dbLogMessage;
+	
+	@Autowired
+	private DbMessageRecord dbMessageRecord;
 
     @Autowired
     private PipelineFacade pipelineFacade;
@@ -58,12 +70,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Override
     public void showLogEventHandler(long executionId) {
-        view.showExecutionDetail(getLightExecution(executionId));
+        //TODO: Show log for selected DPU?
     }
 
     @Override
     public void showDebugEventHandler(long executionId) {
-        view.showExecutionDetail(getLightExecution(executionId));
+        view.showExecutionDetail(getLightExecution(executionId), new ExecutionDetailData(getLogDataSource(), getMessageDataSource()));
     }
 
     @Override
@@ -86,5 +98,13 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
     private PipelineExecution getLightExecution(long executionId) {
         return pipelineFacade.getExecution(executionId);
     }
+	
+	private ReadOnlyContainer<LogMessage> getLogDataSource() {
+		return new ReadOnlyContainer<>(dbLogMessage, new LogAccessor());
+	}
+	
+	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
+		return new ReadOnlyContainer<>(dbMessageRecord, new MessageRecordAccessor());
+	}
     
 }

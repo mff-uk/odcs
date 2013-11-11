@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
@@ -20,7 +21,7 @@ import org.apache.log4j.Level;
  */
 @Entity
 @Table(name = "logging_event")
-public class LogMessage implements Serializable {
+public class LogMessage implements Serializable, DataObject {
 
 	/**
 	 * Log property name for logging messages produced by

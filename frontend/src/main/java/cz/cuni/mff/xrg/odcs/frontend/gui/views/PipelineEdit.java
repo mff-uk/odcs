@@ -598,7 +598,8 @@ public class PipelineEdit extends ViewComponent {
 			return;
 		}
 		final DPUInstanceRecord instance = debugNode.getDpuInstance();
-		final DebuggingView debug = new DebuggingView(pExec, instance, true, true);
+		final DebuggingView debug = new DebuggingView();
+		debug.initialize(pExec, instance, true, true);
 		
 		final Window debugWindow = new Window("Debug window");
 		HorizontalLayout buttonLine = new HorizontalLayout();

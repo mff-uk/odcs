@@ -61,7 +61,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	}
 
 	@Override
-	public void showExecutionDetail(PipelineExecution execution) {
+	public void showExecutionDetail(PipelineExecution execution, ExecutionListPresenter.ExecutionDetailData detailDataObject) {
 		App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
 		// secure existance of detail layout
 		if (logLayout == null) {
@@ -70,6 +70,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			// will just set the debug view content
 			buildDebugView(execution);
 		}
+		debugView.setDisplay(detailDataObject);
 		hsplit.setSecondComponent(logLayout);
 		// adjust hsplit
 		if (hsplit.isLocked()) {
@@ -160,7 +161,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				Long executionId = (long) event.getItem().getItemProperty("id").getValue();
-				presenter.showLogEventHandler(executionId);
+				presenter.showDebugEventHandler(executionId);
 			}
 		});
 		// add generated columns to the table
@@ -212,7 +213,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		generator.addButton("Show log", "110px", new Action() {
 			@Override
 			protected void action(long id) {
-				presenter.showLogEventHandler(id);
+				presenter.showDebugEventHandler(id);
 			}
 		}, new ActionColumnGenerator.ButtonShowCondition() {
 			@Override
@@ -228,7 +229,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		generator.addButton("Debug data", "120px", new Action() {
 			@Override
 			protected void action(long id) {
-				presenter.showLogEventHandler(id);
+				presenter.showDebugEventHandler(id);
 			}
 		}, new ActionColumnGenerator.ButtonShowCondition() {
 			@Override
@@ -283,7 +284,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		logLayout.setSpacing(true);
 		logLayout.setWidth("100%");
 		logLayout.setHeight("100%");
-
+		debugView = new DebuggingView();
 		// build the debug view
 		buildDebugView(execution);
 
@@ -328,8 +329,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	 * @param exec pipeline execution to show in debugging view
 	 */
 	private void buildDebugView(PipelineExecution execution) {
-		if (debugView == null) {
-			debugView = new DebuggingView(execution, null, execution.isDebugging(), false);
+		if (!debugView.isInitialized()) {
+			debugView.initialize(execution, null, execution.isDebugging(), false);
 		} else {
 			debugView.setExecution(execution, null);
 		}

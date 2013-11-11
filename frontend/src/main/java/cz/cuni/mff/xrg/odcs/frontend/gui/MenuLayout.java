@@ -22,6 +22,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Scheduler;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
@@ -89,7 +90,7 @@ public class MenuLayout extends CustomComponent {
 		menuBar.addItem("<b>ODCleanStore</b>", new NavigateToCommand(Initial.class, navigator));
 		menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator));
 		menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenter.class, navigator));
-		menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionMonitor.class, navigator));
+		menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator));
 //		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
 		menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator));
 		menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator));
