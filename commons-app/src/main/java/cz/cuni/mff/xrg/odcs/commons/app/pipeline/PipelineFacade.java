@@ -351,8 +351,8 @@ public class PipelineFacade {
 		
 		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
 				"SELECT CASE"
-				+ " WHEN MAX(e.lastChange) > :last THEN 1"
-				+ " ELSE 0"
+				+ " WHEN MAX(e.lastChange) > :last THEN CAST(1 AS INTEGER)"
+				+ " ELSE CAST(0 AS INTEGER)"
 				+ " END "
 				+ " FROM PipelineExecution e");
 		jpql.setParameter("last", lastLoad);
