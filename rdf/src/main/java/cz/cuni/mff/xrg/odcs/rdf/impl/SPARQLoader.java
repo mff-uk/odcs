@@ -183,7 +183,7 @@ public class SPARQLoader {
 
 		try {
 
-			connection = rdfDataUnit.getDataRepository().getConnection();
+			connection = rdfDataUnit.getConnection();
 
 			for (int i = 0; i < namedGraph.size(); i++) {
 				final String endpointGraph = namedGraph.get(i);
