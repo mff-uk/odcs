@@ -166,18 +166,12 @@ public class DailyReport {
 			case CANCELLING:
 				return false;
 			case FAILED:
-				if (notification.getTypeError() == NotificationRecordType.DAILY) {
-					return true;
-				} else {
-					return false;
-				}
+				// return true if use daily report
+				return notification.getTypeError() == NotificationRecordType.DAILY;
 			case FINISHED_SUCCESS:
 			case FINISHED_WARNING:
-				if (notification.getTypeSuccess() == NotificationRecordType.DAILY) {
-					return true;
-				} else {
-					return false;
-				}
+				// return trye if use daily report
+				return notification.getTypeSuccess() == NotificationRecordType.DAILY;
 			case QUEUED:
 				return false;
 			case RUNNING:

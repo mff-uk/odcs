@@ -18,9 +18,13 @@ import ch.qos.logback.core.spi.FilterReply;
 public class MdcExecutionLevelFilter extends ch.qos.logback.core.filter.Filter<ILoggingEvent> {
 
 	/**
-	 * Store required minimal levels for executions.
+	 * Store required minimal levels for executions. This is shared
+	 * between thread.
+	 * 
+	 * The key is name of the execution, the value (level) is 
+	 * the minimal allowed log level.
 	 */
-	private static ConcurrentHashMap<String, Level> levels = new ConcurrentHashMap<String, Level>();
+	private static final ConcurrentHashMap<String, Level> levels = new ConcurrentHashMap<>();
 	
 	@Override
 	public FilterReply decide(ILoggingEvent event) {

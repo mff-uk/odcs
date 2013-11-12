@@ -29,25 +29,25 @@ public final class DPUMessage extends DPUEvent {
 		switch(type) {
 		case DEBUG:
 			LOG.debug("DPU '{}' publish message short: '{}' long: '{}'", 
-					context.getDpuInstance().getName(),
+					context.getDPU().getName(),
 					shortMessage, 
 					longMessage);
 			break;
 		case ERROR:
 			LOG.error("DPU '{}' publish message short: '{}' long: '{}'", 
-					context.getDpuInstance().getName(),
+					context.getDPU().getName(),
 					shortMessage, 
 					longMessage);
 			break;
 		case INFO:
 			LOG.info("DPU '{}' publish message short: '{}' long: '{}'", 
-					context.getDpuInstance().getName(),
+					context.getDPU().getName(),
 					shortMessage, 
 					longMessage);
 			break;
 		case WARNING:
 			LOG.warn("DPU '{}' publish message short: '{}' long: '{}'", 
-					context.getDpuInstance().getName(),
+					context.getDPU().getName(),
 					shortMessage, 
 					longMessage);
 			break;

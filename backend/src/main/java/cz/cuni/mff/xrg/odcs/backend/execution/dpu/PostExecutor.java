@@ -26,9 +26,10 @@ public interface PostExecutor extends Ordered {
 	 * Should perform post-execution actions. If return false then the execution
 	 * is cancelled and marked failed.
 	 * 
-	 * @param dpu Respective DPU.
+	 * @param node Node on which run the postExecutor.
+	 * @param contexts DPUs context.
+	 * @param dpuInstance Respective DPU instance class.
 	 * @param execution Respective execution.
-	 * @param context DPU's context.
 	 * @param unitInfo DPU's ProcessingUnitInfo.
 	 * @return
 	 */

@@ -96,7 +96,7 @@ public class AppEntry {
 		
 	/**
 	 * Initialise and start network TCP/IP server.
-	 * @return False it the TCP/IP server cannot be unidealised.
+	 * @return False it the TCP/IP server cannot be initialised.
 	 */
 	private boolean initNetworkServer() {
 		// set TCP/IP server
@@ -156,9 +156,8 @@ public class AppEntry {
 		// infinite loop
 		while (true) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1000 * 60);
             } catch (InterruptedException ex) {
-               continue;
             }
 		}
 	}

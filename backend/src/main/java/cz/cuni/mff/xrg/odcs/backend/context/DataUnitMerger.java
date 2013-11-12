@@ -75,7 +75,7 @@ class DataUnitMerger {
 			String leftDataUnitName = rightDataUnitName;
 			// get command
 			String cmd = this.findRule(rightDataUnitName, instruction);
-			if (cmd == "") {
+			if (cmd.isEmpty()) {
 				// there is no mapping
 				// IGNORE DATAUNIT
 				continue;				
@@ -127,7 +127,7 @@ class DataUnitMerger {
 			} catch (IllegalArgumentException e) {
 				throw new ContextException(
 						"Can't merge data units, type miss match.", e);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new ContextException("Can't merge data units.", e);
 			}
 		}

@@ -10,9 +10,9 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 
 /**
  * Facade that provides method for manipulation with {@link Context}.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class ContextFacade {
 
@@ -38,7 +38,7 @@ public class ContextFacade {
 	 * If {@link Context} for given {@link DPUInstanceRecord} and
 	 * {@link ExecutionContextInfo} already exist then load it. Otherwise create
 	 * new empty context.
-	 * 
+	 *
 	 * @param dpuInstance
 	 * @param contextInfo
 	 * @param lastSuccExec
@@ -61,7 +61,7 @@ public class ContextFacade {
 
 	/**
 	 * Seal given context against modification from inside of DPU.
-	 * 
+	 *
 	 * @param context
 	 */
 	public void seal(Context context) {
@@ -69,10 +69,11 @@ public class ContextFacade {
 	}
 
 	/**
-	 * Close given context does not delete the data. To open the context use
+	 * Close given context does not delete the data (save the date(. To open the
+	 * context use
 	 * {@link #create(DPUInstanceRecord, ExecutionContextInfo, Date)} method
 	 * with proper arguments.
-	 * 
+	 *
 	 * @param context
 	 */
 	public void close(Context context) {
@@ -81,7 +82,7 @@ public class ContextFacade {
 
 	/**
 	 * Delete {@link Context} and it's {@link ExecutionContextInfo}.
-	 * 
+	 *
 	 * @param context
 	 */
 	public void delete(Context context) {
@@ -93,7 +94,7 @@ public class ContextFacade {
 	 * newly created {@link ManagableDataUnit} are cleaned by calling
 	 * {@link ManagableDataUnit#clean()}. So any previous data are safely
 	 * deleted and do not contaminate the execution.
-	 * 
+	 *
 	 * @param left
 	 * @param right
 	 * @param script

@@ -39,7 +39,7 @@ public class ConflictLock implements PreExecutor {
 	/**
 	 * Store running execution together with respective threads.
 	 */
-	private HashMap<Pipeline, Thread> locks = new HashMap<>();
+	private final HashMap<Pipeline, Thread> locks = new HashMap<>();
 
 	/**
 	 * Return when given execution can continue ie. there are no conflict

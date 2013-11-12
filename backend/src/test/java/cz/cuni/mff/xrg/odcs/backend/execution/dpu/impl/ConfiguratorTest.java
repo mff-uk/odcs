@@ -12,30 +12,23 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
 
-import org.junit.Ignore;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
  * Test suite for {@link Configurator} class.
  * 
- * <p>
- * TODO Fix test and remove ignore annotation. Spring seems to be passing
- *		uninitialized {@link AppConfig} to {@link OSGiModuleFacadeConfig}.
- * 
  * @author Petyr
  * 
  */
 @ContextConfiguration(locations = {"file:src/test/resource/backend-test-context.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
-@Ignore
 public class ConfiguratorTest {
 
 	@Autowired

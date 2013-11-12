@@ -25,9 +25,9 @@ public final class PipelineFailedEvent extends PipelineEvent {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineFailedEvent.class);
 	
-	private String shortMessage;
+	private final String shortMessage;
 
-	private String longMessage;
+	private final String longMessage;
 
 	protected PipelineFailedEvent(String shortMessage,
 			String longMessage,
@@ -174,7 +174,8 @@ public final class PipelineFailedEvent extends PipelineEvent {
 	/**
 	 * Create event which indicate that there is no jar-file for DPU to execute.
 	 * 
-	 * @param context
+	 * @param dpuInstance
+	 * @param execution
 	 * @param source
 	 * @return
 	 */

@@ -12,6 +12,7 @@ import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
+import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -33,6 +34,9 @@ class CleanUp implements PostExecutor {
 	@Autowired
 	private AppConfig appConfig;
 
+	@Autowired
+	private ContextFacade contextFacade;
+	
 	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
@@ -46,13 +50,11 @@ class CleanUp implements PostExecutor {
 		// first release contexts
 		for (Context item : contexts.values()) {
 			if (execution.isDebugging()) {
-				// save data
-				item.save();
-				// just release leave
-				item.release();
+				// close and save data
+				contextFacade.close(item);
 			} else {
 				// delete data ..
-				item.delete();
+				contextFacade.delete(item);
 			}
 		}
 

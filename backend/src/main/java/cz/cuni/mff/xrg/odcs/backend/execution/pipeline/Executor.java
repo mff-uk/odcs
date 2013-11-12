@@ -292,9 +292,9 @@ public class Executor implements Runnable {
 	 * @return
 	 */
 	private DependencyGraph prepareDependencyGraph() {
-		DependencyGraph dependencyGraph = null;
 		final Pipeline pipeline = execution.getPipeline();
 		// if in debug mode then pass the final DPU
+		DependencyGraph dependencyGraph;
 		if (execution.isDebugging() && execution.getDebugNode() != null) {
 			dependencyGraph = new DependencyGraph(pipeline.getGraph(),
 					execution.getDebugNode());
@@ -353,7 +353,7 @@ public class Executor implements Runnable {
 			while (executorThread.isAlive()) {
 				try {
 					// sleep for two seconds
-					Thread.sleep(2000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					// request stop
 					stopExecution = true;
