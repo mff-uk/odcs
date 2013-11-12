@@ -5,14 +5,16 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.*;
@@ -28,13 +30,45 @@ public class RepositoryDataValidator implements DataValidator {
 	private static Logger logger = Logger.getLogger(
 			RepositoryDataValidator.class);
 
-	private RDFDataUnit dataUnit;
+	private RDFDataUnit input;
+
+	private RDFDataUnit output;
 
 	private String message;
 
-	public RepositoryDataValidator(RDFDataUnit dataUnit) {
-		this.dataUnit = dataUnit;
+	private List<TripleProblem> findedProblems;
+
+	public RepositoryDataValidator(RDFDataUnit input) {
+		this.input = input;
+		this.output = null;
 		this.message = "";
+		this.findedProblems = new ArrayList<>();
+	}
+
+	public RepositoryDataValidator(RDFDataUnit input, RDFDataUnit output) {
+		this.input = input;
+		this.output = output;
+		this.message = "";
+		this.findedProblems = new ArrayList<>();
+	}
+
+	private RDFDataUnit getGoalRepository() {
+		if (hasOutput()) {
+			return output;
+		} else {
+			RDFDataUnit tempRepo = RDFDataUnitFactory.createLocalRDFRepo(
+					"tempRepo");
+
+			return tempRepo;
+		}
+	}
+
+	private boolean hasOutput() {
+		if (output != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -48,28 +82,27 @@ public class RepositoryDataValidator implements DataValidator {
 
 		boolean isValid = false;
 
-		if (dataUnit.getTripleCount() == 0) {
+		if (input.getTripleCount() == 0) {
 			isValid = true;
 		} else {
 
 			File tempFile = null;
-			LocalRDFRepo tempRepo = null;
+			RDFDataUnit goalRepo = null;
 			try {
 				tempFile = File.createTempFile("temp", "file");
-				dataUnit
+				input
 						.loadToFile(tempFile.getAbsolutePath(), RDFFormatType.N3,
 						true, false);
 
 				try (InputStreamReader fileStream = new InputStreamReader(
 						new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
 
-					tempRepo = RDFDataUnitFactory.createLocalRDFRepo(
-							"tempRepo");
+					goalRepo = getGoalRepository();
 
 					final StatisticalHandler handler = new StatisticalHandler(
-							tempRepo.getConnection(), true);
+							goalRepo.getConnection(), true);
 
-					handler.setGraphContext(tempRepo.getDataGraph());
+					handler.setGraphContext(goalRepo.getDataGraph());
 
 					RDFParser parser = Rio.createParser(RDFFormat.N3);
 					parser.setRDFHandler(handler);
@@ -102,6 +135,7 @@ public class RepositoryDataValidator implements DataValidator {
 
 					isValid = !handler.hasFindedProblems();
 					message = handler.getFindedProblemsAsString();
+					findedProblems = handler.getFindedProblems();
 				}
 
 
@@ -116,8 +150,8 @@ public class RepositoryDataValidator implements DataValidator {
 				if (tempFile != null) {
 					tempFile.delete();
 				}
-				if (tempRepo != null) {
-					tempRepo.delete();
+				if (!hasOutput() && goalRepo != null) {
+					goalRepo.delete();
 				}
 			}
 		}
@@ -129,5 +163,10 @@ public class RepositoryDataValidator implements DataValidator {
 	@Override
 	public String getErrorMessage() {
 		return message;
+	}
+
+	@Override
+	public List<TripleProblem> getFindedProblems() {
+		return findedProblems;
 	}
 }
