@@ -1,5 +1,6 @@
-package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
+package cz.cuni.mff.xrg.odcs.commons.app.user;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import javax.persistence.*;
 
 import java.io.Serializable;

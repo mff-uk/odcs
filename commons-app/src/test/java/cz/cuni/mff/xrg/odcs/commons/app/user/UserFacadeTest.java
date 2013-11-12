@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade;
 

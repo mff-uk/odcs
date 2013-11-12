@@ -280,7 +280,6 @@ public class Schedule implements Serializable {
 		this.strictToleranceMinutes = strictToleranceMinutes;
 	}	
 	
-	
 	/**
 	 * Return time of the next execution. It the schedule is not time
 	 * dependent return null. 
