@@ -92,9 +92,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 						okCaption,
 						cancelCaption);
 
+				// we inceare by two .. so prevent from creating 
+				// unecesary scroll bars on some resolutions and zoom levels
+				// also it should not do somehing bad as at the end the dialog
+				// is just litle bit heigher then originally
+				d.setHeight(d.getHeight() + 2.0f, d.getWidthUnits());
+				
 				// Change the order of buttons
 				d.setContentMode(ConfirmDialog.ContentMode.TEXT);
-
+				
 				Button ok = d.getOkButton();
 				ok.setWidth(120, Unit.PIXELS);
 				HorizontalLayout buttons = (HorizontalLayout) ok.getParent();
