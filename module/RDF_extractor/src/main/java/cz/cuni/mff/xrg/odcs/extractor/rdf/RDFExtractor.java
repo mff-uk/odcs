@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
@@ -51,7 +52,13 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			if (constructQuery.isEmpty()) {
 				constructQuery = "construct {?x ?y ?z} where {?x ?y ?z}";
 			}
-			final boolean useStatisticHandler = config.UseStatisticalHandler;
+
+			boolean useStatisticHandler = config.UseStatisticalHandler;
+			boolean failWhenErrors = config.failWhenErrors;
+
+			HandlerExtractType handlerExtractType = HandlerExtractType
+					.getHandlerType(useStatisticHandler, failWhenErrors);
+
 			final boolean extractFail = config.ExtractFail;
 
 			LOG.debug("endpointURL: {}", endpointURL);
@@ -65,7 +72,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
 					constructQuery, hostName, password, RDFFormat.N3,
-					useStatisticHandler, extractFail);
+					handlerExtractType, extractFail);
 		} catch (MalformedURLException ex) {
 			LOG.debug("RDFDataUnitException", ex);
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "

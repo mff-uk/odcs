@@ -6,7 +6,6 @@ import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.frontend.ViewNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
@@ -18,12 +17,13 @@ import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.Model;
 import cz.cuni.mff.xrg.odcs.frontend.mvp.View;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.vaadin.dialogs.ConfirmDialog;
-import ru.xpoft.vaadin.VaadinView;
 
 /**
  *
@@ -31,19 +31,17 @@ import ru.xpoft.vaadin.VaadinView;
  */
 @Component
 @Scope("prototype")
-@VaadinView(DPUPresenter.NAME)
 @Model(DPUModel.class)
 @View(DPUViewImpl.class)
+@Address(url = "DPURecord")
 public class DPUPresenter extends BasePresenter implements DPUViewListener {
 
-	/**
-	 * View name.
-	 */
-	public static final String NAME = "DPURecord";
 	private DPUView view;
 	private DPUModel model;
+	
 	@Autowired
-	ViewNavigator navigator;
+	ClassNavigator navigator;
+	
 	/**
 	 * Evaluates permissions of currently logged in user.
 	 */
@@ -141,7 +139,7 @@ public class DPUPresenter extends BasePresenter implements DPUViewListener {
 		switch (action) {
 			case "detail":
 				// navigate to PIPELINE_EDIT
-				navigator.navigateTo(PipelineEdit.NAME, pipeId);
+				navigator.navigateTo(PipelineEdit.class, pipeId.toString());
 				break;
 			case "delete":
 				model.deletePipeline(pipeId);

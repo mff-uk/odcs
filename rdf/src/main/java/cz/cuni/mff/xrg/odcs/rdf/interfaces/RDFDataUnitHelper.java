@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -123,17 +124,17 @@ public interface RDFDataUnitHelper {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file                  File which contains RDF data to extract.
-	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
-	 *                              RDFXML, Turtle, ..) if RDF format can not be
-	 *                              detected from file suffix.
-	 * @param useStatisticalHandler boolean value, if during extraction the
-	 *                              detailed statistic about parsed RDF triples
-	 *                              and detailed log is needed or not
+	 * @param file               File which contains RDF data to extract.
+	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
+	 *                           RDFXML, Turtle, ..) if RDF format can not be
+	 *                           detected from file suffix.
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data
 	 * @throws RDFException when extraction fail.
 	 */
 	public void addFromFile(File file, RDFFormat format,
-			boolean useStatisticalHandler) throws RDFException;
+			HandlerExtractType handlerExtractType) throws RDFException;
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
@@ -225,31 +226,27 @@ public interface RDFDataUnitHelper {
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
 	 * collection of URI graphs using authentication (name,password).
 	 *
-	 * TODO Jirka : This method is used by RDFExtractor, but it should be
-	 * refactored, it has 8 params, everything which has more than 4-5 params is
-	 * strange and result of poor design typically.
-	 *
-	 * @param endpointURL         Remote URL connection to SPARQL endpoint
-	 *                            contains RDF data.
-	 * @param defaultGraphsUri    List with names of graph where RDF data are
-	 *                            stored.
-	 * @param query               String SPARQL query.
-	 * @param hostName            String name needed for authentication.
-	 * @param password            String password needed for authentication.
-	 * @param format              Type of RDF format for saving data (example:
-	 *                            TURTLE, RDF/XML,etc.)
-	 * @param useStatisticHandler boolean value if detailed log and statistic
-	 *                            are awailable or not.
-	 * @param extractFail         boolean value, if true stop pipeline(cause
-	 *                            exception) when no triples were extracted. if
-	 *                            false step triple count extraction criterium.
+	 * @param endpointURL        Remote URL connection to SPARQL endpoint
+	 *                           contains RDF data.
+	 * @param defaultGraphsUri   List with names of graph where RDF data are
+	 *                           stored.
+	 * @param query              String SPARQL query.
+	 * @param hostName           String name needed for authentication.
+	 * @param password           String password needed for authentication.
+	 * @param format             Type of RDF format for saving data (example:
+	 *                           TURTLE, RDF/XML,etc.)
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
+	 * @param extractFail        boolean value, if true stop pipeline(cause
+	 *                           exception) when no triples were extracted. if
+	 *                           false step triple count extraction criterium.
 	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
-	@Deprecated
 	public void extractFromSPARQLEndpoint(URL endpointURL,
 			List<String> endpointGraphsURI,
 			String query, String hostName, String password, RDFFormat format,
-			boolean useStatisticHandler, boolean extractFail) throws RDFException;
+			HandlerExtractType handlerExtractType, boolean extractFail) throws RDFException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.

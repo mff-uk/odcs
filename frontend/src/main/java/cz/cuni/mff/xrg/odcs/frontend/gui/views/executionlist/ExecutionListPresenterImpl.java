@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
+@Address(url = "ExecutionList")
 public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Autowired
@@ -30,7 +32,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
     private ExecutionListData dataObject;
     
     @Override
-    public Object enter() {
+    public Object enter(Object configuration) {
         // prepare data object
         dataObject = new ExecutionListData(new ReadOnlyContainer<>(dbExecution, 
             new ExecutionAccessor()));
@@ -56,12 +58,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Override
     public void showLogEventHandler(long executionId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        view.showExecutionDetail(getLightExecution(executionId));
     }
 
     @Override
     public void showDebugEventHandler(long executionId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        view.showExecutionDetail(getLightExecution(executionId));
     }
 
     @Override

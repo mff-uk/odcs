@@ -7,6 +7,12 @@ import com.vaadin.ui.Label;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 
+/**
+ * 
+ * @author Petyr
+ * @deprecated will be removed soon
+ */
+@Deprecated
 class DataBrowser extends ViewComponent {
 
 	private AbsoluteLayout mainLayout;

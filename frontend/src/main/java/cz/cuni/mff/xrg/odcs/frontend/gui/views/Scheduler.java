@@ -33,6 +33,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.springframework.context.annotation.Scope;
 import ru.xpoft.vaadin.VaadinView;
@@ -47,7 +48,8 @@ import ru.xpoft.vaadin.VaadinView;
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @VaadinView(Scheduler.NAME)
-class Scheduler extends ViewComponent {
+@Address(url = "Scheduler")
+public class Scheduler extends ViewComponent {
 
 	/**
 	 * View name.

@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
-import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -9,7 +8,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.UI;
 
-import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
@@ -24,26 +22,19 @@ import org.vaadin.dialogs.ConfirmDialog;
  *
  * @author Bogo
  */
-public class PipelineListViewImpl extends CustomComponent implements PipelineListView {
+public class PipelineListViewImpl extends CustomComponent implements PipelineListPresenter.PipelineListView {
 
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
-	/* Only the presenter registers one listener... */
-	private PipelineListViewListener listener;
 
 	public boolean isModified() {
 		//There are no editable fields.
 		return false;
 	}
 
-	public PipelineListViewImpl() {
-		buildMainLayout();
-		setCompositionRoot(mainLayout);
-	}
-
 	@Transactional
-	private VerticalLayout buildMainLayout() {
+	private void buildPage(final PipelineListPresenter presenter) {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
@@ -65,7 +56,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				listener.navigation(PipelineEdit.NAME, "New");
+				presenter.navigateToEventHandler(PipelineEdit.class, "New");
 			}
 		});
 		topLine.addComponent(btnCreatePipeline);
@@ -107,7 +98,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 //				}
 //			}
 //		});
-		tablePipelines.addGeneratedColumn("actions", createColumnGenerator());
+		tablePipelines.addGeneratedColumn("actions", createColumnGenerator(presenter));
 
 		tablePipelines.setFilterBarVisible(true);
 		tablePipelines.setFilterLayout();
@@ -119,43 +110,15 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 				if (!tablePipelines.isSelected(event.getItemId())) {
 					ValueItem item = (ValueItem) event.getItem();
 					long pipelineId = (long) item.getItemProperty("id").getValue();
-					listener.navigation(PipelineEdit.NAME, pipelineId);
+					presenter.navigateToEventHandler(PipelineEdit.class, pipelineId);
 				}
 			}
 		});
 
-		return mainLayout;
+		setCompositionRoot(mainLayout);
 	}
 
-	/**
-	 * Refresh data on the pipeline list table.
-	 */
-	@Override
-	public void refresh() {
-		int page = tablePipelines.getCurrentPage();
-		ReadOnlyContainer c = (ReadOnlyContainer) tablePipelines.getContainerDataSource().getContainer();
-		//c.refresh();
-		tablePipelines.setCurrentPage(page);
-	}
-
-	@Override
-	public void setDataSource(Container c) {
-		// assign data source
-		tablePipelines.setContainerDataSource(c);
-	}
-
-	@Override
-	public void setListener(PipelineListViewListener listener) {
-		this.listener = listener;
-	}
-
-	/**
-	 * Generate column in table with buttons.
-	 *
-	 * @author Petyr
-	 *
-	 */
-	private ActionColumnGenerator createColumnGenerator() {
+	private ActionColumnGenerator createColumnGenerator(final PipelineListPresenter presenter) {
 
 		ActionColumnGenerator generator = new ActionColumnGenerator();
 		// add action buttons
@@ -163,14 +126,14 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		generator.addButton("Edit", "80px", new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
-				listener.navigation(PipelineEdit.NAME, id);
+				presenter.navigateToEventHandler(PipelineEdit.class, id);
 			}
 		});
 
 		generator.addButton("Copy", "80px", new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
-				listener.pipelineEvent(id, "copy");
+				presenter.copyEventHandler(id);
 			}
 		});
 
@@ -183,37 +146,46 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 					@Override
 					public void onClose(ConfirmDialog cd) {
 						if (cd.isConfirmed()) {
-							listener.pipelineEvent(id, "delete");
+							presenter.deleteEventHandler(id);
 						}
 					}
 				});
 			}
 		});
-		
+
 		generator.addButton("Run", "80px", new ActionColumnGenerator.Action() {
-
 			@Override
 			protected void action(long id) {
-				listener.pipelineEvent(id, "run");
+				presenter.runEventHandler(id, false);
 			}
 		});
-		
+
 		generator.addButton("Debug", "80px", new ActionColumnGenerator.Action() {
-
 			@Override
 			protected void action(long id) {
-				listener.pipelineEvent(id, "debug");
+				presenter.runEventHandler(id, true);
 			}
 		});
-		
+
 		generator.addButton("Schedule", "80px", new ActionColumnGenerator.Action() {
-
 			@Override
 			protected void action(long id) {
-				listener.pipelineEvent(id, "schedule");
+				presenter.scheduleEventHandler(id);
 			}
 		});
-		
+
 		return generator;
+	}
+
+	@Override
+	public Object enter(PipelineListPresenter presenter) {
+		buildPage(presenter);
+
+		return this;
+	}
+
+	@Override
+	public void setDisplay(PipelineListPresenter.PipelineListData dataObject) {
+		tablePipelines.setContainerDataSource(dataObject.getContainer());
 	}
 }

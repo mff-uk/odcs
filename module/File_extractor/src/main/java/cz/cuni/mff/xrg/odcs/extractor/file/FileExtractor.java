@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -44,7 +45,12 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final String path = config.Path;
 		final String fileSuffix = config.FileSuffix;
 		final boolean onlyThisSuffix = config.OnlyThisSuffix;
-		final boolean useStatisticHandler = config.UseStatisticalHandler;
+
+		boolean useStatisticHandler = config.UseStatisticalHandler;
+		boolean failWhenErrors = config.failWhenErrors;
+
+		final HandlerExtractType handlerExtractType = HandlerExtractType
+				.getHandlerType(useStatisticHandler, failWhenErrors);
 
 		RDFFormatType formatType = config.RDFFormatValue;
 		final RDFFormat format = RDFFormatType.getRDFFormatByType(formatType);
@@ -59,7 +65,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
 		try {
 			rdfDataUnit.extractFromFile(extractType, format, path, fileSuffix,
-					baseURI, onlyThisSuffix, useStatisticHandler);
+					baseURI, onlyThisSuffix, handlerExtractType);
 		} catch (RDFException e) {
 			context.sendMessage(MessageType.ERROR, e.getMessage());
 			throw new DPUException(e.getMessage(), e);

@@ -34,15 +34,17 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  *
  */
 public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
-	
+
 	private GridLayout mainLayout;
 
 	/**
 	 * ComboBox to set RDF format (Auto, RDF/XML, TTL, TriG, N3)
 	 */
 	private ComboBox comboBoxFormat;
-	
+
 	private CheckBox useHandler;  //Statistical handler
+
+	private CheckBox failWhenErrors; // How to solve errors for Statistical handler
 
 	/**
 	 * TextField for set file extension that will be processed in some
@@ -55,35 +57,35 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 * TextField to set destination of the file
 	 */
 	private TextField textFieldPath;
-	
+
 	private HorizontalLayout horizontalLayoutOnly;
-	
+
 	private HorizontalLayout horizontalLayoutFormat;
 
 	/**
 	 * OptionGroup for path type definition
 	 */
 	private OptionGroup pathType;
-	
+
 	private FileExtractType extractType;
-	
+
 	private InvalidValueException ex;
-	
+
 	private FileUploadReceiver fileUploadReceiver;
-	
+
 	private Upload fileUpload;
-	
+
 	private UploadInfoWindow uploadInfoWindow;
-	
+
 	static int fl = 0;
 
 	/**
 	 * TabSheet of Configuration dialog. Contains two tabs: Core and Details
 	 */
 	private TabSheet tabSheet;
-	
+
 	private GridLayout gridLayoutCore;
-	
+
 	private VerticalLayout verticalLayoutDetails;
 
 	/**
@@ -110,13 +112,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 * {@link #pathType}
 	 */
 	private void mapData() {
-		
+
 		for (RDFFormatType next : RDFFormatType.getListOfRDFType()) {
 			comboBoxFormat.addItem(next);
 		}
-		
+
 		comboBoxFormat.setValue(RDFFormatType.AUTO);
-		
+
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.UPLOAD_FILE));
 		pathType.addItem(FileExtractType.getDescriptionByType(
@@ -127,11 +129,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.HTTP_URL));
-		
+
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
-		
-		
+
+
 	}
 
 	/**
@@ -147,42 +149,43 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	@Override
 	public FileExtractorConfig getConfiguration() throws ConfigException {
-		
+
 		if (!textFieldPath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			FileExtractorConfig conf = new FileExtractorConfig();
-			
+
 			if (extractType == FileExtractType.UPLOAD_FILE) {
 				conf.Path = FileUploadReceiver.path + "/" + textFieldPath
 						.getValue().trim();
-				
+
 			} else {
 				conf.Path = textFieldPath.getValue().trim();
 			}
-			
-			
+
+
 			if (extractType == FileExtractType.PATH_TO_DIRECTORY
 					|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
-				
+
 				conf.FileSuffix = textFieldOnly.getValue().trim();
-				
+
 				if (textFieldOnly.getValue().trim().isEmpty()) {
 					conf.OnlyThisSuffix = false;
 				} else {
 					conf.OnlyThisSuffix = true;
 				}
-				
+
 			} else {
 				conf.FileSuffix = "";
 				conf.OnlyThisSuffix = false;
 			}
-			
+
 			conf.RDFFormatValue = (RDFFormatType) comboBoxFormat.getValue();
 			conf.UseStatisticalHandler = useHandler.getValue();
-			
+			conf.failWhenErrors = failWhenErrors.getValue();
+
 			conf.fileExtractType = extractType;
-			
+
 			return conf;
 		}
 	}
@@ -199,18 +202,18 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	@Override
 	public void setConfiguration(FileExtractorConfig conf) {
-		
+
 		extractType = conf.fileExtractType;
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
-		
-		
+
+
 		if (extractType == FileExtractType.UPLOAD_FILE) {
-			
+
 			String filepath = conf.Path.trim();
 			String filename = filepath.substring(filepath.lastIndexOf("/") + 1,
 					filepath.length());
-			
+
 			textFieldPath.setReadOnly(false); // allow value settings
 			textFieldPath.setValue(filename.trim()); // set value
 			textFieldPath.setReadOnly(true); // forbid
@@ -218,18 +221,20 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		} else {
 			textFieldPath.setValue(conf.Path.trim());
 		}
-		
+
 		if (extractType == FileExtractType.PATH_TO_DIRECTORY
 				|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
-			
+
 			textFieldOnly.setValue(conf.FileSuffix.trim());
 		}
-		
+
 		comboBoxFormat.setValue(conf.RDFFormatValue);
 		useHandler.setValue(conf.UseStatisticalHandler);
-		
+		failWhenErrors.setValue(conf.failWhenErrors);
+
+
 	}
-	
+
 	@Override
 	public String getDescription() {
 		String path;
@@ -279,10 +284,10 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		// Details tab
 		verticalLayoutDetails = buildVerticalLayoutDetails();
 		tabSheet.addTab(verticalLayoutDetails, "Details", null);
-		
+
 		mainLayout.addComponent(tabSheet, 0, 0);
-		
-		
+
+
 		return mainLayout;
 	}
 
@@ -294,9 +299,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 * @return message. String that assign to the {@link #pathType} item
 	 */
 	private String getValidMessageByFileExtractType(FileExtractType type) {
-		
+
 		String message = "";
-		
+
 		switch (type) {
 			case HTTP_URL:
 				message = "URL path must start with prefix http://";
@@ -312,9 +317,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				message = "Path to upload file must not be empty.";
 				break;
 		}
-		
+
 		return message;
-		
+
 	}
 
 	/**
@@ -341,7 +346,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		pathType.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				
+
 				gridLayoutCore.removeComponent(0, 1);
 				gridLayoutCore.removeComponent(0, 2);
 
@@ -351,19 +356,19 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				textFieldPath.setImmediate(true);
 				textFieldPath.setWidth("100%");
 				textFieldPath.setHeight("-1px");
-				
+
 				textFieldPath.addValidator(new Validator() {
 					@Override
 					public void validate(Object value) throws InvalidValueException {
 						Class<?> myClass = value.getClass();
-						
+
 						if (myClass.equals(String.class)) {
 							String stringValue = (String) value;
-							
+
 							if (extractType == FileExtractType.HTTP_URL) {
 								if (!stringValue.toLowerCase().startsWith(
 										"http://")) {
-									
+
 									String message = getValidMessageByFileExtractType(
 											extractType);
 									ex = new InvalidValueException(message);
@@ -371,7 +376,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 								}
 							} else {
 								if (stringValue.isEmpty()) {
-									
+
 									String message = getValidMessageByFileExtractType(
 											extractType);
 									ex = new EmptyValueException(message);
@@ -390,7 +395,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				if (event.getProperty().getValue().equals(
 						FileExtractType.getDescriptionByType(
 						FileExtractType.UPLOAD_FILE))) {
-					
+
 					extractType = FileExtractType.UPLOAD_FILE;
 					fileUploadReceiver = new FileUploadReceiver();
 
@@ -403,14 +408,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					fileUpload.addStartedListener(new StartedListener() {
 						@Override
 						public void uploadStarted(final StartedEvent event) {
-							
+
 							if (uploadInfoWindow.getParent() == null) {
 								UI.getCurrent().addWindow(uploadInfoWindow);
 							}
 							uploadInfoWindow.setClosable(false);
-							
-							
-							
+
+
+
 						}
 					});
 					//Upload received event listener. 
@@ -418,7 +423,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 							new Upload.FinishedListener() {
 						@Override
 						public void uploadFinished(final FinishedEvent event) {
-							
+
 							uploadInfoWindow.setClosable(true);
 							uploadInfoWindow.close();
 							//If upload wasn't interrupt by user
@@ -442,12 +447,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 					// The window with upload information
 					uploadInfoWindow = new UploadInfoWindow(fileUpload);
-					
-					
+
+
 					HorizontalLayout uploadFileLayout = new HorizontalLayout();
 					uploadFileLayout.setWidth("100%");
 					uploadFileLayout.setSpacing(true);
-					
+
 					textFieldPath.setReadOnly(true);
 					uploadFileLayout.addComponent(fileUpload);
 					uploadFileLayout.addComponent(textFieldPath);
@@ -461,9 +466,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				} else if (event.getProperty().getValue().equals(
 						FileExtractType.getDescriptionByType(
 						FileExtractType.PATH_TO_FILE))) {
-					
+
 					extractType = FileExtractType.PATH_TO_FILE;
-					
+
 					textFieldPath.setInputPrompt("C:\\ted\\test.ttl");
 
 					//Adding component for specify path to file
@@ -473,14 +478,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					//If selected "Extract file based on the path to the directory" option
 				} else if (event.getProperty().getValue().equals(FileExtractType
 						.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
-					
+
 					extractType = FileExtractType.PATH_TO_DIRECTORY;
 					prepareDirectoryForm();
-					
+
 				} else if (event.getProperty().getValue().equals(FileExtractType
 						.getDescriptionByType(
 						FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
-					
+
 					extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
 					prepareDirectoryForm();
 
@@ -488,9 +493,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				} else if (event.getProperty().getValue().equals(
 						FileExtractType.getDescriptionByType(
 						FileExtractType.HTTP_URL))) {
-					
+
 					extractType = FileExtractType.HTTP_URL;
-					
+
 					textFieldPath.setInputPrompt("http://");
 
 					//Adding component for specify HTTP URL
@@ -505,7 +510,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		horizontalLayoutFormat = new HorizontalLayout();
 		horizontalLayoutFormat.setImmediate(false);
 		horizontalLayoutFormat.setSpacing(true);
-		
+
 		horizontalLayoutFormat.addComponent(new Label("RDF Format:"));
 
 		// comboBoxFormat
@@ -514,14 +519,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		comboBoxFormat.setNewItemsAllowed(false);
 		comboBoxFormat.setNullSelectionAllowed(false);
 		horizontalLayoutFormat.addComponent(comboBoxFormat);
-		
-		
+
+
 		gridLayoutCore.addComponent(horizontalLayoutFormat, 0, 3);
-		
-		
+
+
 		return gridLayoutCore;
 	}
-	
+
 	private void prepareDirectoryForm() {
 		textFieldPath.setInputPrompt("C:\\ted\\");
 
@@ -533,7 +538,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		horizontalLayoutOnly = new HorizontalLayout();
 		horizontalLayoutOnly.setImmediate(false);
 		horizontalLayoutOnly.setSpacing(true);
-		
+
 		horizontalLayoutOnly.addComponent(new Label(
 				"If directory, process only files with extension:"));
 
@@ -548,7 +553,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 		//Adding component for specify file extension
 		gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
-		
+
 	}
 
 	/**
@@ -572,8 +577,27 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		useHandler.setValue(true);
 		useHandler.setWidth("-1px");
 		useHandler.setHeight("-1px");
+		useHandler.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (failWhenErrors != null) {
+					failWhenErrors.setVisible(useHandler.getValue());
+				}
+			}
+		});
+
+		//How to solve errors for Statistical handler
+		failWhenErrors = new CheckBox(
+				"If there is an error in some of the extracted triples,"
+				+ " extractor ends with an error");
+		failWhenErrors.setValue(false);
+		failWhenErrors.setWidth("-1px");
+		failWhenErrors.setHeight("-1px");
+		failWhenErrors.setVisible(useHandler.getValue());
+
 		verticalLayoutDetails.addComponent(useHandler);
-		
+		verticalLayoutDetails.addComponent(failWhenErrors);
+
 		return verticalLayoutDetails;
 	}
 }
@@ -588,19 +612,19 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
  */
 class UploadInfoWindow extends Window implements Upload.StartedListener,
 		Upload.ProgressListener, Upload.FinishedListener {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private final Label state = new Label();
-	
+
 	private final Label fileName = new Label();
-	
+
 	private final Label textualProgress = new Label();
-	
+
 	private final ProgressIndicator pi = new ProgressIndicator();
-	
+
 	private final Button cancelButton;
-	
+
 	private final Upload upload;
 
 	/**
@@ -609,35 +633,35 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	 * @param upload. Upload component
 	 */
 	public UploadInfoWindow(Upload nextUpload) {
-		
+
 		super("Status");
 		this.upload = nextUpload;
 		this.cancelButton = new Button("Cancel");
-		
+
 		setComponent();
-		
+
 	}
-	
+
 	private void setComponent() {
 		addStyleName("upload-info");
-		
+
 		setResizable(false);
 		setDraggable(false);
-		
+
 		final FormLayout formLayout = new FormLayout();
 		setContent(formLayout);
 		formLayout.setMargin(true);
-		
+
 		final HorizontalLayout stateLayout = new HorizontalLayout();
 		stateLayout.setSpacing(true);
 		stateLayout.addComponent(state);
-		
+
 		cancelButton.addClickListener(new Button.ClickListener() {
 			/**
 			 * Upload interruption
 			 */
 			private static final long serialVersionUID = 1L;
-			
+
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				upload.interruptUpload();
@@ -647,11 +671,11 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		cancelButton.setVisible(false);
 		cancelButton.setStyleName("small");
 		stateLayout.addComponent(cancelButton);
-		
+
 		stateLayout.setCaption("Current state");
 		state.setValue("Idle");
 		formLayout.addComponent(stateLayout);
-		
+
 		fileName.setCaption("File name");
 		formLayout.addComponent(fileName);
 
@@ -659,10 +683,10 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		pi.setCaption("Progress");
 		pi.setVisible(false);
 		formLayout.addComponent(pi);
-		
+
 		textualProgress.setVisible(false);
 		formLayout.addComponent(textualProgress);
-		
+
 		upload.addStartedListener(this);
 		upload.addProgressListener(this);
 		upload.addFinishedListener(this);
@@ -677,7 +701,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		pi.setVisible(false);
 		textualProgress.setVisible(false);
 		cancelButton.setVisible(false);
-		
+
 	}
 
 	/**
@@ -685,7 +709,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	 */
 	@Override
 	public void uploadStarted(final StartedEvent event) {
-		
+
 		pi.setValue(0f);
 		pi.setVisible(true);
 		pi.setPollingInterval(500); // hit server frequantly to get
@@ -693,7 +717,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		// updates to client
 		state.setValue("Uploading");
 		fileName.setValue(event.getFilename());
-		
+
 		cancelButton.setVisible(true);
 	}
 
@@ -717,19 +741,19 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
  *
  */
 class FileUploadReceiver implements Receiver {
-	
+
 	private static final long serialVersionUID = 5099459605355200117L;
-	
+
 	private static final int searchedByte = '\n';
-	
+
 	private static int total = 0;
-	
+
 	private boolean sleep = false;
-	
+
 	public static String fileName;
-	
+
 	public static File file;
-	
+
 	public static Path path;
 
 	/**
@@ -739,33 +763,33 @@ class FileUploadReceiver implements Receiver {
 	public OutputStream receiveUpload(final String filename,
 			final String MIMEType) {
 		fileName = filename;
-		
-		
+
+
 		try {
 			//create template directory
 			path = Files.createTempDirectory("Upload");
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		
-		
+
+
 		file = new File("/" + path + "/" + filename); // path for upload file in temp directory
 
 		OutputStream fos = null;
-		
+
 		try {
 			final FileOutputStream fstream = new FileOutputStream(file);
-			
+
 			fos = new OutputStream() {
 				@Override
 				public void write(final int b) throws IOException {
 					total++;
-					
+
 					fstream.write(b);
-					
-					
+
+
 				}
-				
+
 				@Override
 				public void write(byte b[], int off, int len) throws IOException {
 					if (b == null) {
@@ -778,24 +802,24 @@ class FileUploadReceiver implements Receiver {
 					}
 					fstream.write(b, off, len);
 					total += len;
-					
-					
+
+
 				}
-				
+
 				@Override
 				public void close() throws IOException {
 					fstream.close();
 					super.close();
 				}
 			};
-			
+
 		} catch (FileNotFoundException e) {
 			new Notification("Could not open file<br/>", e.getMessage(),
 					Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 		} finally {
 			return fos;
-			
+
 		}
-		
+
 	}
 }

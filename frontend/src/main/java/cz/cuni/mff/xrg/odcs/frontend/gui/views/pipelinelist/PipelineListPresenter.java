@@ -1,132 +1,89 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Notification;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.frontend.ViewNavigator;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListView.PipelineListViewListener;
-import cz.cuni.mff.xrg.odcs.frontend.mvp.BasePresenter;
-import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
-import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPView;
-import cz.cuni.mff.xrg.odcs.frontend.mvp.Model;
-import cz.cuni.mff.xrg.odcs.frontend.mvp.View;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import ru.xpoft.vaadin.VaadinView;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 
 /**
- * Presenter class for PipelineList. Handles events from PipelineListView.
+ * Interface for presenter that take care about presenting information about
+ * pipelines.
  *
  * @author Bogo
  */
-@Component
-@Scope("prototype")
-@VaadinView(PipelineListPresenter.NAME)
-@Model(PipelineListModel.class)
-@View(PipelineListViewImpl.class)
-public class PipelineListPresenter extends BasePresenter implements PipelineListViewListener {
+public interface PipelineListPresenter extends Presenter {
 
 	/**
-	 * View name.
+	 * Refresh data from data sources.
 	 */
-	//TODO do we need this?
-	public static final String NAME = "PipelineList";
-	private PipelineListView view;
-	private PipelineListModel pipelineModel;
-	@Autowired
-	private ViewNavigator navigator;
-
-	public PipelineListPresenter() {
-	}
-
-	@Override
-	public void setModel(MVPModel model) {
-		if (!PipelineListModel.class.isInstance(model)) {
-			return;
-		}
-		this.pipelineModel = (PipelineListModel) model;
-	}
+	public void refreshEventHandler();
 
 	/**
-	 * Prepares the view - data source for the view and listener for the event
-	 * of the view
+	 * Copy pipeline with given id.
 	 *
-	 * @param view
+	 * @param id Pipeline id.
 	 */
-	@Override
-	public void setView(MVPView view) {
-		if (!PipelineListView.class.isInstance(view)) {
-			return;
+	public void copyEventHandler(long id);
+
+	/**
+	 * Delete pipeline with given id.
+	 *
+	 * @param id Pipeline id.
+	 */
+	public void deleteEventHandler(long id);
+
+	/**
+	 * Schedule pipeline with given id.
+	 *
+	 * @param id Pipeline id.
+	 */
+	public void scheduleEventHandler(long id);
+
+	/**
+	 * Run pipeline with given id.
+	 *
+	 * @param id Pipeline id.
+	 */
+	public void runEventHandler(long id, boolean inDebugMode);
+
+	/**
+	 * Navigate to other view.
+	 *
+	 * @param where View class.
+	 * @param param Parameter for new view or null.
+	 */
+	public void navigateToEventHandler(Class where, Object param);
+
+	public interface PipelineListView {
+
+		/**
+		 * Generate view, that interact with given presenter.
+		 *
+		 * @param presenter
+		 * @return
+		 */
+		public Object enter(final PipelineListPresenter presenter);
+
+		/**
+		 * Set data for view.
+		 *
+		 * @param dataObject
+		 */
+		public void setDisplay(PipelineListData dataObject);
+	}
+
+	/**
+	 * Data object for handling informations between view and presenter.
+	 */
+	public final class PipelineListData {
+
+		private final ReadOnlyContainer<Pipeline> container;
+
+		public ReadOnlyContainer<Pipeline> getContainer() {
+			return container;
 		}
-		this.view = (PipelineListView) view;
-		this.view.setListener(this);
-		this.view.setDataSource(pipelineModel.getDataSource(Utils.PAGE_LENGTH));
-	}
 
-	@Override
-	public void navigation(String where) {
-		navigator.navigateTo(where);
-	}
-
-	@Override
-	public void navigation(String where, Object parameter) {
-		navigator.navigateTo(where, parameter);
-	}
-
-	@Override
-	public void pipelineEvent(long id, String event) {
-		switch (event) {
-			case "copy":
-				if (!pipelineModel.copyPipeline(id)) {
-					Notification.show(String.format("Name of copied pipeline would exceed limit of %d characters, new pipeline has same name as original.", MaxLengthValidator.NAME_LENGTH), Notification.Type.WARNING_MESSAGE);
-				}
-				view.refresh();
-				break;
-			case "delete":
-				pipelineModel.deletePipeline(id);
-				view.refresh();
-				break;
-			case "run":
-				pipelineModel.runPipeline(id, false);
-				break;
-			case "debug":
-				PipelineExecution exec = pipelineModel.runPipeline(id, true);
-				if (exec != null) {
-					navigator.navigateTo(ExecutionMonitor.NAME, exec.getId());
-				}
-				break;
-			case "schedule":
-				schedulePipeline(id);
-				break;
+		public PipelineListData(ReadOnlyContainer<Pipeline> container) {
+			this.container = container;
 		}
-	}
-
-	@Override
-	public void event(String name) {
-		switch (name) {
-			case "refresh":
-				refresh();
-				break;
-		}
-	}
-
-	void refresh() {
-		view.refresh();
-	}
-
-	void schedulePipeline(long id) {
-		Pipeline pipeline = pipelineModel.getPipeline(id);
-		// open scheduler dialog
-		SchedulePipeline sch = new SchedulePipeline();
-		sch.setSelectePipeline(pipeline);
-		App.getApp().addWindow(sch);
 	}
 }

@@ -199,13 +199,12 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		Statement statement = next.getStatement();
 		String problemType = next.getConflictType().toString();
 
-		String problem = "\n" + errorCount + "] No added triple contains " + problemType + ":"
-				+ "\n Subject:" + statement.getSubject().toString()
-				+ "\n Predicate:" + statement.getPredicate().toString()
-				+ "\n Object:" + statement.getObject().toString()
+		String problem = "\n" + errorCount + "] "+problemType+" in triple :"
+				+ "\n Subject: " + statement.getSubject().toString()
+				+ "\n Predicate: " + statement.getPredicate().toString()
+				+ "\n Object: " + statement.getObject().toString()
 				+ "\n PROBLEM message: " + next.getMessage()
-				+ "\n Find on source line: " + next.getLine()
-				+ "\n Find on source column: " + next.getColumn();
+				+ "\n Find on source line: " + next.getLine();
 
 		return problem;
 	}

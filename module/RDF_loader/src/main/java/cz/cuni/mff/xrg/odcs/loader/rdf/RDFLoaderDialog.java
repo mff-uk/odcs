@@ -701,7 +701,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		verticalLayoutDetails.addComponent(chunkDefault);
 
 		//add checkbox for data validation
-		validateDataBefore = new CheckBox("Validate data before loading");
+		validateDataBefore = new CheckBox(
+				"Validate data before loading - "
+				+ "if validation fails, the loading fails immediately");
 		validateDataBefore.setValue(false);
 		validateDataBefore.setWidth("-1px");
 		validateDataBefore.setHeight("-1px");
@@ -761,7 +763,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 *                         null	null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
 	 *             {@link #passwordFieldPass}, {@link #optionGroupDetail},
 	 *             {@link #griddata} , in read-only mode or when requested operation is not
 	 *                         supported.

@@ -70,7 +70,7 @@ public class Pipeline implements OwnedEntity, Resource, Serializable, DataObject
 	private String description;
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.LAZY)
-	private PipelineGraph graph;
+	private PipelineGraph graph = new PipelineGraph();
 	
 	/**
 	 * User who created and owns this pipeline.
@@ -91,9 +91,7 @@ public class Pipeline implements OwnedEntity, Resource, Serializable, DataObject
 	/**
 	 * Default constructor for JPA
 	 */
-	public Pipeline() {
-		graph = new PipelineGraph();
-	}
+	public Pipeline() {}
 
 	/**
 	 * Copy constructor. Creates a deep copy of given pipeline.

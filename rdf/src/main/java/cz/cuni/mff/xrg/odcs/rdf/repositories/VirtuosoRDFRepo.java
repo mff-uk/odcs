@@ -70,7 +70,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		try {
 			repository.initialize();
 			logger.info(
-					"Virtuoso repository with data graph <{}> successfully incicialized.",
+					"Virtuoso repository with data graph <{}> successfully initialized.",
 					defaultGraph);
 
 		} catch (RepositoryException ex) {
@@ -155,7 +155,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 					result.evaluate();
 
-					logger.info("Merged SUCESSFULL");
+					logger.info("Merged SUCCESSFUL");
 
 				} catch (MalformedQueryException ex) {
 					logger.debug("NOT VALID QUERY: " + ex.getMessage());
@@ -213,7 +213,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 					result.evaluate();
 
-					logger.info("Merged SUCESSFULL");
+					logger.info("Merged SUCCESSFUL");
 
 				} catch (MalformedQueryException ex) {
 					logger.debug("NOT VALID QUERY: " + ex.getMessage());

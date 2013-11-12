@@ -66,9 +66,8 @@
 	<!-- scheduler -->
 	<bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler" />
 	 
-	<!-- component for sending email based on events -->
-	<bean id="emailCommunicator"
-		class="cz.cuni.mff.xrg.odcs.backend.communication.EmailCommunicator" />
+	<!-- components for sending reports -->
+        <context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.report" />
 
 	<!-- watcher for DPU changes -->
 	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager">

@@ -9,6 +9,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -30,9 +31,9 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.NamespacePrefixes;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.springframework.context.annotation.Scope;
-import ru.xpoft.vaadin.VaadinView;
 
 /**
  * GUI for Settings page which opens from the main menu. For User role it
@@ -45,13 +46,9 @@ import ru.xpoft.vaadin.VaadinView;
  */
 @org.springframework.stereotype.Component
 @Scope("prototype")
-@VaadinView(Settings.NAME)
+@Address(url = "Administrator")
 public class Settings extends ViewComponent {
 
-	/**
-	 * View name.
-	 */
-	public static final String NAME = "Administrator";
 	private static final long serialVersionUID = 1L;
 	private GridLayout mainLayout;
 	private VerticalLayout accountLayout;
@@ -161,14 +158,18 @@ public class Settings extends ViewComponent {
 		recordsLayout.setWidth("100%");
 		recordsLayout.addComponent(new Label("Records"));
 
-		//layout with Release locked pipelines
+		//layout for Delete debug resources
 		pipelinesLayout = new VerticalLayout();
 		pipelinesLayout.setMargin(true);
 		pipelinesLayout.setSpacing(true);
 		pipelinesLayout.setImmediate(true);
 		pipelinesLayout.setStyleName("settings");
 		pipelinesLayout.setWidth("100%");
-		pipelinesLayout.addComponent(new Label("Pipelines"));
+		pipelinesLayout.addComponent(new Label("Delete all intermediate graphs created \n by the pipelines in the debug mode"));
+		Button clearButton = new Button();
+		clearButton.setCaption("Clear");
+		pipelinesLayout.addComponent(clearButton );
+		
 
 		//layout for Namespace Prefixes
 		prefixesLayout = new VerticalLayout();
@@ -279,8 +280,8 @@ public class Settings extends ViewComponent {
 		tabsLayout.addComponent(recordsButton);
 		tabsLayout.setComponentAlignment(recordsButton, Alignment.TOP_RIGHT);
 
-		//Release locked pipelines tab
-		pipelinesButton = new NativeButton("Release locked pipelines");
+		//Delete debug resources tab
+		pipelinesButton = new NativeButton("Delete debug resources");
 		pipelinesButton.setHeight("40px");
 		pipelinesButton.setWidth("170px");
 		pipelinesButton.setStyleName("multiline");

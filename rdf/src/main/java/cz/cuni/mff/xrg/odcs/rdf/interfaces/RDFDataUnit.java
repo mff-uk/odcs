@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -50,45 +51,46 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file                  File contains RDF data to extract.
-	 * @param format                Specifies concrete {@link RDFFormat} (e.g.,
-	 *                              RDFXML, Turtle, ..) if RDF format can not be
-	 *                              detected from file suffix.
-	 * @param baseURI               String name of defined used URI prefix
-	 *                              namespace used by all triples.
-	 * @param useStatisticalHandler boolean value, if during extraction needed
-	 *                              detail statistic about RDF triples and
-	 *                              detailed log or not.
+	 * @param file               File contains RDF data to extract.
+	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
+	 *                           RDFXML, Turtle, ..) if RDF format can not be
+	 *                           detected from file suffix.
+	 * @param baseURI            String name of defined used URI prefix
+	 *                           namespace used by all triples.
+	 *                           HandlerExtractType handlerExtractType
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
 	 * @throws RDFException when extraction fail.
 	 */
 	public void extractFromFile(File file, RDFFormat format, String baseURI,
-			boolean useStatisticalHandler) throws RDFException;
+			HandlerExtractType handlerExtractType) throws RDFException;
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param extractType         One of defined enum type for extraction data
-	 *                            from file.
-	 * @param format              One of RDFFormat value for parsing triples, if
-	 *                            value is null RDFFormat is selected by
-	 *                            filename.
-	 * @param path                String path to file/directory
-	 * @param suffix              String suffix of fileName (example: ".ttl",
-	 *                            ".xml", etc)
-	 * @param baseURI             String name of defined used URI prefix
-	 *                            namespace used by all triples.
-	 * @param useSuffix           boolean value, if extract files only with
-	 *                            defined suffix or not.
-	 * @param useStatisticHandler boolean value, if during extraction needed
-	 *                            detail statistic about RDF triples and
-	 *                            detailed log or not.
+	 * @param extractType        One of defined enum type for extraction data
+	 *                           from file.
+	 * @param format             One of RDFFormat value for parsing triples, if
+	 *                           value is null RDFFormat is selected by
+	 *                           filename.
+	 * @param path               String path to file/directory
+	 * @param suffix             String suffix of fileName (example: ".ttl",
+	 *                           ".xml", etc)
+	 * @param baseURI            String name of defined used URI prefix
+	 *                           namespace used by all triples.
+	 * @param useSuffix          boolean value, if extract files only with
+	 *                           defined suffix or not.
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
 	 * @throws RDFException when extraction fail.
 	 */
 	public void extractFromFile(FileExtractType extractType,
 			RDFFormat format,
 			String path, String suffix,
 			String baseURI,
-			boolean useSuffix, boolean useStatisticHandler) throws RDFException;
+			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -162,7 +164,7 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * address. For data deleting is necessarry to have endpoint with update
 	 * rights.
 	 *
-	 * @param endpointURL   URL address of endpoint connect to.
+	 * @param endpointURL   URL address of update endpoint connect to.
 	 * @param endpointGraph Graph name in URI format.
 	 * @throws RDFException When you dont have update right for this action, or
 	 *                      connection is lost before succesfully ending.
@@ -273,4 +275,19 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *                             of the Connection.
 	 */
 	public RepositoryConnection getConnection() throws RepositoryException;
+
+	/**
+	 *
+	 * @return List of all application graphs keeps in Virtuoso storage in case
+	 *         of Virtuoso repository. When is used local repository as storage,
+	 *         this method return an empty list.
+	 */
+	public List<String> getApplicationGraphs();
+
+	/**
+	 * Delete all application graphs keeps in Virtuoso storage in case of
+	 * Virtuoso repository. When is used local repository as storage, this
+	 * method has no effect.
+	 */
+	public void deleteApplicationGraphs();
 }

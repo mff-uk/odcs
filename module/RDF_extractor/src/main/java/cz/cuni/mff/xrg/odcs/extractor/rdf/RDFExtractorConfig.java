@@ -24,15 +24,17 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 	public String SPARQL_query = "";
 
 	public boolean ExtractFail = true;
-	
-	public boolean UseStatisticalHandler = true; 
+
+	public boolean UseStatisticalHandler = true;
+
+	public boolean failWhenErrors = false;
 
 	@Override
 	public boolean isValid() {
-		return SPARQL_endpoint != null &&
-				Host_name != null && 
-				Password != null &&
-				GraphsUri != null && 
-				SPARQL_query != null;
-		} 
+		return SPARQL_endpoint != null
+				&& Host_name != null
+				&& Password != null
+				&& GraphsUri != null
+				&& SPARQL_query != null;
+	}
 }

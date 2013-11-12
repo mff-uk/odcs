@@ -3,6 +3,7 @@ package cz.cuni.xrg.intlib.rdf;
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -223,14 +224,14 @@ public class LocalRDFRepoTest {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = true;
+		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.RDFXML,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -247,7 +248,7 @@ public class LocalRDFRepoTest {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = true;
+		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
 		long size = rdfRepo.getTripleCount();
 
@@ -255,7 +256,7 @@ public class LocalRDFRepoTest {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, null,
 					dirFile.getAbsolutePath(), suffix, baseURI, useSuffix,
-					useStatisticHandler);
+					handlerType);
 			fail();
 		} catch (RDFException e) {
 			long newSize = rdfRepo.getTripleCount();
@@ -270,14 +271,14 @@ public class LocalRDFRepoTest {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.RDFXML,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -293,14 +294,14 @@ public class LocalRDFRepoTest {
 		String suffix = "shakespeare.n3";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.N3,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 
@@ -317,14 +318,14 @@ public class LocalRDFRepoTest {
 		String suffix = ".ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.TURTLE,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 
@@ -341,14 +342,14 @@ public class LocalRDFRepoTest {
 		String suffix = ".nt";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.NTRIPLES,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 
@@ -365,14 +366,14 @@ public class LocalRDFRepoTest {
 		String suffix = ".trig";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.TRIG,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 
@@ -389,14 +390,14 @@ public class LocalRDFRepoTest {
 		String suffix = ".trix";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.TRIX,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 
@@ -557,14 +558,14 @@ public class LocalRDFRepoTest {
 		String suffix = "ted4.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, null,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -579,14 +580,14 @@ public class LocalRDFRepoTest {
 		String suffix = "ted4b.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, null,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -715,13 +716,13 @@ public class LocalRDFRepoTest {
 		String suffix = "bigdata.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = true;
+		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
 		long size = rdfRepo.getTripleCount();
 
 		try {
 			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -899,14 +900,14 @@ public class LocalRDFRepoTest {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
-		boolean useStatisticHandler = false;
+		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
 		long size = repository.getTripleCount();
 
 		try {
 			repository.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, null,
-					testFileDir, suffix, baseURI, useSuffix, useStatisticHandler);
+					testFileDir, suffix, baseURI, useSuffix, handlerType);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}

@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -82,7 +83,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			repository.initialize();
 			logger.info("New local repository with data graph <"
 					+ getDataGraph().stringValue()
-					+ "> successfully incicialized.");
+					+ "> successfully initialized.");
 
 		} catch (RepositoryException ex) {
 			logger.debug(ex.getMessage());
@@ -148,13 +149,14 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		final String suffix = "";
 		final String baseURI = "";
 		final boolean useSuffix = false;
-		final boolean useStatisticHandler = true;
+		final HandlerExtractType handlerExtractType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
 		try {
 			extractFromFile(FileExtractType.PATH_TO_FILE, null,
 					file.getAbsolutePath(), suffix,
 					baseURI,
-					useSuffix, useStatisticHandler);
+					useSuffix,
+					handlerExtractType);
 
 		} catch (RDFException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -193,8 +195,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * in second defined repository.
 	 *
 	 *
-	 * @param sourceDataUnit Type of repository contains RDF data as implementation of
-	 *               RDFDataUnit interface.
+	 * @param sourceDataUnit Type of repository contains RDF data as
+	 *                       implementation of RDFDataUnit interface.
 	 * @throws IllegalArgumentException if second repository as param is null.
 	 */
 	@Override
@@ -222,7 +224,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 						+ "to <" + getDataGraph().stringValue() + ">.");
 
 				long addedParts = 0;
-				long partsCount = sourceDataUnit.getPartsCount(DEFAULT_MERGE_PART_SIZE);
+				long partsCount = sourceDataUnit.getPartsCount(
+						DEFAULT_MERGE_PART_SIZE);
 
 				List<Statement> statements = getNextDataPart(lazySource,
 						DEFAULT_MERGE_PART_SIZE);
@@ -241,7 +244,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 				}
 
 
-				logger.info("Merged SUCESSFULL");
+				logger.info("Merged SUCCESSFUL");
 			}
 
 
