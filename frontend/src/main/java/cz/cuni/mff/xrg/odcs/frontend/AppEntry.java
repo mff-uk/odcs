@@ -92,11 +92,19 @@ public class AppEntry extends com.vaadin.ui.UI {
 						okCaption,
 						cancelCaption);
 
-				// we inceare by two .. so prevent from creating 
+				LOG.info("Dialog info: w:{} {} h:{} {} cap:{}", d.getWidth(), 
+						d.getWidthUnits(), d.getHeight(), d.getHeightUnits(), 
+						caption.length());
+				
+				// we inceare by 1.5 .. so prevent from creating 
 				// unecesary scroll bars on some resolutions and zoom levels
 				// also it should not do somehing bad as at the end the dialog
 				// is just litle bit heigher then originally
-				d.setHeight(d.getHeight() + 2.0f, d.getWidthUnits());
+				d.setHeight(d.getHeight() + 1.5f, d.getHeightUnits());
+				if (caption.length() > 30) {
+					// adjust the width as there is not enough space for text
+					d.setWidth( caption.length() * 0.73f , d.getWidthUnits());
+				}
 				
 				// Change the order of buttons
 				d.setContentMode(ConfirmDialog.ContentMode.TEXT);
