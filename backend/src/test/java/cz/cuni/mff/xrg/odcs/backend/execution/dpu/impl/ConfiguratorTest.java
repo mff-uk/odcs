@@ -93,7 +93,7 @@ public class ConfiguratorTest {
 		// create Context with given DPUInstanceRecord
 		Context context = mock(Context.class);
 		DPUInstanceRecord dpuRecord = mock(DPUInstanceRecord.class);
-		when(context.getDpuInstance()).thenReturn(dpuRecord);
+		when(context.getDPU()).thenReturn(dpuRecord);
 		when(dpuRecord.getName()).thenReturn("dpuName");
 		
 		Map<Node, Context> contexts = new HashMap<>();
