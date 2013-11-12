@@ -2034,10 +2034,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		StatisticalHandler handler = new StatisticalHandler(connection);
 		parseFileUsingHandler(handler, fileFormat, is, baseURI);
 
-		if (handler.hasFindedProblems() && failWhenErrors) {
-			throw new RDFException(handler.getFindedProblemsAsString());
-		}
+		if (handler.hasFindedProblems()) {
+			String problems = handler.getFindedProblemsAsString();
 
+			logger.error(problems);
+			if (failWhenErrors) {
+				throw new RDFException(problems);
+			}
+		}
 	}
 
 	private void parseFileUsingStandardHandler(RDFFormat fileFormat,
