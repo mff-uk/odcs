@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
@@ -67,7 +69,6 @@ public class StatisticalHandler extends TripleCountHandler {
 	@Override
 	public void endRDF() throws RDFHandlerException {
 		super.endRDF();
-		printFindedProblems();
 	}
 
 	/**
@@ -92,19 +93,6 @@ public class StatisticalHandler extends TripleCountHandler {
 		}
 	}
 
-	private void printFindedProblems() {
-		if (hasWarnings()) {
-			logger.debug("\nWARNINGS list:");
-
-			logger.warn(getWarningsAsString());
-
-		}
-		if (hasErrors()) {
-			logger.debug("\nERRORS list:");
-			logger.error(getErorrsAsString());
-		}
-	}
-
 	/**
 	 *
 	 * @return String representation of all finded problems with data
@@ -124,5 +112,14 @@ public class StatisticalHandler extends TripleCountHandler {
 		}
 
 		return result.toString();
+	}
+
+	/**
+	 *
+	 * @return List as collection of all finded problems with data validation.
+	 *         If all data are valid, return empty list.
+	 */
+	public List<TripleProblem> getFindedProblems() {
+		return getTripleProblems();
 	}
 }

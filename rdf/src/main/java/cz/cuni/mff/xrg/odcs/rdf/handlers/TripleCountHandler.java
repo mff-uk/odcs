@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import java.util.ArrayList;
@@ -199,7 +200,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		Statement statement = next.getStatement();
 		String problemType = next.getConflictType().toString();
 
-		String problem = "\n" + errorCount + "] "+problemType+" in triple :"
+		String problem = "\n" + errorCount + "] " + problemType + " in triple :"
 				+ "\n Subject: " + statement.getSubject().toString()
 				+ "\n Predicate: " + statement.getPredicate().toString()
 				+ "\n Object: " + statement.getObject().toString()
@@ -215,6 +216,15 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 	protected boolean hasWarnings() {
 		return !warnings.isEmpty();
+	}
+
+	protected List<TripleProblem> getTripleProblems() {
+
+		List<TripleProblem> problems = new ArrayList<>();
+		problems.addAll(warnings);
+		problems.addAll(errors);
+
+		return problems;
 	}
 
 	/**
@@ -258,51 +268,5 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 
 		}
-	}
-}
-
-class TripleProblem {
-
-	private String message;
-
-	private int line;
-
-	private int column;
-
-	private ParsingConfictType type;
-
-	private Statement statement;
-
-	public TripleProblem(String message, int line, int column,
-			ParsingConfictType type) {
-		this.message = message;
-		this.line = line;
-		this.column = column;
-		this.type = type;
-
-	}
-
-	public void setStatement(Statement statement) {
-		this.statement = statement;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public int getLine() {
-		return line;
-	}
-
-	public int getColumn() {
-		return column;
-	}
-
-	public ParsingConfictType getConflictType() {
-		return type;
-	}
-
-	public Statement getStatement() {
-		return statement;
 	}
 }

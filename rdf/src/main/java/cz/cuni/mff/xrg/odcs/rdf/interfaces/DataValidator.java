@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import java.util.List;
+
 /**
  *
  * Is responsible for right validation of data.
@@ -21,4 +24,11 @@ public interface DataValidator {
 	 * @return empty string, when all data are valid.
 	 */
 	public String getErrorMessage();
+
+	/**
+	 *
+	 * @return List of tripleProbelm describes invalid triples and its cause. If
+	 *         all data are valid return empty list.
+	 */
+	public List<TripleProblem> getFindedProblems();
 }
