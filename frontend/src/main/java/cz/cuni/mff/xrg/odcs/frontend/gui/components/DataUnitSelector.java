@@ -83,6 +83,7 @@ public class DataUnitSelector extends CustomComponent {
 		dataUnitSelector = new ComboBox();
 		dataUnitSelector.setWidth(100, Unit.PERCENTAGE);
 		dataUnitSelector.setEnabled(false);
+		dataUnitSelector.setNullSelectionAllowed(false);
 		dataUnitSelector.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
@@ -155,10 +156,8 @@ public class DataUnitSelector extends CustomComponent {
 					debugDpu = (DPUInstanceRecord) value;
 					dataUnitSelector.removeAllItems();
 					setDataUnitCheckBoxes(debugDpu.getType());
-					fireEvent(new EnableEvent(DataUnitSelector.this));
 				} else {
 					debugDpu = null;
-					fireEvent(new DisableEvent(DataUnitSelector.this));
 				}
 				refreshDataUnitSelector();
 				refreshEnabled();
@@ -238,7 +237,13 @@ public class DataUnitSelector extends CustomComponent {
 		inputDataUnits.setEnabled(debugDpu != null);
 		outputDataUnits.setEnabled(debugDpu != null);
 		dataUnitSelector.setEnabled(debugDpu != null);
-		browse.setEnabled(dataUnitSelector.isEnabled() && !dataUnitSelector.getItemIds().isEmpty());
+		boolean buttonsEnabled = dataUnitSelector.isEnabled() && dataUnitSelector.getValue() != null;
+		browse.setEnabled(buttonsEnabled);
+		if(buttonsEnabled) {
+			fireEvent(new EnableEvent(dpuSelector));
+		} else {
+			fireEvent(new DisableEvent(dpuSelector));
+		}
 	}
 
 	public DPUInstanceRecord getSelectedDPU() {
