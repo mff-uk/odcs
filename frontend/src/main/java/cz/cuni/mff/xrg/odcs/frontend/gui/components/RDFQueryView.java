@@ -208,6 +208,7 @@ public class RDFQueryView extends CustomComponent {
 		resultDownloadControls = new HorizontalLayout();
 
 		downloadFormatSelect = new NativeSelect();
+		downloadFormatSelect.setImmediate(true);
 		resultDownloadControls.addComponent(downloadFormatSelect);
 
 		tableDownload = new Button("Download");

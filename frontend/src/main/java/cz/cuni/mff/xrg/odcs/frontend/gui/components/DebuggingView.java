@@ -183,6 +183,7 @@ public class DebuggingView extends CustomComponent {
 	 */
 	public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
 		this.pipelineExec = execution;
+		this.isInDebugMode = execution.isDebugging();
 		this.debugDpu = instance;
 		fillContent(false);
 		if (!isRunFinished()) {
