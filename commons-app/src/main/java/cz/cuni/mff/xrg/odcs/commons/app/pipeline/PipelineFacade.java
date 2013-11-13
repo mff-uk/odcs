@@ -46,7 +46,11 @@ public class PipelineFacade {
      * @return newly created pipeline
      */
     public Pipeline createPipeline() {
-		return pipelineDao.create();
+		Pipeline newPipeline = pipelineDao.create();
+        if (authCtx != null) {
+            newPipeline.setUser(authCtx.getUser());
+        }
+		return newPipeline;
     }
 
     /**
@@ -59,7 +63,11 @@ public class PipelineFacade {
      */
     @PreAuthorize("hasPermission(#pipeline, 'copy')")
     public Pipeline copyPipeline(Pipeline pipeline) {
-		return pipelineDao.copy(pipeline);
+		Pipeline newPipeline = pipelineDao.copy(pipeline);
+        if (authCtx != null) {
+            newPipeline.setUser(authCtx.getUser());
+        }
+		return newPipeline;
     }
 
     /**
@@ -171,10 +179,14 @@ public class PipelineFacade {
      * to be saved with {@link #save(PipelineExecution)} method.
      *
      * @param pipeline
-     * @return
+     * @return pipeline execution of given pipeline
      */
     public PipelineExecution createExecution(Pipeline pipeline) {
-		return executionDao.create(pipeline);
+		PipelineExecution newExec = executionDao.create(pipeline);
+        if (authCtx != null) {
+            newExec.setOwner(authCtx.getUser());
+        }
+		return newExec;
     }
 
     /**

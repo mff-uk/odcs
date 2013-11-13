@@ -1,8 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 
 /**
@@ -12,23 +9,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
  */
 class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecution {
 
-    /**
-     * Authentication context.
-     */
-    @Autowired(required = false)
-    protected AuthenticationContext authCtx;
-
     protected DbExecutionImpl() {
         super(PipelineExecution.class);
     }
 
 	@Override
 	public PipelineExecution create(Pipeline pipeline) {
-        PipelineExecution newExecution = new PipelineExecution(pipeline);
-        if (authCtx != null) {
-            newExecution.setOwner(authCtx.getUser());
-        }
-        return newExecution;
+        return new PipelineExecution(pipeline);
 	}
 	
 	/**
