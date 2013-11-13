@@ -13,9 +13,9 @@ import java.util.List;
  */
 public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 
-	private List<String> all = Arrays.asList("id", "time", "type", "dpuInstance.name", "shortMessage");
-	private List<String> sortable = Arrays.asList("id", "time", "type", "dpuInstance.name");
-	private List<String> filtrable = Arrays.asList("id", "time", "type", "dpuInstance.name", "shortMessage");
+	private List<String> all = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage", "dpuInstance.id");
+	private List<String> sortable = Arrays.asList("time", "type", "dpuInstance.name");
+	private List<String> filtrable = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
 
 	@Override
 	public List<String> all() {
@@ -64,6 +64,8 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 				return object.getDpuInstance().getName();
 			case "shortMessage":
 				return object.getShortMessage();
+			case "dpuInstance.id":
+				return object.getDpuInstance().getId();
 			default:
 				return null;
 		}
@@ -73,6 +75,7 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 	public Class<?> getType(String id) {
 		switch (id) {
 			case "id":
+			case "dpuInstance.id":
 				return Long.class;
 			case "time":
 				return Date.class;

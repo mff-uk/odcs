@@ -427,4 +427,9 @@ public class LogMessagesTable extends CustomComponent {
 	private boolean nullableEquals(Object obj1, Object obj2) {
 		return (obj1 == null && obj2 == null) || (obj1 != null && obj1.equals(obj2));
 	}
+
+	public void setDpu(DPUInstanceRecord debugDpu) {
+		this.dpu = debugDpu;
+		refreshDpuSelector((ComboBox) messageTable.getFilterField("dpuInstanceId"));
+	}
 }

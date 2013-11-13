@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
@@ -69,6 +70,16 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
          * Show condition, if null the button is always shown.
          */
         ButtonShowCondition showCondition;
+		
+		/**
+		 * Button icon(overrides name)
+		 * 
+		 */
+		ThemeResource icon;
+		
+		public void setIcon(ThemeResource icon) {
+			this.icon = icon;
+		}
 
         ActionButtonInfo(String name, String width, Action action, ButtonShowCondition showCondition) {
             this.name = name;
@@ -89,8 +100,16 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
             if (template.showCondition == null
                 || template.showCondition.show(source, (Long) itemId)) {
                 // we show button
-                Button button = new Button(template.name);
-                button.setWidth(template.width);
+                Button button = new Button();
+				if(template.icon == null) {
+					button.setCaption(template.name);
+				} else {
+					button.setDescription(template.name);
+					button.setIcon(template.icon);
+				}
+				if(template.width != null) {
+					button.setWidth(template.width);
+				}
                 // set source }table]
                 template.action.source = source;
                 button.addClickListener(template.action);
@@ -126,6 +145,33 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
      */
     public void addButton(String name, String width, Action action, ButtonShowCondition showCondition) {
         actionButtons.add(new ActionButtonInfo(name, width, action, showCondition));
+    }
+	
+	/**
+     * Add template for action button with icon.
+     *
+     * @param name
+     * @param width
+     * @param action
+     */
+    public void addButton(String name, String width, Action action, ThemeResource icon) {
+        ActionButtonInfo abi = new ActionButtonInfo(name, width, action, null);
+		abi.setIcon(icon);
+		actionButtons.add(abi);
+    }
+
+    /**
+     * Add template for action button with icon.
+     *
+     * @param name
+     * @param width
+     * @param action
+     * @param showCondition
+     */
+    public void addButton(String name, String width, Action action, ButtonShowCondition showCondition, ThemeResource icon) {
+        ActionButtonInfo abi = new ActionButtonInfo(name, width, action, showCondition);
+		abi.setIcon(icon);
+		actionButtons.add(abi);
     }
 
 }

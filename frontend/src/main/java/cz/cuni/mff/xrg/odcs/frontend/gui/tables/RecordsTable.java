@@ -8,6 +8,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -89,64 +90,61 @@ public class RecordsTable extends CustomComponent {
 		messageTable.setSortEnabled(true);
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
-//			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
-//				@Override
-//				public Object generateCell(CustomTable source, Object itemId,
-//						Object columnId) {
-//
-//					MessageRecordType type = (MessageRecordType) source.getItem(itemId).getItemProperty(columnId).getValue();
-//					ThemeResource img = null;
-//					switch (type) {
-//						case DPU_INFO:
-//						case PIPELINE_INFO:
-//							img = new ThemeResource("icons/log.png");
-//							break;
-//						case DPU_DEBUG:
-//							img = new ThemeResource("icons/debug.png");
-//							break;
-//						case DPU_WARNING:
-//							img = new ThemeResource("icons/warning.png");
-//							break;
-//						case DPU_ERROR:
-//						case PIPELINE_ERROR:
-//							img = new ThemeResource("icons/error.png");
-//							break;
-//						default:
-//							//no img
-//							break;
-//					}
-//					Embedded emb = new Embedded(type.name(), img);
-//					emb.setDescription(type.name());
-//					return emb;
-//				}
-//			});
-//			messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
-//
-//				@Override
-//				public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-//					final Long dpuId = (Long)source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
-//					if(dpuId == null) {
-//						return null;
-//					}
-//					Button logsLink = new Button("Logs");
-//					logsLink.setStyleName(BaseTheme.BUTTON_LINK);
-//					logsLink.addClickListener(new Button.ClickListener() {
-//
-//						@Override
-//						public void buttonClick(Button.ClickEvent event) {
-//							fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
-//						}
-//					});
-//					return logsLink;
-//				}
-//			});
-//			messageTable.setFilterDecorator(new filterDecorator());
+			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
+				@Override
+				public Object generateCell(CustomTable source, Object itemId,
+						Object columnId) {
+
+					MessageRecordType type = (MessageRecordType) source.getItem(itemId).getItemProperty(columnId).getValue();
+					ThemeResource img = null;
+					switch (type) {
+						case DPU_INFO:
+						case PIPELINE_INFO:
+							img = new ThemeResource("icons/log.png");
+							break;
+						case DPU_DEBUG:
+							img = new ThemeResource("icons/debug.png");
+							break;
+						case DPU_WARNING:
+							img = new ThemeResource("icons/warning.png");
+							break;
+						case DPU_ERROR:
+						case PIPELINE_ERROR:
+							img = new ThemeResource("icons/error.png");
+							break;
+						default:
+							//no img
+							break;
+					}
+					Embedded emb = new Embedded(type.name(), img);
+					emb.setDescription(type.name());
+					return emb;
+				}
+			});
+			messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
+
+				@Override
+				public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+					final Long dpuId = (Long)source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
+					if(dpuId == null) {
+						return null;
+					}
+					Button logsLink = new Button("Logs");
+					logsLink.setStyleName(BaseTheme.BUTTON_LINK);
+					logsLink.addClickListener(new Button.ClickListener() {
+
+						@Override
+						public void buttonClick(Button.ClickEvent event) {
+							fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
+						}
+					});
+					return logsLink;
+				}
+			});
+			messageTable.setFilterDecorator(new filterDecorator());
 			// set columns
 			isInitialized = true;
 		}
-//		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage", "");
-//		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message", "");
-//		messageTable.setFilterFieldVisible("", false);
 		messageTable.setFilterBarVisible(true);
 	}
 	

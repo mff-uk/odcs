@@ -26,85 +26,93 @@ import org.springframework.stereotype.Component;
 @Address(url = "ExecutionList")
 public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
-    @Autowired
-    private DbExecution dbExecution;
-	
+	@Autowired
+	private DbExecution dbExecution;
 	@Autowired
 	private DbLogMessage dbLogMessage;
-	
 	@Autowired
 	private DbMessageRecord dbMessageRecord;
+	@Autowired
+	private PipelineFacade pipelineFacade;
+	@Autowired
+	private ExecutionListView view;
+	private ExecutionListData dataObject;
 
-    @Autowired
-    private PipelineFacade pipelineFacade;
-    
-    @Autowired
-    private ExecutionListView view;
-        
-    private ExecutionListData dataObject;
-    
-    @Override
-    public Object enter(Object configuration) {
-        // prepare data object
-        dataObject = new ExecutionListData(new ReadOnlyContainer<>(dbExecution, 
-            new ExecutionAccessor()));
-        // prepare view
-        Object viewObject = view.enter(this);
-        // set data object
-        view.setDisplay(dataObject);
-        // return main component
-        return viewObject;
-    }
-        
-    @Override
-    public void refreshEventHandler() {
-        // TODO check for database change
-        dataObject.getContainer().refresh();
-    }
+	@Override
+	public Object enter(Object configuration) {
+		// prepare data object
+		dataObject = new ExecutionListData(new ReadOnlyContainer<>(dbExecution,
+				new ExecutionAccessor()));
+		// prepare view
+		Object viewObject = view.enter(this);
+		// set data object
+		view.setDisplay(dataObject);
 
-    @Override
-    public void stopEventHandler(long executionId) {
-        pipelineFacade.stopExecution(getLightExecution(executionId));
-        refreshEventHandler();
-    }
+		if (configuration != null && configuration.getClass() == String.class) {
+			String strExecId = (String) configuration;
+			try {
+				Long execId = Long.parseLong(strExecId);
+				//view.setSelectedRow(execId);
+				showDebugEventHandler(execId);
+			} catch (NumberFormatException e) {
+				//LOG.warn("Invalid parameter for execution monitor.", e);
+			}
+		}
 
-    @Override
-    public void showLogEventHandler(long executionId) {
-        //TODO: Show log for selected DPU?
-    }
+		// return main component
+		return viewObject;
+	}
 
-    @Override
-    public void showDebugEventHandler(long executionId) {
-        view.showExecutionDetail(getLightExecution(executionId), new ExecutionDetailData(getLogDataSource(), getMessageDataSource()));
-    }
+	@Override
+	public void refreshEventHandler() {
+		// TODO check for database change
+		dataObject.getContainer().refresh();
+		view.refresh();
+	}
 
-    @Override
-    public void runEventHandler(long executionId) {
-        pipelineFacade.run(getLightExecution(executionId).getPipeline(), false);
-        refreshEventHandler();
-    }
+	@Override
+	public void stopEventHandler(long executionId) {
+		pipelineFacade.stopExecution(getLightExecution(executionId));
+		refreshEventHandler();
+	}
 
-    @Override
-    public void debugEventHandler(long executionId) {
-        pipelineFacade.run(getLightExecution(executionId).getPipeline(), true);
-        refreshEventHandler();
-    }
+	@Override
+	public void showLogEventHandler(long executionId) {
+		//TODO: Show log for selected DPU?
+	}
 
-    /**
-     * Get light copy of execution.
-     * @param executionId
-     * @return 
-     */
-    private PipelineExecution getLightExecution(long executionId) {
-        return pipelineFacade.getExecution(executionId);
-    }
-	
+	@Override
+	public void showDebugEventHandler(long executionId) {
+		view.showExecutionDetail(getLightExecution(executionId), new ExecutionDetailData(getLogDataSource(), getMessageDataSource()));
+	}
+
+	@Override
+	public void runEventHandler(long executionId) {
+		pipelineFacade.run(getLightExecution(executionId).getPipeline(), false);
+		refreshEventHandler();
+	}
+
+	@Override
+	public void debugEventHandler(long executionId) {
+		pipelineFacade.run(getLightExecution(executionId).getPipeline(), true);
+		refreshEventHandler();
+	}
+
+	/**
+	 * Get light copy of execution.
+	 *
+	 * @param executionId
+	 * @return
+	 */
+	private PipelineExecution getLightExecution(long executionId) {
+		return pipelineFacade.getExecution(executionId);
+	}
+
 	private ReadOnlyContainer<LogMessage> getLogDataSource() {
 		return new ReadOnlyContainer<>(dbLogMessage, new LogAccessor());
 	}
-	
+
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
 		return new ReadOnlyContainer<>(dbMessageRecord, new MessageRecordAccessor());
 	}
-    
 }

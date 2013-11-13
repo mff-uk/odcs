@@ -80,6 +80,10 @@ public interface ExecutionListPresenter extends Presenter {
 		 * @param execution
 		 */
 		public void showExecutionDetail(PipelineExecution execution, ExecutionDetailData detailDataObject);
+		
+		public void refresh();
+
+		public void setSelectedRow(Long execId);
 	}
 
 	/**

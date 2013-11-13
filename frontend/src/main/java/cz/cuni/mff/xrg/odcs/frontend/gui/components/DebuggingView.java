@@ -107,7 +107,7 @@ public class DebuggingView extends CustomComponent {
 				if(event.getClass() == OpenLogsEvent.class) {
 					OpenLogsEvent ole = (OpenLogsEvent)event;
 					debugDpu = dpuFacade.getDPUInstance(ole.getDpuId());
-					//logMessagesTable.setDpu(pipelineExec, debugDpu);
+					logMessagesTable.setDpu(debugDpu);
 					logMessagesTable.refresh(true, false);
 					tabs.setSelectedTab(logsTab);
 				}

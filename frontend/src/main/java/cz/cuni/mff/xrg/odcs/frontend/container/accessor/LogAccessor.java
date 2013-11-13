@@ -13,9 +13,9 @@ import org.apache.log4j.Level;
  */
 public class LogAccessor implements ClassAccessor<LogMessage> {
 
-	private List<String> all = Arrays.asList("id", "date", "level", "dpuInstanceId", "message", "source");
-	private List<String> sortable = Arrays.asList("id", "date", "level", "dpuInstanceId");
-	private List<String> filtrable = Arrays.asList("id", "date", "level", "dpuInstanceId", "message", "source");
+	private List<String> all = Arrays.asList("date", "level", "dpuInstanceId", "message", "source");
+	private List<String> sortable = Arrays.asList("date", "level", "dpuInstanceId");
+	private List<String> filtrable = Arrays.asList("date", "level", "dpuInstanceId", "message", "source");
 
 	@Override
 	public List<String> all() {
