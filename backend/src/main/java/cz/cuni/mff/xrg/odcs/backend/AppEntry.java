@@ -1,15 +1,22 @@
 package cz.cuni.mff.xrg.odcs.backend;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
 import cz.cuni.mff.xrg.odcs.backend.communication.Server;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.h2.store.fs.FileUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +25,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Backend entry point.
- * 
+ *
  * @author Petyr
  *
  */
@@ -28,7 +35,7 @@ public class AppEntry {
 	 * Path to the spring configuration file.
 	 */
 	private final static String SPRING_CONFIG_FILE = "backend-context.xml";
-	
+
 	/**
 	 * Logger class.
 	 */
@@ -38,29 +45,25 @@ public class AppEntry {
 	 * Path to the configuration file.
 	 */
 	private String configFileLocation = null;
-	
+
 	/**
 	 * Spring context.
 	 */
 	private AbstractApplicationContext context = null;
-	
-	/**
-	 * Application configuration.
-	 */
-	private AppConfig appConfig = null;
-				
+
 	/**
 	 * Server for network communication.
 	 */
 	private Server server = null;
-	
+
 	/**
 	 * Separate thread for network server.
 	 */
 	private Thread serverThread = null;
-		
+
 	/**
 	 * Parse program arguments.
+	 *
 	 * @param args
 	 */
 	private void parseArgs(String[] args) {
@@ -70,17 +73,19 @@ public class AppEntry {
 		// parse args
 		CommandLineParser parser = new org.apache.commons.cli.BasicParser();
 		try {
-			CommandLine cmd = parser.parse( options, args);
+			CommandLine cmd = parser.parse(options, args);
 			// read args ..
 			configFileLocation = cmd.getOptionValue("config");
 		} catch (ParseException e) {
-			LOG.error("Failed to parse program's arguments.", e);
+			System.err.println("Failed to parse program's arguments.");
+			e.printStackTrace(System.err);
+			System.exit(1);
 		}
-		
+
 		// override default configuration path if it has been provided
 		if (configFileLocation != null) {
 			AppConfig.confPath = configFileLocation;
-		}		
+		}
 	}
 
 	/**
@@ -90,12 +95,11 @@ public class AppEntry {
 		// load spring
 		context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
 		context.registerShutdownHook();
-		// load configuration
-		appConfig = context.getBean(AppConfig.class);
 	}
-		
+
 	/**
 	 * Initialise and start network TCP/IP server.
+	 *
 	 * @return False it the TCP/IP server cannot be initialised.
 	 */
 	private boolean initNetworkServer() {
@@ -111,19 +115,98 @@ public class AppEntry {
 		// start server in another thread
 		serverThread = new Thread(server, "TCP/IP server");
 		serverThread.setDaemon(true);
-		serverThread.start();	
+		serverThread.start();
 		return true;
 	}
-			
+
+	private void initLogbackAppender() {
+
+		// default values
+		String logDirectory = "";
+		int logHistory = 14;
+		// we try to load values from configuration
+		AppConfig appConfig = AppConfig.loadFromHome();
+		try {
+			logDirectory = appConfig.getString(ConfigProperty.BACKEND_LOG_DIR);
+			// user set path, ensure that it end's on file separator
+			if (logDirectory.endsWith(File.separator) || logDirectory.isEmpty()) {
+				// ok it ends or it's empty
+			} else {
+				// no .. just add
+				logDirectory = logDirectory + File.separator;
+			}
+		} catch(Exception e) { }
+		
+		try {
+			logHistory = appConfig.getInteger(ConfigProperty.BACKEND_LOG_KEEP);
+		} catch(Exception e) { }
+
+		// check existance of directory
+		if (logDirectory.isEmpty() || FileUtils.exists(logDirectory)) {
+			// ok directory exist or is default
+		} else {
+			// can not find log directory .. 
+			try {
+			FileUtils.createDirectory(logDirectory);
+			} catch (Exception e) {
+				System.err.println("Failed to create log directory '" + logDirectory + "'");
+				System.exit(1);
+			}
+		}
+				
+		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+		RollingFileAppender rfAppender = new RollingFileAppender();
+		rfAppender.setContext(loggerContext);
+		rfAppender.setFile(logDirectory + "backend.log");
+
+		TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
+		rollingPolicy.setContext(loggerContext);
+		// rolling policies need to know their parent
+		// it's one of the rare cases, where a sub-component knows about its parent
+		rollingPolicy.setParent(rfAppender);
+		rollingPolicy.setFileNamePattern(logDirectory + "backend.%d{yyyy-MM-dd}.%i.log");
+		rollingPolicy.setMaxHistory(logHistory);
+		rollingPolicy.start();
+
+		SizeBasedTriggeringPolicy triggeringPolicy = new ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy();
+		triggeringPolicy.setMaxFileSize("10MB");
+		triggeringPolicy.start();
+
+		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+		encoder.setContext(loggerContext);
+		encoder.setPattern("%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{50} - %msg%n");
+		encoder.start();
+
+		rfAppender.setEncoder(encoder);
+		rfAppender.setRollingPolicy(rollingPolicy);
+		rfAppender.setTriggeringPolicy(triggeringPolicy);
+
+		rfAppender.start();
+
+		// we have the appender, now we need to attach it
+		// under root logger
+		
+		ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+		logbackLogger.addAppender(rfAppender);
+
+	}
+
 	/**
 	 * Main execution method.
+	 *
 	 * @param args
 	 */
 	private void run(String[] args) {
-		// parse args
+		// parse args - do not use logging		
 		parseArgs(args);
+
+		// the log back is not initialised here .. 
+		// we add file appender
+		initLogbackAppender();
+
 		// initialise
-		initSpring();		
+		initSpring();
 
 		// try to get application-lock 
 		// we construct lock key based on port		
@@ -133,7 +216,7 @@ public class AppEntry {
 		if (!AppLock.setLock(lockKey.toString())) {
 			// another application is already running
 			LOG.info("Another instance of Intlib is probably running.");
-			context.close();			
+			context.close();
 			return;
 		}
 
@@ -148,25 +231,24 @@ public class AppEntry {
 			AppLock.releaseLock();
 			return;
 		}
-		
+
 		// print some information ..
-		LOG.info("Module directory: " + appConfig.getString(ConfigProperty.MODULE_PATH));		
 		LOG.info("Running ...");
-		
+
 		// infinite loop
 		while (true) {
-            try {
-                Thread.sleep(1000 * 60);
-            } catch (InterruptedException ex) {
-            }
+			try {
+				Thread.sleep(1000 * 60);
+			} catch (InterruptedException ex) {
+			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		AppEntry app = new AppEntry();
 		app.run(args);
-		
+
 		LOG.info("Closing application ...");
 	}
-	
+
 }
