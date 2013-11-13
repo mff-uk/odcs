@@ -74,11 +74,13 @@ public class PipelineFacade {
      * Returns list of all pipelines persisted in the database.
      *
      * @return list of pipelines
+	 * @deprecated performance intensive for many pipelines in DB, use lazy
+	 *			   container with paging instead
      */
+	@Deprecated
     @PostFilter("hasPermission(filterObject,'view')")
     public List<Pipeline> getAllPipelines() {
-		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>("SELECT e FROM Pipeline e");
-		return pipelineDao.executeList(jpql);
+		return pipelineDao.getAll();
     }
 
     /**
@@ -123,17 +125,7 @@ public class PipelineFacade {
      */
     @PreAuthorize("hasPermission(#dpu, 'view')")
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
-		
-		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM Pipeline e"
-				+ " LEFT JOIN e.graph g"
-				+ " LEFT JOIN g.nodes n"
-				+ " LEFT JOIN n.dpuInstance i"
-				+ " LEFT JOIN i.template t"
-				+ " WHERE t = :dpu");
-		jpql.setParameter("dpu", dpu);
-		
-		return pipelineDao.executeList(jpql);
+		return pipelineDao.getPipelinesUsingDPU(dpu);
     }
 
 	/**
@@ -146,20 +138,8 @@ public class PipelineFacade {
 	 * @return 
 	 */
     public boolean hasPipelineWithName(String newName, Pipeline pipeline) {
-		
-		String query = "SELECT COUNT(e) FROM Pipeline e"
-                + " WHERE e.name = :name";
-		
-        JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>();
-		jpql.setParameter("name", newName);
-		
-		if (pipeline != null && pipeline.getId() != null) {
-			query += " AND e.id <> :pid";
-			jpql.setParameter("pid", pipeline.getId());
-		}
-		
-		jpql.setQuery(query);
-        return pipelineDao.executeSize(jpql) > 0;
+		Pipeline duplicate = pipelineDao.getPipelineByName(newName);
+        return duplicate == null || duplicate.equals(pipeline);
     }
 
     /**
