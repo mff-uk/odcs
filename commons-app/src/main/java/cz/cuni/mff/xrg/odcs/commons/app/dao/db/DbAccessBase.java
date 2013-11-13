@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Map;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,24 +43,9 @@ public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
 	 * Entity class.
 	 */
 	protected final Class<T> entityClass;
-	    
+	
 	public DbAccessBase(Class<T> entityClass) {
 		this.entityClass = entityClass;
-	}
-    
-	@Override
-	public T create() {
-		try {
-			return entityClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException ex) {
-			LOG.error("The class {} cannot be instatiated by no-arg constructor.", entityClass.getSimpleName(), ex);
-			throw new RuntimeException(ex);
-		}
-	}
-
-	@Override
-	public T copy(T object) {
-		throw new UnsupportedOperationException();
 	}
 	
 	@Transactional

@@ -13,9 +13,4 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
         super(Pipeline.class);
     }
 
-    @Override
-    public Pipeline copy(Pipeline object) {
-        return new Pipeline(object);
-    }
-
 }
