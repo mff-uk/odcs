@@ -302,6 +302,7 @@ public class LogMessagesTable extends CustomComponent {
 	}
 
 	private void refreshDpuSelector(ComboBox dpuSelector) {
+		dpuSelector.removeAllItems();
 		ExecutionContextInfo ctx = pipelineExecution.getContextReadOnly();
 		if (ctx != null) {
 			for (DPUInstanceRecord dpuInstance : ctx.getDPUIndexes()) {
