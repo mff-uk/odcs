@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 
 import java.io.File;
@@ -324,6 +325,24 @@ public interface RDFDataUnitHelper {
 	 *         repository/
 	 */
 	public List<Statement> getTriples();
+
+	/**
+	 *
+	 * @return instance with iterator behavior for lazy returning all triples in
+	 *         repository, which are split to parts using default split value
+	 *         (see {@link LazyTriples#DEFAULT_SPLIT_SIZE}).
+	 */
+	public LazyTriples getLazyTriples();
+
+	/**
+	 *
+	 * @param splitSize number of triples returns in each return part using
+	 *                  method {@link LazyTriples#getTriples() }.
+	 * @return instance with iterator behavior for lazy returning all triples in
+	 *         repository, which are split to parts - each has triples at most
+	 *         as defined splitSize.
+	 */
+	public LazyTriples getLazyTriples(long splitSize);
 
 	/**
 	 * Copy all data from repository to targetRepository.
