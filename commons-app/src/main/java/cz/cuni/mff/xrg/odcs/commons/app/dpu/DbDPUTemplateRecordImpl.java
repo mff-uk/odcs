@@ -32,7 +32,14 @@ public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
 		
 		return execute(jpql);
 	}
-	
-	
+
+	@Override
+	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parentDpu) {
+		JPQLDbQuery<DPUTemplateRecord> jpql = new JPQLDbQuery<DPUTemplateRecord>(
+				"SELECT e FROM DPUTemplateRecord e WHERE e.parent = :tmpl");
+		jpql.setParameter("tmpl", parentDpu);
+		
+		return executeList(jpql);
+	}
 
 }

@@ -176,6 +176,16 @@ public class DPUFacade {
 		templateDao.delete(dpu);
 	}
 
+	/**
+	 * Fetch all child DPU templates for a given DPU template.
+	 * 
+	 * @param parent DPU template
+	 * @return list of child DPU templates or empty collection
+	 */
+	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
+		return templateDao.getChildDPUs(parent);
+	}
+
 	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
 
 	/**
@@ -304,15 +314,4 @@ public class DPUFacade {
 		}
 		em.remove(record);
 	}
-
-	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
-		@SuppressWarnings("unchecked")
-		List<DPUTemplateRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUTemplateRecord e WHERE e.parent = :tmpl").setParameter("tmpl", parent).getResultList(),
-				DPUTemplateRecord.class
-		);
-
-		return resultList;
-	}
-
 }
