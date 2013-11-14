@@ -1581,7 +1581,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * address. For data deleting is necessarry to have endpoint with update
 	 * rights.
 	 *
-	 * @param endpointURL   URL address of endpoint connect to.
+	 * @param endpointURL   URL address of update endpoint connect to.
 	 * @param endpointGraph Graph name in URI format.
 	 * @throws RDFException When you dont have update right for this action, or
 	 *                      connection is lost before succesfully ending.
@@ -1590,10 +1590,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public void clearEndpointGraph(URL endpointURL, String endpointGraph)
 			throws RDFException {
 
-		String deleteQuery = "delete {?x ?y ?z} where {?x ?y ?z}";
+		String deleteQuery = String.format("CLEAR GRAPH <%s>", endpointGraph);
+
 		InputStreamReader inputStreamReader = getEndpointStreamReader(
-				endpointURL,
-				endpointGraph, deleteQuery, RDFFormat.RDFXML);
+				endpointURL, "", deleteQuery, RDFFormat.RDFXML);
 
 	}
 
@@ -2034,10 +2034,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		StatisticalHandler handler = new StatisticalHandler(connection);
 		parseFileUsingHandler(handler, fileFormat, is, baseURI);
 
-		if (handler.hasFindedProblems() && failWhenErrors) {
-			throw new RDFException(handler.getFindedProblemsAsString());
-		}
+		if (handler.hasFindedProblems()) {
+			String problems = handler.getFindedProblemsAsString();
 
+			logger.error(problems);
+			if (failWhenErrors) {
+				throw new RDFException(problems);
+			}
+		}
 	}
 
 	private void parseFileUsingStandardHandler(RDFFormat fileFormat,

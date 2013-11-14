@@ -57,6 +57,7 @@ public interface ManagableDataUnit extends DataUnit {
 	 * exception. The directory doesn't have to exist. The directory can be the
 	 * same as the DataUnit working directory!
 	 *
+	 * @param directory
 	 * @throws RuntimeException
 	 */
 	public void save(File directory) throws RuntimeException;
@@ -77,8 +78,8 @@ public interface ManagableDataUnit extends DataUnit {
 	/**
 	 * Return true if DataUnit is in read only state.
 	 *
-	 * @see {@link #madeReadOnly}
 	 * @return True if data in DataUnit are read only, false otherwise.
+	 * @see {@link #madeReadOnly}
 	 */
 	public boolean isReadOnly();
 	

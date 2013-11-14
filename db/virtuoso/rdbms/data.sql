@@ -22,6 +22,8 @@ INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configu
 
 INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(5,'RDF File Loader',0,'','<object-stream> <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> <FilePath></FilePath> <RDFFileFormat>AUTO</RDFFileFormat> <DiffName>false</DiffName> </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> </object-stream>',NULL,1,1,2,'RDF_File_Loader','RDF_File_Loader-1.0.0.jar','Loads RDF data into file.');
 
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(6,'RDF Data Validator',0,'','<object-stream> <cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig> <directoryPath></directoryPath> <stopExecution>false</stopExecution> <sometimesFile>true</sometimesFile> </cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig> </object-stream>',NULL,1,1,1,'RDF_Data_Validator','RDF_Data_Validator-1.0.0.jar','Validate RDF data and create validation report.');
+
 -- Table DB.ODCS.DPU_TEMPLATE 5 rows output.
 -- SELECT * FROM DB.ODCS.EXEC_CONTEXT_DPU
 -- Table DB.ODCS.EXEC_CONTEXT_DPU 0 rows output.
@@ -97,4 +99,20 @@ INSERT INTO DB.ODCS.USR_USER_ROLE(user_id,role_id) VALUES(2,0);
 -- Table DB.ODCS.USR_USER_ROLE 3 rows output.
 
 
+sequence_set('seq_dpu_record', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."DPU_INSTANCE"), 1);
+sequence_set('seq_exec_dataunit_info', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."EXEC_DATAUNIT_INFO"), 1);
+sequence_set('seq_exec_context_pipeline', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."EXEC_CONTEXT_PIPELINE"), 1);
+sequence_set('seq_exec_context_dpu', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."EXEC_CONTEXT_DPU"), 1);
+sequence_set('seq_exec_record', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."EXEC_RECORD"), 1);
+sequence_set('seq_exec_pipeline', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."EXEC_PIPELINE"), 1);
+sequence_set('seq_exec_schedule', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."EXEC_SCHEDULE"), 1);
+sequence_set('seq_ppl_model', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."PPL_MODEL"), 1);
+sequence_set('seq_ppl_edge', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."PPL_EDGE"), 1);
+sequence_set('seq_ppl_node', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."PPL_NODE"), 1);
+sequence_set('seq_ppl_graph', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."PPL_GRAPH"), 1);
+sequence_set('seq_ppl_position', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."PPL_POSITION"), 1);
+sequence_set('seq_sch_notification', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."SCH_SCH_NOTIFICATION"), 1);
+sequence_set('seq_sch_email', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."SCH_EMAIL"), 1);
+sequence_set('seq_usr_user', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."USR_USER"), 1);
+sequence_set('seq_rdf_ns_prefix', (SELECT COALESCE(MAX(id),1) FROM "DB"."ODCS"."RDF_NS_PREFIX"), 1);
 fk_check_input_values(1);

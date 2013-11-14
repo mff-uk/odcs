@@ -19,6 +19,7 @@
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>
 		<module>SPARQL_transformer</module>
+		<module>RDF_Data_Validator</module>
 		<module>Silk_Linker</module>
 	</modules>
 

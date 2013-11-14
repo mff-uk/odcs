@@ -17,7 +17,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 
 import java.util.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Shows complex debug information about current pipeline execution. Shows
@@ -198,7 +197,7 @@ public class DebuggingView extends CustomComponent {
 	 */
 	public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
 		this.pipelineExec = execution;
-		isInDebugMode = pipelineExec.getIsDebugging();
+		this.isInDebugMode = execution.isDebugging();
 		this.debugDpu = instance;
 		fillContent(false);
 		if (!isRunFinished()) {

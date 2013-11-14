@@ -787,7 +787,7 @@ public class PipelineEdit extends ViewComponent {
 		try {
 			pipelineName.validate();
 			pipelineDescription.validate();
-			if(pipelineFacade.hasPipelineWithName(pipelineName.getValue())) {
+			if(pipelineFacade.hasPipelineWithName(pipelineName.getValue(), pipeline)) {
 				throw new Validator.InvalidValueException("Pipeline with same name already exists in the system.");
 			}
 		} catch (Validator.InvalidValueException e) {

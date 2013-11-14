@@ -675,6 +675,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 	@Override
 	public boolean isChanged() {
+		if(selectedDpuWrap == null) {
+			return false;
+		}
 		boolean configChanged = false;
 		try {
 			configChanged = selectedDpuWrap.getDialog().hasConfigChanged();

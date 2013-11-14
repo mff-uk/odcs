@@ -19,6 +19,12 @@ public class JPQLDbQuery<T extends DataObject> implements DataQuery<T> {
 
 	private final Map<String, Object> parameters = new HashMap<>();
 
+	/**
+	 * No-arg constructor allows setting parameters before the query is
+	 * completely constructed.
+	 */
+	public JPQLDbQuery() {}
+	
 	public JPQLDbQuery(String query) {
 		this.query = query;
 	}
@@ -50,34 +56,5 @@ public class JPQLDbQuery<T extends DataObject> implements DataQuery<T> {
 			parameters.put(name, value);
 		}
 		return this;
-	}
-	
-	/**
-	 * Query parameter.
-	 * 
-	 * @param <V> 
-	 */
-	public class Parameter<V> {
-		
-		private String key;
-		
-		private V value;
-
-		public String getKey() {
-			return key;
-		}
-
-		public void setKey(String key) {
-			this.key = key;
-		}
-
-		public V getValue() {
-			return value;
-		}
-
-		public void setValue(V value) {
-			this.value = value;
-		}
-		
 	}
 }
