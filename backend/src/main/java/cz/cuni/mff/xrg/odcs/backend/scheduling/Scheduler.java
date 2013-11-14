@@ -26,13 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 class Scheduler implements ApplicationListener<ApplicationEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
-		
-	/**
-	 * Pipeline facade.
-	 */
-	@Autowired
-	private PipelineFacade pipelineFacade;
-	
+			
 	/**
 	 * Schedule facade.
 	 */

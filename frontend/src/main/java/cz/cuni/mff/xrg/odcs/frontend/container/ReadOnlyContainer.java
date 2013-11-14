@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
@@ -165,14 +167,14 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Override
     public Item getItem(Object itemId) {
-        LOG.trace("getItem({})", itemId);
+        //LOG.trace("getItem({})", itemId);
         // ...
         return new ValueItem(this, (Long) itemId);
     }
 
     @Override
     public Collection<?> getContainerPropertyIds() {
-        LOG.trace("getContainerPropertyIds()");
+        //LOG.trace("getContainerPropertyIds()");
         // ...
         return propertiesIds;
     }
@@ -186,14 +188,14 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 
     @Override
     public Property<?> getContainerProperty(Object itemId, Object propertyId) {
-        LOG.trace("getContainerProperty({}, {})", itemId, propertyId);
+        //LOG.trace("getContainerProperty({}, {})", itemId, propertyId);
         // ...
         return properties.get(propertyId).bind((Long) itemId);
     }
 
     @Override
     public Class<?> getType(Object propertyId) {
-        LOG.trace("getType({})", propertyId);
+        //LOG.trace("getType({})", propertyId);
         // ...
         return properties.get(propertyId).getType();
     }
@@ -206,18 +208,35 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
             // update
             size = (int) dbAccess.executeSize(getQueryCount());
             sizeCache.set(size, now);
-            LOG.trace("size() -> {}", size);
+            //LOG.trace("size() -> {}", size);
         } else {
-            LOG.trace("size() -> {} cached", size);
+            //LOG.trace("size() -> {} cached", size);
         }
         return size;
     }
 
     @Override
     public boolean containsId(Object itemId) {
-        LOG.trace("containsId({}) -> EX", itemId);
-        // ...
-        throw new UnsupportedOperationException();
+        //LOG.trace("containsId({})", itemId);
+        // we try to use cache first .. 
+		if(dataCache.containsId((Long) itemId)) {
+			return true;
+		}
+		// no data in cache .. so we query database ...
+		LOG.warn("containsId({}) -> ask database, this may have serious performance impact", itemId);
+		DataQueryBuilder<T> builder = dbAccess.createQueryBuilder();
+		DataQueryBuilder.Filterable<T> filtrableBuilder
+            = (DataQueryBuilder.Filterable<T>) builder;
+		
+        filtrableBuilder.claerFilters();
+        // add filters
+        for (Filter filter : filters) {
+            filtrableBuilder.addFilter(filter);
+        }
+		// add filter for id
+		filtrableBuilder.addFilter(new Equal("id", itemId));
+		// and ask for size
+		return dbAccess.executeSize(builder.getCountQuery()) > 0;
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -335,7 +354,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 
     @Override
     public Object getIdByIndex(int index) {
-        LOG.trace("getIdByIndex({})", index);
+        //LOG.trace("getIdByIndex({})", index);
         // select given item
         T object = dbAccess.execute(getQuery().limit(index, 1));
         // object can be null
@@ -352,12 +371,12 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
         final String cacheKey = Integer.toString(startIndex) + Integer.toString(numberOfItems);
 
         if (dataCache.isValid(cacheKey, now)) {
-            LOG.trace("getItemIds({}, {}) -> CACHED", startIndex, numberOfItems);
+            //LOG.trace("getItemIds({}, {}) -> CACHED", startIndex, numberOfItems);
             // data are valid, we do not need to reload
             return dataCache.getKeys();
         }
 
-        LOG.trace("getItemIds({}, {})", startIndex, numberOfItems);
+        //LOG.trace("getItemIds({}, {})", startIndex, numberOfItems);
         // ...
         List<T> objects = dbAccess.executeList(getQuery().limit(startIndex,
             numberOfItems));

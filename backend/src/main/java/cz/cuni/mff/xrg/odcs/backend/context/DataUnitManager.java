@@ -31,47 +31,47 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
  */
 final class DataUnitManager {
 
+	private static final Logger LOG = LoggerFactory.getLogger(DataUnitManager.class);
+	
 	/**
 	 * Store outputs.
 	 */
-	private List<ManagableDataUnit> dataUnits;
+	private final List<ManagableDataUnit> dataUnits;
 
 	/**
 	 * Mapping from {@link outputs} to indexes.
 	 */
-	private Map<ManagableDataUnit, Integer> indexes;
+	private final Map<ManagableDataUnit, Integer> indexes;
 
 	/**
 	 * DPUInstanceRecord as owner of this context.
 	 */
-	private DPUInstanceRecord dpuInstance;
+	private final DPUInstanceRecord dpuInstance;
 
 	/**
 	 * Used factory.
 	 */
-	private DataUnitFactory dataUnitFactory;
+	private final DataUnitFactory dataUnitFactory;
 
 	/**
 	 * Manage mapping context into execution's directory.
 	 */
-	private ExecutionContextInfo context;
+	private final ExecutionContextInfo context;
 
 	/**
 	 * Execution working directory.
 	 */
-	private File workingDir;
+	private final File workingDir;
 
 	/**
 	 * Application configuration.
 	 */
-	private AppConfig appConfig;
+	private final AppConfig appConfig;
 
 	/**
 	 * True if used for inputs.
 	 */
-	private boolean isInput;
-
-	private static Logger LOG = LoggerFactory.getLogger(DataUnitManager.class);
+	private final boolean isInput;
 
 	/**
 	 * Create manager for input {@link DataUnit}s.
@@ -211,7 +211,7 @@ final class DataUnitManager {
 	 * are not instantiated in DataUnitManager. Does not delete or release
 	 * existing DataUnits.
 	 * 
-	 * DataUnit load's failures are silently ignored.
+	 * DataUnit load failures are silently ignored.
 	 * 
 	 * @throws DataUnitException 
 	 */
@@ -224,7 +224,7 @@ final class DataUnitManager {
 		List<DataUnitInfo> dataUnitsInfo = dpuInfo.getDataUnits();
 		// check every DataUnit in contextInfo
 		for (DataUnitInfo info : dataUnitsInfo) {
-			if (indexes.containsKey(info.getIndex())) {
+			if (indexes.containsValue(info.getIndex())) {
 				// DataUnit is already presented
 			} else {
 				// create new DataUnit

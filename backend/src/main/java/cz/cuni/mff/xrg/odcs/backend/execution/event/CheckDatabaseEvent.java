@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Event represent request on engine to check database for new 
- * scheduled executions.
+ * queued executions.
  * 
  * @author Petyr
  *

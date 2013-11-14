@@ -27,13 +27,13 @@ abstract class PostExecutorBase implements PostExecutor {
 	 * Contains states on which this execution will be executed, other states
 	 * are ignored.
 	 */
-	private List<DPUExecutionState> executionStates;
+	private final List<DPUExecutionState> executionStates;
 
 	/**
 	 * If true then execution only if the state of the DPU is in
 	 * {@link executionStates} if false then executed otherwise.
 	 */
-	private boolean polarity;
+	private final boolean polarity;
 
 	/**
 	 * @param executionStates List of {@link DPUExecutionState} on which run
@@ -50,6 +50,7 @@ abstract class PostExecutorBase implements PostExecutor {
 		this.polarity = polarity;
 	}
 
+	@Override
 	public boolean postAction(Node node,
 			Map<Node, Context> contexts,
 			Object dpuInstance,

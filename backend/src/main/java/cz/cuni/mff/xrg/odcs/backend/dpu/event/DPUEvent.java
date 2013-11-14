@@ -113,7 +113,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return
 	 */
 	public static DPUEvent createStart(Context context, Object source) {		
-		LOG.info("DPU '{}' started", context.getDpuInstance().getName());
+		LOG.info("DPU '{}' started", context.getDPU().getName());
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
 				"DPU started.", "");
@@ -127,7 +127,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return
 	 */
 	public static DPUEvent createComplete(Context context, Object source) {
-		LOG.info("DPU '{}' finished", context.getDpuInstance().getName());
+		LOG.info("DPU '{}' finished", context.getDPU().getName());
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
 				"DPU completed.", "");
@@ -141,7 +141,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return
 	 */
 	public static DPUEvent createNoOutputWarning(Context context, Object source) {
-		LOG.warn("Missing outpuds for '{}'", context.getDpuInstance().getName());
+		LOG.warn("Missing outpuds for '{}'", context.getDPU().getName());
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_WARNING,
 				"Missing output DataUnit.", "");
@@ -156,7 +156,7 @@ public class DPUEvent extends ApplicationEvent {
 	 */
 	public static DPUEvent createWrongState(Context context, Object source) {
 		LOG.error("DPU '{}' has wrong state at the beggining of the execution.",
-				context.getDpuInstance().getName());
+				context.getDPU().getName());
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
 				"Unexpected state of DPU before execution", "");
@@ -176,7 +176,7 @@ public class DPUEvent extends ApplicationEvent {
 			String longMessage) {
 		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),
-				context.getDpuInstance().getName(),
+				context.getDPU().getName(),
 				longMessage);
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
@@ -199,7 +199,7 @@ public class DPUEvent extends ApplicationEvent {
 			Throwable throwable) {
 		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),
-				context.getDpuInstance().getName(),
+				context.getDPU().getName(),
 				longMessage,
 				throwable);
 		
@@ -221,7 +221,7 @@ public class DPUEvent extends ApplicationEvent {
 			String longMessage) {
 		LOG.error("Post-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),
-				context.getDpuInstance().getName(),
+				context.getDPU().getName(),
 				longMessage);
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
@@ -234,13 +234,13 @@ public class DPUEvent extends ApplicationEvent {
 	 *
 	 * @param context
 	 * @param source
-	 * @param ex
+	 * @param e
 	 * @return
 	 */
 	public static DPUEvent createFailed(Context context, Object source,
 			Exception e) {
 		LOG.error("DPU '{}' failed by throwing eception",
-				context.getDpuInstance().getName(), e);
+				context.getDPU().getName(), e);
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
 				"DPU execution failed. ", e);
@@ -258,7 +258,7 @@ public class DPUEvent extends ApplicationEvent {
 	public static DPUEvent createDataUnitFailed(Context context, Object source,
 			DataUnitException e) {
 		LOG.error("Failed to create DataUnit for DPU '{}'",
-				context.getDpuInstance().getName(), e);
+				context.getDPU().getName(), e);
 		
 		return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
 				"DataUnit error.", e);
@@ -270,7 +270,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return record
 	 */
 	public MessageRecord getRecord() {
-		return new MessageRecord(time, type, context.getDpuInstance(),
+		return new MessageRecord(time, type, context.getDPU(),
 				context.getExecution(), shortMessage, longMessage);
 
 	}

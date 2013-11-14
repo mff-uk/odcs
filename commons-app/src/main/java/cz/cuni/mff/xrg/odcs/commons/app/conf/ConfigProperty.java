@@ -12,7 +12,8 @@ public enum ConfigProperty {
 
 	BACKEND_HOST("backend.host"),
 	BACKEND_PORT("backend.port"),
-	
+	BACKEND_LOG_DIR("backend.log.dir"),
+	BACKEND_LOG_KEEP("backend.log.keepDays"),
 	BACKEND_DEFAULTRDF("backend.defaultRdf"),
 	
 	// namespaces for virtuoso configuration

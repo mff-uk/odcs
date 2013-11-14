@@ -14,11 +14,6 @@ public enum MessageRecordType {
 	 */
 	 DPU_DEBUG
 	/**
-	 * Log information from DPURecord.
-	 */
-	,@Deprecated
-         DPU_LOG
-	/**
 	 * Closer unspecified information from DPURecord.
 	 */
 	,DPU_INFO
@@ -40,7 +35,9 @@ public enum MessageRecordType {
 	,PIPELINE_INFO;
 		
 	/**
-	 * Convert message.Type to RecordType.
+	 * Convert {@link MessageType} to {@link RecordType}.
+	 * @param type 
+	 * @return
 	 */
 	public static MessageRecordType fromMessageType(MessageType type) {
 		switch(type) {

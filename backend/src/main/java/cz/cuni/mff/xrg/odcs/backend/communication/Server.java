@@ -29,6 +29,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
  */
 public class Server implements Runnable {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Server.class);
+	
 	/**
 	 * Timeout in ms for TCP/IP operation. Also determine the 
 	 * time in which server check's for end of it's execution. 
@@ -39,36 +41,33 @@ public class Server implements Runnable {
      * Application configuration.
      */
     @Autowired
-    protected AppConfig appConfiguration;
+    private AppConfig appConfiguration;
     
     /**
      * Event publisher used to publicise events.
      */
     @Autowired
-    protected ApplicationEventPublisher eventPublisher;
+    private ApplicationEventPublisher eventPublisher;
         
     /**
      * Server socket.
      */
-    protected ServerSocket socket;
+    private ServerSocket socket;
     
     /**
      * Provide executors for handling incoming communications.
      */
-    protected ExecutorService executorService;
+    private final ExecutorService executorService;
         
     /**
      * True if continue in execution. Set to false to stop the loop in run
      * method.
      */
-    protected boolean running;
+    private boolean running;
 
-    protected static Logger LOG = LoggerFactory.getLogger(Server.class); 
-    
     /**
      * Create instance of Server. CachedThreadPool is used as ExecutorService.
      *
-     * @param appConfiguration
      */
     public Server() {
         this.executorService = Executors.newCachedThreadPool();

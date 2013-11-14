@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
+package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;

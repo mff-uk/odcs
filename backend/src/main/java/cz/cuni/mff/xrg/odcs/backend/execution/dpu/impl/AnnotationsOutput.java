@@ -46,12 +46,6 @@ public class AnnotationsOutput implements PreExecutor {
 			.getLogger(AnnotationsOutput.class);
 	
 	/**
-	 * DataUnit factory used to create new {@link DataUnit}s.
-	 */
-	@Autowired
-	private DataUnitFactory dataUnitFactory;
-
-	/**
 	 * Event publisher used to publish error event.
 	 */
 	@Autowired
@@ -133,10 +127,6 @@ public class AnnotationsOutput implements PreExecutor {
 	 * @param dpuInstance
 	 * @param context
 	 * @return False in case of error.
-	 * @param annotation
-	 * @param dpuInstance
-	 * @param context
-	 * @return
 	 */
 	protected boolean annotationOutput(AnnotationContainer<OutputDataUnit> annotationContainer,
 			Object dpuInstance,
@@ -157,7 +147,7 @@ public class AnnotationsOutput implements PreExecutor {
 			return false;
 		}
 		// let's create dataUnit
-		ManagableDataUnit dataUnit = null;
+		ManagableDataUnit dataUnit;
 		try {
 			dataUnit = context.addOutputDataUnit(type, annotation.name());
 		} catch (DataUnitCreateException e) {

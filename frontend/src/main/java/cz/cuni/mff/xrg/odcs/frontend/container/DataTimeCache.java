@@ -107,4 +107,13 @@ public class DataTimeCache<T> {
 		return cacheIds;
 	}
 	
+	/**
+	 * Return true if the cache contains data for given id.
+	 * @param id
+	 * @return 
+	 */
+	public boolean containsId(Long id) {
+		return cache.containsKey(id);
+	}
+	
 }

@@ -45,7 +45,6 @@ public class InstantReportEmailBuilder {
 		for (MessageRecord message : messages) {
 			// set color based on type
 			switch (message.getType()) {
-			case DPU_LOG:
 			case DPU_DEBUG:
 				body.append("<tr>");
 				break;

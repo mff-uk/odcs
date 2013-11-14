@@ -281,7 +281,6 @@ public class Schedule implements Serializable, OwnedEntity {
 		this.strictToleranceMinutes = strictToleranceMinutes;
 	}	
 	
-	
 	/**
 	 * Return time of the next execution. It the schedule is not time
 	 * dependent return null. 

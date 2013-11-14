@@ -43,7 +43,7 @@ public class Context implements DPUContext {
 	/**
 	 * Logger class for ExtendedCommonImpl class.
 	 */
-	private static Logger LOG = LoggerFactory.getLogger(Context.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Context.class);
 
 	/**
 	 * DPUInstanceRecord as owner of this context.

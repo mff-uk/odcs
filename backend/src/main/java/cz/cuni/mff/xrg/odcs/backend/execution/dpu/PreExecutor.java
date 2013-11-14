@@ -39,7 +39,7 @@ public interface PreExecutor extends Ordered {
 	 * 
 	 * @param node Node that will be executed.
 	 * @param contexts List of context, also contain context for current node.
-	 * @param dpuInstace DPU instance.
+	 * @param dpuInstance DPU instance.
 	 * @param execution Respective execution.
 	 * @param unitInfo DPU's ProcessingUnitInfo.
 	 * @return

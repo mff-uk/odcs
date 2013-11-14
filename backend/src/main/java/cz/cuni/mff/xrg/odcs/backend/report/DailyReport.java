@@ -6,11 +6,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.NotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.NotificationRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.UserNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -166,18 +166,12 @@ public class DailyReport {
 			case CANCELLING:
 				return false;
 			case FAILED:
-				if (notification.getTypeError() == NotificationRecordType.DAILY) {
-					return true;
-				} else {
-					return false;
-				}
+				// return true if use daily report
+				return notification.getTypeError() == NotificationRecordType.DAILY;
 			case FINISHED_SUCCESS:
 			case FINISHED_WARNING:
-				if (notification.getTypeSuccess() == NotificationRecordType.DAILY) {
-					return true;
-				} else {
-					return false;
-				}
+				// return trye if use daily report
+				return notification.getTypeSuccess() == NotificationRecordType.DAILY;
 			case QUEUED:
 				return false;
 			case RUNNING:

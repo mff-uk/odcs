@@ -14,7 +14,6 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.GridLayout;
@@ -28,7 +27,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
