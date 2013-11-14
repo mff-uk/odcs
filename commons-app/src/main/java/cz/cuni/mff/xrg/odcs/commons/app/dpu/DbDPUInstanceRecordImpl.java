@@ -12,8 +12,8 @@ import java.util.List;
 public class DbDPUInstanceRecordImpl extends DbAccessBase<DPUInstanceRecord>
 		implements DbDPUInstanceRecord {
 
-	public DbDPUInstanceRecordImpl(Class<DPUInstanceRecord> entityClass) {
-		super(entityClass);
+	public DbDPUInstanceRecordImpl() {
+		super(DPUInstanceRecord.class);
 	}
 
 	@Override

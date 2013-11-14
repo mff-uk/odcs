@@ -66,11 +66,14 @@
     <bean id="DPUExplorer" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer" />
 	
     <!-- Application DAO -->
-    <bean id="DbPipeline" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipelineImpl" />
-    <bean id="DbExecution" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecutionImpl" />
+    <bean id="dbPipeline" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipelineImpl" />
+    <bean id="dbExecution" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecutionImpl" />
+    <bean id="dbTemplate" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecordImpl" />
+    <bean id="dbInstance" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUInstanceRecordImpl" />
+    <bean id="dbMessage" class="cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecordImpl" />
     
     <!-- authorizator required by dao -->
-    <bean id="DbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.AuthorizatorImpl" />
+    <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.AuthorizatorImpl" />
     
     <!-- translator for ODCS filters -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.ODCSFilterTranslator" />

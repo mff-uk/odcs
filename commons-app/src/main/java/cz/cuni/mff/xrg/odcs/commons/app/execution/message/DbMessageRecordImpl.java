@@ -13,8 +13,8 @@ import java.util.List;
 public class DbMessageRecordImpl extends DbAccessBase<MessageRecord>
 								 implements DbMessageRecord {
 
-	public DbMessageRecordImpl(Class<MessageRecord> entityClass) {
-		super(entityClass);
+	public DbMessageRecordImpl() {
+		super(MessageRecord.class);
 	}
 
 	@Override
