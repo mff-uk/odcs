@@ -297,7 +297,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	@Override
-	public void storeToFile(File file, RDFFormatType formatType) throws RDFException {
+	public void loadToFile(File file, RDFFormatType formatType) throws RDFException {
 
 		ParamController.testNullParameter(file,
 				"Given file for loading is null.");
