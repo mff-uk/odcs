@@ -33,6 +33,12 @@ public class DPUFacade {
 	@PersistenceContext
 	private EntityManager em;
 	
+	@Autowired
+	private DbDPUTemplateRecord templateDao;
+	
+	@Autowired
+	private DbDPUInstanceRecord instanceDao;
+	
 	@Autowired(required = false)
 	private AuthenticationContext authCtx;
 
@@ -56,7 +62,7 @@ public class DPUFacade {
 
 	/**
 	 * Create copy of DPU template, as the owner the current user is set.
-	 * @param template
+	 * 
 	 * @return
 	 */
 	public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
@@ -95,14 +101,7 @@ public class DPUFacade {
 	 */
 	@PostFilter("hasPermission(filterObject,'view')")
 	public List<DPUTemplateRecord> getAllTemplates() {
-
-		@SuppressWarnings("unchecked")
-		List<DPUTemplateRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUTemplateRecord e").getResultList(),
-				DPUTemplateRecord.class
-		);
-
-		return resultList;
+		return templateDao.getAllTemplates();
 	}
 
 	/**
@@ -110,19 +109,12 @@ public class DPUFacade {
 	 * 
 	 * Is used by OSGIModuleFacade, so no permissions are applied here.
 	 * 
-	 * TODO Honza from Petyr: Please check this
-	 * 
 	 * @return
+	 * @deprecated refactor and call DAO directly
 	 */
+	@Deprecated
 	public List<DPUTemplateRecord> getAllTemplatesNoPermission() {
-
-		@SuppressWarnings("unchecked")
-		List<DPUTemplateRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUTemplateRecord e").getResultList(),
-				DPUTemplateRecord.class
-		);
-
-		return resultList;
+		return templateDao.getAllTemplates();
 	}	
 	
 	/**
@@ -131,39 +123,7 @@ public class DPUFacade {
 	 * @return
 	 */
 	public DPUTemplateRecord getTemplate(long id) {
-		return em.find(DPUTemplateRecord.class, id);
-	}
-	
-	/**
-	 * Fetch DPU template using given JAR file.
-	 * 
-	 * <p>
-	 * TODO Currently files are compared only by filename. It would be better
-	 *		if we compared file content hash instead.
-	 * 
-	 * <p>
-	 * TODO This method cannot use any security filters, because it is used in
-	 *		file upload listener. For details see GH-415.
-	 * 
-	 * @param jarFile
-	 * @return DPU using given JAR file, or <code>null</code>
-	 * 
-	 * @deprecated Use {@link getTemplateByDirectory} instead.
-	 */
-	@Deprecated
-	public DPUTemplateRecord getTemplateByJarFile(File jarFile) {
-		
-		DPUTemplateRecord result = null;
-		try {
-			result = em.createQuery(
-				"SELECT e FROM DPUTemplateRecord e"
-				+ " WHERE e.jarPath = :path", DPUTemplateRecord.class
-			).setParameter("path", jarFile.getPath()).getSingleResult();
-		} catch (NoResultException ex) {
-			// just return null if nothing is found
-		}
-		
-		return result;
+		return templateDao.getInstance(id);
 	}
 
 	/**
@@ -174,34 +134,22 @@ public class DPUFacade {
 	 * 
 	 * @param directory
 	 * @return
+	 * @deprecated refactor and call DAO directly
 	 */
+	@Deprecated
 	public DPUTemplateRecord getTemplateByDirectory(String directory) {
-		
-		DPUTemplateRecord result = null;
-		try {
-			result = em.createQuery(
-				"SELECT e FROM DPUTemplateRecord e"
-				+ " WHERE e.jarDirectory = :directory", DPUTemplateRecord.class
-			).setParameter("directory", directory).getSingleResult();
-		} catch (NoResultException ex) {
-			// just return null if nothing is found
-		}
-		
-		return result;
+		return templateDao.getTemplateByDirectory(directory);
 	}
 	
 	/**
 	 * Saves any modifications made to the DPUTemplateRecord into the database.
+	 * 
 	 * @param dpu
 	 */
 	@Transactional
 	@PreAuthorize("hasPermission(#dpu,'save')")
 	public void save(DPUTemplateRecord dpu) {
-		if (dpu.getId() == null) {
-			em.persist(dpu);
-		} else {
-			em.merge(dpu);
-		}
+		templateDao.save(dpu);
 	}
 
 	/**
@@ -210,8 +158,10 @@ public class DPUFacade {
 	 * the contents in the JAR file.
 	 * 
 	 * @param dpu
+	 * @deprecated refactor and call DAO directly
 	 */
 	@Transactional
+	@Deprecated
 	public void saveNoPermission(DPUTemplateRecord dpu) {
 		save(dpu);
 	}	
@@ -223,11 +173,7 @@ public class DPUFacade {
 	@Transactional
 	@PreAuthorize("hasPermission(#dpu,'delete')")
 	public void delete(DPUTemplateRecord dpu) {
-		// we might be trying to remove detached entity
-		if (!em.contains(dpu) && dpu.getId() != null) {
-			dpu = getTemplate(dpu.getId());
-		}
-		em.remove(dpu);
+		templateDao.delete(dpu);
 	}
 
 	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
