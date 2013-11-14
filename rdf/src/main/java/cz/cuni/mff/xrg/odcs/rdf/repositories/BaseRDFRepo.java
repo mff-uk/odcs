@@ -17,6 +17,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
+import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
@@ -970,6 +971,36 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		}
 		return statemens;
+	}
+
+	/**
+	 *
+	 * @return instance with iterator behavior for lazy returning all triples in
+	 *         repository, which are split to parts using default split value
+	 *         (see {@link LazyTriples#DEFAULT_SPLIT_SIZE}).
+	 */
+	@Override
+	public LazyTriples getLazyTriples() {
+
+		LazyTriples result = new LazyTriples(getRepositoryResult());
+
+		return result;
+	}
+
+	/**
+	 *
+	 * @param splitSize number of triples returns in each return part using
+	 *                  method {@link LazyTriples#getTriples() }.
+	 * @return instance with iterator behavior for lazy returning all triples in
+	 *         repository, which are split to parts - each has triples at most
+	 *         as defined splitSize.
+	 */
+	@Override
+	public LazyTriples getLazyTriples(long splitSize) {
+
+		LazyTriples result = new LazyTriples(getRepositoryResult(), splitSize);
+
+		return result;
 	}
 
 	private MyRDFHandler getHandlerForConstructQuery(File file,
