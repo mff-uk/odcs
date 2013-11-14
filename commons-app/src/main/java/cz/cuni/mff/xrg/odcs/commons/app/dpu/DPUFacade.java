@@ -96,19 +96,6 @@ public class DPUFacade {
 	public List<DPUTemplateRecord> getAllTemplates() {
 		return templateDao.getAllTemplates();
 	}
-
-	/**
-	 * Return list of all DPUTemplateRecords currently persisted in database.
-	 * 
-	 * Is used by OSGIModuleFacade, so no permissions are applied here.
-	 * 
-	 * @return
-	 * @deprecated refactor and call DAO directly
-	 */
-	@Deprecated
-	public List<DPUTemplateRecord> getAllTemplatesNoPermission() {
-		return templateDao.getAllTemplates();
-	}	
 	
 	/**
 	 * Find DPUTemplateRecord in database by ID and return it.
@@ -117,21 +104,6 @@ public class DPUFacade {
 	 */
 	public DPUTemplateRecord getTemplate(long id) {
 		return templateDao.getInstance(id);
-	}
-
-	/**
-	 * Fetch DPU template using given DPU directory.
-	 * 
-	 * TODO This method do not use security filters. As it is used
-	 * 		in OSGIChangeManager which use it to identify DPU to update. 
-	 * 
-	 * @param directory
-	 * @return
-	 * @deprecated refactor and call DAO directly
-	 */
-	@Deprecated
-	public DPUTemplateRecord getTemplateByDirectory(String directory) {
-		return templateDao.getTemplateByDirectory(directory);
 	}
 	
 	/**
@@ -144,20 +116,6 @@ public class DPUFacade {
 	public void save(DPUTemplateRecord dpu) {
 		templateDao.save(dpu);
 	}
-
-	/**
-	 * Save DPU template without without checking permissions of currently
-	 * logged user. This is useful when we are updating data in database with
-	 * the contents in the JAR file.
-	 * 
-	 * @param dpu
-	 * @deprecated refactor and call DAO directly
-	 */
-	@Transactional
-	@Deprecated
-	public void saveNoPermission(DPUTemplateRecord dpu) {
-		save(dpu);
-	}	
 	
 	/**
 	 * Deletes DPUTemplateRecord from the database.

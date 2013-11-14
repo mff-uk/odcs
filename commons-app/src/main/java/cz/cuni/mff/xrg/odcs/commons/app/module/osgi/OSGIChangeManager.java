@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationListener;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleDeleteEvent;
@@ -42,6 +43,9 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 
 	@Autowired
 	private DPUFacade dpuFacade;
+	
+	@Autowired
+	private DbDPUTemplateRecord dpuTemplateDao;
 
 	@Autowired
 	private DPUExplorer dpuExplorer;
@@ -65,8 +69,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 		} else if (event instanceof ModuleNewEvent) {
 			LOG.debug("Loading jar-file for new DPU in: {}", directory);
 			// get record for DPU from database
-			final DPUTemplateRecord dpu = dpuFacade
-					.getTemplateByDirectory(directory);
+			final DPUTemplateRecord dpu = dpuTemplateDao.getTemplateByDirectory(directory);
 			if (dpu == null) {
 				LOG.warn("Missing record for new DPU in directory: ", directory);
 			} else {
@@ -77,8 +80,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 			}
 		} else if (event instanceof ModuleUpdateEvent) {
 			LOG.debug("Udating DPU in: {}", directory);
-			final DPUTemplateRecord dpu = dpuFacade
-					.getTemplateByDirectory(directory);
+			final DPUTemplateRecord dpu = dpuTemplateDao.getTemplateByDirectory(directory);
 			final ModuleUpdateEvent updateEvent = (ModuleUpdateEvent) event;
 			if (dpu == null) {
 				LOG.warn("Missing record for updating DPU in directory: {}",
@@ -123,7 +125,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 		// update information loaded from DPU
 		dpu.setJarDescription(dpuExplorer.getJarDescription(dpu));
 		// save DPU
-		dpuFacade.saveNoPermission(dpu);
+		dpuTemplateDao.save(dpu);
 	}
 	
 }

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 
@@ -25,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
  * OSGI based implementation of {@link ModuleFacade}.
  * 
  * @author Petyr
+ * @author Jan Vojt
  * 
  */
 class OSGIModuleFacade implements ModuleFacade {
@@ -55,10 +57,10 @@ class OSGIModuleFacade implements ModuleFacade {
 	private OSGIModuleFacadeConfig configuration;
 	
 	/**
-	 * DPU facade to get all DPU's templates.
+	 * DPU DAO to get all DPU's templates.
 	 */
 	@Autowired
-	private DPUFacade dpuFacade;
+	private DbDPUTemplateRecord dpuTemplateDao;
 	
 	/**
 	 * Store directories for bundle which are currently being updated. 
@@ -538,7 +540,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		// first load libraries
 		loadLibs(configuration.getDpuLibFolder());
 		// load DPU's jar files
-		preLoadDPUs(dpuFacade.getAllTemplatesNoPermission());		
+		preLoadDPUs(dpuTemplateDao.getAllTemplates());		
 	}
 	
 }
