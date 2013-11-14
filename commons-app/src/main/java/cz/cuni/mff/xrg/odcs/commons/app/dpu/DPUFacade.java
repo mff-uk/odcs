@@ -182,7 +182,8 @@ public class DPUFacade {
 	 * Creates DPUInstanceRecord with configuration copied from template without
 	 * persisting it.
 	 *
-	 * @return
+	 * @param dpuTemplate to create from
+	 * @return newly created DPU instance
 	 */
 	public DPUInstanceRecord createInstanceFromTemplate(DPUTemplateRecord dpuTemplate) {
 		DPUInstanceRecord dpuInstance = new DPUInstanceRecord(dpuTemplate);		
@@ -195,14 +196,7 @@ public class DPUFacade {
 	 * @return DPUInstance list
 	 */
 	public List<DPUInstanceRecord> getAllDPUInstances() {
-
-		@SuppressWarnings("unchecked")
-		List<DPUInstanceRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUInstanceRecord e").getResultList(),
-				DPUInstanceRecord.class
-		);
-
-		return resultList;
+		return instanceDao.getAllDPUInstances();
 	}
 
 	/**
@@ -212,7 +206,7 @@ public class DPUFacade {
 	 * @return
 	 */
 	public DPUInstanceRecord getDPUInstance(long id) {
-		return em.find(DPUInstanceRecord.class, id);
+		return instanceDao.getInstance(id);
 	}
 
 	/**
@@ -221,11 +215,7 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void save(DPUInstanceRecord dpu) {
-		if (dpu.getId() == null) {
-			em.persist(dpu);
-		} else {
-			em.merge(dpu);
-		}
+		instanceDao.save(dpu);
 	}
 
 	/**
@@ -234,30 +224,10 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void delete(DPUInstanceRecord dpu) {
-		// we might be trying to remove detached entity
-		if (!em.contains(dpu) && dpu.getId() != null) {
-			dpu = getDPUInstance(dpu.getId());
-		}
-		em.remove(dpu);
+		instanceDao.delete(dpu);
 	}
 
 	/* **************** Methods for Record (messages) management ***************** */
-
-	/**
-	 * Returns list of all Records currently persisted in database.
-	 *
-	 * @return Record list
-	 */
-	public List<MessageRecord> getAllDPURecords() {
-
-		@SuppressWarnings("unchecked")
-		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT e FROM MessageRecord e").getResultList(),
-			MessageRecord.class
-		);
-
-		return resultList;
-	}
 
 	/**
 	 * Fetches all DPURecords emitted by given DPUInstance.
