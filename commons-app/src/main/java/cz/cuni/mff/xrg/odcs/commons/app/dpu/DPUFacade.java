@@ -1,16 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
-import java.io.File;
-
-import java.util.Collections;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +23,14 @@ public class DPUFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DPUFacade.class);
 
-	/**
-	 * Entity manager for accessing database with persisted objects.
-	 */
-	@PersistenceContext
-	private EntityManager em;
-	
 	@Autowired
 	private DbDPUTemplateRecord templateDao;
 	
 	@Autowired
 	private DbDPUInstanceRecord instanceDao;
+	
+	@Autowired
+	private DbMessageRecord messageDao;
 	
 	@Autowired(required = false)
 	private AuthenticationContext authCtx;
@@ -240,41 +233,13 @@ public class DPUFacade {
 	/* **************** Methods for Record (messages) management ***************** */
 
 	/**
-	 * Fetches all DPURecords emitted by given DPUInstance.
-	 *
-	 * @param dpuInstance
-	 * @return
-	 */
-	public List<MessageRecord> getAllDPURecords(DPUInstanceRecord dpuInstance) {
-
-		@SuppressWarnings("unchecked")
-		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM MessageRecord r WHERE r.dpuInstance = :ins")
-				.setParameter("ins", dpuInstance)
-				.getResultList(),
-			MessageRecord.class
-		);
-
-		return resultList;
-	}
-
-	/**
 	 * Fetches all DPURecords emitted by given PipelineExecution.
 	 *
 	 * @param pipelineExec
 	 * @return
 	 */
 	public List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec) {
-
-		@SuppressWarnings("unchecked")
-		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM MessageRecord r WHERE r.execution = :ins")
-				.setParameter("ins", pipelineExec)
-				.getResultList(),
-			MessageRecord.class
-		);
-
-		return resultList;
+		return messageDao.getAllDPURecords(pipelineExec);
 	}
 
 	/**
@@ -284,7 +249,7 @@ public class DPUFacade {
 	 * @return
 	 */
 	public MessageRecord getDPURecord(long id) {
-		return em.find(MessageRecord.class, id);
+		return messageDao.getInstance(id);
 	}
 
 	/**
@@ -294,11 +259,7 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void save(MessageRecord record) {
-		if (record.getId() == null) {
-			em.persist(record);
-		} else {
-			em.merge(record);
-		}
+		messageDao.save(record);
 	}
 
 	/**
@@ -308,10 +269,6 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void delete(MessageRecord record) {
-		// we might be trying to remove detached entity
-		if (!em.contains(record) && record.getId() != null) {
-			record = getDPURecord(record.getId());
-		}
-		em.remove(record);
+		messageDao.delete(record);
 	}
 }
