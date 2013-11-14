@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAcess;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import java.util.Date;
 import java.util.List;
@@ -11,8 +11,9 @@ import java.util.Set;
  * Spring does not support autowired on generic types
  *
  * @author Petyr
+ * @author Jan Vojt
  */
-public interface DbExecution extends DbAcess<PipelineExecution> {
+public interface DbExecution extends DbAccess<PipelineExecution> {
 	
 	/**
 	 * @param pipeline or null

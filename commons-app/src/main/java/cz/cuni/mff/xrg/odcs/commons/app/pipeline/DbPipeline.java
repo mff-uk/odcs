@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAcess;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * @author Petyr
  * @author Jan Vojt
  */
-public interface DbPipeline extends DbAcess<Pipeline> {
+public interface DbPipeline extends DbAccess<Pipeline> {
 	
 	/**
 	 * @return all pipelines in DB
