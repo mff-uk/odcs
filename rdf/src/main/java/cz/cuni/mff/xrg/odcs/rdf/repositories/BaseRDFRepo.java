@@ -297,24 +297,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	@Override
-	public void storeToFile(File file, RDFFormatType formatType) throws RDFException {
+	public void loadToFile(File file, RDFFormatType formatType) throws RDFException {
 
-		if (file == null) {
+		ParamController.testNullParameter(file,
+				"Given file for loading is null.");
 
-			final String message = "Given file for loading is null.";
-
-			logger.debug(message);
-			throw new RDFException(message);
-
-
-		} else if (file.getName().isEmpty()) {
-
-			final String message = "File name is empty.";
-
-
-			logger.debug(message);
-			throw new RDFException(message);
-		}
+		ParamController.testEmptyParameter(file, "File name is empty");
 
 		if (!file.exists()) {
 			createNewFile(file);

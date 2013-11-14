@@ -251,8 +251,7 @@ public class EmailComponent {
 
 
 		} else {
-			User user = App.getApp().getUsers().getUser(1L);
-			getUserEmailNotification(user);
+			getUserEmailNotification(schedule.getOwner());
 		}
 
 	}

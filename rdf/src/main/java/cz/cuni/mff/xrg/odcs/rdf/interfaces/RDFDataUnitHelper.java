@@ -162,7 +162,7 @@ public interface RDFDataUnitHelper {
 	 *                   RDF/XML,etc.)
 	 * @throws RDFException when loading data to file fail.
 	 */
-	public void storeToFile(File file, RDFFormatType formatType) throws RDFException;
+	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
 
 	/**
 	 * Extract RDF data from SPARQL endpoint to repository using only data from
