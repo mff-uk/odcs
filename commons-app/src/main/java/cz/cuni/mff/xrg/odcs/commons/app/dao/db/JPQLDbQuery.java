@@ -33,8 +33,13 @@ public class JPQLDbQuery<T extends DataObject> implements DataQuery<T> {
 		return query;
 	}
 
-	public void setQuery(String query) {
+	/**
+	 * @param query as {@code String}
+	 * @return this instance to allow method chaining
+	 */
+	public JPQLDbQuery<T> setQuery(String query) {
 		this.query = query;
+		return this;
 	}
 
 	public Set<Map.Entry<String, Object>> getParameters() {
