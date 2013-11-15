@@ -84,7 +84,7 @@ public class ExecutionContextInfo implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@MapKeyJoinColumn(name = "dpu_instance_id", referencedColumnName = "id")
 	@JoinColumn(name = "exec_context_pipeline_id")
-	private Map<DPUInstanceRecord, ProcessingUnitInfo> contexts;
+	Map<DPUInstanceRecord, ProcessingUnitInfo> contexts;
 
 	/**
 	 * Empty constructor for JPA.
@@ -94,8 +94,8 @@ public class ExecutionContextInfo implements Serializable {
 	}
 
 	/**
-	 * 
-	 * @param directory Path to the root directory for execution.
+	 * Create info for given execution.
+	 * @param execution
 	 */
 	public ExecutionContextInfo(PipelineExecution execution) {
 		this.contexts = new HashMap<>();
@@ -221,7 +221,6 @@ public class ExecutionContextInfo implements Serializable {
 	 * in debug mode. Does not create a directory!
 	 * 
 	 * @param dpuInstance
-	 * @param index DataUnitInfo index.
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
 	public String getDataUnitRootTmpPath(DPUInstanceRecord dpuInstance) {
@@ -254,7 +253,6 @@ public class ExecutionContextInfo implements Serializable {
 	 * debug mode. Does not create a directory!
 	 * 
 	 * @param dpuInstance
-	 * @param index DataUnitInfo index.
 	 * @return Relative path, start but not end with separator (/, \\)
 	 */
 	public String getDataUnitRootStoragePath(DPUInstanceRecord dpuInstance) {
@@ -350,13 +348,9 @@ public class ExecutionContextInfo implements Serializable {
 	 * Return string that should be used as a name for DPU's directory.
 	 */
 	private String getDpuDirectoryName(DPUInstanceRecord dpuInstance) {
-		final String dpuName = dpuInstance.getName();
-		
 		StringBuilder dirName = new StringBuilder();
 		dirName.append(DPU_ID_PREFIX);
 		dirName.append(dpuInstance.getId().toString());
-		dirName.append('_');
-		dirName.append(dpuName.replaceAll("\\s+", "_"));
 		return dirName.toString();
 	}
 }

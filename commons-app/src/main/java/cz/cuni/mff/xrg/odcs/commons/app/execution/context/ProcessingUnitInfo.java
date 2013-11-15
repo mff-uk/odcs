@@ -90,14 +90,13 @@ public class ProcessingUnitInfo implements Serializable {
 	public List<DataUnitInfo> getDataUnits() {
 		return dataUnits;
 	}
-
 	
 	public DPUExecutionState getState() {
 		return state;
 	}
 	
-
 	public void setState(DPUExecutionState state) {
 		this.state = state;
 	}
+	
 }
