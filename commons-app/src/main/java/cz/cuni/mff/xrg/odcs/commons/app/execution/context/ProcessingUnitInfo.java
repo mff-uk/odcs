@@ -41,7 +41,7 @@ public class ProcessingUnitInfo implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "exec_context_dpu_id")
 	@OrderBy("index")
-	private List<DataUnitInfo> dataUnits = new LinkedList<>();
+	List<DataUnitInfo> dataUnits = new LinkedList<>();
 
 	/**
 	 * Empty constructor for JPA.
@@ -58,7 +58,10 @@ public class ProcessingUnitInfo implements Serializable {
 	 * @param type
 	 * @param isInput
 	 * @return Index of new DataUnitInfo.
+	 * 
+	 * @deprecated use DpuContextInfo instead
 	 */
+	@Deprecated
 	public Integer addDataUnit(String name, DataUnitType type, boolean isInput) {
 		// add information
 		Integer index = 0;
@@ -77,7 +80,10 @@ public class ProcessingUnitInfo implements Serializable {
 	 * 
 	 * @param index Index of DataUnit.
 	 * @return DataUnitInfo or null.
+	 * 
+	 * @deprecated use DpuContextInfo instead
 	 */
+	@Deprecated
 	public DataUnitInfo getDataUnit(Integer index) {
 		for (DataUnitInfo info : dataUnits) {
 			if (info.getIndex() == index) {
@@ -87,6 +93,12 @@ public class ProcessingUnitInfo implements Serializable {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @deprecated use DpuContextInfo instead
+	 */
+	@Deprecated
 	public List<DataUnitInfo> getDataUnits() {
 		return dataUnits;
 	}
