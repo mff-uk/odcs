@@ -45,6 +45,11 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	}
 
 	@Override
+	public List<String> visible() {
+		return all;
+	}
+
+	@Override
 	public Class<Pipeline> getEntityClass() {
 		return Pipeline.class;
 	}

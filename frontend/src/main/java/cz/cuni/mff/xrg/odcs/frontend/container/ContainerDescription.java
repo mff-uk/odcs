@@ -24,4 +24,10 @@ public interface ContainerDescription {
 	 */
 	public String getColumnName(String id);
 	
+	/**
+	 * Return ids of column that are visible.
+	 * @return 
+	 */
+	public List<String> getVisibles();
+	
 }

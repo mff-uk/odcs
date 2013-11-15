@@ -33,6 +33,11 @@ public class LogAccessor implements ClassAccessor<LogMessage> {
 	}
 
 	@Override
+	public List<String> visible() {
+		return all;
+	}
+	
+	@Override
 	public Class<LogMessage> getEntityClass() {
 		return LogMessage.class;
 	}

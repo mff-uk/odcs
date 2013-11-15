@@ -144,6 +144,7 @@ public class RecordsTable extends CustomComponent {
 					return logsLink;
 				}
 			});
+			messageTable.setVisibleColumns();
 			messageTable.setFilterDecorator(new filterDecorator());
 			// set columns
 			isInitialized = true;

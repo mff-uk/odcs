@@ -485,9 +485,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				return emb;
 			}
 		});
-
+		
 		// add generated columns to the executionTable
-		executionTable.addGeneratedColumn("actions", createColumnGenerator(presenter));
+		executionTable.addGeneratedColumn("", createColumnGenerator(presenter));
+		executionTable.setVisibleColumns();
 
 		return executionTable;
 	}

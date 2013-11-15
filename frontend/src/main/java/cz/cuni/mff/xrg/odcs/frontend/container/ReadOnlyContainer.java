@@ -546,4 +546,9 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
         return classAccessor.getColumnName(id);
     }
 
+	@Override
+	public List<String> getVisibles() {
+		return classAccessor.visible();
+	}
+
 }

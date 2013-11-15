@@ -32,6 +32,11 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 	}
 	
 	@Override
+	public List<String> visible() {
+		return all;
+	}
+	
+	@Override
 	public Class<PipelineExecution> getEntityClass() {
 		return PipelineExecution.class;
 	}

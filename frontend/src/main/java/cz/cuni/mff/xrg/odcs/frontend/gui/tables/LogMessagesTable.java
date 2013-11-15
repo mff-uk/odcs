@@ -432,6 +432,7 @@ public class LogMessagesTable extends CustomComponent {
 				return dpuNames.get(dpuId);
 			}
 		});
+		table.setVisibleColumns();
 		return table;
 	}
 
