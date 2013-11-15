@@ -622,6 +622,7 @@ public class PipelineEdit extends ViewComponent {
 					return;
 				}
 				debug.setExecution(pExec, instance);
+				debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor()), new ReadOnlyContainer(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor())));
 			}
 		});
 		rerunButton.setWidth(100, Unit.PIXELS);
