@@ -100,8 +100,14 @@ public class ConflictLock implements PreExecutor {
 	@Override
 	public boolean preAction(PipelineExecution execution,
 			Map<Node, Context> contexts,
-			DependencyGraph graph) {
-		lock(execution);
+			DependencyGraph graph,
+			boolean success) {
+		if (success) {
+			// ok so far good, the pipeline will run get lock
+			lock(execution);
+		} else {
+			// something faield .. the execution will not start .. 
+		}
 		return true;
 	}
 

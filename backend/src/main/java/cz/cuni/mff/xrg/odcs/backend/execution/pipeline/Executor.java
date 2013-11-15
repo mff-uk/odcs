@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -26,8 +23,6 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -78,12 +73,6 @@ public class Executor implements Runnable {
 	 */
 	@Autowired
 	private LogFacade logFacade;
-
-	/**
-	 * Application's configuration.
-	 */
-	@Autowired
-	private AppConfig appConfig;
 
 	/**
 	 * List of all {@link PreExecutor}s to execute before executing pipeline.
@@ -140,22 +129,7 @@ public class Executor implements Runnable {
 		contexts = new HashMap<>();
 
 		// for newly scheduled pipelines delete the execution directory
-		File coreExecutionFile = new File(
-				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR),
-				execution.getContext().getRootPath());
 		if (execution.getStatus() == PipelineExecutionStatus.QUEUED) {
-			// new run, check for directory
-			if (coreExecutionFile.exists() && coreExecutionFile.isDirectory()) {
-				// delete
-				LOG.debug("Deleting existing execution's directory. ");
-
-				try {
-					FileUtils.deleteDirectory(coreExecutionFile);
-				} catch (IOException e) {
-					LOG.error("Failed to delete execution directory.");
-				}
-			}
-
 			// update state and set start time
 			this.execution.setStart(new Date());
 			this.execution.setStatus(PipelineExecutionStatus.RUNNING);
@@ -201,17 +175,15 @@ public class Executor implements Runnable {
 	private boolean executePreExecutors(DependencyGraph graph) {
 		if (preExecutors == null) {
 			return true;
-		}
-
+		}		
+		boolean success = true;
 		for (PreExecutor item : preExecutors) {
-			if (item.preAction(execution, contexts, graph)) {
-				// continue execution
-			} else {
+			if (!item.preAction(execution, contexts, graph, success)) {
 				LOG.error("PreProcessor: {} failed", item.getClass().getName());
-				return false;
+				success = false;
 			}
 		}
-		return true;
+		return success;
 	}
 
 	/**
@@ -229,15 +201,14 @@ public class Executor implements Runnable {
 			return true;
 		}
 
+		boolean success = true;
 		for (PostExecutor item : postExecutors) {
 			if (item.postAction(execution, contexts, graph)) {
-				// continue execution
-			} else {
 				LOG.error("PostProcessor: {} failed", item.getClass().getName());
-				return false;
+				success = false;
 			}
 		}
-		return true;
+		return success;
 	}
 
 	/**

@@ -33,10 +33,12 @@ public interface PreExecutor extends Ordered {
 	 * @param execution
 	 * @param contexts
 	 * @param graph Dependency graph used for execution.
+	 * @param success False if the execution it self will not be executed.
 	 * @return
 	 */
 	public boolean preAction(PipelineExecution execution,
 			Map<Node, Context> contexts,
-			DependencyGraph graph);
+			DependencyGraph graph,
+			boolean success);
 
 }
