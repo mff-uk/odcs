@@ -187,6 +187,7 @@ public class DataUnitSelector extends CustomComponent {
 	 * available.
 	 */
 	private void refreshDpuSelector() {
+		Object selected = dpuSelector.getValue();
 		dpuSelector.removeAllItems();
 		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
 		for (DPUInstanceRecord dpu : contextDpuIndexes) {
@@ -194,6 +195,8 @@ public class DataUnitSelector extends CustomComponent {
 				dpuSelector.addItem(dpu);
 				if (dpu.equals(debugDpu)) {
 					dpuSelector.select(debugDpu);
+				} else if(selected != null && dpu.equals(selected)) {
+					dpuSelector.select(selected);
 				}
 			}
 		}

@@ -143,7 +143,7 @@ public final class Executor implements Runnable {
 	 * @param contexts Contexts of other DPU's.
 	 * @param execution Pipeline execution.
 	 * @param lastExecutionTime Time of last successful execution. Can be null.
-	 * @return False if can't bind.
+	 * @throws cz.cuni.mff.xrg.odcs.backend.context.ContextException
 	 */
 	public void bind(Node node,
 			Map<Node, Context> contexts,

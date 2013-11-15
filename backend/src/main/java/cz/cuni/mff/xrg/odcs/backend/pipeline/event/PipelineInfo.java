@@ -18,9 +18,9 @@ public class PipelineInfo extends PipelineEvent {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(PipelineInfo.class);
 	
-	private String shortMessage;
+	private final String shortMessage;
 	
-	private String longMessage;
+	private final String longMessage;
 	
 	protected PipelineInfo(PipelineExecution execution,
 			Object source,
@@ -47,5 +47,12 @@ public class PipelineInfo extends PipelineEvent {
 		LOG.info("Execution continue");
 		return new PipelineInfo(execution, source, "Pipeline continue", "");
 	}	
+	
+	public static PipelineInfo createStart(PipelineExecution execution,
+			Object source) {
+		LOG.info("Starting execution of pipeline {} = {}", execution.getId(),
+				execution.getPipeline().getName());
+		return new PipelineInfo(execution, source, "Starting execution of pipeline", "");
+	} 
 	
 }

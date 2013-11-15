@@ -120,7 +120,7 @@ public class AnnotationsInput implements PreExecutor {
 	 */
 	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates,
 			Class<?> type) {
-		LinkedList<ManagableDataUnit> result = new LinkedList<ManagableDataUnit>();
+		LinkedList<ManagableDataUnit> result = new LinkedList<>();
 		for (ManagableDataUnit item : candidates) {
 			if (type.isInstance(item)) {
 				result.add(item);
@@ -134,13 +134,13 @@ public class AnnotationsInput implements PreExecutor {
 	 * Is case insensitive.
 	 * 
 	 * @param candidates
-	 * @param type
+	 * @param name Required name of DataUnits.
 	 * @return List with {@link ManagableDataUnit} can be empty, can not be
 	 *         null.
 	 */
 	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates,
 			String name) {
-		LinkedList<ManagableDataUnit> result = new LinkedList<ManagableDataUnit>();
+		LinkedList<ManagableDataUnit> result = new LinkedList<>();
 		for (ManagableDataUnit item : candidates) {
 			if (item.getDataUnitName().compareToIgnoreCase(name) == 0) {
 				result.add(item);

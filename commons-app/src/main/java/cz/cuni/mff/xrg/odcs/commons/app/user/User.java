@@ -1,9 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.UserNotificationRecord;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;

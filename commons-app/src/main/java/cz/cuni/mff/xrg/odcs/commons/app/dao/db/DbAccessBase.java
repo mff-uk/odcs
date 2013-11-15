@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @param <T>
  */
-public abstract class DbAccessBase<T extends DataObject> implements DbAcess<T> {
+public abstract class DbAccessBase<T extends DataObject> implements DbAccess<T> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DbAccessBase.class);
 	

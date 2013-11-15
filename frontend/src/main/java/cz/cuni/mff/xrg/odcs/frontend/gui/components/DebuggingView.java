@@ -8,15 +8,20 @@ import com.vaadin.ui.TabSheet.Tab;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 
 import java.util.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Shows complex debug information about current pipeline execution. Shows
@@ -45,8 +50,27 @@ public class DebuggingView extends CustomComponent {
 	private boolean isFromCanvas;
 	private Embedded iconStatus;
 	private CheckBox refreshAutomatically = null;
+	private boolean isInitialized = false;
 	
 	private DPUFacade dpuFacade = App.getDPUs();
+	
+	public DebuggingView() {
+		logMessagesTable = App.getApp().getBean(LogMessagesTable.class);
+	}
+	
+	public final void initialize(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug, boolean isFromCanvas) {
+		this.pipelineExec = pipelineExec;
+		this.debugDpu = debugDpu;
+		this.isInDebugMode = debug;
+		this.isFromCanvas = isFromCanvas;
+		buildMainLayout();
+		setCompositionRoot(mainLayout);
+		isInitialized = true;
+	}
+	
+	public boolean isInitialized() {
+		return isInitialized;
+	}
 
 	/**
 	 * Default constructor.
@@ -55,14 +79,9 @@ public class DebuggingView extends CustomComponent {
 	 * @param debugDpu Preselected DPU or null.
 	 * @param debug Is execution in debug mode?
 	 */
-	public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug, boolean isFromCanvas) {
-		this.pipelineExec = pipelineExec;
-		this.debugDpu = debugDpu;
-		this.isInDebugMode = debug;
-		this.isFromCanvas = isFromCanvas;
-		buildMainLayout();
-		setCompositionRoot(mainLayout);
-	}
+//	public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug, boolean isFromCanvas) {
+//		initialize(pipelineExec, debugDpu, debug, isFromCanvas);
+//	}
 
 	/**
 	 * Builds main layout.
@@ -92,7 +111,7 @@ public class DebuggingView extends CustomComponent {
 				if(event.getClass() == OpenLogsEvent.class) {
 					OpenLogsEvent ole = (OpenLogsEvent)event;
 					debugDpu = dpuFacade.getDPUInstance(ole.getDpuId());
-					logMessagesTable.setDpu(pipelineExec, debugDpu);
+					logMessagesTable.setDpu(debugDpu);
 					logMessagesTable.refresh(true, false);
 					tabs.setSelectedTab(logsTab);
 				}
@@ -116,7 +135,7 @@ public class DebuggingView extends CustomComponent {
 
 		VerticalLayout logLayout = new VerticalLayout();
 
-		logMessagesTable = new LogMessagesTable();
+		//logMessagesTable = App.getApp().getBean(LogMessagesTable.class);
 		logLayout.addComponent(logMessagesTable);
 		logLayout.setSizeFull();
 		logsTab = tabs.addTab(logLayout, "Log");
@@ -145,11 +164,8 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh);
-
-		//Content of text log file
-		if(!isRefresh) {
-			logMessagesTable.setDpu(pipelineExec, null);
+		if(isRefresh) {
+			executionRecordsTable.refresh();
 		}
 
 		//Query View
@@ -183,6 +199,7 @@ public class DebuggingView extends CustomComponent {
 	 */
 	public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
 		this.pipelineExec = execution;
+		this.isInDebugMode = execution.isDebugging();
 		this.debugDpu = instance;
 		fillContent(false);
 		if (!isRunFinished()) {
@@ -228,5 +245,10 @@ public class DebuggingView extends CustomComponent {
 	
 	public LogMessagesTable getLogMessagesTable() {
 		return logMessagesTable;
+	}
+
+	public void setDisplay(ExecutionListPresenter.ExecutionDetailData detailDataObject) {
+		logMessagesTable.setDpu(pipelineExec, debugDpu, detailDataObject.getLogContainer());
+		executionRecordsTable.setPipelineExecution(pipelineExec, false, detailDataObject.getMessageContainer());
 	}
 }

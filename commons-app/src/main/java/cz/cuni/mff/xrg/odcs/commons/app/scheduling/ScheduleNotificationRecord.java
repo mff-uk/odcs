@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;

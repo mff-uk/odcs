@@ -73,7 +73,7 @@ class ContextPreparator extends PreExecutorBase {
 		// PREPROCESSING phase that has been interrupted
 		// so some DataUnit can already been created and may contains some
 		// data .. we solve this in contextFacade.merge
-		// which solve this
+		// which take care about this
 		
 		// looks for edges that lead to our node
 		Set<Edge> edges = execution.getPipeline().getGraph().getEdges();

@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.backend.report;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -13,10 +12,9 @@ import org.springframework.context.ApplicationListener;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.NotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import org.springframework.stereotype.Component;
@@ -160,7 +158,7 @@ public class InstantReport implements ApplicationListener<ApplicationEvent> {
 				final String subject = subjectInstant(execution, schedule);
 				final String body = emailBuilder.build(execution, schedule);
 				// create list of recipients
-				ArrayList<String> recipients = new ArrayList<String>();
+				ArrayList<String> recipients = new ArrayList<>();
 				recipients.addAll(emails);
 				emailSender.send(subject, body, recipients);
 			}

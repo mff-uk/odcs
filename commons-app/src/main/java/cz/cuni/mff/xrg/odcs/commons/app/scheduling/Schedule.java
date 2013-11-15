@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "exec_schedule")
-public class Schedule implements Serializable {
+public class Schedule implements Serializable, OwnedEntity {
 
 	/**
 	 * Unique ID for each plan.
@@ -279,7 +280,6 @@ public class Schedule implements Serializable {
 	public void setStrictToleranceMinutes(Integer strictToleranceMinutes) {
 		this.strictToleranceMinutes = strictToleranceMinutes;
 	}	
-	
 	
 	/**
 	 * Return time of the next execution. It the schedule is not time

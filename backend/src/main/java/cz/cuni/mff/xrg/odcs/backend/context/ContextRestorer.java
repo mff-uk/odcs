@@ -1,8 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 
@@ -14,10 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
  *
  */
 class ContextRestorer {
-	
-	@Autowired
-	private DataUnitFactory dataUnitFactory;
-	
+		
 	/**
 	 * Restore data of given context. If there is some data already 
 	 * loaded then does not load them again otherwise nothing happen.

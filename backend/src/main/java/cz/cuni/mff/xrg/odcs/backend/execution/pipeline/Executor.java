@@ -25,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
@@ -292,9 +293,9 @@ public class Executor implements Runnable {
 	 * @return
 	 */
 	private DependencyGraph prepareDependencyGraph() {
-		DependencyGraph dependencyGraph = null;
 		final Pipeline pipeline = execution.getPipeline();
 		// if in debug mode then pass the final DPU
+		DependencyGraph dependencyGraph;
 		if (execution.isDebugging() && execution.getDebugNode() != null) {
 			dependencyGraph = new DependencyGraph(pipeline.getGraph(),
 					execution.getDebugNode());
@@ -353,7 +354,7 @@ public class Executor implements Runnable {
 			while (executorThread.isAlive()) {
 				try {
 					// sleep for two seconds
-					Thread.sleep(2000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					// request stop
 					stopExecution = true;
@@ -431,9 +432,8 @@ public class Executor implements Runnable {
 		}
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
 
-		LOG.info("Starting execution of pipeline {} = {}", executionId,
-				execution.getPipeline().getName());
-
+		eventPublisher.publishEvent(PipelineInfo.createStart(execution, this));
+		
 		// execute the pipeline it self
 		execute();
 

@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
@@ -19,13 +18,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
-import cz.cuni.mff.xrg.odcs.frontend.container.IntlibLazyQueryContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -33,9 +30,8 @@ import org.vaadin.addons.lazyquerycontainer.CompositeItem;
  * @author Bogo
  */
 public class RecordsTable extends CustomComponent {
-	
-	private static final int PAGE_LENGTH = 20;
 
+	private static final int PAGE_LENGTH = 20;
 	private boolean isInitialized = false;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
@@ -46,23 +42,14 @@ public class RecordsTable extends CustomComponent {
 	 */
 	public RecordsTable() {
 		mainLayout = new VerticalLayout();
-		messageTable = new IntlibPagedTable() {
-			@Override
-			public Collection<?> getSortableContainerPropertyIds() {
-				ArrayList<String> sortableIds = new ArrayList<>(3);
-				sortableIds.add("time");
-				sortableIds.add("type");
-				sortableIds.add("dpuInstance.name");
-				return sortableIds;
-			}
-		};
+		messageTable = new IntlibPagedTable();
 		messageTable.setSelectable(true);
 		messageTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!messageTable.isSelected(event.getItemId())) {
-					CompositeItem item = (CompositeItem) event.getItem();
+					ValueItem item = (ValueItem) event.getItem();
 					long recordId = (long) item.getItemProperty("id")
 							.getValue();
 					MessageRecord record = App.getDPUs().getDPURecord(recordId);
@@ -74,7 +61,7 @@ public class RecordsTable extends CustomComponent {
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
 		messageTable.setPageLength(PAGE_LENGTH);
-		loadMessageTable();
+		//loadMessageTable();
 		setCompositionRoot(mainLayout);
 	}
 
@@ -83,12 +70,19 @@ public class RecordsTable extends CustomComponent {
 	 *
 	 * @param data List of {@link MessageRecord}s to show in table.
 	 */
-	public void setPipelineExecution(PipelineExecution execution, boolean isRefresh) {
-		IntlibLazyQueryContainer c = (IntlibLazyQueryContainer) messageTable.getContainerDataSource().getContainer();
-		if(!isRefresh) {
-			c.removeDefaultFilters();
-			c.addDefaultFilter(new Compare.Equal("execution.id", execution.getId()));
+	public void setPipelineExecution(PipelineExecution execution, boolean isRefresh, ReadOnlyContainer container) {
+		loadMessageTable(container);
+		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
+		if (!isRefresh) {
+			c.removeAllContainerFilters();
+			c.addContainerFilter(new Compare.Equal("execution.id", execution.getId()));
 		}
+		c.refresh();
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+	}
+
+	public void refresh() {
+		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
 		c.refresh();
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
@@ -97,8 +91,7 @@ public class RecordsTable extends CustomComponent {
 	 * Loads data to the table.
 	 *
 	 */
-	private void loadMessageTable() {
-		Container container = App.getApp().getBean(ContainerFactory.class).createExecutionMessages(PAGE_LENGTH);
+	private void loadMessageTable(ReadOnlyContainer container) {
 		messageTable.setSortEnabled(true);
 		messageTable.setContainerDataSource(container);
 		if (!isInitialized) {
@@ -134,17 +127,15 @@ public class RecordsTable extends CustomComponent {
 				}
 			});
 			messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
-
 				@Override
 				public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-					final Long dpuId = (Long)source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
-					if(dpuId == null) {
+					final Long dpuId = (Long) source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
+					if (dpuId == null) {
 						return null;
 					}
 					Button logsLink = new Button("Logs");
 					logsLink.setStyleName(BaseTheme.BUTTON_LINK);
 					logsLink.addClickListener(new Button.ClickListener() {
-
 						@Override
 						public void buttonClick(Button.ClickEvent event) {
 							fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
@@ -157,12 +148,9 @@ public class RecordsTable extends CustomComponent {
 			// set columns
 			isInitialized = true;
 		}
-		messageTable.setVisibleColumns("time", "type", "dpuInstance.name", "shortMessage", "");
-		messageTable.setColumnHeaders("Date", "Type", "DPU Instance", "Short message", "");
-		messageTable.setFilterFieldVisible("", false);
 		messageTable.setFilterBarVisible(true);
 	}
-	
+
 	/**
 	 * Inform listeners, that the detail is closing.
 	 */

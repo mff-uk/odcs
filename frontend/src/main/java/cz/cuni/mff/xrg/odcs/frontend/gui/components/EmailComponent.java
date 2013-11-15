@@ -15,10 +15,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.UserNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 
@@ -251,8 +251,7 @@ public class EmailComponent {
 
 
 		} else {
-			User user = App.getApp().getUsers().getUser(1L);
-			getUserEmailNotification(user);
+			getUserEmailNotification(schedule.getOwner());
 		}
 
 	}

@@ -21,7 +21,7 @@ public final class PipelineRestart extends PipelineEvent {
     public PipelineRestart(PipelineExecution pipelineExec, Object source) {
         super(null, pipelineExec, source);
         
-        LOG.info("Pipeline execution has been restarted");
+        LOG.info("Pipeline execution has been restarted.");
     }
 
 	@Override

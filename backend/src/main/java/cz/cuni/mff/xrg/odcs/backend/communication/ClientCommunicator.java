@@ -20,19 +20,20 @@ class ClientCommunicator implements Runnable {
     /**
      * Communication socket.
      */
-    private Socket socket;
+    private final Socket socket;
     
     /**
      * Event publisher used to publicise events.
      */        
-    private ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
     
     /**
      * The creator. Used in events as a source.
      */
-    private Server server;
+    private final Server server;
 
-    public ClientCommunicator(Socket socket, ApplicationEventPublisher eventPublisher, Server server) {
+    public ClientCommunicator(Socket socket, 
+			ApplicationEventPublisher eventPublisher, Server server) {
         this.socket = socket;
         this.eventPublisher = eventPublisher;
         this.server = server;

@@ -130,7 +130,7 @@ public class Engine implements ApplicationListener<CheckDatabaseEvent> {
 	 * 
 	 * Also setup engine according to it's configuration.
 	 */
-	protected void startUp() {
+	protected synchronized void startUp() {
 		if (startUpDone) {
 			LOG.warn("Ignoring second startUp call");
 			return;

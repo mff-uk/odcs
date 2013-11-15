@@ -19,7 +19,7 @@ public class InMemoryEventListener implements ApplicationListener<ApplicationEve
 	/**
 	 * Store application events.
 	 */
-	private List<ApplicationEvent> eventList = new LinkedList<ApplicationEvent>();
+	private final List<ApplicationEvent> eventList = new LinkedList<>();
 	
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
