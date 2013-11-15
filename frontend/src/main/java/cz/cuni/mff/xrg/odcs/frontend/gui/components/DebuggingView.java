@@ -8,11 +8,16 @@ import com.vaadin.ui.TabSheet.Tab;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 
@@ -159,11 +164,11 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		//executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh);
+		//executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh, new ReadOnlyContainer(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()));
 
 		//Content of text log file
 		if(!isRefresh) {
-//			logMessagesTable.setDpu(pipelineExec, null);
+			//logMessagesTable.setDpu(pipelineExec, debugDpu, new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor()));
 		}
 
 		//Query View

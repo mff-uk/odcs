@@ -7,11 +7,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -37,12 +39,15 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private ExecutionListView view;
 	private ExecutionListData dataObject;
+	
+	private Date lastLoad = new Date(0L);
 
 	@Override
 	public Object enter(Object configuration) {
 		// prepare data object
-		dataObject = new ExecutionListData(new ReadOnlyContainer<>(dbExecution,
-				new ExecutionAccessor()));
+		ReadOnlyContainer c = new ReadOnlyContainer<>(dbExecution, new ExecutionAccessor());
+		c.sort(new Object[] {"id"} , new boolean[] {false});
+		dataObject = new ExecutionListData(c);
 		// prepare view
 		Object viewObject = view.enter(this);
 		// set data object
@@ -52,7 +57,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 			String strExecId = (String) configuration;
 			try {
 				Long execId = Long.parseLong(strExecId);
-				//view.setSelectedRow(execId);
+				view.setSelectedRow(execId);
 				showDebugEventHandler(execId);
 			} catch (NumberFormatException e) {
 				//LOG.warn("Invalid parameter for execution monitor.", e);
@@ -66,8 +71,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Override
 	public void refreshEventHandler() {
 		// TODO check for database change
-		dataObject.getContainer().refresh();
-		view.refresh();
+		boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+		if(hasModifiedExecutions) {
+			lastLoad = new Date();
+			dataObject.getContainer().refresh();
+		}
+		view.refresh(hasModifiedExecutions);
 	}
 
 	@Override
@@ -88,14 +97,20 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	@Override
 	public void runEventHandler(long executionId) {
-		pipelineFacade.run(getLightExecution(executionId).getPipeline(), false);
+		IntlibHelper.runPipeline(getLightExecution(executionId).getPipeline(), false);
+		//pipelineFacade.run(getLightExecution(executionId).getPipeline(), false);
 		refreshEventHandler();
 	}
 
 	@Override
 	public void debugEventHandler(long executionId) {
-		pipelineFacade.run(getLightExecution(executionId).getPipeline(), true);
-		refreshEventHandler();
+		PipelineExecution exec = IntlibHelper.runPipeline(getLightExecution(executionId).getPipeline(), true);
+		//pipelineFacade.run(getLightExecution(executionId).getPipeline(), true);
+		if(exec != null) {
+			refreshEventHandler();
+			view.setSelectedRow(exec.getId());
+			view.showExecutionDetail(exec, new ExecutionDetailData(getLogDataSource(), getMessageDataSource()));
+		}
 	}
 
 	/**

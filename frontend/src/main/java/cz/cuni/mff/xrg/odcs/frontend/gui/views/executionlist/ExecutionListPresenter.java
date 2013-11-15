@@ -81,7 +81,7 @@ public interface ExecutionListPresenter extends Presenter {
 		 */
 		public void showExecutionDetail(PipelineExecution execution, ExecutionDetailData detailDataObject);
 		
-		public void refresh();
+		public void refresh(boolean modified);
 
 		public void setSelectedRow(Long execId);
 	}

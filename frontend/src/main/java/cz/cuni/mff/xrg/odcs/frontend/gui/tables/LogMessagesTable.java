@@ -18,6 +18,7 @@ import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -28,6 +29,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource
 import cz.cuni.mff.xrg.odcs.frontend.container.InFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.PropertiesFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.InputStream;
 import java.util.Date;
@@ -82,48 +84,9 @@ public class LogMessagesTable extends CustomComponent {
 	@PostConstruct
 	private void initialize() {
 		mainLayout = new VerticalLayout();
-
-		messageTable = new IntlibPagedTable();
-		messageTable.setSelectable(true);
-		messageTable.setSizeFull();
-		messageTable.setPageLength(PAGE_LENGTH);
-		messageTable.addItemClickListener(
-				new ItemClickEvent.ItemClickListener() {
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				//if (event.isDoubleClick()) {
-				if (!messageTable.isSelected(event.getItemId())) {
-					CompositeItem item = (CompositeItem) event.getItem();
-					long logId = (long) item.getItemProperty("id")
-							.getValue();
-					LogMessage log = logFacade.getLog(logId);
-					showLogMessageDetail(log);
-				}
-			}
-		});
 		dpuNames = new HashMap<>();
-		messageTable.addGeneratedColumn("dpuInstanceId", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Long dpuId = (Long) source.getItem(itemId).getItemProperty(columnId).getValue();
-				if (dpuId == null) {
-					return null;
-				}
-
-				return dpuNames.get(dpuId);
-			}
-		});
-		ComboBox levelSelector = new ComboBox();
-		levelSelector.setImmediate(true);
-		levelSelector.setNullSelectionAllowed(false);
-		levelSelector.addItem(Level.ALL);
-		for (Level level : logFacade.getAllLevels(false)) {
-			levelSelector.addItem(level);
-			levelSelector.setItemCaption(level, level.toString() + "+");
-		}
-		ComboBox dpuSelector = new ComboBox();
-		dpuSelector.setImmediate(true);
-		filterGenerator = createFilterGenerator(dpuSelector, levelSelector);
+		
+		messageTable = getInitializedTable();
 		mtControls = messageTable.createControls();
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(mtControls);
@@ -182,7 +145,7 @@ public class LogMessagesTable extends CustomComponent {
 			dpuNames.put(nodeDpu.getId(), nodeDpu.getName());
 		}
 
-		loadMessageTable(exec.getId(), container);
+		messageTable = loadMessageTable(messageTable, exec.getId(), container);
 
 		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
 		c.removeAllContainerFilters();
@@ -203,44 +166,44 @@ public class LogMessagesTable extends CustomComponent {
 
 	public boolean refresh(boolean immediate, boolean getNewData) {
 		pipelineExecution = App.getPipelines().getExecution(pipelineExecution.getId());
-		//if (immediate) {
-		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
-		c.refresh();
-		return true;
-		/*} else {
+		if (immediate) {
+			ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
+			c.refresh();
+			return true;
+		} else {
 
-		 DPUInstanceRecord selectedDpu = (DPUInstanceRecord) messageTable.getFilterFieldValue("dpuInstanceId");
-		 Level level = (Level) messageTable.getFilterFieldValue("level");
-		 String message = (String) messageTable.getFilterFieldValue("message");
-		 String source = (String) messageTable.getFilterFieldValue("source");
-		 Object date = messageTable.getFilterFieldValue("date");
+			DPUInstanceRecord selectedDpu = (DPUInstanceRecord) messageTable.getFilterFieldValue("dpuInstanceId");
+			Level level = (Level) messageTable.getFilterFieldValue("level");
+			String message = (String) messageTable.getFilterFieldValue("message");
+			String source = (String) messageTable.getFilterFieldValue("source");
+			Object date = null; //messageTable.getFilterFieldValue("date");
 
-		 boolean result = false;
+			boolean result = false;
 
-		 if (preparedRefreshedTable != null) {
-		 if (filterValuesStayedSame(selectedDpu, level, message, source, date)) {
-		 refreshDpuSelector((ComboBox) preparedRefreshedTable.getFilterField("dpuInstanceId"));
-		 LOG.debug("Data refresh updated to client.");
-		 mainLayout.removeComponent(messageTable);
-		 mainLayout.removeComponent(mtControls);
-		 messageTable = preparedRefreshedTable;
-		 mtControls = messageTable.createControls();
-		 mainLayout.addComponent(messageTable, 0);
-		 mainLayout.addComponent(mtControls, 1);
-		 result = true;
-		 } else {
-		 getNewData = true;
-		 }
-		 preparedRefreshedTable = null;
-		 }
+			if (preparedRefreshedTable != null) {
+				if (filterValuesStayedSame(selectedDpu, level, message, source, date)) {
+					refreshDpuSelector((ComboBox) preparedRefreshedTable.getFilterField("dpuInstanceId"));
+					LOG.debug("Data refresh updated to client.");
+					mainLayout.removeComponent(messageTable);
+					mainLayout.removeComponent(mtControls);
+					messageTable = preparedRefreshedTable;
+					mtControls = messageTable.createControls();
+					mainLayout.addComponent(messageTable, 0);
+					mainLayout.addComponent(mtControls, 1);
+					result = true;
+				} else {
+					getNewData = true;
+				}
+				preparedRefreshedTable = null;
+			}
 
-		 if (getNewData && preparedRefreshedTable == null && (fetchData == null || !fetchData.isAlive())) {
-		 LOG.debug("Data refresh requested.");
-		 Authentication authentication = App.getApp().getAuthCtx().getAuthentication();
-		 startFetchThread(pipelineExecution, selectedDpu, level, message, source, date, authentication);
-		 }
-		 return result && !getNewData;
-		 }*/
+			if (getNewData && preparedRefreshedTable == null && (fetchData == null || !fetchData.isAlive())) {
+				LOG.debug("Data refresh requested.");
+				Authentication authentication = App.getApp().getAuthCtx().getAuthentication();
+				startFetchThread(pipelineExecution, selectedDpu, level, message, source, date, authentication);
+			}
+			return result && !getNewData;
+		}
 	}
 
 	public List<LogMessage> getData(PipelineExecution exec, DPUInstanceRecord dpu, Level level) {
@@ -258,17 +221,28 @@ public class LogMessagesTable extends CustomComponent {
 	 *
 	 * @param data List of {@link LogMessages} to show in table.
 	 */
-	private IntlibPagedTable loadMessageTable(Long executionId, ReadOnlyContainer container) {
+	private IntlibPagedTable loadMessageTable(IntlibPagedTable table, Long executionId, ReadOnlyContainer container) {
+		ComboBox levelSelector = new ComboBox();
+		levelSelector.setImmediate(true);
+		levelSelector.setNullSelectionAllowed(false);
+		levelSelector.addItem(Level.ALL);
+		for (Level level : logFacade.getAllLevels(false)) {
+			levelSelector.addItem(level);
+			levelSelector.setItemCaption(level, level.toString() + "+");
+		}
+		ComboBox dpuSelector = new ComboBox();
+		dpuSelector.setImmediate(true);
+		filterGenerator = createFilterGenerator(dpuSelector, levelSelector);
 		if (executionId != null) {
 			container.addContainerFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId));
 			//container.addDefaultFilter(new PropertiesFilter(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId));
 		}
-		messageTable.setFilterGenerator(filterGenerator);
-		messageTable.setContainerDataSource(container);
-		messageTable.setSortEnabled(false);
-		messageTable.setFilterBarVisible(true);
+		table.setFilterGenerator(filterGenerator);
+		table.setContainerDataSource(container);
+		table.setSortEnabled(false);
+		table.setFilterBarVisible(true);
 
-		return messageTable;
+		return table;
 	}
 
 	/*
@@ -380,7 +354,9 @@ public class LogMessagesTable extends CustomComponent {
 			@Override
 			public void run() {
 				App.getApp().getAuthCtx().setAuthentication(authentication);
-				final IntlibPagedTable fetchTable = messageTable;// loadMessageTable(exec.getId());
+				ReadOnlyContainer container = new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor());
+				IntlibPagedTable table = getInitializedTable();
+				final IntlibPagedTable fetchTable = loadMessageTable(table, exec.getId(), container);
 				setTableFilters(fetchTable, dpu, level, message, source, date);
 				fetchTable.setCurrentPage(fetchTable.getTotalAmountOfPages());
 
@@ -423,6 +399,40 @@ public class LogMessagesTable extends CustomComponent {
 		}
 
 		return isSame;
+	}
+
+	private IntlibPagedTable getInitializedTable() {
+		final IntlibPagedTable table = new IntlibPagedTable();
+		table.setSelectable(true);
+		table.setSizeFull();
+		table.setPageLength(PAGE_LENGTH);
+		table.addItemClickListener(
+				new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				//if (event.isDoubleClick()) {
+				if (!table.isSelected(event.getItemId())) {
+					CompositeItem item = (CompositeItem) event.getItem();
+					long logId = (long) item.getItemProperty("id")
+							.getValue();
+					LogMessage log = logFacade.getLog(logId);
+					showLogMessageDetail(log);
+				}
+			}
+		});
+
+		table.addGeneratedColumn("dpuInstanceId", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+				Long dpuId = (Long) source.getItem(itemId).getItemProperty(columnId).getValue();
+				if (dpuId == null) {
+					return null;
+				}
+
+				return dpuNames.get(dpuId);
+			}
+		});
+		return table;
 	}
 
 	private boolean nullableEquals(Object obj1, Object obj2) {

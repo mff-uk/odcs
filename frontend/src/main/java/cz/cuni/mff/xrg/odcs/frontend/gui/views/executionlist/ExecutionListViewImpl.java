@@ -67,7 +67,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	private VerticalLayout logLayout;
 	private Panel mainLayout;
 	private DebuggingView debugView;
-	
 	private HashMap<Date, Label> runTimeLabels = new HashMap<>();
 
 	@Override
@@ -105,10 +104,13 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			hsplit.setLocked(false);
 		}
 	}
-	
+
 	@Override
-	public void refresh() {
-	for (Map.Entry<Date, Label> entry : runTimeLabels.entrySet()) {
+	public void refresh(boolean modified) {
+		if (modified) {
+			runTimeLabels.clear();
+		}
+		for (Map.Entry<Date, Label> entry : runTimeLabels.entrySet()) {
 			long duration = (new Date()).getTime() - entry.getKey().getTime();
 			entry.getValue().setValue(IntlibHelper.formatDuration(duration));
 		}
@@ -176,8 +178,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		App.getApp().getRefreshManager().addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
 			@Override
 			public void refresh(Refresher source) {
-//                presenter.refreshEventHandler();
-//				LOG.debug("ExecutionMonitor refreshed.");
+                presenter.refreshEventHandler();
+				LOG.debug("ExecutionMonitor refreshed.");
 			}
 		});
 
@@ -336,7 +338,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			debugView.setExecution(execution, null);
 		}
 	}
-	
+
 	private FilterGenerator createFilterGenerator() {
 		return new FilterGenerator() {
 			@Override
@@ -391,7 +393,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	}
 
 	private IntlibPagedTable initializeExecutionTable(final ExecutionListPresenter presenter) {
-		
+
 		IntlibPagedTable executionTable = new IntlibPagedTable();
 		executionTable.setSelectable(true);
 		executionTable.setWidth("100%");
@@ -419,7 +421,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				presenter.showDebugEventHandler(executionId);
 			}
 		});
-		
+
 		//Status column. Contains status icons.
 		executionTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override
@@ -464,7 +466,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				PipelineExecutionStatus status = (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue();
 				if (duration == -1 && (status == RUNNING || status == PipelineExecutionStatus.CANCELLING)) {
 					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
-					if(start != null) {
+					if (start != null) {
 						duration = (new Date()).getTime() - start.getTime();
 						Label durationLabel = new Label(IntlibHelper.formatDuration(duration));
 						durationLabel.setImmediate(true);
@@ -483,10 +485,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				return emb;
 			}
 		});
-		
+
 		// add generated columns to the executionTable
 		executionTable.addGeneratedColumn("actions", createColumnGenerator(presenter));
-		
+
 		return executionTable;
 	}
 
