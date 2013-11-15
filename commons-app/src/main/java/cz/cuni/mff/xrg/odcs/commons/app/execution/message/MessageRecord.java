@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Date;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -19,7 +20,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "exec_record")
-public class MessageRecord implements Serializable {
+public class MessageRecord implements Serializable, DataObject {
 
 	/**
 	 * Unique id.

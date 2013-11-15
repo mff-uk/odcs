@@ -20,6 +20,8 @@ import com.vaadin.ui.TabSheet.Tab;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
@@ -39,6 +41,10 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedE
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -598,7 +604,9 @@ public class PipelineEdit extends ViewComponent {
 			return;
 		}
 		final DPUInstanceRecord instance = debugNode.getDpuInstance();
-		final DebuggingView debug = new DebuggingView(pExec, instance, true, true);
+		final DebuggingView debug = new DebuggingView();
+		debug.initialize(pExec, instance, true, true);
+		debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor()), new ReadOnlyContainer(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor())));
 		
 		final Window debugWindow = new Window("Debug window");
 		HorizontalLayout buttonLine = new HorizontalLayout();
@@ -635,8 +643,8 @@ public class PipelineEdit extends ViewComponent {
 		debugWindow.setContent(layout);
 		
 		debugWindow.setImmediate(true);
-		debugWindow.setWidth("600px");
-		debugWindow.setHeight("785px");
+		debugWindow.setWidth("700px");
+		debugWindow.setHeight("835px");
 		debugWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {

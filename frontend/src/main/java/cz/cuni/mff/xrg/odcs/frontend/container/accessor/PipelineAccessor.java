@@ -11,10 +11,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import java.text.DateFormat;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PipelineAccessor implements ClassAccessor<Pipeline> {
@@ -28,7 +27,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	 * Cache for last pipeline execution, so we do not load from DB every time
 	 * table cell with duration, start, ..., is needed.
 	 */
-	private Map<Pipeline, PipelineExecution> execCache = new HashMap<>();
+	private DataTimeCache<PipelineExecution> execCache = new DataTimeCache<>();
 
 	@Override
 	public List<String> all() {
@@ -112,7 +111,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	 * Clears the pipeline cache.
 	 */
 	private void clearExecCache() {
-		execCache.clear();
+		execCache.invalidate();
 	}
 
 	/**
@@ -123,9 +122,9 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	 * @return last execution for given pipeline
 	 */
 	private PipelineExecution getLastExecution(Pipeline ppl) {
-		PipelineExecution exec = execCache.get(ppl);
+		PipelineExecution exec = execCache.get(ppl.getId());
 		if (exec == null) {
-			execCache.put(ppl, pipelineFacade.getLastExec(ppl));
+			execCache.set(ppl.getId(), pipelineFacade.getLastExec(ppl));
 		}
 		return exec;
 	}
