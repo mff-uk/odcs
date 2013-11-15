@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
@@ -96,7 +97,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public void runEventHandler(long id, boolean inDebugMode) {
 		PipelineExecution exec = IntlibHelper.runPipeline(getLightPipeline(id), inDebugMode);
 		if (inDebugMode && exec != null) {
-			navigator.navigateTo(ExecutionMonitor.class, exec.getId().toString());
+			navigator.navigateTo(ExecutionListPresenterImpl.class, exec.getId().toString());
 		}
 	}
 

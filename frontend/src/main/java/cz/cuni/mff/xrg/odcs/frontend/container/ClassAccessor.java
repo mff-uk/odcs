@@ -34,6 +34,12 @@ public interface ClassAccessor<T extends DataObject> {
 	public List<String> filtrable();
 	
 	/**
+	 * Return subset of {@link all()}. This subset will be visible.
+	 * @return 
+	 */
+	public List<String> visible();
+	
+	/**
 	 * Return entity class.
 	 * @return
 	 */

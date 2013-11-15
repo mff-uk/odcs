@@ -14,6 +14,7 @@ import com.vaadin.ui.themes.Reindeer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.tepi.filtertable.paged.PagedFilterTable;
@@ -198,31 +199,46 @@ public class IntlibPagedTable extends PagedFilterTable {
 	@Override
 	public void setContainerDataSource(Container newDataSource) {
 		super.setContainerDataSource(newDataSource);
-		if(newDataSource.getClass() == ReadOnlyContainer.class) {
-			ReadOnlyContainer container = (ReadOnlyContainer)newDataSource;
-			for(Object id : newDataSource.getContainerPropertyIds()) {
-				setColumnHeader(id, container.getColumnName((String)id));
+		if (newDataSource.getClass() == ReadOnlyContainer.class) {
+			ReadOnlyContainer container = (ReadOnlyContainer) newDataSource;
+			for (Object id : newDataSource.getContainerPropertyIds()) {
+				setColumnHeader(id, container.getColumnName((String) id));
 			}
+			setVisibleColumns();
 		}
 	}
-	
-	
-	
 
+	public void setVisibleColumns() {
+		PagedFilterTableContainer pagedContainer = getContainerDataSource();
+		if (pagedContainer != null) {
+			Container c = pagedContainer.getContainer();
+			if (c != null && c.getClass() == ReadOnlyContainer.class) {
+				LinkedList<String> visible = new LinkedList<>(((ReadOnlyContainer) c).getVisibles());
+				for(Object o : getVisibleColumns()) {
+					if(o.equals("")) {
+						visible.add("");
+						break;
+					}
+				}
+				this.setVisibleColumns(visible.toArray());
+			}
+		}
+		
+	}
 
 	public void setFilterLayout() {
-		 PagedFilterTableContainer pagedContainer = getContainerDataSource();
-		 if(pagedContainer != null) {
-			 Container c = pagedContainer.getContainer();
-			 if(c != null && c.getClass() == ReadOnlyContainer.class) {
-				 ReadOnlyContainer container = (ReadOnlyContainer)c;
-				 List<String> filterables = container.getFilterables();
-				 for(Object columnId : getVisibleColumns()) {
-					 setFilterFieldVisible(columnId, filterables.contains((String)columnId));
-				 }
-			 }
-		 }
-		
+		PagedFilterTableContainer pagedContainer = getContainerDataSource();
+		if (pagedContainer != null) {
+			Container c = pagedContainer.getContainer();
+			if (c != null && c.getClass() == ReadOnlyContainer.class) {
+				ReadOnlyContainer container = (ReadOnlyContainer) c;
+				List<String> filterables = container.getFilterables();
+				for (Object columnId : getVisibleColumns()) {
+					setFilterFieldVisible(columnId, filterables.contains((String) columnId));
+				}
+			}
+		}
+
 		for (Object id : getVisibleColumns()) {
 			Component filterField = getFilterField(id);
 			if (filterField != null) {

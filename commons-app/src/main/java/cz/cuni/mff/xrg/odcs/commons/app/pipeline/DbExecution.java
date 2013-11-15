@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAcess;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 
 /**
  * Interface for access to {@link PipelineExecution}s. 
@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAcess;
  *
  * @author Petyr
  */
-public interface DbExecution extends DbAcess<PipelineExecution> {
+public interface DbExecution extends DbAccess<PipelineExecution> {
 	
 	public PipelineExecution create(Pipeline pipeline);
 	
