@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 import static org.junit.Assert.*;
@@ -40,7 +39,7 @@ public class ExecutionContextInfoTest {
 		
 		String expected = File.separator + "1" + File.separator +
 				"working" + File.separator + 
-				"dpu_11_Q_CK" + File.separator +
+				"dpu_11" + File.separator +
 				"tmp";
 		String value = info.getDPUTmpPath(dpu);
 		

@@ -203,7 +203,7 @@ public class Executor implements Runnable {
 
 		boolean success = true;
 		for (PostExecutor item : postExecutors) {
-			if (item.postAction(execution, contexts, graph)) {
+			if (!item.postAction(execution, contexts, graph)) {
 				LOG.error("PostProcessor: {} failed", item.getClass().getName());
 				success = false;
 			}
