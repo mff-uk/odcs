@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
-
 /**
  * Describe states for DPU execution. 
  * 

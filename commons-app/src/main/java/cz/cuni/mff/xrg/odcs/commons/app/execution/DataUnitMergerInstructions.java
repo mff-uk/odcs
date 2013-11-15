@@ -18,7 +18,7 @@ public enum DataUnitMergerInstructions {
 	/**
 	 * The command name.
 	 */
-	private String command;
+	private final String command;
 	
 	private DataUnitMergerInstructions(String command) {
 		this.command = command;
