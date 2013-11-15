@@ -170,94 +170,6 @@ public class Context implements DPUContext {
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 	
 	/**
-	 * Bind the context to the {@link PipelineExecution} and {@link DPUInstanceRecord}.
-	 * Must be called before future using of the {@link Context} class.
-	 * @param dpuInstance
-	 * @param contextInfo
-	 * @param lastSuccExec
-	 * @deprecated use direct setters instead
-	 */
-	@Deprecated
-	public void bind(DPUInstanceRecord dpuInstance, 
-			ExecutionContextInfo contextInfo, Date lastSuccExec) {
-		this.dpuInstance = dpuInstance;
-		this.contextInfo = contextInfo;
-		this.lastSuccExec = lastSuccExec;
-		// create DataUnit manager
-		this.inputsManager = DataUnitManager.createInputManager(dpuInstance,
-				dataUnitFactory, contextInfo, getGeneralWorkingDir(), appConfig);
-		// create DataUnit manager
-		this.outputsManager = DataUnitManager.createOutputManager(dpuInstance,
-				dataUnitFactory, contextInfo, getGeneralWorkingDir(), appConfig);		
-	}
-	
-	/**
-	 * Save all data units.
-	 */
-	@Deprecated
-	public void sealInputs() {
-		for (ManagableDataUnit item : inputsManager.getDataUnits()) {
-			item.madeReadOnly();
-		}
-	}
-	
-	/**
-	 * Save all data units.
-	 */
-	@Deprecated
-	public void save() {
-		inputsManager.save();
-		outputsManager.save();
-	}
-	
-	/**
-	 * Release all locks from context and DataUnits do not delete data.
-	 */
-	@Deprecated
-	public void release() {
-		inputsManager.release();
-		outputsManager.release();		
-	}
-
-	/**
-	 * Release all lock from context and DataUnits. Also delete all stored
-	 * {@link DataUnit}s and related context's directories.
-	 */
-	@Deprecated
-	public void delete() {
-		inputsManager.delete();
-		outputsManager.delete();
-		deleteDirectories();		
-	}
-
-	/**
-	 * Reload DataUnit's if they are not loaded.
-	 * 
-	 * @throws DataUnitCreateException
-	 */
-	@Deprecated
-	public void reload() throws DataUnitException {
-		inputsManager.reload();
-		outputsManager.reload();		
-	}
-
-	/**
-	 * Add data from given context.
-	 * @param context
-	 * @param instruction
-	 * @throws ContextException
-	 */
-	@Deprecated
-	public void addContext(Context context, String instruction)
-			throws ContextException {
-		// create merger class
-		DataUnitMerger merger = new DataUnitMerger();
-		// merge dataUnits
-		merger.merger(inputsManager, 
-				context.outputsManager.getDataUnits(), instruction);
-	}
-	
-	/**
 	 * Create required {@link ManagableDataUnit} and add it to the context.
 	 * @param type Type of {@link ManagableDataUnit} to create.
 	 * @param name DataUnit name.
@@ -284,16 +196,6 @@ public class Context implements DPUContext {
 	 */
 	public PipelineExecution getExecution() {
 		return contextInfo.getExecution();
-	}
-	
-	/**
-	 * Return respective {@link DPUInstanceRecord}
-	 * @return
-	 * @deprecated use {@link #getDPU()} instead
-	 */
-	@Deprecated
-	public DPUInstanceRecord getDpuInstance() {
-		return dpuInstance;
 	}
 	
 	/**
@@ -346,46 +248,7 @@ public class Context implements DPUContext {
 	private String getTemplateIdentification() {
 		return dpuInstance.getTemplate().getJarDirectory();
 	}	
-	
-	/**
-	 * Delete directory if exist. If error occur is logged and silently ignored.
-	 * 
-	 * @param directory
-	 */
-	@Deprecated
-	private void deleteDirectory(File directory) {
-		if (directory.exists()) {
-			try {
-				FileUtils.deleteDirectory(directory);
-			} catch (IOException e) {
-				LOG.error("Can't delete directory {}", directory.toString(), e);
-			}
-		}
-	}
-	
-	/**
-	 * Delete all DPU context's directories.
-	 */
-	@Deprecated
-	private void deleteDirectories() {
-		// DPU' tmp directory
-		final File workingDir = getWorkingDir();
-		deleteDirectory(workingDir);
 
-		// DataUnit storage directory
-		final File dpuStoragePath = new File(getGeneralWorkingDir(),
-				contextInfo.getDataUnitRootStoragePath(dpuInstance));
-		deleteDirectory(dpuStoragePath);
-
-		// DataUnit tmp directory
-		final File dpuTmpPath = new File(getGeneralWorkingDir(),
-				contextInfo.getDataUnitRootTmpPath(dpuInstance));
-		deleteDirectory(dpuTmpPath);
-
-		// Result directory is shared by whole pipeline
-		// and so it's not deleted from here
-	}
-	
 	// - - - - - - - - - - ProcessingContext - - - - - - - - - - //
 	
 	@Override

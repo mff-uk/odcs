@@ -280,6 +280,6 @@ public class DPUEvent extends ApplicationEvent {
 	}
 
 	public DPUInstanceRecord getDpuInstance() {
-		return context.getDpuInstance();
+		return context.getDPU();
 	}
 }
