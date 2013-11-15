@@ -644,7 +644,7 @@ public class PipelineEdit extends ViewComponent {
 		
 		debugWindow.setImmediate(true);
 		debugWindow.setWidth("700px");
-		debugWindow.setHeight("835px");
+		debugWindow.setHeight("850px");
 		debugWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {

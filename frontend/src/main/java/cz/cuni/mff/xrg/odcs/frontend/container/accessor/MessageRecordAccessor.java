@@ -61,11 +61,19 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 			case "type":
 				return object.getType();
 			case "dpuInstance.name":
-				return object.getDpuInstance().getName();
+				if(object.getDpuInstance() != null) {
+					return object.getDpuInstance().getName();
+				} else {
+					return "";
+				}
 			case "shortMessage":
 				return object.getShortMessage();
 			case "dpuInstance.id":
-				return object.getDpuInstance().getId();
+				if(object.getDpuInstance() != null) {
+					return object.getDpuInstance().getId();
+				} else {
+					return null;
+				}
 			default:
 				return null;
 		}

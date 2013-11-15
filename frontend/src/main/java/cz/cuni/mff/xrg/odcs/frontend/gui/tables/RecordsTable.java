@@ -30,9 +30,8 @@ import java.util.Collection;
  * @author Bogo
  */
 public class RecordsTable extends CustomComponent {
-	
-	private static final int PAGE_LENGTH = 20;
 
+	private static final int PAGE_LENGTH = 20;
 	private boolean isInitialized = false;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
@@ -74,10 +73,16 @@ public class RecordsTable extends CustomComponent {
 	public void setPipelineExecution(PipelineExecution execution, boolean isRefresh, ReadOnlyContainer container) {
 		loadMessageTable(container);
 		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
-		if(!isRefresh) {
+		if (!isRefresh) {
 			c.removeAllContainerFilters();
 			c.addContainerFilter(new Compare.Equal("execution.id", execution.getId()));
 		}
+		c.refresh();
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+	}
+
+	public void refresh() {
+		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
 		c.refresh();
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
@@ -122,17 +127,15 @@ public class RecordsTable extends CustomComponent {
 				}
 			});
 			messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
-
 				@Override
 				public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-					final Long dpuId = (Long)source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
-					if(dpuId == null) {
+					final Long dpuId = (Long) source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
+					if (dpuId == null) {
 						return null;
 					}
 					Button logsLink = new Button("Logs");
 					logsLink.setStyleName(BaseTheme.BUTTON_LINK);
 					logsLink.addClickListener(new Button.ClickListener() {
-
 						@Override
 						public void buttonClick(Button.ClickEvent event) {
 							fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
@@ -147,7 +150,7 @@ public class RecordsTable extends CustomComponent {
 		}
 		messageTable.setFilterBarVisible(true);
 	}
-	
+
 	/**
 	 * Inform listeners, that the detail is closing.
 	 */

@@ -164,11 +164,8 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		//executionRecordsTable.setPipelineExecution(pipelineExec, isRefresh, new ReadOnlyContainer(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()));
-
-		//Content of text log file
-		if(!isRefresh) {
-			//logMessagesTable.setDpu(pipelineExec, debugDpu, new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor()));
+		if(isRefresh) {
+			executionRecordsTable.refresh();
 		}
 
 		//Query View
