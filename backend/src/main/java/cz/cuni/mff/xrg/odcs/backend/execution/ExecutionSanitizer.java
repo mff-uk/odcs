@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -25,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * Delete context of given execution that has been interrupted by backend
@@ -46,6 +48,9 @@ class ExecutionSanitizer {
 
 	@Autowired
 	private DataUnitFactory dataUnitFactory;
+	
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
 	
 	/**
 	 * Executions root directory.
@@ -75,7 +80,7 @@ class ExecutionSanitizer {
 			sanitizeRunning(execution);
 			return;
 		default:
-			// nothing happened
+			// do nothing with such pipeline .. 
 			return;
 		}
 	}
@@ -87,7 +92,8 @@ class ExecutionSanitizer {
 	 * @param execution
 	 */
 	private void sanitizeRunning(PipelineExecution execution) {
-		LOG.info("Execution has been re-scheduled after backend shutdown.");
+		eventPublisher.publishEvent(new PipelineRestart(execution, this));
+	
 		// set state back to scheduled
 		execution.setStatus(PipelineExecutionStatus.QUEUED);
 	}
