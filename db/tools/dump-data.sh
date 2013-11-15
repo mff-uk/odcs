@@ -19,6 +19,6 @@ dbdump "${dbhost}:${dbport}" "$dbuser" "$dbpass" tablename=db.odcs.% -c \
 # generate sequence setters
 cat "${dumpdir}/schema.sql" | egrep "^(CREATE TABLE|sequence_set)" \
 	| awk  '/^sequence_set/ { seq1=$1; seq2=$3;}
-		/^CREATE TABLE/ { if(seq1) print seq1, "(SELECT COALESCE(MAX(id),1) FROM "$3"),", seq2; seq1="";}' \
+		/^CREATE TABLE/ { if(seq1) print seq1, "(SELECT COALESCE(MAX(id)+1,1) FROM "$3"),", seq2; seq1="";}' \
 	>> "${dumpdir}/data.sql"
 echo "fk_check_input_values(1);" >> "${dumpdir}/data.sql"
