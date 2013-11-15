@@ -63,7 +63,7 @@ public class DPUExplorer {
 	 * Return content of manifest for given bundle that is stored in DPU's
 	 * directory. This method does not load DPU into system.
 	 * 
-	 * @param relativePath Relative path in DPU's directory.
+	 * @param dpu {@link DPUTemplateRecord} to explore
 	 * @return Description stored in manifest file or null in case of error.
 	 */
 	public String getJarDescription(DPUTemplateRecord dpu) {

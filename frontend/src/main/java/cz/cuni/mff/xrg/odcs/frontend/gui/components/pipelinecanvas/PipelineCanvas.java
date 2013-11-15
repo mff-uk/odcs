@@ -180,7 +180,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 		if (result == null) {
 			int connectionId = graph.addEdge(dpuFrom, dpuTo);
-			EdgeCompiler edgeCompiler = new EdgeCompiler(App.getApp().getModules());
+			EdgeCompiler edgeCompiler = new EdgeCompiler();
 			Edge edge = graph.getEdgeById(connectionId);
 			DPUInstanceRecord from = graph.getNodeById(dpuFrom).getDpuInstance();
 			edgeCompiler.setDefaultMapping(edge, explorer.getOutputs(from), explorer.getInputs(to.getDpuInstance()));

@@ -43,6 +43,7 @@ public class DataUnitDescription {
 	 * @param name
 	 * @param typeName
 	 * @param description
+	 * @return 
 	 */
 	public static DataUnitDescription createOutput(String name,
 			String typeName,
@@ -56,6 +57,7 @@ public class DataUnitDescription {
 	 * @param typeName
 	 * @param description
 	 * @param optional
+	 * @return 
 	 */
 	public static DataUnitDescription createInput(String name,
 			String typeName,

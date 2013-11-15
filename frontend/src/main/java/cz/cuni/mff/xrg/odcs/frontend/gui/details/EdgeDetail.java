@@ -51,7 +51,7 @@ public class EdgeDetail extends Window {
 	/**
 	 * Class for working with edge's script.
 	 */
-	private EdgeCompiler edgeCompiler = new EdgeCompiler(App.getApp().getModules());
+	private EdgeCompiler edgeCompiler = new EdgeCompiler();
 
 	/**
 	 * Basic constructor, takes {@link Edge} which detail should be showed.
