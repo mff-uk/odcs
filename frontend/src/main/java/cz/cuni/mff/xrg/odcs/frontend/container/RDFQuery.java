@@ -112,7 +112,8 @@ public class RDFQuery implements Query {
 				MyTupleQueryResult result = (MyTupleQueryResult) data;
 				int id = 0;
 				while (result.hasNext()) {
-					items.add(toItem(result.next(), ++id));
+					items.add(toItem(result.getBindingNames(), result.next(),
+							++id));
 				}
 
 			} else {
@@ -157,8 +158,8 @@ public class RDFQuery implements Query {
 				.getPropertyIds());
 	}
 
-	private Item toItem(BindingSet binding, int id) {
-		return new BindingSetItem(binding, id);
+	private Item toItem(List<String> headers, BindingSet binding, int id) {
+		return new BindingSetItem(headers, binding, id);
 	}
 
 	@Override
