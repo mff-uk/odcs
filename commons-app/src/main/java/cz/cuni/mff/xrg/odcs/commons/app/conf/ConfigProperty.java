@@ -27,6 +27,7 @@ public enum ConfigProperty {
 	VIRTUOSO_CHARSET("charset"),
 	VIRTUOSO_RETRIES("retries"),
 	VIRTUOSO_WAIT("wait"),
+	VIRTUOSO_EXTENSION("useExtension"),
 	
 	MODULE_PATH("module.path"),
 	MODULE_FRONT_EXPOSE("module.frontend.expose"),
