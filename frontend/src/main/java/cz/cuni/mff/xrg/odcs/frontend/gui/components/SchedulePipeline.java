@@ -23,6 +23,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
@@ -87,7 +88,7 @@ public class SchedulePipeline extends Window {
 	private EmailComponent email;
 	public GridLayout emailLayout;
 	private ComboBox comboPipeline = null;
-	private TextField scheduleName;
+	private TextArea scheduleDescription;
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -127,7 +128,7 @@ public class SchedulePipeline extends Window {
 	 */
 	public void setSelectedSchedule(Schedule selectedSchedule) {
 		//setting name
-		scheduleName.setValue(selectedSchedule.getName());
+		scheduleDescription.setValue(selectedSchedule.getDescription());
 		
 		//setting pipeline
 		comboPipeline.setValue(selectedSchedule.getPipeline().getId());
@@ -204,18 +205,6 @@ public class SchedulePipeline extends Window {
 		mainLayout.setImmediate(false);
 		mainLayout.setSpacing(true);
 		
-		//Layout contains name of scheduling rule
-		GridLayout schNameLayout = new GridLayout(2, 1);
-		schNameLayout.setMargin(true);
-		schNameLayout.setSpacing(true);
-
-		Label nameLabel = new Label("Scheduling rule name:");
-		schNameLayout.addComponent(nameLabel, 0, 0);
-		scheduleName = new TextField();
-		scheduleName.setImmediate(true);
-		scheduleName.setWidth("100%");
-		schNameLayout.addComponent(scheduleName, 1, 0);
-		
 		tabSheet = new TabSheet();
 		tabSheet.setImmediate(true);
 
@@ -235,7 +224,7 @@ public class SchedulePipeline extends Window {
 			}
 		});
 
-		coreLayout = new GridLayout(1, 3);
+		coreLayout = new GridLayout(1, 4);
 		coreLayout.setImmediate(false);
 		coreLayout.setSpacing(true);
 		coreLayout.setMargin(true);
@@ -278,9 +267,9 @@ public class SchedulePipeline extends Window {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (scheduleType.getValue().equals(ScheduleType.AFTER_PIPELINE)) {
-					coreLayout.removeComponent(0, 2);
+					coreLayout.removeComponent(0, 3);
 					afterLayout = buildAfterLayout();
-					coreLayout.addComponent(afterLayout, 0, 2);
+					coreLayout.addComponent(afterLayout, 0, 3);
 				}
 			}
 		});
@@ -290,6 +279,19 @@ public class SchedulePipeline extends Window {
 		layoutPipeline.addComponent(new Label(" was selected for scheduling."));
 
 		coreLayout.addComponent(layoutPipeline, 0, 0);
+		
+		//Layout contains name of scheduling rule
+		GridLayout schNameLayout = new GridLayout(2, 1);
+		schNameLayout.setSpacing(true);
+
+		Label nameLabel = new Label("Description:");
+		schNameLayout.addComponent(nameLabel, 0, 0);
+		scheduleDescription = new TextArea();
+		scheduleDescription.setImmediate(true);
+		scheduleDescription.setWidth("470px");
+		schNameLayout.addComponent(scheduleDescription, 1, 0);
+		
+		coreLayout.addComponent(schNameLayout, 0, 1);
 
 		//Schedule type component. Two types: PERIODICALLY and AFTER_PIPELINE
 		scheduleType = new OptionGroup();
@@ -313,21 +315,21 @@ public class SchedulePipeline extends Window {
 
 				if (event.getProperty().getValue() == ScheduleType.AFTER_PIPELINE) {
 
-					coreLayout.removeComponent(0, 2);
+					coreLayout.removeComponent(0, 3);
 					afterLayout = buildAfterLayout();
-					coreLayout.addComponent(afterLayout, 0, 2);
+					coreLayout.addComponent(afterLayout, 0, 3);
 
 				} else {
-					coreLayout.removeComponent(0, 2);
-					coreLayout.addComponent(autoLayout, 0, 2);
+					coreLayout.removeComponent(0, 3);
+					coreLayout.addComponent(autoLayout, 0, 3);
 				}
 
 			}
 		});
 
-		coreLayout.addComponent(scheduleType, 0, 1);
+		coreLayout.addComponent(scheduleType, 0, 2);
 		autoLayout = buildAutoLayout();
-		coreLayout.addComponent(autoLayout, 0, 2);
+		coreLayout.addComponent(autoLayout, 0, 3);
 
 		//Layout with buttons Save and Cancel
 		HorizontalLayout buttonBar = new HorizontalLayout();
@@ -408,11 +410,11 @@ public class SchedulePipeline extends Window {
 					}
 
 				}
-				//setting name
-				if(scheduleName.getValue().trim()!=null)
-					schedule.setName(scheduleName.getValue());
+				//setting description
+				if(scheduleDescription.getValue().trim()!=null)
+					schedule.setDescription(scheduleDescription.getValue());
 				else{
-					schedule.setName(schedule.getPipeline().getName() + " rule");
+					schedule.setDescription("");
 				}
 				
 				//setting type
@@ -575,7 +577,6 @@ public class SchedulePipeline extends Window {
 		tabSheet.addTab(coreLayout, "Core", null);
 		tabSheet.addTab(notificationsLayout, "Notifications", null);
 
-		mainLayout.addComponent(schNameLayout);
 		mainLayout.addComponent(tabSheet);
 		mainLayout.addComponent(buttonBar);
 //		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);

@@ -61,9 +61,9 @@ public class Scheduler extends ViewComponent {
 	 */
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
-	static String[] visibleCols = new String[]{"pipeline", "rule", "user",
+	static String[] visibleCols = new String[]{"pipeline", "description", "rule", "user",
 		"last", "next", "duration", "status", "commands"};
-	static String[] headers = new String[]{"pipeline", "Rule", "User",
+	static String[] headers = new String[]{"pipeline","Description", "Rule", "User",
 		"Last", "Next", "Last run time", "Status", "Commands"};
 	int style = DateFormat.MEDIUM;
 	private Long schId;
@@ -311,6 +311,8 @@ public class Scheduler extends ViewComponent {
 			}
 			result.getContainerProperty(num, "pipeline").setValue(
 					item.getPipeline().getName());
+			result.getContainerProperty(num, "description").setValue(
+					item.getDescription());
 
 			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, PipelineExecutionStatus.FINISHED);
 			result.getContainerProperty(num, "duration").setValue(IntlibHelper.getDuration(exec));

@@ -39,6 +39,7 @@ public class EmailComponent {
 	public TextField textFieldEmail;
 	private InvalidValueException mailEx;
 	public List<TextField> listedEditText = null;
+	public cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings parentComponentAccount;
 	/**
 	 * List<String> that contains e-mails.
 	 */
@@ -73,6 +74,7 @@ public class EmailComponent {
 		for (TextField editText : listedEditText) {
 			griddata.add(editText.getValue().trim());
 		}
+
 	}
 
 	/**
@@ -103,7 +105,9 @@ public class EmailComponent {
 
 				@Override
 				public void textChange(TextChangeEvent event) {
-					// TODO Auto-generated method stub
+					if(parentComponentAccount!=null && parentComponentAccount.buttonMyAccountBar!=null)	
+						parentComponentAccount.buttonMyAccountBar.setEnabled(true);
+
 					saveEditedTexts();
 				}
 			});
