@@ -23,7 +23,7 @@ public class QueryPart {
 	}
 
 	private void setPrefixEndIndex() {
-		String regex = ".*prefix\\s+[\\w-_]+[:]?\\s+[<]?http://[\\w:/\\.#-_]+[>]?\\s+";
+		String regex = ".*prefix\\s+[\\w-_]+[:]\\s*[<]http://[\\w:/\\.#-_]+[>][\\s]*";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(query.toLowerCase());
 
