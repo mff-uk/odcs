@@ -4,6 +4,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
@@ -11,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +32,9 @@ import org.vaadin.addons.lazyquerycontainer.Query;
 public class RDFQuery implements Query {
 
 	private String baseQuery;
+
 	private int batchSize;
+
 	private RDFQueryDefinition qd;
 
 	public RDFQuery(RDFQueryDefinition qd) {
@@ -41,7 +45,8 @@ public class RDFQuery implements Query {
 
 	@Override
 	public int size() {
-		RDFDataUnit repository = RDFDataUnitHelper.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
+		RDFDataUnit repository = RDFDataUnitHelper
+				.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
@@ -63,18 +68,19 @@ public class RDFQuery implements Query {
 	 * Load batch of items.
 	 *
 	 * @param startIndex Starting index of the item list.
-	 * @param count Count of the items to be retrieved.
+	 * @param count      Count of the items to be retrieved.
 	 * @return List of items.
 	 */
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
-		RDFDataUnit repository = RDFDataUnitHelper.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
+		RDFDataUnit repository = RDFDataUnitHelper
+				.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
-		
+
 		String filteredQuery = setWhereCriteria(baseQuery);
-		
+
 		QueryRestriction restriction = new QueryRestriction(filteredQuery);
 		restriction.setLimit(batchSize);
 		//String query = baseQuery + String.format(" LIMIT %d", batchSize);
@@ -138,7 +144,8 @@ public class RDFQuery implements Query {
 		for (Filter filter : filters) {
 			if (filter.getClass() == RDFRegexFilter.class) {
 				RDFRegexFilter rdfRegexFilter = (RDFRegexFilter) filter;
-				RegexFilter rf = new RegexFilter(rdfRegexFilter.getColumnName(), rdfRegexFilter.getRegex());
+				RegexFilter rf = new RegexFilter(rdfRegexFilter.getColumnName(),
+						rdfRegexFilter.getRegex());
 				filterManager.addFilter(rf);
 			}
 		}
@@ -146,7 +153,8 @@ public class RDFQuery implements Query {
 	}
 
 	private Item toItem(RDFTriple triple) {
-		return new NestingBeanItem(triple, qd.getMaxNestedPropertyDepth(), qd.getPropertyIds());
+		return new NestingBeanItem(triple, qd.getMaxNestedPropertyDepth(), qd
+				.getPropertyIds());
 	}
 
 	private Item toItem(BindingSet binding, int id) {
@@ -155,27 +163,36 @@ public class RDFQuery implements Query {
 
 	@Override
 	public void saveItems(List<Item> list, List<Item> list1, List<Item> list2) {
-		throw new UnsupportedOperationException("RDFLazyQueryContainer is read-only.");
+		throw new UnsupportedOperationException(
+				"RDFLazyQueryContainer is read-only.");
 	}
 
 	@Override
 	public boolean deleteAllItems() {
-		throw new UnsupportedOperationException("RDFLazyQueryContainer is read-only.");
+		throw new UnsupportedOperationException(
+				"RDFLazyQueryContainer is read-only.");
 	}
 
 	@Override
 	public Item constructItem() {
-		throw new UnsupportedOperationException("RDFLazyQueryContainer is read-only.");
+		throw new UnsupportedOperationException(
+				"RDFLazyQueryContainer is read-only.");
 	}
 
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
 		if (query.length() < 9) {
 			//Due to expected exception format in catch block
 			throw new InvalidQueryException(new InvalidQueryException(
-					"Invalid query."));
+					"Invalid query: " + query));
 		}
-		String queryStart = query.trim().substring(0, 9).toLowerCase();
-		return queryStart.startsWith("select");
+		QueryPart queryPart = new QueryPart(query);
+		SPARQLQueryType type = queryPart.getSPARQLQueryType();
+
+		if (type == SPARQLQueryType.SELECT) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private List<RDFTriple> getRDFTriplesData(List<Statement> statements) {
