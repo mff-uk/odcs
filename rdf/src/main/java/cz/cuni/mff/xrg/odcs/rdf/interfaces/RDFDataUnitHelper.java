@@ -332,7 +332,7 @@ public interface RDFDataUnitHelper {
 	 *         repository, which are split to parts using default split value
 	 *         (see {@link LazyTriples#DEFAULT_SPLIT_SIZE}).
 	 */
-	public LazyTriples getLazyTriples();
+	public LazyTriples getTriplesIterator();
 
 	/**
 	 *
@@ -342,7 +342,7 @@ public interface RDFDataUnitHelper {
 	 *         repository, which are split to parts - each has triples at most
 	 *         as defined splitSize.
 	 */
-	public LazyTriples getLazyTriples(long splitSize);
+	public LazyTriples getTriplesIterator(long splitSize);
 
 	/**
 	 * Copy all data from repository to targetRepository.
