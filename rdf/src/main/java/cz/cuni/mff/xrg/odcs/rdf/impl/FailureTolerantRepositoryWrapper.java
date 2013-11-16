@@ -170,7 +170,7 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 			LOG.info("Missing config property {}, using default value {}.",
 					EXTENSION_KEY, extension);
 		} else {
-			extension = Boolean.parseBoolean(sWait);
+			extension = Boolean.parseBoolean(sExtension);
 		}
 	}
 
