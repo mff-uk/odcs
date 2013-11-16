@@ -31,6 +31,8 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 	private String defaultGraph;
 
+	private boolean useExtension;
+
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
 	 *
@@ -61,10 +63,13 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 		setDataGraph(defaultGraph);
 
-		repository = new FailureTolerantRepositoryWrapper(
+		FailureTolerantRepositoryWrapper repoWrapper = new FailureTolerantRepositoryWrapper(
 				new VirtuosoRepository(URL_Host_List, user, password,
 				defaultGraph),
 				config);
+
+		this.useExtension = repoWrapper.useVirtuosoExtension();
+		this.repository = repoWrapper;
 
 		try {
 			repository.initialize();
@@ -139,9 +144,18 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				String sourceGraphName = second.getDataGraph().stringValue();
 				String targetGraphName = getDataGraph().stringValue();
 
-				String mergeQuery = String
-						.format("DEFINE sql:log-enable 2 \n"
-						+ "ADD <%s> TO <%s>", sourceGraphName, targetGraphName);
+				String mergeQuery;
+
+				if (useExtension) {
+					mergeQuery = String
+							.format("DEFINE sql:log-enable 2 \n"
+							+ "ADD <%s> TO <%s>", sourceGraphName,
+							targetGraphName);
+				} else {
+					mergeQuery = String
+							.format("ADD <%s> TO <%s>", sourceGraphName,
+							targetGraphName);
+				}
 
 				try {
 					GraphQuery result = targetConnection.prepareGraphQuery(
@@ -198,9 +212,18 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				String sourceGraphName = getDataGraph().stringValue();
 				String targetGraphName = targetRepo.getDataGraph().stringValue();
 
-				String mergeQuery = String
-						.format("ADD <%s> TO <%s>", sourceGraphName,
-						targetGraphName);
+				String mergeQuery;
+
+				if (useExtension) {
+					mergeQuery = String
+							.format("DEFINE sql:log-enable 2 \n"
+							+ "ADD <%s> TO <%s>", sourceGraphName,
+							targetGraphName);
+				} else {
+					mergeQuery = String
+							.format("ADD <%s> TO <%s>", sourceGraphName,
+							targetGraphName);
+				}
 
 				try {
 					GraphQuery result = targetConnection.prepareGraphQuery(
