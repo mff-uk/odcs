@@ -49,7 +49,8 @@ public class ConfiguratorTest {
 		contexts.put(node, context);
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		assertTrue(config.preAction(node, contexts, dpuInstance, execution, null));
+		assertTrue(config.preAction(node, contexts, dpuInstance, execution, 
+				null, true));
 	}
 	
 	/**
@@ -72,7 +73,8 @@ public class ConfiguratorTest {
 		contexts.put(node, context);
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
-		assertTrue(config.preAction(node, contexts, dpuInstance, execution, null));
+		assertTrue(config.preAction(node, contexts, dpuInstance, execution, 
+				null, true));
 		// verify that the configure function has been called 
 		verify(dpuInstance, times(1)).configure(rawConfig);
 	}
@@ -105,7 +107,8 @@ public class ConfiguratorTest {
 		
 		Configurator config = beanFactory.getBean(Configurator.class);
 		
-		assertFalse(config.preAction(node, contexts, dpuInstance, execution, null));
+		assertFalse(config.preAction(node, contexts, dpuInstance, execution, 
+				null, true));
 		
 		// something has been published
 		assertTrue(listener.getEventList().size() >= 1);		

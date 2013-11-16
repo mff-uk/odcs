@@ -18,6 +18,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
+import cz.cuni.mff.xrg.odcs.backend.execution.ExecutionResult;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
@@ -102,7 +103,7 @@ public class Executor implements Runnable {
 	 * End time of last successful pipeline execution.
 	 */
 	private Date lastSuccessfulExTime;
-
+	
 	/**
 	 * Sort pre/post executors.
 	 */
@@ -200,7 +201,6 @@ public class Executor implements Runnable {
 		if (postExecutors == null) {
 			return true;
 		}
-
 		boolean success = true;
 		for (PostExecutor item : postExecutors) {
 			if (!item.postAction(execution, contexts, graph)) {
@@ -283,19 +283,27 @@ public class Executor implements Runnable {
 		// get dependency graph
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
 
+		// we need result state
+		ExecutionResult execResult = new ExecutionResult();		
+		
 		// execute pre-executors
 		if (!executePreExecutors(dependencyGraph)) {
-			// cancel the execution
-			executionFailed();
-			return;
+			execResult.failure();
 		}
 
-		boolean executionFailed = false;
-		boolean executionCancelled = false;
+		// and we also have evidance about user abort request
+		boolean userAbortRequest = false;
 
 		// execute each node
 		for (Node node : dependencyGraph) {
 
+			// check for the end of the execution
+			// this test has to be here .. as the pre executors
+			// can failed .. in such case no DPU will be launched
+			if (!execResult.continueExecution() || userAbortRequest) {
+				break;
+			}
+			
 			// put dpuInstance id to MDC, so we can identify logs related to the
 			// dpuInstance
 			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME,
@@ -309,7 +317,7 @@ public class Executor implements Runnable {
 			} catch (ContextException e) {
 				// failed to create context .. fail the execution
 				eventPublisher.publishEvent(PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));
-				executionFailed = true;
+				execResult.failure();
 				break;
 			}
 
@@ -321,14 +329,17 @@ public class Executor implements Runnable {
 			executorThread.start();
 
 			// repeat until the executorThread is running
-			boolean stopExecution = false;
+			
 			while (executorThread.isAlive()) {
 				try {
-					// sleep for two seconds
+					// sleep for five seconds
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					// request stop
-					stopExecution = true;
+					stopExecution(executorThread, dpuExecutor);
+					// set stop to true
+					execResult.stop();
+					break;
 				}
 
 				// check for user request to stop execution -> we need new
@@ -337,58 +348,51 @@ public class Executor implements Runnable {
 						.getExecution(execution.getId());
 				if (uptodateExecution == null) {
 					LOG.warn("Seems like someone deleted our execution.");
-					stopExecution = true;
+					// stop execution
+					stopExecution(executorThread, dpuExecutor);
+					// set stop to true
+					execResult.stop();
+					break;
 				} else if (uptodateExecution.getStop()) {
-					stopExecution = true;
-					executionCancelled = true;
 					eventPublisher.publishEvent(new PipelineAbortedEvent(
 							execution, this));
-				}
-
-				if (stopExecution) {
-					// update flag, so we do not override the value in database
-					execution.setStatus(PipelineExecutionStatus.CANCELLING);
 					// try to stop the DPU's execution thread
 					stopExecution(executorThread, dpuExecutor);
-					// jump out of waiting cycle
+					// update flag, so we do not override the value in database
+					execution.setStatus(PipelineExecutionStatus.CANCELLING);
+					// set flags
+					execResult.stop();
+					userAbortRequest = true;
 					break;
 				}
 			} // end of single DPU thread execution
-
-			if (stopExecution) {
-				// we should stop the execution
-				executionFailed = true;
-				// jump out of pipeline
-				break;
-			} else {
-				// pipeline continue, check for DPU result
-				if (dpuExecutor.executionFailed()) {
-					// continue
-					executionFailed = true;
-					break;
-				}
-			}
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
+
+			// merge result information
+			execResult.add(dpuExecutor.getExecResult());
+			
+			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
+
 		}
 
-		// ending ..
+		// apost executors are comming
+		if (!executePostExecutors(dependencyGraph)) {
+			// failed ..
+			execResult.failure();
+		}	
+		
+		// all done, resolve the way of ending .. 
 		// set time then the pipeline's execution finished
-
-		if (executionFailed) {
-			if (executionCancelled) {
-				executionCancelled();
+		if (userAbortRequest) {
+			executionCancelled();
+		} else {
+			if (execResult.executionEndsSuccessfully()) {
+				executionSuccessful();
 			} else {
 				executionFailed();
 			}
-		} else {
-			executionSuccessful();
 		}
 
-		// all set
-		if (!executePostExecutors(dependencyGraph)) {
-			// failed ..
-			executionFailed();
-		}
 	}
 
 	@Override

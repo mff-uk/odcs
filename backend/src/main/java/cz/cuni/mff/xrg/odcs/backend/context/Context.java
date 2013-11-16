@@ -1,11 +1,9 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +18,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 public class Context implements DPUContext {
-
+	
 	/**
 	 * Name of directory for shared DPU's data.
 	 */
@@ -114,6 +110,12 @@ public class Context implements DPUContext {
 	 */
 	private boolean canceled;
 	
+	/**
+	 * True if the execution should be stopped on DPU's request. The execution
+	 * does not failed instantly by this.
+	 */
+	private boolean stopExecution;
+	
 	public Context() {
 		this.dpuInstance = null;
 		this.contextInfo = null;
@@ -123,6 +125,7 @@ public class Context implements DPUContext {
 		this.warningMessage = false;
 		this.errorMessage = false;
 		this.canceled = false;
+		this.stopExecution = false;
 	}
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -231,6 +234,14 @@ public class Context implements DPUContext {
 	}	
 	
 	/**
+	 * True if the execution should be stopped but not failed instantly.
+	 * @return 
+	 */
+	public boolean shouldStopExecution() {
+		return stopExecution;
+	}
+	
+	/**
 	 * Return engine's general working directory.
 	 * 
 	 * @return
@@ -266,6 +277,11 @@ public class Context implements DPUContext {
 		// set warningMessage and errorMessage 
 		this.warningMessage = warningMessage || type == MessageType.WARNING;
 		this.errorMessage = errorMessage || type == MessageType.ERROR;
+	}
+	
+	@Override
+	public void requestEnd() {
+		stopExecution = true;
 	}
 	
 	@Override

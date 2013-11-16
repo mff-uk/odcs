@@ -66,7 +66,8 @@ public class AnnotationsInput implements PreExecutor {
 			Map<Node, Context> contexts,
 			Object dpuInstance,
 			PipelineExecution execution,
-			ProcessingUnitInfo unitInfo) {
+			ProcessingUnitInfo unitInfo,
+			boolean willExecute) {
 		// get current context and DPUInstanceRecord
 		Context context = contexts.get(node);
 

@@ -265,6 +265,22 @@ public class DPUEvent extends ApplicationEvent {
 	}
 	
 	/**
+	 * Create event which indicate that the execution of pipeline should end
+	 * on request of last executed DPU.
+	 * 
+	 * @param context
+	 * @param source
+	 * @return 
+	 */
+	public static DPUEvent createStopOnDpuRequest(Context context, Object source) {
+		LOG.info("DPU '{}' required the termination of execution",
+				context.getDPU().getName());
+		
+		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
+				"Request for execution termination", "");
+	}
+	
+	/**
 	 * Record that describes event.
 	 *
 	 * @return record

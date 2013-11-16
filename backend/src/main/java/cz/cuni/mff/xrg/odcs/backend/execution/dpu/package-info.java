@@ -17,7 +17,8 @@
  * 
  * 
  * To locate new pre/Post processor relatively to existing processor
- * use processor static variable ORDER.
+ * use processor static variable ORDER. The pre/post executors are executed
+ * all no matter if some of them return false or not.
  * 
  * @author Petyr
  *

@@ -55,7 +55,8 @@ abstract class PreExecutorBase implements PreExecutor {
 			Map<Node, Context> contexts,
 			Object dpuInstance,
 			PipelineExecution execution,
-			ProcessingUnitInfo unitInfo) {
+			ProcessingUnitInfo unitInfo,
+			boolean willExecute) {
 		// shall we execute ?
 		final boolean contains = executionStates.contains(unitInfo.getState());
 

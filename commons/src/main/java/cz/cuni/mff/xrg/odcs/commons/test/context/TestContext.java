@@ -80,6 +80,11 @@ public class TestContext implements DPUContext {
 	}
 
 	@Override
+	public void requestEnd() {
+		// just ignore this
+	}
+	
+	@Override
 	public boolean isDebugging() {
 		return false;
 	}

@@ -26,6 +26,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * do please filter their usage for non {@link DPUExecutionState#FINISHED}
  * state.
  * 
+ * The willExecute carry the authoritative information about execution, 
+ * but the PreExecutors should rather use {@link DPUExecutionState}
+ * to determine if run or not.
  * 
  * @author Petyr
  * 
@@ -42,12 +45,14 @@ public interface PreExecutor extends Ordered {
 	 * @param dpuInstance DPU instance.
 	 * @param execution Respective execution.
 	 * @param unitInfo DPU's ProcessingUnitInfo.
+	 * @param willExecute False it the DPU will not be executed.
 	 * @return
 	 */
 	public boolean preAction(Node node,
 			Map<Node, Context> contexts,
 			Object dpuInstance,
 			PipelineExecution execution,
-			ProcessingUnitInfo unitInfo);
+			ProcessingUnitInfo unitInfo,
+			boolean willExecute);
 	
 }
