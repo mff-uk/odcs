@@ -42,6 +42,8 @@ public enum RDFFormatType {
 
 	private static Map<RDFFormat, RDFFormatType> map = new HashMap<>();
 
+	private static Map<String, RDFFormatType> stringMap = new HashMap<>();
+
 	private static void inicializeMap() {
 
 		map.put(RDFFormat.RDFXML, RDFXML);
@@ -53,8 +55,15 @@ public enum RDFFormatType {
 		map.put(RDFFormat.NTRIPLES, NT);
 	}
 
+	private static void inicializeStringMap() {
+		for (RDFFormatType next : getListOfRDFType()) {
+			stringMap.put(getStringValue(next), next);
+		}
+	}
+
 	static {
 		inicializeMap();
+		inicializeStringMap();
 	}
 
 	public static RDFFormatType getTypeByRDFFormat(RDFFormat format) {
@@ -65,6 +74,14 @@ public enum RDFFormatType {
 			return AUTO;
 		}
 
+	}
+
+	public static RDFFormatType getTypeByString(String value) {
+		if (stringMap.containsKey(value)) {
+			return stringMap.get(value);
+		} else {
+			return AUTO;
+		}
 	}
 
 	public static RDFFormat getRDFFormatByType(RDFFormatType type) {
@@ -105,5 +122,31 @@ public enum RDFFormatType {
 		list.addAll(map.values());
 
 		return list;
+	}
+
+	public static String getStringValue(RDFFormatType type) {
+
+		String result;
+
+		switch (type) {
+			case AUTO:
+			case N3:
+			case TRIX:
+			case TRIG:
+			case TTL:
+				result = type.toString();
+				break;
+			case RDFXML:
+				result = "RDF/XML";
+				break;
+			case NT:
+				result = "N-TRIPLES";
+				break;
+			default:
+				result = "";
+		}
+
+		return result;
+
 	}
 }
