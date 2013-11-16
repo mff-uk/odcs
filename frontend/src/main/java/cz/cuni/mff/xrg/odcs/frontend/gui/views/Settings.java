@@ -65,7 +65,8 @@ public class Settings extends ViewComponent {
 	private Button prefixesButton;
 	private Button shownTab = null;
 	private UsersList usersList;
-	private HorizontalLayout buttonBar;
+	public HorizontalLayout buttonMyAccountBar;
+	public HorizontalLayout buttonNotificationBar;
 	private EmailComponent email;
 	private EmailNotifications emailNotifications;
 	private GridLayout emailLayout;
@@ -358,7 +359,7 @@ public class Settings extends ViewComponent {
 		emailNotifications.getUserNotificationRecord(loggedUser);
 		notificationsLayout.setStyleName("settings");
 
-		HorizontalLayout buttonBarNotify = buildButtonBar();
+		HorizontalLayout buttonBarNotify = buildButtonNotificationBar();
 		notificationsLayout.addComponent(buttonBarNotify);
 
 		notificationsLayout.addComponent(new Label(
@@ -391,7 +392,9 @@ public class Settings extends ViewComponent {
 
 		email.getUserEmailNotification(loggedUser);
 
-		HorizontalLayout buttonBarMyAcc = buildButtonBar();
+		email.parentComponentAccount = this;
+		
+		HorizontalLayout buttonBarMyAcc = buildButtonMyAccountBar();
 
 		accountLayout.addComponent(emailLayout);
 		accountLayout.addComponent(buttonBarMyAcc);
@@ -401,17 +404,18 @@ public class Settings extends ViewComponent {
 	}
 
 	/**
-	 * Building layout with button Save for saving notifications
+	 * Building layout with button Save for saving My account tab
 	 *
 	 * @return buttonBar Layout with button
 	 */
-	private HorizontalLayout buildButtonBar() {
+	private HorizontalLayout buildButtonMyAccountBar() {
 
 		//Layout with buttons Save and Cancel
-		buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("380px");
-		buttonBar.setStyleName("dpuDetailButtonBar");
-		buttonBar.setMargin(new MarginInfo(true, false, false, false));
+		buttonMyAccountBar = new HorizontalLayout();
+		buttonMyAccountBar.setWidth("380px");
+		buttonMyAccountBar.setStyleName("dpuDetailButtonBar");
+		buttonMyAccountBar.setMargin(new MarginInfo(true, false, false, false));
+		buttonMyAccountBar.setEnabled(false);
 
 		Button saveButton = new Button("Save");
 		saveButton.addClickListener(new ClickListener() {
@@ -422,13 +426,49 @@ public class Settings extends ViewComponent {
 
 				email.saveEditedTexts();
 				saveEmailNotifications();
+				Notification.show("E-mail settings were saved", Notification.Type.HUMANIZED_MESSAGE);
+				
 
 			}
 		});
-		buttonBar.addComponent(saveButton);
-		buttonBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
+		buttonMyAccountBar.addComponent(saveButton);
+		buttonMyAccountBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
 
-		return buttonBar;
+		return buttonMyAccountBar;
+
+	}
+	
+	/**
+	 * Building layout with button Save for saving notifications
+	 *
+	 * @return buttonBar Layout with button
+	 */
+	private HorizontalLayout buildButtonNotificationBar() {
+
+		//Layout with buttons Save and Cancel
+		buttonNotificationBar = new HorizontalLayout();
+		buttonNotificationBar.setWidth("380px");
+		buttonNotificationBar.setStyleName("dpuDetailButtonBar");
+		buttonNotificationBar.setMargin(new MarginInfo(true, false, false, false));
+		buttonNotificationBar.setEnabled(false);
+
+		Button saveButton = new Button("Save");
+		saveButton.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				
+				email.saveEditedTexts();
+				saveEmailNotifications();
+				Notification.show("Schedule notifications were saved", Notification.Type.HUMANIZED_MESSAGE);
+
+			}
+		});
+		buttonNotificationBar.addComponent(saveButton);
+		buttonNotificationBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
+
+		return buttonNotificationBar;
 
 	}
 
