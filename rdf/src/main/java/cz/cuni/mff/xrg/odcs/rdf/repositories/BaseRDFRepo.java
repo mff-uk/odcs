@@ -1279,7 +1279,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String selectQuery)
 			throws InvalidQueryException {
 
-		Map<String, List<String>> map = new HashMap<>();
+		Map<String, List<String>> map = new LinkedHashMap<>();
 
 		List<BindingSet> listBindings = new ArrayList<>();
 		MyTupleQueryResult result = null;
