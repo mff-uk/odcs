@@ -174,7 +174,7 @@ File filePath = fileManager.getGlobal().directory("myDir").file("myFile.txt");
         
         
         <p>The DPU context provides ability 
-		to send events of the DPU as it is executed. Such messages (events) are stored and accessible to the user via execution monitor in the administration interface od ODCleanStore. 
+		to send events of the DPU as it is executed. Such messages (events) are stored and accessible to the user via execution monitor in the administration interface of ODCleanStore. 
                  <p>
                      The following example demonstrates how the context may send various messages about the execution of the DPU.
 <div class="code"> <pre> <code>		 
@@ -193,6 +193,14 @@ context.sendMessage(MessageType.ERROR, "MalformedURLException: "
         		Best is to use <code>DPUException</code> with reasonable message that describes the reason
         		of execution's failure.</li>
         </ol>
+        
+        Also in some cases the termination of the whole pipeline without failure can be required. As an example: we have
+        an extractor DPU that harvest new data from some webpage. If there are not new data, there is no meaning in further 
+        pipeline processing, but this does not mean that the execution failed.<br/>
+        For such case the DPU can use <code>MessageType.TERMINATION_REQUEST</code> as message type. If this 
+        message is send then the pipeline execution terminate after the current DPU. <br/>
+        
+        If both ERROR and TERMINATION_REQUEST are send, then TERMINATION_REQUEST is ignored.
         
         As the DPU's execution can be time consuming, ODCleanStore provides user with the possibility to 
         stop the execution. Unfortunately this can not be done without DPU's cooperation. 
