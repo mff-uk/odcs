@@ -16,11 +16,13 @@ import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryDefinition;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFQueryFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TRIG;
@@ -50,27 +52,41 @@ import org.tepi.filtertable.FilterGenerator;
 public class RDFQueryView extends CustomComponent {
 
 	private DataUnitSelector selector;
+
 	private TextArea queryText;
+
 	private IntlibPagedTable resultTable;
+
 	private HorizontalLayout resultTableControls;
+
 	private NativeSelect formatSelect;
+
 	private NativeSelect downloadFormatSelect;
+
 	private Button tableDownload;
+
 	private final static Logger LOG = LoggerFactory
 			.getLogger(RDFQueryView.class);
+
 	private boolean isEnabled = true;
+
 	Button queryDownloadButton;
+
 	Button queryButton;
+
 	private HorizontalLayout resultDownloadControls;
+
 	private String tableQuery = null;
+
 	private DPUInstanceRecord tableDpu = null;
+
 	private DataUnitInfo tableDataUnit = null;
 
 	/**
 	 * Constructor with parent view.
 	 *
 	 * @param parent {@link DebuggingView} which is parent to this
-	 * {@link RDFQueryView}.
+	 *               {@link RDFQueryView}.
 	 */
 	public RDFQueryView(PipelineExecution execution) {
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -129,12 +145,14 @@ public class RDFQueryView extends CustomComponent {
 
 			@Override
 			public InputStream getStream() {
-				RDFDataUnit repository = getRepository(selector.getSelectedDPU(), selector.getSelectedDataUnit());
+				RDFDataUnit repository = getRepository(selector.getSelectedDPU(),
+						selector.getSelectedDataUnit());
 				if (repository == null) {
 					return null;
 				}
 				String query = queryText.getValue();
-				return getDownloadData(repository, query, formatSelect.getValue());
+				return getDownloadData(repository, query, formatSelect
+						.getValue());
 			}
 		});
 		fileDownloader.extend(queryDownloadButton);
@@ -171,20 +189,21 @@ public class RDFQueryView extends CustomComponent {
 		resultTable.setSortEnabled(false);
 		//resultTable.setFilterBarVisible(true);
 		resultTable.setFilterGenerator(new FilterGenerator() {
-
 			@Override
-			public Container.Filter generateFilter(Object propertyId, Object value) {
-				return new RDFRegexFilter((String)propertyId, (String)value);
+			public Container.Filter generateFilter(Object propertyId,
+					Object value) {
+				return new RDFRegexFilter((String) propertyId, (String) value);
 			}
 
 			@Override
-			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
+			public Container.Filter generateFilter(Object propertyId,
+					Field<?> originatingField) {
 				return null;
 			}
 
 			@Override
 			public AbstractField<?> getCustomFilterComponent(Object propertyId) {
-				return null; 
+				return null;
 			}
 
 			@Override
@@ -192,11 +211,13 @@ public class RDFQueryView extends CustomComponent {
 			}
 
 			@Override
-			public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
+			public void filterAdded(Object propertyId,
+					Class<? extends Container.Filter> filterType, Object value) {
 			}
 
 			@Override
-			public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+			public Container.Filter filterGeneratorFailed(Exception reason,
+					Object propertyId, Object value) {
 				return null;
 			}
 		});
@@ -225,7 +246,8 @@ public class RDFQueryView extends CustomComponent {
 					return null;
 				}
 				RDFDataUnit tableRepo = getRepository(tableDpu, tableDataUnit);
-				return getDownloadData(tableRepo, tableQuery, downloadFormatSelect.getValue());
+				return getDownloadData(tableRepo, tableQuery,
+						downloadFormatSelect.getValue());
 			}
 		});
 		tableFileDownloader.extend(tableDownload);
@@ -246,7 +268,8 @@ public class RDFQueryView extends CustomComponent {
 	 *
 	 */
 	RDFDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(selector.getContext(), dpu, dataUnit);
+		return RDFDataUnitHelper.getRepository(selector.getContext(), dpu,
+				dataUnit);
 	}
 
 	void setDpu(DPUInstanceRecord dpu) {
@@ -258,13 +281,21 @@ public class RDFQueryView extends CustomComponent {
 	}
 
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
+
 		if (query.length() < 9) {
 			//Due to expected exception format in catch block
 			throw new InvalidQueryException(new InvalidQueryException(
-					"Invalid query."));
+					"Invalid query: " + query));
 		}
-		String queryStart = query.trim().substring(0, 9).toLowerCase();
-		return queryStart.startsWith("select");
+		QueryPart queryPart = new QueryPart(query);
+		SPARQLQueryType type = queryPart.getSPARQLQueryType();
+
+		if (type == SPARQLQueryType.SELECT) {
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	/**
@@ -290,17 +321,24 @@ public class RDFQueryView extends CustomComponent {
 		setUpTableDownload(selectedDpu, selectedDataUnit, query);
 
 		//New RDFLazyQueryContainer
-		RDFLazyQueryContainer container = new RDFLazyQueryContainer(new RDFQueryDefinition(15, "id", query, selector.getContext(), selectedDpu, selectedDataUnit), new RDFQueryFactory());
+		RDFLazyQueryContainer container = new RDFLazyQueryContainer(
+				new RDFQueryDefinition(15, "id", query, selector.getContext(),
+				selectedDpu, selectedDataUnit), new RDFQueryFactory());
 		if (container.size() > 0) {
-			if(isSelectQuery(query)) {
-				for (Object propertyId : container.getItem(container.getIdByIndex(0)).getItemPropertyIds()) {
-					container.addContainerProperty(propertyId, String.class, null, true, true);
+			if (isSelectQuery(query)) {
+				for (Object propertyId : container.getItem(container
+						.getIdByIndex(0)).getItemPropertyIds()) {
+					container.addContainerProperty(propertyId, String.class,
+							null, true, true);
 				}
 				resultTable.setFilterBarVisible(true);
 			} else {
-				container.addContainerProperty("subject", String.class, null, true, true);
-				container.addContainerProperty("predicate", String.class, null, true, true);
-				container.addContainerProperty("object", String.class, null, true, true);
+				container.addContainerProperty("subject", String.class, null,
+						true, true);
+				container.addContainerProperty("predicate", String.class, null,
+						true, true);
+				container.addContainerProperty("object", String.class, null,
+						true, true);
 				resultTable.setFilterBarVisible(false);
 			}
 		}
@@ -331,10 +369,12 @@ public class RDFQueryView extends CustomComponent {
 	 * Prepare data file for download after SELECT or CONSTRUCT query.
 	 *
 	 * @param repository {@link LocalRDFRepo} of selected graph.
-	 * @param query {@link String} containing query to execute on repository.
+	 * @param query      {@link String} containing query to execute on
+	 *                   repository.
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
-	private InputStream getDownloadData(RDFDataUnit repository, String query, Object format) {
+	private InputStream getDownloadData(RDFDataUnit repository, String query,
+			Object format) {
 		try {
 			boolean isSelectQuery = isSelectQuery(query);
 
@@ -426,7 +466,8 @@ public class RDFQueryView extends CustomComponent {
 		return filename;
 	}
 
-	private void setUpTableDownload(DPUInstanceRecord selectedDpu, DataUnitInfo selectedDataUnit, String query) {
+	private void setUpTableDownload(DPUInstanceRecord selectedDpu,
+			DataUnitInfo selectedDataUnit, String query) {
 		resultDownloadControls.setVisible(true);
 		tableDpu = selectedDpu;
 		tableDataUnit = selectedDataUnit;
@@ -436,7 +477,7 @@ public class RDFQueryView extends CustomComponent {
 			if (isSelectQuery(query)) {
 				downloadFormatSelect.removeAllItems();
 				for (SelectFormatType t : SelectFormatType.values()) {
-					if(first == null) {
+					if (first == null) {
 						first = t;
 					}
 					downloadFormatSelect.addItem(t);
@@ -445,8 +486,8 @@ public class RDFQueryView extends CustomComponent {
 				downloadFormatSelect.removeAllItems();
 				for (RDFFormatType type : RDFFormatType.values()) {
 					if (type != RDFFormatType.AUTO) {
-						if(first == null) {
-						first = type;
+						if (first == null) {
+							first = type;
 						}
 						downloadFormatSelect.addItem(type);
 					}
