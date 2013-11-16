@@ -980,7 +980,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *         (see {@link LazyTriples#DEFAULT_SPLIT_SIZE}).
 	 */
 	@Override
-	public LazyTriples getLazyTriples() {
+	public LazyTriples getTriplesIterator() {
 
 		LazyTriples result = new LazyTriples(getRepositoryResult());
 
@@ -996,7 +996,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *         as defined splitSize.
 	 */
 	@Override
-	public LazyTriples getLazyTriples(long splitSize) {
+	public LazyTriples getTriplesIterator(long splitSize) {
 
 		LazyTriples result = new LazyTriples(getRepositoryResult(), splitSize);
 
