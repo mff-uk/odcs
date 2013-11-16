@@ -105,6 +105,7 @@ public class RecordsTable extends CustomComponent {
 					switch (type) {
 						case DPU_INFO:
 						case PIPELINE_INFO:
+						case DPU_TERMINATION_REQUEST:
 							img = new ThemeResource("icons/log.png");
 							break;
 						case DPU_DEBUG:

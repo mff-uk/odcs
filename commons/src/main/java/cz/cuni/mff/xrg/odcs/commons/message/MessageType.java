@@ -24,4 +24,10 @@ public enum MessageType {
 	 * execution.
 	 */
 	, ERROR
+	/**
+	 * Message that require skipping execution of every DPU after current
+	 * DPU till the end of the pipeline. Can be used to terminate execution
+	 * if there are for example no input data without failing it.
+	 */
+	, TERMINATION_REQUEST
 }

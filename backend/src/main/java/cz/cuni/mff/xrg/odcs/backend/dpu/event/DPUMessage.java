@@ -51,6 +51,12 @@ public final class DPUMessage extends DPUEvent {
 					shortMessage, 
 					longMessage);
 			break;
+		case TERMINATION_REQUEST:
+			LOG.info("DPU '{}' requires pipeline termination with message short: '{}' long: '{}'", 
+					context.getDPU().getName(),
+					shortMessage, 
+					longMessage);
+			break;			
 		}
 	}
 

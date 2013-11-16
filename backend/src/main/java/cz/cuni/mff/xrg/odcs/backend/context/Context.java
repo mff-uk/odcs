@@ -275,13 +275,18 @@ public class Context implements DPUContext {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
 				type, this, this));
 		// set warningMessage and errorMessage 
-		this.warningMessage = warningMessage || type == MessageType.WARNING;
-		this.errorMessage = errorMessage || type == MessageType.ERROR;
-	}
-	
-	@Override
-	public void requestEnd() {
-		stopExecution = true;
+		switch(type) {
+			case WARNING:
+				this.warningMessage = true;
+				break;
+			case ERROR:
+				this.errorMessage = true;
+				break;
+			case TERMINATION_REQUEST:
+				this.stopExecution = true;
+				break;
+			default:			
+		}
 	}
 	
 	@Override

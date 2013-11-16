@@ -21,17 +21,17 @@ public class TestContext implements DPUContext {
 	/**
 	 * Root directory for execution.
 	 */
-	private File rootDirectory;
+	private final File rootDirectory;
 	
 	/**
 	 * Date of last execution.
 	 */
-	private Date lastExecution;
+	private final Date lastExecution;
 	
 	/**
 	 * Jar path.
 	 */
-	private String jarPath;
+	private final String jarPath;
 	
 	private boolean publishedWarning = false; 
 	
@@ -75,13 +75,13 @@ public class TestContext implements DPUContext {
 					fullMessage);
 			publishedWarning = true;
 			break;
+		case TERMINATION_REQUEST:
+			LOG.info("DPU publish termination message short: '{}' long: '{}'", 
+					shortMessage, 
+					fullMessage);
+			break;
 		}
 		
-	}
-
-	@Override
-	public void requestEnd() {
-		// just ignore this
 	}
 	
 	@Override

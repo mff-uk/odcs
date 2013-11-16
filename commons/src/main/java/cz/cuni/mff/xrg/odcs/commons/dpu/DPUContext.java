@@ -50,16 +50,6 @@ public interface DPUContext {
 			String fullMessage);	
 	
 	/**
-	 * Request the execution to end after current DPU. This does not mean that
-	 * execution failed.
-	 * 
-	 * Use this to end execution for planned cases. DPU should also create
-	 * message about the reasons for this request. To do this use
-	 * {@link #sendMessage(cz.cuni.mff.xrg.odcs.commons.message.MessageType, java.lang.String)}.
-	 */
-	public void requestEnd();
-	
-	/**
 	 * Return true if the DPU is running in debugging mode.
 	 * 
 	 * @return
