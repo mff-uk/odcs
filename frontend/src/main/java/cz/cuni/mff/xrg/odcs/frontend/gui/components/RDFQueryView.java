@@ -124,7 +124,7 @@ public class RDFQueryView extends CustomComponent {
 		formatSelect = new NativeSelect();
 		for (RDFFormatType type : RDFFormatType.values()) {
 			if (type != RDFFormatType.AUTO) {
-				formatSelect.addItem(type);
+				formatSelect.addItem(RDFFormatType.getStringValue(type));
 			}
 		}
 		for (SelectFormatType t : SelectFormatType.values()) {
@@ -132,7 +132,7 @@ public class RDFQueryView extends CustomComponent {
 		}
 		formatSelect.setImmediate(true);
 		formatSelect.setNullSelectionAllowed(false);
-		formatSelect.select(RDFFormatType.RDFXML);
+		formatSelect.select(RDFFormatType.getStringValue(RDFFormatType.RDFXML));
 		queryControls.addComponent(formatSelect);
 
 		queryDownloadButton = new Button("Run Query and Download");
@@ -383,9 +383,18 @@ public class RDFQueryView extends CustomComponent {
 					.getAbsolutePath();
 
 			if (isSelectQuery != (format.getClass() == SelectFormatType.class)) {
-				Notification.show("Bad format selected!",
-						"Proper format for query type must be selected!",
-						Notification.Type.ERROR_MESSAGE);
+
+				if (isSelectQuery) {
+					Notification.show("Not suported format for SELECT query !",
+							"This format can be used only for CONSTRUCT queries !",
+							Notification.Type.ERROR_MESSAGE);
+				} else {
+					Notification.show(
+							"Not suported format for CONSTRUCT query !",
+							"This format can be used only for SELECT queries !",
+							Notification.Type.ERROR_MESSAGE);
+				}
+
 				return null;
 			}
 
@@ -394,7 +403,9 @@ public class RDFQueryView extends CustomComponent {
 				constructData = repository.executeSelectQuery(query, fn,
 						selectType);
 			} else {
-				RDFFormatType rdfType = (RDFFormatType) format;
+
+				RDFFormatType rdfType = RDFFormatType.getTypeByString(format
+						.toString());
 				constructData = repository.executeConstructQuery(query,
 						rdfType, fn);
 			}
@@ -425,8 +436,12 @@ public class RDFQueryView extends CustomComponent {
 			return "";
 		}
 		String filename = null;
-		if (oFormat.getClass() == RDFFormatType.class) {
-			switch ((RDFFormatType) oFormat) {
+		if (oFormat.getClass() == String.class) {
+
+			RDFFormatType type = RDFFormatType.getTypeByString(oFormat
+					.toString());
+
+			switch (type) {
 				case TTL:
 					filename = "data.ttl";
 					break;
@@ -486,10 +501,11 @@ public class RDFQueryView extends CustomComponent {
 				downloadFormatSelect.removeAllItems();
 				for (RDFFormatType type : RDFFormatType.values()) {
 					if (type != RDFFormatType.AUTO) {
+						String value = RDFFormatType.getStringValue(type);
 						if (first == null) {
-							first = type;
+							first = value;
 						}
-						downloadFormatSelect.addItem(type);
+						downloadFormatSelect.addItem(value);
 					}
 				}
 			}
