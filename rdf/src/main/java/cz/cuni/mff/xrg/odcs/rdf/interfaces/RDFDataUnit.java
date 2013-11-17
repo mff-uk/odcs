@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
 import org.openrdf.model.URI;
@@ -290,4 +291,16 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * method has no effect.
 	 */
 	public void deleteApplicationGraphs();
+
+	/**
+	 *
+	 * @param uriResource Subject or object URI as resource use to describe it.
+	 * @return Graph contains all RDF triples as result of descibe for given
+	 *         Resource URI. If graph is empty, there is are no triples for
+	 *         describe Resource URI.
+	 * @throws InvalidQueryException if resource is not URI type (e.g.
+	 *                               BlankNode, some type of Literal (in object
+	 *                               case))
+	 */
+	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
 }
