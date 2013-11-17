@@ -1333,6 +1333,33 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return map;
 	}
 
+	/**
+	 *
+	 * @param uriResource Subject or object URI as resource use to describe it.
+	 * @return Graph contains all RDF triples as result of descibe for given
+	 *         Resource URI. If graph is empty, there is are no triples for
+	 *         describe Resource URI.
+	 * @throws InvalidQueryException if resource is not URI type (e.g.
+	 *                               BlankNode, some type of Literal (in object
+	 *                               case))
+	 */
+	@Override
+	public Graph describeURI(Resource uriResource) throws InvalidQueryException {
+
+		if (uriResource instanceof URI) {
+			String describeQuery = String.format("DESCRIBE <%s>", uriResource
+					.toString());
+
+			Graph result = executeConstructQuery(describeQuery);
+
+			return result;
+		} else {
+			throw new InvalidQueryException(
+					"Resource " + uriResource.toString() + "is not URI type");
+		}
+
+	}
+
 	private long getSizeForConstruct(String constructQuery) throws InvalidQueryException {
 		long size = 0;
 
