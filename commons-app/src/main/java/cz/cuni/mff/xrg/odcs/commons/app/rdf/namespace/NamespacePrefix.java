@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
 /**
@@ -9,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "rdf_ns_prefix")
-public class NamespacePrefix {
+public class NamespacePrefix implements Serializable {
 	
 	/**
 	 * Primary key of entity.
