@@ -29,6 +29,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource
 import cz.cuni.mff.xrg.odcs.frontend.container.InFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.PropertiesFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.InputStream;
@@ -45,7 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
-import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
 /**
  * Component for viewing and filtering of log messages.
@@ -412,7 +412,7 @@ public class LogMessagesTable extends CustomComponent {
 			public void itemClick(ItemClickEvent event) {
 				//if (event.isDoubleClick()) {
 				if (!table.isSelected(event.getItemId())) {
-					CompositeItem item = (CompositeItem) event.getItem();
+					ValueItem item = (ValueItem) event.getItem();
 					long logId = (long) item.getItemProperty("id")
 							.getValue();
 					LogMessage log = logFacade.getLog(logId);
