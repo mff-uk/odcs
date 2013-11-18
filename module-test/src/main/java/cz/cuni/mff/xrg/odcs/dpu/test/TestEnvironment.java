@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.openrdf.rio.RDFFormat;
@@ -23,9 +22,8 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.test.context.TestContext;
+import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
@@ -49,47 +47,37 @@ public class TestEnvironment {
 	/**
 	 * Context used for testing.
 	 */
-	private TestContext context;
+	private final TestContext context;
 
 	/**
 	 * Working directory.
 	 */
-	private File workingDirectory;
-
-	/**
-	 * Time of last execution.
-	 */
-	private Date lastExecution;
-
-	/**
-	 * Jar-path.
-	 */
-	private String jarPath;
+	private final File workingDirectory;
 
 	/**
 	 * Used {@link ManagableDataUnit}s
 	 */
-	private LinkedList<ManagableDataUnit> dataUnits = new LinkedList<>();
+	private final LinkedList<ManagableDataUnit> dataUnits = new LinkedList<>();
 
 	/**
 	 * Directories for input {@link ManagableDataUnit}s.
 	 */
-	private HashMap<String, ManagableDataUnit> inputDataUnits = new HashMap<>();
+	private final HashMap<String, ManagableDataUnit> inputDataUnits = new HashMap<>();
 
 	/**
 	 * Directories for output {@link ManagableDataUnit}s.
 	 */
-	private HashMap<String, ManagableDataUnit> outputDataUnits = new HashMap<>();
+	private final HashMap<String, ManagableDataUnit> outputDataUnits = new HashMap<>();
 
 	/**
-	 * Counter for dataUnits id's and directories.
+	 * Factory for {@link DataUnit}s classes.
 	 */
-	private int dataUnitIdCounter = 0;
-
-	private TestEnvironment() {
-		context = null;
-		workingDirectory = null;
-		lastExecution = null;
+	private final DataUnitFactory dataUnitFactory;
+	
+	private TestEnvironment(File workingDirectory) {
+		this.context = new TestContext();
+		this.workingDirectory = workingDirectory;
+		this.dataUnitFactory = new DataUnitFactory(workingDirectory);
 	}
 
 	/**
@@ -109,11 +97,10 @@ public class TestEnvironment {
 	 * @return Test environment.
 	 */
 	public static TestEnvironment create(File directory) {
-		TestEnvironment env = new TestEnvironment();
 		final String testDirName = "odcs_test_"
 				+ Long.toString((new Date()).getTime());
-		env.workingDirectory = new File(directory, testDirName);
-		return env;
+		
+		return new TestEnvironment(new File(directory, testDirName));
 	}
 
 	// - - - - - - - - - methods for environment setup - - - - - - - - - //
@@ -124,13 +111,50 @@ public class TestEnvironment {
 	 * @param jarPath
 	 */
 	public void setJarPath(String jarPath) {
-		this.jarPath = jarPath;
+		context.setJarPath(jarPath);
 	}
 
+	/**
+	 * Set time for last execution.
+	 * 
+	 * @param lastExecution 
+	 */
 	public void setLastExecution(Date lastExecution) {
-		this.lastExecution = lastExecution;
+		context.setLastExecution(lastExecution);
 	}
 
+	/**
+	 * @param workingDirectory the workingDirectory to set, use null to use
+	 * subdirectory in {@link#rootDirectory}
+	 */
+	public void setWorkingDirectory(File workingDirectory) {
+		context.setWorkingDirectory(workingDirectory);
+	}
+
+	/**
+	 * @param resultDirectory the resultDirectory to set, use null to use
+	 * subdirectory in {@link#rootDirectory}
+	 */
+	public void setResultDirectory(File resultDirectory) {
+		context.setResultDirectory(resultDirectory);
+	}
+
+	/**
+	 * @param globalDirectory the globalDirectory to set, use null to use
+	 * subdirectory in {@link#rootDirectory}
+	 */
+	public void setGlobalDirectory(File globalDirectory) {
+		context.setGlobalDirectory(globalDirectory);
+	}
+
+	/**
+	 * @param userDirectory the userDirectory to set, use null to use
+	 * subdirectory in {@link#rootDirectory}
+	 */
+	public void setUserDirectory(File userDirectory) {
+		context.setUserDirectory(userDirectory);
+	}
+	
 	/**
 	 * Set given {@link ManagableDataUnit} as an input. If there already is
 	 * another value for given name it is overridden. The old
@@ -166,12 +190,12 @@ public class TestEnvironment {
 	 * 
 	 * @param name Name.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
-	 * @param file File with data.
 	 * @return Created input data unit.
+	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
 	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso)
 			throws RDFException {
-		RDFDataUnit rdf = createRdfDataUnit(name, useVirtuoso);
+		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
 		addInput(name, rdf);
 		return rdf;
 	}
@@ -184,15 +208,16 @@ public class TestEnvironment {
 	 * 
 	 * @param name Name.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
-	 * @param resorceName Name of resource file. The path to the resource file should be relative with respect to src/test/resources folder
+	 * @param resourceName Name of resource file. The path to the resource file should be relative with respect to src/test/resources folder
 	 * @param format Format of input file.
 	 * @return Created input data unit.
+	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
 	public RDFDataUnit createRdfInputFromResource(String name,
 			boolean useVirtuoso,
 			String resourceName,
 			RDFFormat format) throws RDFException {
-		RDFDataUnit rdf = createRdfDataUnit(name, useVirtuoso);
+		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
 		// construct path to the resource
 		URL url = Thread.currentThread().getContextClassLoader()
 				.getResource(resourceName);
@@ -215,10 +240,11 @@ public class TestEnvironment {
 	 * @param name Name.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @return Created RDFDataUnit.
+	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
 	public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
 			throws RDFException {
-		RDFDataUnit rdf = createRdfDataUnit(name, useVirtuoso);
+		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
 		addOutput(name, rdf);
 		return rdf;
 	}
@@ -234,13 +260,11 @@ public class TestEnvironment {
 	 * Any thrown exception is passed. In every case the {@link #release()}
 	 * method must be called in order to release test data.
 	 * 
-	 * @param dpuClass
+	 * @param dpuInstance Instance of DPU to run.
 	 * @return False if the execution failed by sending error message
+	 * @throws java.lang.Exception
 	 */
-	public <T extends DPU> boolean run(DPU dpuInstance) throws Exception {
-		// prepare context
-		context = new TestContext(workingDirectory, lastExecution, jarPath);
-
+	public boolean run(DPU dpuInstance) throws Exception {
 		// prepare dpu instance - set annotations
 		connectDataUnits(dpuInstance);
 
@@ -357,56 +381,6 @@ public class TestEnvironment {
 			// ...
 			dataUnits.add(dataUnit);
 		}
-	}
-
-	/**
-	 * Create RDF data unit.
-	 * 
-	 * @param name
-	 * @param useVirtuoso
-	 * @return
-	 */
-	private RDFDataUnit createRdfDataUnit(String name, boolean useVirtuoso) {
-		if (useVirtuoso) {
-			return createVirtuosoRdfDataUnit(name);
-		} else {
-			return createLocalRdfDataUnit(name);
-		}
-	}
-
-	/**
-	 * Create RDF data unit with given name that is stored in local file.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	private RDFDataUnit createLocalRdfDataUnit(String name) {
-		final String number = Integer.toString(dataUnitIdCounter++);
-		final String repoPath = workingDirectory.toString()
-				+ File.separatorChar + "dataUnit" + File.separatorChar + number;
-		final String id = "dpu-test_" + number + "_" + name;
-		final String namedGraph = GraphUrl.translateDataUnitId(id);
-
-		return RDFDataUnitFactory.createLocalRDFRepo(repoPath, id, name,
-				namedGraph);
-	}
-
-	/**
-	 * Create RDF data unit with given name that is stored in virtuoso.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	private RDFDataUnit createVirtuosoRdfDataUnit(String name) {
-		final String number = Integer.toString(dataUnitIdCounter++);
-		final String id = "dpu-test_" + number + "_" + name;
-		final String namedGraph = GraphUrl.translateDataUnitId(id);
-		final String dataUnitName = id;
-
-		return RDFDataUnitFactory.createVirtuosoRDFRepo(virtuosoConfig.host,
-				virtuosoConfig.port, virtuosoConfig.user,
-				virtuosoConfig.password, namedGraph, dataUnitName,
-				new Properties());
 	}
 
 }
