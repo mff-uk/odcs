@@ -184,7 +184,7 @@ public class TestEnvironment {
 	 * 
 	 * @param name Name.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
-	 * @param resorceName Name of resource file.
+	 * @param resorceName Name of resource file. The path to the resource file should be relative with respect to src/test/resources folder
 	 * @param format Format of input file.
 	 * @return Created input data unit.
 	 */
