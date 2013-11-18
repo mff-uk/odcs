@@ -16,11 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.launch.Framework;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * OSGI based implementation of {@link ModuleFacade}.
@@ -34,24 +36,23 @@ class OSGIModuleFacade implements ModuleFacade {
 	/**
 	 * Logger class.
 	 */
-	private static final Logger LOG = LoggerFactory
-			.getLogger(OSGIModuleFacade.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OSGIModuleFacade.class);
 
 	/**
 	 * OSGi framework class.
 	 */
-	private org.osgi.framework.launch.Framework framework = null;
+	private Framework framework;
 
 	/**
 	 * OSGi context.
 	 */
-	private org.osgi.framework.BundleContext context = null;
+	private BundleContext context;
 
 	/**
 	 * Store loaded bundles. DPU's bundles are stored under their directory
 	 * name. Libraries under their uri.
 	 */
-	private ConcurrentHashMap<String, BundleContainer> bundles = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, BundleContainer> bundles = new ConcurrentHashMap<>();
 
 	@Autowired
 	private OSGIModuleFacadeConfig configuration;
@@ -69,7 +70,7 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * 
 	 * The structure must be accessed only inside synchronised block.
 	 */
-	private Map<String, Thread> updatingBundles = new HashMap<String, Thread>();
+	private final Map<String, Thread> updatingBundles = new HashMap<>();
 	
 	/**
 	 * Start the OSGI framework.
@@ -110,7 +111,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		}
 		
 		// load resources
-		starUpLoad();
+		startUpLoad();
 	}
 
 	/**
@@ -153,6 +154,7 @@ class OSGIModuleFacade implements ModuleFacade {
 		unLoad(directory);
 	}
 	
+	@Override
 	public void unLoad(String directory) {
 		// we need DPUs lock as 'uninstall' do not care about locking 
 		lockUpdate(directory);
@@ -285,10 +287,16 @@ class OSGIModuleFacade implements ModuleFacade {
 		}
 		return null;
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public void preLoadAllDPUs() {
+		preLoadDPUs(dpuTemplateDao.getAllTemplates());
+	}
 
 	@Override
 	public void preLoadDPUs(List<DPUTemplateRecord> dpus) {
-		for (DPUTemplateRecord dpu:dpus) {
+		for (DPUTemplateRecord dpu : dpus) {
 			try {
 				install(dpu);
 			} catch(ModuleException e) {
@@ -467,7 +475,7 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * @return Null in case of error.
 	 */
 	private BundleContainer installLib(String uri) {
-		Bundle bundle = null;
+		Bundle bundle;
 		try {
 			bundle = context.installBundle(uri);
 		} catch (org.osgi.framework.BundleException e) {
@@ -475,7 +483,7 @@ class OSGIModuleFacade implements ModuleFacade {
 			return null;
 		}
 
-		BundleContainer bundleContainer = null;
+		BundleContainer bundleContainer;
 		bundleContainer = new BundleContainer(context, uri.toString(), bundle);
 		bundles.put(uri, bundleContainer);
 
@@ -536,11 +544,9 @@ class OSGIModuleFacade implements ModuleFacade {
 	/**
 	 * Load libraries and DPU's jar files.
 	 */
-	private void starUpLoad() {
+	private void startUpLoad() {
 		// first load libraries
 		loadLibs(configuration.getDpuLibFolder());
-		// load DPU's jar files
-		preLoadDPUs(dpuTemplateDao.getAllTemplates());		
 	}
 	
 }

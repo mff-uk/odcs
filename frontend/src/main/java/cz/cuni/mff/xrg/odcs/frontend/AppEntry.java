@@ -76,6 +76,11 @@ public class AppEntry extends com.vaadin.ui.UI {
         
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
+		
+		// Initialize DPUs by preloading all thier JAR bundles
+		// TODO use lazyloading instead of preload?
+		ModuleFacade modules = context.getBean(ModuleFacade.class);
+		modules.preLoadAllDPUs();
         
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling

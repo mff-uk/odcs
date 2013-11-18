@@ -1,14 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
-import java.util.ArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -17,6 +14,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleDeleteEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleNewEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleUpdateEvent;
+import java.util.Arrays;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * As component receive {@link ModuleEvent} and react on them by calling methods
@@ -35,14 +34,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleUpdateEvent;
  */
 class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(OSGIChangeManager.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OSGIChangeManager.class);
 
 	@Autowired
-	private OSGIModuleFacade osgiModule;
-
-	@Autowired
-	private DPUFacade dpuFacade;
+	private ModuleFacade osgiModule;
 	
 	@Autowired
 	private DbDPUTemplateRecord dpuTemplateDao;
@@ -61,6 +56,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 	}
 
 	@Override
+	@Transactional
 	public void onApplicationEvent(ModuleEvent event) {
 		final String directory = event.getDirectoryName();
 		if (event instanceof ModuleDeleteEvent) {
@@ -74,9 +70,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 				LOG.warn("Missing record for new DPU in directory: ", directory);
 			} else {
 				// pre-load
-				ArrayList<DPUTemplateRecord> dpuList = new ArrayList<>(1);
-				dpuList.add(dpu);
-				osgiModule.preLoadDPUs(dpuList);
+				osgiModule.preLoadDPUs(Arrays.asList(dpu));
 			}
 		} else if (event instanceof ModuleUpdateEvent) {
 			LOG.debug("Udating DPU in: {}", directory);

@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.backend.communication.Server;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -123,7 +124,12 @@ public class AppEntry {
 		// parse args
 		parseArgs(args);
 		// initialise
-		initSpring();		
+		initSpring();
+		
+		// Initialize DPUs by preloading all thier JAR bundles
+		// TODO use lazyloading instead of preload?
+		ModuleFacade modules = context.getBean(ModuleFacade.class);
+		modules.preLoadAllDPUs();
 
 		// try to get application-lock 
 		// we construct lock key based on port		
