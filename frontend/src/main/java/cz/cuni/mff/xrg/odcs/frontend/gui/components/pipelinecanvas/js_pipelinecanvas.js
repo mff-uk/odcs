@@ -1423,6 +1423,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			strokeWidth = 2.5;
 		}
 		var rect = dpu.group.get('Rect')[0];
+		if(rect == null) {
+			return;
+		}
 		if(highlight) {
 			rect.setStrokeWidth(4);
 		} else {
@@ -1453,6 +1456,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			conn.arrowLeft.setStrokeWidth(strokeWidth);
 			conn.arrowRight.setStrokeWidth(strokeWidth);
 		}
+		dpuLayer.draw();
 		lineLayer.draw();
 	}
 

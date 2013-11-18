@@ -40,6 +40,7 @@ public class DPUDetail extends Window {
 	private DPUInstanceWrap dpuInstance;
 	private TextField dpuName;
 	private TextArea dpuDescription;
+	private boolean result = false;
 	/**
 	 * DPU's configuration dialog.
 	 */
@@ -158,6 +159,7 @@ public class DPUDetail extends Window {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				if (saveDPUInstance()) {
+					result = true;
 					close();
 				}
 			}
@@ -168,6 +170,7 @@ public class DPUDetail extends Window {
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
+				result = false;
 				close();
 			}
 		});
@@ -188,6 +191,7 @@ public class DPUDetail extends Window {
 					public void onClose(ConfirmDialog cd) {
 						if (cd.isConfirmed()) {
 							if (saveDpuAsNew()) {
+								result = true;
 								close();
 							}
 						}
@@ -282,5 +286,9 @@ public class DPUDetail extends Window {
 			return false;
 		}
 		return true;
+	}
+	
+	public boolean getResult() {
+		return result;
 	}
 }

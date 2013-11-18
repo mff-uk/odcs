@@ -213,9 +213,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				isModified = true;
-				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Node.class));
-				getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
+				DPUDetail source = (DPUDetail)e.getSource();
+				if(source.getResult()) {
+					isModified = true;
+					fireEvent(new DetailClosedEvent(PipelineCanvas.this, Node.class));
+					getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
+				}
 			}
 		});
 		App.getApp().addWindow(detailDialog);
