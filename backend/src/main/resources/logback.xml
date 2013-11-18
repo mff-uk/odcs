@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <appender name="DB-OLD" class="ch.qos.logback.classic.db.VirtuosoAppender">
+    <appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">
         <!-- requiredKey must by in MDC to pass this filter, so only messages related  to executions will pass -->
         <filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter">
             <requiredKey>execution</requiredKey>
@@ -16,18 +16,16 @@
 
         <connectionSource class="ch.qos.logback.classic.db.PooledConnectionSource"/>                
     </appender>
-
+<!--
     <appender name="DB" class="cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender">
-        <!-- requiredKey must by in MDC to pass this filter, so only messages related  to executions will pass -->
         <filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter">
             <requiredKey>execution</requiredKey>
         </filter>
-        <!-- execution level based filtering -->
         <filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter" />
                 
         <connectionSource class="ch.qos.logback.classic.db.PooledConnectionSource"/>
     </appender>
-
+-->
     <logger name="org.springframework" level="WARN" />
     <logger name="org.eclipse.persistence" level="INFO" />
     <logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
