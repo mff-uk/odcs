@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import java.io.Serializable;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 import javax.persistence.*;
 
@@ -11,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "logging_event_exception")
-public class LogExceptionLine implements Serializable {
+public class LogExceptionLine implements DataObject {
 	
 	/**
 	 * Log message which produced this stacktrace.
@@ -33,6 +33,11 @@ public class LogExceptionLine implements Serializable {
 	 */
 	@Column(name = "trace_line")
 	private String line;
+
+	@Override
+	public Long getId() {
+		return (message.getId().longValue() << 16) | lineIndex;
+	}
 	
 	public LogMessage getMessage() {
 		return message;

@@ -71,6 +71,8 @@
     <bean id="dbTemplate" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecordImpl" />
     <bean id="dbInstance" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUInstanceRecordImpl" />
     <bean id="dbMessage" class="cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecordImpl" />
+    <bean id="dbLog" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessageImpl" />
+    <bean id="dbLogException" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogExceptionLineImpl" />
     
     <!-- authorizator required by dao -->
     <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.AuthorizatorImpl" />
