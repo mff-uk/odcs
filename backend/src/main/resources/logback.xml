@@ -1,30 +1,40 @@
 <configuration>
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{30} - %msg%n</pattern>
-		</encoder>
-	</appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{30} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-	<appender name="DB" class="ch.qos.logback.classic.db.VirtuosoAppender">
-		<!-- requiredKey must by in MDC to pass this filter, so only messages related 
-			to executions will pass -->
-		<filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter">
-			<requiredKey>execution</requiredKey>
-		</filter>
-		<!-- execution level based filtering -->
-		<filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter" />
+    <appender name="DB-OLD" class="ch.qos.logback.classic.db.VirtuosoAppender">
+        <!-- requiredKey must by in MDC to pass this filter, so only messages related  to executions will pass -->
+        <filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter">
+            <requiredKey>execution</requiredKey>
+        </filter>
+        <!-- execution level based filtering -->
+        <filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter" />
 
-		<connectionSource class="ch.qos.logback.classic.db.PooledConnectionSource" />
-	</appender>
+        <connectionSource class="ch.qos.logback.classic.db.PooledConnectionSource"/>                
+    </appender>
 
-	<logger name="org.springframework" level="WARN" />
-	<logger name="org.eclipse.persistence" level="INFO" />
-	<logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
+    <appender name="DB" class="cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender">
+        <!-- requiredKey must by in MDC to pass this filter, so only messages related  to executions will pass -->
+        <filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter">
+            <requiredKey>execution</requiredKey>
+        </filter>
+        <!-- execution level based filtering -->
+        <filter class="cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter" />
+                
+        <connectionSource class="ch.qos.logback.classic.db.PooledConnectionSource"/>
+    </appender>
 
-	<root level="ALL">	
-		<appender-ref ref="DB" />
-		<appender-ref ref="STDOUT" />
-	</root>	
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.eclipse.persistence" level="INFO" />
+    <logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
+
+    <root level="ALL">	
+        <appender-ref ref="DB" />
+        <appender-ref ref="STDOUT" />
+    </root>	
 
 </configuration>
