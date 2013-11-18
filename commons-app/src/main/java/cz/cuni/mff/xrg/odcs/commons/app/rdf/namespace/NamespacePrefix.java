@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 
 /**
@@ -9,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "rdf_ns_prefix")
-public class NamespacePrefix {
+public class NamespacePrefix implements DataObject {
 	
 	/**
 	 * Primary key of entity.
@@ -47,6 +48,7 @@ public class NamespacePrefix {
 		this.prefixURI = prefixURI;
 	}
 	
+	@Override
 	public Long getId() {
 		return id;
 	}
