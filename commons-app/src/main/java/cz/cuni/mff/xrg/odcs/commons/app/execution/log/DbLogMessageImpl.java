@@ -6,12 +6,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.util.*;
 import org.apache.log4j.Level;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation providing access to {@link LogMessage} data objects.
  *
  * @author Jan Vojt
  */
+@Transactional(propagation = Propagation.MANDATORY)
 public class DbLogMessageImpl extends DbAccessBase<LogMessage>
 		implements DbLogMessage {
 

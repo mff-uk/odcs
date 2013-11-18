@@ -6,12 +6,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link DbExecution}
  *
  * @author Petyr
  */
+@Transactional(propagation = Propagation.MANDATORY)
 class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecution {
 
     protected DbExecutionImpl() {

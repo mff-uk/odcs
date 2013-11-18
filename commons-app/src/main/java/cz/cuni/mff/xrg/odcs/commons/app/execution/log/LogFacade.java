@@ -9,6 +9,7 @@ import java.util.*;
 
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for fetching persisted entities. Manipulating logs is not implemented,
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Jan Vojt
  */
+@Transactional(readOnly = true)
 public class LogFacade {
 	
 	@Autowired

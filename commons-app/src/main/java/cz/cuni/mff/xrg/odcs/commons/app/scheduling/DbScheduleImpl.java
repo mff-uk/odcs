@@ -4,12 +4,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import java.util.List;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation providing access to {@link Schedule} data objects.
  *
  * @author Jan Vojt
  */
+@Transactional(propagation = Propagation.MANDATORY)
 public class DbScheduleImpl extends DbAccessBase<Schedule>
 							implements DbSchedule {
 

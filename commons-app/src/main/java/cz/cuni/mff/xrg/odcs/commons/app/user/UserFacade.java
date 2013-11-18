@@ -7,12 +7,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.UserNotificationRecord;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Jan Vojt
  */
+@Transactional(readOnly = true)
 public class UserFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UserFacade.class);

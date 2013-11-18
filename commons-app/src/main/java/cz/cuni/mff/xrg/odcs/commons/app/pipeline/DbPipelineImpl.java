@@ -4,6 +4,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import java.util.List;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation for accessing {@link Pipeline} data objects.
@@ -11,6 +13,7 @@ import java.util.List;
  * @author Petyr
  * @author Jan Vojt
  */
+@Transactional(propagation = Propagation.MANDATORY)
 class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
 
     protected DbPipelineImpl() {

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Jan Vojt
  */
+@Transactional(readOnly = true)
 public class DPUFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DPUFacade.class);
@@ -56,6 +57,7 @@ public class DPUFacade {
 	/**
 	 * Create copy of DPU template, as the owner the current user is set.
 	 * 
+	 * @param original
 	 * @return
 	 */
 	public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
