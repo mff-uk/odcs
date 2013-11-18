@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLog;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
@@ -31,7 +30,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private DbExecution dbExecution;
 	@Autowired
-	private DbLog dbLog;
+	private DbLogMessage dbLog;
 	@Autowired
 	private DbLogMessage dbLogMessage;
 	@Autowired

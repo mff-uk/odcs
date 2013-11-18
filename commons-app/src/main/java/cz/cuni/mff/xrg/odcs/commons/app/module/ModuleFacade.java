@@ -16,17 +16,26 @@ public interface ModuleFacade {
 	
 	/**
 	 * Return instance for given {@link DPUTemplateRecord}.
+	 * 
 	 * @param dpu
 	 * @return
 	 * @throws ModuleException
 	 */
 	Object getInstance(DPUTemplateRecord dpu) throws ModuleException;
-		
+	
 	/**
 	 * Unload the given {@link DPUTemplateRecord} instance bundle.
+	 * 
 	 * @param dpu
 	 */
 	void unLoad(DPUTemplateRecord dpu);
+	
+	/**
+	 * Unload the instance bundle given by its directory.
+	 * 
+	 * @param directory
+	 */
+	void unLoad(String directory);
 	
 	/**
 	 * Start update on given DPU. This will block access the given
@@ -58,6 +67,7 @@ public interface ModuleFacade {
 	/**
 	 * Stop update on given DPU. If updataFailed is true, then 
 	 * possibly loaded bundle for given DPU is uninstalled.
+	 * 
 	 * @param dpu
 	 * @param updataFailed
 	 */
@@ -65,32 +75,44 @@ public interface ModuleFacade {
 	
 	/**
 	 * Uninstall and delete the DPU's jar file.
+	 * 
 	 * @param dpu
 	 */
 	void delete(DPUTemplateRecord dpu);
 	
 	/**
-	 * Return jar-properties for given {@link DPURecord}'s bundle 
-	 * @param relativePath
+	 * Return jar-properties for given {@link DPURecord}'s bundle.
+	 * 
+	 * @param dpu
 	 * @return
 	 */
 	Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu);
 	
 	/**
+	 * Pre-load bundles for all DPUs persisted in database into memory. Do not
+	 * create instance from them, so their functionality is not validated.
+	 */
+	void preLoadAllDPUs();
+	
+	/**
 	 * Pre-load bundles for given DPUs into memory. Do not create instance
 	 * from them, so their functionality is not validated.
+	 * 
 	 * @param dpus
 	 */
 	void preLoadDPUs(List<DPUTemplateRecord> dpus);
 	
 	/**
 	 * Install all jar files from given folders as libraries.
+	 * 
 	 * @param directoryPaths
 	 */
 	void loadLibs(List<String> directoryPaths);
 	
 	/**
 	 * Return path to the DPU directory.
+	 * 
+	 * @return 
 	 */
 	String getDPUDirectory();
 	

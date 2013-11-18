@@ -10,19 +10,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao;
 public interface DataAccess <T extends DataObject> extends DataAccessRead<T> {
 	
 	/**
-	 * Create new object of given type. 
-	 * @return
-	 */
-	public T create();
-	
-	/**
-	 * Return deep copy of given object.
-	 * @param object
-	 * @return
-	 */
-	public T copy(T object);
-	
-	/**
 	 * Persist given object into database.
 	 * @param object
 	 */

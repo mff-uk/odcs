@@ -13,28 +13,14 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T>
  */
-public abstract class DbAccessBase<T extends DataObject> 
-	extends DbAccessReadBase<T> implements DbAccess<T> {
+public abstract class DbAccessBase<T extends DataObject>
+		extends DbAccessReadBase<T>
+		implements DbAccess<T> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DbAccessBase.class);
-		    
+	
 	public DbAccessBase(Class<T> entityClass) {
 		super(entityClass);
-	}
-    
-	@Override
-	public T create() {
-		try {
-			return entityClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException ex) {
-			LOG.error("The class {} cannot be instatiated by no-arg constructor.", entityClass.getSimpleName(), ex);
-			throw new RuntimeException(ex);
-		}
-	}
-
-	@Override
-	public T copy(T object) {
-		throw new UnsupportedOperationException();
 	}
 	
 	@Transactional

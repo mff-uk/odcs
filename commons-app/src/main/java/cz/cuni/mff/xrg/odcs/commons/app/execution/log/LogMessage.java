@@ -4,7 +4,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ import org.apache.log4j.Level;
  */
 @Entity
 @Table(name = "logging_event")
-public class LogMessage implements Serializable, DataObject {
+public class LogMessage implements DataObject {
 
 	/**
 	 * Log property name for logging messages produced by

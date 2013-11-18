@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -7,8 +8,6 @@ import javax.persistence.*;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-
-import java.io.Serializable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +20,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "exec_schedule")
-public class Schedule implements Serializable, OwnedEntity {
+public class Schedule implements DataObject, OwnedEntity {
 
 	/**
 	 * Unique ID for each plan.

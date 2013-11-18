@@ -32,16 +32,6 @@ public class LogFacadeTest {
 	private LogFacade facade;
 	
 	@Test
-	public void testGetAllLogs() {
-		List<LogMessage> logs = facade.getAllLogs();
-		assertEquals(10, logs.size());
-		assertEquals(2, logs.get(0).getProperties().size());
-		assertEquals(2, logs.get(1).getProperties().size());
-		assertEquals(3, logs.get(2).getProperties().size());
-		assertEquals(0, logs.get(3).getProperties().size());
-	}
-	
-	@Test
 	public void testLogsWarningOrInfo() {
 		Set<Level> levels = new HashSet<>(2);
 		levels.add(Level.WARN);
