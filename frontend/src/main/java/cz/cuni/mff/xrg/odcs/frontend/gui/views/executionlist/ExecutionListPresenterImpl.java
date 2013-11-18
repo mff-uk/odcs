@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLog;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
@@ -31,6 +31,8 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private DbExecution dbExecution;
 	@Autowired
+	private DbLog dbLog;
+	@Autowired
 	private DbLogMessage dbLogMessage;
 	@Autowired
 	private DbMessageRecord dbMessageRecord;
@@ -39,14 +41,14 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private ExecutionListView view;
 	private ExecutionListData dataObject;
-	
+
 	private Date lastLoad = new Date(0L);
 
 	@Override
 	public Object enter(Object configuration) {
 		// prepare data object
 		ReadOnlyContainer c = new ReadOnlyContainer<>(dbExecution, new ExecutionAccessor());
-		c.sort(new Object[] {"id"} , new boolean[] {false});
+		c.sort(new Object[]{"id"}, new boolean[]{false});
 		dataObject = new ExecutionListData(c);
 		// prepare view
 		Object viewObject = view.enter(this);
@@ -72,7 +74,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	public void refreshEventHandler() {
 		// TODO check for database change
 		boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-		if(hasModifiedExecutions) {
+		if (hasModifiedExecutions) {
 			lastLoad = new Date();
 			dataObject.getContainer().refresh();
 		}
@@ -106,7 +108,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	public void debugEventHandler(long executionId) {
 		PipelineExecution exec = IntlibHelper.runPipeline(getLightExecution(executionId).getPipeline(), true);
 		//pipelineFacade.run(getLightExecution(executionId).getPipeline(), true);
-		if(exec != null) {
+		if (exec != null) {
 			refreshEventHandler();
 			view.setSelectedRow(exec.getId());
 			view.showExecutionDetail(exec, new ExecutionDetailData(getLogDataSource(), getMessageDataSource()));
@@ -123,7 +125,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		return pipelineFacade.getExecution(executionId);
 	}
 
-	private ReadOnlyContainer<LogMessage> getLogDataSource() {
+	private ReadOnlyContainer<?> getLogDataSource() {
 		return new ReadOnlyContainer<>(dbLogMessage, new LogAccessor());
 	}
 

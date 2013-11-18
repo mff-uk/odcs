@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -78,9 +79,10 @@ public interface ExecutionListPresenter extends Presenter {
 		 * Show detail for given execution.
 		 *
 		 * @param execution
+		 * @param detailDataObject
 		 */
 		public void showExecutionDetail(PipelineExecution execution, ExecutionDetailData detailDataObject);
-		
+
 		public void refresh(boolean modified);
 
 		public void setSelectedRow(Long execId);
@@ -104,10 +106,11 @@ public interface ExecutionListPresenter extends Presenter {
 
 	public class ExecutionDetailData {
 
-		private ReadOnlyContainer<LogMessage> logContainer;
-		private ReadOnlyContainer<MessageRecord> messageContainer;
+		private final ReadOnlyContainer<?> logContainer;
+		
+		private final ReadOnlyContainer<MessageRecord> messageContainer;
 
-		public ReadOnlyContainer<LogMessage> getLogContainer() {
+		public ReadOnlyContainer<?> getLogContainer() {
 			return logContainer;
 		}
 
@@ -115,9 +118,10 @@ public interface ExecutionListPresenter extends Presenter {
 			return messageContainer;
 		}
 
-		public ExecutionDetailData(ReadOnlyContainer<LogMessage> logContainer, ReadOnlyContainer<MessageRecord> messageContainer) {
+		public ExecutionDetailData(ReadOnlyContainer<?> logContainer, ReadOnlyContainer<MessageRecord> messageContainer) {
 			this.logContainer = logContainer;
 			this.messageContainer = messageContainer;
 		}
+
 	}
 }

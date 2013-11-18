@@ -68,6 +68,7 @@
     <!-- Application DAO -->
     <bean id="DbPipeline" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipelineImpl" />
     <bean id="DbExecution" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecutionImpl" />
+    <bean id="DbLog" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogImpl" />
     <bean id="DbLogMessage" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessageImpl" />
     <bean id="DbMessageRecord" class="cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecordImpl" />
     
