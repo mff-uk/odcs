@@ -63,13 +63,14 @@ public class Scheduler extends ViewComponent {
 	private IndexedContainer tableData;
 	static String[] visibleCols = new String[]{"pipeline", "description", "rule", "user",
 		"last", "next", "duration", "status", "commands"};
-	static String[] headers = new String[]{"pipeline","Description", "Rule", "User",
+	static String[] headers = new String[]{"pipeline", "Description", "Rule", "User",
 		"Last", "Next", "Last run time", "Status", "Commands"};
 	int style = DateFormat.MEDIUM;
 	private Long schId;
 	static String filter;
 	private Schedule scheduleDel;
-	
+	private SchedulePipeline sch;
+
 	/**
 	 * The constructor should first build the main layout, set the composition
 	 * root and then do any custom initialization.
@@ -192,7 +193,6 @@ public class Scheduler extends ViewComponent {
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-
 				if (!schedulerTable.isSelected(event.getItemId())) {
 					schId = (Long) event.getItem().getItemProperty("schid").getValue();
 					showSchedulePipeline(schId);
@@ -205,7 +205,7 @@ public class Scheduler extends ViewComponent {
 
 	/**
 	 * Container with data for table {@link #schedulerTable}.
-	 * 
+	 *
 	 * TODO why static?
 	 *
 	 * @param data List of {@link Schedule}.
@@ -344,19 +344,23 @@ public class Scheduler extends ViewComponent {
 	private void showSchedulePipeline(Long id) {
 
 		// open scheduler dialog
-		SchedulePipeline sch = new SchedulePipeline();
+		if (sch == null) {
+			sch = new SchedulePipeline();
+			sch.addCloseListener(new CloseListener() {
+				@Override
+				public void windowClose(CloseEvent e) {
+					refreshData();
+				}
+			});
+		}
 
 		//openScheduler(schedule);
 		Schedule schedule = App.getApp().getSchedules().getSchedule(id);
 		sch.setSelectedSchedule(schedule);
 
-		App.getApp().addWindow(sch);
-		sch.addCloseListener(new CloseListener() {
-			@Override
-			public void windowClose(CloseEvent e) {
-				refreshData();
-			}
-		});
+		if (!App.getApp().getWindows().contains(sch)) {
+			App.getApp().addWindow(sch);
+		}
 	}
 
 	/**

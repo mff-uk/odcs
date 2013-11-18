@@ -35,13 +35,14 @@ public class UsersList {
 
 	private IntlibPagedTable usersTable;
 	private VerticalLayout usersListLayout;
-	private static String[] visibleCols = new String[]{"id","fullname", "user", "role",
+	private static String[] visibleCols = new String[]{"id", "fullname", "user", "role",
 		"total_pipelines", "actions"};
-	private static String[] headers = new String[]{"Id","Full User Name", "User Name", "Role(s)",
+	private static String[] headers = new String[]{"Id", "Full User Name", "User Name", "Role(s)",
 		"Total Pipelines", "Actions"};
 	private IndexedContainer tableData;
 	private Long userId;
 	private User userDel;
+	private UserCreate userEdit;
 
 	public VerticalLayout buildUsersListLayout() {
 
@@ -221,25 +222,23 @@ public class UsersList {
 
 		boolean newUser = false;
 		// open usercreation dialog
-		UserCreate userEdit = new UserCreate(newUser);
+		if (userEdit == null) {
+			userEdit = new UserCreate(newUser);
+			userEdit.addCloseListener(new CloseListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void windowClose(CloseEvent e) {
+					refreshData();
+				}
+			});
+		}
 		User user = App.getApp().getUsers().getUser(id);
 		userEdit.setSelectedUser(user);
 
-		App.getApp().addWindow(userEdit);
-
-
-		userEdit.addCloseListener(new CloseListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void windowClose(CloseEvent e) {
-				refreshData();
-			}
-		});
-
-
-
-
+		if (!App.getApp().getWindows().contains(userEdit)) {
+			App.getApp().addWindow(userEdit);
+		}
 	}
 
 	/**
