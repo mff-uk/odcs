@@ -3,8 +3,12 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -14,7 +18,11 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
-import cz.cuni.mff.xrg.odcs.frontend.mvp.MVPModel;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  *
@@ -33,15 +42,29 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class DPUModel implements MVPModel {
+@Address(url = "DPURecord")
+public class DPUPresenterImpl implements DPUPresenter {
 
+	@Autowired
+	private DPUView view;
+	@Autowired
+	ClassNavigator navigator;
+	
+	@Autowired
+	private DPUModuleManipulator dpuManipulator;
+	/**
+	 * Evaluates permissions of currently logged in user.
+	 */
+	private IntlibPermissionEvaluator permissions = App.getApp().getBean(IntlibPermissionEvaluator.class);
+	private DPUTemplateRecord selectedDpu = null;
 	@Autowired
 	private PipelineFacade pipelineFacade;
 	@Autowired
 	private DPUFacade dpuFacade;
-	private static final Logger LOG = LoggerFactory.getLogger(DPUModel.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DPUPresenterImpl.class);
 
-	void saveDPU(DPUTemplateWrap dpuWrap) {
+	@Override
+	public void saveDPUEventHandler(DPUTemplateWrap dpuWrap) {
 		// saving configuration
 		try {
 			dpuWrap.saveConfig();
@@ -105,7 +128,7 @@ public class DPUModel implements MVPModel {
 			//if DPU Template hasn't child elements then delete it.
 			if (dpu.getParent() == null) {
 				// first level DPU .. delete it completely
-				App.getApp().getDPUManipulator().delete(dpu);
+				dpuManipulator.delete(dpu);
 			} else {
 				// 2+ level DPU .. just delete the database record
 				dpuFacade.delete(dpu);
@@ -131,8 +154,6 @@ public class DPUModel implements MVPModel {
 	}
 
 	void deletePipeline(Long pipeId) {
-		Pipeline pipe = pipelineFacade.getPipeline(pipeId);
-		pipelineFacade.delete(pipe);
 	}
 
 	Pipeline getPipeline(Long pipeId) {
@@ -187,7 +208,7 @@ public class DPUModel implements MVPModel {
 		validators.add(new DPUDialogValidator());
 
 		try {
-			App.getApp().getDPUManipulator().replace(dpu, newJar, validators);
+			dpuManipulator.replace(dpu, newJar, validators);
 		} catch (DPUReplaceException e) {
 			Notification.show("Failed to replace DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			return;
@@ -195,5 +216,124 @@ public class DPUModel implements MVPModel {
 
 		// and show message to the user that the replace has been successful
 		Notification.show("Replace finished", Notification.Type.HUMANIZED_MESSAGE);
+	}
+
+	@Override
+	public void selectDPUEventHandler(final DPUTemplateRecord dpu) {
+		//if the previous selected
+		if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission("save")) {
+
+			//open confirmation dialog
+			ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
+					"There are unsaved changes.\nDo you wish to save them or discard?",
+					"Save", "Discard changes",
+					new ConfirmDialog.Listener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void onClose(ConfirmDialog cd) {
+					if (cd.isConfirmed()) {
+						view.saveDPUTemplate();
+						view.refresh();
+					}
+					selectedDpu = dpu;
+					view.selectNewDPU(dpu);
+				}
+			});
+
+		} else {
+			selectedDpu = dpu;
+			view.selectNewDPU(dpu);
+		}
+	}
+
+	@Override
+	public void dpuUploadedEventHandler(File file) {
+		DPUTemplateRecord dpu = dpuUploaded(file, selectedDpu);
+		view.refresh();
+		view.selectNewDPU(dpu);
+	}
+
+	@Override
+	public boolean hasPermission(String type) {
+		return permissions.hasPermission(selectedDpu, type);
+	}
+
+	/**
+	 * Return container with data that used in {@link #instancesTable}.
+	 *
+	 * @return result IndexedContainer for {@link #instancesTable}
+	 */
+	@Override
+	public IndexedContainer getTableData() {
+		return getPipelinesForDpu(selectedDpu);
+	}
+
+	@Override
+	public Object enter(Object configuration) {
+		Object viewObject = view.enter(this);
+		return viewObject;
+	}
+
+	@Override
+	public void openDPUCreateEventHandler() {
+		//Open the dialog for DPU Template creation
+		DPUCreate createDPU = new DPUCreate();
+		UI.getCurrent().addWindow(createDPU);
+		createDPU.addCloseListener(new Window.CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(Window.CloseEvent e) {
+				//refresh DPU tree after closing DPU Template creation dialog 
+				view.refresh();
+			}
+		});
+	}
+
+	@Override
+	public void importDPUTemplateEventHandler() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void exportAllEventHandler() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void copyDPUEventHandler() {
+		copyDPU(selectedDpu);
+	}
+
+	@Override
+	public void deleteDPUEventHandler() {
+		boolean isDeleted = deleteDPU(selectedDpu);
+		if (isDeleted) {
+			// and refresh the layout
+			view.refresh();
+			view.selectNewDPU(null);
+		}
+	}
+
+	@Override
+	public void pipelineDetailEventHandler(Long id) {
+		// navigate to PIPELINE_EDIT
+		navigator.navigateTo(PipelineEdit.class, id.toString());
+	}
+
+	@Override
+	public void pipelineDeleteEventHandler(Long id) {
+		Pipeline pipe = pipelineFacade.getPipeline(id);
+		pipelineFacade.delete(pipe);
+	}
+
+	@Override
+	public void pipelineStatusEventHandler(Long id) {
+		PipelineStatus pipelineStatus = new PipelineStatus();
+		Pipeline pipe = getPipeline(id);
+		pipelineStatus.setSelectedPipeline(pipe);
+		// open the window with status parameters.
+		UI.getCurrent().addWindow(pipelineStatus);
 	}
 }

@@ -38,8 +38,6 @@
     <bean id="pipelineListPresenterImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl" scope="prototype" />
 	
     <bean id="pipelineListViewImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListViewImpl" scope="prototype" />
-	
-    <bean id="dpuPresenter" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter" scope="prototype" />
 
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
