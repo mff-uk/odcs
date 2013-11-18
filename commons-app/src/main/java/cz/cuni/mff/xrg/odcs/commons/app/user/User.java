@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.UserNotificationRecord;
@@ -24,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Entity
 @Table(name = "usr_user")
-public class User implements UserDetails, OwnedEntity, RoleHolder, Resource {
+public class User implements UserDetails, OwnedEntity, RoleHolder, Resource, DataObject {
 
 	/**
 	 * Primary key for entity.

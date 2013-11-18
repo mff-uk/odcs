@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +35,9 @@ public class UserFacade {
 	 */
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private DbUser userDao;
 	
 	/**
 	 * Factory for a new User.
@@ -70,14 +74,7 @@ public class UserFacade {
 	 */
 	@PostFilter("hasPermission(filterObject, 'view')")
 	public List<User> getAllUsers() {
-
-		@SuppressWarnings("unchecked")
-		List<User> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM User e").getResultList(),
-				User.class
-		);
-
-		return resultList;
+		return userDao.getAllUsers();
 	}
 	
 	/**
@@ -86,7 +83,7 @@ public class UserFacade {
 	 */
 	@PostAuthorize("hasPermission(returnObject, 'view')")
 	public User getUser(long id) {
-		return em.find(User.class, id);
+		return userDao.getInstance(id);
 	}
 	
 	/**
@@ -97,13 +94,8 @@ public class UserFacade {
 	 * @return user
 	 */
 	public User getUserByUsername(String username) {
-		Query q = em.createQuery("SELECT e FROM User e WHERE e.username = :uname")
-				.setParameter("uname", username);
-		
-		User user = null;
-		try {
-			user = (User) q.getSingleResult();
-		} catch (NoResultException ex) {
+		User user = userDao.getByUsername(username);
+		if (user == null) {
 			LOG.info("User with username {} was not found.", username);
 		}
 		
@@ -118,11 +110,7 @@ public class UserFacade {
 	@Transactional
 	@PreAuthorize("hasPermission(#user, 'save')")
 	public void save(User user) {
-		if (user.getId() == null) {
-			em.persist(user);
-		} else {
-			em.merge(user);
-		}
+		userDao.save(user);
 	}
 
 	/**
@@ -133,11 +121,7 @@ public class UserFacade {
 	@Transactional
 	@PreAuthorize("hasPermission(#user, 'delete')")
 	public void delete(User user) {
-		// we might be trying to remove detached entity
-		if (!em.contains(user) && user.getId() != null) {
-			user = getUser(user.getId());
-		}
-		em.remove(user);
+		userDao.delete(user);
 	}
 
 }
