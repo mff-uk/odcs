@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -20,16 +21,13 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-
-
+import org.vaadin.dialogs.ConfirmDialog;
 
 @Component
 @Scope("prototype")
 @Address(url = "PipelineList")
 public class PipelineListPresenterImpl implements PipelineListPresenter {
 
-	
 	//TODO do we need this?
 	public static final String NAME = "PipelineList";
 	@Autowired
@@ -42,7 +40,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	private PipelineAccessor pipelineAccessor;
 	@Autowired
 	private PipelineListView view;
-	
 	private PipelineListData dataObject;
 
 	@Override
@@ -80,8 +77,18 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 	@Override
 	public void deleteEventHandler(long id) {
-		pipelineFacade.delete(getLightPipeline(id));
-		refreshEventHandler();
+		final Pipeline pipeline = getLightPipeline(id);
+		String message = "Would you really like to delete the " + pipeline.getName() + " pipeline and all associated records (DPU instances e.g.)?";
+		//String message = "Would you really like to delete this pipeline and all associated records (DPU instances e.g.)?";
+		ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
+			@Override
+			public void onClose(ConfirmDialog cd) {
+				if (cd.isConfirmed()) {
+					pipelineFacade.delete(pipeline);
+					refreshEventHandler();
+				}
+			}
+		});
 	}
 
 	@Override

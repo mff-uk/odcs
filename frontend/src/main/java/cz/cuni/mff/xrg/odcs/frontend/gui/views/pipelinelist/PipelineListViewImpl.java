@@ -141,16 +141,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		generator.addButton("Delete", "80px", new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(final long id) {
-				//String message = "Would you really like to delete the " + item.getItemProperty("name").getValue() + " pipeline and all associated records (DPU instances e.g.)?";
-				String message = "Would you really like to delete this pipeline and all associated records (DPU instances e.g.)?";
-				ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
-					@Override
-					public void onClose(ConfirmDialog cd) {
-						if (cd.isConfirmed()) {
-							presenter.deleteEventHandler(id);
-						}
-					}
-				});
+				presenter.deleteEventHandler(id);
 			}
 		});
 
