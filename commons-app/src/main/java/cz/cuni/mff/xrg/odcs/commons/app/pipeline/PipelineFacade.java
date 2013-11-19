@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,9 +57,9 @@ public class PipelineFacade {
     }
 
     /**
-     * Creates a clone of given pipeline and returns it as a new instance.
-     * Original owner is not preserved, rather currently logged in user is set
-     * as an owner of the newly created pipeline.
+     * Creates a clone of given pipeline, persists it, and returns it as a new
+	 * instance. Original owner is not preserved, rather currently logged in
+	 * user is set as an owner of the newly created pipeline.
      *
      * @param pipeline original pipeline to copy
      * @return newly copied pipeline
@@ -66,10 +67,23 @@ public class PipelineFacade {
 	@Transactional
     @PreAuthorize("hasPermission(#pipeline, 'copy')")
     public Pipeline copyPipeline(Pipeline pipeline) {
+
 		Pipeline newPipeline = new Pipeline(pipeline);
+		
+		// determine new name for pipeline
+		String oName = "Copy of " + pipeline.getName();
+		String nName = oName;
+		int no = 1;
+		while (hasPipelineWithName(nName, null)) {
+			nName = oName + " #" + no++;
+		}
+		newPipeline.setName(nName);
+		
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
         }
+		
+		save(newPipeline);
 		return newPipeline;
     }
 
@@ -142,7 +156,7 @@ public class PipelineFacade {
 	 */
     public boolean hasPipelineWithName(String newName, Pipeline pipeline) {
 		Pipeline duplicate = pipelineDao.getPipelineByName(newName);
-        return duplicate == null || duplicate.equals(pipeline);
+        return !(duplicate == null || duplicate.equals(pipeline));
     }
 
     /**

@@ -62,16 +62,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	@Override
 	public void copyEventHandler(long id) {
 		Pipeline pipeline = getLightPipeline(id);
-		Pipeline nPipeline = pipelineFacade.copyPipeline(pipeline);
-		String copiedPipelineName = "Copy of " + pipeline.getName();
-		boolean isNameLengthOk = copiedPipelineName.length() <= MaxLengthValidator.NAME_LENGTH;
-		if (isNameLengthOk) {
-			nPipeline.setName(copiedPipelineName);
-		}
-		pipelineFacade.save(nPipeline);
-		if (!isNameLengthOk) {
-			Notification.show(String.format("Name of copied pipeline would exceed limit of %d characters, new pipeline has same name as original.", MaxLengthValidator.NAME_LENGTH), Notification.Type.WARNING_MESSAGE);
-		}
+		pipelineFacade.copyPipeline(pipeline);
 		refreshEventHandler();
 	}
 
