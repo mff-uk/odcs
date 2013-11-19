@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
 
@@ -27,524 +26,569 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 import java.util.LinkedList;
 
 /**
- * Implementation of read only container that use 
- * {@link DataAccessRead} as data source.
- * 
+ * Implementation of read only container that use {@link DataAccessRead} as data
+ * source.
+ *
+ * The container provide possibility to set {@link #coreFilters} in  {@link ReadOnlyContainer#ReadOnlyContainer(cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead, cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor, java.util.List)
+ * those filters are then applied in every data query. The given list is used as
+ * reference so changes in the list will be reflected by the container. There 
+ * are no guards for concurrent access, so it's up to the user to secure that
+ * the list will not be modified in time of querying for data.
+ *
  * @author Petyr
- * @param <T> 
+ *
+ * @param <T>
  */
 public class ReadOnlyContainer<T extends DataObject> implements Container,
-    Container.Indexed, Container.Filterable, Container.Sortable,
-    Container.ItemSetChangeNotifier, ContainerDescription {
+		Container.Indexed, Container.Filterable, Container.Sortable,
+		Container.ItemSetChangeNotifier, ContainerDescription {
 
-    private final static Logger LOG = LoggerFactory
-        .getLogger(ReadOnlyContainer.class);
+	private final static Logger LOG = LoggerFactory
+			.getLogger(ReadOnlyContainer.class);
 
-    private final DataAccessRead<T> dbAccess;
+	/**
+	 * Read only access to data source.
+	 */
+	private final DataAccessRead<T> dbAccess;
 
-    private final ClassAccessor<T> classAccessor;
+	/**
+	 * {@link ClassAccessor} used to gain information about presented class.
+	 */
+	private final ClassAccessor<T> classAccessor;
 
-    private final Map<Object, GeneralProperty<?, T>> properties = new HashMap<>();
+	/**
+	 * Store definition for properties ie. columns.
+	 */
+	private final Map<Object, GeneralProperty<?, T>> properties = new HashMap<>();
 
-    private final List<Object> propertiesIds = new LinkedList<>();
-    
-    private final DataQueryBuilder<T> queryBuilder;
+	/**
+	 * Contains properties id in sorted order.
+	 */
+	private final List<Object> propertiesIds = new LinkedList<>();
 
-    private final Set<Filter> filters = new HashSet<>();
+	/**
+	 * Query builder from {@link #dbAccess} used to build queries.
+	 */
+	private final DataQueryBuilder<T> queryBuilder;
 
-    private final List<ItemSetChangeListener> changeListeners = new LinkedList<>();
+	/**
+	 * Store filters managed by {@link #addContainerFilter(com.vaadin.data.Container.Filter)
+	 * }
+	 * and related methods.
+	 */
+	private final Set<Filter> filters = new HashSet<>();
 
-    // - - - - - information about data access - - - - 
-    private final boolean filterable;
+	/**
+	 * Store core filters those filters can be set only in ctor and are used in
+	 * every data query.
+	 */
+	private final List<Filter> coreFilters;
 
-    private final boolean sortable;
+	/**
+	 * List of registered onChange listeners.
+	 */
+	private final List<ItemSetChangeListener> changeListeners = new LinkedList<>();
 
-    // - - - - - - - - - - - cache - - - - - - - - - -
-    private final ValueTimeCache<Integer> sizeCache = new ValueTimeCache<>();
+	/**
+	 * True if the {@link #dbAccess} provide filtering ability.
+	 */
+	private final boolean filterable;
 
-    private final DataTimeCache<T> dataCache = new DataTimeCache<>();
+	/**
+	 * True if the {@link #dbAccess} provide sorting ability.
+	 */
+	private final boolean sortable;
 
-    // - - - - - - - - - - - - -
-    @SuppressWarnings("unchecked")
-    public ReadOnlyContainer(DataAccessRead<T> dbAccess,
-        ClassAccessor<T> classAccessor) {
-        this.dbAccess = dbAccess;
-        this.classAccessor = classAccessor;
-        this.queryBuilder = dbAccess.createQueryBuilder();
-        // generate properties
-        for (String id : classAccessor.all()) {
-            properties.put(id, new GeneralProperty(classAccessor.getType(id),
-                id, this));
-            // we also add id
-            propertiesIds.add(id);
-        }
-        // check if we can sort and filter
-        this.filterable = this.queryBuilder instanceof DataQueryBuilder.Filterable<?>;
-        this.sortable = this.queryBuilder instanceof DataQueryBuilder.Sortable<?>;
-        // get information from ClassAccessor
-        boolean accessorFilterable = classAccessor.filtrable().isEmpty();
-        boolean accessorSortable = classAccessor.sortable().isEmpty();
-        // check if there is some inconsistance
-        if (accessorFilterable && !this.filterable) {
-            LOG.warn("Class accessor {} provides columns to filter, but data accessor {} does not support filtering.",
-                classAccessor.getClass().getSimpleName(), dbAccess.getClass().getSimpleName());
-        }
-        if (accessorSortable && !this.sortable) {
-            LOG.warn("Class accessor {} provides columns to sort, but data accessor {} does not support sorting.",
-                classAccessor.getClass().getSimpleName(), dbAccess.getClass().getSimpleName());
-        }
-    }
+	// - - - - - - - - - - - cache - - - - - - - - - -
+	private final ValueTimeCache<Integer> sizeCache = new ValueTimeCache<>();
 
-    /**
-     * Return object for given id.
-     *
-     * @param id
-     * @return
-     */
-    public T getObject(Long id) {
-        T object = dataCache.get(id);
-        if (object == null) {
-            object = dbAccess.getInstance(id);
-            // we do not cache data here
-        }
-        return object;
-    }
+	private final DataTimeCache<T> dataCache = new DataTimeCache<>();
 
-    Map<Object, GeneralProperty<?, T>> getProperties() {
-        return properties;
-    }
+	/**
+	 * Create read only container.
+	 *
+	 * @param dbAccess data access
+	 * @param classAccessor
+	 */
+	@SuppressWarnings("unchecked")
+	public ReadOnlyContainer(DataAccessRead<T> dbAccess,
+			ClassAccessor<T> classAccessor) {
+		this.dbAccess = dbAccess;
+		this.classAccessor = classAccessor;
+		this.queryBuilder = dbAccess.createQueryBuilder();
+		// check if we can sort and filter
+		this.filterable = this.queryBuilder instanceof DataQueryBuilder.Filterable<?>;
+		this.sortable = this.queryBuilder instanceof DataQueryBuilder.Sortable<?>;
+		// build properties list
+		buildProperties();
+		// no core filters
+		this.coreFilters = null;
+	}
 
-    ClassAccessor<T> getClassAccessor() {
-        return classAccessor;
-    }
+	/**
+	 * Create read only container.
+	 *
+	 * @param dbAccess data access
+	 * @param classAccessor
+	 * @param coreFilters use given list to obtain filters, in each query the
+	 * list is asked for current filters
+	 */
+	@SuppressWarnings("unchecked")
+	public ReadOnlyContainer(DataAccessRead<T> dbAccess,
+			ClassAccessor<T> classAccessor, List<Filter> coreFilters) {
+		this.dbAccess = dbAccess;
+		this.classAccessor = classAccessor;
+		this.queryBuilder = dbAccess.createQueryBuilder();
+		// check if we can sort and filter
+		this.filterable = this.queryBuilder instanceof DataQueryBuilder.Filterable<?>;
+		this.sortable = this.queryBuilder instanceof DataQueryBuilder.Sortable<?>;
+		// build properties list
+		buildProperties();
+		// no core filters
+		this.coreFilters = coreFilters;
+	}
 
-    /**
-     * Invalidate caches and emit on change listeners.
-     */
-    public void refresh() {
-        final ReadOnlyContainer<T> container = this;
-        // invalidata cache
-        sizeCache.invalidate();
-        dataCache.invalidate();
-        
-        
-        for (ItemSetChangeListener listener : changeListeners) {
-            // emit change
-            listener.containerItemSetChange(new ItemSetChangeEvent() {
-                @Override
-                public Container getContainer() {
-                    return container;
-                }
-            }) ;
-        }
-    }
-    
-    // - - - - - - - - - - - - - query - - - - - - - - - - - - - - - - - - -
-    private DbQuery<T> getQuery() {
-        updateBuilder();
-        return queryBuilder.getQuery();
-    }
+	/**
+	 * Build properties list and and print warnings about sorting and filtering.
+	 */
+	private void buildProperties() {
+		// build properties list
+		for (String id : classAccessor.all()) {
+			properties.put(id, new GeneralProperty(classAccessor.getType(id),
+					id, this));
+			// we also add id
+			propertiesIds.add(id);
+		}
+		// get information from ClassAccessor
+		boolean accessorFilterable = classAccessor.filtrable().isEmpty();
+		boolean accessorSortable = classAccessor.sortable().isEmpty();
+		// check if there is some inconsistance
+		if (accessorFilterable && !this.filterable) {
+			LOG.warn("Class accessor {} provides columns to filter, but data accessor {} does not support filtering.",
+					classAccessor.getClass().getSimpleName(), dbAccess.getClass().getSimpleName());
+		}
+		if (accessorSortable && !this.sortable) {
+			LOG.warn("Class accessor {} provides columns to sort, but data accessor {} does not support sorting.",
+					classAccessor.getClass().getSimpleName(), dbAccess.getClass().getSimpleName());
+		}
+	}
 
-    private DbQueryCount<T> getQueryCount() {
-        updateBuilder();
-        return queryBuilder.getCountQuery();
-    }
+	/**
+	 * Return object for given id. Do not check for authorization.
+	 *
+	 * @param id
+	 * @return
+	 */
+	T getObject(Long id) {
+		T object = dataCache.get(id);
+		if (object == null) {
+			object = dbAccess.getInstance(id);
+			// we do not cache data here
+		}
+		return object;
+	}
 
-    private void updateBuilder() {
-        if (!filterable) {
-            return;
-        }
-        DataQueryBuilder.Filterable<T> filtrableBuilder
-            = (DataQueryBuilder.Filterable<T>) queryBuilder;
-        // clear filters and build news
-        filtrableBuilder.claerFilters();
-        // add filters
-        for (Filter filter : filters) {
-            filtrableBuilder.addFilter(filter);
-        }
-    }
+	Map<Object, GeneralProperty<?, T>> getProperties() {
+		return properties;
+	}
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Override
-    public Item getItem(Object itemId) {
-        //LOG.trace("getItem({})", itemId);
-        // ...
-        return new ValueItem(this, (Long) itemId);
-    }
+	ClassAccessor<T> getClassAccessor() {
+		return classAccessor;
+	}
 
-    @Override
-    public Collection<?> getContainerPropertyIds() {
-        //LOG.trace("getContainerPropertyIds()");
-        // ...
-        return propertiesIds;
-    }
+	/**
+	 * Invalidate caches and emit on change listeners.
+	 */
+	public void refresh() {
+		final ReadOnlyContainer<T> container = this;
+		// invalidata cache
+		sizeCache.invalidate();
+		dataCache.invalidate();
 
-    @Override
-    public Collection<?> getItemIds() {
-        LOG.trace("getItemIds() -> EX");
-        // ...
-        throw new UnsupportedOperationException();
-    }
+		for (ItemSetChangeListener listener : changeListeners) {
+			// emit change
+			listener.containerItemSetChange(new ItemSetChangeEvent() {
+				@Override
+				public Container getContainer() {
+					return container;
+				}
+			});
+		}
+	}
 
-    @Override
-    public Property<?> getContainerProperty(Object itemId, Object propertyId) {
-        //LOG.trace("getContainerProperty({}, {})", itemId, propertyId);
-        // ...
-        return properties.get(propertyId).bind((Long) itemId);
-    }
+	// - - - - - - - - - - - - - query - - - - - - - - - - - - - - - - - - -
+	private DbQuery<T> getQuery() {
+		updateBuilder();
+		return queryBuilder.getQuery();
+	}
 
-    @Override
-    public Class<?> getType(Object propertyId) {
-        //LOG.trace("getType({})", propertyId);
-        // ...
-        return properties.get(propertyId).getType();
-    }
+	private DbQueryCount<T> getQueryCount() {
+		updateBuilder();
+		return queryBuilder.getCountQuery();
+	}
 
-    @Override
-    public int size() {
-        final Date now = new Date();
-        Integer size = sizeCache.get(now);
-        if (size == null) {
-            // update
-            size = (int) dbAccess.executeSize(getQueryCount());
-            sizeCache.set(size, now);
-            //LOG.trace("size() -> {}", size);
-        } else {
-            //LOG.trace("size() -> {} cached", size);
-        }
-        return size;
-    }
+	private void updateBuilder() {
+		if (!filterable) {
+			return;
+		}
+		DataQueryBuilder.Filterable<T> filtrableBuilder
+				= (DataQueryBuilder.Filterable<T>) queryBuilder;
+		// clear filters and build news
+		filtrableBuilder.claerFilters();
+		// add filters
+		for (Filter filter : filters) {
+			filtrableBuilder.addFilter(filter);
+		}
+		// add core filters if eqists
+		if (coreFilters != null) {
+			for (Filter filter : coreFilters) {
+				filtrableBuilder.addFilter(filter);
+			}
+		}
+	}
 
-    @Override
-    public boolean containsId(Object itemId) {
-        //LOG.trace("containsId({})", itemId);
-        // we try to use cache first .. 
-		if(dataCache.containsId((Long) itemId)) {
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	@Override
+	public Item getItem(Object itemId) {
+		return new ValueItem(this, (Long) itemId);
+	}
+
+	@Override
+	public Collection<?> getContainerPropertyIds() {
+		return propertiesIds;
+	}
+
+	@Override
+	public Collection<?> getItemIds() {
+		LOG.trace("getItemIds() -> EX");
+		// ...
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Property<?> getContainerProperty(Object itemId, Object propertyId) {
+		return properties.get(propertyId).bind((Long) itemId);
+	}
+
+	@Override
+	public Class<?> getType(Object propertyId) {
+		return properties.get(propertyId).getType();
+	}
+
+	@Override
+	public int size() {
+		final Date now = new Date();
+		Integer size = sizeCache.get(now);
+		if (size == null) {
+			// update
+			size = (int) dbAccess.executeSize(getQueryCount());
+			sizeCache.set(size, now);
+		} else {
+			// use cached value
+		}
+		return size;
+	}
+
+	@Override
+	public boolean containsId(Object itemId) {
+		// we try to use cache first .. 
+		if (dataCache.containsId((Long) itemId)) {
 			return true;
 		}
+
 		// no data in cache .. so we query database ...
 		LOG.warn("containsId({}) -> ask database, this may have serious performance impact", itemId);
 		DataQueryBuilder<T> builder = dbAccess.createQueryBuilder();
 		DataQueryBuilder.Filterable<T> filtrableBuilder
-            = (DataQueryBuilder.Filterable<T>) builder;
-		
-        filtrableBuilder.claerFilters();
-        // add filters
-        for (Filter filter : filters) {
-            filtrableBuilder.addFilter(filter);
-        }
+				= (DataQueryBuilder.Filterable<T>) builder;
+
+		filtrableBuilder.claerFilters();
+		// add filters
+		for (Filter filter : filters) {
+			filtrableBuilder.addFilter(filter);
+		}
 		// add filter for id
 		filtrableBuilder.addFilter(new Equal("id", itemId));
 		// and ask for size
 		return dbAccess.executeSize(builder.getCountQuery()) > 0;
-    }
+	}
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Override
-    public Item addItem(Object itemId) throws UnsupportedOperationException {
-        LOG.trace("addItem({}) -> EX", itemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	@Override
+	public Item addItem(Object itemId) throws UnsupportedOperationException {
+		LOG.trace("addItem({}) -> EX", itemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Object addItem() throws UnsupportedOperationException {
-        LOG.trace("addItem() -> EX");
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Object addItem() throws UnsupportedOperationException {
+		LOG.trace("addItem() -> EX");
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public boolean removeItem(Object itemId)
-        throws UnsupportedOperationException {
-        LOG.trace("removeItem({}) -> EX", itemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public boolean removeItem(Object itemId)
+			throws UnsupportedOperationException {
+		LOG.trace("removeItem({}) -> EX", itemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public boolean addContainerProperty(Object propertyId, Class<?> type,
-        Object defaultValue) throws UnsupportedOperationException {
-        LOG.trace("addContainerProperty({}, {}, {}) -> EX", propertyId, type,
-            defaultValue);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public boolean addContainerProperty(Object propertyId, Class<?> type,
+			Object defaultValue) throws UnsupportedOperationException {
+		LOG.trace("addContainerProperty({}, {}, {}) -> EX", propertyId, type,
+				defaultValue);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public boolean removeContainerProperty(Object propertyId)
-        throws UnsupportedOperationException {
-        LOG.trace("removeContainerProperty({}) -> EX", propertyId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public boolean removeContainerProperty(Object propertyId)
+			throws UnsupportedOperationException {
+		LOG.trace("removeContainerProperty({}) -> EX", propertyId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public boolean removeAllItems() throws UnsupportedOperationException {
-        LOG.trace("removeAllItems({}) -> EX");
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public boolean removeAllItems() throws UnsupportedOperationException {
+		LOG.trace("removeAllItems({}) -> EX");
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    // - - - - - - - - - - - - Container.Indexed - - - - - - - - - - - - - - -
-    @Override
-    public Object nextItemId(Object itemId) {
-        LOG.trace("nextItemId({}) -> EX", itemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	// - - - - - - - - - - - - Container.Indexed - - - - - - - - - - - - - - -
+	@Override
+	public Object nextItemId(Object itemId) {
+		LOG.trace("nextItemId({}) -> EX", itemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Object prevItemId(Object itemId) {
-        LOG.trace("prevItemId({}) -> EX", itemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Object prevItemId(Object itemId) {
+		LOG.trace("prevItemId({}) -> EX", itemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Object firstItemId() {
-        LOG.trace("firstItemId() -> EX");
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Object firstItemId() {
+		LOG.trace("firstItemId() -> EX");
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Object lastItemId() {
-        LOG.trace("lastItemId() -> EX");
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Object lastItemId() {
+		LOG.trace("lastItemId() -> EX");
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public boolean isFirstId(Object itemId) {
-        LOG.trace("isFirstId({})", itemId);
-        // ...
-        return firstItemId() == itemId;
-    }
+	@Override
+	public boolean isFirstId(Object itemId) {
+		LOG.trace("isFirstId({})", itemId);
+		// ...
+		return firstItemId() == itemId;
+	}
 
-    @Override
-    public boolean isLastId(Object itemId) {
-        LOG.trace("isLastId({})", itemId);
-        // ...
-        return lastItemId() == itemId;
-    }
+	@Override
+	public boolean isLastId(Object itemId) {
+		LOG.trace("isLastId({})", itemId);
+		// ...
+		return lastItemId() == itemId;
+	}
 
-    @Override
-    public Object addItemAfter(Object previousItemId)
-        throws UnsupportedOperationException {
-        LOG.trace("addItemAfter({}) -> EX", previousItemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Object addItemAfter(Object previousItemId)
+			throws UnsupportedOperationException {
+		LOG.trace("addItemAfter({}) -> EX", previousItemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Item addItemAfter(Object previousItemId, Object newItemId)
-        throws UnsupportedOperationException {
-        LOG.trace("addItemAfter({}, {}) -> EX", previousItemId, newItemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Item addItemAfter(Object previousItemId, Object newItemId)
+			throws UnsupportedOperationException {
+		LOG.trace("addItemAfter({}, {}) -> EX", previousItemId, newItemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public int indexOfId(Object itemId) {
-        LOG.trace("indexOfId({}) -> 0", itemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public int indexOfId(Object itemId) {
+		LOG.trace("indexOfId({}) -> 0", itemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Object getIdByIndex(int index) {
-        //LOG.trace("getIdByIndex({})", index);
-        // select given item
-        T object = dbAccess.execute(getQuery().limit(index, 1));
-        // object can be null
-        if (object == null) {
-            return null;
-        } else {
-            return object.getId();
-        }
-    }
+	@Override
+	public Object getIdByIndex(int index) {
+		// select given item
+		T object = dbAccess.execute(getQuery().limit(index, 1));
+		// object can be null
+		if (object == null) {
+			return null;
+		} else {
+			return object.getId();
+		}
+	}
 
-    @Override
-    public List<?> getItemIds(int startIndex, int numberOfItems) {
-        final Date now = new Date();
-        final String cacheKey = Integer.toString(startIndex) + Integer.toString(numberOfItems);
+	@Override
+	public List<?> getItemIds(int startIndex, int numberOfItems) {
+		final Date now = new Date();
+		final String cacheKey = Integer.toString(startIndex) + Integer.toString(numberOfItems);
 
-        if (dataCache.isValid(cacheKey, now)) {
-            //LOG.trace("getItemIds({}, {}) -> CACHED", startIndex, numberOfItems);
-            // data are valid, we do not need to reload
-            return dataCache.getKeys();
-        }
+		if (dataCache.isValid(cacheKey, now)) {
+			// data are valid, we do not need to reload
+			return dataCache.getKeys();
+		}
+		// load new data 
+		List<T> objects = dbAccess.executeList(getQuery().limit(startIndex,
+				numberOfItems));
+		// invalidate cache
+		dataCache.invalidate();
+		// add data to cache
+		dataCache.setKey(cacheKey, now);
+		for (T item : objects) {
+			dataCache.set(item.getId(), item);
+		}
+		// return id
+		return dataCache.getKeys();
+	}
 
-        //LOG.trace("getItemIds({}, {})", startIndex, numberOfItems);
-        // ...
-        List<T> objects = dbAccess.executeList(getQuery().limit(startIndex,
-            numberOfItems));
-        // invalidate cache
-        dataCache.invalidate();
-        // add data to cache
-        dataCache.setKey(cacheKey, now);
-        for (T item : objects) {
-            dataCache.set(item.getId(), item);
-        }
-        // return id
-        return dataCache.getKeys();
-    }
+	@Override
+	public Object addItemAt(int index) throws UnsupportedOperationException {
+		LOG.trace("addItemAt({}) -> EX", index);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Object addItemAt(int index) throws UnsupportedOperationException {
-        LOG.trace("addItemAt({}) -> EX", index);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Item addItemAt(int index, Object newItemId)
+			throws UnsupportedOperationException {
+		LOG.trace("addItemAt({}, {}) -> EX", index, newItemId);
+		// ...
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Item addItemAt(int index, Object newItemId)
-        throws UnsupportedOperationException {
-        LOG.trace("addItemAt({}, {}) -> EX", index, newItemId);
-        // ...
-        throw new UnsupportedOperationException();
-    }
+	// - - - - - - - - - - - - Container.Filterable - - - - - - - - - - - - -
+	@Override
+	public void addContainerFilter(Filter filter)
+			throws UnsupportedFilterException {
+		if (!filterable) {
+			LOG.warn("addConteinerFilter({}) -> IGNORED", filter);
+			return;
+		}
+		filters.add(filter);
+	}
 
-    // - - - - - - - - - - - - Container.Filterable - - - - - - - - - - - - -
-    @Override
-    public void addContainerFilter(Filter filter)
-        throws UnsupportedFilterException {
-        if (!filterable) {
-            LOG.trace("addConteinerFilter({}) -> IGNORED", filter);
-            return;
-        }
+	@Override
+	public void removeContainerFilter(Filter filter) {
+		if (!filterable) {
+			LOG.warn("removeContainerFilter({}) -> IGNORED", filter);
+			return;
+		}
+		filters.remove(filter);
+	}
 
-        LOG.trace("addConteinerFilter({})", filter);
-        // ...
-        filters.add(filter);
+	@Override
+	public void removeAllContainerFilters() {
+		if (!filterable) {
+			LOG.warn("removeAllContainerFilters() -> IGNORED");
+			return;
+		}
+		filters.clear();
+	}
 
-        // and invalidate queries
-    }
+	@Override
+	public Collection<Filter> getContainerFilters() {
+		return filters;
+	}
 
-    @Override
-    public void removeContainerFilter(Filter filter) {
-        if (!filterable) {
-            LOG.trace("removeContainerFilter({}) -> IGNORED", filter);
-            return;
-        }
+	// - - - - - - - - - - - - Container.Sortable - - - - - - - - - - - - -
+	@Override
+	public void sort(Object[] propertyId, boolean[] ascending) {
 
-        LOG.trace("removeContainerFilter({})", filter);
-        // ...
-        filters.remove(filter);
+		if (!sortable) {
+			// sorting not supported
+			LOG.warn("sort(?, ?) -> IGNORED");
+			return;
+		}
 
-        // and invalidate queries
-    }
+		final DataQueryBuilder.Sortable<T> sortableBuilder
+				= (DataQueryBuilder.Sortable<T>) queryBuilder;
 
-    @Override
-    public void removeAllContainerFilters() {
-        if (!filterable) {
-            LOG.trace("removeAllContainerFilters() -> IGNORED");
-            return;
-        }
+		switch (propertyId.length) {
+			case 0: // remove sort
+				sortableBuilder.sort(null, false);
+				break;
+			default:
+				LOG.warn("sort(Objet[], boolean[]) called with multiple targets."
+						+ " Only first used others are ignored.");
+			case 1: // sort, but we need expresion for sorting first
+				sortableBuilder.sort((String) propertyId[0], ascending[0]);
+				break;
+		}
 
-        LOG.trace("removeAllContainerFilters()");
-        // ..
-        filters.clear();
+		// and invalidate queries
+	}
 
-        // and invalidate queries
-    }
+	@Override
+	public Collection<?> getSortableContainerPropertyIds() {
+		if (sortable) {
+			// ok return list from accessor
+			return classAccessor.sortable();
+		} else {
+			// TODO we can warn if classAccessor has some sortable columns
+			final List<String> emptyList = new ArrayList<>(0);
+			return emptyList;
+		}
+	}
 
-    @Override
-    public Collection<Filter> getContainerFilters() {
-        LOG.trace("getContainerFilters()");
-        // ...
-        return filters;
-    }
+	// - - - - - - - - - - - Container.ItemSetChangeNotifier - - - - - - - - -
+	@Override
+	public void addItemSetChangeListener(ItemSetChangeListener listener) {
+		changeListeners.add(listener);
+	}
 
-    // - - - - - - - - - - - - Container.Sortable - - - - - - - - - - - - -
-    @Override
-    public void sort(Object[] propertyId, boolean[] ascending) {
+	@Override
+	public void addListener(ItemSetChangeListener listener) {
+		// this method is deprecated, so just recall the right one
+		addItemSetChangeListener(listener);
+	}
 
-        if (!sortable) {
-            // sorting not supported
-            LOG.trace("sort(?, ?) -> IGNORED");
-            return;
-        }
-        LOG.trace("sort(?, ?)");
+	@Override
+	public void removeItemSetChangeListener(ItemSetChangeListener listener) {
+		changeListeners.remove(listener);
+	}
 
-        final DataQueryBuilder.Sortable<T> sortableBuilder
-            = (DataQueryBuilder.Sortable<T>) queryBuilder;
+	@Override
+	public void removeListener(ItemSetChangeListener listener) {
+		removeItemSetChangeListener(listener);
+	}
 
-        switch (propertyId.length) {
-            case 0: // remove sort
-                sortableBuilder.sort(null, false);
-                break;
-            default:
-                LOG.warn("sort(Objet[], boolean[]) called with multiple targets."
-                    + " Only first used others are ignored.");
-            case 1: // sort, but we need expresion for sorting first
-                sortableBuilder.sort( (String) propertyId[0], ascending[0]);
-                break;
-        }
+	// - - - - - - - - - - - - - ContainerDescription - - - - - - - - - - - -
+	@Override
+	public List<String> getFilterables() {
+		if (filterable) {
+			// ok return list from accessor
+			return classAccessor.filtrable();
+		} else {
+			// TODO we can warn if classAccessor has some sortabel columns
+			final List<String> emptyList = new ArrayList<>(0);
+			return emptyList;
+		}
+	}
 
-        // and invalidate queries
-    }
-
-    @Override
-    public Collection<?> getSortableContainerPropertyIds() {
-        LOG.trace("getSortableContainerPropertyIds()");
-        // ...
-        if (sortable) {
-            // ok return list from accessor
-            return classAccessor.sortable();
-        } else {
-            // TODO we can warn if classAccessor has some sortable columns
-            final List<String> emptyList = new ArrayList<>(0);
-            return emptyList;
-        }
-    }
-
-    // - - - - - - - - - - - Container.ItemSetChangeNotifier - - - - - - - - -
-    @Override
-    public void addItemSetChangeListener(ItemSetChangeListener listener) {
-        LOG.trace("addItemSetChangeListener(?)");
-        // ...
-        changeListeners.add(listener);
-    }
-
-    @Override
-    public void addListener(ItemSetChangeListener listener) {
-        // this method is deprecated, so just recall the right one
-        addItemSetChangeListener(listener);
-    }
-
-    @Override
-    public void removeItemSetChangeListener(ItemSetChangeListener listener) {
-        LOG.trace("removeListener(?)");
-        // ...
-        changeListeners.remove(listener);
-    }
-
-    @Override
-    public void removeListener(ItemSetChangeListener listener) {
-        // this method is deprecated, so just recall the right one
-        removeItemSetChangeListener(listener);
-    }
-
-    // - - - - - - - - - - - - - ContainerDescription - - - - - - - - - - - -
-    
-    @Override
-    public List<String> getFilterables() {
-        if (filterable) {
-            // ok return list from accessor
-            return classAccessor.filtrable();
-        } else {
-            // TODO we can warn if classAccessor has some sortabel columns
-            final List<String> emptyList = new ArrayList<>(0);
-            return emptyList;
-        }
-    }
-
-    @Override
-    public String getColumnName(String id) {
-        return classAccessor.getColumnName(id);
-    }
+	@Override
+	public String getColumnName(String id) {
+		return classAccessor.getColumnName(id);
+	}
 
 	@Override
 	public List<String> getVisibles() {
