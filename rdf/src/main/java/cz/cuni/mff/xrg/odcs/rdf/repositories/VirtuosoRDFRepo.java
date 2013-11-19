@@ -147,6 +147,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				String mergeQuery;
 
 				if (useExtension) {
+					/**
+					 * Virtuoso specific syntax for SPARQL. Parameter log-enable
+					 * with value 2 disables logging and enables row-by-row
+					 * autocommit.
+					 */
 					mergeQuery = String
 							.format("DEFINE sql:log-enable 2 \n"
 							+ "ADD <%s> TO <%s>", sourceGraphName,
@@ -215,6 +220,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				String mergeQuery;
 
 				if (useExtension) {
+					/**
+					 * Virtuoso specific syntax for SPARQL. Parameter log-enable
+					 * with value 2 disables logging and enables row-by-row
+					 * autocommit.
+					 */
 					mergeQuery = String
 							.format("DEFINE sql:log-enable 2 \n"
 							+ "ADD <%s> TO <%s>", sourceGraphName,
