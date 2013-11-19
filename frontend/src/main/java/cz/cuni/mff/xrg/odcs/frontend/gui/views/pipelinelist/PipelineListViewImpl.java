@@ -6,16 +6,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
-
-import org.springframework.transaction.annotation.Transactional;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Vaadin implementation for PipelineListView.
@@ -33,7 +29,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		return false;
 	}
 
-	@Transactional
 	private void buildPage(final PipelineListPresenter presenter) {
 		// common part: create layout
 		mainLayout = new VerticalLayout();
