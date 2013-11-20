@@ -484,6 +484,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 			LOG.warn("addConteinerFilter({}) -> IGNORED", filter);
 			return;
 		}
+		LOG.trace("addConteinerFilter({})", filter);
 		filters.add(filter);
 	}
 

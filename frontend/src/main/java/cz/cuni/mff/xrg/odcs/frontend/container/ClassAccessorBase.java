@@ -174,6 +174,17 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 	}
 
 	/**
+	 * Add invisible non-sortable and non-filterable column.
+	 * @param <U>
+	 * @param clazz
+	 * @param name
+	 * @param getter 
+	 */
+	public <U> void addInvisible(Class<U> clazz, String name, ColumnGetter<U> getter) {
+		addInvisible(clazz, name, getter, false, false);
+	}
+	
+	/**
 	 * Add invisible column.
 	 *
 	 * @param <U>
