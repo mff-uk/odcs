@@ -382,7 +382,8 @@ public final class Executor implements Runnable {
 					// so we delete (clear) context
 					// then new DataUnits will be automatically cleared during
 					// creation
-					contextFacade.delete(context);
+					// so we do not want to preserve context into here
+					contextFacade.delete(context, false);
 					break;
 				case RUNNING:
 					// the context has already been initialized 
