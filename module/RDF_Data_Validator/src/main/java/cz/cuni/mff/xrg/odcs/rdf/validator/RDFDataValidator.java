@@ -13,7 +13,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
-import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +33,19 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 	 * Input RDF data repository with data we want to validate.
 	 */
 	@InputDataUnit
-	public RDFDataUnit rdfInput;
+	public RDFDataUnit dataInput;
 
 	/*
 	 * Output RDF data repository with only validate triples get from input.
 	 */
-	@OutputDataUnit
-	public RDFDataUnit rdfOutput;
+	@OutputDataUnit(name = "Validated_Data")
+	public RDFDataUnit dataOutput;
+
+	/**
+	 * Output RDF repository report about invalid data describe as RDF triples.
+	 */
+	@OutputDataUnit(name = "Report")
+	public RDFDataUnit reportOutput;
 
 	public RDFDataValidator() {
 		super(RDFDataValidatorConfig.class);
@@ -51,23 +56,23 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		return new RDFDataValidatorDialog();
 	}
 
-	private void makeValidationReport(DataValidator validator, File directory,
+	private void makeValidationReport(DataValidator validator,
 			String graphName, boolean stopExecution) throws CannotOverwriteFileException, RDFException {
 
 		logger.info(String.format(
-				"Start generate validation report for graph <%s> to directory %s :",
-				graphName, directory));
+				"Start generate validation report output for graph <%s> .",
+				graphName));
 
 		ReportCreator reporter = new ReportCreator(validator
 				.getFindedProblems(), graphName);
-		reporter.makeOutputReport(directory);
+		reporter.makeOutputReport(reportOutput);
 
 		logger.info(String.format(
-				"Validation report for graph <%s> created successfully",
+				"Validation report output for graph <%s> created successfully",
 				graphName));
 
 		if (stopExecution) {
-			rdfOutput.cleanAllData();
+			dataOutput.cleanAllData();
 			throw new RDFException(
 					"RDFDataValidator found some invalid data - FAIL pipeline execution");
 		}
@@ -78,36 +83,33 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 			throws DPUException,
 			DataUnitException {
 
-		String dirPath = config.directoryPath;
-		final File directory = new File(dirPath);
-
 		final boolean stopExecution = config.stopExecution;
-		final boolean sometimesFile = config.sometimesFile;
+		final boolean sometimesOutput = config.sometimesOutput;
 
 		try {
 
-			DataValidator validator = new RepositoryDataValidator(rdfInput,
-					rdfOutput);
-			String graphName = rdfInput.getDataGraph().toString();
+			DataValidator validator = new RepositoryDataValidator(dataInput,
+					dataOutput);
+			String graphName = dataInput.getDataGraph().toString();
 
-			if (sometimesFile) {
+			if (sometimesOutput) {
 				if (!validator.areDataValid()) {
 					logger.error(validator.getErrorMessage());
 
-					makeValidationReport(validator, directory, graphName,
+					makeValidationReport(validator, graphName,
 							stopExecution);
 
 				}
 			} else {
 				if (validator.areDataValid()) {
 					logger.info(
-							"All RDF data are valid - validation report will be empty file");
+							"All RDF data are valid - validation report output will be empty.");
 				} else {
 					logger.error(
-							"Some RDF data are invalid - see generated validation report");
+							"Some RDF data are invalid - create validation report output.");
 				}
 
-				makeValidationReport(validator, directory, graphName,
+				makeValidationReport(validator, graphName,
 						stopExecution);
 
 			}

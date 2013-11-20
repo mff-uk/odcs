@@ -1,13 +1,9 @@
 package cz.cuni.mff.xrg.odcs.rdf.validator;
 
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import java.io.File;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
@@ -34,30 +30,16 @@ public class ReportCreator {
 
 	private String graphName;
 
-	private static String fileName = "validationReport.ttl";
-
 	public ReportCreator(List<TripleProblem> problems, String graphName) {
 		this.problems = problems;
 		this.graphName = graphName;
 
 	}
 
-	public void makeOutputReport(File directory) throws CannotOverwriteFileException, RDFException {
-
-		RDFDataUnit repository = RDFDataUnitFactory.createLocalRDFRepo("report");
+	public void makeOutputReport(RDFDataUnit repository) throws RDFException {
 
 		setNamespaces(repository);
 		addReports(repository);
-		loadToFile(repository, directory);
-
-		repository.delete();
-
-	}
-
-	private void loadToFile(RDFDataUnit repository, File directory) throws CannotOverwriteFileException, RDFException {
-		File targetFile = new File(directory, fileName);
-		repository.loadToFile(targetFile.getAbsolutePath(), RDFFormatType.AUTO,
-				true, true);
 	}
 
 	private void addReports(RDFDataUnit repository) {

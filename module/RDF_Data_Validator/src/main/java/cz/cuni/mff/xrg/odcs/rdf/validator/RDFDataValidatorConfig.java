@@ -7,14 +7,12 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
  */
 public class RDFDataValidatorConfig extends DPUConfigObjectBase {
 
-	public String directoryPath = "";
-
 	public boolean stopExecution = false;
 
-	public boolean sometimesFile = true;
+	public boolean sometimesOutput = true;
 
 	@Override
 	public boolean isValid() {
-		return directoryPath != null;
+		return true;
 	}
 }

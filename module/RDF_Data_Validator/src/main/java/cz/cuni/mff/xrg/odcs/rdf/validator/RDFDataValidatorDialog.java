@@ -1,10 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.validator;
 
-import com.vaadin.data.Validator;
 import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-import java.io.File;
 
 /**
  * DPU's configuration dialog for setting directory path and others parameters
@@ -29,25 +27,13 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 	 */
 	private CheckBox failExecution;
 
-	private CheckBox createFile;
-
-	/**
-	 * TextField to set directory path to the where the file should be stored.
-	 */
-	private TextField textFieldDirPath;
-
-	private Validator.InvalidValueException ex;
+	private CheckBox createOutput;
 
 	public RDFDataValidatorDialog() {
 		super(RDFDataValidatorConfig.class);
-		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 
-	}
-
-	private void inicialize() {
-		ex = new Validator.InvalidValueException("Valid");
 	}
 
 	/**
@@ -110,38 +96,6 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 		verticalLayoutCore.setMargin(true);
 		verticalLayoutCore.setSpacing(true);
 
-
-		//Directory TextField
-		textFieldDirPath = new TextField();
-		textFieldDirPath.setNullRepresentation("");
-		textFieldDirPath.setCaption("Directory path for errors report:");
-		textFieldDirPath.setImmediate(true);
-		textFieldDirPath.setWidth("100%");
-		textFieldDirPath.setHeight("-1px");
-		textFieldDirPath.setInputPrompt("C:\\validator\\errors");
-		textFieldDirPath.addValidator(new Validator() {
-			@Override
-			public void validate(Object value) throws Validator.InvalidValueException {
-
-				String directory = value.toString();
-
-				if (directory.isEmpty()) {
-					ex = new Validator.EmptyValueException(
-							"Directory path must be filled!");
-					throw ex;
-				} else {
-					File dir = new File(directory);
-					if (dir.exists() && !dir.isDirectory()) {
-						ex = new InvalidValueException(
-								"Given path is not path to existing directory");
-						throw ex;
-					}
-				}
-			}
-		});
-		verticalLayoutCore.addComponent(textFieldDirPath);
-
-
 		// CheckBox selected for each pipeline execution generates a different name
 		failExecution = new CheckBox(
 				"if invalid data find out, pipeline execution fails immediately");
@@ -150,47 +104,37 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 		failExecution.setHeight("-1px");
 		verticalLayoutCore.addComponent(failExecution);
 
-		createFile = new CheckBox(
-				"Create report file only if some data are invalid");
-		createFile.setImmediate(false);
-		createFile.setWidth("-1px");
-		createFile.setHeight("-1px");
-		verticalLayoutCore.addComponent(createFile);
+		createOutput = new CheckBox(
+				"Add triples to report output only if some data are invalid");
+		createOutput.setImmediate(false);
+		createOutput.setWidth("-1px");
+		createOutput.setHeight("-1px");
+		verticalLayoutCore.addComponent(createOutput);
 
 		return verticalLayoutCore;
 	}
 
 	@Override
 	public void setConfiguration(RDFDataValidatorConfig conf) throws ConfigException {
-		textFieldDirPath.setValue(conf.directoryPath);
 		failExecution.setValue(conf.stopExecution);
-		createFile.setValue(conf.sometimesFile);
-
-
+		createOutput.setValue(conf.sometimesOutput);
 	}
 
 	@Override
 	public RDFDataValidatorConfig getConfiguration() throws ConfigException {
 
-		if (!textFieldDirPath.isValid()) {
-			throw new ConfigException(ex.getMessage(), ex);
-		} else {
-			RDFDataValidatorConfig conf = new RDFDataValidatorConfig();
-			conf.directoryPath = textFieldDirPath.getValue().trim();
-			conf.stopExecution = failExecution.getValue();
-			conf.sometimesFile = createFile.getValue();
+		RDFDataValidatorConfig conf = new RDFDataValidatorConfig();
+		conf.stopExecution = failExecution.getValue();
+		conf.sometimesOutput = createOutput.getValue();
 
-			return conf;
-		}
+		return conf;
+
 	}
 
 	@Override
 	public String getDescription() {
-		String path = textFieldDirPath.getValue().trim();
-		// create description
-		StringBuilder description = new StringBuilder();
-		description.append("Error report about validation load to file: ");
-		description.append(path);
-		return description.toString();
+		String description = "Error validation report output was created.";
+
+		return description;
 	}
 }

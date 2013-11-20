@@ -90,8 +90,8 @@ public class RepositoryDataValidator implements DataValidator {
 			RDFDataUnit goalRepo = null;
 			try {
 				tempFile = File.createTempFile("temp", "file");
-				input
-						.loadToFile(tempFile.getAbsolutePath(), RDFFormatType.N3,
+
+				input.loadToFile(tempFile.getAbsolutePath(), RDFFormatType.N3,
 						true, false);
 
 				try (InputStreamReader fileStream = new InputStreamReader(
