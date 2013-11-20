@@ -278,6 +278,8 @@ public class RDFQueryView extends CustomComponent {
 
 	void refreshDPUs(PipelineExecution exec) {
 		selector.refresh(exec);
+		queryText.setValue("");
+		setResultVisible(false);
 	}
 
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
@@ -342,7 +344,7 @@ public class RDFQueryView extends CustomComponent {
 				resultTable.setFilterBarVisible(false);
 			}
 		}
-
+		setResultVisible(true);
 		resultTable.setContainerDataSource(container);
 	}
 
@@ -513,5 +515,11 @@ public class RDFQueryView extends CustomComponent {
 		} catch (InvalidQueryException ex) {
 			//Should not happen, only correct queries are shown in table.
 		}
+	}
+
+	private void setResultVisible(boolean visible) {
+		resultTable.setVisible(visible);
+		resultTableControls.setVisible(visible);
+		resultDownloadControls.setVisible(visible);
 	}
 }
