@@ -35,7 +35,7 @@ public class ExecutionInfo {
 	}
 
 	public DpuContextInfo dpu(DPUInstanceRecord dpuInstance) {
-		if (executionContext.contexts.containsKey(dpuInstance)) {
+		if (executionContext.getContexts().containsKey(dpuInstance)) {
 			return new DpuContextInfo(executionContext, dpuInstance, this);
 		} else {
 			return null;
@@ -43,14 +43,14 @@ public class ExecutionInfo {
 	}
 
 	public Set<DPUInstanceRecord> getDPUIndexes() {
-		return executionContext.contexts.keySet();
+		return executionContext.getContexts().keySet();
 	}
 	
 	/**
 	 * Delete data from context info. The state remain unchanged.
 	 */
 	public void clear() {
-		executionContext.contexts.clear();
+		executionContext.getContexts().clear();
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class ExecutionInfo {
 	 * @return Relative path start but not end with separator separator (/, \\).
 	 */
 	public String getRootPath() {
-		return File.separatorChar + executionContext.execution.getId().toString();
+		return File.separatorChar + executionContext.getExecution().getId().toString();
 	}
 	
 	/**

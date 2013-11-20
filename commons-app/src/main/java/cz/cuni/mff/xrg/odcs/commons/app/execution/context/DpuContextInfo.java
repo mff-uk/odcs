@@ -47,7 +47,7 @@ public class DpuContextInfo {
 			DPUInstanceRecord dpuInstance, ExecutionInfo execInfo) {
 		this.executionContext = executionContext;
 		this.dpuInstance = dpuInstance;
-		this.dpuInfo = executionContext.contexts.get(dpuInstance);
+		this.dpuInfo = executionContext.getContexts().get(dpuInstance);
 		this.execInfo = execInfo;
 	}
 

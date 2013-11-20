@@ -74,7 +74,7 @@ public class ExecutionContextInfo implements Serializable {
 	 * directory.
 	 */
 	@OneToOne(mappedBy = "context", fetch = FetchType.LAZY)
-	PipelineExecution execution;
+	private PipelineExecution execution;
 
 	/**
 	 * Dummy column, because Virtuoso cannot insert a row without specifying any
@@ -89,7 +89,7 @@ public class ExecutionContextInfo implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@MapKeyJoinColumn(name = "dpu_instance_id", referencedColumnName = "id")
 	@JoinColumn(name = "exec_context_pipeline_id")
-	Map<DPUInstanceRecord, ProcessingUnitInfo> contexts;
+	private Map<DPUInstanceRecord, ProcessingUnitInfo> contexts;
 
 	/**
 	 * Empty constructor for JPA.
@@ -415,4 +415,9 @@ public class ExecutionContextInfo implements Serializable {
 		dirName.append(dpuInstance.getId().toString());
 		return dirName.toString();
 	}
+	
+	Map<DPUInstanceRecord, ProcessingUnitInfo> getContexts() {
+		return this.contexts;
+	}
+		
 }
