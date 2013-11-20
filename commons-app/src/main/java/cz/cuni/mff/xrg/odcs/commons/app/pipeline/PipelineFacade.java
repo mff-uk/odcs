@@ -7,6 +7,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Jan Vojt
  */
+@Transactional(readOnly = true)
 public class PipelineFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
@@ -46,31 +49,55 @@ public class PipelineFacade {
      * @return newly created pipeline
      */
     public Pipeline createPipeline() {
-		return pipelineDao.create();
+		Pipeline newPipeline = new Pipeline();
+        if (authCtx != null) {
+            newPipeline.setUser(authCtx.getUser());
+        }
+		return newPipeline;
     }
 
     /**
-     * Creates a clone of given pipeline and returns it as a new instance.
-     * Original owner is not preserved, rather currently logged in user is set
-     * as an owner of the newly created pipeline.
+     * Creates a clone of given pipeline, persists it, and returns it as a new
+	 * instance. Original owner is not preserved, rather currently logged in
+	 * user is set as an owner of the newly created pipeline.
      *
      * @param pipeline original pipeline to copy
      * @return newly copied pipeline
      */
+	@Transactional
     @PreAuthorize("hasPermission(#pipeline, 'copy')")
     public Pipeline copyPipeline(Pipeline pipeline) {
-		return pipelineDao.copy(pipeline);
+
+		Pipeline newPipeline = new Pipeline(pipeline);
+		
+		// determine new name for pipeline
+		String oName = "Copy of " + pipeline.getName();
+		String nName = oName;
+		int no = 1;
+		while (hasPipelineWithName(nName, null)) {
+			nName = oName + " #" + no++;
+		}
+		newPipeline.setName(nName);
+		
+        if (authCtx != null) {
+            newPipeline.setUser(authCtx.getUser());
+        }
+		
+		save(newPipeline);
+		return newPipeline;
     }
 
     /**
      * Returns list of all pipelines persisted in the database.
      *
      * @return list of pipelines
+	 * @deprecated performance intensive for many pipelines in DB, use lazy
+	 *			   container with paging instead
      */
+	@Deprecated
     @PostFilter("hasPermission(filterObject,'view')")
     public List<Pipeline> getAllPipelines() {
-		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>("SELECT e FROM Pipeline e");
-		return pipelineDao.executeList(jpql);
+		return pipelineDao.getAll();
     }
 
     /**
@@ -115,17 +142,7 @@ public class PipelineFacade {
      */
     @PreAuthorize("hasPermission(#dpu, 'view')")
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
-		
-		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM Pipeline e"
-				+ " LEFT JOIN e.graph g"
-				+ " LEFT JOIN g.nodes n"
-				+ " LEFT JOIN n.dpuInstance i"
-				+ " LEFT JOIN i.template t"
-				+ " WHERE t = :dpu");
-		jpql.setParameter("dpu", dpu);
-		
-		return pipelineDao.executeList(jpql);
+		return pipelineDao.getPipelinesUsingDPU(dpu);
     }
 
 	/**
@@ -138,20 +155,8 @@ public class PipelineFacade {
 	 * @return 
 	 */
     public boolean hasPipelineWithName(String newName, Pipeline pipeline) {
-		
-		String query = "SELECT COUNT(e) FROM Pipeline e"
-                + " WHERE e.name = :name";
-		
-        JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>();
-		jpql.setParameter("name", newName);
-		
-		if (pipeline != null && pipeline.getId() != null) {
-			query += " AND e.id <> :pid";
-			jpql.setParameter("pid", pipeline.getId());
-		}
-		
-		jpql.setQuery(query);
-        return pipelineDao.executeSize(jpql) > 0;
+		Pipeline duplicate = pipelineDao.getPipelineByName(newName);
+        return !(duplicate == null || duplicate.equals(pipeline));
     }
 
     /**
@@ -171,21 +176,26 @@ public class PipelineFacade {
      * to be saved with {@link #save(PipelineExecution)} method.
      *
      * @param pipeline
-     * @return
+     * @return pipeline execution of given pipeline
      */
     public PipelineExecution createExecution(Pipeline pipeline) {
-		return executionDao.create(pipeline);
+		PipelineExecution newExec = new PipelineExecution(pipeline);
+        if (authCtx != null) {
+            newExec.setOwner(authCtx.getUser());
+        }
+		return newExec;
     }
 
     /**
      * Fetches all {@link PipelineExecution}s from database.
      *
      * @return list of executions
+	 * @deprecated performance intensive for many pipeline executions, use
+	 *			   container with paging support instead
      */
+	@Deprecated
     public List<PipelineExecution> getAllExecutions() {
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e");
-		return executionDao.executeList(jpql);
+		return executionDao.getAllExecutions(null, null);
     }
 
     /**
@@ -195,14 +205,7 @@ public class PipelineFacade {
      * @return list of executions
      */
     public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
-
-        @SuppressWarnings("unchecked")
-        JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-                + " WHERE e.status = :status");
-		jpql.setParameter("status", status);
-		
-		return executionDao.executeList(jpql);
+		return executionDao.getAllExecutions(null, status);
     }
 
     /**
@@ -222,12 +225,7 @@ public class PipelineFacade {
      * @return pipeline executions
      */
     public List<PipelineExecution> getExecutions(Pipeline pipeline) {
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-                + " WHERE e.pipeline = :pipe");
-		jpql.setParameter("pipe", pipeline);
-		
-		return executionDao.executeList(jpql);
+		return executionDao.getAllExecutions(pipeline, null);
     }
 
     /**
@@ -239,15 +237,7 @@ public class PipelineFacade {
      *
      */
     public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-                + " WHERE e.pipeline = :pipe"
-                + " AND e.status = :status");
-		
-		jpql.setParameter("pipe", pipeline)
-			.setParameter("status", status);
-
-        return executionDao.executeList(jpql);
+        return executionDao.getAllExecutions(pipeline, status);
     }
 
     /**
@@ -278,18 +268,7 @@ public class PipelineFacade {
      */
     public PipelineExecution getLastExec(Pipeline pipeline,
             Set<PipelineExecutionStatus> statuses) {
-
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-                    + " WHERE e.pipeline = :pipe"
-                    + " AND e.status IN :status"
-                    + " AND e.end IS NOT NULL"
-                    + " ORDER BY e.end DESC");
-		
-		jpql.setParameter("pipe", pipeline)
-			.setParameter("status", statuses);
-		
-		return executionDao.execute(jpql);
+		return executionDao.getLastExecution(pipeline, statuses);
     }
 
     /**
@@ -299,16 +278,7 @@ public class PipelineFacade {
      * @return last execution or null
      */
     public PipelineExecution getLastExec(Pipeline pipeline) {
-
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-                    + " WHERE e.pipeline = :pipe"
-                    + " AND e.start IS NOT NULL"
-                    + " ORDER BY e.start DESC");
-		
-		jpql.setParameter("pipe", pipeline);
-		
-		return executionDao.execute(jpql);
+		return executionDao.getLastExecution(pipeline, EnumSet.allOf(PipelineExecutionStatus.class));
     }
 
     /**
@@ -321,18 +291,7 @@ public class PipelineFacade {
      */
     public PipelineExecution getLastExec(Schedule schedule,
             Set<PipelineExecutionStatus> statuses) {
-		
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-				+ " WHERE e.schedule = :schedule"
-				+ " AND e.status IN :status"
-				+ " AND e.end IS NOT NULL"
-				+ " ORDER BY e.end DESC");
-		
-		jpql.setParameter("schedule", schedule)
-			.setParameter("status", statuses);
-
-        return executionDao.execute(jpql);
+        return executionDao.getLastExecution(schedule, statuses);
     }
 
     /**
@@ -348,18 +307,7 @@ public class PipelineFacade {
      * @return
      */
     public boolean hasModifiedExecutions(Date lastLoad) {
-		
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT CASE"
-				+ " WHEN MAX(e.lastChange) > :last THEN CAST(1 AS INTEGER)"
-				+ " ELSE CAST(0 AS INTEGER)"
-				+ " END "
-				+ " FROM PipelineExecution e");
-		jpql.setParameter("last", lastLoad);
-
-		long size = executionDao.executeSize(jpql);
-		
-        return size>0;
+		return executionDao.hasModifiedExecutions(lastLoad);
     }
 
     /**

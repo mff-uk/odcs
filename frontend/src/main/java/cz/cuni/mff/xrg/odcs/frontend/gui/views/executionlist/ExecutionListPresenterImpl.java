@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
@@ -140,7 +139,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		return pipelineFacade.getExecution(executionId);
 	}
 
-	private ReadOnlyContainer<LogMessage> getLogDataSource() {
+	private ReadOnlyContainer<?> getLogDataSource() {
 		return new ReadOnlyContainer<>(dbLogMessage, new LogAccessor());
 	}
 

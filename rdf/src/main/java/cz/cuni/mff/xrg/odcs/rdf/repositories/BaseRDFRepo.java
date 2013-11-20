@@ -806,7 +806,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} else {
 			for (String nextGraph : graphs) {
 				deleteNamedGraph(nextGraph);
-				System.out.println(nextGraph);
 			}
 			logger.info("TOTAL deleted: " + graphs.size() + " graphs");
 
@@ -815,8 +814,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private void deleteNamedGraph(String graphName) {
 
-		String deleteQuery = String.format(
-				"WITH <%s> DELETE {?x ?y ?z} WHERE {?x ?y ?z}", graphName);
+		String deleteQuery = String.format("CLEAR GRAPH <%s>", graphName);
 		try {
 			executeSPARQLUpdateQuery(deleteQuery);
 			logger.info("Graph " + graphName + " was sucessfully deleted");

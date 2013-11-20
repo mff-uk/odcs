@@ -1,10 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
-import java.util.Collections;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,22 +12,22 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import java.util.*;
-import javax.persistence.Query;
 
 /**
  * Facade providing actions with plan.
  *
  * @author Jan Vojt
  */
+@Transactional(readOnly = true)
 public class ScheduleFacade {
 
-	private static final Logger logger = LoggerFactory.getLogger(ScheduleFacade.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ScheduleFacade.class);
 	
-	/**
-	 * Entity manager for accessing database with persisted objects
-	 */
-	@PersistenceContext
-	private EntityManager em;
+	@Autowired
+	private DbSchedule scheduleDao;
+	
+	@Autowired
+	private DbScheduleNotification scheduleNotificationDao;
 	
 	@Autowired(required = false)
 	private AuthenticationContext authCtx;
@@ -55,17 +51,13 @@ public class ScheduleFacade {
 	
 	/**
 	 * Returns list of all Plans currently persisted in database.
+	 * 
 	 * @return Plans list
+	 * @deprecated use container with paging instead
 	 */
+	@Deprecated
 	public List<Schedule> getAllSchedules() {
-		
-		@SuppressWarnings("unchecked")
-		List<Schedule> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM Schedule e").getResultList(),
-				Schedule.class
-		);
-
-		return resultList;
+		return scheduleDao.getAllSchedules();
 	}
 	
 	/**
@@ -75,15 +67,7 @@ public class ScheduleFacade {
 	 * @return
 	 */
 	public List<Schedule> getSchedulesFor(Pipeline pipeline) {
-		@SuppressWarnings("unchecked")
-		List<Schedule> resultList = Collections.checkedList(
-			em.createQuery(
-				"SELECT e FROM Schedule e WHERE e.pipeline = :pipeline"
-				).setParameter("pipeline", pipeline)
-				.getResultList(),
-				Schedule.class
-		);
-		return resultList;
+		return scheduleDao.getSchedulesFor(pipeline);
 	}
 	
 	/**
@@ -98,32 +82,7 @@ public class ScheduleFacade {
 	 * @return schedules configured to follow given pipeline
 	 */
 	public List<Schedule> getFollowers(Pipeline pipeline, Boolean enabled) {
-		
-		String sql = "SELECT s FROM Schedule s JOIN s.afterPipelines p"
-					+ " WHERE p.id = :pipeline AND s.type = :type";
-		
-		Map<String, Object> parameters = new HashMap<>(3);
-		parameters.put("pipeline", pipeline.getId());
-		parameters.put("type", ScheduleType.AFTER_PIPELINE);
-		
-		if (enabled != null) {
-			sql += " AND s.enabled = :enabled";
-			parameters.put("enabled", enabled);
-		}
-		
-		Query query = em.createQuery(sql);
-		
-		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-			query.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		@SuppressWarnings("unchecked")
-		List<Schedule> resultList = Collections.checkedList(
-				query.getResultList(),
-				Schedule.class
-		);
-		
-		return resultList;
+		return scheduleDao.getFollowers(pipeline, enabled);
 	}
 	
 	/**
@@ -140,29 +99,20 @@ public class ScheduleFacade {
 	 * Fetches all {@link Schedule}s which are activated in
 	 * certain time.
 	 *
-	 * @param pipeline
 	 * @return
 	 */	
 	public List<Schedule> getAllTimeBased() {
-		@SuppressWarnings("unchecked")
-		List<Schedule> resultList = Collections.checkedList(
-			em.createQuery(
-				"SELECT s FROM Schedule s"
-					+ " WHERE s.type = :type"
-				).setParameter("type", ScheduleType.PERIODICALLY)
-				.getResultList(),
-				Schedule.class
-		);
-		return resultList;		
+		return scheduleDao.getAllTimeBased();
 	}
 	
 	/**
 	 * Find Schedule in database by ID and return it.
+	 * 
 	 * @param id
 	 * @return
 	 */
 	public Schedule getSchedule(long id) {
-		return em.find(Schedule.class, id);
+		return scheduleDao.getInstance(id);
 	}	
 	
 	/**
@@ -171,11 +121,7 @@ public class ScheduleFacade {
 	 */
 	@Transactional
 	public void save(Schedule schedule) {
-		if (schedule.getId() == null) {
-			em.persist(schedule);
-		} else {
-			em.merge(schedule);
-		}
+		scheduleDao.save(schedule);
 	}
 
 	/**
@@ -184,11 +130,7 @@ public class ScheduleFacade {
 	 */
 	@Transactional
 	public void delete(Schedule schedule) {
-		// we might be trying to remove detached entity
-		if (!em.contains(schedule) && schedule.getId() != null) {
-			schedule = getSchedule(schedule.getId());
-		}
-		em.remove(schedule);
+		scheduleDao.delete(schedule);
 	}
 	
 	/**
@@ -198,11 +140,7 @@ public class ScheduleFacade {
 	 */
 	@Transactional
 	public void deleteNotification(ScheduleNotificationRecord notify) {
-		// we might be trying to remove detached entity
-		if (!em.contains(notify) && notify.getId() != null) {
-			notify = getSchedule(notify.getSchedule().getId()).getNotification();
-		}
-		em.remove(notify);
+		scheduleNotificationDao.delete(notify);
 	}
 	
 	/**

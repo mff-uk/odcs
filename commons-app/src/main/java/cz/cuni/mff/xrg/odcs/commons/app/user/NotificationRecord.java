@@ -1,9 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
-
-import java.io.Serializable;
 
 import java.util.Set;
 
@@ -14,7 +13,7 @@ import java.util.Set;
  *
  */
 @MappedSuperclass
-public abstract class NotificationRecord implements Serializable {
+public abstract class NotificationRecord implements DataObject {
 
 	/**
 	 * Unique ID for each scheduler notification.
@@ -43,6 +42,11 @@ public abstract class NotificationRecord implements Serializable {
 	 */
 	public NotificationRecord() {
 	}
+
+	@Override
+	public Long getId() {
+		return id;
+	}
 	
 	/**
 	 * @return defensive copy of a set of emails to send notification to
@@ -70,10 +74,5 @@ public abstract class NotificationRecord implements Serializable {
 	public void setTypeError(NotificationRecordType typeError) {
 		this.typeError= typeError;
 	}
-
-	public Long getId() {
-		return id;
-	}
-
 
 }

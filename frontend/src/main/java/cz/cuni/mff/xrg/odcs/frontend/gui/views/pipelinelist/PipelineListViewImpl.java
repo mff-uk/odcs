@@ -13,8 +13,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 
-import org.springframework.transaction.annotation.Transactional;
-
 /**
  * Vaadin implementation for PipelineListView.
  *
@@ -31,7 +29,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		return false;
 	}
 
-	@Transactional
 	private void buildPage(final PipelineListPresenter presenter) {
 		// common part: create layout
 		mainLayout = new VerticalLayout();

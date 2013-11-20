@@ -1,16 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
-import java.io.File;
-
-import java.util.Collections;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Jan Vojt
  */
+@Transactional(readOnly = true)
 public class DPUFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DPUFacade.class);
 
-	/**
-	 * Entity manager for accessing database with persisted objects.
-	 */
-	@PersistenceContext
-	private EntityManager em;
+	@Autowired
+	private DbDPUTemplateRecord templateDao;
+	
+	@Autowired
+	private DbDPUInstanceRecord instanceDao;
+	
+	@Autowired
+	private DbMessageRecord messageDao;
 	
 	@Autowired(required = false)
 	private AuthenticationContext authCtx;
@@ -56,7 +56,8 @@ public class DPUFacade {
 
 	/**
 	 * Create copy of DPU template, as the owner the current user is set.
-	 * @param template
+	 * 
+	 * @param original
 	 * @return
 	 */
 	public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
@@ -95,35 +96,8 @@ public class DPUFacade {
 	 */
 	@PostFilter("hasPermission(filterObject,'view')")
 	public List<DPUTemplateRecord> getAllTemplates() {
-
-		@SuppressWarnings("unchecked")
-		List<DPUTemplateRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUTemplateRecord e").getResultList(),
-				DPUTemplateRecord.class
-		);
-
-		return resultList;
+		return templateDao.getAllTemplates();
 	}
-
-	/**
-	 * Return list of all DPUTemplateRecords currently persisted in database.
-	 * 
-	 * Is used by OSGIModuleFacade, so no permissions are applied here.
-	 * 
-	 * TODO Honza from Petyr: Please check this
-	 * 
-	 * @return
-	 */
-	public List<DPUTemplateRecord> getAllTemplatesNoPermission() {
-
-		@SuppressWarnings("unchecked")
-		List<DPUTemplateRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUTemplateRecord e").getResultList(),
-				DPUTemplateRecord.class
-		);
-
-		return resultList;
-	}	
 	
 	/**
 	 * Find DPUTemplateRecord in database by ID and return it.
@@ -131,90 +105,19 @@ public class DPUFacade {
 	 * @return
 	 */
 	public DPUTemplateRecord getTemplate(long id) {
-		return em.find(DPUTemplateRecord.class, id);
-	}
-	
-	/**
-	 * Fetch DPU template using given JAR file.
-	 * 
-	 * <p>
-	 * TODO Currently files are compared only by filename. It would be better
-	 *		if we compared file content hash instead.
-	 * 
-	 * <p>
-	 * TODO This method cannot use any security filters, because it is used in
-	 *		file upload listener. For details see GH-415.
-	 * 
-	 * @param jarFile
-	 * @return DPU using given JAR file, or <code>null</code>
-	 * 
-	 * @deprecated Use {@link getTemplateByDirectory} instead.
-	 */
-	@Deprecated
-	public DPUTemplateRecord getTemplateByJarFile(File jarFile) {
-		
-		DPUTemplateRecord result = null;
-		try {
-			result = em.createQuery(
-				"SELECT e FROM DPUTemplateRecord e"
-				+ " WHERE e.jarPath = :path", DPUTemplateRecord.class
-			).setParameter("path", jarFile.getPath()).getSingleResult();
-		} catch (NoResultException ex) {
-			// just return null if nothing is found
-		}
-		
-		return result;
-	}
-
-	/**
-	 * Fetch DPU template using given DPU directory.
-	 * 
-	 * TODO This method do not use security filters. As it is used
-	 * 		in OSGIChangeManager which use it to identify DPU to update. 
-	 * 
-	 * @param directory
-	 * @return
-	 */
-	public DPUTemplateRecord getTemplateByDirectory(String directory) {
-		
-		DPUTemplateRecord result = null;
-		try {
-			result = em.createQuery(
-				"SELECT e FROM DPUTemplateRecord e"
-				+ " WHERE e.jarDirectory = :directory", DPUTemplateRecord.class
-			).setParameter("directory", directory).getSingleResult();
-		} catch (NoResultException ex) {
-			// just return null if nothing is found
-		}
-		
-		return result;
+		return templateDao.getInstance(id);
 	}
 	
 	/**
 	 * Saves any modifications made to the DPUTemplateRecord into the database.
+	 * 
 	 * @param dpu
 	 */
 	@Transactional
 	@PreAuthorize("hasPermission(#dpu,'save')")
 	public void save(DPUTemplateRecord dpu) {
-		if (dpu.getId() == null) {
-			em.persist(dpu);
-		} else {
-			em.merge(dpu);
-		}
+		templateDao.save(dpu);
 	}
-
-	/**
-	 * Save DPU template without without checking permissions of currently
-	 * logged user. This is useful when we are updating data in database with
-	 * the contents in the JAR file.
-	 * 
-	 * @param dpu
-	 */
-	@Transactional
-	public void saveNoPermission(DPUTemplateRecord dpu) {
-		save(dpu);
-	}	
 	
 	/**
 	 * Deletes DPUTemplateRecord from the database.
@@ -223,11 +126,17 @@ public class DPUFacade {
 	@Transactional
 	@PreAuthorize("hasPermission(#dpu,'delete')")
 	public void delete(DPUTemplateRecord dpu) {
-		// we might be trying to remove detached entity
-		if (!em.contains(dpu) && dpu.getId() != null) {
-			dpu = getTemplate(dpu.getId());
-		}
-		em.remove(dpu);
+		templateDao.delete(dpu);
+	}
+
+	/**
+	 * Fetch all child DPU templates for a given DPU template.
+	 * 
+	 * @param parent DPU template
+	 * @return list of child DPU templates or empty collection
+	 */
+	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
+		return templateDao.getChildDPUs(parent);
 	}
 
 	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
@@ -236,7 +145,8 @@ public class DPUFacade {
 	 * Creates DPUInstanceRecord with configuration copied from template without
 	 * persisting it.
 	 *
-	 * @return
+	 * @param dpuTemplate to create from
+	 * @return newly created DPU instance
 	 */
 	public DPUInstanceRecord createInstanceFromTemplate(DPUTemplateRecord dpuTemplate) {
 		DPUInstanceRecord dpuInstance = new DPUInstanceRecord(dpuTemplate);		
@@ -249,14 +159,7 @@ public class DPUFacade {
 	 * @return DPUInstance list
 	 */
 	public List<DPUInstanceRecord> getAllDPUInstances() {
-
-		@SuppressWarnings("unchecked")
-		List<DPUInstanceRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUInstanceRecord e").getResultList(),
-				DPUInstanceRecord.class
-		);
-
-		return resultList;
+		return instanceDao.getAllDPUInstances();
 	}
 
 	/**
@@ -266,7 +169,7 @@ public class DPUFacade {
 	 * @return
 	 */
 	public DPUInstanceRecord getDPUInstance(long id) {
-		return em.find(DPUInstanceRecord.class, id);
+		return instanceDao.getInstance(id);
 	}
 
 	/**
@@ -275,11 +178,7 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void save(DPUInstanceRecord dpu) {
-		if (dpu.getId() == null) {
-			em.persist(dpu);
-		} else {
-			em.merge(dpu);
-		}
+		instanceDao.save(dpu);
 	}
 
 	/**
@@ -288,49 +187,10 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void delete(DPUInstanceRecord dpu) {
-		// we might be trying to remove detached entity
-		if (!em.contains(dpu) && dpu.getId() != null) {
-			dpu = getDPUInstance(dpu.getId());
-		}
-		em.remove(dpu);
+		instanceDao.delete(dpu);
 	}
 
 	/* **************** Methods for Record (messages) management ***************** */
-
-	/**
-	 * Returns list of all Records currently persisted in database.
-	 *
-	 * @return Record list
-	 */
-	public List<MessageRecord> getAllDPURecords() {
-
-		@SuppressWarnings("unchecked")
-		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT e FROM MessageRecord e").getResultList(),
-			MessageRecord.class
-		);
-
-		return resultList;
-	}
-
-	/**
-	 * Fetches all DPURecords emitted by given DPUInstance.
-	 *
-	 * @param dpuInstance
-	 * @return
-	 */
-	public List<MessageRecord> getAllDPURecords(DPUInstanceRecord dpuInstance) {
-
-		@SuppressWarnings("unchecked")
-		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM MessageRecord r WHERE r.dpuInstance = :ins")
-				.setParameter("ins", dpuInstance)
-				.getResultList(),
-			MessageRecord.class
-		);
-
-		return resultList;
-	}
 
 	/**
 	 * Fetches all DPURecords emitted by given PipelineExecution.
@@ -339,16 +199,7 @@ public class DPUFacade {
 	 * @return
 	 */
 	public List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec) {
-
-		@SuppressWarnings("unchecked")
-		List<MessageRecord> resultList = Collections.checkedList(
-			em.createQuery("SELECT r FROM MessageRecord r WHERE r.execution = :ins")
-				.setParameter("ins", pipelineExec)
-				.getResultList(),
-			MessageRecord.class
-		);
-
-		return resultList;
+		return messageDao.getAllDPURecords(pipelineExec);
 	}
 
 	/**
@@ -358,7 +209,7 @@ public class DPUFacade {
 	 * @return
 	 */
 	public MessageRecord getDPURecord(long id) {
-		return em.find(MessageRecord.class, id);
+		return messageDao.getInstance(id);
 	}
 
 	/**
@@ -368,11 +219,7 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void save(MessageRecord record) {
-		if (record.getId() == null) {
-			em.persist(record);
-		} else {
-			em.merge(record);
-		}
+		messageDao.save(record);
 	}
 
 	/**
@@ -382,21 +229,6 @@ public class DPUFacade {
 	 */
 	@Transactional
 	public void delete(MessageRecord record) {
-		// we might be trying to remove detached entity
-		if (!em.contains(record) && record.getId() != null) {
-			record = getDPURecord(record.getId());
-		}
-		em.remove(record);
+		messageDao.delete(record);
 	}
-
-	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
-		@SuppressWarnings("unchecked")
-		List<DPUTemplateRecord> resultList = Collections.checkedList(
-				em.createQuery("SELECT e FROM DPUTemplateRecord e WHERE e.parent = :tmpl").setParameter("tmpl", parent).getResultList(),
-				DPUTemplateRecord.class
-		);
-
-		return resultList;
-	}
-
 }

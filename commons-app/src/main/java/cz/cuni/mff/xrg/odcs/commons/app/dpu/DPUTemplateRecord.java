@@ -4,6 +4,7 @@ import java.io.File;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
@@ -21,12 +22,13 @@ import javax.persistence.*;
  * propagated to template's children.
  * 
  * @author Petyr
+ * @author Jan Vojt
  * 
  */
 @Entity
 @Table(name = "dpu_template")
 public class DPUTemplateRecord extends DPURecord
-		implements OwnedEntity, SharedEntity {
+		implements OwnedEntity, SharedEntity, DataObject {
 
 	/**
 	 * Visibility in DPUTree.

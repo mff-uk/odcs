@@ -219,6 +219,7 @@ public class PipelineFacadeTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testCopyPipeline() {
 		
 		Pipeline ppl = new Pipeline();
@@ -226,9 +227,35 @@ public class PipelineFacadeTest {
 		ppl.setDescription("pplDesc");
 		
 		Pipeline nPpl = facade.copyPipeline(ppl);
-		
+
+		String newName = "Copy of " + ppl.getName();
 		assertNotSame(ppl, nPpl);
-		assertEquals(ppl.getName(), nPpl.getName());
+		assertEquals(newName, nPpl.getName());
 		assertEquals(ppl.getDescription(), nPpl.getDescription());
+	}
+	
+	@Test
+	@Transactional
+	public void testDuplicateCopyPipeline() {
+		
+		Pipeline ppl = new Pipeline();
+		ppl.setName("pplName");
+		ppl.setDescription("pplDesc");
+		
+		Pipeline nPpl = facade.copyPipeline(ppl);
+
+		// test copying for the first time
+		String newName = "Copy of " + ppl.getName();
+		assertNotSame(ppl, nPpl);
+		assertEquals(newName, nPpl.getName());
+		assertEquals(ppl.getDescription(), nPpl.getDescription());
+
+		Pipeline nPpl1 = facade.copyPipeline(ppl);
+		
+		// test copying for the second time
+		String newName1 = "Copy of " + ppl.getName() + " #1";
+		assertNotSame(ppl, nPpl1);
+		assertEquals(newName1, nPpl1.getName());
+		assertEquals(ppl.getDescription(), nPpl1.getDescription());
 	}
 }

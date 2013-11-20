@@ -1,43 +1,58 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import java.util.List;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implementation of {@link DbPipeline}.
+ * Implementation for accessing {@link Pipeline} data objects.
  *
  * @author Petyr
+ * @author Jan Vojt
  */
+@Transactional(propagation = Propagation.MANDATORY)
 class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
-
-    /**
-     * Authentication context.
-     */
-    @Autowired(required = false)
-    protected AuthenticationContext authCtx;
 
     protected DbPipelineImpl() {
         super(Pipeline.class);
     }
+	
+	@Override
+	public List<Pipeline> getAll() {
+		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>("SELECT e FROM Pipeline e");
+		return executeList(jpql);
+	}
 
-    @Override
-    public Pipeline create() {
-        Pipeline newPipeline = super.create();
-        if (authCtx != null) {
-            newPipeline.setUser(authCtx.getUser());
-        }
-        return newPipeline;
-    }
+	@Override
+	public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
+		
+		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM Pipeline e"
+				+ " LEFT JOIN e.graph g"
+				+ " LEFT JOIN g.nodes n"
+				+ " LEFT JOIN n.dpuInstance i"
+				+ " LEFT JOIN i.template t"
+				+ " WHERE t = :dpu");
+		jpql.setParameter("dpu", dpu);
+		
+		return executeList(jpql);
+	}
 
-    @Override
-    public Pipeline copy(Pipeline object) {
-        Pipeline newPipeline = new Pipeline(object);
-        if (authCtx != null) {
-            newPipeline.setUser(authCtx.getUser());
-        }
-        return newPipeline;
-    }
+	@Override
+	public Pipeline getPipelineByName(String name) {
+		
+		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
+				"SELECT e FROM Pipeline e"
+                + " WHERE e.name = :name");
+		jpql.setParameter("name", name);
+		
+		return execute(jpql);
+	}
+	
+	
+	
 
 }

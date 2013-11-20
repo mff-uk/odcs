@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
  * Read only access to data of given type.
  * 
  * @author Petyr
+ * @author Jan Vojt
  * 
  * @param <T>
  */
@@ -21,7 +22,8 @@ public interface DataAccessRead<T extends DataObject> {
 	 * directly only from the class itself.
 	 * 
 	 * @param id
-	 * @return
+	 * @return a single data object with given ID, or null if no such object is
+	 *		   found
 	 */
 	public T getInstance(long id);
 
@@ -32,7 +34,8 @@ public interface DataAccessRead<T extends DataObject> {
 	 * loaded object.
 	 * 
 	 * @param id
-	 * @return
+	 * @return a single data object with given ID, or null if no such object is
+	 *		   found
 	 */
 	public T getLightInstance(long id);
 
@@ -41,7 +44,7 @@ public interface DataAccessRead<T extends DataObject> {
 	 * it.
 	 * 
 	 * @param query
-	 * @return
+	 * @return a single data object selected by query, or null if empty result
 	 */
 	public T execute(DbQuery<T> query);
 	
@@ -50,7 +53,7 @@ public interface DataAccessRead<T extends DataObject> {
 	 * retrieved from the query result.
 	 * 
 	 * @param query JPQL string
-	 * @return 
+	 * @return a single data object selected by query, or null if empty result
 	 */
 	public T execute(JPQLDbQuery<T> query);
 
@@ -58,7 +61,8 @@ public interface DataAccessRead<T extends DataObject> {
 	 * Execute given query and return result as list of objects.
 	 * 
 	 * @param query
-	 * @return
+	 * @return a list of data objects selected by given query, or empty list if
+	 *		   empty result
 	 */
 	public List<T> executeList(DbQuery<T> query);
 	
@@ -67,7 +71,8 @@ public interface DataAccessRead<T extends DataObject> {
 	 * retrieved from the query result.
 	 * 
 	 * @param query JPQL string
-	 * @return 
+	 * @return a list of data objects selected by given query, or empty list if
+	 *		   empty result
 	 */
 	public List<T> executeList(JPQLDbQuery<T> query);
 
@@ -75,7 +80,7 @@ public interface DataAccessRead<T extends DataObject> {
 	 * Execute count query and return result.
 	 * 
 	 * @param query
-	 * @return
+	 * @return number returned by given query
 	 */
 	public long executeSize(DbQueryCount<T> query);
 	
@@ -84,14 +89,14 @@ public interface DataAccessRead<T extends DataObject> {
 	 * number retrieved from the query result.
 	 * 
 	 * @param query
-	 * @return number of rows in the result
+	 * @return number returned by given query
 	 */
 	public long executeSize(JPQLDbQuery<T> query);
 
 	/**
 	 * Create query builder that can be used to create query for this access.
 	 * 
-	 * @return
+	 * @return query builder
 	 */
 	public DataQueryBuilder<T> createQueryBuilder();
 

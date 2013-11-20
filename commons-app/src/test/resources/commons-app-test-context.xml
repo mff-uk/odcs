@@ -30,7 +30,7 @@
 
 	<!-- Override EntityManager factory with embedde dataSource -->
 	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="persistenceUnitName" value="intlib"/>
+		<property name="persistenceUnitName" value="odcs"/>
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	

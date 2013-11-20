@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -9,11 +10,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
  * Represent the DPU instance pipeline placement in DB.
  * 
  * @author Petyr
+ * @author Jan Vojt
  *
  */
 @Entity
 @Table(name = "dpu_instance")
-public class DPUInstanceRecord extends DPURecord {
+public class DPUInstanceRecord extends DPURecord implements DataObject {
 		
 	/**
 	 * Template used for creating this instance. 

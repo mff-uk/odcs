@@ -6,7 +6,6 @@ import java.util.Date;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.*;
@@ -20,7 +19,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "exec_record")
-public class MessageRecord implements Serializable, DataObject {
+public class MessageRecord implements DataObject {
 
 	/**
 	 * Unique id.
