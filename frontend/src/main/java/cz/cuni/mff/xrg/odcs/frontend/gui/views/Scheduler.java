@@ -12,6 +12,8 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
@@ -19,21 +21,24 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomTable;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Scope;
 import ru.xpoft.vaadin.VaadinView;
@@ -66,10 +71,13 @@ public class Scheduler extends ViewComponent {
 	static String[] headers = new String[]{"pipeline", "Description", "Rule", "User",
 		"Last", "Next", "Last run time", "Status", "Commands"};
 	int style = DateFormat.MEDIUM;
-	private Long schId;
 	static String filter;
 	private Schedule scheduleDel;
 	private SchedulePipeline sch;
+	@Autowired
+	private ScheduleFacade scheduleFacade;
+	@Autowired
+	private PipelineFacade pipelineFacade;
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -124,7 +132,7 @@ public class Scheduler extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				// open scheduler dialog
 				SchedulePipeline sch = new SchedulePipeline();
-				App.getApp().addWindow(sch);
+				UI.getCurrent().addWindow(sch);
 				sch.addCloseListener(new CloseListener() {
 					@Override
 					public void windowClose(CloseEvent e) {
@@ -155,7 +163,7 @@ public class Scheduler extends ViewComponent {
 //		topLine.setExpandRatio(topLineFiller, 1.0f);
 		mainLayout.addComponent(topLine);
 
-		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());
+		tableData = getTableData(scheduleFacade.getAllSchedules());
 
 		//table with schedule rules records
 		schedulerTable = new IntlibPagedTable();
@@ -176,11 +184,11 @@ public class Scheduler extends ViewComponent {
 			public Object generateCell(CustomTable source, Object itemId,
 					Object columnId) {
 				boolean isEnabled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
-				if (isEnabled) {
-					return "Enabled";
-				} else {
-					return "Disabled";
-				}
+				ThemeResource img = new ThemeResource(isEnabled ? "icons/ok.png" : "icons/error.png");
+				String description = isEnabled ? "Enabled" : "Disabled";
+				Embedded emb = new Embedded(description, img);
+				emb.setDescription(description);
+				return emb;
 			}
 		});
 		schedulerTable.setFilterDecorator(new filterDecorator());
@@ -194,7 +202,7 @@ public class Scheduler extends ViewComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!schedulerTable.isSelected(event.getItemId())) {
-					schId = (Long) event.getItem().getItemProperty("schid").getValue();
+					Long schId = (Long) event.getItem().getItemProperty("schid").getValue();
 					showSchedulePipeline(schId);
 				}
 			}
@@ -206,12 +214,10 @@ public class Scheduler extends ViewComponent {
 	/**
 	 * Container with data for table {@link #schedulerTable}.
 	 *
-	 * TODO why static?
-	 *
 	 * @param data List of {@link Schedule}.
 	 * @return result IndexedContainer with data for {@link #schedulerTable}.
 	 */
-	public static IndexedContainer getTableData(List<Schedule> data) {
+	public IndexedContainer getTableData(List<Schedule> data) {
 
 		IndexedContainer result = new IndexedContainer();
 
@@ -314,7 +320,7 @@ public class Scheduler extends ViewComponent {
 			result.getContainerProperty(num, "description").setValue(
 					item.getDescription());
 
-			PipelineExecution exec = App.getApp().getPipelines().getLastExec(item, PipelineExecutionStatus.FINISHED);
+			PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
 			result.getContainerProperty(num, "duration").setValue(IntlibHelper.getDuration(exec));
 		}
 
@@ -327,7 +333,7 @@ public class Scheduler extends ViewComponent {
 	 */
 	private void refreshData() {
 		int page = schedulerTable.getCurrentPage();
-		tableData = getTableData(App.getApp().getSchedules().getAllSchedules());
+		tableData = getTableData(scheduleFacade.getAllSchedules());
 		schedulerTable.setContainerDataSource(tableData);
 		schedulerTable.setCurrentPage(page);
 		schedulerTable.setVisibleColumns(visibleCols);
@@ -355,11 +361,11 @@ public class Scheduler extends ViewComponent {
 		}
 
 		//openScheduler(schedule);
-		Schedule schedule = App.getApp().getSchedules().getSchedule(id);
+		Schedule schedule = scheduleFacade.getSchedule(id);
 		sch.setSelectedSchedule(schedule);
 
-		if (!App.getApp().getWindows().contains(sch)) {
-			App.getApp().addWindow(sch);
+		if (!UI.getCurrent().getWindows().contains(sch)) {
+			UI.getCurrent().addWindow(sch);
 		}
 	}
 
@@ -371,20 +377,14 @@ public class Scheduler extends ViewComponent {
 	 */
 	class actionColumnGenerator implements CustomTable.ColumnGenerator {
 
-		private ClickListener clickListener = null;
-
 		@Override
-		public Object generateCell(final CustomTable source, final Object itemId,
-				Object columnId) {
-			Property propStatus = source.getItem(itemId).getItemProperty(
-					"status");
-			boolean testStatus;
-
+		public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
+			Property propStatus = source.getItem(itemId).getItemProperty("status");
+			final Long schId = (Long) tableData.getContainerProperty(itemId, "schid").getValue();
 			HorizontalLayout layout = new HorizontalLayout();
 
 			if (propStatus.getType().equals(Boolean.class)) {
-
-				testStatus = (Boolean) propStatus.getValue();
+				boolean testStatus = (Boolean) propStatus.getValue();
 				//If item in the scheduler table has Disabled status, then for that item will be shown
 				//Enable button
 				if (!testStatus) {
@@ -393,18 +393,8 @@ public class Scheduler extends ViewComponent {
 					enableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-
-							schId = (Long) tableData.getContainerProperty(itemId, "schid")
-									.getValue();
-							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
-							for (Schedule item : schedulers) {
-								if (item.getId().equals(schId)) {
-									item.setEnabled(true);
-									App.getApp().getSchedules().save(item);
-								}
-							}
+							setScheduleEnabled(schId, true);
 							refreshData();
-
 						}
 					});
 					layout.addComponent(enableButton);
@@ -418,18 +408,8 @@ public class Scheduler extends ViewComponent {
 					disableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
-
-							schId = (Long) tableData.getContainerProperty(itemId, "schid")
-									.getValue();
-							List<Schedule> schedulers = App.getApp().getSchedules().getAllSchedules();
-							for (Schedule item : schedulers) {
-								if (item.getId().equals(schId)) {
-									item.setEnabled(false);
-									App.getApp().getSchedules().save(item);
-								}
-							}
+							setScheduleEnabled(schId, false);
 							refreshData();
-
 						}
 					});
 					layout.addComponent(disableButton);
@@ -440,12 +420,9 @@ public class Scheduler extends ViewComponent {
 			Button editButton = new Button();
 			editButton.setCaption("Edit");
 			editButton.setWidth("80px");
-			editButton
-					.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					schId = (Long) tableData.getContainerProperty(itemId, "schid")
-							.getValue();
 					showSchedulePipeline(schId);
 				}
 			});
@@ -458,10 +435,7 @@ public class Scheduler extends ViewComponent {
 			deleteButton.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-
-					schId = (Long) tableData.getContainerProperty(itemId, "schid")
-							.getValue();
-					scheduleDel = App.getApp().getSchedules().getSchedule(schId);
+					scheduleDel = scheduleFacade.getSchedule(schId);
 
 					//open confirmation dialog
 					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting scheduling rule",
@@ -472,13 +446,11 @@ public class Scheduler extends ViewComponent {
 						@Override
 						public void onClose(ConfirmDialog cd) {
 							if (cd.isConfirmed()) {
-								App.getApp().getSchedules().delete(scheduleDel);
+								scheduleFacade.delete(scheduleDel);
 								refreshData();
-
 							}
 						}
 					});
-
 				}
 			});
 			layout.addComponent(deleteButton);
@@ -487,7 +459,23 @@ public class Scheduler extends ViewComponent {
 		}
 	}
 
+	private void setScheduleEnabled(Long schId, boolean enabled) {
+		Schedule schedule = scheduleFacade.getSchedule(schId);
+		schedule.setEnabled(enabled);
+		scheduleFacade.save(schedule);
+	}
+
 	private class filterDecorator extends IntlibFilterDecorator {
+
+		@Override
+		public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
+			if ("status".equals(propertyId)) {
+				ThemeResource img = new ThemeResource(value ? "icons/ok.png" : "icons/error.png");
+				return img;
+			} else {
+				return super.getBooleanFilterIcon(propertyId, value);
+			}
+		}
 
 		@Override
 		public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
