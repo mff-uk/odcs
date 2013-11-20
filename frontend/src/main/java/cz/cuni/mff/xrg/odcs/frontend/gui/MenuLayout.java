@@ -23,7 +23,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Scheduler;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import org.springframework.beans.factory.annotation.Autowired;

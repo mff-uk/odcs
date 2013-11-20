@@ -45,7 +45,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private ExecutionListView view;
 	private ExecutionListData dataObject;
-	private RefreshManager refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+	private RefreshManager refreshManager;
 	private Date lastLoad = new Date(0L);
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
 
@@ -57,7 +57,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		dataObject = new ExecutionListData(c);
 		// prepare view
 		Object viewObject = view.enter(this);
-
+		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
 		refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
 			@Override
 			public void refresh(Refresher source) {
