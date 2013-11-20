@@ -30,7 +30,7 @@ public class SqlAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 	 */
 	protected String getInsertSQL() {
 		return "INSERT INTO logging"
-				+ " (level, timestmp, logger, message, dpu, execution, stack_trace)"
+				+ " (logLevel, timestmp, logger, message, dpu, execution, stack_trace)"
 				+ " VALUES (?, ?, ? ,?, ?, ?, ?)";
 	}
 
