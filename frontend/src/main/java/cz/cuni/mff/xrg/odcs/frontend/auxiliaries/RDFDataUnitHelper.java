@@ -1,18 +1,23 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import com.vaadin.data.Container.Filter;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Local;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Virtuoso;
+import cz.cuni.mff.xrg.odcs.frontend.container.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import java.io.File;
+import java.util.Collection;
 
 /**
  * Helper for RDF DataUnits.
@@ -32,7 +37,7 @@ public class RDFDataUnitHelper {
 	 * @return Repository or null if there is no browser for given type.
 	 *
 	 */
-	public static RDFDataUnit getRepository(ExecutionContextInfo context,
+	public static RDFDataUnit getRepository(ExecutionInfo executionInfo,
 			DPUInstanceRecord dpuInstance, DataUnitInfo info) {
 
 		// get type and directory
@@ -42,8 +47,7 @@ public class RDFDataUnitHelper {
 		}
 
 		// 
-		String dataUnitId =
-				context.generateDataUnitId(dpuInstance, info.getIndex());
+		String dataUnitId = executionInfo.dpu(dpuInstance).createId(info.getIndex());
 
 
 		switch (info.getType()) {
@@ -53,7 +57,7 @@ public class RDFDataUnitHelper {
 					File dpuStorage =
 							new File(App.getAppConfig().getString(
 							ConfigProperty.GENERAL_WORKINGDIR),
-							context.getDataUnitStoragePath(dpuInstance, info.getIndex()));
+							executionInfo.dpu(dpuInstance).getStoragePath(info.getIndex()));
 					LocalRDFRepo repository = RDFDataUnitFactory
 							.createLocalRDFRepo("");
 					// load data from storage
@@ -94,5 +98,22 @@ public class RDFDataUnitHelper {
 				return null;
 		}
 
+	}
+
+	public static String filterRDFQuery(String query, Collection<Filter> filters) {
+		if(filters == null) {
+			return query;
+		}
+		
+		QueryFilterManager filterManager = new QueryFilterManager(query);
+		for (Filter filter : filters) {
+			if (filter.getClass() == RDFRegexFilter.class) {
+				RDFRegexFilter rdfRegexFilter = (RDFRegexFilter) filter;
+				RegexFilter rf = new RegexFilter(rdfRegexFilter.getColumnName(),
+						rdfRegexFilter.getRegex());
+				filterManager.addFilter(rf);
+			}
+		}
+		return filterManager.getFilteredQuery();
 	}
 }

@@ -46,7 +46,7 @@ public class RDFQuery implements Query {
 	@Override
 	public int size() {
 		RDFDataUnit repository = RDFDataUnitHelper
-				.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
+				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
@@ -74,7 +74,7 @@ public class RDFQuery implements Query {
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
 		RDFDataUnit repository = RDFDataUnitHelper
-				.getRepository(qd.getContext(), qd.getDpu(), qd.getDataUnit());
+				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
@@ -141,16 +141,7 @@ public class RDFQuery implements Query {
 
 	private String setWhereCriteria(String query) {
 		List<Filter> filters = qd.getFilters();
-		QueryFilterManager filterManager = new QueryFilterManager(query);
-		for (Filter filter : filters) {
-			if (filter.getClass() == RDFRegexFilter.class) {
-				RDFRegexFilter rdfRegexFilter = (RDFRegexFilter) filter;
-				RegexFilter rf = new RegexFilter(rdfRegexFilter.getColumnName(),
-						rdfRegexFilter.getRegex());
-				filterManager.addFilter(rf);
-			}
-		}
-		return filterManager.getFilteredQuery();
+		return RDFDataUnitHelper.filterRDFQuery(query, filters);
 	}
 
 	private Item toItem(RDFTriple triple) {

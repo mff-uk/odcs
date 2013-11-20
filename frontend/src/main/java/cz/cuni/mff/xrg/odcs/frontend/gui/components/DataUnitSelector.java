@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 
@@ -32,7 +33,7 @@ public class DataUnitSelector extends CustomComponent {
 	GridLayout mainLayout;
 	ComboBox dpuSelector;
 	private DPUInstanceRecord debugDpu;
-	private ExecutionContextInfo ctxReader;
+	private ExecutionInfo executionInfo;
 	private CheckBox inputDataUnits;
 	private CheckBox outputDataUnits;
 	private ComboBox dataUnitSelector;
@@ -89,7 +90,7 @@ public class DataUnitSelector extends CustomComponent {
 			public void valueChange(Property.ValueChangeEvent event) {
 				DataUnitInfo info = (DataUnitInfo) event.getProperty().getValue();
 				if (info != null) {
-					String id = ctxReader.generateDataUnitId(getSelectedDPU(), info.getIndex()); // where index if from DataUnitInfo and context is Execution context info
+					String id = executionInfo.dpu(getSelectedDPU()).createId(info.getIndex()); // where index if from DataUnitInfo and context is Execution context info
 					String graphUrl = GraphUrl.translateDataUnitId(id);
 					dataUnitGraph.setValue(graphUrl);
 				}
@@ -134,8 +135,11 @@ public class DataUnitSelector extends CustomComponent {
 	 * @return Load was successful.
 	 */
 	private boolean loadExecutionContextReader() {
-		ctxReader = pipelineExec.getContextReadOnly();
-		return ctxReader != null;
+		ExecutionContextInfo context = pipelineExec.getContextReadOnly();
+		if(context != null) {
+			executionInfo = new ExecutionInfo(context);
+		}
+		return context != null;
 	}
 
 	/**
@@ -144,7 +148,7 @@ public class DataUnitSelector extends CustomComponent {
 	private ComboBox buildDpuSelector() {
 		dpuSelector = new ComboBox();
 		dpuSelector.setImmediate(true);
-		if (ctxReader != null) {
+		if (executionInfo != null) {
 			refreshDpuSelector();
 		}
 		dpuSelector.addValueChangeListener(new Property.ValueChangeListener() {
@@ -189,7 +193,7 @@ public class DataUnitSelector extends CustomComponent {
 	private void refreshDpuSelector() {
 		Object selected = dpuSelector.getValue();
 		dpuSelector.removeAllItems();
-		Set<DPUInstanceRecord> contextDpuIndexes = ctxReader.getDPUIndexes();
+		Set<DPUInstanceRecord> contextDpuIndexes = executionInfo.getDPUIndexes();
 		for (DPUInstanceRecord dpu : contextDpuIndexes) {
 			if (!dpuSelector.containsId(dpu)) {
 				dpuSelector.addItem(dpu);
@@ -207,7 +211,7 @@ public class DataUnitSelector extends CustomComponent {
 			dataUnitSelector.removeAllItems();
 			return;
 		}
-		List<DataUnitInfo> dataUnits = ctxReader.getDPUInfo(debugDpu).getDataUnits();
+		List<DataUnitInfo> dataUnits = executionInfo.dpu(debugDpu).getDataUnits();
 		Object selected = dataUnitSelector.getValue();
 		Object first = null;
 		for (DataUnitInfo dataUnit : dataUnits) {
@@ -257,8 +261,8 @@ public class DataUnitSelector extends CustomComponent {
 		return (DataUnitInfo) dataUnitSelector.getValue();
 	}
 
-	public ExecutionContextInfo getContext() {
-		return ctxReader;
+	public ExecutionInfo getInfo() {
+		return executionInfo;
 	}
 
 	void setSelectedDPU(DPUInstanceRecord dpu) {

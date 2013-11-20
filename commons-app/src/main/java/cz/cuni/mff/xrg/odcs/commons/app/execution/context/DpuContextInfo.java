@@ -112,7 +112,7 @@ public class DpuContextInfo {
 	 * @return
 	 */
 	public String createId(Integer index) {
-		return "exec_" + executionContext.execution.getId().toString() + "_dpu_"
+		return "exec_" + executionContext.getExecution().getId().toString() + "_dpu_"
 				+ dpuInstance.getId().toString() + "_du_" + index.toString();
 	}
 
