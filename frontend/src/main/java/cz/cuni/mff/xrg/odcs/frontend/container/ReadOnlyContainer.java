@@ -22,6 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 import java.util.LinkedList;
 
@@ -228,6 +229,20 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 	}
 
 	private void updateBuilder() {
+		// add fetch columns - this can be done only once .. 
+		List<String> toFetch  = classAccessor.toFetch();
+		if (toFetch == null) {
+			// nothing to fetch
+		} else {
+			// TODO add type check here !!
+			
+			DbQueryBuilder<T> dbQuery = (DbQueryBuilder<T>)queryBuilder;
+			dbQuery.clearFetch();
+			for (String column : toFetch) {
+				dbQuery.addFetch(column);
+			}
+		}
+				
 		if (!filterable) {
 			return;
 		}

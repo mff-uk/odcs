@@ -98,7 +98,7 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 	 * List of visible columns.
 	 */
 	private final List<String> visible = new LinkedList<>();
-
+	
 	/**
 	 * Entity class.
 	 */
@@ -244,6 +244,11 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 		return visible;
 	}
 
+	@Override
+	public List<String> toFetch() {
+		return null;
+	}
+	
 	@Override
 	public Class<T> getEntityClass() {
 		return entityClass;

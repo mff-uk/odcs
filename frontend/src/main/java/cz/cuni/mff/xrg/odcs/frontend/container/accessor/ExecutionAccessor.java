@@ -16,6 +16,8 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 
 	private final List<String> filtrable = Arrays.asList("id", "start", "pipeline.name", "owner.username", "status", "isDebugging", "schedule");
 	
+	private final List<String> toFetch = Arrays.asList("pipeline", "owner");
+	
 	@Override
 	public List<String> all() {
 		return all;
@@ -34,6 +36,11 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 	@Override
 	public List<String> visible() {
 		return all;
+	}
+	
+	@Override
+	public List<String> toFetch() {
+		return toFetch;
 	}
 	
 	@Override

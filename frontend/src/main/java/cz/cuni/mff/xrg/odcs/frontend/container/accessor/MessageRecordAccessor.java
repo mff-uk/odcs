@@ -39,6 +39,11 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 	}
 
 	@Override
+	public List<String> toFetch() {
+		return null;
+	}
+	
+	@Override
 	public Class<MessageRecord> getEntityClass() {
 		return MessageRecord.class;
 	}

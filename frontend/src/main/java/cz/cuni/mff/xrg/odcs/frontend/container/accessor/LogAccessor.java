@@ -39,6 +39,11 @@ public class LogAccessor implements ClassAccessor<LogMessage> {
 	}
 	
 	@Override
+	public List<String> toFetch() {
+		return null;
+	}
+	
+	@Override
 	public Class<LogMessage> getEntityClass() {
 		return LogMessage.class;
 	}

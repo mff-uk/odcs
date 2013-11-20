@@ -40,6 +40,12 @@ public interface ClassAccessor<T extends DataObject> {
 	public List<String> visible();
 	
 	/**
+	 * List of properties to fetch.
+	 * @return 
+	 */
+	public List<String> toFetch();
+	
+	/**
 	 * Return entity class.
 	 * @return
 	 */

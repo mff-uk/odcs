@@ -50,6 +50,11 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	}
 
 	@Override
+	public List<String> toFetch() {
+		return null;
+	}
+	
+	@Override
 	public Class<Pipeline> getEntityClass() {
 		return Pipeline.class;
 	}

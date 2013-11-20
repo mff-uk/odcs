@@ -13,4 +13,27 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
 public interface DbQueryBuilder<T extends DataObject> extends DataQueryBuilder<T>, 
     DataQueryBuilder.Filterable<T>, DataQueryBuilder.Sortable<T> {
 	
+	/**
+	 * Add given property into the fetch list. Non-trivial classes
+	 * in fetch list will be loaded together with the main class instance {@link T}.
+	 * 
+	 * <b>The given property name must be name of direct non-trivial property
+	 * of main class {@link T}. </b>
+	 * 
+	 * @param propertyName 
+	 */
+	void addFetch(String propertyName);
+	
+	/**
+	 * Remove given property from fetch list.
+	 * 
+	 * @param propertyName 
+	 */
+	void removeFetch(String propertyName);
+	
+	/**
+	 * Clear fetch list.
+	 */
+	void clearFetch();
+	
 }
