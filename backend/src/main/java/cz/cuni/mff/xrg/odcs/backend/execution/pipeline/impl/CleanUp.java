@@ -54,7 +54,9 @@ class CleanUp implements PostExecutor {
 				contextFacade.close(item);
 			} else {
 				// delete data ..
-				contextFacade.delete(item);
+				// but preserve context info as it can be used to examine the 
+				// execution
+				contextFacade.delete(item, true);
 			}
 		}
 

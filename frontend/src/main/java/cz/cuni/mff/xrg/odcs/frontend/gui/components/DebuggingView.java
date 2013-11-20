@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 
@@ -47,6 +48,7 @@ public class DebuggingView extends CustomComponent {
 	private TabSheet tabs;
 	private RDFQueryView queryView;
 	private LogMessagesTable logMessagesTable;
+	private LogTable logTable;
 	private boolean isFromCanvas;
 	private Embedded iconStatus;
 	private CheckBox refreshAutomatically = null;
@@ -56,6 +58,9 @@ public class DebuggingView extends CustomComponent {
 	
 	public DebuggingView() {
 		logMessagesTable = App.getApp().getBean(LogMessagesTable.class);
+		logTable = App.getApp().getBean(LogTable.class);
+		
+		logTable.enter();
 	}
 	
 	public final void initialize(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug, boolean isFromCanvas) {
@@ -113,6 +118,8 @@ public class DebuggingView extends CustomComponent {
 					debugDpu = dpuFacade.getDPUInstance(ole.getDpuId());
 					logMessagesTable.setDpu(debugDpu);
 					logMessagesTable.refresh(true, false);
+//					logTable.setDpu(debugDpu);
+//					logTable.refresh(true, true);
 					tabs.setSelectedTab(logsTab);
 				}
 			}
@@ -135,8 +142,8 @@ public class DebuggingView extends CustomComponent {
 
 		VerticalLayout logLayout = new VerticalLayout();
 
-		//logMessagesTable = App.getApp().getBean(LogMessagesTable.class);
 		logLayout.addComponent(logMessagesTable);
+//		logLayout.addComponent(logTable);
 		logLayout.setSizeFull();
 		logsTab = tabs.addTab(logLayout, "Log");
 
@@ -249,6 +256,7 @@ public class DebuggingView extends CustomComponent {
 
 	public void setDisplay(ExecutionListPresenter.ExecutionDetailData detailDataObject) {
 		logMessagesTable.setDpu(pipelineExec, debugDpu, detailDataObject.getLogContainer());
+//		logTable.setDpu(pipelineExec, debugDpu, null);
 		executionRecordsTable.setPipelineExecution(pipelineExec, false, detailDataObject.getMessageContainer());
 	}
 }

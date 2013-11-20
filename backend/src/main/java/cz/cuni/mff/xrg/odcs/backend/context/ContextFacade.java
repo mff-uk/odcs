@@ -84,9 +84,10 @@ public class ContextFacade {
 	 * Delete {@link Context} and it's {@link ExecutionContextInfo}.
 	 *
 	 * @param context
+	 * @param preserveContextInfo If true then data in {@link ExecutionContextInfo} are preserved.
 	 */
-	public void delete(Context context) {
-		deleter.delete(context);
+	public void delete(Context context, boolean preserveContextInfo) {
+		deleter.delete(context, preserveContextInfo);
 	}
 
 	/**

@@ -35,8 +35,9 @@ class ContextDeleter {
 	 * @see ContextDeleter
 	 * 
 	 * @param context
+	 * @param preserveContextInfo
 	 */
-	public void delete(Context context) {
+	public void delete(Context context, boolean preserveContextInfo) {
 		// delete data
 		delete(context.getInputsManager());
 		delete(context.getOutputsManager());
@@ -66,7 +67,12 @@ class ContextDeleter {
 		deleteDirectory(tmpPath);
 		
 		// delete execution context info
-		deleteContextInfo(contextInfo);
+		if (preserveContextInfo) {
+			// do not delete context info
+		} else {
+			// delete context info
+			deleteContextInfo(contextInfo);
+		}
 	}
 
 	/**

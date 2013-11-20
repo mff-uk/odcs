@@ -27,6 +27,4 @@ public class RDFLazyQueryContainer extends LazyQueryContainer {
 		super(queryFactory, idPropertyId, batchSize, compositeItems);
 	}
 	
-	
-	
 }

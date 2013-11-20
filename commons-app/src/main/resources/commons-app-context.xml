@@ -44,6 +44,7 @@
     <bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade" />
 	
     <!-- Facade for viewing log messages -->
+    <bean id="dbLogRead" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogReadImpl" />
     <bean id="logFacade" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade" />
 
     <!-- Facade for managing shedules -->

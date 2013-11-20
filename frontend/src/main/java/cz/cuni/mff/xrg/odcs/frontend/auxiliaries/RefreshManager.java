@@ -67,7 +67,9 @@ public class RefreshManager {
 					lastExecutionStatus = true;
 					debug.refreshContent();
 					LogMessagesTable logs = debug.getLogMessagesTable();
-					isLogsSet = logs.refresh(false, !lastFinished);
+					if (logs != null) {
+						isLogsSet = logs.refresh(false, !lastFinished);
+					}
 					//Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
 				} else {
 					lastExecutionStatus = false;

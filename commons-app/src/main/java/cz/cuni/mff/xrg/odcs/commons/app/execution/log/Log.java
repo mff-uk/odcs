@@ -43,8 +43,8 @@ public class Log implements Serializable, DataObject {
 	/**
 	 * Level as string, so it can be persisted in DB.
 	 */
-	@Column(name = "eventLevel")
-	private Integer level;
+	@Column(name = "logLevel")
+	private Integer logLevel;
 	
 	/**
 	 * Timestamp of log message.
@@ -68,15 +68,13 @@ public class Log implements Serializable, DataObject {
 	 * Id of given DPU.
 	 */
 	@JoinColumn(name = "dpu")
-	@ManyToOne(optional = true)
-	private DPUInstanceRecord dpuInstance;
+	private Long dpu;
 	
 	/**
 	 * Id of execution.
 	 */
 	@JoinColumn(name = "execution")
-	@ManyToOne(optional = true)
-	private PipelineExecution execution;
+	private Long execution;
 
 	/**
 	 * Mapping to stack trace.
@@ -98,7 +96,7 @@ public class Log implements Serializable, DataObject {
 	 * @return the logLevel
 	 */
 	public Integer getLogLevel() {
-		return level;
+		return logLevel;
 	}
 
 	/**
@@ -125,14 +123,14 @@ public class Log implements Serializable, DataObject {
 	/**
 	 * @return the dpuInstanceId
 	 */
-	public DPUInstanceRecord getDpuInstance() {
-		return dpuInstance;
+	public Long getDpu() {
+		return dpu;
 	}
 
 	/**
 	 * @return the executionId
 	 */
-	public PipelineExecution getExecution() {
+	public Long getExecution() {
 		return execution;
 	}
 	
