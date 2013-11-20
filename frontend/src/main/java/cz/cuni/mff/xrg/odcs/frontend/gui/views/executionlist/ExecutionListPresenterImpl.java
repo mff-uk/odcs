@@ -1,18 +1,25 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
+import com.github.wolfie.refresher.Refresher;
+import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -30,8 +37,6 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private DbExecution dbExecution;
 	@Autowired
-	private DbLogMessage dbLog;
-	@Autowired
 	private DbLogMessage dbLogMessage;
 	@Autowired
 	private DbMessageRecord dbMessageRecord;
@@ -40,8 +45,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private ExecutionListView view;
 	private ExecutionListData dataObject;
-
+	private RefreshManager refreshManager;
 	private Date lastLoad = new Date(0L);
+	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
 
 	@Override
 	public Object enter(Object configuration) {
@@ -51,6 +57,15 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		dataObject = new ExecutionListData(c);
 		// prepare view
 		Object viewObject = view.enter(this);
+		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+		refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
+			@Override
+			public void refresh(Refresher source) {
+				refreshEventHandler();
+				LOG.debug("ExecutionMonitor refreshed.");
+			}
+		});
+
 		// set data object
 		view.setDisplay(dataObject);
 
@@ -130,5 +145,16 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
 		return new ReadOnlyContainer<>(dbMessageRecord, new MessageRecordAccessor());
+	}
+
+	@Override
+	public void stopRefreshEventHandler() {
+		refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
+	}
+
+	@Override
+	public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution) {
+		refreshManager.addListener(RefreshManager.DEBUGGINGVIEW,
+				RefreshManager.getDebugRefresher(debugView, execution));
 	}
 }

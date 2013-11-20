@@ -40,6 +40,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
 import java.io.FileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -59,6 +60,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private VerticalLayout verticalLayoutConfigure;// Layout contains Template Configuration tab components of {@link #tabSheet}. 
 	private VerticalLayout verticalLayoutInstances;//Layout contains DPU instances tab components of {@link #tabSheet}.  
 	private VerticalLayout dpuDetailLayout; //Layout contains DPU Template details.
+	@Autowired
 	private DPUTree dpuTree;// Tree contains available DPUs.
 	private TextField dpuName; // name of selected DPU Template
 	private TextArea dpuDescription; // description of selected DPU Template
@@ -183,6 +185,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		//layout with  DPURecord tree and DPURecord details 
 		dpuLayout = buildDpuLayout();
 		mainLayout.addComponent(dpuLayout);
+		
 		return mainLayout;
 	}
 
@@ -214,7 +217,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		layoutInfo.addComponent(infoLabel);
 
 		//DPU Template Tree
-		dpuTree = new DPUTree(false);
+		dpuTree.setExpandable(false);
+		dpuTree.fillTree();
 		dpuTree.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 

@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -37,6 +38,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
@@ -152,7 +156,7 @@ public class RDFQueryView extends CustomComponent {
 				}
 				String query = queryText.getValue();
 				return getDownloadData(repository, query, formatSelect
-						.getValue());
+						.getValue(), null);
 			}
 		});
 		fileDownloader.extend(queryDownloadButton);
@@ -245,9 +249,18 @@ public class RDFQueryView extends CustomComponent {
 				if (tableDpu == null) {
 					return null;
 				}
+				
+				List<Filter> filters = new LinkedList<>();
+				for(Object id : resultTable.getVisibleColumns()) {
+					Object value = resultTable.getFilterFieldValue(id);
+					if(value != null && !"".equals(value)) {
+						filters.add(new RDFRegexFilter((String)id, (String)value));
+					}
+				}
+				
 				RDFDataUnit tableRepo = getRepository(tableDpu, tableDataUnit);
 				return getDownloadData(tableRepo, tableQuery,
-						downloadFormatSelect.getValue());
+						downloadFormatSelect.getValue(), filters);
 			}
 		});
 		tableFileDownloader.extend(tableDownload);
@@ -268,7 +281,7 @@ public class RDFQueryView extends CustomComponent {
 	 *
 	 */
 	RDFDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(selector.getContext(), dpu,
+		return RDFDataUnitHelper.getRepository(selector.getInfo(), dpu,
 				dataUnit);
 	}
 
@@ -278,6 +291,8 @@ public class RDFQueryView extends CustomComponent {
 
 	void refreshDPUs(PipelineExecution exec) {
 		selector.refresh(exec);
+		queryText.setValue("");
+		setResultVisible(false);
 	}
 
 	private boolean isSelectQuery(String query) throws InvalidQueryException {
@@ -322,7 +337,7 @@ public class RDFQueryView extends CustomComponent {
 
 		//New RDFLazyQueryContainer
 		RDFLazyQueryContainer container = new RDFLazyQueryContainer(
-				new RDFQueryDefinition(15, "id", query, selector.getContext(),
+				new RDFQueryDefinition(15, "id", query, selector.getInfo(),
 				selectedDpu, selectedDataUnit), new RDFQueryFactory());
 		if (container.size() > 0) {
 			if (isSelectQuery(query)) {
@@ -342,7 +357,7 @@ public class RDFQueryView extends CustomComponent {
 				resultTable.setFilterBarVisible(false);
 			}
 		}
-
+		setResultVisible(true);
 		resultTable.setContainerDataSource(container);
 	}
 
@@ -374,7 +389,7 @@ public class RDFQueryView extends CustomComponent {
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
 	private InputStream getDownloadData(RDFDataUnit repository, String query,
-			Object format) {
+			Object format, Collection<Filter> filters) {
 		try {
 			boolean isSelectQuery = isSelectQuery(query);
 
@@ -397,13 +412,15 @@ public class RDFQueryView extends CustomComponent {
 
 				return null;
 			}
+			
+			
 
 			if (isSelectQuery) {
+				query = RDFDataUnitHelper.filterRDFQuery(query, filters);
 				SelectFormatType selectType = (SelectFormatType) format;
 				constructData = repository.executeSelectQuery(query, fn,
 						selectType);
 			} else {
-
 				RDFFormatType rdfType = RDFFormatType.getTypeByString(format
 						.toString());
 				constructData = repository.executeConstructQuery(query,
@@ -513,5 +530,11 @@ public class RDFQueryView extends CustomComponent {
 		} catch (InvalidQueryException ex) {
 			//Should not happen, only correct queries are shown in table.
 		}
+	}
+
+	private void setResultVisible(boolean visible) {
+		resultTable.setVisible(visible);
+		resultTableControls.setVisible(visible);
+		resultDownloadControls.setVisible(visible);
 	}
 }

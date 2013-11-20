@@ -30,7 +30,6 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FINISHED_WARNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
@@ -58,7 +57,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 	// TODO: get from user settings
 	private static final int PAGE_LENGTH = 20;
-	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
 	private IntlibPagedTable monitorTable;
 	/**
 	 * Used to separate table from execution detail view.
@@ -68,14 +66,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	private Panel mainLayout;
 	private DebuggingView debugView;
 	private HashMap<Date, Label> runTimeLabels = new HashMap<>();
+	
+	private ExecutionListPresenter presenter;
 
 	@Override
 	public Object enter(final ExecutionListPresenter presenter) {
 		// build page
 		buildPage(presenter);
-
-		// TODO if an execution is selected we then should show the details 
-
+		this.presenter = presenter;
 		return this;
 	}
 
@@ -87,7 +85,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 	@Override
 	public void showExecutionDetail(PipelineExecution execution, ExecutionListPresenter.ExecutionDetailData detailDataObject) {
-		App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
+		presenter.stopRefreshEventHandler();
 		// secure existance of detail layout
 		if (logLayout == null) {
 			buildExecutionDetail(execution);
@@ -174,14 +172,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		hsplit.setSecondComponent(null);
 		hsplit.setSplitPosition(100, Unit.PERCENTAGE);
 		hsplit.setLocked(true);
-
-		App.getApp().getRefreshManager().addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
-			@Override
-			public void refresh(Refresher source) {
-                presenter.refreshEventHandler();
-				LOG.debug("ExecutionMonitor refreshed.");
-			}
-		});
 
 		// at the end set page root
 		setCompositionRoot(mainLayout);
@@ -305,8 +295,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		buttonClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				// TODO move into presenter
-				App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
+				presenter.stopRefreshEventHandler();
 				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
 				hsplit.setHeight("100%");
 				hsplit.setLocked(true);
@@ -320,8 +309,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 		if (execution.getStatus() == PipelineExecutionStatus.RUNNING
 				|| execution.getStatus() == PipelineExecutionStatus.QUEUED) {
-			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW,
-					RefreshManager.getDebugRefresher(debugView, execution));
+			presenter.startDebugRefreshEventHandler(debugView, execution);
 		}
 	}
 

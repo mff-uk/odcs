@@ -29,7 +29,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionmonitor.ExecutionMonitor;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 
 import org.slf4j.Logger;
@@ -185,10 +185,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 				}
 				setNavigationHistory(event);
 								
-				if (!(event.getNewView() instanceof ExecutionMonitor)) {
+				//if ((event.getNewView(). instanceof PresenterWrap)) {
 					refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
 					refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
-				}
+				//}
 				return true;
 			}
 
