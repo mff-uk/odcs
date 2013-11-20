@@ -100,6 +100,11 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 	private final List<String> visible = new LinkedList<>();
 	
 	/**
+	 * List of columns to fetch.
+	 */
+	private final List<String> toFetch = new LinkedList<>();
+	
+	/**
 	 * Entity class.
 	 */
 	private final Class<T> entityClass;
@@ -199,6 +204,18 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 	}
 
 	/**
+	 * Add given column to the fetch list. Only direct non trivial column 
+	 * can be fetched.
+	 * Fetching column will result in eager loading on this column so there
+	 * will be no additional query as the data will be loaded in single query.
+	 * 
+	 * @param name 
+	 */
+	public void fetch(String name) {
+		toFetch.add(name);
+	}
+	
+	/**
 	 * Add column.
 	 *
 	 * @param <U>
@@ -246,7 +263,7 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 
 	@Override
 	public List<String> toFetch() {
-		return null;
+		return toFetch;
 	}
 	
 	@Override
