@@ -17,6 +17,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -27,7 +28,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -41,6 +41,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedE
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
@@ -68,6 +70,7 @@ public class PipelineEdit extends ViewComponent {
 	private TextArea pipelineDescription;
 	private Pipeline pipeline = null;
 	PipelineCanvas pc;
+	@Autowired
 	DPUTree dpuTree;
 	TabSheet tabSheet;
 	DragAndDropWrapper dadWrapper;
@@ -84,6 +87,9 @@ public class PipelineEdit extends ViewComponent {
 	
 	@Autowired
 	private PipelineFacade pipelineFacade;
+	@Autowired
+	private DPUFacade dpuFacade;
+	private RefreshManager refreshManager = ((AppEntry)UI.getCurrent()).getRefreshManager();
 
 	/**
 	 * Empty constructor.
@@ -250,7 +256,7 @@ public class PipelineEdit extends ViewComponent {
 				
 				if (obj.getClass() == DPUTemplateRecord.class) {
 					DPUTemplateRecord dpu = (DPUTemplateRecord) obj;
-					if (App.getApp().getDPUs().getAllTemplates().contains(dpu)) {
+					if (dpuFacade.getAllTemplates().contains(dpu)) {
 						pc.addDpu(dpu, mouse.getClientX() - 20 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 280 + UI
 								.getCurrent().getScrollTop());
 					} else {
@@ -299,10 +305,11 @@ public class PipelineEdit extends ViewComponent {
 		//VerticalLayout left = new VerticalLayout();
 		leftPanel.setStyleName("changingposition");
 		//left.setWidth(250, Unit.PIXELS);
-		dpuTree = new DPUTree(true);
+		dpuTree.setExpandable(true);
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setSizeUndefined();
 		dpuTree.setDragable(true);
+		dpuTree.fillTree();
 		//left.addComponentAsFirst(dpuTree);
 		leftPanel.setContent(dpuTree);
 		leftPanel.setSizeUndefined();
@@ -387,7 +394,7 @@ public class PipelineEdit extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				// save current pipeline
 				if (savePipeline()) {
-					pipeline = App.getApp().getPipelines().getPipeline(pipeline.getId());
+					pipeline = pipelineFacade.getPipeline(pipeline.getId());
 					pc.showPipeline(pipeline);
 				}
 			}
@@ -588,7 +595,7 @@ public class PipelineEdit extends ViewComponent {
 	 *
 	 */
 	private void closeView() {
-		App.getApp().navigateToLastView();
+		((AppEntry)UI.getCurrent()).navigateToLastView();
 	}
 
 	/**
@@ -649,8 +656,7 @@ public class PipelineEdit extends ViewComponent {
 		debugWindow.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(Window.CloseEvent e) {
-				//App.getApp().getRefreshThread().refreshExecution(null, null);
-				App.getApp().getRefreshManager().removeListener(RefreshManager.DEBUGGINGVIEW);
+				refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
 			}
 		});
 		debugWindow.addResizeListener(new Window.ResizeListener() {
@@ -661,10 +667,9 @@ public class PipelineEdit extends ViewComponent {
 		});
 		
 		if (pExec.getStatus() == RUNNING || pExec.getStatus() == QUEUED) {
-			//App.getApp().getRefreshThread().refreshExecution(pExec, debug);
-			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debug, pExec));
+			refreshManager.addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debug, pExec));
 		}
-		App.getApp().addWindow(debugWindow);
+		UI.getCurrent().addWindow(debugWindow);
 	}
 
 	/**
@@ -675,7 +680,7 @@ public class PipelineEdit extends ViewComponent {
 	 */
 	protected Pipeline loadPipeline(String id) {
 		// get data from DB ..
-		this.pipeline = App.getApp().getPipelines().getPipeline(Long.parseLong(id));
+		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		setupButtons(false);
@@ -698,7 +703,7 @@ public class PipelineEdit extends ViewComponent {
 			this.pipeline = loadPipeline(pipeIdstr);
 		} else {	
 			// create empty, for new record
-			this.pipeline = App.getApp().getPipelines().createPipeline();
+			this.pipeline = pipelineFacade.createPipeline();
 			pipeline.setName("");
 			pipeline.setDescription("");
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
@@ -729,7 +734,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineDescription.commit();
 		boolean doCleanup = pc.saveGraph(pipeline);
 		
-		App.getApp().getPipelines().save(this.pipeline);
+		pipelineFacade.save(this.pipeline);
 		if (doCleanup) {
 			pc.afterSaveCleanUp();
 		}

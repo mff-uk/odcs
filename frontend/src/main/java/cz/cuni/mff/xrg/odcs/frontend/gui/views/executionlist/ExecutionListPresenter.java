@@ -4,6 +4,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 
 /**
@@ -53,6 +54,10 @@ public interface ExecutionListPresenter extends Presenter {
 	 * @param executionId
 	 */
 	public void debugEventHandler(long executionId);
+
+	public void stopRefreshEventHandler();
+
+	public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution);
 
 	/**
 	 * View that can be used with the presenter.
