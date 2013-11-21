@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
 
 /**
  * Builds E-mail notification component which consists of text fields for e-mail
@@ -36,9 +37,8 @@ public class EmailComponent {
 	private Button buttonEmailAdd;
 	private GridLayout gridLayoutEmail;
 	public TextField textFieldEmail;
-	private InvalidValueException mailEx;
 	public List<TextField> listedEditText = null;
-	public cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings parentComponentAccount;
+	public Settings parentComponentAccount;
 	/**
 	 * List<String> that contains e-mails.
 	 */
@@ -117,22 +117,17 @@ public class EmailComponent {
 
 				@Override
 				public void validate(Object value) throws InvalidValueException {
-					//			if((parentComponent!=null) && (parentComponent.shEmailLayout.isEnabled())){
+
 					if (value.getClass() == String.class
 							&& !((String) value).isEmpty()) {
 						String inputEmail = (String) value;
 						if (!inputEmail.matches("[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})")) {
-							mailEx = new InvalidValueException("wrong е-mail format");
-							throw mailEx;
+							throw new InvalidValueException("wrong е-mail format");
 						}
 						return;
 					}
 
-					mailEx = new InvalidValueException("e-mail must be filled");
-					throw mailEx;
-
-					//			}
-
+					throw new InvalidValueException("e-mail must be filled");
 				}
 			});
 
