@@ -49,7 +49,7 @@ public class SPARQLoader {
 
 	/**
 	 * Constructor for using in DPUs calling.
-	 * 
+	 *
 	 * @param rdfDataUnit Instance of RDFDataUnit repository neeed for loading
 	 * @param context     Given DPU context for DPU over it are executed.
 	 */
@@ -331,12 +331,11 @@ public class SPARQLoader {
 					.valueOf(partsCount);
 
 			try {
-				InputStreamReader inputStreamReader = rdfDataUnit
+				try (InputStreamReader inputStreamReader = rdfDataUnit
 						.getEndpointStreamReader(
 						endpointURL, endpointGraph, query,
-						RDFFormat.N3);
-
-				inputStreamReader.close();
+						RDFFormat.N3)) {
+				}
 
 				logger.debug(
 						"Data " + processing + " part loaded successful");
@@ -380,9 +379,14 @@ public class SPARQLoader {
 		logger.debug(start);
 
 		try {
-			InputStreamReader result = rdfDataUnit.getEndpointStreamReader(
+			try (InputStreamReader result = rdfDataUnit.getEndpointStreamReader(
 					endpointURL,
-					"", moveQuery, RDFFormat.RDFXML);
+					"", moveQuery, RDFFormat.RDFXML)) {
+			}
+
+		} catch (IOException e) {
+			throw new RDFException(e.getMessage(), e);
+
 		} catch (RDFException e) {
 			String exception = String.format(
 					"Moving from temp GRAPH <%s> to target GRAPH <%s> FAILED.",
@@ -401,7 +405,7 @@ public class SPARQLoader {
 
 	private long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph)
 			throws RDFException {
-		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
+		String countQuery = "SELECT (count(*) as ?count) WHERE {?x ?y ?z}";
 
 		InputStreamReader inputStreamReader = rdfDataUnit
 				.getEndpointStreamReader(

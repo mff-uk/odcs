@@ -95,7 +95,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * Default construct query using for extraction without query in parameter.
 	 */
-	protected static final String DEFAULT_CONSTRUCT_QUERY = "construct {?x ?y ?z} where {?x ?y ?z}";
+	protected static final String DEFAULT_CONSTRUCT_QUERY = "CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z}";
 
 	/**
 	 * Logging information about execution of method using openRDF.
