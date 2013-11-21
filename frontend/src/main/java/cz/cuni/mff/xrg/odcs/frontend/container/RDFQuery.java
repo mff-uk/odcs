@@ -7,17 +7,15 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
@@ -32,9 +30,7 @@ import org.vaadin.addons.lazyquerycontainer.Query;
 public class RDFQuery implements Query {
 
 	private String baseQuery;
-
 	private int batchSize;
-
 	private RDFQueryDefinition qd;
 
 	public RDFQuery(RDFQueryDefinition qd) {
@@ -68,7 +64,7 @@ public class RDFQuery implements Query {
 	 * Load batch of items.
 	 *
 	 * @param startIndex Starting index of the item list.
-	 * @param count      Count of the items to be retrieved.
+	 * @param count Count of the items to be retrieved.
 	 * @return List of items.
 	 */
 	@Override
@@ -90,36 +86,43 @@ public class RDFQuery implements Query {
 			restriction.setOffset(offset * batchSize);
 		}
 		String query = restriction.getRestrictedQuery();
-		boolean isSelectQuery;
+		SPARQLQueryType type;
 		Object data;
 		try {
-			isSelectQuery = isSelectQuery(query);
+			type = getQueryType(query);
 
-			if (isSelectQuery) {
-				data = repository.executeSelectQueryAsTuples(query);
-			} else {
-				Graph queryResult = repository.executeConstructQuery(query);
-				List<Statement> result = new ArrayList<>(queryResult.size());
-				Iterator<Statement> it = queryResult.iterator();
-				while (it.hasNext()) {
-					result.add(it.next());
-				}
-				data = getRDFTriplesData(result);
+			switch (type) {
+				case SELECT:
+					data = repository.executeSelectQueryAsTuples(query);
+					break;
+				case CONSTRUCT:
+					data = getRDFTriplesData(repository.executeConstructQuery(query));
+					break;
+				case DESCRIBE:
+					String resource = query.substring(query.indexOf('<') + 1, query.indexOf('>'));
+					URIImpl uri = new URIImpl(resource);
+					data = getRDFTriplesData(repository.describeURI(uri));
+					break;
+				default: 
+					return null;
 			}
 
 			List<Item> items = new ArrayList<>();
-			if (isSelectQuery) {
-				MyTupleQueryResult result = (MyTupleQueryResult) data;
-				int id = 0;
-				while (result.hasNext()) {
-					items.add(toItem(result.getBindingNames(), result.next(),
-							++id));
-				}
-
-			} else {
-				for (RDFTriple triple : (List<RDFTriple>) data) {
-					items.add(toItem(triple));
-				}
+			switch (type) {
+				case SELECT:
+					MyTupleQueryResult result = (MyTupleQueryResult) data;
+					int id = 0;
+					while (result.hasNext()) {
+						items.add(toItem(result.getBindingNames(), result.next(),
+								++id));
+					}
+					break;
+				case CONSTRUCT:
+				case DESCRIBE:
+					for (RDFTriple triple : (List<RDFTriple>) data) {
+						items.add(toItem(triple));
+					}
+					break;
 			}
 			return items;
 		} catch (InvalidQueryException ex) {
@@ -187,13 +190,13 @@ public class RDFQuery implements Query {
 		}
 	}
 
-	private List<RDFTriple> getRDFTriplesData(List<Statement> statements) {
-
+	private List<RDFTriple> getRDFTriplesData(Graph graph) {
+		
 		List<RDFTriple> triples = new ArrayList<>();
 
 		int count = 0;
 
-		for (Statement next : statements) {
+		for (Statement next : graph) {
 			String subject = next.getSubject().stringValue();
 			String predicate = next.getPredicate().stringValue();
 			String object = next.getObject().stringValue();
@@ -205,5 +208,17 @@ public class RDFQuery implements Query {
 		}
 
 		return triples;
+	}
+
+	private SPARQLQueryType getQueryType(String query) throws InvalidQueryException {
+		if (query.length() < 9) {
+			//Due to expected exception format in catch block
+			throw new InvalidQueryException(new InvalidQueryException(
+					"Invalid query: " + query));
+		}
+		QueryPart queryPart = new QueryPart(query);
+		SPARQLQueryType type = queryPart.getSPARQLQueryType();
+
+		return type;
 	}
 }

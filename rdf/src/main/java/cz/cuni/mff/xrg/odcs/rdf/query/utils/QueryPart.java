@@ -12,80 +12,81 @@ import java.util.regex.Pattern;
  */
 public class QueryPart {
 
-	private String query;
+    private String query;
+    private int prefixEndIndex;
 
-	private int prefixEndIndex;
+    public QueryPart(String query) {
+        setQuery(query);
+        setPrefixEndIndex();
 
-	public QueryPart(String query) {
-		setQuery(query);
-		setPrefixEndIndex();
+    }
 
-	}
+    private void setPrefixEndIndex() {
+        String regex = ".*prefix\\s+[\\w-_]+[:]\\s*[<]http://[\\w:/\\.#-_]+[>][\\s]*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(query.toLowerCase());
 
-	private void setPrefixEndIndex() {
-		String regex = ".*prefix\\s+[\\w-_]+[:]\\s*[<]http://[\\w:/\\.#-_]+[>][\\s]*";
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(query.toLowerCase());
+        boolean hasResult = matcher.find();
 
-		boolean hasResult = matcher.find();
+        if (hasResult) {
 
-		if (hasResult) {
+            prefixEndIndex = matcher.end();
 
-			prefixEndIndex = matcher.end();
+            while (matcher.find()) {
+                prefixEndIndex = matcher.end();
+            }
 
-			while (matcher.find()) {
-				prefixEndIndex = matcher.end();
-			}
+        } else {
+            prefixEndIndex = 0;
+        }
+    }
 
-		} else {
-			prefixEndIndex = 0;
-		}
-	}
+    /**
+     *
+     * @return String representation of query without defined prefixes.
+     */
+    public String getQueryWithoutPrefixes() {
+        return query.substring(prefixEndIndex, query.length());
+    }
 
-	/**
-	 *
-	 * @return String representation of query without defined prefixes.
-	 */
-	public String getQueryWithoutPrefixes() {
-		return query.substring(prefixEndIndex, query.length());
-	}
+    /**
+     *
+     * @return all defined prefixes in given query.
+     */
+    public String getQueryPrefixes() {
+        return query.substring(0, prefixEndIndex);
+    }
 
-	/**
-	 *
-	 * @return all defined prefixes in given query.
-	 */
-	public String getQueryPrefixes() {
-		return query.substring(0, prefixEndIndex);
-	}
+    /**
+     *
+     * @return string representation of query.
+     */
+    public String getQuery() {
+        return query;
+    }
 
-	/**
-	 *
-	 * @return string representation of query.
-	 */
-	public String getQuery() {
-		return query;
-	}
+    private void setQuery(String newQuery) {
+        this.query = newQuery;
+    }
 
-	private void setQuery(String newQuery) {
-		this.query = newQuery;
-	}
+    /**
+     * Return one of enum as query type - SELECT, CONTRUCT, UNKNOWN.
+     *
+     * @return
+     */
+    public SPARQLQueryType getSPARQLQueryType() {
 
-	/**
-	 * Return one of enum as query type - SELECT, CONTRUCT, UNKNOWN.
-	 *
-	 * @return
-	 */
-	public SPARQLQueryType getSPARQLQueryType() {
+        String myQyery = getQueryWithoutPrefixes().toLowerCase();
 
-		String myQyery = getQueryWithoutPrefixes().toLowerCase();
+        SPARQLQueryType myType = SPARQLQueryType.UNKNOWN;
 
-		SPARQLQueryType myType = SPARQLQueryType.UNKNOWN;
-
-		if (myQyery.startsWith("select")) {
-			myType = SPARQLQueryType.SELECT;
-		} else if (myQyery.startsWith("construct")) {
-			myType = SPARQLQueryType.CONSTRUCT;
-		}
-		return myType;
-	}
+        if (myQyery.startsWith("select")) {
+            myType = SPARQLQueryType.SELECT;
+        } else if (myQyery.startsWith("construct")) {
+            myType = SPARQLQueryType.CONSTRUCT;
+        } else if (myQyery.startsWith("describe")) {
+            myType = SPARQLQueryType.DESCRIBE;
+        }
+        return myType;
+    }
 }

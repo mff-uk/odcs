@@ -73,7 +73,8 @@ public class Scheduler extends ViewComponent {
 	int style = DateFormat.MEDIUM;
 	static String filter;
 	private Schedule scheduleDel;
-	private SchedulePipeline sch;
+	@Autowired
+	private SchedulePipeline schedulePipeline;
 	@Autowired
 	private ScheduleFacade scheduleFacade;
 	@Autowired
@@ -131,14 +132,7 @@ public class Scheduler extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// open scheduler dialog
-				SchedulePipeline sch = new SchedulePipeline();
-				UI.getCurrent().addWindow(sch);
-				sch.addCloseListener(new CloseListener() {
-					@Override
-					public void windowClose(CloseEvent e) {
-						refreshData();
-					}
-				});
+				showSchedulePipeline(null);
 			}
 		});
 		topLine.addComponent(addRuleButton);
@@ -350,9 +344,9 @@ public class Scheduler extends ViewComponent {
 	private void showSchedulePipeline(Long id) {
 
 		// open scheduler dialog
-		if (sch == null) {
-			sch = new SchedulePipeline();
-			sch.addCloseListener(new CloseListener() {
+		if (!schedulePipeline.isInitialized()) {
+			schedulePipeline.init();
+			schedulePipeline.addCloseListener(new CloseListener() {
 				@Override
 				public void windowClose(CloseEvent e) {
 					refreshData();
@@ -360,12 +354,14 @@ public class Scheduler extends ViewComponent {
 			});
 		}
 
-		//openScheduler(schedule);
-		Schedule schedule = scheduleFacade.getSchedule(id);
-		sch.setSelectedSchedule(schedule);
+		Schedule schedule = null;
+		if (id != null) {
+			schedule = scheduleFacade.getSchedule(id);
+		}
+		schedulePipeline.setSelectedSchedule(schedule);
 
-		if (!UI.getCurrent().getWindows().contains(sch)) {
-			UI.getCurrent().addWindow(sch);
+		if (!UI.getCurrent().getWindows().contains(schedulePipeline)) {
+			UI.getCurrent().addWindow(schedulePipeline);
 		}
 	}
 

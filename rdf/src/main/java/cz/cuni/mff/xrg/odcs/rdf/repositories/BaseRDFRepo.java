@@ -1476,6 +1476,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				size = getSizeForSelect(queryPart);
 				break;
 			case CONSTRUCT:
+                        case DESCRIBE:
 				size = getSizeForConstruct(query);
 				break;
 			case UNKNOWN:

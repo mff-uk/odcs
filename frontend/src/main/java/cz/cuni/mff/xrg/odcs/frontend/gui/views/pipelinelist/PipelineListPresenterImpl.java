@@ -1,13 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
@@ -39,6 +37,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	@Autowired
 	private PipelineListView view;
 	private PipelineListData dataObject;
+	
+	@Autowired
+	private SchedulePipeline schedulePipeline;
 
 	@Override
 	public Object enter(Object configuration) {
@@ -84,9 +85,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public void scheduleEventHandler(long id) {
 		Pipeline pipeline = getLightPipeline(id);
 		// open scheduler dialog
-		SchedulePipeline sch = new SchedulePipeline();
-		sch.setSelectePipeline(pipeline);
-		UI.getCurrent().addWindow(sch);
+		if(!schedulePipeline.isInitialized()) {
+			schedulePipeline.init();
+		}
+		schedulePipeline.setSelectePipeline(pipeline);
+		UI.getCurrent().addWindow(schedulePipeline);
 	}
 
 	@Override
