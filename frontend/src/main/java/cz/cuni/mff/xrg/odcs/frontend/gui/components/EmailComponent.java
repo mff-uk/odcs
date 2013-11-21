@@ -20,7 +20,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 
 /**
  * Builds E-mail notification component which consists of text fields for e-mail
@@ -220,7 +219,7 @@ public class EmailComponent {
 			List<String> emailStr = new LinkedList<>();
 
 			for (EmailAddress mail : emails) {
-				emailStr.add(mail.getName() + "@" + mail.getDomain());
+				emailStr.add(mail.toString());
 			}
 
 			griddata.clear();
@@ -228,11 +227,8 @@ public class EmailComponent {
 			refreshEmailData();
 
 		} else {
-			EmailAddress email = user.getEmail();
-			String emailStr = email.getName() + "@" + email.getDomain();
-
 			griddata.clear();
-			griddata.add(0, emailStr);
+			griddata.add(0, user.getEmail().toString());
 			refreshEmailData();
 		}
 	}
@@ -246,7 +242,7 @@ public class EmailComponent {
 			List<String> emailStr = new LinkedList<>();
 
 			for (EmailAddress mail : emails) {
-				emailStr.add(mail.getName() + "@" + mail.getDomain());
+				emailStr.add(mail.toString());
 			}
 
 			griddata.clear();
