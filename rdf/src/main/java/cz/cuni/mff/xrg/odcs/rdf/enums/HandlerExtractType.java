@@ -31,6 +31,15 @@ public enum HandlerExtractType {
 	 */
 	STANDARD_HANDLER;
 
+	/**
+	 *
+	 * @param useStatisticalErrorHandler if is use statistical and error handler
+	 *                                   for data parsing or not.
+	 * @param failWhenErrors             If pipeline execution will fail, if
+	 *                                   some data are invalid, or not.
+	 * @return Concrete HandlerExtractType as choise based on the specified
+	 *         parameters.
+	 */
 	public static HandlerExtractType getHandlerType(
 			boolean useStatisticalErrorHandler, boolean failWhenErrors) {
 
