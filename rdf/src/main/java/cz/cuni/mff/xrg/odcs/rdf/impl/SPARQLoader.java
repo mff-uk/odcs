@@ -405,7 +405,7 @@ public class SPARQLoader {
 
 	private long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph)
 			throws RDFException {
-		String countQuery = "select count(*) as ?count where {?x ?y ?z}";
+		String countQuery = "SELECT (count(*) as ?count) WHERE {?x ?y ?z}";
 
 		InputStreamReader inputStreamReader = rdfDataUnit
 				.getEndpointStreamReader(
