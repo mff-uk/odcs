@@ -24,6 +24,10 @@ public class GraphUrl {
 		return prefix + dataUnitId.replace('_', '/');
 	}
 
+	/**
+	 *
+	 * @return defined graph prefix used for application graph names.
+	 */
 	public static String getGraphPrefix() {
 		return prefix;
 	}
