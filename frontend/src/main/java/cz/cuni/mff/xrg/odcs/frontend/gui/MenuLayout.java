@@ -25,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -38,7 +39,6 @@ public class MenuLayout extends CustomComponent {
 
 	private static final long serialVersionUID = 1L;
 
-	@Autowired
 	private ClassNavigator navigator;
 
 	/**
@@ -85,14 +85,6 @@ public class MenuLayout extends CustomComponent {
 	public void enter() {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
-		// init menuBar
-		menuBar.addItem("<b>ODCleanStore</b>", new NavigateToCommand(Initial.class, navigator));
-		menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator));
-		menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator));
-		menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator));
-//		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
-		menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator));
-		menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator));
 	}
 
 	private VerticalLayout buildMainLayout() {
@@ -175,6 +167,18 @@ public class MenuLayout extends CustomComponent {
 	public void refreshBackendStatus(boolean isRunning) {
 		backendStatus.setDescription(isRunning ? "Backend is online!" : "Backend is offline!");
 		backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.png" : "icons/offline.png"));
+	}
+
+	public void setNavigation(ClassNavigatorHolder navigatorHolder) {
+		this.navigator = navigatorHolder;
+		// init menuBar
+		menuBar.addItem("<b>ODCleanStore</b>", new NavigateToCommand(Initial.class, navigator));
+		menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator));
+		menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator));
+		menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator));
+//		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
+		menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator));
+		menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator));
 	}
 
 	/**

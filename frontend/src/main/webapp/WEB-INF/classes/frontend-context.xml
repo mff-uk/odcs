@@ -63,7 +63,7 @@
     <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype" />
 
     <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
-    <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="session"/>
+    <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="prototype"/>
 	
 	<bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype" />
 	<bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline" scope="prototype" />

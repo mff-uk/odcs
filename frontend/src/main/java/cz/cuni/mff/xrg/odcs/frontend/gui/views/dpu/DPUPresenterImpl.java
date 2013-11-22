@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
@@ -47,7 +48,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 	@Autowired
 	private DPUView view;
-	@Autowired
+	
 	ClassNavigator navigator;
 	
 	@Autowired
@@ -271,6 +272,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 	@Override
 	public Object enter(Object configuration) {
+		navigator = ((AppEntry)UI.getCurrent()).getNavigation();
 		Object viewObject = view.enter(this);
 		return viewObject;
 	}

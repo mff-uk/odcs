@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 
 import org.slf4j.Logger;
@@ -87,6 +88,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 		//main = new MenuLayout();
 		main.enter();
 		setContent(main);
+		
+		// create a navigator to control the views
+		// and set it into the navigator holder
+		ClassNavigatorImpl navInstance = new ClassNavigatorImpl(this, main.getViewLayout(), context);
+        ((ClassNavigatorHolder)navigatorHolder).setNavigator(navInstance);
+		main.setNavigation(navigatorHolder);
 
 		ConfirmDialog.Factory df = new DefaultConfirmDialogFactory() {
 			// We change the default order of the buttons
@@ -125,11 +132,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}
 		};
 		ConfirmDialog.setFactory(df);
-
-		// create a navigator to control the views
-		// and set it into the navigator holder
-		ClassNavigatorImpl navInstance = new ClassNavigatorImpl(this, main.getViewLayout(), context);
-        ((ClassNavigatorHolder)navigatorHolder).setNavigator(navInstance);
 		        
 		this.addDetachListener(new DetachListener() {
 			@Override
@@ -309,6 +311,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 		} else {
 			navigatorHolder.navigateTo("");
 		}
+	}
+	
+	public ClassNavigator getNavigation() {
+		return navigatorHolder;
 	}
 
 	/**

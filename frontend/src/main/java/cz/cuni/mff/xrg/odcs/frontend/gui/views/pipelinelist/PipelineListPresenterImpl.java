@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
@@ -24,9 +25,6 @@ import org.vaadin.dialogs.ConfirmDialog;
 @Address(url = "PipelineList")
 public class PipelineListPresenterImpl implements PipelineListPresenter {
 
-	//TODO do we need this?
-	public static final String NAME = "PipelineList";
-	@Autowired
 	private ClassNavigator navigator;
 	@Autowired
 	private PipelineFacade pipelineFacade;
@@ -43,6 +41,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 	@Override
 	public Object enter(Object configuration) {
+		navigator = ((AppEntry)UI.getCurrent()).getNavigation();
 		// prepare data object
 		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(dbPipeline, pipelineAccessor));
 		// prepare view
