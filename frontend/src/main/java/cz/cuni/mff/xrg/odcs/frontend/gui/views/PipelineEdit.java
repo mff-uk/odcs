@@ -89,7 +89,7 @@ public class PipelineEdit extends ViewComponent {
 	private PipelineFacade pipelineFacade;
 	@Autowired
 	private DPUFacade dpuFacade;
-	private RefreshManager refreshManager = ((AppEntry)UI.getCurrent()).getRefreshManager();
+	private RefreshManager refreshManager;
 
 	/**
 	 * Empty constructor.
@@ -105,6 +105,7 @@ public class PipelineEdit extends ViewComponent {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
+		refreshManager = ((AppEntry)UI.getCurrent()).getRefreshManager();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		// ..
