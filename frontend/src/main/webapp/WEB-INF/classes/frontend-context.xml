@@ -33,8 +33,7 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
 		
     <!-- Factory for constructing data containers for Vaadin tables. -->
-    <bean id="containerFactory" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory" />
-	
+
     <bean id="pipelineListPresenterImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl" scope="prototype" />
 	
     <bean id="pipelineListViewImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListViewImpl" scope="prototype" />
@@ -42,13 +41,13 @@
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
     <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
-	<bean id="logAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor" />
-	<bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor" />
+    <bean id="logAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor" />
+    <bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor" />
 	
-	<bean id="logMessagesTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable" scope="prototype" />
-	<bean id="debugView" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
+    <bean id="logMessagesTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable" scope="prototype" />
+    <bean id="debugView" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
 
-        <bean id="logTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable" scope="prototype" />
+    <bean id="logTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable" scope="prototype" />
         
     <!-- Imposes authorization filters on container. -->
     <bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
@@ -65,7 +64,7 @@
     <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
     <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="prototype"/>
 	
-	<bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype" />
-	<bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline" scope="prototype" />
+    <bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype" />
+    <bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline" scope="prototype" />
     
 </beans>

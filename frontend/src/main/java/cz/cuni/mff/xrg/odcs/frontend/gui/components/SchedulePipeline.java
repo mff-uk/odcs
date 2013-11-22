@@ -43,7 +43,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
@@ -108,8 +107,6 @@ public class SchedulePipeline extends Window {
 	private ScheduleFacade scheduleFacade;
 	@Autowired
 	private AuthenticationContext authCtx;
-	@Autowired
-	private ContainerFactory containerFactory;
 
 	/**
 	 * The constructor should first build the main layout, set the composition
