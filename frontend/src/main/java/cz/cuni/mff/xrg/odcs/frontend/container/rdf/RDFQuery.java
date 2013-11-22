@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.container;
+package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;

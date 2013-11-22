@@ -4,7 +4,6 @@ import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
-import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

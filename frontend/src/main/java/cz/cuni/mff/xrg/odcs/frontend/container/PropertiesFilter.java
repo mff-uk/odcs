@@ -7,7 +7,9 @@ import com.vaadin.data.Item;
  * Filter for property filtering in database. 
  *
  * @author Bogo
+ * @deprecated can be removed with the old log table
  */
+@Deprecated
 public class PropertiesFilter implements Filter {
 
 	Object value;

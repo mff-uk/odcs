@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
-import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;

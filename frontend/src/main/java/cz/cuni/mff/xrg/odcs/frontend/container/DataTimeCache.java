@@ -15,6 +15,7 @@ import java.util.Map;
  * 
  * @param <T>
  *
+ * TODO Let user set the time for which the data stays valid
  */
 public class DataTimeCache<T> {
 

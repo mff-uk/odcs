@@ -1,5 +1,6 @@
-package cz.cuni.mff.xrg.odcs.frontend.container;
+package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.HashMap;
 import java.util.LinkedList;

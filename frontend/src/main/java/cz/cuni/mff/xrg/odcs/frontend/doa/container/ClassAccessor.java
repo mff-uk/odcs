@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.container;
+package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
 import java.util.List;
 

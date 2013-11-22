@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.container;
 
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

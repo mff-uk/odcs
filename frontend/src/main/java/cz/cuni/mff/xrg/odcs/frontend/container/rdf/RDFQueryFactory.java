@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.container;
+package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;

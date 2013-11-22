@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
 import com.vaadin.data.Container;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor;
 import java.util.Collection;
 import java.util.List;
 

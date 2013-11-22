@@ -5,7 +5,6 @@ import com.vaadin.data.Container.Filter;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
-import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

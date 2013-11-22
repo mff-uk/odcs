@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.cuni.mff.xrg.odcs.frontend.container;
+package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;

@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessorBase;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessorBase;
 
 /**
  * Accessor used for containers that just list the pipelines.

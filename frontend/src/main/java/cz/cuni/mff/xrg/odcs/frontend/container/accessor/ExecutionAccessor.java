@@ -6,7 +6,7 @@ import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 
 public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 	

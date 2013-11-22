@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
-import cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessorBase;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessorBase;
 import java.util.Date;
 
 /**
