@@ -51,7 +51,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
 
 	@Override
-	public Object enter(Object configuration) {
+	public Object enter() {
 		// prepare data object
 		ReadOnlyContainer c = new ReadOnlyContainer<>(
 				new CachedSource<>(dbExecution, new ExecutionAccessor()));
@@ -71,6 +71,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		// set data object
 		view.setDisplay(dataObject);
 
+		// return main component
+		return viewObject;
+	}
+
+	@Override
+	public void setParameters(Object configuration) {
 		if (configuration != null && configuration.getClass() == String.class) {
 			String strExecId = (String) configuration;
 			try {
@@ -81,11 +87,8 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 				//LOG.warn("Invalid parameter for execution monitor.", e);
 			}
 		}
-
-		// return main component
-		return viewObject;
-	}
-
+	}		
+	
 	@Override
 	public void refreshEventHandler() {
 		// TODO check for database change

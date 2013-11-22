@@ -11,9 +11,15 @@ public interface Presenter {
     /**
      * Activate presenter. Should return the graphical user interface object
      * that will be set as main view for application.
-     * @param configuration
      * @return 
      */
-    Object enter(Object configuration);
+    Object enter();
     
+	/**
+	 * Set the parameters to the view. Can be called only after previously called
+	 * {@link #enter()}.
+	 * @param configuration 
+	 */
+	void setParameters(Object configuration);
+	
 }

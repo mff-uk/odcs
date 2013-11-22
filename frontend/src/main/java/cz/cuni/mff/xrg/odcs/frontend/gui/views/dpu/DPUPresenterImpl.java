@@ -271,12 +271,17 @@ public class DPUPresenterImpl implements DPUPresenter {
 	}
 
 	@Override
-	public Object enter(Object configuration) {
+	public Object enter() {
 		navigator = ((AppEntry)UI.getCurrent()).getNavigation();
 		Object viewObject = view.enter(this);
 		return viewObject;
 	}
 
+	@Override
+	public void setParameters(Object configuration) {
+		// we do not care about parameters, we always do the same job .. 
+	}
+	
 	@Override
 	public void openDPUCreateEventHandler() {
 		//Open the dialog for DPU Template creation

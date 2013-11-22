@@ -41,7 +41,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	private SchedulePipeline schedulePipeline;
 
 	@Override
-	public Object enter(Object configuration) {
+	public Object enter() {
 		navigator = ((AppEntry)UI.getCurrent()).getNavigation();
 		// prepare data object
 		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(
@@ -55,6 +55,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		return viewObject;
 	}
 
+	@Override
+	public void setParameters(Object configuration) {
+		// we do not care about parameters, we always do the same job .. 
+	}	
+	
 	@Override
 	public void refreshEventHandler() {
 		dataObject.getContainer().refresh();

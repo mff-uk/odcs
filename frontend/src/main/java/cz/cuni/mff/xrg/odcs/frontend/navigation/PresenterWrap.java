@@ -18,16 +18,13 @@ class PresenterWrap implements View {
      */
     private final Presenter presenter;
     
-    private String parameters;
-    
     public PresenterWrap(Presenter presenter) {
         this.presenter = presenter;
     }
     
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        parameters = event.getParameters();
-		// TODO call set parameters here 
+		presenter.setParameters(event.getParameters());
     }
     
     public Presenter getPresenter() {
@@ -41,8 +38,7 @@ class PresenterWrap implements View {
      * @return 
      */
     public Object enterPresenter() {
-		// TODO remove the parameter from here
-        return presenter.enter(parameters);
+        return presenter.enter();
     }
 
 	@Override
