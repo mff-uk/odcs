@@ -164,8 +164,11 @@ public class SchedulePipeline extends Window {
 			comboEvery.setValue(PeriodUnit.DAY);
 			valueInt.setValue(1);
 			valueTol.setValue(1);
-			selectPipe.setValue(null);
 			notifyThis.setValue(false);
+			
+			if(selectPipe != null) {
+				selectPipe.setValue(null);
+			}
 			
 			
 		} else {
