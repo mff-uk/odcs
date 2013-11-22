@@ -97,6 +97,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		hsplit.setSecondComponent(logLayout);
 		// adjust hsplit
 		if (hsplit.isLocked()) {
+			debugView.setActiveTab("Events");
 			hsplit.setSplitPosition(55, Unit.PERCENTAGE);
 			hsplit.setHeight("-1px");
 			hsplit.setLocked(false);

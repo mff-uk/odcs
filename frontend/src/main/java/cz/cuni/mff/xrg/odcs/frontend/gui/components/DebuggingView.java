@@ -259,4 +259,22 @@ public class DebuggingView extends CustomComponent {
 //		logTable.setDpu(pipelineExec, debugDpu, null);
 		executionRecordsTable.setPipelineExecution(pipelineExec, false, detailDataObject.getMessageContainer());
 	}
+
+	public void setActiveTab(String tabName) {
+		int tabIdx;
+		switch(tabName) {
+			case "Events":
+				tabIdx = 0;
+				break;
+			case "Log":
+				tabIdx = 1;
+				break;
+			case "Browse":
+				tabIdx = 2;
+				break;
+			default:
+				tabIdx = 0;
+		}
+		tabs.setSelectedTab(tabIdx);
+	}
 }
