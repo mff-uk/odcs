@@ -1,23 +1,17 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.RecordsTable;
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
-import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
@@ -47,7 +41,6 @@ public class DebuggingView extends CustomComponent {
 	private Tab logsTab;
 	private TabSheet tabs;
 	private RDFQueryView queryView;
-	private LogMessagesTable logMessagesTable;
 	private LogTable logTable;
 	private boolean isFromCanvas;
 	private Embedded iconStatus;
@@ -57,7 +50,6 @@ public class DebuggingView extends CustomComponent {
 	private DPUFacade dpuFacade = App.getDPUs();
 	
 	public DebuggingView() {
-		logMessagesTable = App.getApp().getBean(LogMessagesTable.class);
 		logTable = App.getApp().getBean(LogTable.class);
 		
 		logTable.enter();
@@ -116,10 +108,8 @@ public class DebuggingView extends CustomComponent {
 				if(event.getClass() == OpenLogsEvent.class) {
 					OpenLogsEvent ole = (OpenLogsEvent)event;
 					debugDpu = dpuFacade.getDPUInstance(ole.getDpuId());
-					logMessagesTable.setDpu(debugDpu);
-					logMessagesTable.refresh(true, false);
-//					logTable.setDpu(debugDpu);
-//					logTable.refresh(true, true);
+					logTable.setDpu(debugDpu);
+					logTable.refresh(true, true);
 					tabs.setSelectedTab(logsTab);
 				}
 			}
@@ -141,9 +131,7 @@ public class DebuggingView extends CustomComponent {
 		mainLayout.addComponent(optionLine);
 
 		VerticalLayout logLayout = new VerticalLayout();
-
-		logLayout.addComponent(logMessagesTable);
-//		logLayout.addComponent(logTable);
+		logLayout.addComponent(logTable);
 		logLayout.setSizeFull();
 		logsTab = tabs.addTab(logLayout, "Log");
 
@@ -250,13 +238,12 @@ public class DebuggingView extends CustomComponent {
 		}
 	}
 	
-	public LogMessagesTable getLogMessagesTable() {
-		return logMessagesTable;
+	public LogTable getLogTable() {
+		return logTable;
 	}
 
 	public void setDisplay(ExecutionListPresenter.ExecutionDetailData detailDataObject) {
-		logMessagesTable.setDpu(pipelineExec, debugDpu, detailDataObject.getLogContainer());
-//		logTable.setDpu(pipelineExec, debugDpu, null);
+		logTable.setDpu(pipelineExec, debugDpu, null);
 		executionRecordsTable.setPipelineExecution(pipelineExec, false, detailDataObject.getMessageContainer());
 	}
 

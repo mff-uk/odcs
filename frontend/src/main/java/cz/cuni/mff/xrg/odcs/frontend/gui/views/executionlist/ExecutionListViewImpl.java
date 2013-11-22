@@ -321,6 +321,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	 * @param exec pipeline execution to show in debugging view
 	 */
 	private void buildDebugView(PipelineExecution execution) {
+		if (debugView == null) {
+			// secure that the debug view exist
+			buildExecutionDetail(execution);
+		}
+		
 		if (!debugView.isInitialized()) {
 			debugView.initialize(execution, null, execution.isDebugging(), false);
 		} else {

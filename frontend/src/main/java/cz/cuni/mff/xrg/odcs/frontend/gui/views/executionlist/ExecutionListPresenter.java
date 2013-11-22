@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
@@ -110,21 +108,14 @@ public interface ExecutionListPresenter extends Presenter {
 	}
 
 	public class ExecutionDetailData {
-
-		private final ReadOnlyContainer<?> logContainer;
-		
+	
 		private final ReadOnlyContainer<MessageRecord> messageContainer;
-
-		public ReadOnlyContainer<?> getLogContainer() {
-			return logContainer;
-		}
 
 		public ReadOnlyContainer<MessageRecord> getMessageContainer() {
 			return messageContainer;
 		}
 
-		public ExecutionDetailData(ReadOnlyContainer<?> logContainer, ReadOnlyContainer<MessageRecord> messageContainer) {
-			this.logContainer = logContainer;
+		public ExecutionDetailData(ReadOnlyContainer<MessageRecord> messageContainer) {
 			this.messageContainer = messageContainer;
 		}
 

@@ -10,7 +10,9 @@ import org.apache.log4j.Level;
 /**
  *
  * @author Bogo
+ * @deprecated will be removed with the old log's table
  */
+@Deprecated
 public class LogAccessor implements ClassAccessor<LogMessage> {
 
 	private List<String> all = Arrays.asList("id", "date", "level", "dpuInstanceId", "message", "source");

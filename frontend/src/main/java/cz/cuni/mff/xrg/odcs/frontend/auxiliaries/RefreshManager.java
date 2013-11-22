@@ -7,6 +7,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 
 import java.util.HashMap;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public class RefreshManager {
 				if (debug.isRefreshingAutomatically()) {
 					lastExecutionStatus = true;
 					debug.refreshContent();
-					LogMessagesTable logs = debug.getLogMessagesTable();
+					LogTable logs = debug.getLogTable();
 					if (logs != null) {
 						isLogsSet = logs.refresh(false, !lastFinished);
 					}

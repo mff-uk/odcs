@@ -253,30 +253,30 @@ public class LogMessagesTable extends CustomComponent {
 	 * @param log Log message to show detail of.
 	 */
 	private void showLogMessageDetail(LogMessage log) {
-		if (detail == null) {
-			final LogMessageDetail detailWindow = new LogMessageDetail(log);
-			detailWindow.setHeight(600, Unit.PIXELS);
-			detailWindow.setWidth(500, Unit.PIXELS);
-			detailWindow.setImmediate(true);
-			detailWindow.setContentHeight(600, Unit.PIXELS);
-			detailWindow.addResizeListener(new Window.ResizeListener() {
-				@Override
-				public void windowResized(Window.ResizeEvent e) {
-					detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
-				}
-			});
-			detailWindow.addCloseListener(new Window.CloseListener() {
-				@Override
-				public void windowClose(Window.CloseEvent e) {
-					detail = null;
-				}
-			});
-			detail = detailWindow;
-			App.getApp().addWindow(detailWindow);
-		} else {
-			detail.loadMessage(log);
-			detail.bringToFront();
-		}
+//		if (detail == null) {
+//			final LogMessageDetail detailWindow = new LogMessageDetail(log);
+//			detailWindow.setHeight(600, Unit.PIXELS);
+//			detailWindow.setWidth(500, Unit.PIXELS);
+//			detailWindow.setImmediate(true);
+//			detailWindow.setContentHeight(600, Unit.PIXELS);
+//			detailWindow.addResizeListener(new Window.ResizeListener() {
+//				@Override
+//				public void windowResized(Window.ResizeEvent e) {
+//					detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+//				}
+//			});
+//			detailWindow.addCloseListener(new Window.CloseListener() {
+//				@Override
+//				public void windowClose(Window.CloseEvent e) {
+//					detail = null;
+//				}
+//			});
+//			detail = detailWindow;
+//			App.getApp().addWindow(detailWindow);
+//		} else {
+//			detail.loadMessage(log);
+//			detail.bringToFront();
+//		}
 	}
 
 	private void refreshDpuSelector(ComboBox dpuSelector) {

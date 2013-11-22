@@ -12,7 +12,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
@@ -21,12 +23,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,6 +75,8 @@ public class LogTable extends CustomComponent {
 	
 	private FilterGenerator filterGenerator;
 	
+	private LogMessageDetail detail = null;
+	
 	/**
 	 * Filters on {@link #container}.
 	 */
@@ -82,6 +88,9 @@ public class LogTable extends CustomComponent {
 	 */
 	private final Map<Long, String> dpuNames = new HashMap<>();
 
+	private CachedSource dataSouce;
+			
+	
 	protected int getPageSize() {
 		return 28;
 	}
@@ -90,13 +99,14 @@ public class LogTable extends CustomComponent {
 	 * Default constructor.
 	 */
 	public LogTable() {
+		
 	}
 
 	@PostConstruct
 	private void initialize() {
 		// bind container to the access
-		container = new ReadOnlyContainer<>(
-				new CachedSource<>(access, new NewLogAccessor(), coreFilters));
+		dataSouce = new CachedSource<>(access, new NewLogAccessor(), coreFilters);
+		container = new ReadOnlyContainer<>(dataSouce);
 	}
 
 	/**
@@ -251,9 +261,11 @@ public class LogTable extends CustomComponent {
 	 * @return
 	 */
 	public boolean refresh(boolean immediate, boolean getNewData) {
+		// invalidata all the data
+		// TODO : load new data in background
+		dataSouce.invalidate();
 		// use direct refresh
 		container.refresh();
-
 		return true;
 	}
 
@@ -263,7 +275,30 @@ public class LogTable extends CustomComponent {
 	 * @param log
 	 */
 	protected void showLogDetail(Log log) {
-		// todo : show detail
+		if (detail == null) {
+			final LogMessageDetail detailWindow = new LogMessageDetail(log);
+			detailWindow.setHeight(600, Unit.PIXELS);
+			detailWindow.setWidth(500, Unit.PIXELS);
+			detailWindow.setImmediate(true);
+			detailWindow.setContentHeight(600, Unit.PIXELS);
+			detailWindow.addResizeListener(new Window.ResizeListener() {
+				@Override
+				public void windowResized(Window.ResizeEvent e) {
+					detailWindow.setContentHeight(e.getWindow().getHeight(), Unit.PIXELS);
+				}
+			});
+			detailWindow.addCloseListener(new Window.CloseListener() {
+				@Override
+				public void windowClose(Window.CloseEvent e) {
+					detail = null;
+				}
+			});
+			detail = detailWindow;
+			UI.getCurrent().addWindow(detailWindow);
+		} else {
+			detail.loadMessage(log);
+			detail.bringToFront();
+		}
 	}
 	
 	private FilterGenerator createFilterGenerator(final ComboBox dpuSelector, final ComboBox levelSelector) {

@@ -13,7 +13,6 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
@@ -113,7 +112,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	@Override
 	public void showDebugEventHandler(long executionId) {
-		view.showExecutionDetail(getLightExecution(executionId), new ExecutionDetailData(getLogDataSource(), getMessageDataSource()));
+		view.showExecutionDetail(getLightExecution(executionId), new ExecutionDetailData(getMessageDataSource()));
 	}
 
 	@Override
@@ -130,7 +129,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		if (exec != null) {
 			refreshEventHandler();
 			view.setSelectedRow(exec.getId());
-			view.showExecutionDetail(exec, new ExecutionDetailData(getLogDataSource(), getMessageDataSource()));
+			view.showExecutionDetail(exec, new ExecutionDetailData(getMessageDataSource()));
 		}
 	}
 
@@ -142,11 +141,6 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	 */
 	private PipelineExecution getLightExecution(long executionId) {
 		return pipelineFacade.getExecution(executionId);
-	}
-
-	private ReadOnlyContainer<?> getLogDataSource() {
-		return new ReadOnlyContainer<>(
-				new CachedSource<>(dbLogMessage, new LogAccessor()));
 	}
 
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
