@@ -44,7 +44,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ContainerFactory;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -271,7 +274,8 @@ public class SchedulePipeline extends Window {
 		coreLayout.setSpacing(true);
 		coreLayout.setMargin(true);
 		
-		container = containerFactory.createPipelinesList(20);
+		container = new ReadOnlyContainer<>(
+				new InMemorySource<>(new PipelineNameAccessor(), dbPipeline));
 		
 		HorizontalLayout layoutPipeline = new HorizontalLayout();
 		layoutPipeline.setSpacing(true);

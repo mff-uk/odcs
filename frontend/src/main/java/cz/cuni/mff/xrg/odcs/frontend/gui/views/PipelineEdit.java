@@ -46,6 +46,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.slf4j.Logger;
@@ -614,7 +615,11 @@ public class PipelineEdit extends ViewComponent {
 		final DPUInstanceRecord instance = debugNode.getDpuInstance();
 		final DebuggingView debug = new DebuggingView();
 		debug.initialize(pExec, instance, true, true);
-		debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor()), new ReadOnlyContainer(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor())));
+		debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
+				new ReadOnlyContainer(
+						new CachedSource<>(App.getApp().getBean(DbLogMessage.class), new LogAccessor())), 
+				new ReadOnlyContainer(
+						new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
 		
 		final Window debugWindow = new Window("Debug window");
 		HorizontalLayout buttonLine = new HorizontalLayout();
@@ -630,7 +635,11 @@ public class PipelineEdit extends ViewComponent {
 					return;
 				}
 				debug.setExecution(pExec, instance);
-				debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor()), new ReadOnlyContainer(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor())));
+				debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
+						new ReadOnlyContainer(
+								new CachedSource<>(App.getApp().getBean(DbLogMessage.class), new LogAccessor())), 
+						new ReadOnlyContainer(
+								new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
 			}
 		});
 		rerunButton.setWidth(100, Unit.PIXELS);
@@ -722,6 +731,7 @@ public class PipelineEdit extends ViewComponent {
 
 	/**
 	 * Saves current pipeline.
+	 * @return 
 	 */
 	protected boolean savePipeline() {
 		if (!validate()) {

@@ -15,6 +15,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import java.util.Date;
@@ -52,7 +53,8 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Override
 	public Object enter(Object configuration) {
 		// prepare data object
-		ReadOnlyContainer c = new ReadOnlyContainer<>(dbExecution, new ExecutionAccessor());
+		ReadOnlyContainer c = new ReadOnlyContainer<>(
+				new CachedSource<>(dbExecution, new ExecutionAccessor()));
 		c.sort(new Object[]{"id"}, new boolean[]{false});
 		dataObject = new ExecutionListData(c);
 		// prepare view
@@ -140,11 +142,13 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	}
 
 	private ReadOnlyContainer<?> getLogDataSource() {
-		return new ReadOnlyContainer<>(dbLogMessage, new LogAccessor());
+		return new ReadOnlyContainer<>(
+				new CachedSource<>(dbLogMessage, new LogAccessor()));
 	}
 
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
-		return new ReadOnlyContainer<>(dbMessageRecord, new MessageRecordAccessor());
+		return new ReadOnlyContainer<>(
+				new CachedSource<>(dbMessageRecord, new MessageRecordAccessor()));
 	}
 
 	@Override

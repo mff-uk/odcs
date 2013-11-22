@@ -27,6 +27,7 @@ class PresenterWrap implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         parameters = event.getParameters();
+		// TODO call set parameters here 
     }
     
     public Presenter getPresenter() {
@@ -40,6 +41,7 @@ class PresenterWrap implements View {
      * @return 
      */
     public Object enterPresenter() {
+		// TODO remove the parameter from here
         return presenter.enter(parameters);
     }
 

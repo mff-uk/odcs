@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
@@ -43,7 +44,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public Object enter(Object configuration) {
 		navigator = ((AppEntry)UI.getCurrent()).getNavigation();
 		// prepare data object
-		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(dbPipeline, pipelineAccessor));
+		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(
+				new CachedSource<>(dbPipeline, pipelineAccessor)));
+
 		// prepare view
 		Object viewObject = view.enter(this);
 		// set data object

@@ -31,6 +31,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.PropertiesFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.LogAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.InputStream;
 import java.util.Date;
@@ -127,6 +128,7 @@ public class LogMessagesTable extends CustomComponent {
 	 *
 	 * @param exec {@link PipelineExecution} which log to show.
 	 * @param dpu {@link DPUInstanceRecord} or null.
+	 * @param container
 	 */
 	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, ReadOnlyContainer container) {
 		if (fetchData != null) {
@@ -353,8 +355,9 @@ public class LogMessagesTable extends CustomComponent {
 		fetchData = new Thread() {
 			@Override
 			public void run() {
-				App.getApp().getAuthCtx().setAuthentication(authentication);
-				ReadOnlyContainer container = new ReadOnlyContainer(App.getApp().getBean(DbLogMessage.class), new LogAccessor());
+				App.getApp().getAuthCtx().setAuthentication(authentication);				
+				ReadOnlyContainer container = new ReadOnlyContainer(
+						new CachedSource<>(App.getApp().getBean(DbLogMessage.class), new LogAccessor()));
 				IntlibPagedTable table = getInitializedTable();
 				final IntlibPagedTable fetchTable = loadMessageTable(table, exec.getId(), container);
 				setTableFilters(fetchTable, dpu, level, message, source, date);

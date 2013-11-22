@@ -26,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,7 +95,8 @@ public class LogTable extends CustomComponent {
 	@PostConstruct
 	private void initialize() {
 		// bind container to the access
-		container = new ReadOnlyContainer<>(access, new NewLogAccessor(), coreFilters);
+		container = new ReadOnlyContainer<>(
+				new CachedSource<>(access, new NewLogAccessor(), coreFilters));
 	}
 
 	/**
