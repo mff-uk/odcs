@@ -127,14 +127,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		mainLayout.setContent(hsplit);
 		// set top level element properties
 		setWidth("100%");
-		setHeight("100%");
+		//setHeight("100%");
 
 		VerticalLayout monitorTableLayout = new VerticalLayout();
 		monitorTableLayout.setImmediate(true);
 		monitorTableLayout.setMargin(true);
 		monitorTableLayout.setSpacing(true);
 		monitorTableLayout.setWidth("100%");
-		monitorTableLayout.setHeight("100%");
+		//monitorTableLayout.setHeight("100%");
 
 		// Layout for buttons Refresh and Clear Filters on the top.
 		HorizontalLayout topLine = new HorizontalLayout();
@@ -277,7 +277,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		logLayout.setMargin(true);
 		logLayout.setSpacing(true);
 		logLayout.setWidth("100%");
-		logLayout.setHeight("100%");
+		//logLayout.setHeight("100%");
 		debugView = new DebuggingView();
 		// build the debug view
 		buildDebugView(execution);
