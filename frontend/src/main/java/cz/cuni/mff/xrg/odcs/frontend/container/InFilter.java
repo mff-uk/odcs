@@ -10,7 +10,9 @@ import org.apache.log4j.Level;
  * Filter for testing presence in given collection.
  *
  * @author Bogo
+ * @deprecated can be removed with old logs table
  */
+@Deprecated
 public class InFilter implements Filter {
 
 	Set<?> collection;
