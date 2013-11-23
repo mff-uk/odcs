@@ -152,6 +152,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializab
 		graph.setPipeline(this);
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}

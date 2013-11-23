@@ -1,14 +1,16 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import java.util.ArrayList;
 
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +41,9 @@ public class PipelineFacade {
 	
 	@Autowired
 	private DbExecution executionDao;
+	
+	@Autowired
+	private DPUFacade dpuFacade;
 
     /* ******************* Methods for managing Pipeline ******************** */
     /**
@@ -50,6 +55,7 @@ public class PipelineFacade {
      */
     public Pipeline createPipeline() {
 		Pipeline newPipeline = new Pipeline();
+		newPipeline.setVisibility(VisibilityType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
         }
@@ -120,6 +126,17 @@ public class PipelineFacade {
     @Transactional
     @PreAuthorize("hasPermission(#pipeline,'save')")
     public void save(Pipeline pipeline) {
+		
+		// If pipeline is public, we need to make sure
+		// all DPU templates used in this pipeline are
+		// public as well.
+		if (VisibilityType.PUBLIC.equals(pipeline.getVisibility())) {
+			for (DPUTemplateRecord dpu : getPrivateDPUs(pipeline)) {
+				dpu.setVisibility(VisibilityType.PUBLIC);
+				dpuFacade.save(dpu);
+			}
+		}
+		
 		pipelineDao.save(pipeline);
     }
 
@@ -158,6 +175,23 @@ public class PipelineFacade {
 		Pipeline duplicate = pipelineDao.getPipelineByName(newName);
         return !(duplicate == null || duplicate.equals(pipeline));
     }
+	
+	/**
+	 * Lists all private DPU templates which are used in given pipeline.
+	 * 
+	 * @param pipeline to inspect for private DPUs
+	 * @return list of private DPUs used in pipeline
+	 */
+	public List<DPUTemplateRecord> getPrivateDPUs(Pipeline pipeline) {
+		List<DPUTemplateRecord> dpus = new ArrayList<>();
+		for (Node node : pipeline.getGraph().getNodes()) {
+			DPUTemplateRecord dpu = node.getDpuInstance().getTemplate();
+			if (VisibilityType.PRIVATE.equals(dpu.getVisibility())) {
+				dpus.add(dpu);
+			}
+		}
+		return dpus;
+	}
 
     /**
      * Execute the given pipeline.
