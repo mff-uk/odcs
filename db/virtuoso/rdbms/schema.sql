@@ -146,7 +146,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
   "name" VARCHAR(45),
-  "description" VARCHAR(255),
+  "description" LONG VARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
   "just_once" SMALLINT,

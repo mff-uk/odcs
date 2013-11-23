@@ -127,7 +127,7 @@ CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(45),
-  `description` VARCHAR(255),
+  `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
   `just_once` SMALLINT,
@@ -555,3 +555,21 @@ CREATE TABLE `LOGGING_EVENT_EXCEPTION`
   PRIMARY KEY(event_id, i),
   FOREIGN KEY (event_id) REFERENCES `LOGGING_EVENT`(event_id)
 );
+
+-- TABLE FOR LOGS
+
+CREATE TABLE `LOGGING`
+(
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `logLevel` INTEGER NOT NULL,
+  `timestmp` BIGINT NOT NULL,
+  `logger` VARCHAR(254) NOT NULL,
+  `message` TEXT NOT NULL,
+  `dpu` INTEGER,
+  `execution` INTEGER,
+  `stack_trace` TEXT,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX `ix_LOGGING_dpu` ON `LOGGING` (`dpu`);
+CREATE INDEX `ix_LOGGIN_execution` ON `LOGGING` (`execution`);
