@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -11,8 +12,10 @@ import javax.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * Implementation of authorization logic for {@link CriteriaBuilder}.
  *
  * @author Petyr
+ * @author Jan Vojt
  */
 class AuthorizatorImpl implements Authorizator {
 
@@ -35,7 +38,7 @@ class AuthorizatorImpl implements Authorizator {
         Predicate predicate = null;
         
         if (SharedEntity.class.isAssignableFrom(entityClass)) {
-            predicate = or(cb, predicate, cb.equal(root.get("public"), true));
+            predicate = or(cb, predicate, cb.equal(root.get("visibility"), VisibilityType.PUBLIC));
         }
 
         if (OwnedEntity.class.isAssignableFrom(entityClass)) {
