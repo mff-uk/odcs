@@ -21,6 +21,7 @@ public class DailyReportEmailBuilder {
 		body.append("</tr>");
 		
 		for (PipelineExecution exec : executions) {
+			body.append("<tr>");
 			// pipeline
 			body.append("<td>");
 			body.append(exec.getPipeline().getName());
@@ -59,6 +60,9 @@ public class DailyReportEmailBuilder {
 					break;
 			}
 			body.append("</td>");
+			
+			// end line
+			body.append("</tr>");
 		}
 		
 		body.append("</table>");
