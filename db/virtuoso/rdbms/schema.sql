@@ -180,6 +180,7 @@ CREATE TABLE "DB"."ODCS"."PPL_MODEL"
   "name" VARCHAR(2048),
   "description" LONG VARCHAR,
   "user_id" INTEGER,
+  "visibility" SMALLINT,
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_PPL_MODEL_user_id" ON "DB"."ODCS"."PPL_MODEL" ("user_id");

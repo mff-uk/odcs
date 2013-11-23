@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 
@@ -48,7 +50,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements OwnedEntity, Resource, Serializable, DataObject {
+public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializable, DataObject {
 
 	/**
 	 * Unique ID for each pipeline
@@ -78,6 +80,13 @@ public class Pipeline implements OwnedEntity, Resource, Serializable, DataObject
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User owner;
+
+	/**
+	 * Public vs private visibility.
+	 */
+	@Enumerated(EnumType.ORDINAL)
+	@Column(name = "visibility")
+	private VisibilityType visibility;
 
 	/**
 	 * List pipelines that must not run in order to run this pipeline.
@@ -165,6 +174,15 @@ public class Pipeline implements OwnedEntity, Resource, Serializable, DataObject
 		return Pipeline.class.toString();
 	}
 
+	@Override
+	public VisibilityType getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(VisibilityType visibility) {
+		this.visibility = visibility;
+	}
+	
 	/**
 	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
 	 * 

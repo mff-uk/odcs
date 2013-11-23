@@ -161,6 +161,7 @@ CREATE TABLE `PPL_MODEL`
   `name` VARCHAR(2048),
   `description` TEXT,
   `user_id` INTEGER,
+  `visibility` SMALLINT,
   PRIMARY KEY (`id`)
 );
 CREATE INDEX `ix_PPL_MODEL_user_id` ON `PPL_MODEL` (`user_id`);
