@@ -49,9 +49,6 @@
 
     <bean id="logTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable" scope="prototype" />
         
-    <!-- Imposes authorization filters on container. -->
-    <bean id="containerAuthorizator" class="cz.cuni.mff.xrg.odcs.frontend.container.exp.ContainerAuthorizatorImpl" />
-	
     <!-- tranlator for vaadin's filters -->
     <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator" />
     
