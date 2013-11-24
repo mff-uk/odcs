@@ -84,6 +84,7 @@ public class PipelineFacade {
 			nName = oName + " #" + no++;
 		}
 		newPipeline.setName(nName);
+		newPipeline.setVisibility(VisibilityType.PRIVATE);
 		
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
