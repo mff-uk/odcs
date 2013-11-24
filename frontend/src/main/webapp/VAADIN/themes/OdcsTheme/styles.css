@@ -157,6 +157,14 @@ overflow: auto !important;
 	visibility: hidden;
 }
 
+.v-tree-node-public {
+	color: #000000;
+}
+
+.v-tree-node-private {
+	color: #5CA0DF
+}
+
 
 
   
