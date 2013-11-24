@@ -1,16 +1,22 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -35,6 +41,7 @@ public class DPUTree extends CustomComponent {
 	Button buttonCreateDPU;
 	GridLayout filterBar;
 	boolean isExpandable = false;
+	private Filter visibilityFilter;
 	@Autowired
 	private DPUFacade dpuFacade;
 	
@@ -49,6 +56,21 @@ public class DPUTree extends CustomComponent {
 	@PostConstruct
 	private void initialize() {
 		buildMainLayout();
+		
+		visibilityFilter = new Filter() {
+
+		@Override
+		public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+			DPUTemplateRecord dpu = (DPUTemplateRecord)itemId;
+			return dpu.getVisibility() == VisibilityType.PRIVATE;
+		}
+
+		@Override
+		public boolean appliesToProperty(Object propertyId) {
+			return true;
+		}
+	};
+		
 		setCompositionRoot(mainLayout);
 	}
 
@@ -135,6 +157,19 @@ public class DPUTree extends CustomComponent {
 
 		CheckBox onlyMyDPU = new CheckBox();
 		onlyMyDPU.setCaption("Only my DPU templates");
+		onlyMyDPU.addValueChangeListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				boolean onlyMy = (boolean) event.getProperty().getValue();
+				Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
+				if(onlyMy) {
+					f.addContainerFilter(visibilityFilter);
+				} else {
+					f.removeContainerFilter(visibilityFilter);
+				}
+			}
+		});
 		filterBar.addComponent(onlyMyDPU, 0, 0, 1, 0);
 
 		TextField treeFilter = new TextField();
@@ -171,6 +206,18 @@ public class DPUTree extends CustomComponent {
 		dpuTree.setHeight("100%");
 		//	dpuTree.setHeight(600, Unit.PIXELS);
 		dpuTree.setStyleName("dpuTree");
+		dpuTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
+
+			@Override
+			public String getStyle(Tree source, Object itemId) {
+				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
+				if(dpu.getVisibility() == VisibilityType.PRIVATE) {
+					return "private";
+				} else {
+					return "public";
+				}
+			}
+		});
 
 		layoutTree.addComponent(dpuTree);
 		layoutTree.setComponentAlignment(dpuTree, Alignment.TOP_LEFT);
@@ -179,9 +226,15 @@ public class DPUTree extends CustomComponent {
 	}
 	
 	public void fillTree() {
+		Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
+		Collection<Filter> filters = new LinkedList<>(f.getContainerFilters());
+		f.removeAllContainerFilters();
 		fillTree(dpuTree);
 		for (Object itemId : dpuTree.rootItemIds()) {
 			dpuTree.expandItemsRecursively(itemId);
+		}
+		for(Filter filter : filters) {
+			f.addContainerFilter(filter);
 		}
 	}
 

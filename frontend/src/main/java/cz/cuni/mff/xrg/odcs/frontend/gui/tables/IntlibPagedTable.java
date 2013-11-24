@@ -14,6 +14,7 @@ import com.vaadin.ui.themes.Reindeer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -30,9 +31,12 @@ import org.tepi.filtertable.paged.PagedTableChangeEvent;
  * @author Bogo
  */
 public class IntlibPagedTable extends PagedFilterTable {
+	
+	private HashMap<Object, Integer> positions;
 
 	public IntlibPagedTable() {
 		super();
+		positions = new HashMap<>();
 		setFilterDecorator(new IntlibFilterDecorator());
 	}
 
@@ -195,6 +199,11 @@ public class IntlibPagedTable extends PagedFilterTable {
 		super.addGeneratedColumn(id, generatedColumn);
 		setFilterFieldVisible(id, false);
 	}
+	
+	public void addGeneratedColumn(Object id, int position, ColumnGenerator generatedColumn) {
+		positions.put(id, position);
+		addGeneratedColumn(id, generatedColumn);
+	}
 
 	@Override
 	public void setContainerDataSource(Container newDataSource) {
@@ -216,7 +225,11 @@ public class IntlibPagedTable extends PagedFilterTable {
 				LinkedList<String> visible = new LinkedList<>(((ReadOnlyContainer) c).getVisibles());
 				for(Object o : getVisibleColumns()) {
 					if(o.equals("")) {
-						visible.add("");
+						if(positions.containsKey(o)) {
+							visible.add(positions.get(o), "");
+						} else {
+							visible.add("");
+						}
 						break;
 					}
 				}

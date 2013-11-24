@@ -93,7 +93,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 //				}
 //			}
 //		});
-		tablePipelines.addGeneratedColumn("", createColumnGenerator(presenter));
+		tablePipelines.addGeneratedColumn("", 3, createColumnGenerator(presenter));
 		tablePipelines.setVisibleColumns();
 
 		tablePipelines.setFilterBarVisible(true);

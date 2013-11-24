@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.FieldEvents;
@@ -17,6 +18,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -67,6 +69,7 @@ public class PipelineEdit extends ViewComponent {
 	private Label label;
 	private TextField pipelineName;
 	private TextArea pipelineDescription;
+	private OptionGroup pipelineVisibility;
 	private Pipeline pipeline = null;
 	PipelineCanvas pc;
 	@Autowired
@@ -214,6 +217,8 @@ public class PipelineEdit extends ViewComponent {
 				}
 				ShowDebugEvent sde = (ShowDebugEvent) event;
 				if (savePipeline()) {
+					pipeline = pipelineFacade.getPipeline(pipeline.getId());
+					pc.showPipeline(pipeline);
 					openDebug(pipeline, sde.getDebugNode());
 				}
 			}
@@ -494,6 +499,24 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
+		
+		Label visibilityLabel = new Label("Visibility");
+		pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
+		
+		pipelineVisibility = new OptionGroup();
+		pipelineVisibility.addStyleName("horizontalgroup");
+		pipelineVisibility.addItem(VisibilityType.PRIVATE);
+		pipelineVisibility.addItem(VisibilityType.PUBLIC);
+		pipelineVisibility.setImmediate(true);
+		pipelineVisibility.setBuffered(true);
+		pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				setupButtons(true);
+			}
+		});
+		pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
 
 //		Label permissionLabel = new Label("Permissions");
 //		permissionLabel.setImmediate(false);
@@ -550,7 +573,7 @@ public class PipelineEdit extends ViewComponent {
 	
 	@Override
 	public boolean isModified() {
-		return pipelineName.isModified() || pipelineDescription.isModified() || pc.isModified();
+		return pipelineName.isModified() || pipelineDescription.isModified() || pc.isModified() || pipelineVisibility.isModified();
 	}
 	
 	@Override
@@ -687,6 +710,10 @@ public class PipelineEdit extends ViewComponent {
 		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
+		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getVisibility()));
+		if(this.pipeline.getVisibility() == VisibilityType.PUBLIC) {
+			pipelineVisibility.setEnabled(false);
+		}
 		setupButtons(false);
 		return pipeline;
 	}
@@ -710,8 +737,10 @@ public class PipelineEdit extends ViewComponent {
 			this.pipeline = pipelineFacade.createPipeline();
 			pipeline.setName("");
 			pipeline.setDescription("");
+			pipeline.setVisibility(VisibilityType.PRIVATE);
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 			pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
+			pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getVisibility()));
 			setupButtons(false);
 			pipelineName.setInputPrompt("Insert pipeline name");
 			pipelineDescription.setInputPrompt("Insert pipeline description");
@@ -737,7 +766,18 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.commit();
 		this.pipeline.setDescription(pipelineDescription.getValue());
 		pipelineDescription.commit();
+		
 		boolean doCleanup = pc.saveGraph(pipeline);
+		
+		VisibilityType visibility = (VisibilityType)pipelineVisibility.getValue();
+		if(visibility == VisibilityType.PUBLIC) {
+			if(!pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
+				Notification.show("All DPUs on the pipeline are now public!", Notification.Type.WARNING_MESSAGE);
+			}
+			pipelineVisibility.setEnabled(false);
+		}
+		this.pipeline.setVisibility(visibility);
+		pipelineVisibility.commit();
 		
 		pipelineFacade.save(this.pipeline);
 		if (doCleanup) {
@@ -805,6 +845,7 @@ public class PipelineEdit extends ViewComponent {
 		try {
 			pipelineName.validate();
 			pipelineDescription.validate();
+			pipelineVisibility.validate();
 			if(pipelineFacade.hasPipelineWithName(pipelineName.getValue(), pipeline)) {
 				throw new Validator.InvalidValueException("Pipeline with same name already exists in the system.");
 			}
