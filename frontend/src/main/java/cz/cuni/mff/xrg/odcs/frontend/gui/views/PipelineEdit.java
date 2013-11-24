@@ -214,6 +214,8 @@ public class PipelineEdit extends ViewComponent {
 				}
 				ShowDebugEvent sde = (ShowDebugEvent) event;
 				if (savePipeline()) {
+					pipeline = pipelineFacade.getPipeline(pipeline.getId());
+					pc.showPipeline(pipeline);
 					openDebug(pipeline, sde.getDebugNode());
 				}
 			}
