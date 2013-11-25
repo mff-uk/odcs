@@ -26,13 +26,17 @@ public class ReportCreator {
 	private static Logger logger = Logger.getLogger(
 			ReportCreator.class);
 
+	private static final String ODCS_VAL = "http://linked.opendata.cz/ontology/odcs/validation/";
+
+	private static final String EXEC_ERROR = "http://linked.opendata.cz/resource/odcs/internal/pipeline/validation/error/";
+
 	private List<TripleProblem> problems;
 
-	private String graphName;
+	private String reportPrefix;
 
 	public ReportCreator(List<TripleProblem> problems, String graphName) {
 		this.problems = problems;
-		this.graphName = graphName;
+		this.reportPrefix = getReportPrefix(graphName);
 
 	}
 
@@ -40,6 +44,21 @@ public class ReportCreator {
 
 		setNamespaces(repository);
 		addReports(repository);
+	}
+
+	private String getReportPrefix(String graphName) {
+
+		String prefix;
+
+		int index = graphName.indexOf("du/");
+
+		if (index > -1) {
+			prefix = graphName.substring(0, index);
+		} else {
+			prefix = graphName;
+		}
+
+		return prefix + "validation/error/";
 	}
 
 	private void addReports(RDFDataUnit repository) {
@@ -58,22 +77,22 @@ public class ReportCreator {
 			String message = next.getMessage();
 			int line = next.getLine();
 
-			repository.addTriple(getSubject(), new URIImpl("rdf:type"),
-					new URIImpl("odcs-val:" + conflictType));
+			repository.addTriple(getSubject(count), new URIImpl("rdf:type"),
+					new URIImpl(ODCS_VAL + conflictType.toString()));
 
 			count++;
 
-			repository.addTriple(getSubject(), getPredicate("subject", count),
+			repository.addTriple(getSubject(count), getPredicate("subject"),
 					getObject(sub));
-			repository.addTriple(getSubject(), getPredicate("predicate", count),
+			repository.addTriple(getSubject(count), getPredicate("predicate"),
 					getObject(pred));
-			repository.addTriple(getSubject(), getPredicate("object", count),
+			repository.addTriple(getSubject(count), getPredicate("object"),
 					getObject(obj));
 
-			repository.addTriple(getSubject(), getPredicate("reason", count),
+			repository.addTriple(getSubject(count), getPredicate("reason"),
 					getObject(message));
 			repository
-					.addTriple(getSubject(), getPredicate("sourceLine", count),
+					.addTriple(getSubject(count), getPredicate("sourceLine"),
 					getObject(line));
 
 		}
@@ -88,10 +107,8 @@ public class ReportCreator {
 					"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 			connection.setNamespace("xsd",
 					"http://www.w3.org/2001/XMLSchema#");
-			connection.setNamespace("odcs-val",
-					"http://linked.opendata.cz/ontology/odcs/validation/");
-			connection.setNamespace("exec-error",
-					"http://linked.opendata.cz/resource/odcs/internal/pipeline/validation/error/");
+			connection.setNamespace("odcs-val", ODCS_VAL);
+			connection.setNamespace("exec-error", EXEC_ERROR);
 
 		} catch (RepositoryException e) {
 			final String message = "Not possible to set namespace"
@@ -101,12 +118,12 @@ public class ReportCreator {
 		}
 	}
 
-	private Resource getSubject() {
-		return new URIImpl(graphName);
+	private Resource getSubject(int count) {
+		return new URIImpl(reportPrefix + String.valueOf(count));
 	}
 
-	private URI getPredicate(String text, int count) {
-		return new URIImpl("odcs-val:" + text + "/" + String.valueOf(count));
+	private URI getPredicate(String text) {
+		return new URIImpl(ODCS_VAL + text);
 	}
 
 	private Value getObject(String text) {
