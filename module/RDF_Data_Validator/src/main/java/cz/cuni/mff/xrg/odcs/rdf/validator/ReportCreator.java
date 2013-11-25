@@ -77,10 +77,10 @@ public class ReportCreator {
 			String message = next.getMessage();
 			int line = next.getLine();
 
+			count++;
+
 			repository.addTriple(getSubject(count), new URIImpl("rdf:type"),
 					new URIImpl(ODCS_VAL + conflictType.toString()));
-
-			count++;
 
 			repository.addTriple(getSubject(count), getPredicate("subject"),
 					getObject(sub));
