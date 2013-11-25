@@ -274,6 +274,7 @@ CREATE TABLE `USR_USER`
   `email_id` INTEGER,
   `u_password` CHAR(132) NOT NULL,
   `full_name` VARCHAR(55),
+  `table_rows` INTEGER,
   PRIMARY KEY (`id`),
   UNIQUE (`username`)
 );

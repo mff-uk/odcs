@@ -137,6 +137,10 @@ public class EmailComponent {
 
 			//remove button
 			buttonEmailhRem = new Button();
+			if (griddata.size()>1)
+				buttonEmailhRem.setEnabled(true);
+			else
+				buttonEmailhRem.setEnabled(false);
 			buttonEmailhRem.setWidth("55px");
 			buttonEmailhRem.setCaption("-");
 			buttonEmailhRem.setData(row);
@@ -145,6 +149,8 @@ public class EmailComponent {
 
 				@Override
 				public void buttonClick(Button.ClickEvent event) {
+					if(parentComponentAccount!=null && parentComponentAccount.buttonMyAccountBar!=null)	
+						parentComponentAccount.buttonMyAccountBar.setEnabled(true);
 					saveEditedTexts();
 					Button senderButton = event.getButton();
 					Integer row = (Integer) senderButton.getData();
@@ -244,6 +250,7 @@ public class EmailComponent {
 		if (griddata.size() > 1) {
 			griddata.remove(index);
 		}
+
 	}
 	
 	/**
