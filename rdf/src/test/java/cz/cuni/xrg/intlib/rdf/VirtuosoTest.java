@@ -7,7 +7,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.SPARQLoader;
+import cz.cuni.mff.xrg.odcs.loader.rdf.SPARQLoader;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.io.File;
