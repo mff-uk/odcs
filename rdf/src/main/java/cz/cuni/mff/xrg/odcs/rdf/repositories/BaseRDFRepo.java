@@ -65,12 +65,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * Count of attempts to reconnect if the connection fails. For infinite loop
 	 * use zero or negative integer.
 	 */
-	protected static final int RETRY_CONNECTION_SIZE = 20;
+	protected static int RETRY_CONNECTION_SIZE = 20;
 
 	/**
 	 * Time in miliseconds how long to wait before trying to reconnect.
 	 */
-	protected static final long RETRY_CONNECTION_TIME = 1000;
+	protected static long RETRY_CONNECTION_TIME = 1000;
 
 	/**
 	 * Represents successful connection using HTTP.
@@ -144,6 +144,35 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	public static long getDefaultChunkSize() {
 		return DEFAULT_CHUNK_SIZE;
+	}
+
+	/**
+	 *
+	 * Set time in miliseconds how long to wait before trying to reconnect.
+	 *
+	 * @param retryTimeValue time in milisecond for waiting before trying to
+	 *                       reconnect.
+	 * @throws IllegalArgumentException if time is 0 or negative long number.
+	 */
+	@Override
+	public void setRetryConnectionTime(long retryTimeValue) throws IllegalArgumentException {
+		if (retryTimeValue > 0) {
+			RETRY_CONNECTION_TIME = retryTimeValue;
+		} else {
+			throw new IllegalArgumentException(
+					"Retry connection time must be positive number");
+		}
+	}
+
+	/**
+	 * Set Count of attempts to reconnect if the connection fails. For infinite
+	 * loop use zero or negative integer
+	 *
+	 * @param retrySizeValue as interger with count of attemts to reconnect.
+	 */
+	@Override
+	public void setRetryConnectionSize(int retrySizeValue) {
+		RETRY_CONNECTION_SIZE = retrySizeValue;
 	}
 
 	@Override
@@ -1476,7 +1505,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				size = getSizeForSelect(queryPart);
 				break;
 			case CONSTRUCT:
-                        case DESCRIBE:
+			case DESCRIBE:
 				size = getSizeForConstruct(query);
 				break;
 			case UNKNOWN:
@@ -1817,6 +1846,22 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	private String getRetryConnectionSizeAsString() {
+		if (hasInfinityRetryConnection()) {
+			return "infinity";
+		} else {
+			return String.valueOf(RETRY_CONNECTION_SIZE);
+		}
+	}
+
+	private boolean hasInfinityRetryConnection() {
+		if (RETRY_CONNECTION_SIZE <= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	private HttpURLConnection getHttpURLConnection(URL call) throws IOException {
 
 		int retryCount = 0;
@@ -1832,16 +1877,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				final String message = String.format(
 						"%s/%s attempt to reconnect %s FAILED", retryCount,
-						RETRY_CONNECTION_SIZE, call.toString());
+						getRetryConnectionSizeAsString(), call
+						.toString());
 
 				logger.debug(message);
 
-				if (retryCount >= RETRY_CONNECTION_SIZE) {
+				if (retryCount >= RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
 					throw new IOException(e.getMessage(), e);
 				} else {
 					try {
 						//sleep and attempt to reconnect
 						Thread.sleep(RETRY_CONNECTION_TIME);
+
 					} catch (InterruptedException ex) {
 						logger.debug(ex.getMessage());
 					}
@@ -1883,6 +1930,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						RDFFormat.RDFXML);
 				formatType = RDFFormatType.getTypeByRDFFormat(newFormat);
 			}
+
 			MyRDFHandler handler = new MyRDFHandler(os, formatType);
 
 			connection = getConnection();
