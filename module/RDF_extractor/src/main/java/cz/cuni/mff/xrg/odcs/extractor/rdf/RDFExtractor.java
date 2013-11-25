@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import java.net.MalformedURLException;
@@ -73,6 +74,18 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 					defaultGraphsUri,
 					constructQuery, hostName, password, RDFFormat.N3,
 					handlerExtractType, extractFail);
+
+			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
+
+				String problems = StatisticalHandler
+						.getFindedGlobalProblemsAsString();
+				StatisticalHandler.clearParsingProblems();
+
+				context.sendMessage(MessageType.WARNING,
+						"Statistical and error handler has found during parsing problems triples (these triples were not added)",
+						problems);
+			}
+
 		} catch (MalformedURLException ex) {
 			LOG.debug("RDFDataUnitException", ex);
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
