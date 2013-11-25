@@ -149,6 +149,8 @@ public class EmailComponent {
 
 				@Override
 				public void buttonClick(Button.ClickEvent event) {
+					if(parentComponentAccount!=null && parentComponentAccount.buttonMyAccountBar!=null)	
+						parentComponentAccount.buttonMyAccountBar.setEnabled(true);
 					saveEditedTexts();
 					Button senderButton = event.getButton();
 					Integer row = (Integer) senderButton.getData();
