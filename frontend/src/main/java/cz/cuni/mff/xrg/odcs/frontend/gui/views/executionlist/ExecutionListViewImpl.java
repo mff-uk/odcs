@@ -37,6 +37,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator.Action;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,8 +56,6 @@ import org.tepi.filtertable.FilterGenerator;
 @Scope("prototype")
 public class ExecutionListViewImpl extends CustomComponent implements ExecutionListPresenter.ExecutionListView {
 
-	// TODO: get from user settings
-	private static final int PAGE_LENGTH = 20;
 	private IntlibPagedTable monitorTable;
 	/**
 	 * Used to separate table from execution detail view.
@@ -401,7 +400,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setColumnWidth("actions", 200);
 		executionTable.setColumnWidth("id", 50);
 		executionTable.setSortEnabled(true);
-		executionTable.setPageLength(PAGE_LENGTH);
+		executionTable.setPageLength(Utils.getPageLength());
 
 		executionTable.setFilterGenerator(createFilterGenerator());
 		executionTable.setFilterDecorator(new filterDecorator());

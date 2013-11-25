@@ -5,6 +5,9 @@ import java.util.Set;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Validator;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -47,7 +50,7 @@ import org.springframework.context.annotation.Scope;
 @Scope("prototype")
 @Address(url = "Administrator")
 public class Settings extends ViewComponent {
-
+	
 	private static final long serialVersionUID = 1L;
 	private GridLayout mainLayout;
 	private VerticalLayout accountLayout;
@@ -71,6 +74,7 @@ public class Settings extends ViewComponent {
 	private EmailNotifications emailNotifications;
 	private GridLayout emailLayout;
 	private NamespacePrefixes prefixesList;
+	private TextField rows;
 	/**
 	 * Currently logged in user.
 	 */
@@ -86,10 +90,10 @@ public class Settings extends ViewComponent {
 	 */
 	public Settings() {
 	}
-
+	
 	@Override
 	public boolean isModified() {
-
+		
 		if (shownTab.equals(notificationsButton)) {
 			return areNotificationsModified();
 		} else if (shownTab.equals(accountButton)) {
@@ -97,7 +101,7 @@ public class Settings extends ViewComponent {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean saveChanges() {
 		if (shownTab.equals(notificationsButton) || shownTab.equals(accountButton)) {
@@ -105,14 +109,14 @@ public class Settings extends ViewComponent {
 		}
 		return true;
 	}
-
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
 		loggedUser = App.getApp().getAuthCtx().getUser();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
-
+	
 	private GridLayout buildMainLayout() {
 		// common part: create layout
 		mainLayout = new GridLayout(2, 1);
@@ -133,7 +137,7 @@ public class Settings extends ViewComponent {
 
 		//layout with my account components
 		accountLayout = buildMyAccountLayout();
-
+		
 		emailNotifications = new EmailNotifications();
 		emailNotifications.parentComponentUs = this;
 
@@ -168,8 +172,8 @@ public class Settings extends ViewComponent {
 		pipelinesLayout.addComponent(new Label("Delete all intermediate graphs created \n by the pipelines in the debug mode"));
 		Button clearButton = new Button();
 		clearButton.setCaption("Clear");
-		pipelinesLayout.addComponent(clearButton );
-		
+		pipelinesLayout.addComponent(clearButton);
+
 
 		//layout for Namespace Prefixes
 		prefixesLayout = new VerticalLayout();
@@ -179,7 +183,7 @@ public class Settings extends ViewComponent {
 		prefixesList = new NamespacePrefixes();
 		prefixesLayout = prefixesList.buildNamespacePrefixesLayout();
 		prefixesLayout.setStyleName("settings");
-		
+
 		//My account tab
 		accountButton = new NativeButton("My account");
 		accountButton.setHeight("40px");
@@ -187,7 +191,7 @@ public class Settings extends ViewComponent {
 		accountButton.setStyleName("selectedtab");
 		accountButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//if before click was pushed Schedule notification tab
@@ -196,7 +200,7 @@ public class Settings extends ViewComponent {
 				} else {
 					buttonPush(accountButton, accountLayout);
 				}
-
+				
 			}
 		});
 		tabsLayout.addComponent(accountButton);
@@ -210,7 +214,7 @@ public class Settings extends ViewComponent {
 		notificationsButton.setStyleName("multiline");
 		notificationsButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//if before click was pushed My account tab
@@ -220,7 +224,7 @@ public class Settings extends ViewComponent {
 				} else {
 					buttonPush(notificationsButton, notificationsLayout);
 				}
-
+				
 			}
 		});
 		tabsLayout.addComponent(notificationsButton);
@@ -234,7 +238,7 @@ public class Settings extends ViewComponent {
 		usersButton.setStyleName("multiline");
 		usersButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//if before click was pushed My account tab
@@ -260,7 +264,7 @@ public class Settings extends ViewComponent {
 		recordsButton.setStyleName("multiline");
 		recordsButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//if before click was pushed My account tab
@@ -287,7 +291,7 @@ public class Settings extends ViewComponent {
 		pipelinesButton.setStyleName("multiline");
 		pipelinesButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//if before click was pushed My account tab
@@ -301,7 +305,7 @@ public class Settings extends ViewComponent {
 					} else {
 						buttonPush(pipelinesButton, pipelinesLayout);
 					}
-
+					
 				}
 			}
 		});
@@ -328,17 +332,17 @@ public class Settings extends ViewComponent {
 				}
 			}
 		});
-
+		
 		tabsLayout.addComponent(prefixesButton);
 		tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
-
-
+		
+		
 		shownTab = accountButton;
 		mainLayout.addComponent(tabsLayout, 0, 0);
 		mainLayout.addComponent(accountLayout, 1, 0);
 		mainLayout.setColumnExpandRatio(0, 0.15f);
 		mainLayout.setColumnExpandRatio(1, 0.85f);
-
+		
 		return mainLayout;
 	}
 
@@ -350,23 +354,23 @@ public class Settings extends ViewComponent {
 	 * notifications.
 	 */
 	private VerticalLayout buildNotificationsLayout() {
-
+		
 		notificationsLayout = new VerticalLayout();
 		notificationsLayout.setWidth("100%");
 		notificationsLayout.setHeight("100%");
-
+		
 		notificationsLayout = emailNotifications.buildEmailNotificationsLayout();
 		emailNotifications.getUserNotificationRecord(loggedUser);
 		notificationsLayout.setStyleName("settings");
-
+		
 		HorizontalLayout buttonBarNotify = buildButtonNotificationBar();
 		notificationsLayout.addComponent(buttonBarNotify);
-
+		
 		notificationsLayout.addComponent(new Label(
 				"Default form of report about scheduled pipeline execution"), 0);
 		notificationsLayout.addComponent(new Label(
 				"(may be overriden in the particular schedulled event) :"), 1);
-
+		
 		return notificationsLayout;
 	}
 
@@ -376,30 +380,47 @@ public class Settings extends ViewComponent {
 	 * @return accountLayout Layout with components of My account.
 	 */
 	private VerticalLayout buildMyAccountLayout() {
-
+		
 		accountLayout = new VerticalLayout();
 		accountLayout.setMargin(true);
 		accountLayout.setSpacing(true);
 		accountLayout.setHeight("100%");
 		accountLayout.setImmediate(true);
 		accountLayout.setStyleName("settings");
-
+		
 		email = new EmailComponent();
 		emailLayout = new GridLayout();
 		emailLayout.setImmediate(true);
-
+		
 		emailLayout = email.initializeEmailList();
-
+		
 		email.getUserEmailNotification(loggedUser);
-
+		
 		email.parentComponentAccount = this;
 		
 		HorizontalLayout buttonBarMyAcc = buildButtonMyAccountBar();
-
+		
 		accountLayout.addComponent(emailLayout);
+		
+		Label rowsLabel = new Label("Number of rows in tables:");
+		rows = new TextField();
+		Integer tableRows = loggedUser.getTableRows() != null ? loggedUser.getTableRows() : 20;
+		rows.setPropertyDataSource(new ObjectProperty<>(tableRows));
+		rows.addValidator(new IntegerRangeValidator("Invalid number of rows specified! Please enter value between 5 and 100.", 5, 100));
+		rows.setBuffered(true);
+		rows.setImmediate(true);
+		rows.addTextChangeListener(new FieldEvents.TextChangeListener() {
+			@Override
+			public void textChange(FieldEvents.TextChangeEvent event) {
+				buttonMyAccountBar.setEnabled(true);
+			}
+		});
+		accountLayout.addComponent(rowsLabel);
+		accountLayout.addComponent(rows);
+		
 		accountLayout.addComponent(buttonBarMyAcc);
-		accountLayout.addComponent(new Label("Email Notifications to:"), 0);
-
+		accountLayout.addComponent(new Label("Email Notifications to:"), 0);		
+		
 		return accountLayout;
 	}
 
@@ -416,28 +437,26 @@ public class Settings extends ViewComponent {
 		buttonMyAccountBar.setStyleName("dpuDetailButtonBar");
 		buttonMyAccountBar.setMargin(new MarginInfo(true, false, false, false));
 		buttonMyAccountBar.setEnabled(false);
-
+		
 		Button saveButton = new Button("Save");
 		saveButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
-
+				
 				email.saveEditedTexts();
 				saveEmailNotifications();
 				Notification.show("E-mail settings were saved", Notification.Type.HUMANIZED_MESSAGE);
-				
-
 			}
 		});
 		buttonMyAccountBar.addComponent(saveButton);
 		buttonMyAccountBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
-
+		
 		return buttonMyAccountBar;
-
+		
 	}
-	
+
 	/**
 	 * Building layout with button Save for saving notifications
 	 *
@@ -451,25 +470,25 @@ public class Settings extends ViewComponent {
 		buttonNotificationBar.setStyleName("dpuDetailButtonBar");
 		buttonNotificationBar.setMargin(new MarginInfo(true, false, false, false));
 		buttonNotificationBar.setEnabled(false);
-
+		
 		Button saveButton = new Button("Save");
 		saveButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
 				email.saveEditedTexts();
 				saveEmailNotifications();
 				Notification.show("Schedule notifications were saved", Notification.Type.HUMANIZED_MESSAGE);
-
+				
 			}
 		});
 		buttonNotificationBar.addComponent(saveButton);
 		buttonNotificationBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
-
+		
 		return buttonNotificationBar;
-
+		
 	}
 
 	/**
@@ -479,7 +498,7 @@ public class Settings extends ViewComponent {
 	 * @param layoutShow Layaut will be shown.
 	 */
 	private void buttonPush(Button pressedButton, VerticalLayout layoutShow) {
-
+		
 		accountButton.setStyleName("multiline");
 		usersButton.setStyleName("multiline");
 		recordsButton.setStyleName("multiline");
@@ -488,7 +507,7 @@ public class Settings extends ViewComponent {
 		notificationsButton.setStyleName("multiline");
 		shownTab = pressedButton;
 		shownTab.setStyleName("selectedtab");
-
+		
 		mainLayout.removeComponent(1, 0);
 		mainLayout.addComponent(layoutShow, 1, 0);
 		mainLayout.setColumnExpandRatio(1, 0.85f);
@@ -498,30 +517,39 @@ public class Settings extends ViewComponent {
 	 * Saving changes that relating to Schedule Notification.
 	 */
 	private boolean saveEmailNotifications() {
-
-
+		
+		
 		if (!emailValidationText().equals("")) {
 			Notification.show("Failed to save settings, reason:",
 					emailValidationText(), Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
-
+		
+		try {
+			rows.validate();
+		} catch (Validator.InvalidValueException ex) {
+			Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+			return false;
+		}
+		
 		UserNotificationRecord notification = loggedUser.getNotification();
 		if (notification != null) {
-
+			
 			email.setUserEmailNotification(notification);
 			emailNotifications.setUserNotificatonRecord(notification);
 			loggedUser.setNotification(notification);
 		} else {
-
+			
 			UserNotificationRecord userNotificationRecord = new UserNotificationRecord();
 			userNotificationRecord.setUser(loggedUser);
 			emailNotifications.setUserNotificatonRecord(userNotificationRecord);
 			email.setUserEmailNotification(userNotificationRecord);
 			loggedUser.setNotification(userNotificationRecord);
 		}
+		loggedUser.setTableRows(Integer.parseInt(rows.getValue()));
+		rows.commit();
 		App.getApp().getUsers().save(loggedUser);
-
+		
 		if (shownTab.equals(accountButton)) {
 			accountLayout = buildMyAccountLayout();
 			mainLayout.removeComponent(1, 0);
@@ -549,7 +577,7 @@ public class Settings extends ViewComponent {
 					"Save", "Discard changes",
 					new ConfirmDialog.Listener() {
 				private static final long serialVersionUID = 1L;
-
+				
 				@Override
 				public void onClose(ConfirmDialog cd) {
 					if (cd.isConfirmed()) {
@@ -566,7 +594,7 @@ public class Settings extends ViewComponent {
 			accountLayout = buildMyAccountLayout();
 			buttonPush(pressedButton, layoutShow);
 		}
-
+		
 	}
 
 	/**
@@ -587,7 +615,7 @@ public class Settings extends ViewComponent {
 					"Save", "Discard changes",
 					new ConfirmDialog.Listener() {
 				private static final long serialVersionUID = 1L;
-
+				
 				@Override
 				public void onClose(ConfirmDialog cd) {
 					if (cd.isConfirmed()) {
@@ -602,9 +630,9 @@ public class Settings extends ViewComponent {
 		} else {
 			buttonPush(pressedButton, layoutShow);
 		}
-
+		
 	}
-
+	
 	private boolean areNotificationsModified() {
 		if (loggedUser.getNotification() == null) {
 			return true;
@@ -619,16 +647,16 @@ public class Settings extends ViewComponent {
 		NotificationRecordType newErrorEx = newNotification.getTypeError();
 		return !aldSuccessEx.equals(newSuccessEx) || !aldErrorEx.equals(newErrorEx);
 	}
-
+	
 	private boolean isMyAccountModified() {
 		email.saveEditedTexts();
-
+		
 		if (!emailValidationText().equals("")) {
 			Notification.show("", emailValidationText(),
 					Notification.Type.ERROR_MESSAGE);
 			return true;
 		}
-
+		
 		UserNotificationRecord record = loggedUser.getNotification();
 		if (record == null) {
 			return true;
@@ -637,9 +665,9 @@ public class Settings extends ViewComponent {
 		UserNotificationRecord newNotification = new UserNotificationRecord();
 		email.setUserEmailNotification(newNotification);
 		Set<EmailAddress> newEmails = newNotification.getEmails();
-		return !aldEmails.equals(newEmails);
+		return !aldEmails.equals(newEmails) || rows.isModified();
 	}
-
+	
 	private String emailValidationText() {
 		String errorText = "";
 		String wrongFormat = "";
@@ -652,15 +680,15 @@ public class Settings extends ViewComponent {
 				break;
 			}
 		}
-
+		
 		if (notEmpty) {
 			for (TextField emailField : email.listedEditText) {
 				fieldNumber++;
 				try {
 					emailField.validate();
-
+					
 				} catch (Validator.InvalidValueException e) {
-
+					
 					if (e.getMessage().equals("wrong е-mail format")) {
 						if (fieldNumber == 1) {
 							wrongFormat = "\"" + emailField.getValue() + "\"";
@@ -681,9 +709,9 @@ public class Settings extends ViewComponent {
 		} else {
 			errorText = "At least one mail has to be filled, so that the notification can be send.";
 		}
-
-
+		
+		
 		return errorText;
-
+		
 	}
 }
