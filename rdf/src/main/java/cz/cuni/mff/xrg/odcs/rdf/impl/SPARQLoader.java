@@ -43,7 +43,15 @@ public class SPARQLoader {
 
 	private static Logger logger = Logger.getLogger(SPARQLoader.class);
 
+	private static final int DEFAULT_LOADER_RETRY_SIZE = -1;
+
+	private static final long DEFAUTL_LOADER_RETRY_TIME = 1000;
+
 	private RDFDataUnit rdfDataUnit;
+
+	private int retrySize;
+
+	private long retryTime;
 
 	private DPUContext context;
 
@@ -53,9 +61,12 @@ public class SPARQLoader {
 	 * @param rdfDataUnit Instance of RDFDataUnit repository neeed for loading
 	 * @param context     Given DPU context for DPU over it are executed.
 	 */
-	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context) {
+	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
+			int retrySize, long retryTime) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
+		this.retrySize = retrySize;
+		this.retryTime = retryTime;
 	}
 
 	/**
@@ -67,6 +78,8 @@ public class SPARQLoader {
 		this.rdfDataUnit = rdfDataUnit;
 
 		this.context = new TestContext(null, null, null);
+		this.retrySize = DEFAULT_LOADER_RETRY_SIZE;
+		this.retryTime = DEFAUTL_LOADER_RETRY_TIME;
 	}
 
 	/**
@@ -222,6 +235,9 @@ public class SPARQLoader {
 			long chunkSize, InsertType insertType) throws RDFException {
 
 		final String tempGraph = endpointGraph + "/temp";
+
+		rdfDataUnit.setRetryConnectionSize(retrySize);
+		rdfDataUnit.setRetryConnectionTime(retryTime);
 
 		switch (insertType) {
 			case STOP_WHEN_BAD_PART:
