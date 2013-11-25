@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  * @author Petyr
  */
 @Component
-public class DailyReport {
+class DailyReport {
 
 	@Autowired
 	private EmailSender emailSender;

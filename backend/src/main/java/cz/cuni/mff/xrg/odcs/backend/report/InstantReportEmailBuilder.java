@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author Petyr
  */
 @Component
-public class InstantReportEmailBuilder {
+class InstantReportEmailBuilder {
 	
 	@Autowired
 	private DPUFacade dpuFacade;
