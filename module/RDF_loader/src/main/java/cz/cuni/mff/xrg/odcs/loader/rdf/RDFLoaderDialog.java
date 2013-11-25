@@ -87,6 +87,17 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private TextField chunkParts;
 
 	/**
+	 * Set Count of attempts to reconnect if the connection fails. For infinite
+	 * loop use zero or negative integer
+	 */
+	private TextField retrySizeField;
+
+	/**
+	 * For setting retry connection time before trying to reconnect.
+	 */
+	private TextField retryTimeField;
+
+	/**
 	 * Button for set default chunk size.
 	 */
 	private Button chunkDefault;
@@ -700,6 +711,86 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		});
 		verticalLayoutDetails.addComponent(chunkDefault);
 
+		verticalLayoutDetails.addComponent(new Label(
+				"Count of attempts to reconnect if the connection to SPARQL fails"));
+
+		retrySizeField = new TextField(
+				"(Use 0 or negative integer for infinity)");
+		retrySizeField.setValue("-1");
+		retrySizeField.setNullRepresentation("");
+		retrySizeField.setImmediate(false);
+		retrySizeField.setWidth("100px");
+		retrySizeField.setHeight("-1px");
+		retrySizeField.setInputPrompt(
+				"Count of attempts to reconnect if the connection to SPARQL fails\n "
+				+ "(Use 0 or negative integer for infinity)");
+
+		retrySizeField.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+
+				if (value != null) {
+					String size = value.toString().trim();
+
+					try {
+						Integer.parseInt(size);
+
+					} catch (NumberFormatException e) {
+						ex = new Validator.InvalidValueException(
+								"Count of attempts must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new Validator.EmptyValueException(
+							"Count of attempts is a null");
+				}
+			}
+		});
+
+		verticalLayoutDetails.addComponent(retrySizeField);
+
+
+		retryTimeField = new TextField(
+				"Time in miliseconds how long to wait before trying to reconnect");
+		retryTimeField.setValue("1000");
+		retryTimeField.setNullRepresentation("");
+		retryTimeField.setImmediate(false);
+		retryTimeField.setWidth("100px");
+		retryTimeField.setHeight("-1px");
+		retryTimeField.setInputPrompt(
+				"Time in miliseconds how long to wait before trying to reconnect");
+
+		retryTimeField.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+				if (value != null) {
+					String sTime = value.toString().trim();
+
+					try {
+						long time = Long.parseLong(sTime);
+
+						if (time <= 0) {
+							ex = new Validator.InvalidValueException(
+									"Time for reconnect must be number greater than 0");
+							throw ex;
+						}
+
+					} catch (NumberFormatException e) {
+						ex = new Validator.InvalidValueException(
+								"Time for reconnect must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new Validator.EmptyValueException(
+							"Time for reconnect is a null");
+				}
+			}
+		});
+
+		verticalLayoutDetails.addComponent(retryTimeField);
+
 		//add checkbox for data validation
 		validateDataBefore = new CheckBox(
 				"Validate data before loading - "
@@ -711,6 +802,17 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		verticalLayoutDetails.addComponent(validateDataBefore);
 
 		return verticalLayoutDetails;
+	}
+
+	private boolean allComponentAreValid() {
+
+		boolean areValid = comboBoxSparql.isValid()
+				&& chunkParts.isValid()
+				&& retrySizeField.isValid()
+				&& retryTimeField.isValid()
+				&& areGraphsNameValid();
+
+		return areValid;
 	}
 
 	/**
@@ -726,7 +828,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 */
 	@Override
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
-		if (!comboBoxSparql.isValid() | !chunkParts.isValid() | !areGraphsNameValid()) {
+		if (!allComponentAreValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			saveEditedTexts();
@@ -740,6 +842,10 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 			long chunkSize = Long.parseLong(chunkParts.getValue());
 
+			int retrySize = Integer.parseInt(retrySizeField.getValue());
+			long retryTime = Long.parseLong(retryTimeField.getValue());
+
+
 			config.graphOption = graphType;
 			config.insertOption = insertType;
 			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
@@ -747,6 +853,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			config.Password = passwordFieldPass.getValue();
 			config.GraphsUri = griddata;
 			config.chunkSize = chunkSize;
+			config.retrySize = retrySize;
+			config.retryTime = retryTime;
 			config.validDataBefore = validateDataBefore.getValue();
 
 			return config;
@@ -759,14 +867,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	 {@link #comboBoxSparql}, {@link #textFieldNameAdm},
-	 *             {@link #passwordFieldPass}, {@link #optionGroupDetail},
-	 *             {@link #griddata} , in read-only mode or when requested operation is not
-	 *                         supported.
+	 *
+	 * {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 * {@link #passwordFieldPass}, {@link #optionGroupDetail},
+	 * {@link #griddata}, in read-only mode or when requested operation is not
+	 * supported.
 	 * @param conf Object holding configuration which is used to initialize
 	 *             fields in the configuration dialog.
 	 */
@@ -794,7 +899,14 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			String chunkSize = String.valueOf(conf.chunkSize);
 			chunkParts.setValue(chunkSize);
 
+			String retrySize = String.valueOf(conf.retrySize);
+			retrySizeField.setValue(retrySize);
+
+			String retryTime = String.valueOf(conf.retryTime);
+			retryTimeField.setValue(retryTime);
+
 			validateDataBefore.setValue(conf.validDataBefore);
+
 
 			try {
 				griddata = conf.GraphsUri;
