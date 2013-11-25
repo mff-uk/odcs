@@ -73,7 +73,7 @@ public class DPUDetail extends Window {
 
 		dpuName = new TextField();
 		dpuName.setImmediate(false);
-		dpuName.setWidth("200px");
+		dpuName.setWidth("280px");
 		dpuName.setHeight("-1px");
 		dpuName.setValue(dpu.getName().trim());
 		dpuName.setRequired(true);
