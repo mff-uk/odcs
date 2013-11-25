@@ -31,12 +31,17 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 
 	public boolean validDataBefore = false;
 
+	public long retryTime = 1000;
+
+	public int retrySize = -1;
+
 	@Override
 	public boolean isValid() {
 		return SPARQL_endpoint != null
 				&& Host_name != null
 				&& Password != null
 				&& GraphsUri != null
-				&& graphOption != null;
+				&& graphOption != null
+				&& retryTime > 0;
 	}
 }
