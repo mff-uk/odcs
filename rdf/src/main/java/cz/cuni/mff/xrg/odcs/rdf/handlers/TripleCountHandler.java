@@ -169,12 +169,12 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		return isStatementAdded;
 	}
 
-	protected String getWarningsAsString() {
+	protected static String getWarningsAsString(List<TripleProblem> warningsList) {
 		StringBuilder result = new StringBuilder();
 
 		int warningCount = 0;
 
-		for (TripleProblem next : warnings) {
+		for (TripleProblem next : warningsList) {
 			warningCount++;
 			result.append(getDescribedProblem(next, warningCount));
 		}
@@ -182,23 +182,33 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		return result.toString();
 	}
 
-	protected String getErorrsAsString() {
+	protected String getWarningsAsString() {
+		return getWarningsAsString(warnings);
+	}
+
+	protected static String getErorrsAsString(List<TripleProblem> errorsList) {
+
 		StringBuilder result = new StringBuilder();
 
 		int errorCount = 0;
 
-		for (TripleProblem next : errors) {
+		for (TripleProblem next : errorsList) {
 			errorCount++;
 			result.append(getDescribedProblem(next, errorCount));
 		}
 
 		return result.toString();
+
 	}
 
-	private String getDescribedProblem(TripleProblem next, int errorCount) {
+	protected String getErorrsAsString() {
+		return getErorrsAsString(errors);
+	}
+
+	private static String getDescribedProblem(TripleProblem next, int errorCount) {
 
 		Statement statement = next.getStatement();
-		String problemType = next.getConflictType().toString();
+		String problemType = next.getConflictType().name();
 
 		String problem = "\n" + errorCount + "] " + problemType + " in triple :"
 				+ "\n Subject: " + statement.getSubject().toString()
