@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * @author Petyr
  */
 @Component
-public class DailyReportEmailBuilder {
+class DailyReportEmailBuilder {
 	
 	public String build(List<PipelineExecution> executions) {
 		StringBuilder body = new StringBuilder();

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class InstantReport implements ApplicationListener<ApplicationEvent> {
+class InstantReport implements ApplicationListener<ApplicationEvent> {
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(InstantReport.class);
@@ -40,7 +40,7 @@ public class InstantReport implements ApplicationListener<ApplicationEvent> {
 
 	@Autowired
 	private InstantReportEmailBuilder emailBuilder;
-
+	
 	/**
 	 * Add email based on {@link ScheduleNotificationRecord}.
 	 *
