@@ -57,19 +57,22 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 	}
 
 	private void makeValidationReport(DataValidator validator,
-			String graphName, boolean stopExecution) throws CannotOverwriteFileException, RDFException {
+			String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException {
 
-		logger.info(String.format(
-				"Start generate validation report output for graph <%s> .",
+		context.sendMessage(MessageType.INFO,
+				"Start creating VALIDATION REPORT", String.format(
+				"Start generating validation report output for graph <%s> .",
 				graphName));
 
 		ReportCreator reporter = new ReportCreator(validator
 				.getFindedProblems(), graphName);
 		reporter.makeOutputReport(reportOutput);
 
-		logger.info(String.format(
+		context.sendMessage(MessageType.INFO,
+				"VALIDATION REPORT created SUCCESSFULLY", String.format(
 				"Validation report output for graph <%s> created successfully",
 				graphName));
+
 
 		if (stopExecution) {
 			dataOutput.cleanAllData();
@@ -94,22 +97,33 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
 			if (sometimesOutput) {
 				if (!validator.areDataValid()) {
+					context.sendMessage(MessageType.WARNING,
+							"Validator found some INVALID DATA",
+							validator.getErrorMessage() + "\nIt will be created validation report.");
 					logger.error(validator.getErrorMessage());
 
-					makeValidationReport(validator, graphName,
+					makeValidationReport(validator, graphName, context,
 							stopExecution);
 
+				} else {
+					context.sendMessage(MessageType.INFO,
+							"Validation Sucessful - NO errors",
+							"All RDF data are valid. Validation report will be not created.");
 				}
 			} else {
 				if (validator.areDataValid()) {
-					logger.info(
-							"All RDF data are valid - validation report output will be empty.");
+					context.sendMessage(MessageType.INFO,
+							"Validation Sucessful - NO errors",
+							"All RDF data are valid. Validation report output will be empty");
 				} else {
-					logger.error(
-							"Some RDF data are invalid - create validation report output.");
+					context.sendMessage(MessageType.WARNING,
+							"Validator found some INVALID DATA",
+							"Some RDF data are invalid:\n"
+							+ validator.getErrorMessage()
+							+ " It will be created validation report");
 				}
 
-				makeValidationReport(validator, graphName,
+				makeValidationReport(validator, graphName, context,
 						stopExecution);
 
 			}
