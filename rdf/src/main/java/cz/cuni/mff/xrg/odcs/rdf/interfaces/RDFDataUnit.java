@@ -303,4 +303,22 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *                               case))
 	 */
 	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
+
+	/**
+	 *
+	 * Set time in miliseconds how long to wait before trying to reconnect.
+	 *
+	 * @param retryTimeValue time in milisecond for waiting before trying to
+	 *                       reconnect.
+	 * @throws IllegalArgumentException if time is 0 or negative long number.
+	 */
+	public void setRetryConnectionTime(long retryTimeValue) throws IllegalArgumentException;
+
+	/**
+	 * Set Count of attempts to reconnect if the connection fails. For infinite
+	 * loop use zero or negative integer
+	 *
+	 * @param retrySizeValue as interger with count of attemts to reconnect.
+	 */
+	public void setRetryConnectionSize(int retrySizeValue);
 }
