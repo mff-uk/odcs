@@ -165,6 +165,12 @@ overflow: auto !important;
 	color: #5CA0DF
 }
 
+.v-table-empty .v-table-body {
+    background-image: url('img/no_data.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
 
 
   

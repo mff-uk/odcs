@@ -358,6 +358,11 @@ public class RDFQueryView extends CustomComponent {
 			}
 		});
 		resultTable.setContainerDataSource(container);
+		if (resultTable.getItemIds().isEmpty()) {
+			resultTable.setStyleName("empty");
+		} else {
+			resultTable.removeStyleName("empty");
+		}
 	}
 
 	private void browseDataUnit() {
