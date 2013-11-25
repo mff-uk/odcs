@@ -8,7 +8,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 
@@ -23,7 +23,7 @@ import org.apache.log4j.Level;
  */
 public class LogMessageDetail extends Window {
 
-	TextArea fullMessageContent;
+	private final RichTextArea fullMessageContent;
 	
 	private final Label timeContent = new Label();
 	
@@ -66,7 +66,7 @@ public class LogMessageDetail extends Window {
 		Label messageLabel = new Label("Message:");
 		mainLayout.addComponent(messageLabel, 0, 4);
 
-		fullMessageContent = new TextArea();
+		fullMessageContent = new RichTextArea();
 		fullMessageContent.setValue("");
 		fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
@@ -108,8 +108,11 @@ public class LogMessageDetail extends Window {
 		} else {
 			StringBuilder sb = new StringBuilder();
 			sb.append(log.getMessage());
-			sb.append("<br/>Stack trace:<br/>");
-			sb.append(log.getStackTrace());
+			sb.append("<br/><br/>Stack trace:<br/>");
+			// just do replace in stack trace
+			final String stackTrace = 
+					log.getStackTrace().replace("<", "&lt;").replace("&", "&amp;");
+			sb.append(stackTrace);
 			
 			fullMessageContent.setValue(sb.toString());
 		}

@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.persistence.*;
 
@@ -28,12 +29,16 @@ public class UserNotificationRecord extends NotificationRecord {
 	
 	/**
 	 * E-mails the notification will be sent to.
+	 * 
+	 * <p>
+	 * Emails are initialized as {@link LinkedHashSet} to preserve insertion
+	 * order.
 	 */
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sch_usr_notification_email",
 			joinColumns = @JoinColumn(name = "notification_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "email_id", referencedColumnName = "id"))
-	private Set<EmailAddress> emails = new HashSet<>();
+	private Set<EmailAddress> emails = new LinkedHashSet<>();
 	
 	public User getUser() {
 		return user;
@@ -48,12 +53,12 @@ public class UserNotificationRecord extends NotificationRecord {
 	 */
 	@Override
 	public Set<EmailAddress> getEmails() {
-		return new HashSet<>(emails);
+		return new LinkedHashSet<>(emails);
 	}
 
 	@Override
 	public void setEmails(Set<EmailAddress> emails) {
-		this.emails = new HashSet<>(emails);
+		this.emails = new LinkedHashSet<>(emails);
 	}
 	
 	@Override

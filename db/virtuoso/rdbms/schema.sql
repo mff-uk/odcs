@@ -146,7 +146,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
   "name" VARCHAR(45),
-  "description" VARCHAR(255),
+  "description" LONG VARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
   "just_once" SMALLINT,
@@ -180,6 +180,7 @@ CREATE TABLE "DB"."ODCS"."PPL_MODEL"
   "name" VARCHAR(2048),
   "description" LONG VARCHAR,
   "user_id" INTEGER,
+  "visibility" SMALLINT,
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_PPL_MODEL_user_id" ON "DB"."ODCS"."PPL_MODEL" ("user_id");

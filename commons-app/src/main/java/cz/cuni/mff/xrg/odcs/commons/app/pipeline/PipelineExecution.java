@@ -7,6 +7,7 @@ import javax.persistence.*;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.io.Serializable;
@@ -21,7 +22,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "exec_pipeline")
-public class PipelineExecution implements Serializable, DataObject {
+public class PipelineExecution implements OwnedEntity, DataObject {
 
 	/**
 	 * Unique id of pipeline execution.

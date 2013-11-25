@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +20,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 /**
  * Builds E-mail notification component which consists of text fields for e-mail
@@ -39,10 +40,11 @@ public class EmailComponent {
 	public TextField textFieldEmail;
 	public List<TextField> listedEditText = null;
 	public Settings parentComponentAccount;
+	
 	/**
 	 * List<String> that contains e-mails.
 	 */
-	public List<String> griddata = initializeEmailData();
+	private List<String> griddata = initializeEmailData();
 
 	/**
 	 * Initializes E-mail notification component.
@@ -177,30 +179,12 @@ public class EmailComponent {
 	}
 
 	public void setUserEmailNotification(UserNotificationRecord notofication) {
-
-		Set<EmailAddress> emails = new HashSet<>();
-		List<String> emailStr = griddata;
-
-		for (String mail : emailStr) {
-			if (!mail.equals("")) {
-				EmailAddress e = new EmailAddress(mail);
-				emails.add(e);
-			}
-		}
+		Set<EmailAddress> emails = stringsToEmails(griddata);
 		notofication.setEmails(emails);
 	}
 
 	public void setScheduleEmailNotification(ScheduleNotificationRecord notofication, Schedule schedule) {
-
-		Set<EmailAddress> emails = new HashSet<>();
-		List<String> emailStr = griddata;
-
-		for (String mail : emailStr) {
-			if (!mail.equals("")) {
-				EmailAddress e = new EmailAddress(mail);
-				emails.add(e);
-			}
-		}
+		Set<EmailAddress> emails = stringsToEmails(griddata);
 		notofication.setEmails(emails);
 	}
 
@@ -209,21 +193,10 @@ public class EmailComponent {
 		UserNotificationRecord notification = user.getNotification();
 
 		if (notification != null) {
-
-			Set<EmailAddress> emails = notification.getEmails();
-			List<String> emailStr = new LinkedList<>();
-
-			for (EmailAddress mail : emails) {
-				emailStr.add(mail.toString());
-			}
-
-			griddata.clear();
-			griddata = emailStr;
+			griddata = emailsToStrings(notification.getEmails());
 			refreshEmailData();
-
 		} else {
-			griddata.clear();
-			griddata.add(0, user.getEmail().toString());
+			griddata = Arrays.asList(user.getEmail().toString());
 			refreshEmailData();
 		}
 	}
@@ -233,18 +206,8 @@ public class EmailComponent {
 		ScheduleNotificationRecord notification = schedule.getNotification();
 
 		if (notification != null) {
-			Set<EmailAddress> emails = notification.getEmails();
-			List<String> emailStr = new LinkedList<>();
-
-			for (EmailAddress mail : emails) {
-				emailStr.add(mail.toString());
-			}
-
-			griddata.clear();
-			griddata = emailStr;
+			griddata = emailsToStrings(notification.getEmails());
 			refreshEmailData();
-
-
 		} else {
 			getUserEmailNotification(schedule.getOwner());
 		}
@@ -259,7 +222,6 @@ public class EmailComponent {
 		result.add("");
 
 		return result;
-
 	}
 
 	/**
@@ -282,5 +244,37 @@ public class EmailComponent {
 		if (griddata.size() > 1) {
 			griddata.remove(index);
 		}
+	}
+	
+	/**
+	 * Converts {@link EmailAddress}es into {@code String}s.
+	 * 
+	 * @param emails
+	 * @return sorted emails as list of strings
+	 */
+	private static List<String> emailsToStrings(Set<EmailAddress> emails) {
+		List emailStr = new ArrayList<>(emails.size());
+		for (EmailAddress mail : emails) {
+			emailStr.add(mail.toString());
+		}
+		
+		return emailStr;
+	}
+	
+	/**
+	 * Converts {@code String}s of emails to {@link EmailAddress}es.
+	 * 
+	 * @param emails
+	 * @return sorted emails as list of strings
+	 */
+	private static Set<EmailAddress> stringsToEmails(List<String> emails) {
+		Set<EmailAddress> emailAddrs = new LinkedHashSet<>();
+		for (String mail : emails) {
+			if (!mail.equals("")) {
+				EmailAddress e = new EmailAddress(mail);
+				emailAddrs.add(e);
+			}
+		}
+		return emailAddrs;
 	}
 }
