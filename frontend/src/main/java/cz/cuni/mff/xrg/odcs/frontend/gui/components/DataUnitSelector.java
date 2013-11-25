@@ -11,7 +11,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
@@ -136,7 +135,7 @@ public class DataUnitSelector extends CustomComponent {
 	 */
 	private boolean loadExecutionContextReader() {
 		ExecutionContextInfo context = pipelineExec.getContextReadOnly();
-		if(context != null) {
+		if (context != null) {
 			executionInfo = new ExecutionInfo(context);
 		}
 		return context != null;
@@ -159,7 +158,7 @@ public class DataUnitSelector extends CustomComponent {
 				if (value != null && value.getClass() == DPUInstanceRecord.class) {
 					debugDpu = (DPUInstanceRecord) value;
 					dataUnitSelector.removeAllItems();
-					setDataUnitCheckBoxes(debugDpu.getType());
+					setDataUnitCheckBoxes(debugDpu);
 				} else {
 					debugDpu = null;
 				}
@@ -170,19 +169,28 @@ public class DataUnitSelector extends CustomComponent {
 		return dpuSelector;
 	}
 
-	private void setDataUnitCheckBoxes(DPUType type) {
-		switch (type) {
-			case LOADER:
-				inputDataUnits.setEnabled(true);
-				inputDataUnits.setValue(true);
-				outputDataUnits.setEnabled(false);
-				break;
-			default:
-				inputDataUnits.setEnabled(true);
-				inputDataUnits.setValue(true);
-				outputDataUnits.setEnabled(true);
-				outputDataUnits.setValue(true);
-				break;
+	private void setDataUnitCheckBoxes(DPUInstanceRecord record) {
+		List<DataUnitInfo> dataUnits = executionInfo.dpu(record).getDataUnits();
+		int inputs = 0;
+		int outputs = 0;
+		for (DataUnitInfo dataUnit : dataUnits) {
+			if (dataUnit.isInput()) {
+				++inputs;
+			} else {
+				++outputs;
+			}
+		}
+		if (inputs == 0) {
+			inputDataUnits.setEnabled(false);
+		} else {
+			inputDataUnits.setEnabled(true);
+			inputDataUnits.setValue(true);
+		}
+		if (outputs == 0) {
+			outputDataUnits.setEnabled(false);
+		} else {
+			outputDataUnits.setEnabled(true);
+			outputDataUnits.setValue(true);
 		}
 	}
 
@@ -199,7 +207,7 @@ public class DataUnitSelector extends CustomComponent {
 				dpuSelector.addItem(dpu);
 				if (dpu.equals(debugDpu)) {
 					dpuSelector.select(debugDpu);
-				} else if(selected != null && dpu.equals(selected)) {
+				} else if (selected != null && dpu.equals(selected)) {
 					dpuSelector.select(selected);
 				}
 			}
@@ -226,7 +234,7 @@ public class DataUnitSelector extends CustomComponent {
 			} else {
 				if (dataUnitSelector.containsId(dataUnit)) {
 					dataUnitSelector.removeItem(dataUnit);
-					if(dataUnit.equals(selected)) {
+					if (dataUnit.equals(selected)) {
 						selected = null;
 					}
 				}
@@ -241,12 +249,12 @@ public class DataUnitSelector extends CustomComponent {
 	}
 
 	private void refreshEnabled() {
-		inputDataUnits.setEnabled(debugDpu != null);
-		outputDataUnits.setEnabled(debugDpu != null);
+		//inputDataUnits.setEnabled(debugDpu != null);
+		//outputDataUnits.setEnabled(debugDpu != null);
 		dataUnitSelector.setEnabled(debugDpu != null);
 		boolean buttonsEnabled = dataUnitSelector.isEnabled() && dataUnitSelector.getValue() != null;
 		browse.setEnabled(buttonsEnabled);
-		if(buttonsEnabled) {
+		if (buttonsEnabled) {
 			fireEvent(new EnableEvent(dpuSelector));
 		} else {
 			fireEvent(new DisableEvent(dpuSelector));
