@@ -274,7 +274,7 @@ public class SchedulePipeline extends Window {
 		container = new ReadOnlyContainer<>(
 				new InMemorySource<>(new PipelineNameAccessor(), dbPipeline));
 		
-		HorizontalLayout layoutPipeline = new HorizontalLayout();
+		GridLayout layoutPipeline = new GridLayout(2, 2);
 		layoutPipeline.setSpacing(true);
 		layoutPipeline.setMargin(false);
 
@@ -315,24 +315,20 @@ public class SchedulePipeline extends Window {
 			}
 		});
 		
-		layoutPipeline.addComponent(new Label("Pipeline "));
-		layoutPipeline.addComponent(comboPipeline);
-		layoutPipeline.addComponent(new Label(" was selected for scheduling."));
+		layoutPipeline.addComponent(new Label("Pipeline "), 0,0);
+		HorizontalLayout selectedPipe = new HorizontalLayout();
+		selectedPipe.setSpacing(true);
+		selectedPipe.addComponent(comboPipeline);
+		selectedPipe.addComponent(new Label(" was selected for scheduling."));
+		layoutPipeline.addComponent(selectedPipe, 1,0);
 		
-		coreLayout.addComponent(layoutPipeline, 0, 0);
-
-		//Layout contains name of scheduling rule
-		GridLayout schNameLayout = new GridLayout(2, 1);
-		schNameLayout.setSpacing(true);
-		
-		Label nameLabel = new Label("Description:");
-		schNameLayout.addComponent(nameLabel, 0, 0);
+		layoutPipeline.addComponent(new Label("Description:" ), 0,1);
 		scheduleDescription = new TextArea();
 		scheduleDescription.setImmediate(true);
 		scheduleDescription.setWidth("470px");
-		schNameLayout.addComponent(scheduleDescription, 1, 0);
+		layoutPipeline.addComponent(scheduleDescription, 1,1);
 		
-		coreLayout.addComponent(schNameLayout, 0, 1);
+		coreLayout.addComponent(layoutPipeline, 0, 0);
 
 		//Schedule type component. Two types: PERIODICALLY and AFTER_PIPELINE
 		scheduleType = new OptionGroup();
