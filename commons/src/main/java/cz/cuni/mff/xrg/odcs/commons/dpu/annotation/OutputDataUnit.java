@@ -6,16 +6,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to announced that given {@link DataUnit} should be used as output. 
- * Can not be use together with {@link InputDataUnit}.
- * 
- * Require using {@link BindDataUnits} annotation to the whole class in order
- * to work.
- * 
+ * Used to announced that given {@link DataUnit} should be used as output. Can
+ * not be use together with {@link InputDataUnit}.
+ *
+ * Require using {@link BindDataUnits} annotation to the whole class in order to
+ * work.
+ *
  * If DPU contains more than one output the name should be provided for all the
  * output data units.
- * 
+ *
  * @author Petyr
+ * @author Jiri Tomes
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -24,14 +25,23 @@ public @interface OutputDataUnit {
 
 	/**
 	 * Name of output {@link DataUnit}.
+	 *
 	 * @return
 	 */
 	public String name() default "output";
-	
+
 	/**
 	 * {@link DataUnit}'s description will be visible to the user.
+	 *
 	 * @return
 	 */
 	public String description() default "";
-	
+
+	/**
+	 * If false the execution failed if there is no suitable DataUnit that can
+	 * be used.
+	 *
+	 * @return
+	 */
+	public boolean optional() default false;
 }
