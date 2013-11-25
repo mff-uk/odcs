@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import org.openrdf.rio.RDFFormat;
@@ -66,6 +67,17 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		try {
 			rdfDataUnit.extractFromFile(extractType, format, path, fileSuffix,
 					baseURI, onlyThisSuffix, handlerExtractType);
+
+			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
+
+				String problems = StatisticalHandler
+						.getFindedGlobalProblemsAsString();
+				StatisticalHandler.clearParsingProblems();
+
+				context.sendMessage(MessageType.WARNING,
+						"Statistical and error handler has found during parsing problems triples (these triples were not added)",
+						problems);
+			}
 		} catch (RDFException e) {
 			context.sendMessage(MessageType.ERROR, e.getMessage());
 			throw new DPUException(e.getMessage(), e);
