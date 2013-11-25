@@ -1,9 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
@@ -14,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
+import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +78,14 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	@Override
 	public void deleteEventHandler(long id) {
 		final Pipeline pipeline = getLightPipeline(id);
+		List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.QUEUED);
+		if(executions.isEmpty()) {
+			executions = pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.RUNNING);
+		}
+		if(!executions.isEmpty()) {
+			Notification.show("Pipeline " + pipeline.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
+			return;
+		}
 		String message = "Would you really like to delete the " + pipeline.getName() + " pipeline and all associated records (DPU instances e.g.)?";
 		//String message = "Would you really like to delete this pipeline and all associated records (DPU instances e.g.)?";
 		ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {

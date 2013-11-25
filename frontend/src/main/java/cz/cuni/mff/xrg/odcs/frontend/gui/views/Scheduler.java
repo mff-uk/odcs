@@ -190,7 +190,7 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setFilterFieldVisible("duration", false);
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
-		schedulerTable.setPageLength(20);
+		schedulerTable.setPageLength(Utils.getPageLength());
 		schedulerTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
 			@Override

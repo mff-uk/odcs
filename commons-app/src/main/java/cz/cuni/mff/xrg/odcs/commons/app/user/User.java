@@ -25,67 +25,65 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "usr_user")
 public class User implements UserDetails, OwnedEntity, RoleHolder, Resource, DataObject {
 
-	/**
-	 * Primary key for entity.
-	 */
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usr_user")
-	@SequenceGenerator(name = "seq_usr_user", allocationSize = 1)
+    /**
+     * Primary key for entity.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usr_user")
+    @SequenceGenerator(name = "seq_usr_user", allocationSize = 1)
     private Long id;
-	
-	/**
-	 * User name used for login and as a unique identification of User.
-	 */
-	@Column
-	private String username;
-	
-	/**
-	 * User email.
-	 */
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "email_id")
+    /**
+     * User name used for login and as a unique identification of User.
+     */
+    @Column
+    private String username;
+    /**
+     * User email.
+     */
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "email_id")
     private EmailAddress email;
-	
-	/**
-	 * Full name.
-	 */
-	@Column(name = "full_name")
+    /**
+     * Full name.
+     */
+    @Column(name = "full_name")
     private String fullName;
-	
-	/**
-	 * Hashed password.
-	 */
-	@Column(name = "u_password")
+    /**
+     * Hashed password.
+     */
+    @Column(name = "u_password")
     private String password;
-	
-	/**
-	 * User roles representing sets of privileges.
-	 */
-	@ElementCollection(fetch = FetchType.LAZY)
-	@Column(name = "role_id")
-	@Enumerated(EnumType.ORDINAL)
-	@CollectionTable(name = "usr_user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "table_rows")
+    private Integer tableRows;
+    /**
+     * User roles representing sets of privileges.
+     */
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(name = "role_id")
+    @Enumerated(EnumType.ORDINAL)
+    @CollectionTable(name = "usr_user_role", joinColumns =
+            @JoinColumn(name = "user_id"))
     private Set<Role> roles = new HashSet<>();
-	
-	/**
-	 * User notification settings used as a default for execution schedules.
-	 * Overridden by specific settings in {@link ScheduleNotificationRecord}.
-	 */
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private UserNotificationRecord notification;
+    /**
+     * User notification settings used as a default for execution schedules.
+     * Overridden by specific settings in {@link ScheduleNotificationRecord}.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserNotificationRecord notification;
 
-	/**
-	 * Empty constructor required by JPA.
-	 */
-	public User() {
-	}
+    /**
+     * Empty constructor required by JPA.
+     */
+    public User() {
+    }
 
-	/**
-	 * Constructs entity from required attributes.
-	 * 
-	 * @param username user login
-	 * @param password already hashed password
-	 * @param email contact email
-	 */	
+    /**
+     * Constructs entity from required attributes.
+     *
+     * @param username user login
+     * @param password already hashed password
+     * @param email contact email
+     */
     public User(String username, String password, EmailAddress email) {
         this.username = username;
         this.password = password;
@@ -95,15 +93,15 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource, Dat
     /**
      * @return user name as unique identifier.
      */
-	@Override
-	public String getUsername() {
-		return username;
-	}
+    @Override
+    public String getUsername() {
+        return username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public EmailAddress getEmail() {
         return email;
     }
@@ -120,17 +118,17 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource, Dat
         this.fullName = fullName;
     }
 
-	@Override
+    @Override
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
-		try {
-			this.password = PasswordHash.createHash(password);
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
-		}
+        try {
+            this.password = PasswordHash.createHash(password);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -148,51 +146,60 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource, Dat
         roles = newRoles;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
-	public UserNotificationRecord getNotification() {
-		return notification;
-	}
+    public UserNotificationRecord getNotification() {
+        return notification;
+    }
 
-	public void setNotification(UserNotificationRecord notification) {
-		this.notification = notification;
-		notification.setUser(this);
-	}
-	
+    public void setNotification(UserNotificationRecord notification) {
+        this.notification = notification;
+        notification.setUser(this);
+    }
+    
+    public Integer getTableRows() {
+        return tableRows;
+    }
+
+    public void setTableRows(Integer value) {
+        tableRows = value;
+    }
+
     @Override
     public String getResourceId() {
         return User.class.toString();
     }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return new ArrayList<>(getRoles());
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>(getRoles());
+    }
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
-	@Override
-	public User getOwner() {
-		return this;
-	}
+    @Override
+    public User getOwner() {
+        return this;
+    }
 }
