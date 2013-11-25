@@ -12,6 +12,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
@@ -332,6 +334,14 @@ public class DPUPresenterImpl implements DPUPresenter {
 	@Override
 	public void pipelineDeleteEventHandler(Long id) {
 		Pipeline pipe = pipelineFacade.getPipeline(id);
+		List<PipelineExecution> executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.QUEUED);
+		if(executions.isEmpty()) {
+			executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.RUNNING);
+		}
+		if(!executions.isEmpty()) {
+			Notification.show("Pipeline " + pipe.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
+			return;
+		}
 		pipelineFacade.delete(pipe);
 	}
 
