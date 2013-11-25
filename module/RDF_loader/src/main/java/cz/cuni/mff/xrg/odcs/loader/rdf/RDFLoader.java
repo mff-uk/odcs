@@ -63,6 +63,9 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final long chunkSize = config.chunkSize;
 		final boolean validateDataBefore = config.validDataBefore;
 
+		final int retrySize = config.retrySize;
+		final long retryTime = config.retryTime;
+
 		if (validateDataBefore) {
 			DataValidator dataValidator = new RepositoryDataValidator(
 					rdfDataUnit);
@@ -84,7 +87,8 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		logger.info("Loading {} triples", triplesCount);
 
 		try {
-			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context);
+			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
+					retryTime);
 
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
