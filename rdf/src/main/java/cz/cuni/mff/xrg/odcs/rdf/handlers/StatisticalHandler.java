@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
@@ -18,6 +19,8 @@ import org.openrdf.rio.RDFHandlerException;
 public class StatisticalHandler extends TripleCountHandler {
 
 	private static final int TRIPLE_LOGGED_SIZE = 100;
+
+	private static List<TripleProblem> parsingProblems = new LinkedList<>();
 
 	private long addedCount = 0;
 
@@ -69,6 +72,9 @@ public class StatisticalHandler extends TripleCountHandler {
 	@Override
 	public void endRDF() throws RDFHandlerException {
 		super.endRDF();
+		if (!checkData) {
+			addToParsingProblems();
+		}
 	}
 
 	/**
@@ -78,6 +84,7 @@ public class StatisticalHandler extends TripleCountHandler {
 	public void reset() {
 		super.reset();
 		addedCount = 0;
+		parsingProblems.clear();
 	}
 
 	/**
@@ -121,5 +128,52 @@ public class StatisticalHandler extends TripleCountHandler {
 	 */
 	public List<TripleProblem> getFindedProblems() {
 		return getTripleProblems();
+	}
+
+	private void addToParsingProblems() {
+		for (TripleProblem next : getTripleProblems()) {
+			if (!parsingProblems.contains(next)) {
+				parsingProblems.add(next);
+			}
+		}
+	}
+
+	public static boolean hasParsingProblems() {
+		return !parsingProblems.isEmpty();
+	}
+
+	public static String getFindedGlobalProblemsAsString() {
+		StringBuilder result = new StringBuilder();
+
+		List<TripleProblem> warning = new LinkedList<>();
+		List<TripleProblem> errors = new LinkedList<>();
+
+		for (TripleProblem next : parsingProblems) {
+			switch (next.getConflictType()) {
+				case ERROR:
+					errors.add(next);
+					break;
+				case WARNING:
+					warning.add(next);
+					break;
+
+			}
+		}
+
+		if (!warning.isEmpty()) {
+			result.append("\nWARNINGS list:");
+			result.append(getWarningsAsString(warning));
+
+		}
+		if (!errors.isEmpty()) {
+			result.append("\nERRORS list:");
+			result.append(getErorrsAsString(errors));
+		}
+
+		return result.toString();
+	}
+
+	public static void clearParsingProblems() {
+		parsingProblems.clear();
 	}
 }
