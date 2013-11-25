@@ -38,7 +38,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 	/*
 	 * Output RDF data repository with only validate triples get from input.
 	 */
-	@OutputDataUnit(name = "Validated_Data")
+	@OutputDataUnit(name = "Validated_Data", optional = true)
 	public RDFDataUnit dataOutput;
 
 	/**
