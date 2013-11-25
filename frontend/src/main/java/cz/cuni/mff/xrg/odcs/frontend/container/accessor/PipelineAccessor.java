@@ -120,7 +120,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	/**
 	 * Clears the pipeline cache.
 	 */
-	private void clearExecCache() {
+	public void clearExecCache() {
 		execCache.invalidate();
 	}
 
@@ -134,7 +134,8 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	private PipelineExecution getLastExecution(Pipeline ppl) {
 		PipelineExecution exec = execCache.get(ppl.getId());
 		if (exec == null) {
-			execCache.set(ppl.getId(), pipelineFacade.getLastExec(ppl));
+			exec = pipelineFacade.getLastExec(ppl);
+			execCache.set(ppl.getId(), exec);
 		}
 		return exec;
 	}

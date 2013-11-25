@@ -158,7 +158,7 @@ public class Scheduler extends ViewComponent {
 		mainLayout.addComponent(topLine);
 
 		tableData = getTableData(scheduleFacade.getAllSchedules());
-
+		
 		//table with schedule rules records
 		schedulerTable = new IntlibPagedTable();
 		schedulerTable.setSelectable(true);
