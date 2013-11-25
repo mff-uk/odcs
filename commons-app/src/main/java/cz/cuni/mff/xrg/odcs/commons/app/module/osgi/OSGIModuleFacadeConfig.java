@@ -61,6 +61,7 @@ class OSGIModuleFacadeConfig {
 			+ "cz.cuni.mff.xrg.odcs.rdf.interfaces;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.repositories;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.validators;version=\"1.0.0\","
+			+ "cz.cuni.mff.xrg.odcs.rdf.handlers;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.help;version=\"1.0.0\","
 			// library for configuration serialisation
 			+ "com.thoughtworks.xstream,"
