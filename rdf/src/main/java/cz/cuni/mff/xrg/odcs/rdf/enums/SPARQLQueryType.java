@@ -9,7 +9,7 @@ public enum SPARQLQueryType {
 
 	SELECT,
 	CONSTRUCT,
-        DESCRIBE,
+	DESCRIBE,
 	/*as value for syntax error or other values*/
 	UNKNOWN;
 }
