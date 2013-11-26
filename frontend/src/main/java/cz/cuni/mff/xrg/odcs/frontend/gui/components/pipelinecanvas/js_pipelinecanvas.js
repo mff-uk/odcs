@@ -1708,7 +1708,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 		
 		$(".v-scrollable").scroll(function(){
-			$(".changingposition").css("top",Math.max(0,280-$(".v-scrollable").scrollTop()));
+			$(".changingposition").css("top",Math.max(0,300-$(".v-scrollable").scrollTop()));
 		});
 	});
 	

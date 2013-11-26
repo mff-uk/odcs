@@ -58,7 +58,7 @@ INSERT INTO DB.ODCS.PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name)
 INSERT INTO DB.ODCS.PPL_GRAPH(id,pipeline_id) VALUES(1,1);
 -- Table DB.ODCS.PPL_GRAPH 1 rows output.
 -- SELECT * FROM DB.ODCS.PPL_MODEL
-INSERT INTO DB.ODCS.PPL_MODEL(id,name,description,user_id) VALUES(1,'DBpedia','Loads 100 triples from DBpedia.',2);
+INSERT INTO DB.ODCS.PPL_MODEL(id,name,description,user_id,visibility) VALUES(1,'DBpedia','Loads 100 triples from DBpedia.',2,1);
 -- Table DB.ODCS.PPL_MODEL 1 rows output.
 -- SELECT * FROM DB.ODCS.PPL_NODE
 INSERT INTO DB.ODCS.PPL_NODE(id,graph_id,instance_id,position_id) VALUES(1,1,1,1);
