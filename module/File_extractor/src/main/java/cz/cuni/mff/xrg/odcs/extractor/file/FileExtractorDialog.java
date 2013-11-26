@@ -114,10 +114,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	private void mapData() {
 
 		for (RDFFormatType next : RDFFormatType.getListOfRDFType()) {
-			comboBoxFormat.addItem(next);
+			String value = RDFFormatType.getStringValue(next);
+			comboBoxFormat.addItem(value);
 		}
 
-		comboBoxFormat.setValue(RDFFormatType.AUTO);
+		comboBoxFormat
+				.setValue(RDFFormatType.getStringValue(RDFFormatType.AUTO));
 
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.UPLOAD_FILE));
@@ -180,7 +182,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				conf.OnlyThisSuffix = false;
 			}
 
-			conf.RDFFormatValue = (RDFFormatType) comboBoxFormat.getValue();
+			String formatValue = (String) comboBoxFormat.getValue();
+
+			conf.RDFFormatValue = RDFFormatType.getTypeByString(formatValue);
 			conf.UseStatisticalHandler = useHandler.getValue();
 			conf.failWhenErrors = failWhenErrors.getValue();
 
@@ -228,7 +232,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			textFieldOnly.setValue(conf.FileSuffix.trim());
 		}
 
-		comboBoxFormat.setValue(conf.RDFFormatValue);
+		String formatValue = RDFFormatType.getStringValue(conf.RDFFormatValue);
+
+		comboBoxFormat.setValue(formatValue);
 		useHandler.setValue(conf.UseStatisticalHandler);
 		failWhenErrors.setValue(conf.failWhenErrors);
 
