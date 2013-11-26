@@ -16,6 +16,7 @@ import java.util.List;
  * Configuration dialog for DPU RDF File Loader.
  *
  * @author Maria
+ * @author Jiri Tomes
  *
  */
 public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
@@ -52,6 +53,8 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 * TextField to set file path to the where the file should be stored.
 	 */
 	private TextField textFieldFilePath;
+
+	private CheckBox validateDataBefore;
 
 	private Validator.InvalidValueException ex;
 
@@ -113,23 +116,38 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 		// Core tab
 		verticalLayoutCore = buildVerticalLayoutCore();
-		verticalLayoutCore.setImmediate(false);
-		verticalLayoutCore.setWidth("100.0%");
-		verticalLayoutCore.setHeight("100.0%");
 		tabSheet.addTab(verticalLayoutCore, "Core", null);
 
 		// Details tab
-		verticalLayoutDetails = new VerticalLayout();
-		verticalLayoutDetails.setImmediate(false);
-		verticalLayoutDetails.setWidth("100.0%");
-		verticalLayoutDetails.setHeight("100.0%");
-		verticalLayoutDetails.setMargin(false);
+		verticalLayoutDetails = buildVerticalLayoutDetails();
 		tabSheet.addTab(verticalLayoutDetails, "Details", null);
 
 		mainLayout.addComponent(tabSheet, 0, 0);
 		mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
 
 		return mainLayout;
+	}
+
+	private VerticalLayout buildVerticalLayoutDetails() {
+
+		verticalLayoutDetails = new VerticalLayout();
+		verticalLayoutDetails.setImmediate(false);
+		verticalLayoutDetails.setWidth("100.0%");
+		verticalLayoutDetails.setHeight("100.0%");
+		verticalLayoutDetails.setMargin(true);
+		verticalLayoutDetails.setSpacing(true);
+
+		//add checkbox for data validation
+		validateDataBefore = new CheckBox(
+				"Validate data before loading - "
+				+ "if validation fails, the loading fails immediately");
+		validateDataBefore.setValue(false);
+		validateDataBefore.setWidth("-1px");
+		validateDataBefore.setHeight("-1px");
+
+		verticalLayoutDetails.addComponent(validateDataBefore);
+
+		return verticalLayoutDetails;
 	}
 
 	/**
@@ -147,7 +165,6 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		verticalLayoutCore.setHeight("100.0%");
 		verticalLayoutCore.setMargin(true);
 		verticalLayoutCore.setSpacing(true);
-
 
 		//Directory TextField
 		textFieldFilePath = new TextField();
@@ -233,6 +250,8 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 			String formatValue = (String) comboBoxFormat.getValue();
 			config.RDFFileFormat = RDFFormatType.getTypeByString(formatValue);
+
+			config.validDataBefore = validateDataBefore.getValue();
 			return config;
 		}
 
@@ -259,6 +278,9 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 			String formatValue = RDFFormatType
 					.getStringValue(conf.RDFFileFormat);
 			comboBoxFormat.setValue(formatValue);
+
+			validateDataBefore.setValue(conf.validDataBefore);
+
 		} catch (Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception
 			throw new ConfigException(e.getMessage(), e);
