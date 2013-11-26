@@ -50,13 +50,25 @@ import java.util.regex.Pattern;
 public class PlaceholdersHelper {
 
 	/**
+	 * Given DPU Context used in case for sending message if not finding mapping
+	 * between DPU names keep in placeHolders and really used DPU names in
+	 * application.
 	 *
-	 * @param constructQuery original SPARQL contruct query where we can replace
-	 *                       DPU names to graph names(graph URI).
-	 * @return List as collection of PlaceHolder - each keep DPU name extracted
-	 *         from SPARQL query.
 	 */
-	private List<PlaceHolder> getPlaceHolders(String constructQuery) {
+	private DPUContext context;
+
+	public PlaceholdersHelper(DPUContext context) {
+		this.context = context;
+	}
+
+	/**
+	 *
+	 * @param constructQuery original SPARQL contruct query where we can find
+	 *                       DPU names to graph names(graph URI).
+	 * @return List as collection of DPUNames - each keep String DPU name
+	 *         extracted from SPARQL query.
+	 */
+	private List<String> getExtractedDPUNames(String constructQuery) {
 
 		String regex = "graph\\s+\\?[gG]_[\\w-_]+";
 		Pattern pattern = Pattern.compile(regex);
@@ -64,7 +76,7 @@ public class PlaceholdersHelper {
 
 		boolean hasResult = matcher.find();
 
-		List<PlaceHolder> placeholders = new ArrayList<>();
+		List<String> DPUNames = new ArrayList<>();
 
 		while (hasResult) {
 
@@ -77,10 +89,31 @@ public class PlaceholdersHelper {
 
 			String DPUName = constructQuery.substring(start, end);
 
-			PlaceHolder placeHolder = new PlaceHolder(DPUName);
-			placeholders.add(placeHolder);
+			DPUNames.add(DPUName);
 
 			hasResult = matcher.find();
+		}
+
+		return DPUNames;
+	}
+
+	/**
+	 *
+	 * @param constructQuery original SPARQL contruct query where we can replace
+	 *                       DPU names to graph names(graph URI).
+	 * @return List as collection of PlaceHolder - each keep DPU name extracted
+	 *         from SPARQL query.
+	 */
+	private List<PlaceHolder> getPlaceHolders(String constructQuery) {
+
+		List<String> DPUNames = getExtractedDPUNames(constructQuery);
+
+
+		List<PlaceHolder> placeholders = new ArrayList<>();
+
+		for (String dpuName : DPUNames) {
+			PlaceHolder placeHolder = new PlaceHolder(dpuName);
+			placeholders.add(placeHolder);
 		}
 
 		return placeholders;
@@ -94,16 +127,12 @@ public class PlaceholdersHelper {
 	 *                     URI.
 	 * @param placeHolders List as collection of PlaceHolder - each keep DPU
 	 *                     name extracted from SPARQL query.
-	 * @param context      Given DPU Context used in case for sending message if
-	 *                     not finding mapping between DPU names keep in
-	 *                     placeHolders and really used DPU names in
-	 *                     application.
 	 * @throws DPUException if DPU name in placeHolders in not in any DPU names
 	 *                      used in application - there can not exist mapping
 	 *                      DPU name in query to graph URI (graph name).
 	 */
 	private void replaceAllPlaceHolders(List<RDFDataUnit> inputs,
-			List<PlaceHolder> placeHolders, DPUContext context) throws DPUException {
+			List<PlaceHolder> placeHolders) throws DPUException {
 
 		for (PlaceHolder next : placeHolders) {
 			boolean isReplased = false;
@@ -139,24 +168,20 @@ public class PlaceholdersHelper {
 	 *                               in query correspondent to at least one DPU
 	 *                               name in given inputs. Is necessary for
 	 *                               mapping DPU_name -> graph URI.
-	 * @param contextGiven           DPU Context used in case for sending error
-	 *                               message if not finding mapping between DPU
-	 *                               names keep in placeHolders and really used
-	 *                               DPU names in application.
 	 * @return Modified query after using placeholders (with original URI graph
 	 *         names)
 	 * @throws DPUException if there can not exist mapping DPU name in query to
 	 *                      graph URI (graph name).
 	 */
 	public String getContructQuery(String originalConstructQuery,
-			List<RDFDataUnit> inputs, DPUContext context) throws DPUException {
+			List<RDFDataUnit> inputs) throws DPUException {
 
 		String result = originalConstructQuery;
 
 		List<PlaceHolder> placeHolders = getPlaceHolders(originalConstructQuery);
 
 		if (!placeHolders.isEmpty()) {
-			replaceAllPlaceHolders(inputs, placeHolders, context);
+			replaceAllPlaceHolders(inputs, placeHolders);
 		}
 
 		for (PlaceHolder next : placeHolders) {
