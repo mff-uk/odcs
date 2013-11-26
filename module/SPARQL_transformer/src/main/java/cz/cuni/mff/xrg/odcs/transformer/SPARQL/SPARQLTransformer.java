@@ -28,71 +28,79 @@ import org.slf4j.LoggerFactory;
 public class SPARQLTransformer
 		extends ConfigurableBase<SPARQLTransformerConfig>
 		implements ConfigDialogProvider<SPARQLTransformerConfig> {
-	
+
 	private final Logger LOG = LoggerFactory.getLogger(SPARQLTransformer.class);
-	
+
 	@InputDataUnit(name = "input")
 	public RDFDataUnit intputDataUnit;
-       
-        
-        //two other optional inputs, which may be used in the queries
-        @InputDataUnit(name = "optional1",optional = true)
+
+	//two other optional inputs, which may be used in the queries
+	@InputDataUnit(name = "optional1", optional = true)
 	public RDFDataUnit intputOptional1;
-         @InputDataUnit(name = "optional2",optional = true)
+
+	@InputDataUnit(name = "optional2", optional = true)
 	public RDFDataUnit intputOptional2;
-          @InputDataUnit(name = "optional3",optional = true)
+
+	@InputDataUnit(name = "optional3", optional = true)
 	public RDFDataUnit intputOptional3;
 
-	
 	@OutputDataUnit
 	public RDFDataUnit outputDataUnit;
-	
+
 	public SPARQLTransformer() {
 		super(SPARQLTransformerConfig.class);
 	}
-	
-	
-	
+
+	private List<RDFDataUnit> getInputs() {
+		List<RDFDataUnit> inputs = new ArrayList<>();
+
+		inputs.add(intputDataUnit);
+		inputs.add(intputOptional1);
+		inputs.add(intputOptional2);
+		inputs.add(intputOptional3);
+
+		return inputs;
+	}
+
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException, DataUnitException {
-		
+
 		final String updateQuery = config.SPARQL_Update_Query;
 		final boolean isConstructQuery = config.isConstructType;
-		
-		
+
 		try {
 			if (isConstructQuery) {
 
-				//TODO - update for more inputs
-				List<RDFDataUnit> inputs = new ArrayList<>();
-				inputs.add(intputDataUnit);
+				//GET ALL inputs
+				List<RDFDataUnit> inputs = getInputs();
 
 				//creating newConstruct replaced query
-				String constructQuery = new PlaceholdersHelper().getContructQuery(updateQuery, inputs,
-						context);
+				PlaceholdersHelper placeHolders = new PlaceholdersHelper(context);
+				String constructQuery = placeHolders.getContructQuery(updateQuery,
+						inputs);
 
 				//execute given construct query
 				Graph graph = intputDataUnit.executeConstructQuery(
 						constructQuery);
 				outputDataUnit.addTriplesFromGraph(graph);
-				
+
 			} else {
 				outputDataUnit.merge(intputDataUnit);
 				outputDataUnit.executeSPARQLUpdateQuery(updateQuery);
 			}
-			
+
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage());
 			throw new DPUException(ex.getMessage(), ex);
 		}
-		
+
 		final long beforeTriplesCount = intputDataUnit.getTripleCount();
 		final long afterTriplesCount = outputDataUnit.getTripleCount();
 		LOG.info("Transformed {} triples into {}", beforeTriplesCount,
 				afterTriplesCount);
 	}
-	
+
 	@Override
 	public AbstractConfigDialog<SPARQLTransformerConfig> getConfigurationDialog() {
 		return new SPARQLTransformerDialog();
