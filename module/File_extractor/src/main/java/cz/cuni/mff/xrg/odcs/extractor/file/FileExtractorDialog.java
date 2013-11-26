@@ -44,7 +44,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	private CheckBox useHandler;  //Statistical handler
 
-	private CheckBox failWhenErrors; // How to solve errors for Statistical handler
+	private OptionGroup failsWhenErrors; // How to solve errors for Statistical handler
 
 	/**
 	 * TextField for set file extension that will be processed in some
@@ -87,6 +87,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	private GridLayout gridLayoutCore;
 
 	private VerticalLayout verticalLayoutDetails;
+
+	private static final String STOP = "Stop pipeline execution if extractor "
+			+ "extracted some triples with an error.";
+
+	private static final String CONTINUE = "Extract only triples with no errors.";
 
 	/**
 	 * Basic constructor.
@@ -134,7 +139,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
-
 
 	}
 
@@ -186,7 +190,17 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 			conf.RDFFormatValue = RDFFormatType.getTypeByString(formatValue);
 			conf.UseStatisticalHandler = useHandler.getValue();
-			conf.failWhenErrors = failWhenErrors.getValue();
+
+			String selectedValue = (String) failsWhenErrors.getValue();
+
+			if (selectedValue.equals(STOP)) {
+				conf.failWhenErrors = true;
+			} else if (selectedValue.endsWith(CONTINUE)) {
+				conf.failWhenErrors = false;
+			} else {
+				throw new ConfigException(
+						"No value for case using statistical and error handler");
+			}
 
 			conf.fileExtractType = extractType;
 
@@ -236,8 +250,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 		comboBoxFormat.setValue(formatValue);
 		useHandler.setValue(conf.UseStatisticalHandler);
-		failWhenErrors.setValue(conf.failWhenErrors);
 
+		if (conf.failWhenErrors) {
+			failsWhenErrors.setValue(STOP);
+		} else {
+			failsWhenErrors.setValue(CONTINUE);
+		}
 
 	}
 
@@ -368,10 +386,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					public void validate(Object value) throws InvalidValueException {
 						Class<?> myClass = value.getClass();
 
+
+
 						if (myClass.equals(String.class)) {
 							String stringValue = (String) value;
 
-							if (extractType == FileExtractType.HTTP_URL) {
+							if (extractType
+									== FileExtractType.HTTP_URL) {
 								if (!stringValue.toLowerCase().startsWith(
 										"http://")) {
 
@@ -586,25 +607,35 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		useHandler.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (failWhenErrors != null) {
-					failWhenErrors.setVisible(useHandler.getValue());
+
+				if (failsWhenErrors != null) {
+					failsWhenErrors.setEnabled(useHandler.getValue());
 				}
 			}
 		});
 
-		//How to solve errors for Statistical handler
-		failWhenErrors = new CheckBox(
-				"If there is an error in some of the extracted triples,"
-				+ " extractor ends with an error");
-		failWhenErrors.setValue(false);
-		failWhenErrors.setWidth("-1px");
-		failWhenErrors.setHeight("-1px");
-		failWhenErrors.setVisible(useHandler.getValue());
-
 		verticalLayoutDetails.addComponent(useHandler);
-		verticalLayoutDetails.addComponent(failWhenErrors);
+
+		//How to solve errors for Statistical handler
+		failsWhenErrors = new OptionGroup();
+		failsWhenErrors.setImmediate(false);
+		failsWhenErrors.setWidth("-1px");
+		failsWhenErrors.setHeight("-1px");
+		failsWhenErrors.setMultiSelect(false);
+
+		//extract only triples with no errors.
+		failsWhenErrors.addItem(CONTINUE);
+		//stop pipeline execution if extractor extracted some triples with an error.
+		failsWhenErrors.addItem(STOP);
+
+		failsWhenErrors.setValue(CONTINUE);
+		failsWhenErrors.setEnabled(useHandler.getValue());
+
+		verticalLayoutDetails.addComponent(failsWhenErrors);
 
 		return verticalLayoutDetails;
+
+
 	}
 }
 
