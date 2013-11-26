@@ -70,16 +70,18 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 					rdfDataUnit);
 
 			if (!dataValidator.areDataValid()) {
-				final String message = "RDF Data to load are not valid - LOAD to SPARQL FAIL";
-				logger.info(message);
+				final String message = "RDF Data to load are not valid - LOADING to SPARQL FAIL";
 				logger.error(dataValidator.getErrorMessage());
-				context.sendMessage(MessageType.WARNING, dataValidator
+
+				context.sendMessage(MessageType.WARNING, message, dataValidator
 						.getErrorMessage());
 
 				throw new RDFException(message);
 			} else {
-				logger.info("RDF Data for loading are VALID");
-				logger.info("Loading to SPARQL endpoint start just now");
+				context.sendMessage(MessageType.INFO,
+						"RDF Data for loading are valid");
+				context.sendMessage(MessageType.INFO,
+						"Loading data to SPARQL endpoint STARTS JUST NOW");
 			}
 		}
 		final long triplesCount = rdfDataUnit.getTripleCount();
@@ -91,6 +93,9 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
+
+			context.sendMessage(MessageType.INFO,
+					"Loading data to SPARQL endpoint ends SUCCESSFULLY");
 
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage());
