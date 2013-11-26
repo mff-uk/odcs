@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,9 @@ import cz.cuni.mff.xrg.odcs.commons.web.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 /**
  * @author Jiri Tomes
@@ -22,27 +25,49 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 @AsLoader
 public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		implements ConfigDialogProvider<FileLoaderConfig> {
-	
-	private final Logger LOG = LoggerFactory.getLogger(FileLoader.class);
-	
+
+	private final Logger logger = LoggerFactory.getLogger(FileLoader.class);
+
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
-	
+
 	public FileLoader() {
 		super(FileLoaderConfig.class);
 	}
-	
+
 	@Override
-	public void execute(DPUContext context) throws DPUException {
-		
+	public void execute(DPUContext context) throws DPUException, DataUnitException {
+
 		final String filePath = config.FilePath;
 		final RDFFormatType formatType = config.RDFFileFormat;
 		final boolean isNameUnique = config.DiffName;
 		final boolean canFileOverwritte = true;
-		
+		final boolean validateDataBefore = config.validDataBefore;
+
+		if (validateDataBefore) {
+			DataValidator dataValidator = new RepositoryDataValidator(
+					rdfDataUnit);
+
+			if (!dataValidator.areDataValid()) {
+				final String message = "RDF Data to load are not valid - LOADING to File FAIL";
+				logger.error(dataValidator.getErrorMessage());
+
+				context.sendMessage(MessageType.WARNING, message, dataValidator
+						.getErrorMessage());
+
+				throw new RDFException(message);
+			} else {
+				context.sendMessage(MessageType.INFO,
+						"RDF Data for loading to file are valid");
+				context.sendMessage(MessageType.INFO,
+						"Loading data to file STARTS JUST NOW");
+			}
+		}
+
+
 		final long triplesCount = rdfDataUnit.getTripleCount();
-		LOG.info("Loading {} triples", triplesCount);
-		
+		logger.info("Loading {} triples", triplesCount);
+
 		try {
 			rdfDataUnit.loadToFile(filePath, formatType,
 					canFileOverwritte, isNameUnique);
@@ -51,7 +76,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 			throw new DPUException(ex);
 		}
 	}
-	
+
 	@Override
 	public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
 		return new FileLoaderDialog();
