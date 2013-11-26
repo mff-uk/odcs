@@ -15,6 +15,9 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.openrdf.model.Graph;
+import org.openrdf.model.URI;
+import org.openrdf.query.Dataset;
+import org.openrdf.query.impl.DatasetImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +54,16 @@ public class SPARQLTransformer
 		super(SPARQLTransformerConfig.class);
 	}
 
+	private Dataset createGraphDataSet(List<RDFDataUnit> inputs) {
+		DatasetImpl dataSet = new DatasetImpl();
+
+		for (RDFDataUnit repository : inputs) {
+			URI dataGraphURI = repository.getDataGraph();
+			dataSet.addDefaultGraph(dataGraphURI);
+		}
+		return dataSet;
+	}
+
 	private List<RDFDataUnit> getInputs() {
 		List<RDFDataUnit> inputs = new ArrayList<>();
 
@@ -77,12 +90,14 @@ public class SPARQLTransformer
 
 				//creating newConstruct replaced query
 				PlaceholdersHelper placeHolders = new PlaceholdersHelper(context);
-				String constructQuery = placeHolders.getContructQuery(updateQuery,
+				String constructQuery = placeHolders.getContructQuery(
+						updateQuery,
 						inputs);
 
 				//execute given construct query
+				Dataset dataSet = createGraphDataSet(inputs);
 				Graph graph = intputDataUnit.executeConstructQuery(
-						constructQuery);
+						constructQuery, dataSet);
 				outputDataUnit.addTriplesFromGraph(graph);
 
 			} else {
