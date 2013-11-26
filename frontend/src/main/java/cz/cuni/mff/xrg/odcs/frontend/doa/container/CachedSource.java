@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.util.filter.Compare;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
@@ -26,7 +27,7 @@ public class CachedSource<T extends DataObject>
 		ContainerSource.Sortable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CachedSource.class);
-	
+
 	/**
 	 * Store size of data set in database.
 	 */
@@ -51,7 +52,7 @@ public class CachedSource<T extends DataObject>
 	 * The query builder.
 	 */
 	protected final DataQueryBuilder<T> queryBuilder;
-	
+
 	/**
 	 * Filters that can be set by {@link Filterable} interface.
 	 */
@@ -63,11 +64,12 @@ public class CachedSource<T extends DataObject>
 	protected final List<Filter> coreFilters;
 
 	protected final ClassAccessor<T> classAccessor;
-	
+
 	/**
 	 * Initialize the source with given data access. No core filters are used.
-	 * @param access 
-	 * @param classAccessor 
+	 *
+	 * @param access
+	 * @param classAccessor
 	 */
 	public CachedSource(DataAccessRead<T> access, ClassAccessor<T> classAccessor) {
 		this.source = access;
@@ -75,23 +77,24 @@ public class CachedSource<T extends DataObject>
 		this.coreFilters = null;
 		this.classAccessor = classAccessor;
 	}
-	
+
 	/**
-	 * Initialize the source with given data access. The core filters
-	 * are apply before every query, ant the list is used as reference.
-	 * That means that changes in list changed the used filters in source.
-	 * @param access 
-	 * @param classAccessor 
-	 * @param coreFilters 
+	 * Initialize the source with given data access. The core filters are apply
+	 * before every query, ant the list is used as reference. That means that
+	 * changes in list changed the used filters in source.
+	 *
+	 * @param access
+	 * @param classAccessor
+	 * @param coreFilters
 	 */
-	public CachedSource(DataAccessRead<T> access, ClassAccessor<T> classAccessor, 
+	public CachedSource(DataAccessRead<T> access, ClassAccessor<T> classAccessor,
 			List<Filter> coreFilters) {
 		this.source = access;
 		this.queryBuilder = source.createQueryBuilder();
 		this.coreFilters = coreFilters;
 		this.classAccessor = classAccessor;
 	}
-	
+
 	/**
 	 * Invalidate data cache.
 	 */
@@ -102,49 +105,39 @@ public class CachedSource<T extends DataObject>
 	}
 
 	/**
-	 * Load data size from {@link #source} and store the value into
-	 * {@link #size}.
+	 * Load data size from {@link #source} and return it. {@link #size}.
 	 */
-	protected void loadSize() {
+	int loadSize() {
 		applyFilters();
-		size = (int) source.executeSize(queryBuilder.getCountQuery());
+		return (int) source.executeSize(queryBuilder.getCountQuery());
 	}
 
 	/**
-	 * Read data from {@link #source} with given index.
+	 * Read data from {@link #source} and return it.
 	 *
 	 * @param index
 	 */
-	protected T loadByIndex(int index) {
+	T loadByIndex(int index) {
 		applyFilters();
 		T item = source.execute(queryBuilder.getQuery().limit(index, 1));
 		if (item == null) {
 			return null;
 		}
-		// add to caches
-		data.put(item.getId(), item);
-		dataIndexes.put(index, item.getId());
 		return item;
 	}
 
 	/**
-	 * Load data on given indexes and return list of their IDs.
+	 * Load data on given indexes and return them.
 	 *
 	 * @param startIndex
 	 * @param numberOfItems
 	 * @return
 	 */
-	protected List<Long> loadByIndex(int startIndex, int numberOfItems) {
-		applyFilters();		
-		List<T> items = source.executeList(queryBuilder.getQuery().limit(startIndex, numberOfItems));
-		// add to chaces
-		List<Long> newIDs = new ArrayList<>(numberOfItems); 
-		for (T item : items) {
-			data.put(item.getId(), item);
-			dataIndexes.put(startIndex++, item.getId());
-			newIDs.add(item.getId());
-		}
-		return newIDs;
+	List<T> loadByIndex(int startIndex, int numberOfItems) {
+		applyFilters();
+		final List<T> items = source.executeList(
+				queryBuilder.getQuery().limit(startIndex, numberOfItems));
+		return items;
 	}
 
 	/**
@@ -154,6 +147,26 @@ public class CachedSource<T extends DataObject>
 	 */
 	protected void loadById(Long id) {
 		applyFilters();
+
+		if (queryBuilder instanceof DataQueryBuilder.Filterable) {
+			// ok continue
+		} else {
+			LOG.warn("Can not set filters on nonfilterable query builder."
+					+ " We can not ask for given id.");
+			return;
+		}
+
+		DataQueryBuilder.Filterable<T> filtrableBuilder
+				= (DataQueryBuilder.Filterable<T>) queryBuilder;
+
+		filtrableBuilder.addFilter(new Compare.Equal("id", id));
+		T item = source.execute(queryBuilder.getQuery().limit(0, 1));
+		if (item == null) {
+			LOG.warn("Failed to load data with id {}", id);
+			return;
+		}
+		// add to the data cache
+		data.put(item.getId(), item);
 	}
 
 	/**
@@ -161,17 +174,17 @@ public class CachedSource<T extends DataObject>
 	 */
 	protected void applyFilters() {
 		// TODO we can optimize and do not set those filter twice .. 
-		
+
 		if (queryBuilder instanceof DataQueryBuilder.Filterable) {
 			// ok continue
 		} else {
 			LOG.warn("Can not set filters on nonfilterable query builder. The filters are ignored.");
 			return;
 		}
-		
+
 		DataQueryBuilder.Filterable<T> filtrableBuilder
 				= (DataQueryBuilder.Filterable<T>) queryBuilder;
-		
+
 		// clear filters and build news
 		filtrableBuilder.claerFilters();
 		// add filters
@@ -185,11 +198,27 @@ public class CachedSource<T extends DataObject>
 			}
 		}
 	}
+
+	/**
+	 * Add items to the cache, if there are collisions between new and old data
+	 * in ID then the old data are replaced.
+	 * @param items 
+	 * @param startIndex
+	 */
+	void add(List<T> items, int startIndex) {
+		int index = startIndex;
+		for(T item : items) {
+			data.put(item.getId(), item);
+			dataIndexes.put(index, item.getId());
+			++index;
+		}
+	}
 	
 	@Override
 	public int size() {
 		if (size == null) {
-			loadSize();
+			// reload size
+			size = loadSize();
 		}
 		return size;
 	}
@@ -210,7 +239,14 @@ public class CachedSource<T extends DataObject>
 			// we have data
 			return data.get(dataIndexes.get(index));
 		} else {
-			return loadByIndex(index);
+			T item = loadByIndex(index);
+			if (item != null) {
+				// add to caches
+				data.put(item.getId(), item);
+				dataIndexes.put(index, item.getId());
+			}
+			// return new item .. can be null
+			return item;
 		}
 	}
 
@@ -238,7 +274,15 @@ public class CachedSource<T extends DataObject>
 			} else {
 				// some data are mising, we have to load them
 				final int toLoad = numberOfItems - (index - startIndex);
-				List<Long> newIDs = loadByIndex(index, toLoad);
+				List<T> newData = loadByIndex(index, toLoad);
+				// gather IDs and add data to caches
+				List<Long> newIDs = new ArrayList<>(numberOfItems);
+				for (T item : newData) {
+					data.put(item.getId(), item);
+					dataIndexes.put(startIndex++, item.getId());
+					newIDs.add(item.getId());
+				}
+				// add new IDs to the result list
 				result.addAll(newIDs);
 				break;
 			}
@@ -261,7 +305,7 @@ public class CachedSource<T extends DataObject>
 	public ClassAccessor<T> getClassAccessor() {
 		return classAccessor;
 	}
-	
+
 	@Override
 	public void addFilter(Container.Filter filter) {
 		filters.add(filter);
@@ -297,10 +341,10 @@ public class CachedSource<T extends DataObject>
 			LOG.warn("Call of sort(Objet[], boolean[]) on non sortable-source ignored.");
 			return;
 		}
-		
+
 		final DataQueryBuilder.Sortable<T> sortableBuilder
 				= (DataQueryBuilder.Sortable<T>) queryBuilder;
-		
+
 		switch (propertyId.length) {
 			case 0: // remove sort
 				sortableBuilder.sort(null, false);
@@ -312,7 +356,7 @@ public class CachedSource<T extends DataObject>
 				sortableBuilder.sort((String) propertyId[0], ascending[0]);
 				break;
 		}
-		
+
 	}
 
 }
