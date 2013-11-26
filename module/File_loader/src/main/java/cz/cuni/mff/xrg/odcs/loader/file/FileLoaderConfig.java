@@ -18,6 +18,8 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 
 	public boolean DiffName = false;
 
+	public boolean validDataBefore = false;
+
 	@Override
 	public boolean isValid() {
 		return FilePath != null
