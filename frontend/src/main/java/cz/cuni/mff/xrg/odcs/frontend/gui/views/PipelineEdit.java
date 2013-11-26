@@ -43,11 +43,6 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,19 +118,6 @@ public class PipelineEdit extends ViewComponent {
 
 		//Resizing canvas
 		UI.getCurrent().setImmediate(true);
-//		resizeCanvas(UI.getCurrent().getPage().getBrowserWindowWidth());
-//		UI.getCurrent().getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
-//			@Override
-//			public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
-//				int width = event.getWidth();
-//				resizeCanvas(width);
-//			}
-//		});
-
-
-
-		// work with pipeline here ...
-
 	}
 
 	/**
@@ -174,12 +156,12 @@ public class PipelineEdit extends ViewComponent {
 				if (c instanceof TabSheet) {
 					return "margin-left: 0px; margin-top: 20px;";
 				} else if (c instanceof Panel) {
-					return "position: fixed; left: 20px; top: 280px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
+					return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
 				} else if (c instanceof HorizontalLayout) {
 					if (c.equals(buttonBar)) {
 						return "position: fixed; bottom: 20px; left: 20px; height: 30px; background: #eee; padding: 10px;";
 					} else {
-						return "position: fixed; right: 20px; top: 280px;";
+						return "position: fixed; right: 20px; top: 300px;";
 					}
 				}
 				return null;
