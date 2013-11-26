@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.VaadinServletService;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 
@@ -121,6 +122,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * Method initializing client side RPC.
 	 */
 	public void init() {
+//		String requUrl = VaadinServletService.getCurrentServletRequest().getRequestURI();
+//		String requUrl2 = VaadinServletService.getCurrentServletRequest().getContextPath();
+//		String requUrl3 = VaadinServletService.getCurrentServletRequest().getServerName();
+//		String requUrl4 = VaadinServletService.getCurrentServletRequest().getServletPath();
 		getRpcProxy(PipelineCanvasClientRpc.class).init();
 	}
 

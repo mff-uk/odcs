@@ -45,6 +45,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private ExecutionListView view;
 	private ExecutionListData dataObject;
+	private CachedSource<PipelineExecution> cachedSource;
 	private RefreshManager refreshManager;
 	private Date lastLoad = new Date(0L);
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
@@ -52,8 +53,8 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Override
 	public Object enter() {
 		// prepare data object
-		ReadOnlyContainer c = new ReadOnlyContainer<>(
-				new CachedSource<>(dbExecution, new ExecutionAccessor()));
+		cachedSource = new CachedSource<>(dbExecution, new ExecutionAccessor());
+		ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
 		c.sort(new Object[]{"id"}, new boolean[]{false});
 		dataObject = new ExecutionListData(c);
 		// prepare view
@@ -90,10 +91,10 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	
 	@Override
 	public void refreshEventHandler() {
-		// TODO check for database change
 		boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
 		if (hasModifiedExecutions) {
 			lastLoad = new Date();
+			cachedSource.invalidate();
 			dataObject.getContainer().refresh();
 		}
 		view.refresh(hasModifiedExecutions);
