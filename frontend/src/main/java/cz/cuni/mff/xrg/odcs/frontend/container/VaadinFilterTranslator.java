@@ -136,12 +136,6 @@ class VaadinFilterTranslator implements FilterTranslator {
 			return isFromDpu;
 		}
 
-		if (filter instanceof InFilter) {
-			final InFilter inFilter = (InFilter) filter;
-			final Expression<String> property = (Expression) root.get(inFilter.name);
-			return property.in(inFilter.getStringSet());
-		}
-
 		return null;
     }
     
