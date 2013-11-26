@@ -124,24 +124,6 @@ class VaadinFilterTranslator implements FilterTranslator {
 					+ simpleStringFilter.getFilterString());
 		}
 
-		if (filter instanceof PropertiesFilter) {
-			final PropertiesFilter propertiesFilter = (PropertiesFilter) filter;
-			//Root<LogMessage> msg = cq.from(LogMessage.class);
-			MapJoin<LogMessage, String, String> props = root.joinMap("properties");
-
-
-			Predicate isFromDpu = cb.and(
-					cb.equal(props.key(), propertiesFilter.parameterName),
-					cb.equal(props.value(), propertiesFilter.value));
-			return isFromDpu;
-		}
-
-		if (filter instanceof InFilter) {
-			final InFilter inFilter = (InFilter) filter;
-			final Expression<String> property = (Expression) root.get(inFilter.name);
-			return property.in(inFilter.getStringSet());
-		}
-
 		return null;
     }
     

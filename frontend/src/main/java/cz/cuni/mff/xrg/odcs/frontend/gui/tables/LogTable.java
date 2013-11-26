@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
@@ -17,31 +16,22 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.apache.log4j.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -49,38 +39,29 @@ import org.tepi.filtertable.datefilter.DateInterval;
  * Table for displaying {@link Log}s.
  *
  * @author Petyr
+ * @author bogo777
  */
 public class LogTable extends CustomComponent {
 
-	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
-
-	@Autowired
-	private DbLogRead access;
-
-	@Autowired
-	private LogFacade logFacade;
-
-	@Autowired
-	private PipelineFacade pipelineFacade;
-
+	private static final int PAGE_LENGTH = 28;
+	
 	private VerticalLayout mainLayout;
 
 	private IntlibPagedTable table;
 
-	private DPUInstanceRecord dpu;
-
 	private PipelineExecution execution;
 
-	private ReadOnlyContainer<Log> container;
-	
 	private FilterGenerator filterGenerator;
-	
+
 	private LogMessageDetail detail = null;
-	
+
 	/**
-	 * Filters on {@link #container}.
+	 * Access to data for retrieving detail log information.
+	 * TODO replace with ContainerSource
 	 */
-	private final List<Filter> coreFilters = new LinkedList<>();
+	private final CachedSource<Log> dataSouce;
+	
+	private final ReadOnlyContainer<Log> container;
 
 	/**
 	 * Contains names of {@link DPUInstanceRecord}s. Used as a cache for
@@ -88,46 +69,42 @@ public class LogTable extends CustomComponent {
 	 */
 	private final Map<Long, String> dpuNames = new HashMap<>();
 
-	private CachedSource dataSouce;
-			
+	private final LogFacade logFacade;
 	
-	protected int getPageSize() {
-		return 28;
-	}
-
 	/**
 	 * Default constructor.
+	 *
+	 * @param dataSouce
 	 */
-	public LogTable() {
+	public LogTable(CachedSource<Log> dataSouce) {
+		this.dataSouce = dataSouce;
+		this.container = new ReadOnlyContainer<>(dataSouce);
 		
-	}
-
-	@PostConstruct
-	private void initialize() {
-		// bind container to the access
-		dataSouce = new CachedSource<>(access, new NewLogAccessor(), coreFilters);
-		container = new ReadOnlyContainer<>(dataSouce);
+		// TODO autowired ..
+		logFacade = App.getApp().getBean(LogFacade.class);
+		
+	// build layout
+		buildLayout();		
 	}
 
 	/**
 	 * Build user interface.
 	 */
-	public void enter() {
+	private void buildLayout() {
 		mainLayout = new VerticalLayout();
 
 		table = new IntlibPagedTable();
 		table.setSelectable(true);
 		table.setSizeFull();
-		table.setPageLength(getPageSize());
+		table.setPageLength(PAGE_LENGTH);
 
 		table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				//if (event.isDoubleClick()) {
 				if (!table.isSelected(event.getItemId())) {
 					ValueItem item = (ValueItem) event.getItem();
 					long logId = (long) item.getItemProperty("id").getValue();
-					Log log = access.getInstance(logId);
+					Log log = dataSouce.getObject(logId);
 					showLogDetail(log);
 				}
 			}
@@ -149,7 +126,7 @@ public class LogTable extends CustomComponent {
 				Integer level = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
 				return Level.toLevel(level);
 			}
-		});		
+		});
 
 		// add filter generation
 		ComboBox levelSelector = new ComboBox();
@@ -160,15 +137,14 @@ public class LogTable extends CustomComponent {
 			levelSelector.addItem(level);
 			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
-		
+
 		ComboBox dpuSelector = new ComboBox();
 		dpuSelector.setImmediate(true);
-		
+
 		filterGenerator = createFilterGenerator(dpuSelector, levelSelector);
 		table.setFilterGenerator(filterGenerator);
 		table.setSortEnabled(false);
-		table.setFilterBarVisible(true);		
-		
+		table.setFilterBarVisible(true);
 
 		// add to the main layout
 		mainLayout.addComponent(table);
@@ -185,7 +161,7 @@ public class LogTable extends CustomComponent {
 			public InputStream getStream() {
 				// get current dpu
 				DPUInstanceRecord dpu = (DPUInstanceRecord) table.getFilterFieldValue("dpu");
-				Level level = Level.toLevel((Integer)table.getFilterFieldValue("logLevel"));
+				Level level = Level.toLevel((Integer) table.getFilterFieldValue("logLevel"));
 				String message = (String) table.getFilterFieldValue("message");
 				String source = (String) table.getFilterFieldValue("source");
 				Object date = table.getFilterFieldValue("timestamp");
@@ -205,67 +181,111 @@ public class LogTable extends CustomComponent {
 
 	}
 
-	public void setDpu(DPUInstanceRecord debugDpu) {
-		this.dpu = debugDpu;
-		refreshDpuSelector((ComboBox) table.getFilterField("dpuInstanceId"));
-	}	
-	
-	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, ReadOnlyContainer container) {
-		this.dpu = dpu;
-		this.execution = exec;	
-		
-		// set data source .. chat a littele and use our data source
-		table.setContainerDataSource(this.container);
-		
-		coreFilters.clear();
-		coreFilters.add(new Compare.Equal("execution", exec.getId()));
-			
-		// refresh dpu names list
-		dpuNames.clear();
-				
-		for (Node node : exec.getPipeline().getGraph().getNodes()) {
-			DPUInstanceRecord nodeDpu = node.getDpuInstance();
-			dpuNames.put(nodeDpu.getId(), nodeDpu.getName());			
-		}
-		LOG.info("Node count: {} ", exec.getPipeline().getGraph().getNodes().size());
-
-		// remove all filters
-		this.container.removeAllContainerFilters();
-		// move to the last page
-		table.setCurrentPage(table.getTotalAmountOfPages());
-		
-		
-		refreshDpuSelector((ComboBox) table.getFilterField("dpu"));
-	}
-
-	private void refreshDpuSelector(ComboBox dpuSelector) {
+	/**
+	 * Set active DPU for which the logs are shown. Also do the site refresh.
+	 * 
+	 * @param dpuInstance 
+	 */
+	public void setDpu(DPUInstanceRecord dpu) {
+		// get DPU selector
+		ComboBox dpuSelector = (ComboBox) table.getFilterField("dpu");
+		// refresh it's content
 		dpuSelector.removeAllItems();
+
+		if (execution == null) {
+			// no execution set .. 
+			return;
+		}
+
 		ExecutionContextInfo ctx = execution.getContextReadOnly();
 		if (ctx != null) {
-			for (DPUInstanceRecord dpuInstance : ctx.getDPUIndexes()) {
-				if (!dpuSelector.containsId(dpuInstance)) {
-					dpuSelector.addItem(dpuInstance);
+			for (DPUInstanceRecord item : ctx.getDPUIndexes()) {
+				if (!dpuSelector.containsId(item)) {
+					dpuSelector.addItem(item);
 				}
 			}
-			if (dpuSelector.containsId(dpu)) {
+			// if the curent DPU is presented set is as active
+			if (dpu != null && dpuSelector.containsId(dpu)) {
 				dpuSelector.select(dpu);
 			}
 		}
-	}	
-	
+	}
+
 	/**
-	 * Refresh data.
+	 * Set execution and DPU to show logs for, also reload the data.
+	 * @param exec
+	 * @param dpuInstance 
+	 */
+	public void setExecution(PipelineExecution exec, DPUInstanceRecord dpuInstance) {
+		this.execution = exec;
+		// refresh DPU names
+		dpuNames.clear();
+		for (Node node : exec.getPipeline().getGraph().getNodes()) {
+			DPUInstanceRecord nodeDpu = node.getDpuInstance();
+			dpuNames.put(nodeDpu.getId(), nodeDpu.getName());
+		}
+		// also remove all filters
+		this.container.removeAllContainerFilters();
+		// set container to the table -- we may possibly re-set this
+		// but that does not do anything bad
+		table.setContainerDataSource(this.container);
+		// move to the last page
+		table.setCurrentPage(table.getTotalAmountOfPages());
+		// set DPU
+		setDpu(dpuInstance);
+	}
+
+//	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, ReadOnlyContainer container) {
+//		this.dpu = dpu;
+//		this.execution = exec;	
+//		
+//		// set data source .. chat a littele and use our data source
+//		table.setContainerDataSource(this.container);
+//		
+//		coreFilters.clear();
+//		coreFilters.add(new Compare.Equal("execution", exec.getId()));
+//			
+//		// refresh dpu names list
+//		dpuNames.clear();
+//				
+//		for (Node node : exec.getPipeline().getGraph().getNodes()) {
+//			DPUInstanceRecord nodeDpu = node.getDpuInstance();
+//			dpuNames.put(nodeDpu.getId(), nodeDpu.getName());			
+//		}
+//		LOG.info("Node count: {} ", exec.getPipeline().getGraph().getNodes().size());
+//
+//		// remove all filters
+//		this.container.removeAllContainerFilters();
+//		// move to the last page
+//		table.setCurrentPage(table.getTotalAmountOfPages());
+//		
+//		
+//		refreshDpuSelector((ComboBox) table.getFilterField("dpu"));
+//	}
+//	private void refreshDpuSelector(ComboBox dpuSelector) {
+//		dpuSelector.removeAllItems();
+//		ExecutionContextInfo ctx = execution.getContextReadOnly();
+//		if (ctx != null) {
+//			for (DPUInstanceRecord dpuInstance : ctx.getDPUIndexes()) {
+//				if (!dpuSelector.containsId(dpuInstance)) {
+//					dpuSelector.addItem(dpuInstance);
+//				}
+//			}
+//			if (dpuSelector.containsId(dpu)) {
+//				dpuSelector.select(dpu);
+//			}
+//		}
+//	}	
+	/**
+	 * Reload data from source, do not refresh the source it self!!
 	 *
-	 * @param immediate
-	 * @param getNewData
 	 * @return
 	 */
-	public boolean refresh(boolean immediate, boolean getNewData) {
-		// invalidata all the data
-		// TODO : load new data in background
-		dataSouce.invalidate();
-		// use direct refresh
+	public boolean refresh() {
+		// TODO do ve have to do this, when we also set page?
 		container.refresh();
+		// move us to the last page
+		table.setCurrentPage(table.getTotalAmountOfPages());
 		return true;
 	}
 
@@ -300,15 +320,13 @@ public class LogTable extends CustomComponent {
 			detail.bringToFront();
 		}
 	}
-	
+
 	private FilterGenerator createFilterGenerator(final ComboBox dpuSelector, final ComboBox levelSelector) {
 		return new FilterGenerator() {
 			@Override
 			public Container.Filter generateFilter(Object propertyId, Object value) {
 				if (propertyId.equals("logLevel")) {
-					//return new InFilter(App.getLogs().getLevels((Level) value), "levelString");
-					LOG.info("createFilterGenerator.generateFilter.level");
-					Level level = (Level)value;
+					Level level = (Level) value;
 					return new Compare.GreaterOrEqual("logLevel", level.toInt());
 				} else if (propertyId.equals("timestamp")) {
 					DateInterval interval = (DateInterval) value;
@@ -320,9 +338,8 @@ public class LogTable extends CustomComponent {
 						return new Between("timestamp", interval.getFrom().getTime(), interval.getTo().getTime());
 					}
 				} else if (propertyId.equals("dpu")) {
-					LOG.info("createFilterGenerator.generateFilter.dpu : {} ", value);
 					if (value != null) {
-						Long id = ( (DPUInstanceRecord) value ).getId();
+						Long id = ((DPUInstanceRecord) value).getId();
 						return new Compare.Equal("dpu", id);
 					} else {
 						return null;
@@ -361,8 +378,8 @@ public class LogTable extends CustomComponent {
 			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
 				return null;
 			}
-		
+
 		};
 	}
-	
+
 }

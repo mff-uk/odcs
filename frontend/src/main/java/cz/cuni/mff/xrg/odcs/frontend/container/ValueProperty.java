@@ -20,6 +20,9 @@ class ValueProperty<V, T extends DataObject> implements Property<V> {
 	ValueProperty(GeneralProperty<V, T> generalProperty, Long id) {
 		this.generalProperty = generalProperty;
 		this.object = generalProperty.container.getObject(id);
+		if (this.object == null) {
+			
+		}
 	}
 
 	@Override

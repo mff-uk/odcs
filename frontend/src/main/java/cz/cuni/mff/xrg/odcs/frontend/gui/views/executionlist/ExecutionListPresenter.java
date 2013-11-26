@@ -107,6 +107,7 @@ public interface ExecutionListPresenter extends Presenter {
 		}
 	}
 
+	@Deprecated
 	public class ExecutionDetailData {
 	
 		private final ReadOnlyContainer<MessageRecord> messageContainer;

@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
-import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
@@ -9,6 +8,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -17,9 +17,9 @@ import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordTy
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
 
 import java.util.Collection;
@@ -27,20 +27,42 @@ import java.util.Collection;
 /**
  * Table with event records related to given pipeline execution.
  *
+ * @author Petyr
  * @author Bogo
  */
 public class RecordsTable extends CustomComponent {
 
-	private static final int PAGE_LENGTH = 20;
+	private static final int PAGE_LENGTH = 28;
+	
 	private boolean isInitialized = false;
+	
 	private VerticalLayout mainLayout;
+	
 	private IntlibPagedTable messageTable;
+	
 	private RecordDetail detail = null;
 
 	/**
-	 * Default constructor. Initializes the layout.
+	 * Access to data for retrieving detail log information.
+	 * TODO replace with ContainerSource
 	 */
-	public RecordsTable() {
+	private final CachedSource<MessageRecord> dataSouce;	
+	
+	private final ReadOnlyContainer<MessageRecord> container;
+	
+	/**
+	 * Default constructor. Initializes the layout.
+	 * 
+	 * @param dataSouce
+	 */
+	public RecordsTable(CachedSource<MessageRecord> dataSouce) {
+		this.dataSouce = dataSouce;
+		this.container = new ReadOnlyContainer<>(dataSouce);
+		//build layout
+		buildLayout();
+	}
+	
+	private void buildLayout() {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
 		messageTable.setSelectable(true);
@@ -50,9 +72,8 @@ public class RecordsTable extends CustomComponent {
 			public void itemClick(ItemClickEvent event) {
 				if (!messageTable.isSelected(event.getItemId())) {
 					ValueItem item = (ValueItem) event.getItem();
-					long recordId = (long) item.getItemProperty("id")
-							.getValue();
-					MessageRecord record = App.getDPUs().getDPURecord(recordId);
+					long recordId = (long) item.getItemProperty("id").getValue();
+					MessageRecord record = dataSouce.getObject(recordId);
 					showRecordDetail(record);
 				}
 			}
@@ -61,41 +82,39 @@ public class RecordsTable extends CustomComponent {
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
 		messageTable.setPageLength(PAGE_LENGTH);
-		//loadMessageTable();
 		setCompositionRoot(mainLayout);
 	}
 
 	/**
-	 * Sets data source.
+	 * Sets the execution and refresh data.
 	 *
-	 * @param data List of {@link MessageRecord}s to show in table.
+	 * @param execution
 	 */
-	public void setPipelineExecution(PipelineExecution execution, boolean isRefresh, ReadOnlyContainer container) {
-		loadMessageTable(container);
-		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
-		if (!isRefresh) {
-			c.removeAllContainerFilters();
-			c.addContainerFilter(new Compare.Equal("execution.id", execution.getId()));
+	public void setExecution(PipelineExecution execution) {
+	
+		messageTable.setSortEnabled(true);
+		// set container to the table -- we may possibly re-set this
+		// but that does not do anything bad
+		messageTable.setContainerDataSource(container);
+		
+		if (isInitialized) {
+			// all has been done .. just set the page to the
+			// end and return
+			messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+			return;
 		}
-		c.refresh();
-		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
-	}
-
-	public void refresh() {
-		ReadOnlyContainer c = (ReadOnlyContainer) messageTable.getContainerDataSource().getContainer();
-		c.refresh();
+		
+		// add generated columns
+		buildGeneratedColumns();
+		isInitialized = true;
 		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
 	/**
-	 * Loads data to the table.
-	 *
+	 * Add generated columns and filters to the table.
 	 */
-	private void loadMessageTable(ReadOnlyContainer container) {
-		messageTable.setSortEnabled(true);
-		messageTable.setContainerDataSource(container);
-		if (!isInitialized) {
-			messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
+	public void buildGeneratedColumns() {
+		messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
 				@Override
 				public Object generateCell(CustomTable source, Object itemId,
 						Object columnId) {
@@ -147,14 +166,21 @@ public class RecordsTable extends CustomComponent {
 			});
 			messageTable.setVisibleColumns();
 			messageTable.setFilterDecorator(new filterDecorator());
-			// set columns
-			isInitialized = true;
-		}
-		messageTable.setFilterBarVisible(true);
 	}
-
+	
+	/**
+	 * Reload data from source, do not refresh the source it self!!
+	 */
+	public void refresh() {
+		// TODO do ve have to do this, when we also set page?
+		container.refresh();
+		// and update page
+		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+	}
+	
 	/**
 	 * Inform listeners, that the detail is closing.
+	 * @param event
 	 */
 	protected void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
@@ -188,18 +214,19 @@ public class RecordsTable extends CustomComponent {
 				}
 			});
 			detail = detailWindow;
-			App.getApp().addWindow(detailWindow);
+			UI.getCurrent().addWindow(detailWindow);
 		} else {
 			detail.loadMessage(record);
 			detail.bringToFront();
 		}
 	}
 
+	/**
+	 * Class for filter enchanting.
+	 */
 	private class filterDecorator extends IntlibFilterDecorator {
-
 		@Override
 		public Resource getEnumFilterIcon(Object propertyId, Object value) {
-			//if (propertyId.equals("type")) {
 			ThemeResource img = null;
 			MessageRecordType type = (MessageRecordType) value;
 			switch (type) {
@@ -223,8 +250,7 @@ public class RecordsTable extends CustomComponent {
 					break;
 			}
 			return img;
-			//}
-			//return super.getEnumFilterIcon(propertyId, value);
 		}
 	};
+
 }

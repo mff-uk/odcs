@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
-import com.github.wolfie.refresher.Refresher;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.IsNull;
@@ -31,7 +30,6 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -41,8 +39,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tepi.filtertable.FilterGenerator;
@@ -92,7 +88,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			// will just set the debug view content
 			buildDebugView(execution);
 		}
-		debugView.setDisplay(detailDataObject);
+		// no DPU specified
+		debugView.setExecution(execution, null);
+		//debugView.setDisplay(detailDataObject);
+		
 		hsplit.setSecondComponent(logLayout);
 		// adjust hsplit
 		if (hsplit.isLocked()) {
@@ -410,7 +409,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				Long executionId = (long) event.getItem().getItemProperty("id").getValue();
+				// get property for given item
+				final Property property = event.getItem().getItemProperty("id");
+				final Long executionId = (long)property.getValue();
 				presenter.showDebugEventHandler(executionId);
 			}
 		});

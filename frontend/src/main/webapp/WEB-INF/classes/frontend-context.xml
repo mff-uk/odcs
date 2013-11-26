@@ -46,8 +46,6 @@
 	
     <bean id="logMessagesTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable" scope="prototype" />
     <bean id="debugView" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
-
-    <bean id="logTable" class="cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable" scope="prototype" />
         
     <!-- tranlator for vaadin's filters -->
     <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator" />

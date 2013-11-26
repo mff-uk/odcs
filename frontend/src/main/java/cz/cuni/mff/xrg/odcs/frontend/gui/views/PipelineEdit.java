@@ -627,9 +627,11 @@ public class PipelineEdit extends ViewComponent {
 		final DPUInstanceRecord instance = debugNode.getDpuInstance();
 		final DebuggingView debug = new DebuggingView();
 		debug.initialize(pExec, instance, true, true);
-		debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
-				new ReadOnlyContainer(
-				new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
+
+		debug.setExecution(pExec, instance);
+//		debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
+//				new ReadOnlyContainer(
+//				new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
 
 		final Window debugWindow = new Window("Debug window");
 		HorizontalLayout buttonLine = new HorizontalLayout();
@@ -645,9 +647,10 @@ public class PipelineEdit extends ViewComponent {
 					return;
 				}
 				debug.setExecution(pExec, instance);
-				debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
-						new ReadOnlyContainer(
-						new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
+				// the data are set in setExecution
+//				debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
+//						new ReadOnlyContainer(
+//						new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
 			}
 		});
 		rerunButton.setWidth(100, Unit.PIXELS);

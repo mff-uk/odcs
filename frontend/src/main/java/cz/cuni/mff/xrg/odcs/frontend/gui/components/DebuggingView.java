@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.util.filter.Compare;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.RecordsTable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
@@ -7,14 +9,21 @@ import com.vaadin.ui.TabSheet.Tab;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 
 import java.util.*;
 
@@ -28,57 +37,102 @@ import java.util.*;
  * created. Query tab allows to query data from graphs which were created during
  * pipeline execution.
  *
+ * @author Petyr
  * @author Bogo
  */
 public class DebuggingView extends CustomComponent {
 
 	private VerticalLayout mainLayout;
+	
 	private PipelineExecution pipelineExec;
+	
 	private DPUInstanceRecord debugDpu;
+	
 	private boolean isInDebugMode;
-	private RecordsTable executionRecordsTable;
+
 	private Tab queryTab;
+	
 	private Tab logsTab;
+	
 	private TabSheet tabs;
+	
 	private RDFQueryView queryView;
-	private LogTable logTable;
+
 	private boolean isFromCanvas;
+	
 	private Embedded iconStatus;
+	
 	private CheckBox refreshAutomatically = null;
+	
 	private boolean isInitialized = false;
+
+	// - - - - - - - - - - - - - - - - - - - -
 	
-	private DPUFacade dpuFacade = App.getDPUs();
+	private LogTable logTable;
+
+	private RecordsTable msgTable;
+
+	private DbMessageRecord dbMsg;
+
+	private DbLogRead dbLogs;
+
+	private PipelineFacade pipelineFacade;
 	
+	private DPUFacade dpuFacade;
+	
+	// - - - - -
+	
+	private CachedSource<MessageRecord> msgSource;
+
+	private CachedSource<Log> logSource;
+
+	private final List<Container.Filter> msgCoreFilters = new LinkedList<>();
+
+	private final List<Container.Filter> logCoreFilters = new LinkedList<>();
+
 	public DebuggingView() {
-		logTable = App.getApp().getBean(LogTable.class);
-		
-		logTable.enter();
+		// empty ctor .. nothing is done on creation
 	}
-	
-	public final void initialize(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug, boolean isFromCanvas) {
-		this.pipelineExec = pipelineExec;
-		this.debugDpu = debugDpu;
-		this.isInDebugMode = debug;
+
+	public final void initialize(PipelineExecution exec,
+			DPUInstanceRecord dpu, boolean debug, boolean isFromCanvas) {
+
+		// set properties
 		this.isFromCanvas = isFromCanvas;
+
+		// bind to data sources
+		{
+			dbLogs = App.getApp().getBean(DbLogRead.class);
+			dbMsg = App.getApp().getBean(DbMessageRecord.class);
+			pipelineFacade = App.getPipelines();
+			dpuFacade = App.getDPUs();
+
+			// create sources
+			logSource = new CachedSource<>(dbLogs, new NewLogAccessor(), logCoreFilters);
+			msgSource = new CachedSource<>(dbMsg, new MessageRecordAccessor(), msgCoreFilters);
+
+			// create tables
+			logTable = new LogTable(logSource);
+			msgTable = new RecordsTable(msgSource);
+		}
+
+		// building require some thing to be set 
+		// like queryView = new RDFQueryView(pipelineExec);
+		this.pipelineExec = exec;
+		
+		// build gui layout 
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
+
+		// set 
+		setExecution(exec, dpu);
+
 		isInitialized = true;
 	}
-	
+
 	public boolean isInitialized() {
 		return isInitialized;
 	}
-
-	/**
-	 * Default constructor.
-	 *
-	 * @param pipelineExec Pipeline execution.
-	 * @param debugDpu Preselected DPU or null.
-	 * @param debug Is execution in debug mode?
-	 */
-//	public DebuggingView(PipelineExecution pipelineExec, DPUInstanceRecord debugDpu, boolean debug, boolean isFromCanvas) {
-//		initialize(pipelineExec, debugDpu, debug, isFromCanvas);
-//	}
 
 	/**
 	 * Builds main layout.
@@ -100,23 +154,26 @@ public class DebuggingView extends CustomComponent {
 		tabs = new TabSheet();
 		tabs.setSizeFull();
 
-		executionRecordsTable = new RecordsTable();
-		executionRecordsTable.addListener(new Listener() {
-
+		msgTable.addListener(new Listener() {
 			@Override
 			public void componentEvent(Event event) {
-				if(event.getClass() == OpenLogsEvent.class) {
-					OpenLogsEvent ole = (OpenLogsEvent)event;
+				if (event.getClass() == OpenLogsEvent.class) {
+					// we open tab with log's here
+					OpenLogsEvent ole = (OpenLogsEvent) event;
+					// we get activ dpu
 					debugDpu = dpuFacade.getDPUInstance(ole.getDpuId());
+					// we set active dpu
 					logTable.setDpu(debugDpu);
-					logTable.refresh(true, true);
+					// and we do refresh of table
+					logTable.refresh();
+					// and finally change the tab
 					tabs.setSelectedTab(logsTab);
 				}
 			}
 		});
-		executionRecordsTable.setWidth("100%");
+		msgTable.setWidth("100%");
 
-		tabs.addTab(executionRecordsTable, "Events");
+		tabs.addTab(msgTable, "Events");
 
 		HorizontalLayout optionLine = new HorizontalLayout();
 		optionLine.setWidth(100, Unit.PERCENTAGE);
@@ -135,6 +192,7 @@ public class DebuggingView extends CustomComponent {
 		logLayout.setSizeFull();
 		logsTab = tabs.addTab(logLayout, "Log");
 
+// TODO if this is bind to the ctor, how it's update in setExecution ?		
 		queryView = new RDFQueryView(pipelineExec);
 		if (debugDpu != null) {
 			queryView.setDpu(debugDpu);
@@ -150,38 +208,51 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Fills DebuggingView with data, obtained from objects passed in
 	 * constructor.
+	 * 
+	 * @param doRefresh If true then the refresh is done
 	 */
-	public void fillContent(boolean isRefresh) {
+	public void fillContent(boolean doRefresh) {
 
 		if (isFromCanvas) {
+			// update execution icon .. 
 			ThemeResource icon = IntlibHelper.getIconForExecutionStatus(pipelineExec.getStatus());
 			iconStatus.setSource(icon);
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		if(isRefresh) {
-			executionRecordsTable.refresh();
+		if (doRefresh) {
+			// refresh data .. 
+			logSource.invalidate();
+			msgSource.invalidate();
+			// refresh tables
+			logTable.refresh();
+			msgTable.refresh();
 		}
 
-		//Query View
+		// refresh of query View
 		if (isInDebugMode && isRunFinished()) {
 			queryTab.setEnabled(true);
 			queryView.refreshDPUs(pipelineExec);
 		} else {
+			// no query possibility if we are in debug mode
+			// or the pipeline is not finished yet
 			queryTab.setEnabled(false);
 		}
 
-		
+		// hide the refresh automaticaly check box if the pipeline 
+		// execution is finished
 		refreshAutomatically.setVisible(!isRunFinished());
-		
 	}
 
 	/**
-	 * Reloads content. Data are obtained from objects passed in constructor.
+	 * Refresh content for current data.
 	 */
-	public void refreshContent() {
-		pipelineExec = App.getPipelines().getExecution(pipelineExec.getId());
+	public void refresh() {
+		// refresh out pipeline execution .. 
+		pipelineExec = pipelineFacade.getExecution(pipelineExec.getId());
+		// refresh the content
 		fillContent(true);
+		// TODO why ?
 		setCompositionRoot(mainLayout);
 	}
 
@@ -196,21 +267,44 @@ public class DebuggingView extends CustomComponent {
 		this.pipelineExec = execution;
 		this.isInDebugMode = execution.isDebugging();
 		this.debugDpu = instance;
+		// update core filters
+		msgCoreFilters.clear();
+		logCoreFilters.clear();
+		msgCoreFilters.add(new Compare.Equal("execution.id", execution.getId()));
+		logCoreFilters.add(new Compare.Equal("execution", execution.getId()));
+
+		// update the log table
+		logTable.setExecution(pipelineExec, instance);
+		msgTable.setExecution(execution);
+				
+		// update content, but do not refresh data in tables
+		// as they have already been refresh by setting the executions
 		fillContent(false);
+
 		if (!isRunFinished()) {
-			App.getApp().getRefreshManager().addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(this, execution));
+			// add us to the refresh manager, so we got some refresh events
+			App.getApp().getRefreshManager().addListener(
+					RefreshManager.DEBUGGINGVIEW, 
+					RefreshManager.getDebugRefresher(this, execution));
 		}
 	}
 
 	/**
 	 * Returns whether given execution is finished.
 	 *
-	 * @return Execution is finished.
+	 * @return True is the execution is finished.
 	 */
 	public boolean isRunFinished() {
-		return !(pipelineExec.getStatus() == PipelineExecutionStatus.QUEUED || pipelineExec.getStatus() == PipelineExecutionStatus.RUNNING || pipelineExec.getStatus() == PipelineExecutionStatus.CANCELLING);
+		return !(pipelineExec.getStatus() == PipelineExecutionStatus.QUEUED
+				|| pipelineExec.getStatus() == PipelineExecutionStatus.RUNNING
+				|| pipelineExec.getStatus() == PipelineExecutionStatus.CANCELLING);
 	}
 
+	/**
+	 * Return true if the content is automatically refreshed.
+	 *
+	 * @return
+	 */
 	public boolean isRefreshingAutomatically() {
 		return refreshAutomatically.getValue();
 	}
@@ -221,11 +315,7 @@ public class DebuggingView extends CustomComponent {
 	 * @param height New height of log text area.
 	 */
 	public void resize(float height) {
-		float newLogHeight = height - 325;
-		if (newLogHeight < 400) {
-			newLogHeight = 400;
-		}
-		//logTextArea.setHeight(newLogHeight, Unit.PIXELS);
+		// TODO Resize the content here .. 
 	}
 
 	/**
@@ -237,19 +327,10 @@ public class DebuggingView extends CustomComponent {
 			l.componentEvent(new Event(this));
 		}
 	}
-	
-	public LogTable getLogTable() {
-		return logTable;
-	}
-
-	public void setDisplay(ExecutionListPresenter.ExecutionDetailData detailDataObject) {
-		logTable.setDpu(pipelineExec, debugDpu, null);
-		executionRecordsTable.setPipelineExecution(pipelineExec, false, detailDataObject.getMessageContainer());
-	}
 
 	public void setActiveTab(String tabName) {
 		int tabIdx;
-		switch(tabName) {
+		switch (tabName) {
 			case "Events":
 				tabIdx = 0;
 				break;
@@ -264,4 +345,5 @@ public class DebuggingView extends CustomComponent {
 		}
 		tabs.setSelectedTab(tabIdx);
 	}
+
 }
