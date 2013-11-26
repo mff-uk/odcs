@@ -49,8 +49,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	private CheckBox checkBoxDiffName;
 
 	/**
-	 * TextField to set file path to the where the file should be
-	 * stored.
+	 * TextField to set file path to the where the file should be stored.
 	 */
 	private TextField textFieldFilePath;
 
@@ -67,11 +66,10 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		mapData();
 	}
 
-	private void inicialize()
-	{
-		ex=new Validator.InvalidValueException("Valid");
+	private void inicialize() {
+		ex = new Validator.InvalidValueException("Valid");
 	}
-	
+
 	/**
 	 * Set format data to {@link #comboBoxFormat}
 	 */
@@ -80,10 +78,12 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		List<RDFFormatType> formatTypes = RDFFormatType.getListOfRDFType();
 
 		for (RDFFormatType next : formatTypes) {
-			comboBoxFormat.addItem(next);
+			String formatValue = RDFFormatType.getStringValue(next);
+			comboBoxFormat.addItem(formatValue);
 		}
 
-		comboBoxFormat.setValue(RDFFormatType.AUTO);
+		comboBoxFormat
+				.setValue(RDFFormatType.getStringValue(RDFFormatType.AUTO));
 
 
 	}
@@ -224,13 +224,15 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 */
 	@Override
 	public FileLoaderConfig getConfiguration() throws ConfigException {
-		if (!textFieldFilePath.isValid())  {
+		if (!textFieldFilePath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			FileLoaderConfig config = new FileLoaderConfig();
 			config.DiffName = checkBoxDiffName.getValue();
 			config.FilePath = textFieldFilePath.getValue().trim();
-			config.RDFFileFormat = (RDFFormatType) comboBoxFormat.getValue();
+
+			String formatValue = (String) comboBoxFormat.getValue();
+			config.RDFFileFormat = RDFFormatType.getTypeByString(formatValue);
 			return config;
 		}
 
@@ -253,13 +255,16 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		try {
 			checkBoxDiffName.setValue(conf.DiffName);
 			textFieldFilePath.setValue(conf.FilePath.trim());
-			comboBoxFormat.setValue(conf.RDFFileFormat);
+
+			String formatValue = RDFFormatType
+					.getStringValue(conf.RDFFileFormat);
+			comboBoxFormat.setValue(formatValue);
 		} catch (Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception
 			throw new ConfigException(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public String getDescription() {
 		String path = textFieldFilePath.getValue().trim();
@@ -269,5 +274,4 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		description.append(path);
 		return description.toString();
 	}
-	
 }
