@@ -57,6 +57,10 @@ public class PlaceholdersHelper {
 	 */
 	private DPUContext context;
 
+	public PlaceholdersHelper() {
+		this.context = null;
+	}
+
 	public PlaceholdersHelper(DPUContext context) {
 		this.context = context;
 	}
@@ -68,7 +72,7 @@ public class PlaceholdersHelper {
 	 * @return List as collection of DPUNames - each keep String DPU name
 	 *         extracted from SPARQL query.
 	 */
-	private List<String> getExtractedDPUNames(String constructQuery) {
+	public List<String> getExtractedDPUNames(String constructQuery) {
 
 		String regex = "graph\\s+\\?[gG]_[\\w-_]+";
 		Pattern pattern = Pattern.compile(regex);
@@ -151,7 +155,9 @@ public class PlaceholdersHelper {
 				String DPUName = next.getDPUName();
 				final String message = "Graph for DPU name " + DPUName + " was not replased";
 
-				context.sendMessage(MessageType.ERROR, message);
+				if (context != null) {
+					context.sendMessage(MessageType.ERROR, message);
+				}
 				throw new DPUException(message);
 			}
 
