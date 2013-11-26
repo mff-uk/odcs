@@ -6,8 +6,6 @@ import com.github.wolfie.refresher.Refresher.RefreshListener;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogMessagesTable;
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 
 import java.util.HashMap;
 import org.slf4j.LoggerFactory;
@@ -67,11 +65,13 @@ public class RefreshManager {
 
 				if (debug.isRefreshingAutomatically()) {
 					lastExecutionStatus = true;
-					debug.refreshContent();
-					LogTable logs = debug.getLogTable();
-					if (logs != null) {
-						isLogsSet = logs.refresh(false, !lastFinished);
-					}
+					// do all the refresh job .. 
+					debug.refresh();
+					
+//					LogTable logs = debug.getLogTable();
+//					if (logs != null) {
+//						isLogsSet = logs.refresh(false, !lastFinished);
+//					}
 					//Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
 				} else {
 					lastExecutionStatus = false;
