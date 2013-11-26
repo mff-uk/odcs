@@ -2,8 +2,6 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
-import cz.cuni.mff.xrg.odcs.commons.test.context.TestContext;
-
 import static cz.cuni.mff.xrg.odcs.rdf.enums.InsertType.*;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
@@ -60,6 +58,11 @@ public class SPARQLoader {
 	 *
 	 * @param rdfDataUnit Instance of RDFDataUnit repository neeed for loading
 	 * @param context     Given DPU context for DPU over it are executed.
+	 * @param retrySize   Integer value as count of attempts to reconnect if the
+	 *                    connection fails. For infinite loop use zero or
+	 *                    negative integer
+	 * @param retryTime   Long value as time in miliseconds how long to wait
+	 *                    before trying to reconnect.
 	 */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
 			int retrySize, long retryTime) {
@@ -70,14 +73,15 @@ public class SPARQLoader {
 	}
 
 	/**
-	 * Constructor for testing load funkcionality.
+	 * Constructor for using in DPUs calling with default retrySize and
+	 * retryTime values.
 	 *
 	 * @param rdfDataUnit Instance of RDFDataUnit repository neeed for loading
+	 * @param context     Given DPU context for DPU over it are executed.
 	 */
-	public SPARQLoader(RDFDataUnit rdfDataUnit) {
+	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context) {
 		this.rdfDataUnit = rdfDataUnit;
-
-		this.context = new TestContext();
+		this.context = context;
 		this.retrySize = DEFAULT_LOADER_RETRY_SIZE;
 		this.retryTime = DEFAUTL_LOADER_RETRY_TIME;
 	}
