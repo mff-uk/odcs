@@ -77,7 +77,7 @@ public class SPARQLoader {
 	public SPARQLoader(RDFDataUnit rdfDataUnit) {
 		this.rdfDataUnit = rdfDataUnit;
 
-		this.context = new TestContext(null, null, null);
+		this.context = new TestContext();
 		this.retrySize = DEFAULT_LOADER_RETRY_SIZE;
 		this.retryTime = DEFAUTL_LOADER_RETRY_TIME;
 	}

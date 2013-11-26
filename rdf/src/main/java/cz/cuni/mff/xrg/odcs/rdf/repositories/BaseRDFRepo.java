@@ -1140,15 +1140,17 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	/**
-	 * Make construct query over repository data and return interface Graph as
-	 * result contains iterator for statements (triples).
+	 * Make construct query over graph URIs in dataSet and return interface
+	 * Graph as result contains iterator for statements (triples).
 	 *
 	 * @param constructQuery String representation of SPARQL query.
+	 * @param dataSet        Set of graph URIs used for construct query.
 	 * @return Interface Graph as result of construct SPARQL query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
+	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
+			throws InvalidQueryException {
 
 		RepositoryConnection connection = null;
 
@@ -1159,7 +1161,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					QueryLanguage.SPARQL,
 					constructQuery);
 
-			graphQuery.setDataset(getDataSetForGraph());
+			graphQuery.setDataset(dataSet);
 
 			logger.debug("Query " + constructQuery + " is valid.");
 
@@ -1201,6 +1203,19 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		throw new InvalidQueryException(
 				"Getting GraphQueryResult using SPARQL construct query failed.");
+	}
+
+	/**
+	 * Make construct query over repository data and return interface Graph as
+	 * result contains iterator for statements (triples).
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @return Interface Graph as result of construct SPARQL query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	@Override
+	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
+		return executeConstructQuery(constructQuery, getDataSetForGraph());
 	}
 
 	/**

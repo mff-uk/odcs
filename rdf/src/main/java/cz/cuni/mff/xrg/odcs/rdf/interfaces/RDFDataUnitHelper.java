@@ -12,6 +12,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import org.openrdf.model.*;
+import org.openrdf.query.Dataset;
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -310,6 +311,18 @@ public interface RDFDataUnitHelper {
 	 */
 	public Graph executeConstructQuery(
 			String constructQuery) throws InvalidQueryException;
+
+	/**
+	 * Make construct query over graph URIs in dataSet and return interface
+	 * Graph as result contains iterator for statements (triples).
+	 *
+	 * @param constructQuery String representation of SPARQL query.
+	 * @param dataSet        Set of graph URIs used for construct query.
+	 * @return Interface Graph as result of construct SPARQL query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
+			throws InvalidQueryException;
 
 	/**
 	 * Return count of triples stored in repository.
