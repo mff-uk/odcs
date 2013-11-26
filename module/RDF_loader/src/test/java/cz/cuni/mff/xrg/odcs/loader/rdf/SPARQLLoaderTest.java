@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
@@ -93,13 +94,17 @@ public class SPARQLLoaderTest {
 
 		repository.addTriple(subject, predicate, object);
 
-		String goalGraphName = "http://temp";
+		TestEnvironment environment = TestEnvironment.create();
+
+		String goalGraphName = "http://tempGraph";
 		URL endpoint = getUpdateEndpoint();
 
 		boolean isLoaded = false;
 
 		try {
-			SPARQLoader loader = new SPARQLoader(repository);
+			SPARQLoader loader = new SPARQLoader(repository, environment
+					.getContext());
+
 			loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,
 					PASSWORD,
 					WriteGraphType.OVERRIDE, InsertType.SKIP_BAD_PARTS);
