@@ -60,8 +60,10 @@ public class SPARQLTransformer
 		DatasetImpl dataSet = new DatasetImpl();
 
 		for (RDFDataUnit repository : inputs) {
-			URI dataGraphURI = repository.getDataGraph();
-			dataSet.addDefaultGraph(dataGraphURI);
+			if (repository != null) {
+				URI dataGraphURI = repository.getDataGraph();
+				dataSet.addDefaultGraph(dataGraphURI);
+			}
 		}
 		return dataSet;
 	}
