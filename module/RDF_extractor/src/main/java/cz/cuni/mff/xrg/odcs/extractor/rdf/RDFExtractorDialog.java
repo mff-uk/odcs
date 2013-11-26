@@ -101,7 +101,12 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	private CheckBox useHandler;
 
-	private CheckBox failWhenErrors; // How to solve errors for Statistical handler
+	private OptionGroup failsWhenErrors; // How to solve errors for Statistical handler
+
+	private static final String STOP = "Stop pipeline execution if extractor "
+			+ "extracted some triples with an error.";
+
+	private static final String CONTINUE = "Extract only triples with no errors.";
 
 	int n = 1;
 
@@ -546,23 +551,29 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		useHandler.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (failWhenErrors != null) {
-					failWhenErrors.setVisible(useHandler.getValue());
+				if (failsWhenErrors != null) {
+					failsWhenErrors.setEnabled(useHandler.getValue());
 				}
 			}
 		});
 
 		//How to solve errors for Statistical handler
-		failWhenErrors = new CheckBox(
-				"If there is an error in some of the extracted triples,"
-				+ " extractor ends with an error");
-		failWhenErrors.setValue(false);
-		failWhenErrors.setWidth("-1px");
-		failWhenErrors.setHeight("-1px");
-		failWhenErrors.setVisible(useHandler.getValue());
+		failsWhenErrors = new OptionGroup();
+		failsWhenErrors.setImmediate(false);
+		failsWhenErrors.setWidth("-1px");
+		failsWhenErrors.setHeight("-1px");
+		failsWhenErrors.setMultiSelect(false);
+
+		//extract only triples with no errors.
+		failsWhenErrors.addItem(CONTINUE);
+		//stop pipeline execution if extractor extracted some triples with an error.
+		failsWhenErrors.addItem(STOP);
+
+		failsWhenErrors.setValue(CONTINUE);
+		failsWhenErrors.setEnabled(useHandler.getValue());
 
 		verticalLayoutDetails.addComponent(useHandler);
-		verticalLayoutDetails.addComponent(failWhenErrors);
+		verticalLayoutDetails.addComponent(failsWhenErrors);
 
 		return verticalLayoutDetails;
 	}
@@ -594,7 +605,18 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			config.GraphsUri = griddata;
 			config.ExtractFail = extractFail.getValue();
 			config.UseStatisticalHandler = useHandler.getValue();
-			config.failWhenErrors = failWhenErrors.getValue();
+
+			String selectedValue = (String) failsWhenErrors.getValue();
+
+			if (selectedValue.equals(STOP)) {
+				config.failWhenErrors = true;
+			} else if (selectedValue.endsWith(CONTINUE)) {
+				config.failWhenErrors = false;
+			} else {
+				throw new ConfigException(
+						"No value for case using statistical and error handler");
+			}
+
 			config.ExtractFail = extractFail.getValue();
 
 			return config;
@@ -609,7 +631,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * @throws ConfigException Exception which might be thrown when components
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	null	null	null	null	null	null	null
+	 *                         null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
@@ -631,8 +654,13 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			textAreaConstr.setValue(conf.SPARQL_query.trim());
 			extractFail.setValue(conf.ExtractFail);
 			useHandler.setValue(conf.UseStatisticalHandler);
-			failWhenErrors.setValue(conf.failWhenErrors);
 			extractFail.setValue(conf.ExtractFail);
+
+			if (conf.failWhenErrors) {
+				failsWhenErrors.setValue(STOP);
+			} else {
+				failsWhenErrors.setValue(CONTINUE);
+			}
 
 			griddata = conf.GraphsUri;
 			if (griddata == null) {
