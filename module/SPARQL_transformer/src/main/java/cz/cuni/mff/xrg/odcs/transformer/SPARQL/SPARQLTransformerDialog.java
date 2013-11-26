@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
@@ -13,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLUpdateValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
+import java.util.List;
 
 /**
  * Configuration dialog for DPU SPARQL Transformer.
@@ -89,12 +89,53 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(validationErrorMessage);
 		} else {
+			String query = txtQuery.getValue().trim();
 
-			SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
-			conf.SPARQL_Update_Query = txtQuery.getValue().trim();
-			conf.isConstructType = isConstructQuery;
+			if (isConstructQuery && !hasValidMoreGraphsForContruct(query)) {
+				throw new SPARQLValidationException(validationErrorMessage);
+			} else {
+				SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
+				conf.SPARQL_Update_Query = txtQuery.getValue().trim();
+				conf.isConstructType = isConstructQuery;
 
-			return conf;
+				return conf;
+			}
+		}
+	}
+
+	private boolean isPossibleDPUName(String extractedName) {
+
+		boolean result = false;
+
+		for (String dpuName : SPARQLTransformer.DPUNames) {
+			if (dpuName.equals(extractedName)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+
+	}
+
+	private boolean hasValidMoreGraphsForContruct(String contructQuery) {
+
+		PlaceholdersHelper helper = new PlaceholdersHelper();
+		List<String> extractedNames = helper.getExtractedDPUNames(contructQuery);
+
+		if (extractedNames.isEmpty()) {
+			return true;
+		} else {
+
+			for (String nextExtractedName : extractedNames) {
+				if (!isPossibleDPUName(nextExtractedName)) {
+					validationErrorMessage = String.format(
+							"This INPUT name \"%s\" used in query doesnt exists. "
+							+ "Use name defined in mapping for this DPU !!!",
+							nextExtractedName);
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 
@@ -128,10 +169,15 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		// SPARQL Update Query textArea
 		txtQuery = new TextArea();
 
-		txtQuery.addValueChangeListener(new Property.ValueChangeListener() {
+		txtQuery.addValidator(new com.vaadin.data.Validator() {
 			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
+			public void validate(Object value) throws InvalidValueException {
 				final String query = txtQuery.getValue().trim();
+
+				if (query.isEmpty()) {
+
+					throw new EmptyValueException("SPARQL query must be filled");
+				}
 
 				QueryValidator updateValidator = new SPARQLUpdateValidator(query);
 				SPARQLQueryValidator constructValidator = new SPARQLQueryValidator(
@@ -163,16 +209,6 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 					isQueryValid = false;
 					validationErrorMessage = updateValidator
 							.getErrorMessage();
-				}
-			}
-		});
-
-		txtQuery.addValidator(new com.vaadin.data.Validator() {
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value.toString().trim().isEmpty()) {
-
-					throw new EmptyValueException("SPARQL query must be filled");
 				}
 			}
 		});

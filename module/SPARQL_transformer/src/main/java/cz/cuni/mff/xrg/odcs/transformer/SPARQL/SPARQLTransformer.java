@@ -34,6 +34,8 @@ public class SPARQLTransformer
 
 	private final Logger LOG = LoggerFactory.getLogger(SPARQLTransformer.class);
 
+	public static final String[] DPUNames = {"input", "optional1", "optional2", "optional3"};
+
 	@InputDataUnit(name = "input")
 	public RDFDataUnit intputDataUnit;
 

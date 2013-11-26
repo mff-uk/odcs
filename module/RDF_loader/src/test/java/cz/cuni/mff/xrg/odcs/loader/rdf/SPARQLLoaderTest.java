@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
@@ -9,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -21,6 +24,7 @@ import static org.junit.Assert.*;
  *
  * @author Jiri Tomes
  */
+@Category(IntegrationTest.class)
 public class SPARQLLoaderTest {
 
 	protected final Logger logger = LoggerFactory.getLogger(
@@ -93,13 +97,17 @@ public class SPARQLLoaderTest {
 
 		repository.addTriple(subject, predicate, object);
 
-		String goalGraphName = "http://temp";
+		TestEnvironment environment = TestEnvironment.create();
+
+		String goalGraphName = "http://tempGraph";
 		URL endpoint = getUpdateEndpoint();
 
 		boolean isLoaded = false;
 
 		try {
-			SPARQLoader loader = new SPARQLoader(repository);
+			SPARQLoader loader = new SPARQLoader(repository, environment
+					.getContext());
+
 			loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,
 					PASSWORD,
 					WriteGraphType.OVERRIDE, InsertType.SKIP_BAD_PARTS);
