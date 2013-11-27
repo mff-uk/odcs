@@ -12,12 +12,16 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Vaadin implementation for PipelineListView.
  *
  * @author Bogo
  */
+@Component
+@Scope("prototype")
 public class PipelineListViewImpl extends CustomComponent implements PipelineListPresenter.PipelineListView {
 
 	private VerticalLayout mainLayout;

@@ -66,7 +66,8 @@ public class PipelineEdit extends ViewComponent {
 	private TextArea pipelineDescription;
 	private OptionGroup pipelineVisibility;
 	private Pipeline pipeline = null;
-	PipelineCanvas pc;
+	@Autowired
+	PipelineCanvas pipelineCanvas;
 	@Autowired
 	DPUTree dpuTree;
 	TabSheet tabSheet;
@@ -167,12 +168,12 @@ public class PipelineEdit extends ViewComponent {
 			}
 		};
 		//layout.setMargin(true);
-		pc = new PipelineCanvas();
-		pc.setImmediate(true);
-		pc.setWidth(1060, Unit.PIXELS);
-		pc.setHeight(630, Unit.PIXELS);
-		pc.init();
-		pc.addListener(new Listener() {
+		//pipelineCanvas = new PipelineCanvas();
+		pipelineCanvas.setImmediate(true);
+		pipelineCanvas.setWidth(1060, Unit.PIXELS);
+		pipelineCanvas.setHeight(630, Unit.PIXELS);
+		pipelineCanvas.init();
+		pipelineCanvas.addListener(new Listener() {
 			@Override
 			public void componentEvent(Event event) {
 				if (event.getClass() != DetailClosedEvent.class) {
@@ -191,7 +192,7 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 
-		pc.addListener(new Listener() {
+		pipelineCanvas.addListener(new Listener() {
 			@Override
 			public void componentEvent(Event event) {
 				if (event.getClass() != ShowDebugEvent.class) {
@@ -201,7 +202,7 @@ public class PipelineEdit extends ViewComponent {
 				savePipeline("debug");
 			}
 		});
-		pc.addListener(new Listener() {
+		pipelineCanvas.addListener(new Listener() {
 			@Override
 			public void componentEvent(Event event) {
 				if (event.getClass() != GraphChangedEvent.class) {
@@ -216,7 +217,7 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 
-		dadWrapper = new DragAndDropWrapper(pc);
+		dadWrapper = new DragAndDropWrapper(pipelineCanvas);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
 		dadWrapper.setWidth(1060, Unit.PIXELS);
 		dadWrapper.setHeight(630, Unit.PIXELS);
@@ -240,7 +241,7 @@ public class PipelineEdit extends ViewComponent {
 				if (obj.getClass() == DPUTemplateRecord.class) {
 					DPUTemplateRecord dpu = (DPUTemplateRecord) obj;
 					if (dpuFacade.getAllTemplates().contains(dpu)) {
-						pc.addDpu(dpu, mouse.getClientX() - 20 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 280 + UI
+						pipelineCanvas.addDpu(dpu, mouse.getClientX() - 20 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 280 + UI
 								.getCurrent().getScrollTop());
 					} else {
 						LOG.warn("Invalid drop operation.");
@@ -272,7 +273,7 @@ public class PipelineEdit extends ViewComponent {
 						developTab.setCaption("Standard");
 						tabSheet.setTabPosition(developTab, 0);
 					}
-					pc.changeMode(canvasMode);
+					pipelineCanvas.changeMode(canvasMode);
 					tabSheet.setSelectedTab(developTab);
 				}
 			}
@@ -305,7 +306,7 @@ public class PipelineEdit extends ViewComponent {
 		zoomIn.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Position bounds = pc.zoom(true);
+				Position bounds = pipelineCanvas.zoom(true);
 				calculateCanvasDimensions(bounds);
 			}
 		});
@@ -315,7 +316,7 @@ public class PipelineEdit extends ViewComponent {
 		zoomOut.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Position bounds = pc.zoom(false);
+				Position bounds = pipelineCanvas.zoom(false);
 				calculateCanvasDimensions(bounds);
 			}
 		});
@@ -326,7 +327,7 @@ public class PipelineEdit extends ViewComponent {
 		undo.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (!pc.undo()) {
+				if (!pipelineCanvas.undo()) {
 					event.getButton().setEnabled(false);
 				}
 			}
@@ -400,7 +401,7 @@ public class PipelineEdit extends ViewComponent {
 			public void buttonClick(ClickEvent event) {
 				pipelineName.discard();
 				pipelineDescription.discard();
-				pc.cancelChanges();
+				pipelineCanvas.cancelChanges();
 				closeView();
 			}
 		});
@@ -410,7 +411,7 @@ public class PipelineEdit extends ViewComponent {
 		layout.addComponent(buttonBar);
 		mainLayout.addComponent(layout);
 
-		Position bounds = pc.zoom(true);
+		Position bounds = pipelineCanvas.zoom(true);
 		calculateCanvasDimensions(bounds);
 
 		return mainLayout;
@@ -545,7 +546,7 @@ public class PipelineEdit extends ViewComponent {
 
 	@Override
 	public boolean isModified() {
-		return pipelineName.isModified() || pipelineDescription.isModified() || pc.isModified() || pipelineVisibility.isModified();
+		return pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified();
 	}
 
 	@Override
@@ -722,7 +723,7 @@ public class PipelineEdit extends ViewComponent {
 		}
 
 		if (pipeline != null) {
-			pc.showPipeline(pipeline);
+			pipelineCanvas.showPipeline(pipeline);
 		}
 		return this.pipeline;
 	}
@@ -737,7 +738,7 @@ public class PipelineEdit extends ViewComponent {
 			return false;
 		}
 
-		final boolean doCleanup = pc.saveGraph(pipeline);
+		final boolean doCleanup = pipelineCanvas.saveGraph(pipeline);
 
 		final VisibilityType visibility = (VisibilityType) pipelineVisibility.getValue();
 		if (visibility == VisibilityType.PUBLIC && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
@@ -771,7 +772,7 @@ public class PipelineEdit extends ViewComponent {
 
 		pipelineFacade.save(this.pipeline);
 		if (doCleanup) {
-			pc.afterSaveCleanUp();
+			pipelineCanvas.afterSaveCleanUp();
 		}
 
 		Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
@@ -780,7 +781,7 @@ public class PipelineEdit extends ViewComponent {
 		switch (successAction) {
 			case "debug":
 				pipeline = pipelineFacade.getPipeline(pipeline.getId());
-				pc.showPipeline(pipeline);
+				pipelineCanvas.showPipeline(pipeline);
 				openDebug(pipeline, sde.getDebugNode());
 				break;
 			case "close":
@@ -788,7 +789,7 @@ public class PipelineEdit extends ViewComponent {
 				break;
 			case "reload":
 				pipeline = pipelineFacade.getPipeline(pipeline.getId());
-				pc.showPipeline(pipeline);
+				pipelineCanvas.showPipeline(pipeline);
 				break;
 			default:
 				return true;
@@ -813,15 +814,15 @@ public class PipelineEdit extends ViewComponent {
 			browserHeight = zoomBounds.getY();
 			//enable vertical scrollbar
 		}
-		pc.setWidth(browserWidth, Unit.PIXELS);
-		pc.setHeight(browserHeight, Unit.PIXELS);
+		pipelineCanvas.setWidth(browserWidth, Unit.PIXELS);
+		pipelineCanvas.setHeight(browserHeight, Unit.PIXELS);
 		dadWrapper.setSizeUndefined();
 		tabSheet.setWidth(browserWidth + 40, Unit.PIXELS);
 		tabSheet.setHeight(browserHeight + 60, Unit.PIXELS);
 		mainLayout.setSizeUndefined();
 		mainLayout.markAsDirty();
 
-		//pc.resizeCanvas(browserHeight, browserWidth);
+		//pipelineCanvas.resizeCanvas(browserHeight, browserWidth);
 		//tabSheet.setWidth(browserWidth + 20, Unit.PIXELS);
 		//tabSheet.setHeight(browserHeight + 40, Unit.PIXELS);
 	}
@@ -835,8 +836,8 @@ public class PipelineEdit extends ViewComponent {
 	private void resizeCanvas(int width) {
 //		if (width > 1350) {
 //			int newWidth = 1050 + (width - 1350);
-//			pc.setWidth(newWidth, Unit.PIXELS);
-//			pc.resizeCanvas(630, newWidth);
+//			pipelineCanvas.setWidth(newWidth, Unit.PIXELS);
+//			pipelineCanvas.resizeCanvas(630, newWidth);
 //			tabSheet.setWidth(1070 + (width - 1350), Unit.PIXELS);
 //		}
 	}

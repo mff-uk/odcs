@@ -1,12 +1,12 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
-import com.vaadin.server.VaadinServletService;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -14,18 +14,22 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
 
 import java.util.Collection;
 import java.util.Stack;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Component for visualization of the pipeline.
  *
  * @author Bogo
  */
+@Component
+@Scope("prototype")
 @SuppressWarnings("serial")
 @JavaScript({"js_pipelinecanvas.js", "kinetic-v4.5.4.min.js", "jquery-2.0.0.min.js"})
 public class PipelineCanvas extends AbstractJavaScriptComponent {
@@ -36,12 +40,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	int connCount = 0;
 	float currentZoom = 1.0f;
 	private PipelineGraph graph;
-	private Pipeline pip;
 	private Stack<PipelineGraph> historyStack;
 	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
 	private boolean isModified = false;
 	
-	private DPUExplorer explorer = App.getApp().getDPUExplorer();
+	@Autowired
+	private DPUExplorer dpuExplorer;
+	@Autowired
+	private DPUFacade dpuFacade;
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -122,10 +128,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * Method initializing client side RPC.
 	 */
 	public void init() {
-//		String requUrl = VaadinServletService.getCurrentServletRequest().getRequestURI();
-//		String requUrl2 = VaadinServletService.getCurrentServletRequest().getContextPath();
-//		String requUrl3 = VaadinServletService.getCurrentServletRequest().getServerName();
-//		String requUrl4 = VaadinServletService.getCurrentServletRequest().getServletPath();
 		getRpcProxy(PipelineCanvasClientRpc.class).init();
 	}
 
@@ -150,7 +152,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void afterSaveCleanUp() {
 		for (DPUInstanceRecord instance : dpusToDelete) {
-			App.getDPUs().delete(instance);
+			dpuFacade.delete(instance);
 		}
 	}
 
@@ -163,7 +165,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void addDpu(DPUTemplateRecord dpu, int x, int y) {
 		storeHistoryGraph();
-		DPUInstanceRecord dpuInstance = App.getDPUs().createInstanceFromTemplate(dpu);
+		DPUInstanceRecord dpuInstance = dpuFacade.createInstanceFromTemplate(dpu);
 		Node node = graph.addDpuInstance(dpuInstance);
 		getRpcProxy(PipelineCanvasClientRpc.class)
 				.addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), (int) (x / currentZoom), (int) (y / currentZoom), true);
@@ -179,7 +181,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		String result = graph.validateNewEdge(dpuFrom, dpuTo);
 		Node to = graph.getNodeById(dpuTo);
 		if(result == null) {
-		    if(explorer.getInputs(to.getDpuInstance()).isEmpty()) {
+		    if(dpuExplorer.getInputs(to.getDpuInstance()).isEmpty()) {
 				result = "Target DPU has no inputs.";
             }
 		}
@@ -188,7 +190,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			EdgeCompiler edgeCompiler = new EdgeCompiler();
 			Edge edge = graph.getEdgeById(connectionId);
 			DPUInstanceRecord from = graph.getNodeById(dpuFrom).getDpuInstance();
-			edgeCompiler.setDefaultMapping(edge, explorer.getOutputs(from), explorer.getInputs(to.getDpuInstance()));
+			edgeCompiler.setDefaultMapping(edge, dpuExplorer.getOutputs(from), dpuExplorer.getInputs(to.getDpuInstance()));
 
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edge.getScript());
 		} else {
@@ -203,7 +205,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param pipeline {@link Pipeline} to show on graph canvas.
 	 */
 	public void showPipeline(Pipeline pipeline) {
-		this.pip = pipeline;
 		setGraph(pipeline.getGraph());
 	}
 
@@ -226,7 +227,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				}
 			}
 		});
-		App.getApp().addWindow(detailDialog);
+		UI.getCurrent().addWindow(detailDialog);
 	}
 
 	/**
@@ -321,7 +322,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * Inform listeners, about supplied event.
 	 */
 	protected void fireEvent(Event event) {
-		Collection<Listener> ls = (Collection<Listener>) this.getListeners(Component.Event.class);
+		Collection<Listener> ls = (Collection<Listener>) this.getListeners(com.vaadin.ui.Component.Event.class);
 		for (Listener l : ls) {
 			l.componentEvent(event);
 		}
@@ -373,7 +374,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
 			}
 		});
-		App.getApp().addWindow(edgeDetailDialog);
+		UI.getCurrent().addWindow(edgeDetailDialog);
 	}
 
 	/**

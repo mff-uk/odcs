@@ -31,12 +31,6 @@
 	
     <!-- bean that provide functionality for manipulating with DPUs -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
-		
-    <!-- Factory for constructing data containers for Vaadin tables. -->
-
-    <bean id="pipelineListPresenterImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl" scope="prototype" />
-	
-    <bean id="pipelineListViewImpl" class="cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListViewImpl" scope="prototype" />
 
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
@@ -57,6 +51,7 @@
     <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
     <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="prototype"/>
 	
+	<bean id="pipelineCanvas" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas" scope="prototype" />
     <bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype" />
     <bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline" scope="prototype" />
     
