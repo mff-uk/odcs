@@ -69,6 +69,9 @@
 	<!-- components for sending reports -->
         <context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.report" />
 
+        <!-- log prunner -->
+        <bean class="cz.cuni.mff.xrg.odcs.backend.pruning.Log" />
+        
 	<!-- watcher for DPU changes -->
 	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager">
 		<constructor-arg name="refreshDatabase" value="false" />

@@ -15,6 +15,8 @@ public enum ConfigProperty {
 	BACKEND_LOG_DIR("backend.log.dir"),
 	BACKEND_LOG_KEEP("backend.log.keepDays"),
 	BACKEND_DEFAULTRDF("backend.defaultRdf"),
+
+	EXECUTION_LOG_HISTORY("exec.log.history"),
 	
 	// namespaces for virtuoso configuration
 	VIRTUOSO_RDBMS("virtuoso.rdbms"),
