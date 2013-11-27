@@ -212,6 +212,36 @@ public class RDFQueryView extends CustomComponent {
 				return null;
 			}
 		});
+		resultTable.setCellStyleGenerator(new CustomTable.CellStyleGenerator() {
+
+			@Override
+			public String getStyle(CustomTable source, Object itemId, Object propertyId) {
+				if(propertyId == null) {
+					return null;
+				}
+				String value = (String)source.getItem(itemId).getItemProperty(propertyId).getValue();
+				if(value.startsWith("http://")) {
+					return "link";
+				} else {
+					return null;
+				}
+			}
+		});
+		resultTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				String uri = (String) event.getItem().getItemProperty(event.getPropertyId()).getValue();
+				if(!uri.startsWith("http://")) {
+					return;
+				}
+				queryText.setValue(String.format("DESCRIBE <%s>", uri));
+				try {
+					runQuery();
+				} catch (InvalidQueryException ex) {
+					//Should not happen
+				}
+			}
+		});
 		mainLayout.addComponent(resultTable);
 		resultTableControls = resultTable.createControls();
 		resultTableControls.setImmediate(true);
@@ -345,18 +375,6 @@ public class RDFQueryView extends CustomComponent {
 			}
 		}
 		setResultVisible(true);
-		resultTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				String uri = (String) event.getItem().getItemProperty(event.getPropertyId()).getValue();
-				queryText.setValue(String.format("DESCRIBE <%s>", uri));
-				try {
-					runQuery();
-				} catch (InvalidQueryException ex) {
-					//Should not happen
-				}
-			}
-		});
 		resultTable.setContainerDataSource(container);
 		if (resultTable.getItemIds().isEmpty()) {
 			resultTable.setStyleName("empty");

@@ -171,6 +171,11 @@ overflow: auto !important;
     background-position: center center;
 }
 
+.v-table-cell-content-link {
+	/*text-decoration: underline;
+	color: blue;*/
+}
+
 
 
   

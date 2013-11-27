@@ -32,6 +32,8 @@ public class RDFQuery implements Query {
 	private String baseQuery;
 	private int batchSize;
 	private RDFQueryDefinition qd;
+	
+	private ArrayList<Item> cachedItems;
 
 	public RDFQuery(RDFQueryDefinition qd) {
 		this.baseQuery = qd.getBaseQuery();
@@ -69,6 +71,11 @@ public class RDFQuery implements Query {
 	 */
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
+		
+		if(cachedItems != null) {
+			return cachedItems.subList(startIndex, startIndex + count);
+		}
+		
 		RDFDataUnit repository = RDFDataUnitHelper
 				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
@@ -118,11 +125,16 @@ public class RDFQuery implements Query {
 					}
 					break;
 				case CONSTRUCT:
-				case DESCRIBE:
 					for (RDFTriple triple : (List<RDFTriple>) data) {
 						items.add(toItem(triple));
 					}
 					break;
+				case DESCRIBE:
+					cachedItems = new ArrayList<>();
+					for (RDFTriple triple : (List<RDFTriple>) data) {
+						cachedItems.add(toItem(triple));
+					}
+					return cachedItems.subList(startIndex, startIndex + count);
 			}
 			return items;
 		} catch (InvalidQueryException ex) {
