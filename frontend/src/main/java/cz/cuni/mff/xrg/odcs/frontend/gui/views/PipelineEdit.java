@@ -42,6 +42,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,6 @@ public class PipelineEdit extends ViewComponent {
 	private TextArea pipelineDescription;
 	private OptionGroup pipelineVisibility;
 	private Pipeline pipeline = null;
-	@Autowired
 	PipelineCanvas pipelineCanvas;
 	@Autowired
 	DPUTree dpuTree;
@@ -168,7 +168,7 @@ public class PipelineEdit extends ViewComponent {
 			}
 		};
 		//layout.setMargin(true);
-		//pipelineCanvas = new PipelineCanvas();
+		pipelineCanvas = App.getApp().getBean(PipelineCanvas.class);
 		pipelineCanvas.setImmediate(true);
 		pipelineCanvas.setWidth(1060, Unit.PIXELS);
 		pipelineCanvas.setHeight(630, Unit.PIXELS);

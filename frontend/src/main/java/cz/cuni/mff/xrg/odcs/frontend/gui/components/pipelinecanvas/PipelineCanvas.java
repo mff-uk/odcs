@@ -154,6 +154,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		for (DPUInstanceRecord instance : dpusToDelete) {
 			dpuFacade.delete(instance);
 		}
+		dpusToDelete.clear();
 	}
 
 	/**
