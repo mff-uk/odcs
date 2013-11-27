@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import com.github.wolfie.refresher.Refresher;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -32,12 +33,16 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Scope;
@@ -73,12 +78,16 @@ public class Scheduler extends ViewComponent {
 	int style = DateFormat.MEDIUM;
 	static String filter;
 	private Schedule scheduleDel;
+	private Date lastLoad = new Date(0L);
+	private RefreshManager refreshManager;
 	@Autowired
 	private SchedulePipeline schedulePipeline;
 	@Autowired
 	private ScheduleFacade scheduleFacade;
 	@Autowired
 	private PipelineFacade pipelineFacade;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -100,6 +109,19 @@ public class Scheduler extends ViewComponent {
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
+		
+		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+		refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
+			@Override
+			public void refresh(Refresher source) {
+				boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+				if (hasModifiedExecutions) {
+					lastLoad = new Date();
+					refreshData();
+				}
+				LOG.debug("Scheduler refreshed.");
+			}
+		});
 	}
 
 	/**

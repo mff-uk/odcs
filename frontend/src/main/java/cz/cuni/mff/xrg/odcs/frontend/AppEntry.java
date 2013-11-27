@@ -29,7 +29,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 
@@ -56,43 +55,39 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
-
 	/**
 	 * Spring application context.
 	 */
 	@Autowired
 	private ApplicationContext context;
-	
 	@Autowired
 	private MenuLayout main;
-	
 	@Autowired
 	private ClassNavigatorHolder navigatorHolder;
-	
 	private Client backendClient;
 	private RefreshManager refreshManager;
 	private String storedNavigation = null;
 	private String lastView = null;
 	private String actualView = null;
-        
+
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-		
+
 		// Initialize DPUs by preloading all thier JAR bundles
 		// TODO use lazyloading instead of preload?
 		ModuleFacade modules = context.getBean(ModuleFacade.class);
 		modules.preLoadAllDPUs();
-        
+
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
 		//main = new MenuLayout();
 		main.enter();
 		setContent(main);
-		
+
 		// create a navigator to control the views
 		// and set it into the navigator holder
 		ClassNavigatorImpl navInstance = new ClassNavigatorImpl(this, main.getViewLayout(), context);
-        ((ClassNavigatorHolder)navigatorHolder).setNavigator(navInstance);
+		((ClassNavigatorHolder) navigatorHolder).setNavigator(navInstance);
 		main.setNavigation(navigatorHolder);
 
 		ConfirmDialog.Factory df = new DefaultConfirmDialogFactory() {
@@ -104,10 +99,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 						okCaption,
 						cancelCaption);
 
-				LOG.info("Dialog info: w:{} {} h:{} {} cap:{}", d.getWidth(), 
-						d.getWidthUnits(), d.getHeight(), d.getHeightUnits(), 
+				LOG.info("Dialog info: w:{} {} h:{} {} cap:{}", d.getWidth(),
+						d.getWidthUnits(), d.getHeight(), d.getHeightUnits(),
 						caption != null ? caption.length() : 0);
-				
+
 				// we inceare by 1.5 .. so prevent from creating 
 				// unecesary scroll bars on some resolutions and zoom levels
 				// also it should not do somehing bad as at the end the dialog
@@ -115,12 +110,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 				d.setHeight(d.getHeight() + 1.5f, d.getHeightUnits());
 				if (caption != null && caption.length() > 30) {
 					// adjust the width as there is not enough space for text
-					d.setWidth( caption.length() * 0.73f , d.getWidthUnits());
+					d.setWidth(caption.length() * 0.73f, d.getWidthUnits());
 				}
-				
+
 				// Change the order of buttons
 				d.setContentMode(ConfirmDialog.ContentMode.TEXT);
-				
+
 				Button ok = d.getOkButton();
 				ok.setWidth(120, Unit.PIXELS);
 				HorizontalLayout buttons = (HorizontalLayout) ok.getParent();
@@ -132,7 +127,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}
 		};
 		ConfirmDialog.setFactory(df);
-		        
+
 		this.addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
@@ -148,7 +143,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			public void error(com.vaadin.server.ErrorEvent event) {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
-					if(cause.getClass() == VirtuosoException.class && ((VirtuosoException)cause).getErrorCode() == VirtuosoException.IOERROR && cause.getMessage().contains("Connection refused")) {
+					if (cause.getClass() == VirtuosoException.class && ((VirtuosoException) cause).getErrorCode() == VirtuosoException.IOERROR && cause.getMessage().contains("Connection refused")) {
 						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
 						return;
 					}
@@ -172,7 +167,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			@Override
 			public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {
 				main.refreshUserBar();
-								
+
 				// TODO adjust this once Login screen will be presenters 
 				//	to event.getNewView().equals(Login.class)
 				if (!(event.getNewView() instanceof Login) && !checkAuthentication()) {
@@ -186,11 +181,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 					return false;
 				}
 				setNavigationHistory(event);
-								
-				//if ((event.getNewView(). instanceof PresenterWrap)) {
-					refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
-					refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
-				//}
+
+				refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);
+				refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
+				refreshManager.removeListener(RefreshManager.PIPELINE_LIST);
+				refreshManager.removeListener(RefreshManager.SCHEDULER);
+				
 				return true;
 			}
 
@@ -291,7 +287,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Checks if there is logged in user and if its session is still valid.
 	 *
 	 * @return true if user and its session are valid, false otherwise
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
 	private boolean checkAuthentication() {
 		return getAuthCtx().isAuthenticated();
@@ -300,19 +296,19 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private void setNavigationHistory(ViewChangeListener.ViewChangeEvent event) {
 		lastView = actualView;
 		actualView = event.getViewName();
-		if(event.getParameters() != null) {
+		if (event.getParameters() != null) {
 			actualView += "/" + event.getParameters();
 		}
 	}
-	
+
 	public void navigateToLastView() {
-		if(lastView != null) {
+		if (lastView != null) {
 			navigatorHolder.navigateTo(lastView);
 		} else {
 			navigatorHolder.navigateTo("");
 		}
 	}
-	
+
 	public ClassNavigator getNavigation() {
 		return navigatorHolder;
 	}
@@ -321,9 +317,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Returns facade, which provides services for managing pipelines.
 	 *
 	 * @return pipeline facade
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public PipelineFacade getPipelines() {
 		return (PipelineFacade) context.getBean("pipelineFacade");
 	}
@@ -332,9 +328,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with modules.
 	 *
 	 * @return modules facade
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public ModuleFacade getModules() {
 		return (ModuleFacade) context.getBean("moduleFacade");
 	}
@@ -343,9 +339,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with DPUs.
 	 *
 	 * @return dpus facade
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public DPUFacade getDPUs() {
 		return (DPUFacade) context.getBean("dpuFacade");
 	}
@@ -354,9 +350,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with Schedules.
 	 *
 	 * @return schedules facade
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public ScheduleFacade getSchedules() {
 		return (ScheduleFacade) context.getBean("scheduleFacade");
 	}
@@ -365,9 +361,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with Schedules.
 	 *
 	 * @return schedules facade
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public UserFacade getUsers() {
 		return (UserFacade) context.getBean("userFacade");
 	}
@@ -377,9 +373,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Prefix.
 	 *
 	 * @return NamespascePrefix facade
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public NamespacePrefixFacade getNamespacePrefixes() {
 		return (NamespacePrefixFacade) context.getBean("prefixFacade");
 	}
@@ -388,9 +384,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return facade, which provide services for manipulating with Logs.
 	 *
 	 * @return log facade
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public LogFacade getLogs() {
 		return (LogFacade) context.getBean("logFacade");
 	}
@@ -399,9 +395,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return application configuration class.
 	 *
 	 * @return
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public AppConfig getAppConfiguration() {
 		return (AppConfig) context.getBean("configuration");
 	}
@@ -410,9 +406,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Return class that can be used to explore DPUs.
 	 *
 	 * @return
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public DPUExplorer getDPUExplorer() {
 		return (DPUExplorer) context.getBean(DPUExplorer.class);
 	}
@@ -422,9 +418,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 *
 	 * @param type
 	 * @return bean
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public <T extends Object> T getBean(Class<T> type) {
 		return context.getBean(type);
 	}
@@ -437,19 +433,18 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 * Helper method for retrieving authentication context.
 	 *
 	 * @return authentication context for current user session
-     * @deprecated use autowire annotation instead
+	 * @deprecated use autowire annotation instead
 	 */
-    @Deprecated
+	@Deprecated
 	public AuthenticationContext getAuthCtx() {
 		return getBean(AuthenticationContext.class);
 	}
 
-    /**
-     * 
-     * @return
-     * @deprecated use autowire annotation instead
-     */
-    @Deprecated
+	/**
+	 *
+	 * @return @deprecated use autowire annotation instead
+	 */
+	@Deprecated
 	public DPUModuleManipulator getDPUManipulator() {
 		return getBean(DPUModuleManipulator.class);
 	}

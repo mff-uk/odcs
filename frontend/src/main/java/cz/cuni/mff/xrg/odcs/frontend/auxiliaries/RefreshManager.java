@@ -18,12 +18,13 @@ import org.slf4j.LoggerFactory;
 public class RefreshManager {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RefreshManager.class);
-	public static String PIPELINE_LIST;
 	private Refresher refresher;
 	private HashMap<String, RefreshListener> listeners;
 	public static final String BACKEND_STATUS = "backend_status";
 	public static final String EXECUTION_MONITOR = "execution_monitor";
 	public static final String DEBUGGINGVIEW = "debugging_view";
+	public static final String PIPELINE_LIST = "pipeline_list";
+	public static final String SCHEDULER = "scheduler";
 
 	public RefreshManager(Refresher refresher) {
 		this.refresher = refresher;
