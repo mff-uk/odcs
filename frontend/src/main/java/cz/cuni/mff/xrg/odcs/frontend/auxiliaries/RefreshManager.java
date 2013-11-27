@@ -51,7 +51,6 @@ public class RefreshManager {
 	public static RefreshListener getDebugRefresher(final DebuggingView debug, final PipelineExecution exec) {
 		return new Refresher.RefreshListener() {
 			boolean isWorking = true;
-			boolean lastFinished = false;
 			PipelineExecution execution = exec;
 			boolean lastExecutionStatus = false;
 			boolean isLogsSet = false;
@@ -78,13 +77,10 @@ public class RefreshManager {
 					lastExecutionStatus = false;
 				}
 				isRunFinished &= lastExecutionStatus;
-				if(lastFinished && isLogsSet) {
-					isWorking = false;
-					LOG.debug("Refresh stopped.");
-				}
 				if (isRunFinished) {
-					lastFinished = true;
+					isWorking = false;
 					LOG.debug("Execution finished.");
+					LOG.debug("Refresh stopped.");
 				}
 				LOG.debug("DebuggingView refreshed.");
 			}
