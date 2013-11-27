@@ -26,6 +26,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shows complex debug information about current pipeline execution. Shows
@@ -42,6 +44,8 @@ import java.util.*;
  */
 public class DebuggingView extends CustomComponent {
 
+	private static final Logger LOG = LoggerFactory.getLogger(DebuggingView.class);
+	
 	private VerticalLayout mainLayout;
 	
 	private PipelineExecution pipelineExec;
@@ -220,6 +224,7 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
+		LOG.trace("Tables refresh start");
 		if (doRefresh) {
 			// refresh data .. 
 			logSource.invalidate();
@@ -228,7 +233,8 @@ public class DebuggingView extends CustomComponent {
 			logTable.refresh();
 			msgTable.refresh();
 		}
-
+		LOG.trace("Tables refresh done");
+		
 		// refresh of query View
 		if (isInDebugMode && isRunFinished()) {
 			queryTab.setEnabled(true);

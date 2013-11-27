@@ -108,8 +108,11 @@ public class CachedSource<T extends DataObject>
 	 * Load data size from {@link #source} and return it. {@link #size}.
 	 */
 	int loadSize() {
+		LOG.trace("loadSize()");
 		applyFilters();
-		return (int) source.executeSize(queryBuilder.getCountQuery());
+		int size = (int) source.executeSize(queryBuilder.getCountQuery());
+		LOG.trace("loadSize() -> {}", size);
+		return size;
 	}
 
 	/**
@@ -118,11 +121,13 @@ public class CachedSource<T extends DataObject>
 	 * @param index
 	 */
 	T loadByIndex(int index) {
+		LOG.trace("loadByIndex({})", index);
 		applyFilters();
 		T item = source.execute(queryBuilder.getQuery().limit(index, 1));
 		if (item == null) {
 			return null;
 		}
+		LOG.trace("loadByIndex({}) -- done", index);
 		return item;
 	}
 
@@ -134,9 +139,11 @@ public class CachedSource<T extends DataObject>
 	 * @return
 	 */
 	List<T> loadByIndex(int startIndex, int numberOfItems) {
+		LOG.trace("loadByIndex({}, {})", startIndex, numberOfItems);
 		applyFilters();
 		final List<T> items = source.executeList(
 				queryBuilder.getQuery().limit(startIndex, numberOfItems));
+		LOG.trace("loadByIndex({}, {}) --> done", startIndex, numberOfItems);
 		return items;
 	}
 
@@ -146,6 +153,7 @@ public class CachedSource<T extends DataObject>
 	 * @param id
 	 */
 	protected void loadById(Long id) {
+		LOG.trace("loadById({})", id);
 		applyFilters();
 
 		if (queryBuilder instanceof DataQueryBuilder.Filterable) {
@@ -279,7 +287,7 @@ public class CachedSource<T extends DataObject>
 				List<Long> newIDs = new ArrayList<>(numberOfItems);
 				for (T item : newData) {
 					data.put(item.getId(), item);
-					dataIndexes.put(startIndex++, item.getId());
+					dataIndexes.put(index++, item.getId());
 					newIDs.add(item.getId());
 				}
 				// add new IDs to the result list
@@ -348,12 +356,14 @@ public class CachedSource<T extends DataObject>
 		switch (propertyId.length) {
 			case 0: // remove sort
 				sortableBuilder.sort(null, false);
+				invalidate();
 				break;
 			default:
 				LOG.warn("sort(Objet[], boolean[]) called with multiple targets."
 						+ " Only first used others are ignored.");
 			case 1: // sort, but we need expresion for sorting first
 				sortableBuilder.sort((String) propertyId[0], ascending[0]);
+				invalidate();
 				break;
 		}
 

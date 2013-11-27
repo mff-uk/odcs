@@ -93,6 +93,8 @@ public class RecordsTable extends CustomComponent {
 	public void setExecution(PipelineExecution execution) {
 	
 		messageTable.setSortEnabled(true);
+		
+		container.removeAllContainerFilters();
 		// set container to the table -- we may possibly re-set this
 		// but that does not do anything bad
 		messageTable.setContainerDataSource(container);
@@ -101,13 +103,12 @@ public class RecordsTable extends CustomComponent {
 			// all has been done .. just set the page to the
 			// end and return
 			messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
-			return;
+		} else {		
+			// add generated columns
+			buildGeneratedColumns();
+			isInitialized = true;
+			messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 		}
-		
-		// add generated columns
-		buildGeneratedColumns();
-		isInitialized = true;
-		messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
 	}
 
 	/**
