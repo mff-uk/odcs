@@ -43,9 +43,9 @@ public enum FileExtractType {
 		map.put(UPLOAD_FILE, "Extract uploaded file");
 		map.put(PATH_TO_FILE, "Extract file based on the path to file");
 		map.put(PATH_TO_DIRECTORY,
-				"Extract files based on the path to the directory - stop if some file cause error");
+				"Extract files based on the path to the directory");
 		map.put(PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES,
-				"Extract only files based on the path to the directory, which cause no errors");
+				"Extract files based on the path to the directory");
 		map.put(HTTP_URL, "Extract file from the given HTTP URL");
 
 	}
