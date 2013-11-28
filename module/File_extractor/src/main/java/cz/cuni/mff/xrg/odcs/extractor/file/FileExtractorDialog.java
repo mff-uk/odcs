@@ -53,12 +53,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	private TextField textFieldOnly;
 
+	private OptionGroup directoryGroup;
+
 	/**
 	 * TextField to set destination of the file
 	 */
 	private TextField textFieldPath;
 
-	private HorizontalLayout horizontalLayoutOnly;
+	private VerticalLayout verticalLayoutOnly;
 
 	private HorizontalLayout horizontalLayoutFormat;
 
@@ -92,6 +94,10 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			+ "extracted some triples with an error.";
 
 	private static final String CONTINUE = "Extract only triples with no errors.";
+
+	private static final String FILE_SKIP = "When there is a problem parsing a file, it is skipped";
+
+	private static final String FILE_ERROR = "When there is a program parsing a file, extraction ends with error";
 
 	/**
 	 * Basic constructor.
@@ -132,8 +138,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				FileExtractType.PATH_TO_FILE));
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.PATH_TO_DIRECTORY));
-		pathType.addItem(FileExtractType.getDescriptionByType(
-				FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.HTTP_URL));
 
@@ -244,6 +248,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
 
 			textFieldOnly.setValue(conf.FileSuffix.trim());
+
+			if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
+				directoryGroup.setValue(FILE_ERROR);
+			} else {
+				directoryGroup.setValue(FILE_SKIP);
+			}
 		}
 
 		String formatValue = RDFFormatType.getStringValue(conf.RDFFormatValue);
@@ -509,14 +519,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					extractType = FileExtractType.PATH_TO_DIRECTORY;
 					prepareDirectoryForm();
 
-				} else if (event.getProperty().getValue().equals(FileExtractType
-						.getDescriptionByType(
-						FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
-
-					extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
-					prepareDirectoryForm();
-
-					//If selected "Extract file from the given HTTP URL" option
 				} else if (event.getProperty().getValue().equals(
 						FileExtractType.getDescriptionByType(
 						FileExtractType.HTTP_URL))) {
@@ -562,24 +564,60 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 		// layoutOnly
 
-		horizontalLayoutOnly = new HorizontalLayout();
-		horizontalLayoutOnly.setImmediate(false);
-		horizontalLayoutOnly.setSpacing(true);
-
-		horizontalLayoutOnly.addComponent(new Label(
-				"If directory, process only files with extension:"));
+		verticalLayoutOnly = new VerticalLayout();
+		verticalLayoutOnly.setImmediate(false);
+		verticalLayoutOnly.setSpacing(true);
 
 		// textFieldOnly
-		textFieldOnly = new TextField("");
+		textFieldOnly = new TextField("If directory, process only files with extension:");
 		textFieldOnly.setImmediate(false);
 		textFieldOnly.setWidth("50px");
 		textFieldOnly.setInputPrompt(".ttl");
-		horizontalLayoutOnly.addComponent(textFieldOnly);
-		horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
-				Alignment.TOP_RIGHT);
+		verticalLayoutOnly.addComponent(textFieldOnly);
+
+		directoryGroup = new OptionGroup();
+		directoryGroup.setImmediate(false);
+		directoryGroup.setWidth("-1px");
+		directoryGroup.setHeight("-1px");
+		directoryGroup.setMultiSelect(false);
+
+		directoryGroup.addItem(FILE_SKIP);
+		directoryGroup.addItem(FILE_ERROR);
+
+		switch (extractType) {
+			case PATH_TO_DIRECTORY:
+				directoryGroup.setValue(FILE_ERROR);
+				break;
+
+			case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
+			default:
+				directoryGroup.setValue(FILE_SKIP);
+				extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+				break;
+		}
+
+		directoryGroup.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				String selectedItem = directoryGroup.getValue().toString();
+
+				switch (selectedItem) {
+					case FILE_SKIP:
+						extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+						break;
+					case FILE_ERROR:
+						extractType = FileExtractType.PATH_TO_DIRECTORY;
+						break;
+				}
+			}
+		});
+		
+		verticalLayoutOnly.addComponent(directoryGroup);
 
 		//Adding component for specify file extension
-		gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
+		gridLayoutCore.addComponent(verticalLayoutOnly, 0, 2);
+
+
 
 	}
 
