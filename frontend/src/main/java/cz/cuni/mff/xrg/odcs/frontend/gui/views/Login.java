@@ -7,12 +7,14 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
@@ -45,6 +47,8 @@ public class Login extends ViewComponent {
 	
 	@Autowired
 	private AuthenticationService authService;
+	@Autowired
+    private AppConfig appConfiguration;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -98,7 +102,7 @@ public class Login extends ViewComponent {
         });
         layout.addComponent(loginButton);
 		password.addShortcutListener(new Button.ClickShortcut(loginButton, ShortcutAction.KeyCode.ENTER));
-		Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", App.getAppConfig().getString(ConfigProperty.EMAIL_ADMIN)));
+		Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", appConfiguration.getString(ConfigProperty.EMAIL_ADMIN)));
 		info.setContentMode(ContentMode.HTML);
 		layout.addComponent(info);
         layout.setSizeUndefined();
@@ -113,8 +117,9 @@ public class Login extends ViewComponent {
 			error.setVisible(false);
 
 			// login is successful
-			App.getApp().getMain().refreshUserBar();
-			App.getApp().navigateAfterLogin();
+			AppEntry app = (AppEntry)UI.getCurrent();
+			app.getMain().refreshUserBar();
+			app.navigateAfterLogin();
 
 		} catch (AuthenticationException ex) {
 			password.setValue("");

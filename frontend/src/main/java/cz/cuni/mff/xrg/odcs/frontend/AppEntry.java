@@ -69,6 +69,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private String storedNavigation = null;
 	private String lastView = null;
 	private String actualView = null;
+	
+	@Autowired
+    private AppConfig appConfiguration;
+	@Autowired
+	private AuthenticationContext authCtx;
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
@@ -170,7 +175,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 				// TODO adjust this once Login screen will be presenters 
 				//	to event.getNewView().equals(Login.class)
-				if (!(event.getNewView() instanceof Login) && !checkAuthentication()) {
+				if (!(event.getNewView() instanceof Login) && !authCtx.isAuthenticated()) {
 					storedNavigation = event.getViewName();
 					String parameters = event.getParameters();
 					if (parameters != null) {
@@ -249,10 +254,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}
 		});
 
-		AppConfig config = getAppConfiguration();
 		backendClient = new Client(
-				config.getString(ConfigProperty.BACKEND_HOST),
-				config.getInteger(ConfigProperty.BACKEND_PORT));
+				appConfiguration.getString(ConfigProperty.BACKEND_HOST),
+				appConfiguration.getInteger(ConfigProperty.BACKEND_PORT));
 
 		Refresher refresher = new Refresher();
 		refresher.setRefreshInterval(5000);
@@ -281,16 +285,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 			storedNavigation = null;
 			navigatorHolder.navigateTo(navigationTarget);
 		}
-	}
-
-	/**
-	 * Checks if there is logged in user and if its session is still valid.
-	 *
-	 * @return true if user and its session are valid, false otherwise
-	 * @deprecated use autowire annotation instead
-	 */
-	private boolean checkAuthentication() {
-		return getAuthCtx().isAuthenticated();
 	}
 
 	private void setNavigationHistory(ViewChangeListener.ViewChangeEvent event) {
