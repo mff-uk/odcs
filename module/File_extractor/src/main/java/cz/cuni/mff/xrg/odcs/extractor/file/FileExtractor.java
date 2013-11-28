@@ -42,18 +42,18 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 	public void execute(DPUContext context) throws DataUnitException, DPUException {
 
 		final String baseURI = "";
-		final FileExtractType extractType = config.fileExtractType;
-		final String path = config.Path;
-		final String fileSuffix = config.FileSuffix;
-		final boolean onlyThisSuffix = config.OnlyThisSuffix;
+		final FileExtractType extractType = config.getFileExtractType();
+		final String path = config.getPath();
+		final String fileSuffix = config.getFileSuffix();
+		final boolean onlyThisSuffix = config.isOnlyThisSuffix();
 
-		boolean useStatisticHandler = config.UseStatisticalHandler;
-		boolean failWhenErrors = config.failWhenErrors;
+		boolean useStatisticHandler = config.isUseStatisticalHandler();
+		boolean failWhenErrors = config.isFailWhenErrors();
 
 		final HandlerExtractType handlerExtractType = HandlerExtractType
 				.getHandlerType(useStatisticHandler, failWhenErrors);
 
-		RDFFormatType formatType = config.RDFFormatValue;
+		RDFFormatType formatType = config.getRDFFormatValue();
 		final RDFFormat format = RDFFormatType.getRDFFormatByType(formatType);
 
 		LOG.debug("extractType: {}", extractType);

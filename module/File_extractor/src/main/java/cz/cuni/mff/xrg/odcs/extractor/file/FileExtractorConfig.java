@@ -12,20 +12,73 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  */
 public class FileExtractorConfig extends DPUConfigObjectBase {
 
-	public String Path = "";
+	private String Path;
 
-	public String FileSuffix = "";
+	private String FileSuffix;
 
-	public RDFFormatType RDFFormatValue = RDFFormatType.AUTO;
+	private RDFFormatType RDFFormatValue;
 
-	public FileExtractType fileExtractType = FileExtractType.PATH_TO_FILE;
+	private FileExtractType fileExtractType;
 
-	public boolean OnlyThisSuffix = false;
+	private boolean OnlyThisSuffix;
 
-	public boolean UseStatisticalHandler = true;
+	private boolean UseStatisticalHandler;
 
-	public boolean failWhenErrors = false;
+	private boolean failWhenErrors;
 
+	public FileExtractorConfig() {
+		this.Path = "";
+		this.FileSuffix = "";
+		this.RDFFormatValue = RDFFormatType.AUTO;
+		this.fileExtractType = FileExtractType.PATH_TO_FILE;
+		this.OnlyThisSuffix = false;
+		this.UseStatisticalHandler = true;
+		this.failWhenErrors = false;
+	}
+
+	public FileExtractorConfig(String Path, String FileSuffix,
+			RDFFormatType RDFFormatValue, FileExtractType fileExtractType,
+			boolean OnlyThisSuffix, boolean UseStatisticalHandler,
+			boolean failWhenErrors) {
+
+		this.Path = Path;
+		this.FileSuffix = FileSuffix;
+		this.RDFFormatValue = RDFFormatValue;
+		this.fileExtractType = fileExtractType;
+		this.OnlyThisSuffix = OnlyThisSuffix;
+		this.UseStatisticalHandler = UseStatisticalHandler;
+		this.failWhenErrors = failWhenErrors;
+	}
+
+	public String getPath() {
+		return Path;
+	}
+
+	public String getFileSuffix() {
+		return FileSuffix;
+	}
+
+	public RDFFormatType getRDFFormatValue() {
+		return RDFFormatValue;
+	}
+
+	public FileExtractType getFileExtractType() {
+		return fileExtractType;
+	}
+
+	public boolean isOnlyThisSuffix() {
+		return OnlyThisSuffix;
+	}
+
+	public boolean isUseStatisticalHandler() {
+		return UseStatisticalHandler;
+	}
+
+	public boolean isFailWhenErrors() {
+		return failWhenErrors;
+	}
+
+	
 	@Override
 	public boolean isValid() {
 		return Path != null

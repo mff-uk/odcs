@@ -163,52 +163,60 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		if (!textFieldPath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
-			FileExtractorConfig conf = new FileExtractorConfig();
 
+			String path;
 			if (extractType == FileExtractType.UPLOAD_FILE) {
-				conf.Path = FileUploadReceiver.path + "/" + textFieldPath
+				path = FileUploadReceiver.path + "/" + textFieldPath
 						.getValue().trim();
 
 			} else {
-				conf.Path = textFieldPath.getValue().trim();
+				path = textFieldPath.getValue().trim();
 			}
 
+
+			String fileSuffix;
+			boolean onlyThisSuffix;
 
 			if (extractType == FileExtractType.PATH_TO_DIRECTORY
 					|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
 
-				conf.FileSuffix = textFieldOnly.getValue().trim();
+				fileSuffix = textFieldOnly.getValue().trim();
 
 				if (textFieldOnly.getValue().trim().isEmpty()) {
-					conf.OnlyThisSuffix = false;
+					onlyThisSuffix = false;
 				} else {
-					conf.OnlyThisSuffix = true;
+					onlyThisSuffix = true;
 				}
 
 			} else {
-				conf.FileSuffix = "";
-				conf.OnlyThisSuffix = false;
+				fileSuffix = "";
+				onlyThisSuffix = false;
 			}
 
 			String formatValue = (String) comboBoxFormat.getValue();
 
-			conf.RDFFormatValue = RDFFormatType.getTypeByString(formatValue);
-			conf.UseStatisticalHandler = useHandler.getValue();
+			RDFFormatType RDFFormatValue = RDFFormatType.getTypeByString(
+					formatValue);
+			boolean useStatisticalHandler = useHandler.getValue();
 
 			String selectedValue = (String) failsWhenErrors.getValue();
 
+			boolean failWhenErrors;
 			if (selectedValue.equals(STOP)) {
-				conf.failWhenErrors = true;
+				failWhenErrors = true;
 			} else if (selectedValue.endsWith(CONTINUE)) {
-				conf.failWhenErrors = false;
+				failWhenErrors = false;
 			} else {
 				throw new ConfigException(
 						"No value for case using statistical and error handler");
 			}
 
-			conf.fileExtractType = extractType;
+			FileExtractorConfig config = new FileExtractorConfig(path,
+					fileSuffix,
+					RDFFormatValue, extractType, onlyThisSuffix,
+					useStatisticalHandler, failWhenErrors);
 
-			return conf;
+			return config;
 		}
 	}
 
@@ -225,14 +233,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	@Override
 	public void setConfiguration(FileExtractorConfig conf) {
 
-		extractType = conf.fileExtractType;
+		extractType = conf.getFileExtractType();
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
 
 
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 
-			String filepath = conf.Path.trim();
+			String filepath = conf.getPath().trim();
 			String filename = filepath.substring(filepath.lastIndexOf("/") + 1,
 					filepath.length());
 
@@ -241,13 +249,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			textFieldPath.setReadOnly(true); // forbid
 
 		} else {
-			textFieldPath.setValue(conf.Path.trim());
+			textFieldPath.setValue(conf.getPath().trim());
 		}
 
 		if (extractType == FileExtractType.PATH_TO_DIRECTORY
 				|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
 
-			textFieldOnly.setValue(conf.FileSuffix.trim());
+			textFieldOnly.setValue(conf.getFileSuffix().trim());
 
 			if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
 				directoryGroup.setValue(FILE_ERROR);
@@ -256,12 +264,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			}
 		}
 
-		String formatValue = RDFFormatType.getStringValue(conf.RDFFormatValue);
+		String formatValue = RDFFormatType.getStringValue(conf
+				.getRDFFormatValue());
 
 		comboBoxFormat.setValue(formatValue);
-		useHandler.setValue(conf.UseStatisticalHandler);
+		useHandler.setValue(conf.isUseStatisticalHandler());
 
-		if (conf.failWhenErrors) {
+		if (conf.isFailWhenErrors()) {
 			failsWhenErrors.setValue(STOP);
 		} else {
 			failsWhenErrors.setValue(CONTINUE);
@@ -569,7 +578,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		verticalLayoutOnly.setSpacing(true);
 
 		// textFieldOnly
-		textFieldOnly = new TextField("If directory, process only files with extension:");
+		textFieldOnly = new TextField(
+				"If directory, process only files with extension:");
 		textFieldOnly.setImmediate(false);
 		textFieldOnly.setWidth("50px");
 		textFieldOnly.setInputPrompt(".ttl");
@@ -611,7 +621,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				}
 			}
 		});
-		
+
 		verticalLayoutOnly.addComponent(directoryGroup);
 
 		//Adding component for specify file extension
