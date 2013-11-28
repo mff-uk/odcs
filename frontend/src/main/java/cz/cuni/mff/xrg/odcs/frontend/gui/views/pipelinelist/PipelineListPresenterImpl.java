@@ -8,6 +8,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -19,6 +21,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresen
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +54,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	private Date lastLoad = new Date(0L);
 	@Autowired
 	private SchedulePipeline schedulePipeline;
+	@Autowired
+	private ScheduleFacade scheduleFacade;
 
 	@Override
 	public Object enter() {
@@ -111,7 +117,20 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 			return;
 		}
 		String message = "Would you really like to delete the " + pipeline.getName() + " pipeline and all associated records (DPU instances e.g.)?";
-		//String message = "Would you really like to delete this pipeline and all associated records (DPU instances e.g.)?";
+		List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
+		if (!schedules.isEmpty()) {
+			HashSet<String> usersWithSchedules = new HashSet<>();
+			for (Schedule schedule : schedules) {
+				usersWithSchedules.add(schedule.getOwner().getUsername());
+			}
+			Iterator<String> it = usersWithSchedules.iterator();
+			String users = it.next();
+			while (it.hasNext()) {
+				users = users + ", " + it.next();
+			}
+			String scheduleMessage = String.format(" This pipeline is schedulled by user(s) %s. Delete anyway?", users);
+			message = message + scheduleMessage;
+		}
 		ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
 			@Override
 			public void onClose(ConfirmDialog cd) {

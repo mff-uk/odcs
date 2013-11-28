@@ -742,7 +742,7 @@ public class PipelineEdit extends ViewComponent {
 
 		final VisibilityType visibility = (VisibilityType) pipelineVisibility.getValue();
 		if (visibility == VisibilityType.PUBLIC && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
-			ConfirmDialog.show(UI.getCurrent(), "Saving public pipeline", "Saving pipeline as public will made also all of its DPUs public! Continue with save?", "Save", "Cancel", new ConfirmDialog.Listener() {
+			ConfirmDialog.show(UI.getCurrent(), "Saving public pipeline", "Saving pipeline as public will cause all DPU templates, the pipeline is using, to become public. When they become public, they cannot be reverted to private.", "Save", "Cancel", new ConfirmDialog.Listener() {
 				@Override
 				public void onClose(ConfirmDialog cd) {
 					if (cd.isConfirmed()) {
