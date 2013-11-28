@@ -13,21 +13,79 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
  */
 public class RDFExtractorConfig extends DPUConfigObjectBase {
 
-	public String SPARQL_endpoint = "";
+	private String SPARQL_endpoint;
 
-	public String Host_name = "";
+	private String Host_name;
 
-	public String Password = "";
+	private String Password;
 
-	public List<String> GraphsUri = new LinkedList<>();
+	private List<String> GraphsUri;
 
-	public String SPARQL_query = "";
+	private String SPARQL_query;
 
-	public boolean ExtractFail = true;
+	private boolean ExtractFail;
 
-	public boolean UseStatisticalHandler = true;
+	private boolean UseStatisticalHandler;
 
-	public boolean failWhenErrors = false;
+	private boolean failWhenErrors;
+
+	public RDFExtractorConfig() {
+		this.SPARQL_endpoint = "";
+		this.Host_name = "";
+		this.Password = "";
+		this.GraphsUri = new LinkedList<>();
+		this.SPARQL_query = "";
+		this.ExtractFail = true;
+		this.UseStatisticalHandler = true;
+		this.failWhenErrors = false;
+	}
+
+	public RDFExtractorConfig(String SPARQL_endpoint, String Host_name,
+			String Password,
+			List<String> GraphsUri, String SPARQL_query, boolean ExtractFail,
+			boolean UseStatisticalHandler, boolean failWhenErrors) {
+
+		this.SPARQL_endpoint = SPARQL_endpoint;
+		this.Host_name = Host_name;
+		this.Password = Password;
+		this.GraphsUri = GraphsUri;
+		this.SPARQL_query = SPARQL_query;
+		this.ExtractFail = ExtractFail;
+		this.UseStatisticalHandler = UseStatisticalHandler;
+		this.failWhenErrors = failWhenErrors;
+	}
+
+	public String getSPARQLEndpoint() {
+		return SPARQL_endpoint;
+	}
+
+	public String getHostName() {
+		return Host_name;
+	}
+
+	public String getPassword() {
+		return Password;
+	}
+
+	public List<String> getGraphsUri() {
+		return GraphsUri;
+	}
+
+	public String getSPARQLQuery() {
+		return SPARQL_query;
+	}
+
+	public boolean isExtractFail() {
+		return ExtractFail;
+	}
+
+	public boolean isUsedStatisticalHandler() {
+		return UseStatisticalHandler;
+	}
+
+	public boolean isFailWhenErrors() {
+		return failWhenErrors;
+	}
 
 	@Override
 	public boolean isValid() {
