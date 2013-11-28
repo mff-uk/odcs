@@ -45,7 +45,6 @@ class OSGIModuleFacadeConfig {
 	private static final String PACKAGE_BASE = "cz.cuni.mff.xrg.odcs.commons;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.configuration;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.context;version=\"1.0.0\","
-			+ "cz.cuni.mff.xrg.odcs.commons.test.context;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.data;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.dpu;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.dpu.annotation;version=\"1.0.0\","
