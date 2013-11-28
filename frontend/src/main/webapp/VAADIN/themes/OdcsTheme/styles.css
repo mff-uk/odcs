@@ -176,6 +176,14 @@ overflow: auto !important;
 	color: blue;*/
 }
 
+.loginError {
+	background-color: red;
+	color: white;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 8px;
+}
+
 
 
   

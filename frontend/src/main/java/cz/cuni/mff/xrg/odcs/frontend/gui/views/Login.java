@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
 
@@ -40,14 +41,15 @@ public class Login extends ViewComponent {
     private VerticalLayout layout;
     private TextField login;
     private PasswordField password;
+	private Label error;
 	
+	@Autowired
 	private AuthenticationService authService;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         buildMainLayout();
         setCompositionRoot(mainLayout);
-		authService = App.getApp().getBean(AuthenticationService.class);
     }
 
     private void buildMainLayout() {
@@ -75,6 +77,11 @@ public class Login extends ViewComponent {
         logo.setValue("<h1>ODCleanStore</h1>");
         logo.setContentMode(ContentMode.HTML);
         layout.addComponent(logo);
+		
+		error = new Label();
+		error.setStyleName("loginError");
+		error.setVisible(false);
+		layout.addComponent(error);
 
         login = new TextField("Login:");
 		login.focus();
@@ -102,6 +109,8 @@ public class Login extends ViewComponent {
     private void login() {
         try {
 			authService.login(login.getValue(), password.getValue(), RequestHolder.getRequest());
+			
+			error.setVisible(false);
 
 			// login is successful
 			App.getApp().getMain().refreshUserBar();
@@ -110,7 +119,9 @@ public class Login extends ViewComponent {
 		} catch (AuthenticationException ex) {
 			password.setValue("");
 			LOG.info("Invalid credentials for username {}.", login.getValue());
-			Notification.show(String.format("Invalid credentials for username %s.", login.getValue()), Notification.Type.ERROR_MESSAGE);
+			error.setValue(String.format("Invalid credentials for username %s.", login.getValue()));
+			error.setVisible(true);
+			error.setSizeUndefined();
 		} 
     }
 
