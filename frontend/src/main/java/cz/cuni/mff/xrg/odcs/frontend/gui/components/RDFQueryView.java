@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import org.openrdf.model.impl.URIImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
@@ -213,15 +214,21 @@ public class RDFQueryView extends CustomComponent {
 			}
 		});
 		resultTable.setCellStyleGenerator(new CustomTable.CellStyleGenerator() {
-
 			@Override
 			public String getStyle(CustomTable source, Object itemId, Object propertyId) {
-				if(propertyId == null) {
+				if (propertyId == null) {
 					return null;
 				}
-				String value = (String)source.getItem(itemId).getItemProperty(propertyId).getValue();
-				if(value.startsWith("http://")) {
+				Object oValue = source.getItem(itemId).getItemProperty(propertyId).getValue();
+				if (oValue.getClass() == URIImpl.class) {
 					return "link";
+				} else if (oValue.getClass() == String.class) {
+					String value = (String) oValue;
+					if (value.startsWith("http://")) {
+						return "link";
+					} else {
+						return null;
+					}
 				} else {
 					return null;
 				}
@@ -230,8 +237,16 @@ public class RDFQueryView extends CustomComponent {
 		resultTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				String uri = (String) event.getItem().getItemProperty(event.getPropertyId()).getValue();
-				if(!uri.startsWith("http://")) {
+				Object oValue = event.getItem().getItemProperty(event.getPropertyId()).getValue();
+				String uri = null;
+				if (oValue.getClass() == URIImpl.class) {
+					uri = ((URIImpl) oValue).stringValue();
+				} else if (oValue.getClass() == String.class) {
+					uri = (String) oValue;
+					if (!uri.startsWith("http://")) {
+						return;
+					}
+				} else {
 					return;
 				}
 				queryText.setValue(String.format("DESCRIBE <%s>", uri));
