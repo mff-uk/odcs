@@ -12,13 +12,45 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  */
 public class FileLoaderConfig extends DPUConfigObjectBase {
 
-	public String FilePath = "";
+	private String FilePath;
 
-	public RDFFormatType RDFFileFormat = RDFFormatType.AUTO;
+	private RDFFormatType RDFFileFormat;
 
-	public boolean DiffName = false;
+	private boolean DiffName;
 
-	public boolean validDataBefore = false;
+	private boolean validDataBefore;
+
+	public FileLoaderConfig() {
+		this.FilePath = "";
+		this.RDFFileFormat = RDFFormatType.AUTO;
+		this.DiffName = false;
+		this.validDataBefore = false;
+	}
+
+	public FileLoaderConfig(String FilePath, RDFFormatType RDFFileFormat,
+			boolean DiffName, boolean validDataBefore) {
+		this.FilePath = FilePath;
+		this.RDFFileFormat = RDFFileFormat;
+		this.DiffName = DiffName;
+		this.validDataBefore = validDataBefore;
+	}
+
+	public String getFilePath() {
+		return FilePath;
+	}
+
+	public RDFFormatType getRDFFileFormat() {
+		return RDFFileFormat;
+	}
+
+	public boolean isDiffName() {
+		return DiffName;
+	}
+
+	public boolean isValidDataBefore() {
+		return validDataBefore;
+	}
+	
 
 	@Override
 	public boolean isValid() {
