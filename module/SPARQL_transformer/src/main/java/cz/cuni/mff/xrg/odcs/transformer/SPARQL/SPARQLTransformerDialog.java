@@ -63,8 +63,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	 */
 	@Override
 	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
-		txtQuery.setValue(conf.SPARQL_Update_Query);
-		isConstructQuery = conf.isConstructType;
+		txtQuery.setValue(conf.getSPARQL_Update_Query());
+		isConstructQuery = conf.isIsConstructType();
 	}
 
 	/**
@@ -94,10 +94,11 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 			if (isConstructQuery && !hasValidMoreGraphsForContruct(query)) {
 				throw new SPARQLValidationException(validationErrorMessage);
 			} else {
-				SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
-				conf.SPARQL_Update_Query = txtQuery.getValue().trim();
-				conf.isConstructType = isConstructQuery;
+				String SPARQL_Update_Query = txtQuery.getValue().trim();
+				boolean isConstructType = isConstructQuery;
 
+				SPARQLTransformerConfig conf=new SPARQLTransformerConfig(
+						SPARQL_Update_Query, isConstructType);
 				return conf;
 			}
 		}
