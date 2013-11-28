@@ -8,12 +8,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import org.springframework.core.annotation.Order;
 
 /**
  * Aspect for automatically reconnection in case of database problems.
@@ -23,14 +23,21 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
  * outage.
  * 
  * @author Petyr
+ * @author Jan Vojt
  * 
  */
 @Aspect
+@Order(1)
 class DatabaseReconnectAspect {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(DatabaseReconnectAspect.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DatabaseReconnectAspect.class);
 
+	/**
+	 * Configuration how many subsequent failures must occur before sending
+	 * email notification.
+	 */
+	private static final int NOTIFY_AFTER_RETRIES = 2;
+	
 	/**
 	 * Application configuration.
 	 */
@@ -57,7 +64,7 @@ class DatabaseReconnectAspect {
 	/**
 	 * True if email for last outage has been send.
 	 */
-	private boolean emailSent = false;
+	private static boolean emailSent = false;
 
 	@PostConstruct
 	public void configure() {
@@ -86,7 +93,6 @@ class DatabaseReconnectAspect {
 	 * @return
 	 * @throws Throwable
 	 */
-	@Transactional
 	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade.*(..)) || "
 			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade.*(..)) || "
 			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade.*(..)) || "
@@ -94,39 +100,36 @@ class DatabaseReconnectAspect {
 			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade.*(..)) || "
 			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefixFacade.*(..))")
 	public Object failureTolerant(ProceedingJoinPoint pjp) throws Throwable {
-		// first try
-		try {
-			return pjp.proceed();
-		} catch (RuntimeException ex) {
-			LOG.warn("Database is down after 1 attempts.");
-			notify(ex);
-		}
 		
-		// now we for sure failed at least once so lets
-		// try it again and again .. 
-		
-		int attempts = 1;
+		int attempts = 0;
 		while (true) {
 			try {
-				// we count attempts only if we have
-				// finite number of tries
+				// count attempts so we can check number of retries later
 				attempts++;
 				Object result = pjp.proceed();
-				// reset email
+				
+				// reset email status on success
 				emailSent = false;
 				return result;
-			} catch (RuntimeException ex) {
+				
+			} catch (RuntimeException ex) { // TODO more specific exception?
+				
 				LOG.warn("Database is down after {} attempts.", attempts);
+				
+				// check whether we should notify admin
+				if (attempts == NOTIFY_AFTER_RETRIES) {
+					notify(ex);
+				}
+				
+				// check whether retry attempts were exhausted
 				if (retries != -1 && attempts > retries) {
-					// we have wait for too long
-					LOG.error("Giving up on database after {} retries.",
-							attempts);
-					// and re-throw
+					// we have waited for too long
+					LOG.error("Giving up on database after {} retries.", attempts);
 					throw ex;
 				}
 			}
 
-			// wait for some time before next try
+			// wait for some time before the next try
 			try {
 				Thread.sleep(wait);
 			} catch (InterruptedException e) {
@@ -143,8 +146,7 @@ class DatabaseReconnectAspect {
 	private synchronized void notify(Exception ex) {
 		if (emailSender != null && appConfig != null && !emailSent) {
 			final String subject = "ODCS - database error";
-			String body = "Database is down with exception: </br>" +
-					ex.toString();
+			String body = "Database is down with exception: </br>" + ex.toString();
 			String recipient = appConfig.getString(ConfigProperty.EMAIL_ADMIN);
 			emailSender.send(subject, body, recipient);
 			// 
