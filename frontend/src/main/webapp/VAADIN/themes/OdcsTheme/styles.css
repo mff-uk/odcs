@@ -172,8 +172,8 @@ overflow: auto !important;
 }
 
 .v-table-cell-content-link {
-	/*text-decoration: underline;
-	color: blue;*/
+	color: blue;
+	cursor: pointer;
 }
 
 .loginError {
