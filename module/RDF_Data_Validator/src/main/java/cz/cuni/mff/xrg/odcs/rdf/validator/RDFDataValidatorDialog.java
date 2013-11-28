@@ -116,8 +116,8 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 
 	@Override
 	public void setConfiguration(RDFDataValidatorConfig conf) throws ConfigException {
-		failExecution.setValue(conf.isStopExecution());
-		createOutput.setValue(conf.isSometimesOutput());
+		failExecution.setValue(conf.canStopExecution());
+		createOutput.setValue(conf.hasSometimesOutput());
 	}
 
 	@Override

@@ -66,11 +66,11 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 		return fileExtractType;
 	}
 
-	public boolean isOnlyThisSuffix() {
+	public boolean useOnlyThisSuffix() {
 		return OnlyThisSuffix;
 	}
 
-	public boolean isUseStatisticalHandler() {
+	public boolean isUsedStatisticalHandler() {
 		return UseStatisticalHandler;
 	}
 

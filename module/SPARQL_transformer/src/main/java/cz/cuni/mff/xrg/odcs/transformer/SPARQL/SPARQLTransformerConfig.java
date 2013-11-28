@@ -24,11 +24,11 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 		this.isConstructType = isConstructType;
 	}
 
-	public String getSPARQL_Update_Query() {
+	public String getSPARQLUpdateQuery() {
 		return SPARQL_Update_Query;
 	}
 
-	public boolean isIsConstructType() {
+	public boolean isConstructType() {
 		return isConstructType;
 	}
 

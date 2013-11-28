@@ -21,11 +21,11 @@ public class RDFDataValidatorConfig extends DPUConfigObjectBase {
 		this.sometimesOutput = sometimesOutput;
 	}
 
-	public boolean isStopExecution() {
+	public boolean canStopExecution() {
 		return stopExecution;
 	}
 
-	public boolean isSometimesOutput() {
+	public boolean hasSometimesOutput() {
 		return sometimesOutput;
 	}
 	

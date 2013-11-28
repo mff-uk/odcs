@@ -268,7 +268,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				.getRDFFormatValue());
 
 		comboBoxFormat.setValue(formatValue);
-		useHandler.setValue(conf.isUseStatisticalHandler());
+		useHandler.setValue(conf.isUsedStatisticalHandler());
 
 		if (conf.isFailWhenErrors()) {
 			failsWhenErrors.setValue(STOP);

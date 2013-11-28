@@ -45,9 +45,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final FileExtractType extractType = config.getFileExtractType();
 		final String path = config.getPath();
 		final String fileSuffix = config.getFileSuffix();
-		final boolean onlyThisSuffix = config.isOnlyThisSuffix();
+		final boolean onlyThisSuffix = config.useOnlyThisSuffix();
 
-		boolean useStatisticHandler = config.isUseStatisticalHandler();
+		boolean useStatisticHandler = config.isUsedStatisticalHandler();
 		boolean failWhenErrors = config.isFailWhenErrors();
 
 		final HandlerExtractType handlerExtractType = HandlerExtractType

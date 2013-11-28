@@ -63,8 +63,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	 */
 	@Override
 	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
-		txtQuery.setValue(conf.getSPARQL_Update_Query());
-		isConstructQuery = conf.isIsConstructType();
+		txtQuery.setValue(conf.getSPARQLUpdateQuery());
+		isConstructQuery = conf.isConstructType();
 	}
 
 	/**
