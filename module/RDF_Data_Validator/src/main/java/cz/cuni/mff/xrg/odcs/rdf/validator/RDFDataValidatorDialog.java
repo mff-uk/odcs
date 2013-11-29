@@ -131,10 +131,10 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 
 	}
 
-	@Override
-	public String getDescription() {
-		String description = "Error validation report output was created.";
-
-		return description;
-	}
+//	@Override
+//	public String getDescription() {
+//		String description = "Error validation report output was created.";
+//
+//		return description;
+//	}
 }

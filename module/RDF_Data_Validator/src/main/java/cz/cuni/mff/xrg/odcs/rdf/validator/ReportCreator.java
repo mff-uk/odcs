@@ -50,7 +50,7 @@ public class ReportCreator {
 
 		String prefix;
 
-		int index = graphName.indexOf("du/");
+		int index = graphName.indexOf("/du/");
 
 		if (index > -1) {
 			prefix = graphName.substring(0, index);
@@ -58,7 +58,7 @@ public class ReportCreator {
 			prefix = graphName;
 		}
 
-		return prefix + "validation/error/";
+		return prefix + "/validation/error/";
 	}
 
 	private void addReports(RDFDataUnit repository) {

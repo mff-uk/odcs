@@ -77,7 +77,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		if (stopExecution) {
 			dataOutput.cleanAllData();
 			throw new RDFException(
-					"RDFDataValidator found some invalid data - FAIL pipeline execution");
+					"RDFDataValidator found some invalid data - pipeline execution is stopped");
 		}
 	}
 
