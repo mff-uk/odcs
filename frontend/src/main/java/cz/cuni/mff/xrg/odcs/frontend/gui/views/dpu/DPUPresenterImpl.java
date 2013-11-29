@@ -239,14 +239,14 @@ public class DPUPresenterImpl implements DPUPresenter {
 						view.saveDPUTemplate();
 						view.refresh();
 					}
-					selectedDpu = dpu;
 					view.selectNewDPU(dpu);
+					selectedDpu = dpu;
 				}
 			});
 
 		} else {
-			selectedDpu = dpu;
 			view.selectNewDPU(dpu);
+			selectedDpu = dpu;
 		}
 	}
 
@@ -268,13 +268,14 @@ public class DPUPresenterImpl implements DPUPresenter {
 	 * @return result IndexedContainer for {@link #instancesTable}
 	 */
 	@Override
-	public IndexedContainer getTableData() {
-		return getPipelinesForDpu(selectedDpu);
+	public IndexedContainer getTableData(DPUTemplateRecord dpu) {
+		return getPipelinesForDpu(dpu);
 	}
 
 	@Override
 	public Object enter() {
 		navigator = ((AppEntry)UI.getCurrent()).getNavigation();
+		selectedDpu = null;
 		Object viewObject = view.enter(this);
 		return viewObject;
 	}

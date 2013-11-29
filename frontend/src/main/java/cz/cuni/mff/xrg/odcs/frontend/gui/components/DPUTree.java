@@ -336,4 +336,15 @@ public class DPUTree extends CustomComponent {
 		topLine.setVisible(isExpandable);
 		buttonCreateDPU.setVisible(isExpandable);
 	}
+
+	@Override
+	public Collection<?> getListeners(Class<?> eventType) {
+		if(eventType == ItemClickEvent.class) {
+			return dpuTree.getListeners(eventType);
+		}
+		return super.getListeners(eventType);
+	}
+	
+
+	
 }

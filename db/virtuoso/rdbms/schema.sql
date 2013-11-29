@@ -200,7 +200,7 @@ CREATE TABLE "DB"."ODCS"."PPL_EDGE"
   "graph_id" INTEGER,
   "node_from_id" INTEGER,
   "node_to_id" INTEGER,
-  "data_unit_name" VARCHAR(45),
+  "data_unit_name" VARCHAR(2048),
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_PPL_EDGE_graph_id" ON "DB"."ODCS"."PPL_EDGE" ("graph_id");

@@ -86,7 +86,7 @@ public interface DPUPresenter extends Presenter {
 	 * Get data(pipelines) for selected DPU.
 	 * @return 
 	 */
-	public IndexedContainer getTableData();
+	public IndexedContainer getTableData(DPUTemplateRecord dpu);
 	
 	public interface DPUView {
 	
