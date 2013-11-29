@@ -132,7 +132,7 @@ public class Settings extends ViewComponent {
 
 		//layout with tabs
 		tabsLayout = new VerticalLayout();
-		tabsLayout.setWidth("100%");
+		tabsLayout.setWidth("170px");
 		tabsLayout.setImmediate(true);
 
 		//layout with my account components
@@ -340,8 +340,8 @@ public class Settings extends ViewComponent {
 		shownTab = accountButton;
 		mainLayout.addComponent(tabsLayout, 0, 0);
 		mainLayout.addComponent(accountLayout, 1, 0);
-		mainLayout.setColumnExpandRatio(0, 0.15f);
-		mainLayout.setColumnExpandRatio(1, 0.85f);
+		//mainLayout.setColumnExpandRatio(0, 0.15f);
+		mainLayout.setColumnExpandRatio(1, 1f);
 		
 		return mainLayout;
 	}
