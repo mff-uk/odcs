@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -344,8 +345,19 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			DPUInstanceRecord dpu = node.getDpuInstance();
 			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY(), false);
 		}
+		EdgeCompiler edgeCompiler = new EdgeCompiler();
+		boolean hadInvalidMappings = false;
+		String message = "Pipeline contained invalid mapping(s). They were removed. List of removed mappings:\n";
 		for (Edge edge : graph.getEdges()) {
+			List<String> invalidMappings = edgeCompiler.update(edge, dpuExplorer.getOutputs(edge.getFrom().getDpuInstance()), dpuExplorer.getInputs(edge.getTo().getDpuInstance()));
+			if(!invalidMappings.isEmpty()) {
+				hadInvalidMappings = true;
+				message += String.format("Edge from %s to %s: %s.\n", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
+			}
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
+		}
+		if(hadInvalidMappings) {
+			Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
 		}
 	}
 
