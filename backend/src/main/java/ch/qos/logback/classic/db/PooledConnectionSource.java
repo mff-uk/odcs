@@ -20,17 +20,19 @@ public class PooledConnectionSource extends DriverManagerConnectionSource {
 	private DataSource pool;
 	
 	/**
+	 * Application configuration.
+	 */
+	private final AppConfig appConfig;
+	
+	public PooledConnectionSource(AppConfig appConfig) {
+		this.appConfig = appConfig;
+	}
+	
+	/**
 	 * Setup connection pool.
 	 */
 	@Override
 	public void start() {
-		// This is ugly, but Spring's autowiring is not available yet. Spring
-		// initializes logging (and thus logback) before application context is
-		// initialized. This could be circumvented by setting up a listener for
-		// Spring context initialization and replace logging appender afterwards.
-		// However, this is too complicated, so we use this simple but ugly
-		// manual initialization of dataSource instead. :(
-		AppConfig appConfig = AppConfig.loadFromHome();
 		BasicDataSource dataSource = new ConfigurableDataSource(
 				appConfig.getSubConfiguration(ConfigProperty.VIRTUOSO_RDBMS)
 		);

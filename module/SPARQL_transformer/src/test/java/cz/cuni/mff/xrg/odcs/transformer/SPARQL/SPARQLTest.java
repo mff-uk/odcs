@@ -19,14 +19,19 @@ public class SPARQLTest {
 		TestEnvironment.virtuosoConfig.user = "dba";
 		TestEnvironment.virtuosoConfig.password = "dba";
 	}
-	
+
 	@Test
 	public void constructAllTest() throws Exception {
 		// prepare dpu
 		SPARQLTransformer trans = new SPARQLTransformer();
-		SPARQLTransformerConfig config = new SPARQLTransformerConfig();
-		config.isConstructType = true;
-		config.SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+		
+		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+		boolean isConstructType = true;
+
+		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+				SPARQL_Update_Query, isConstructType);
+
+
 		trans.configureDirectly(config);
 
 		// prepare test environment
@@ -35,7 +40,7 @@ public class SPARQLTest {
 		RDFDataUnit input = env.createRdfInputFromResource("input", false,
 				"metadata.ttl", RDFFormat.TURTLE);
 		RDFDataUnit output = env.createRdfOutput("output", false);
-		
+
 		// some triples has been loaded 
 		assertTrue(input.getTripleCount() > 0);
 		// run
@@ -54,9 +59,12 @@ public class SPARQLTest {
 	public void constructAllTestVirtuoso() throws Exception {
 		// prepare dpu
 		SPARQLTransformer trans = new SPARQLTransformer();
-		SPARQLTransformerConfig config = new SPARQLTransformerConfig();
-		config.isConstructType = true;
-		config.SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+		boolean isConstructType = true;
+		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+		
+		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+				SPARQL_Update_Query, isConstructType);
+		
 		trans.configureDirectly(config);
 
 		// prepare test environment
@@ -65,7 +73,7 @@ public class SPARQLTest {
 		RDFDataUnit input = env.createRdfInputFromResource("input", true,
 				"metadata.ttl", RDFFormat.TURTLE);
 		RDFDataUnit output = env.createRdfOutput("output", true);
-		
+
 		// some triples has been loaded 
 		assertTrue(input.getTripleCount() > 0);
 		// run
@@ -79,6 +87,4 @@ public class SPARQLTest {
 			env.release();
 		}
 	}
-	
-	
 }

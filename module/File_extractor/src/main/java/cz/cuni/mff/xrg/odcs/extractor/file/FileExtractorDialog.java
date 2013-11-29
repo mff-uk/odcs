@@ -53,12 +53,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	private TextField textFieldOnly;
 
+	private OptionGroup directoryGroup;
+
 	/**
 	 * TextField to set destination of the file
 	 */
 	private TextField textFieldPath;
 
-	private HorizontalLayout horizontalLayoutOnly;
+	private VerticalLayout verticalLayoutOnly;
 
 	private HorizontalLayout horizontalLayoutFormat;
 
@@ -92,6 +94,10 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			+ "extracted some triples with an error.";
 
 	private static final String CONTINUE = "Extract only triples with no errors.";
+
+	private static final String FILE_SKIP = "When there is a problem parsing a file, it is skipped";
+
+	private static final String FILE_ERROR = "When there is a program parsing a file, extraction ends with error";
 
 	/**
 	 * Basic constructor.
@@ -133,8 +139,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.PATH_TO_DIRECTORY));
 		pathType.addItem(FileExtractType.getDescriptionByType(
-				FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
-		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.HTTP_URL));
 
 		pathType.setValue(FileExtractType.getDescriptionByType(
@@ -159,52 +163,60 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		if (!textFieldPath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
-			FileExtractorConfig conf = new FileExtractorConfig();
 
+			String path;
 			if (extractType == FileExtractType.UPLOAD_FILE) {
-				conf.Path = FileUploadReceiver.path + "/" + textFieldPath
+				path = FileUploadReceiver.path + "/" + textFieldPath
 						.getValue().trim();
 
 			} else {
-				conf.Path = textFieldPath.getValue().trim();
+				path = textFieldPath.getValue().trim();
 			}
 
+
+			String fileSuffix;
+			boolean onlyThisSuffix;
 
 			if (extractType == FileExtractType.PATH_TO_DIRECTORY
 					|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
 
-				conf.FileSuffix = textFieldOnly.getValue().trim();
+				fileSuffix = textFieldOnly.getValue().trim();
 
 				if (textFieldOnly.getValue().trim().isEmpty()) {
-					conf.OnlyThisSuffix = false;
+					onlyThisSuffix = false;
 				} else {
-					conf.OnlyThisSuffix = true;
+					onlyThisSuffix = true;
 				}
 
 			} else {
-				conf.FileSuffix = "";
-				conf.OnlyThisSuffix = false;
+				fileSuffix = "";
+				onlyThisSuffix = false;
 			}
 
 			String formatValue = (String) comboBoxFormat.getValue();
 
-			conf.RDFFormatValue = RDFFormatType.getTypeByString(formatValue);
-			conf.UseStatisticalHandler = useHandler.getValue();
+			RDFFormatType RDFFormatValue = RDFFormatType.getTypeByString(
+					formatValue);
+			boolean useStatisticalHandler = useHandler.getValue();
 
 			String selectedValue = (String) failsWhenErrors.getValue();
 
+			boolean failWhenErrors;
 			if (selectedValue.equals(STOP)) {
-				conf.failWhenErrors = true;
+				failWhenErrors = true;
 			} else if (selectedValue.endsWith(CONTINUE)) {
-				conf.failWhenErrors = false;
+				failWhenErrors = false;
 			} else {
 				throw new ConfigException(
 						"No value for case using statistical and error handler");
 			}
 
-			conf.fileExtractType = extractType;
+			FileExtractorConfig config = new FileExtractorConfig(path,
+					fileSuffix,
+					RDFFormatValue, extractType, onlyThisSuffix,
+					useStatisticalHandler, failWhenErrors);
 
-			return conf;
+			return config;
 		}
 	}
 
@@ -221,14 +233,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	@Override
 	public void setConfiguration(FileExtractorConfig conf) {
 
-		extractType = conf.fileExtractType;
+		extractType = conf.getFileExtractType();
 		pathType.setValue(FileExtractType.getDescriptionByType(
 				extractType));
 
 
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 
-			String filepath = conf.Path.trim();
+			String filepath = conf.getPath().trim();
 			String filename = filepath.substring(filepath.lastIndexOf("/") + 1,
 					filepath.length());
 
@@ -237,21 +249,28 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			textFieldPath.setReadOnly(true); // forbid
 
 		} else {
-			textFieldPath.setValue(conf.Path.trim());
+			textFieldPath.setValue(conf.getPath().trim());
 		}
 
 		if (extractType == FileExtractType.PATH_TO_DIRECTORY
 				|| extractType == FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES) {
 
-			textFieldOnly.setValue(conf.FileSuffix.trim());
+			textFieldOnly.setValue(conf.getFileSuffix().trim());
+
+			if (extractType == FileExtractType.PATH_TO_DIRECTORY) {
+				directoryGroup.setValue(FILE_ERROR);
+			} else {
+				directoryGroup.setValue(FILE_SKIP);
+			}
 		}
 
-		String formatValue = RDFFormatType.getStringValue(conf.RDFFormatValue);
+		String formatValue = RDFFormatType.getStringValue(conf
+				.getRDFFormatValue());
 
 		comboBoxFormat.setValue(formatValue);
-		useHandler.setValue(conf.UseStatisticalHandler);
+		useHandler.setValue(conf.isUsedStatisticalHandler());
 
-		if (conf.failWhenErrors) {
+		if (conf.isFailWhenErrors()) {
 			failsWhenErrors.setValue(STOP);
 		} else {
 			failsWhenErrors.setValue(CONTINUE);
@@ -509,14 +528,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					extractType = FileExtractType.PATH_TO_DIRECTORY;
 					prepareDirectoryForm();
 
-				} else if (event.getProperty().getValue().equals(FileExtractType
-						.getDescriptionByType(
-						FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
-
-					extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
-					prepareDirectoryForm();
-
-					//If selected "Extract file from the given HTTP URL" option
 				} else if (event.getProperty().getValue().equals(
 						FileExtractType.getDescriptionByType(
 						FileExtractType.HTTP_URL))) {
@@ -562,24 +573,61 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 		// layoutOnly
 
-		horizontalLayoutOnly = new HorizontalLayout();
-		horizontalLayoutOnly.setImmediate(false);
-		horizontalLayoutOnly.setSpacing(true);
-
-		horizontalLayoutOnly.addComponent(new Label(
-				"If directory, process only files with extension:"));
+		verticalLayoutOnly = new VerticalLayout();
+		verticalLayoutOnly.setImmediate(false);
+		verticalLayoutOnly.setSpacing(true);
 
 		// textFieldOnly
-		textFieldOnly = new TextField("");
+		textFieldOnly = new TextField(
+				"If directory, process only files with extension:");
 		textFieldOnly.setImmediate(false);
 		textFieldOnly.setWidth("50px");
 		textFieldOnly.setInputPrompt(".ttl");
-		horizontalLayoutOnly.addComponent(textFieldOnly);
-		horizontalLayoutOnly.setComponentAlignment(textFieldOnly,
-				Alignment.TOP_RIGHT);
+		verticalLayoutOnly.addComponent(textFieldOnly);
+
+		directoryGroup = new OptionGroup();
+		directoryGroup.setImmediate(false);
+		directoryGroup.setWidth("-1px");
+		directoryGroup.setHeight("-1px");
+		directoryGroup.setMultiSelect(false);
+
+		directoryGroup.addItem(FILE_SKIP);
+		directoryGroup.addItem(FILE_ERROR);
+
+		switch (extractType) {
+			case PATH_TO_DIRECTORY:
+				directoryGroup.setValue(FILE_ERROR);
+				break;
+
+			case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
+			default:
+				directoryGroup.setValue(FILE_SKIP);
+				extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+				break;
+		}
+
+		directoryGroup.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				String selectedItem = directoryGroup.getValue().toString();
+
+				switch (selectedItem) {
+					case FILE_SKIP:
+						extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+						break;
+					case FILE_ERROR:
+						extractType = FileExtractType.PATH_TO_DIRECTORY;
+						break;
+				}
+			}
+		});
+
+		verticalLayoutOnly.addComponent(directoryGroup);
 
 		//Adding component for specify file extension
-		gridLayoutCore.addComponent(horizontalLayoutOnly, 0, 2);
+		gridLayoutCore.addComponent(verticalLayoutOnly, 0, 2);
+
+
 
 	}
 

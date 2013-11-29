@@ -7,9 +7,14 @@ import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
 import cz.cuni.mff.xrg.odcs.backend.communication.Server;
+import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
+import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
+import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
+import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppenderImpl;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import java.io.File;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 
@@ -155,7 +160,7 @@ public class AppEntry {
 			}
 		}
 				
-		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
 		RollingFileAppender rfAppender = new RollingFileAppender();
 		rfAppender.setContext(loggerContext);
@@ -190,9 +195,30 @@ public class AppEntry {
 		
 		ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
 		logbackLogger.addAppender(rfAppender);
-
 	}
 
+	private void initLogbackSqlAppender() {
+		
+		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		
+		SqlAppender sqlAppender = context.getBean(SqlAppender.class);
+		sqlAppender.setContext(loggerContext);
+		
+		MdcExecutionLevelFilter mdcLevelFilter = new MdcExecutionLevelFilter();
+		mdcLevelFilter.setContext(loggerContext);
+		sqlAppender.addFilter(mdcLevelFilter);
+		
+		MdcFilter mdcFilter = new MdcFilter();
+		mdcFilter.setRequiredKey(Log.MDC_EXECUTION_KEY_NAME);
+		mdcFilter.setContext(loggerContext);
+		sqlAppender.addFilter(mdcFilter);
+		
+		// start add under the root loger
+		sqlAppender.start();
+		ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+		logbackLogger.addAppender(sqlAppender);
+	}
+	
 	/**
 	 * Main execution method.
 	 *
@@ -208,6 +234,9 @@ public class AppEntry {
 
 		// initialise
 		initSpring();
+		
+		// the sql appender cooperate with spring, so we need spring first
+		initLogbackSqlAppender();
 		
 		// Initialize DPUs by preloading all thier JAR bundles
 		// TODO use lazyloading instead of preload?

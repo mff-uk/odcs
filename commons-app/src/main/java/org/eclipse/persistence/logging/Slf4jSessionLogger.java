@@ -64,6 +64,8 @@ import org.springframework.util.StringUtils;
  */
 public class Slf4jSessionLogger extends AbstractSessionLog {
  
+	private static final Logger LOG = LoggerFactory.getLogger(Slf4jSessionLogger.class);
+	
 	public static final String ECLIPSELINK_NAMESPACE = "org.eclipse.persistence.logging";
 	public static final String DEFAULT_CATEGORY = "default";
  
@@ -71,7 +73,7 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
 			+ "." + DEFAULT_CATEGORY;
  
 	private Map<Integer, LogLevel> mapLevels;
-	private Map<String, Logger> categoryLoggers = new HashMap<String, Logger>();
+	private final Map<String, Logger> categoryLoggers = new HashMap<String, Logger>();
  
 	public Slf4jSessionLogger() {
 		super();
@@ -148,6 +150,7 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
 	/**
 	 * Return true if SQL logging should log visible bind parameters. If the
 	 * shouldDisplayData is not set, return false.
+	 * @return 
 	 */
 	@Override
 	public boolean shouldDisplayData() {
@@ -184,6 +187,9 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
  
 		if (!StringUtils.hasText(category)
 				|| !this.categoryLoggers.containsKey(category)) {
+			
+			LOG.warn("Unknown category '{}', the default is used.", category);
+			
 			category = DEFAULT_CATEGORY;
 		}
  

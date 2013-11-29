@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -24,12 +23,12 @@ public class Log implements Serializable, DataObject {
 	 * Log property name for logging messages produced by
 	 * {@link PipelineExecution}.
 	 */
-	public static final String MDPU_EXECUTION_KEY_NAME = "execution";
+	public static final String MDC_EXECUTION_KEY_NAME = "execution";
 
 	/**
 	 * Log property name for logging messages produced
 	 * by {@link DPUInstanceRecord}. Such logs usually contain
-	 * a {@link #MDPU_EXECUTION_KEY_NAME} as well.
+	 * a {@link #MDC_EXECUTION_KEY_NAME} as well.
 	 */
 	public static final String MDC_DPU_INSTANCE_KEY_NAME = "dpuInstance";	
 	

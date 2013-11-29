@@ -597,27 +597,29 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			throw new SPARQLValidationException(errorMessage);
 		} else {
 			saveEditedTexts();
-			RDFExtractorConfig config = new RDFExtractorConfig();
-			config.SPARQL_endpoint = (String) textFieldSparql.getValue();
-			config.Host_name = textFieldNameAdm.getValue().trim();
-			config.Password = passwordFieldPass.getValue();
-			config.SPARQL_query = textAreaConstr.getValue().trim();
-			config.GraphsUri = griddata;
-			config.ExtractFail = extractFail.getValue();
-			config.UseStatisticalHandler = useHandler.getValue();
+
+			String SPARQLEndpoint = (String) textFieldSparql.getValue();
+			String hostName = textFieldNameAdm.getValue().trim();
+			String password = passwordFieldPass.getValue();
+			String SPARQLQuery = textAreaConstr.getValue().trim();
+			List<String> GraphsUri = griddata;
+			boolean extractFailed = extractFail.getValue();
+			boolean useStatisticalHandler = useHandler.getValue();
 
 			String selectedValue = (String) failsWhenErrors.getValue();
-
+			boolean failWhenErrors;
 			if (selectedValue.equals(STOP)) {
-				config.failWhenErrors = true;
+				failWhenErrors = true;
 			} else if (selectedValue.endsWith(CONTINUE)) {
-				config.failWhenErrors = false;
+				failWhenErrors = false;
 			} else {
 				throw new ConfigException(
 						"No value for case using statistical and error handler");
 			}
 
-			config.ExtractFail = extractFail.getValue();
+			RDFExtractorConfig config = new RDFExtractorConfig(SPARQLEndpoint,
+					hostName, password, GraphsUri, SPARQLQuery, extractFailed,
+					useStatisticalHandler, failWhenErrors);
 
 			return config;
 		}
@@ -632,7 +634,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	null	null	null	null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
@@ -643,26 +645,25 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	@Override
 	public void setConfiguration(RDFExtractorConfig conf) throws ConfigException {
 		try {
-			String endp = conf.SPARQL_endpoint.trim();
+			String endp = conf.getSPARQLEndpoint().trim();
 
 			if (endp != null) {
 				textFieldSparql.setValue(endp);
 			}
 
-			textFieldNameAdm.setValue(conf.Host_name.trim());
-			passwordFieldPass.setValue(conf.Password);
-			textAreaConstr.setValue(conf.SPARQL_query.trim());
-			extractFail.setValue(conf.ExtractFail);
-			useHandler.setValue(conf.UseStatisticalHandler);
-			extractFail.setValue(conf.ExtractFail);
+			textFieldNameAdm.setValue(conf.getHostName().trim());
+			passwordFieldPass.setValue(conf.getPassword());
+			textAreaConstr.setValue(conf.getSPARQLQuery().trim());
+			extractFail.setValue(conf.isExtractFail());
+			useHandler.setValue(conf.isUsedStatisticalHandler());
 
-			if (conf.failWhenErrors) {
+			if (conf.isFailWhenErrors()) {
 				failsWhenErrors.setValue(STOP);
 			} else {
 				failsWhenErrors.setValue(CONTINUE);
 			}
 
-			griddata = conf.GraphsUri;
+			griddata = conf.getGraphsUri();
 			if (griddata == null) {
 				griddata = new LinkedList<>();
 			}

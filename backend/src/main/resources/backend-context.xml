@@ -71,6 +71,7 @@
 
         <!-- log prunner -->
         <bean class="cz.cuni.mff.xrg.odcs.backend.pruning.Log" />
+        <bean class="cz.cuni.mff.xrg.odcs.backend.logback.SqlAppenderImpl" />
         
 	<!-- watcher for DPU changes -->
 	<bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager">

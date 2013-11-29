@@ -45,22 +45,22 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			DataUnitCreateException {
 
 		try {
-			final URL endpointURL = new URL(config.SPARQL_endpoint);
-			final String hostName = config.Host_name;
-			final String password = config.Password;
-			final List<String> defaultGraphsUri = config.GraphsUri;
-			String constructQuery = config.SPARQL_query;
+			final URL endpointURL = new URL(config.getSPARQLEndpoint());
+			final String hostName = config.getHostName();
+			final String password = config.getPassword();
+			final List<String> defaultGraphsUri = config.getGraphsUri();
+			String constructQuery = config.getSPARQLQuery();
 			if (constructQuery.isEmpty()) {
 				constructQuery = "construct {?x ?y ?z} where {?x ?y ?z}";
 			}
 
-			boolean useStatisticHandler = config.UseStatisticalHandler;
-			boolean failWhenErrors = config.failWhenErrors;
+			boolean useStatisticHandler = config.isUsedStatisticalHandler();
+			boolean failWhenErrors = config.isFailWhenErrors();
 
 			HandlerExtractType handlerExtractType = HandlerExtractType
 					.getHandlerType(useStatisticHandler, failWhenErrors);
 
-			final boolean extractFail = config.ExtractFail;
+			final boolean extractFail = config.isExtractFail();
 
 			LOG.debug("endpointURL: {}", endpointURL);
 			LOG.debug("defaultGraphsUri: {}", defaultGraphsUri);

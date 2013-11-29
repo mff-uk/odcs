@@ -38,11 +38,11 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 	@Override
 	public void execute(DPUContext context) throws DPUException, DataUnitException {
 
-		final String filePath = config.FilePath;
-		final RDFFormatType formatType = config.RDFFileFormat;
-		final boolean isNameUnique = config.DiffName;
+		final String filePath = config.getFilePath();
+		final RDFFormatType formatType = config.getRDFFileFormat();
+		final boolean isNameUnique = config.isDiffName();
 		final boolean canFileOverwritte = true;
-		final boolean validateDataBefore = config.validDataBefore;
+		final boolean validateDataBefore = config.isValidDataBefore();
 
 		if (validateDataBefore) {
 			DataValidator dataValidator = new RepositoryDataValidator(
