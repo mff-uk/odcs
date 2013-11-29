@@ -150,7 +150,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	var tooltip = null;
 	var formattingActionBar = null;
-	
+
 	var visibleActionBar = null;
 
 	/** Init function which builds entire stage for pipeline */
@@ -182,18 +182,18 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			} else if (stageMode === NEW_CONNECTION_MODE) {
 				// Repositioning new connection line
 				newConnLine.setPoints(computeConnectionPoints3(newConnStart.group, mousePos.x / scale, mousePos.y / scale));
-				lineLayer.draw();
-			} 
-			else if(visibleActionBar !== null) {
-				visibleActionBar.setVisible(false);	
+				lineLayer.batchDraw();
+			}
+			else if (visibleActionBar !== null) {
+				visibleActionBar.setVisible(false);
 				visibleActionBar = null;
-				dpuLayer.draw();
+				dpuLayer.batchDraw();
 			}
 		});
 
 		// Redraws Connection layer after drag
 		dpuLayer.on('draw', function() {
-			lineLayer.draw();
+			lineLayer.batchDraw();
 		});
 
 		//background layer for detection of mouse move on whole stage
@@ -286,7 +286,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	 **/
 	function moveLine(dpuId) {
 		var dpu = dpus[dpuId];
-		if(dpu == null) {
+		if (dpu == null) {
 			return;
 		}
 		var dpuGroup = dpu.group;
@@ -423,6 +423,13 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		dpuLayer.draw();
 	}
 
+	function generateImageCallback(g) {
+		return function(img) {
+			g.add(img);
+			dpuLayer.draw();
+		};
+	}
+
 	/** 
 	 * Builds DPU object and creates its representations on the stage
 	 * 
@@ -516,7 +523,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			cornerRadius: 2
 		});
 		actionBar.add(rectAb);
-		
+
 //		actionBar.on("mouseleave", function() {
 //			setVisibleActionBar(actionBar, false);
 //		});
@@ -694,6 +701,21 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 		actionBar.add(cmdCopy);
 
+//		var imageGroup = new Kinetic.Group();
+//		imageGroup.add(rect);
+//		imageGroup.add(complexText);
+//		dpuLayer.add(imageGroup);
+
+//		imageGroup.toImage({
+//			width: rect.getWidth(),
+//			height: rect.getHeight(),
+//			/*
+//			 * when star has been converted into an image,
+//			 * use the image to instantiate image objects and
+//			 * then add them to the layer
+//			 */
+//			callback: generateImageCallback(group)
+//		});
 
 		group.add(rect);
 		group.add(complexText);
@@ -725,7 +747,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dpuLayer.draw();
 			return;
 		});
-		
+
 		group.on('mousemove', function(evt) {
 			evt.cancelBubble = true;
 		});
@@ -782,10 +804,10 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 					writeMessage(messageLayer, 'Format by CTRL');
 					stageMode = MULTISELECT_MODE;
 					setVisibleActionBar(actionBar, false);
-					if(selectedDpu !== null) {
+					if (selectedDpu !== null) {
 						var selectedDpuId = selectedDpu.id;
 						setSelectedDpu(null);
-						if(selectedDpuId !== dpu.id) {
+						if (selectedDpuId !== dpu.id) {
 							multiselect(selectedDpuId);
 						}
 					}
@@ -810,7 +832,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				if (!isDragging) {
 					evt.cancelBubble = true;
 				}
-			} 
+			}
 			if (stageMode === DEVELOP_MODE || stageMode === STANDARD_MODE) {
 				var now = Date.now();
 				if (lastClickedDpu !== null && lastClickedTime !== null) {
@@ -835,11 +857,11 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		dpuLayer.add(group);
 		dpuLayer.draw();
 
-		if(isNew) {
+		if (isNew) {
 			rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale));
 		}
 	}
-	
+
 	function checkMode() {
 		return stageMode === STANDARD_MODE;
 	}
@@ -863,18 +885,18 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		}
 		dpuLayer.draw();
 	}
-	
+
 	function setVisibleActionBar(actionBar, value) {
-		if(value) {
-			if(visibleActionBar !== null) {
-				visibleActionBar.setVisible(false);	
+		if (value) {
+			if (visibleActionBar !== null) {
+				visibleActionBar.setVisible(false);
 			}
 			visibleActionBar = actionBar;
 			actionBar.setVisible(true);
 			actionBar.moveToTop();
 		} else {
-			if(visibleActionBar !== null) {
-				visibleActionBar.setVisible(false);	
+			if (visibleActionBar !== null) {
+				visibleActionBar.setVisible(false);
 				visibleActionBar = null;
 			}
 			actionBar.setVisible(false);
@@ -1226,7 +1248,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		hitLine.on('click', function(evt) {
-			if(checkMode()) {
+			if (checkMode()) {
 				return;
 			}
 			var ab = connections[id].actionBar;
@@ -1423,15 +1445,15 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			strokeWidth = 2.5;
 		}
 		var rect = dpu.group.get('Rect')[0];
-		if(rect == null) {
+		if (rect == null) {
 			return;
 		}
-		if(highlight) {
+		if (highlight) {
 			rect.setStrokeWidth(4);
 		} else {
 			rect.setStrokeWidth(2);
 		}
-		
+
 		for (lineId in dpu.connectionFrom) {
 			var conn = connections[dpu.connectionFrom[lineId]];
 			var originalStroke = conn.line.getStroke();
@@ -1477,7 +1499,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 			var SminX = dpu.getPosition().x;
 			var height = dpu.children[0].getWidth();
-			if(height < 100) {
+			if (height < 100) {
 				height = 100;
 			}
 			var SmaxX = SminX + height;
@@ -1533,8 +1555,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	 * @returns {undefined} Text
 	 */
 	function createDataUnitNameText(id, dataUnitName, points) {
-		
-		
+
+
 		var text = new Kinetic.Text({
 			fontSize: 10,
 			fontFamily: 'Calibri',
@@ -1570,7 +1592,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		var y = linePoints[1] + ((linePoints[3] - linePoints[1]) / 2);
 		return [x - (width / 2), y];
 	}
-	
+
 	function computeTextWidth(linePoints, dataUnitName, context) {
 		var minWidth = 200;
 		//30 is padding
@@ -1691,7 +1713,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 		return [startX, startY, endX, endY];
 	}
-	
+
 	function setStageMode(newMode) {
 		stageMode = newMode;
 		var draggable = stageMode !== STANDARD_MODE;
@@ -1706,10 +1728,10 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			lastPositionX = e.pageX;
 			lastPositionY = e.pageY;
 		});
-		
-		$(".v-scrollable").scroll(function(){
-			$(".changingposition").css("top",Math.max(0,300-$(".v-scrollable").scrollTop()));
+
+		$(".v-scrollable").scroll(function() {
+			$(".changingposition").css("top", Math.max(0, 300 - $(".v-scrollable").scrollTop()));
 		});
 	});
-	
+
 };
