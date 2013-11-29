@@ -244,14 +244,17 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		if (!textFieldFilePath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
-			FileLoaderConfig config = new FileLoaderConfig();
-			config.DiffName = checkBoxDiffName.getValue();
-			config.FilePath = textFieldFilePath.getValue().trim();
+			boolean diffName = checkBoxDiffName.getValue();
+			String filePath = textFieldFilePath.getValue().trim();
 
 			String formatValue = (String) comboBoxFormat.getValue();
-			config.RDFFileFormat = RDFFormatType.getTypeByString(formatValue);
+			RDFFormatType RDFFileFormat = RDFFormatType.getTypeByString(
+					formatValue);
 
-			config.validDataBefore = validateDataBefore.getValue();
+			boolean validDataBefore = validateDataBefore.getValue();
+
+			FileLoaderConfig config = new FileLoaderConfig(filePath,
+					RDFFileFormat, diffName, validDataBefore);
 			return config;
 		}
 
@@ -272,14 +275,14 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	@Override
 	public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
 		try {
-			checkBoxDiffName.setValue(conf.DiffName);
-			textFieldFilePath.setValue(conf.FilePath.trim());
+			checkBoxDiffName.setValue(conf.isDiffName());
+			textFieldFilePath.setValue(conf.getFilePath().trim());
 
 			String formatValue = RDFFormatType
-					.getStringValue(conf.RDFFileFormat);
+					.getStringValue(conf.getRDFFileFormat());
 			comboBoxFormat.setValue(formatValue);
 
-			validateDataBefore.setValue(conf.validDataBefore);
+			validateDataBefore.setValue(conf.isValidDataBefore());
 
 		} catch (Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception

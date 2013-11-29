@@ -45,7 +45,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			throws DPUException,
 			DataUnitException {
 
-		final String endpoint = config.SPARQL_endpoint;
+		final String endpoint = config.getSPARQLEndpoint();
 		URL endpointURL = null;
 		try {
 			endpointURL = new URL(endpoint);
@@ -54,16 +54,16 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			throw new DPUException(ex);
 		}
 
-		final List<String> defaultGraphsURI = config.GraphsUri;
-		final String hostName = config.Host_name;
-		final String password = config.Password;
-		final WriteGraphType graphType = config.graphOption;
-		final InsertType insertType = config.insertOption;
-		final long chunkSize = config.chunkSize;
-		final boolean validateDataBefore = config.validDataBefore;
+		final List<String> defaultGraphsURI = config.getGraphsUri();
+		final String hostName = config.getHostName();
+		final String password = config.getPassword();
+		final WriteGraphType graphType = config.getGraphOption();
+		final InsertType insertType = config.getInsertOption();
+		final long chunkSize = config.getChunkSize();
+		final boolean validateDataBefore = config.isValidDataBefore();
 
-		final int retrySize = config.retrySize;
-		final long retryTime = config.retryTime;
+		final int retrySize = config.getRetrySize();
+		final long retryTime = config.getRetryTime();
 
 		if (validateDataBefore) {
 			DataValidator dataValidator = new RepositoryDataValidator(

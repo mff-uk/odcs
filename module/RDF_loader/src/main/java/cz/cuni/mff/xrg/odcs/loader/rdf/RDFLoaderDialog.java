@@ -832,7 +832,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
 			saveEditedTexts();
-			RDFLoaderConfig config = new RDFLoaderConfig();
+
 
 			String graphDescription = (String) optionGroupDetail.getValue();
 			String insertDescription = (String) dataPartsOption.getValue();
@@ -845,17 +845,14 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			int retrySize = Integer.parseInt(retrySizeField.getValue());
 			long retryTime = Long.parseLong(retryTimeField.getValue());
 
+			String SPARQLEndpoint = (String) comboBoxSparql.getValue();
+			String hostName = textFieldNameAdm.getValue().trim();
+			String password = passwordFieldPass.getValue();
+			boolean validDataBefore = validateDataBefore.getValue();
 
-			config.graphOption = graphType;
-			config.insertOption = insertType;
-			config.SPARQL_endpoint = (String) comboBoxSparql.getValue();
-			config.Host_name = textFieldNameAdm.getValue().trim();
-			config.Password = passwordFieldPass.getValue();
-			config.GraphsUri = griddata;
-			config.chunkSize = chunkSize;
-			config.retrySize = retrySize;
-			config.retryTime = retryTime;
-			config.validDataBefore = validateDataBefore.getValue();
+			RDFLoaderConfig config = new RDFLoaderConfig(SPARQLEndpoint,
+					hostName, password, griddata, graphType, insertType,
+					chunkSize, validDataBefore, retryTime, retrySize);
 
 			return config;
 		}
@@ -878,17 +875,17 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	@Override
 	public void setConfiguration(RDFLoaderConfig conf) throws ConfigException {
 		try {
-			String endp = conf.SPARQL_endpoint.trim();
+			String endp = conf.getSPARQLEndpoint().trim();
 
 			if (endp != null) {
 
 				comboBoxSparql.setValue(endp);
 			}
-			textFieldNameAdm.setValue(conf.Host_name.trim());
-			passwordFieldPass.setValue(conf.Password);
+			textFieldNameAdm.setValue(conf.getHostName().trim());
+			passwordFieldPass.setValue(conf.getPassword());
 
-			WriteGraphType graphType = conf.graphOption;
-			InsertType insertType = conf.insertOption;
+			WriteGraphType graphType = conf.getGraphOption();
+			InsertType insertType = conf.getInsertOption();
 
 			String graphDescription = getGraphDescription(graphType);
 			String insertDescription = getInsertDescription(insertType);
@@ -896,20 +893,20 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			optionGroupDetail.setValue(graphDescription);
 			dataPartsOption.setValue(insertDescription);
 
-			String chunkSize = String.valueOf(conf.chunkSize);
+			String chunkSize = String.valueOf(conf.getChunkSize());
 			chunkParts.setValue(chunkSize);
 
-			String retrySize = String.valueOf(conf.retrySize);
+			String retrySize = String.valueOf(conf.getRetrySize());
 			retrySizeField.setValue(retrySize);
 
-			String retryTime = String.valueOf(conf.retryTime);
+			String retryTime = String.valueOf(conf.getRetryTime());
 			retryTimeField.setValue(retryTime);
 
-			validateDataBefore.setValue(conf.validDataBefore);
+			validateDataBefore.setValue(conf.isValidDataBefore());
 
 
 			try {
-				griddata = conf.GraphsUri;
+				griddata = conf.getGraphsUri();
 				if (griddata == null) {
 					griddata = new LinkedList<>();
 				}

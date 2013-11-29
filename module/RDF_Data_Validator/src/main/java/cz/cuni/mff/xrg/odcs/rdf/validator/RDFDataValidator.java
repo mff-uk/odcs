@@ -86,8 +86,8 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 			throws DPUException,
 			DataUnitException {
 
-		final boolean stopExecution = config.stopExecution;
-		final boolean sometimesOutput = config.sometimesOutput;
+		final boolean stopExecution = config.canStopExecution();
+		final boolean sometimesOutput = config.hasSometimesOutput();
 
 		try {
 

@@ -7,10 +7,28 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
  */
 public class RDFDataValidatorConfig extends DPUConfigObjectBase {
 
-	public boolean stopExecution = false;
+	private boolean stopExecution;
 
-	public boolean sometimesOutput = true;
+	private boolean sometimesOutput;
 
+	public RDFDataValidatorConfig() {
+		this.stopExecution = false;
+		this.sometimesOutput = true;
+	}
+
+	public RDFDataValidatorConfig(boolean stopExecution, boolean sometimesOutput) {
+		this.stopExecution = stopExecution;
+		this.sometimesOutput = sometimesOutput;
+	}
+
+	public boolean canStopExecution() {
+		return stopExecution;
+	}
+
+	public boolean hasSometimesOutput() {
+		return sometimesOutput;
+	}
+	
 	@Override
 	public boolean isValid() {
 		return true;

@@ -27,7 +27,7 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	private ConfigWrap<C> configWrap;
 
 	public ConfigurableBase(Class<C> configClass) {
-		this.configWrap = new ConfigWrap<C>(configClass);
+		this.configWrap = new ConfigWrap<>(configClass);
 		this.config = this.configWrap.createInstance();
 	}
 
