@@ -93,9 +93,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private String tabname;
 
 	public DPUViewImpl() {
-		
 	}
-	
+
 	@Override
 	public Object enter(DPUPresenter presenter) {
 		this.presenter = presenter;
@@ -185,7 +184,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		//layout with  DPURecord tree and DPURecord details 
 		dpuLayout = buildDpuLayout();
 		mainLayout.addComponent(dpuLayout);
-		
+
 		return mainLayout;
 	}
 
@@ -219,14 +218,16 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		//DPU Template Tree
 		dpuTree.setExpandable(false);
 		dpuTree.fillTree();
-		dpuTree.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-			private static final long serialVersionUID = 1L;
+		if (dpuTree.getListeners(ItemClickEvent.class).isEmpty()) {
+			dpuTree.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+				private static final long serialVersionUID = 1L;
 
-			@Override
-			public void itemClick(final ItemClickEvent event) {
-				presenter.selectDPUEventHandler(event.getItemId().getClass() == DPUTemplateRecord.class ? (DPUTemplateRecord) event.getItemId() : null);
-			}
-		});
+				@Override
+				public void itemClick(final ItemClickEvent event) {
+					presenter.selectDPUEventHandler(event.getItemId().getClass() == DPUTemplateRecord.class ? (DPUTemplateRecord) event.getItemId() : null);
+				}
+			});
+		}
 
 		dpuLayout.addComponent(dpuTree, 0, 0);
 		dpuLayout.addComponent(layoutInfo, 2, 0);
@@ -275,24 +276,18 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		//information about JAR file.
 		verticalLayoutData = buildVerticalLayoutData();
 
-		verticalLayoutData.setCaption(
-				"general");
+		verticalLayoutData.setCaption("general");
 		TabSheet.Tab dataTab = tabSheet.addTab(verticalLayoutData, "General");
 		//Template Configuration tab. Contains information about configuration 
 		//from JAR file
 		verticalLayoutConfigure = new VerticalLayout();
 
-		verticalLayoutConfigure.setImmediate(
-				false);
-		verticalLayoutConfigure.setMargin(
-				true);
-		verticalLayoutConfigure.setCaption(
-				"configuration");
-		tabSheet.addTab(verticalLayoutConfigure,
-				"Template Configuration");
+		verticalLayoutConfigure.setImmediate(false);
+		verticalLayoutConfigure.setMargin(true);
+		verticalLayoutConfigure.setCaption("configuration");
+		tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
 		tabSheet.setSelectedTab(dataTab);
-		if (selectedDpuWrap
-				!= null) {
+		if (selectedDpuWrap!= null) {
 			AbstractConfigDialog<DPUConfigObject> configDialog = null;
 			//getting configuration dialog of selected DPU Template
 			try {
@@ -324,10 +319,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		//DPU instances tab. Contains pipelines using the given DPU. 
 		verticalLayoutInstances = buildVerticalLayoutInstances();
 
-		verticalLayoutInstances.setCaption(
-				"instances");
-		tabSheet.addTab(verticalLayoutInstances,
-				"DPU instances");
+		verticalLayoutInstances.setCaption("instances");
+		tabSheet.addTab(verticalLayoutInstances, "DPU instances");
 
 		dpuDetailLayout.addComponent(tabSheet);
 		buttonDpuBar = buildDPUButtonBar();
@@ -468,9 +461,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		String selectedDpuName = selectedDpuWrap.getDPUTemplateRecord().getName();
 		String selecteDpuDescription = selectedDpuWrap.getDPUTemplateRecord().getDescription();
 		VisibilityType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getVisibility();
-		dpuName.setValue(selectedDpuName.trim());
+		dpuName.setValue(selectedDpuName);
 		dpuName.setReadOnly(!presenter.hasPermission("save"));
-		dpuDescription.setValue(selecteDpuDescription.trim());
+		dpuDescription.setValue(selecteDpuDescription);
 		dpuDescription.setReadOnly(!presenter.hasPermission("save"));
 
 		groupVisibility.setValue(selecteDpuVisibility);
@@ -758,8 +751,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			dpuLayout.addComponent(dpuDetailLayout, 1, 0);
 
 			// show/hide replace button
-			reloadFile.setVisible(
-					selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
+			reloadFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
 
 			setGeneralTabValues();
 			//Otherwise, the information layout will be shown.
@@ -767,7 +759,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			dpuLayout.removeComponent(dpuDetailLayout);
 			dpuLayout.removeComponent(layoutInfo);
 			dpuLayout.addComponent(layoutInfo, 2, 0);
-
 		}
 	}
 
@@ -786,7 +777,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		verticalLayoutInstances.setWidth("100.0%");
 		verticalLayoutInstances.setMargin(true);
 
-		tableData = presenter.getTableData();
+		tableData = presenter.getTableData(selectedDpuWrap.getDPUTemplateRecord());
 
 		//Table with instancesof DPU
 		instancesTable = new IntlibPagedTable();
