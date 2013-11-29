@@ -141,20 +141,23 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
 					add(emails, execution, schedule.getOwner().getNotification(), 
 							schedule.getOwner().getNotification().getEmails());
 				} else {
+					LOG.debug("Using schedule's settings for email");
 					add(emails, execution, schedule.getNotification(), 
 							schedule.getNotification().getEmails());
 				}
 
 				if (emails.isEmpty()) {
 					// no one to send the email
-					LOG.info(
-							"There is no addres to which send email for schedule {}",
-							schedule.getName());
+					LOG.debug("There is no addres to which send email for schedule id: {} name: {}",
+							schedule.getId(), schedule.getName());
 					return;
 				}
 
-				LOG.debug("Sending email for schedule {}", schedule.getName());
-
+				for (String email : emails) {
+					LOG.debug("Sending email for schedule {} on {}", 
+							schedule.getName(), email);
+				}
+				
 				final String subject = subjectInstant(execution, schedule);
 				final String body = emailBuilder.build(execution, schedule);
 				// create list of recipients

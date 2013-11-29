@@ -90,16 +90,15 @@ public class EmailSender {
 	 * Send email with html content. If the list of recipients
 	 * is empty then immediately return false.
 	 * 
-	 * @param fromEmail
-	 * @param fromName
 	 * @param subject
 	 * @param body
-	 * @param emails
+	 * @param recipients
 	 * @return True if and only if email has been send. 
 	 */
 	public boolean send(String subject, String body, List<String> recipients) {
 		
 		if (!enabled || recipients.isEmpty()) {
+			LOG.debug("Email send request has been ignored ... ");
 			return false;
 		}
 				
