@@ -43,7 +43,7 @@ import org.tepi.filtertable.datefilter.DateInterval;
  */
 public class LogTable extends CustomComponent {
 
-	private static final int PAGE_LENGTH = 28;
+	private static final int PAGE_LENGTH = 30;
 	
 	private VerticalLayout mainLayout;
 

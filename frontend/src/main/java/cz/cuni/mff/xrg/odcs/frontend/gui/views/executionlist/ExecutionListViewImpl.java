@@ -97,7 +97,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		if (hsplit.isLocked()) {
 			debugView.setActiveTab("Events");
 			hsplit.setSplitPosition(55, Unit.PERCENTAGE);
-			hsplit.setHeight("-1px");
+			//hsplit.setHeight("-1px");
 			hsplit.setLocked(false);
 		}
 	}
@@ -169,6 +169,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 		hsplit.setFirstComponent(monitorTableLayout);
 		hsplit.setSecondComponent(null);
+		int height = Math.max(850, 146 + (Utils.getPageLength() * 32));
+		hsplit.setHeight(height, Unit.PIXELS);
 		hsplit.setSplitPosition(100, Unit.PERCENTAGE);
 		hsplit.setLocked(true);
 
@@ -296,7 +298,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			public void buttonClick(Button.ClickEvent event) {
 				presenter.stopRefreshEventHandler();
 				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
-				hsplit.setHeight("100%");
+				//hsplit.setHeight("100%");
 				hsplit.setLocked(true);
 			}
 		});
