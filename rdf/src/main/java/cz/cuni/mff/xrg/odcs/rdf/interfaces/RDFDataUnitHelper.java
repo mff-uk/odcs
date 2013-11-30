@@ -9,7 +9,6 @@ import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 
 import java.io.File;
-import java.net.URL;
 import java.util.List;
 import org.openrdf.model.*;
 import org.openrdf.query.Dataset;
@@ -165,90 +164,6 @@ public interface RDFDataUnitHelper {
 	 * @throws RDFException when loading data to file fail.
 	 */
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
-
-	/**
-	 * Extract RDF data from SPARQL endpoint to repository using only data from
-	 * URI graph without authentication.
-	 *
-	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are stored.
-	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-	 */
-	public void addFromSPARQLEndpoint(URL enpointURL, String namedGraph)
-			throws RDFException;
-
-	/**
-	 * Extract RDF data from SPARQL endpoint to repository using only data from
-	 * URI graph without authentication.
-	 *
-	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are stored.
-	 * @param query           String SPARQL query.
-	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-	 */
-	public void addFromSPARQLEndpoint(URL endpointURL,
-			String namedGraph, String query) throws RDFException;
-
-	/**
-	 * Extract RDF data from SPARQL endpoint to repository using only data from
-	 * URI graph using authentication (name,password).
-	 *
-	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are stored.
-	 * @param hostName        String name needed for authentication.
-	 * @param password        String password needed for authentication.
-	 *
-	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-	 */
-	public void addFromSPARQLEndpoint(URL endpointURL,
-			String namedGraph, String user,
-			String password) throws RDFException;
-
-	/**
-	 * Extract RDF data from SPARQL endpoint to repository using only data from
-	 * URI graph using authentication (name,password).
-	 *
-	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are stored.
-	 * @param query           String SPARQL query.
-	 * @param hostName        String name needed for authentication.
-	 * @param password        String password needed for authentication.
-	 *
-	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-	 */
-	public void addFromSPARQLEndpoint(URL endpointURL,
-			String defaultGraphURI, String query, String hostName,
-			String password) throws RDFException;
-
-	/**
-	 * Extract RDF data from SPARQL endpoint to repository using only data from
-	 * collection of URI graphs using authentication (name,password).
-	 *
-	 * @param endpointURL        Remote URL connection to SPARQL endpoint
-	 *                           contains RDF data.
-	 * @param defaultGraphsUri   List with names of graph where RDF data are
-	 *                           stored.
-	 * @param query              String SPARQL query.
-	 * @param hostName           String name needed for authentication.
-	 * @param password           String password needed for authentication.
-	 * @param format             Type of RDF format for saving data (example:
-	 *                           TURTLE, RDF/XML,etc.)
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data.
-	 * @param extractFail        boolean value, if true stop pipeline(cause
-	 *                           exception) when no triples were extracted. if
-	 *                           false step triple count extraction criterium.
-	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-	 */
-	public void extractFromSPARQLEndpoint(URL endpointURL,
-			List<String> endpointGraphsURI,
-			String query, String hostName, String password, RDFFormat format,
-			HandlerExtractType handlerExtractType, boolean extractFail) throws RDFException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
