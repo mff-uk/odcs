@@ -283,8 +283,10 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * Delete all application graphs keeps in Virtuoso storage in case of
 	 * Virtuoso repository. When is used local repository as storage, this
 	 * method has no effect.
+	 *
+	 * @return Info string message about removing application graphs.
 	 */
-	public void deleteApplicationGraphs();
+	public String deleteApplicationGraphs();
 
 	/**
 	 *
