@@ -570,21 +570,29 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * Delete all application graphs keeps in Virtuoso storage in case of
 	 * Virtuoso repository. When is used local repository as storage, this
 	 * method has no effect.
+	 *
+	 * @return Info string message about removing application graphs.
 	 */
 	@Override
-	public void deleteApplicationGraphs() {
+	public String deleteApplicationGraphs() {
 
 		List<String> graphs = getApplicationGraphs();
 
+		String returnMessage;
+
 		if (graphs.isEmpty()) {
-			logger.info("NO APPLICATIONS GRAPHS to DELETE");
+			returnMessage = "NO APPLICATIONS GRAPHS to DELETE";
+			logger.info(returnMessage);
 		} else {
 			for (String nextGraph : graphs) {
 				deleteNamedGraph(nextGraph);
 			}
-			logger.info("TOTAL deleted: " + graphs.size() + " graphs");
+			returnMessage = "TOTAL deleted: " + graphs.size() + " application graphs";
+			logger.info(returnMessage);
 
 		}
+
+		return returnMessage;
 	}
 
 	private void deleteNamedGraph(String graphName) {
