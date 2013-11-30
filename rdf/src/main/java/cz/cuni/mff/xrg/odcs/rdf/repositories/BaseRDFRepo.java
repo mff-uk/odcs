@@ -444,6 +444,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	/**
+	 * Create RDF parser for given RDF format and set RDF handler where are data
+	 * insert to.
+	 *
+	 * @param format  RDF format witch is set to RDF parser
+	 * @param handler Type of handler where RDF parser used for parsing. If
+	 *                handler is {@link StatisticalHandler} type, is set error
+	 *                listener for fix errors here.
+	 * @return RDFParser for given RDF format and handler.
+	 */
 	@Override
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler) {
 		RDFParser parser = Rio.createParser(format);
