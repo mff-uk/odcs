@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
@@ -27,7 +28,7 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class SPARQLLoaderTest {
 
-	protected final Logger logger = LoggerFactory.getLogger(
+	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLLoaderTest.class);
 
 	private static RDFDataUnit repository;
@@ -92,12 +93,37 @@ public class SPARQLLoaderTest {
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
 
+	@Test
+	public void loadDataToSPARQLEndpointTest() {
+		try {
+			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
+			String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
+			String name = "SPARQL";
+			String password = "nejlepsipaper";
+			WriteGraphType graphType = WriteGraphType.MERGE;
+			InsertType insertType = InsertType.SKIP_BAD_PARTS;
+
+			try {
+				SPARQLoader loader = new SPARQLoader(repository,
+						getTestContext());
+
+				loader.loadToSPARQLEndpoint(endpointURL, defaultGraphUri, name,
+						password, graphType, insertType);
+			} catch (RDFException e) {
+				fail(e.getMessage());
+			}
+
+
+		} catch (MalformedURLException ex) {
+			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+		}
+
+	}
+
 	private void tryInsertToSPARQLEndpoint(Resource subject, URI predicate,
 			Value object) {
 
 		repository.addTriple(subject, predicate, object);
-
-		TestEnvironment environment = TestEnvironment.create();
 
 		String goalGraphName = "http://tempGraph";
 		URL endpoint = getUpdateEndpoint();
@@ -105,8 +131,7 @@ public class SPARQLLoaderTest {
 		boolean isLoaded = false;
 
 		try {
-			SPARQLoader loader = new SPARQLoader(repository, environment
-					.getContext());
+			SPARQLoader loader = new SPARQLoader(repository, getTestContext());
 
 			loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,
 					PASSWORD,
@@ -129,6 +154,11 @@ public class SPARQLLoaderTest {
 		}
 
 		assertTrue(isLoaded);
+	}
+
+	private DPUContext getTestContext() {
+		TestEnvironment environment = TestEnvironment.create();
+		return environment.getContext();
 	}
 
 	private URL getUpdateEndpoint() {
