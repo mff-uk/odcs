@@ -31,8 +31,8 @@ public class RDFDataUnitHelper {
 	/**
 	 * Return repository for specified RDF DataUnit.
 	 *
-	 * @param context The pipelineExecution context.
-	 * @param dpuInstance Owner of DataUnit.
+	 * @param context       The pipelineExecution context.
+	 * @param dpuInstance   Owner of DataUnit.
 	 * @param dataUnitIndex Index of data unit.
 	 * @return Repository or null if there is no browser for given type.
 	 *
@@ -47,7 +47,8 @@ public class RDFDataUnitHelper {
 		}
 
 		// 
-		String dataUnitId = executionInfo.dpu(dpuInstance).createId(info.getIndex());
+		String dataUnitId = executionInfo.dpu(dpuInstance).createId(info
+				.getIndex());
 
 
 		switch (info.getType()) {
@@ -57,7 +58,8 @@ public class RDFDataUnitHelper {
 					File dpuStorage =
 							new File(App.getAppConfig().getString(
 							ConfigProperty.GENERAL_WORKINGDIR),
-							executionInfo.dpu(dpuInstance).getStoragePath(info.getIndex()));
+							executionInfo.dpu(dpuInstance).getStoragePath(info
+							.getIndex()));
 					LocalRDFRepo repository = RDFDataUnitFactory
 							.createLocalRDFRepo("");
 					// load data from storage
@@ -69,30 +71,9 @@ public class RDFDataUnitHelper {
 				}
 
 			case RDF_Virtuoso:
-				AppConfig appConfig = App.getAppConfig().getSubConfiguration(
-						ConfigProperty.VIRTUOSO_RDF);
+				String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
-				// load configuration from appConfig
-				final String hostName =
-						appConfig.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
-				final String port =
-						appConfig.getString(ConfigProperty.VIRTUOSO_PORT);
-				final String user =
-						appConfig.getString(ConfigProperty.VIRTUOSO_USER);
-				final String password =
-						appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
-
-				VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
-						.createVirtuosoRDFRepo(
-						hostName,
-						port,
-						user,
-						password,
-						GraphUrl.translateDataUnitId(dataUnitId),
-						"",
-						appConfig.getProperties());
-
-				return virtuosoRepository;
+				return getVirtuosoRepository(namedGraph);
 
 			default:
 				return null;
@@ -100,11 +81,45 @@ public class RDFDataUnitHelper {
 
 	}
 
+	/**
+	 *
+	 * @param namedGraph URI graph name for set default graph (have to start
+	 *                   with prefix http://).
+	 * @return New instance of virtuoso repository with set from configuration
+	 *         file placed on home directory path.
+	 */
+	public static VirtuosoRDFRepo getVirtuosoRepository(String namedGraph) {
+		AppConfig appConfig = App.getAppConfig().getSubConfiguration(
+				ConfigProperty.VIRTUOSO_RDF);
+
+		// load configuration from appConfig
+		final String hostName =
+				appConfig.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+		final String port =
+				appConfig.getString(ConfigProperty.VIRTUOSO_PORT);
+		final String user =
+				appConfig.getString(ConfigProperty.VIRTUOSO_USER);
+		final String password =
+				appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+
+		VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
+				.createVirtuosoRDFRepo(
+				hostName,
+				port,
+				user,
+				password,
+				namedGraph,
+				"",
+				appConfig.getProperties());
+
+		return virtuosoRepository;
+	}
+
 	public static String filterRDFQuery(String query, Collection<Filter> filters) {
-		if(filters == null) {
+		if (filters == null) {
 			return query;
 		}
-		
+
 		QueryFilterManager filterManager = new QueryFilterManager(query);
 		for (Filter filter : filters) {
 			if (filter.getClass() == RDFRegexFilter.class) {
