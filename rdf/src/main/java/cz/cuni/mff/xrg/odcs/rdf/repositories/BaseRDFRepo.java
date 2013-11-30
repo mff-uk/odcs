@@ -749,7 +749,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			logger.debug(newUpdateQuery);
 
 			myupdate.execute();
-			connection.commit();
+			//connection.commit();
 
 			logger.debug("SPARQL update query for was executed successfully");
 
@@ -951,7 +951,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				connection.clear();
 			}
 
-			connection.commit();
+			//connection.commit();
 
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
@@ -1960,7 +1960,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				connection.export(handler);
 			}
 
-			connection.commit();
+			//connection.commit();
 
 		} catch (IOException ex) {
 			throw new RDFException("Problems with file stream:" + ex
@@ -2117,7 +2117,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					break;
 			}
 
-			connection.commit();
+			//connection.commit();
 
 		} catch (IOException ex) {
 			logger.debug(ex.getMessage(), ex);
@@ -2220,7 +2220,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				connection.add(reader, "", format);
 			}
 
-			connection.commit();
+			//connection.commit();
+
 
 		} catch (RepositoryException e) {
 			hasBrokenConnection = true;
@@ -2252,7 +2253,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				connection.add(statement);
 			}
 
-			connection.commit();
+			//connection.commit();
 
 		} catch (RepositoryException e) {
 			hasBrokenConnection = true;
