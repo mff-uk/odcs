@@ -70,7 +70,9 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			LOG.debug("useStatisticHandler: {}", useStatisticHandler);
 			LOG.debug("extractFail: {}", extractFail);
 
-			rdfDataUnit.extractFromSPARQLEndpoint(endpointURL,
+			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit);
+
+			extractor.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
 					constructQuery, hostName, password, RDFFormat.N3,
 					handlerExtractType, extractFail);
