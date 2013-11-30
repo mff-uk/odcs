@@ -1865,12 +1865,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		if (hasInfinityRetryConnection()) {
 			return "infinity";
 		} else {
-			return String.valueOf(RETRY_CONNECTION_SIZE);
+			if (RETRY_CONNECTION_SIZE == 0) {
+				return "only 1";
+			} else {
+				return String.valueOf(RETRY_CONNECTION_SIZE);
+			}
 		}
 	}
 
 	private boolean hasInfinityRetryConnection() {
-		if (RETRY_CONNECTION_SIZE <= 0) {
+		if (RETRY_CONNECTION_SIZE < 0) {
 			return true;
 		} else {
 			return false;
