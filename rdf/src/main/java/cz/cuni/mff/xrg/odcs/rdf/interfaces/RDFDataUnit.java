@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -24,6 +25,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParser;
 
 /**
  * Provides method for working with RDF data repository.
@@ -122,24 +124,6 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 */
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
-
-	/**
-	 * Extract RDF data from SPARQL endpoint to repository using only data from
-	 * URI graph using authentication (name,password).
-	 *
-	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are stored.
-	 * @param query           String SPARQL query.
-	 * @param hostName        String name needed for authentication.
-	 * @param password        String password needed for authentication.
-	 * @param format          Type of RDF format for saving data (example:
-	 *                        TURTLE, RDF/XML,etc.)
-	 * @throws RDFException when extraction data from SPARQL endpoint fail.
-	 */
-	public void extractFromSPARQLEndpoint(URL endpointURL,
-			String defaultGraphUri, String query,
-			String hostName, String password, RDFFormat format) throws RDFException;
 
 	/**
 	 * Make select query over repository data and return tables as result.
@@ -268,6 +252,8 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
 			RDFFormat format) throws RDFException;
+
+	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
 	/**
 	 *
