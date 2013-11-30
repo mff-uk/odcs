@@ -715,7 +715,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 				"Count of attempts to reconnect if the connection to SPARQL fails"));
 
 		retrySizeField = new TextField(
-				"(Use 0 or negative integer for infinity)");
+				"(Use 0 for no reperat, negative integer for infinity)");
 		retrySizeField.setValue("-1");
 		retrySizeField.setNullRepresentation("");
 		retrySizeField.setImmediate(false);
