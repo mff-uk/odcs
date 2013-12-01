@@ -91,6 +91,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
 
 	/**
+	 * Maximum query execution time in miliseconds
+	 */
+	protected static final String TIME_OUT = "10000000";
+
+	/**
 	 * Logging information about execution of method using openRDF.
 	 */
 	protected Logger logger;
@@ -1480,8 +1485,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		final String myquery = getEncodedString(query);
 
 		final String encoder = getEncoder(format);
+		final String timeOut = getEncodedString(TIME_OUT);
 
-		String parameters = "default-graph-uri=" + endpointGraph + "&query=" + myquery + "&format=" + encoder;
+		String parameters = "default-graph-uri=" + endpointGraph
+				+ "&query=" + myquery
+				+ "&format=" + encoder
+				+ "&timeout=" + timeOut;
 
 		URL call = null;
 		try {
