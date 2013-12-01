@@ -4,12 +4,15 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.FinishedListener;
+import com.vaadin.ui.Upload.ProgressListener;
 import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.StartedListener;
 
 /**
  * Dialog for uploading status. Appear automatically after file upload start.
@@ -17,16 +20,20 @@ import com.vaadin.ui.Upload.StartedEvent;
  * @author Maria Kukhar
  *
  */
-public class UploadInfoWindow extends Window implements Upload.StartedListener,
-		Upload.ProgressListener, Upload.FinishedListener {
+public class UploadInfoWindow extends Window implements StartedListener,
+		ProgressListener, FinishedListener {
 
-	private static final long serialVersionUID = 1L;
-	private final Label state = new Label();
-	private final Label fileName = new Label();
-	private final Label textualProgress = new Label();
-	private final ProgressIndicator pi = new ProgressIndicator();
-	private final Button cancelButton;
-	final FormLayout l;
+	private Label state;
+
+	private Label fileName;
+
+	private Label textualProgress;
+
+	private ProgressBar progressBar;
+
+	private Button cancelButton;
+
+	private Upload upload;
 
 	/**
 	 * Basic constructor
@@ -35,21 +42,30 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	 */
 	public UploadInfoWindow(final Upload upload) {
 		super("Status");
+		this.upload = upload;
+		this.state = new Label();
+		this.fileName = new Label();
+		this.textualProgress = new Label();
+		this.progressBar = new ProgressBar();
+		cancelButton = new Button("Cancel");
 
+		setParameters();
+	}
+
+	private void setParameters() {
 		addStyleName("upload-info");
 
 		setResizable(false);
 		setDraggable(false);
 
-		l = new FormLayout();
-		setContent(l);
-		l.setMargin(true);
+		final FormLayout formLayout = new FormLayout();
+		setContent(formLayout);
+		formLayout.setMargin(true);
 
 		final HorizontalLayout stateLayout = new HorizontalLayout();
 		stateLayout.setSpacing(true);
 		stateLayout.addComponent(state);
 
-		cancelButton = new Button("Cancel");
 		cancelButton.addClickListener(new Button.ClickListener() {
 			/**
 			 * Upload interruption
@@ -68,18 +84,18 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 		stateLayout.setCaption("Current state");
 		state.setValue("Idle");
-		l.addComponent(stateLayout);
+		formLayout.addComponent(stateLayout);
 
 		fileName.setCaption("File name");
-		l.addComponent(fileName);
+		formLayout.addComponent(fileName);
 
 		//progress indicator
-		pi.setCaption("Progress");
-		pi.setVisible(false);
-		l.addComponent(pi);
+		progressBar.setCaption("Progress");
+		progressBar.setVisible(false);
+		formLayout.addComponent(progressBar);
 
 		textualProgress.setVisible(false);
-		l.addComponent(textualProgress);
+		formLayout.addComponent(textualProgress);
 
 		upload.addStartedListener(this);
 		upload.addProgressListener(this);
@@ -95,7 +111,7 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	@Override
 	public void uploadFinished(final FinishedEvent event) {
 		state.setValue("Idle");
-		pi.setVisible(false);
+		progressBar.setVisible(false);
 		textualProgress.setVisible(false);
 		cancelButton.setVisible(false);
 
@@ -109,9 +125,9 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	@Override
 	public void uploadStarted(final StartedEvent event) {
 
-		pi.setValue(0f);
-		pi.setVisible(true);
-		pi.setPollingInterval(500); // hit server frequently to get
+		progressBar.setValue(0f);
+		progressBar.setVisible(true);
+		progressBar.getUI().setPollInterval(500); // hit server frequently to get
 		textualProgress.setVisible(true);
 		// updates to client
 		state.setValue("Uploading");
@@ -123,15 +139,15 @@ public class UploadInfoWindow extends Window implements Upload.StartedListener,
 	/**
 	 * This method shows update progress
 	 *
-	 * @param readBytes bytes transferred
+	 * @param readBytes     bytes transferred
 	 * @param contentLength total size of file currently being uploaded, -1 if
-	 * unknown
+	 *                      unknown
 	 */
 	@Override
 	public void updateProgress(final long readBytes, final long contentLength) {
-		pi.setValue(new Float(readBytes / (float) contentLength));
-		textualProgress.setValue("Processed " + (readBytes / 1024) + " k bytes of "
+		progressBar.setValue(new Float(readBytes / (float) contentLength));
+		textualProgress.setValue(
+				"Processed " + (readBytes / 1024) + " k bytes of "
 				+ (contentLength / 1024) + " k");
-
 	}
 }
