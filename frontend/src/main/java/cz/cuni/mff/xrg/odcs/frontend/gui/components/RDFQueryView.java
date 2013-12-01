@@ -111,7 +111,27 @@ public class RDFQueryView extends CustomComponent {
 		queryLine.addComponent(queryText);
 
 		VerticalLayout queryControls = new VerticalLayout();
+		
 
+		queryButton = new Button("Run Query");
+		queryButton.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					runQuery();
+				} catch (InvalidQueryException e) {
+					Notification.show("Query Validator",
+							"Query is not valid: "
+							+ e.getCause().getMessage(),
+							Notification.Type.ERROR_MESSAGE);
+				}
+			}
+		});
+		queryControls.addComponent(queryButton);
+
+		VerticalLayout runDownload = new VerticalLayout();
+		runDownload.setStyleName("graypanel");
+		
 		//Export options
 		formatSelect = new NativeSelect();
 		for (RDFFormatType type : RDFFormatType.values()) {
@@ -125,7 +145,7 @@ public class RDFQueryView extends CustomComponent {
 		formatSelect.setImmediate(true);
 		formatSelect.setNullSelectionAllowed(false);
 		formatSelect.select(RDFFormatType.getStringValue(RDFFormatType.RDFXML));
-		queryControls.addComponent(formatSelect);
+		runDownload.addComponent(formatSelect);
 
 		queryDownloadButton = new Button("Run Query and Download");
 		OnDemandFileDownloader fileDownloader = new OnDemandFileDownloader(
@@ -148,23 +168,8 @@ public class RDFQueryView extends CustomComponent {
 			}
 		});
 		fileDownloader.extend(queryDownloadButton);
-		queryControls.addComponent(queryDownloadButton);
-
-		queryButton = new Button("Run Query");
-		queryButton.addClickListener(new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				try {
-					runQuery();
-				} catch (InvalidQueryException e) {
-					Notification.show("Query Validator",
-							"Query is not valid: "
-							+ e.getCause().getMessage(),
-							Notification.Type.ERROR_MESSAGE);
-				}
-			}
-		});
-		queryControls.addComponent(queryButton);
+		runDownload.addComponent(queryDownloadButton);
+		queryControls.addComponent(runDownload);
 		queryControls.setSpacing(true);
 		queryControls.setWidth(170, Unit.PIXELS);
 		queryLine.setExpandRatio(queryText, 1.0f);
