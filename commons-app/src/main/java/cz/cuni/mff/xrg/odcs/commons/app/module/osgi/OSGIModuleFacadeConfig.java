@@ -11,6 +11,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.Application;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -42,18 +45,21 @@ class OSGIModuleFacadeConfig {
 	/**
 	 * Contains list of common packages to export. Must not end with comma.
 	 */
-	private static final String PACKAGE_BASE = "cz.cuni.mff.xrg.odcs.commons;version=\"1.0.0\","
+	private static final String PACKAGE_BASE = 
+			  "cz.cuni.mff.xrg.odcs.commons;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.configuration;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.context;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.data;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.dpu;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.dpu.annotation;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.message;version=\"1.0.0\","
-			+ "org.openrdf.rio,"
-			+ "org.apache.log4j;version=\"1.7.5\","
-			+ "org.slf4j;version=\"1.7.5\","
 			+ "cz.cuni.mff.xrg.odcs.commons.httpconnection.utils;version=\"1.0.0\","
+			//
+//			+ "org.apache.log4j;version=\"1.7.5\","
+//			+ "org.slf4j;version=\"1.7.5\","
+//			+ "com.thoughtworks.xstream,"
 			// RDF package
+			+ "org.openrdf.rio,"			
 			+ "cz.cuni.mff.xrg.odcs.rdf.data;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.enums;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.exceptions;version=\"1.0.0\","
@@ -62,17 +68,17 @@ class OSGIModuleFacadeConfig {
 			+ "cz.cuni.mff.xrg.odcs.rdf.repositories;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.validators;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.handlers;version=\"1.0.0\","
-			+ "cz.cuni.mff.xrg.odcs.rdf.help;version=\"1.0.0\","
-			// library for configuration serialisation
-			+ "com.thoughtworks.xstream,"
-			// java packages
-			+ "java.lang";
+			+ "cz.cuni.mff.xrg.odcs.rdf.help;version=\"1.0.0\"";
+	
+	
+	
 
 	/**
 	 * Contains list of packages exported from frontend. Does not start nor end
 	 * on separator.
 	 */
-	private static final String FRONTEND_BASE = "cz.cuni.mff.xrg.odcs.commons.web;version=\"1.0.0\"";
+	private static final String FRONTEND_BASE = 
+			"cz.cuni.mff.xrg.odcs.commons.web;version=\"1.0.0\"";
 
 	/**
 	 * Path to the root directory, does not end on file separator.
@@ -82,13 +88,13 @@ class OSGIModuleFacadeConfig {
 	/**
 	 * List additional package that should be expose from application.
 	 */
-	private String additionalPackages;
+	private final String additionalPackages;
 
 	/**
 	 * If true then libraries from {#link {@link #LIB_BACKEND_DIRECTORY} are
 	 * also loaded.
 	 */
-	private boolean useBackendLibs;
+	private final boolean useBackendLibs;
 
 	/**
 	 * Append new packages to the current one, insert separator if needed.
@@ -147,6 +153,10 @@ class OSGIModuleFacadeConfig {
 		appendPackages(packageList, org.openrdf.PackageList.PACKAGES);
 		// and system packages
 		appendPackages(packageList, OSGISystemPackages.PACKAGES);
+		// append packages from commons, commons-module, commons-web
+		appendPackages(packageList, commons.PACKAGE_LIST);
+		appendPackages(packageList, commons_web.PACKAGE_LIST);
+		appendPackages(packageList, commons_module.PACKAGE_LIST);
 
 		this.additionalPackages = packageList.toString();
 		// check if load data from backend's library directory
