@@ -166,7 +166,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 			String path;
 			if (extractType == FileExtractType.UPLOAD_FILE) {
-				path = FileUploadReceiver.path + "/" + textFieldPath
+				path = fileUploadReceiver.getPath() + "/" + textFieldPath
 						.getValue().trim();
 
 			} else {
@@ -238,18 +238,19 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 				extractType));
 
 
+		String path = conf.getPath().trim();
+
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 
-			String filepath = conf.getPath().trim();
-			String filename = filepath.substring(filepath.lastIndexOf("/") + 1,
-					filepath.length());
+			String filename = path.substring(path.lastIndexOf("/") + 1,
+					path.length());
 
 			textFieldPath.setReadOnly(false); // allow value settings
 			textFieldPath.setValue(filename.trim()); // set value
 			textFieldPath.setReadOnly(true); // forbid
 
 		} else {
-			textFieldPath.setValue(conf.getPath().trim());
+			textFieldPath.setValue(path);
 		}
 
 		if (extractType == FileExtractType.PATH_TO_DIRECTORY
@@ -282,7 +283,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	public String getDescription() {
 		String path;
 		if (extractType == FileExtractType.UPLOAD_FILE) {
-			path = FileUploadReceiver.path + "/" + textFieldPath
+			path = fileUploadReceiver.getPath() + "/" + textFieldPath
 					.getValue().trim();
 		} else {
 			path = textFieldPath.getValue().trim();
@@ -445,9 +446,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					extractType = FileExtractType.UPLOAD_FILE;
 					fileUploadReceiver = new FileUploadReceiver();
 
-
 					//Upload component
-					fileUpload = new Upload(null, fileUploadReceiver);
+					fileUpload = new Upload("", fileUploadReceiver);
 					fileUpload.setImmediate(true);
 					fileUpload.setButtonCaption("Choose file");
 					//Upload started event listener
@@ -478,8 +478,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 								//File was upload to the temp folder. 
 								//Path to this file is setting to the textFieldPath field
 								textFieldPath.setValue(
-										FileUploadReceiver.fileName
-										.toString());
+										fileUploadReceiver.getFileName());
 								textFieldPath.setReadOnly(true);
 							} //If upload was interrupt by user
 							else {
@@ -698,19 +697,17 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 class UploadInfoWindow extends Window implements Upload.StartedListener,
 		Upload.ProgressListener, Upload.FinishedListener {
 
-	private static final long serialVersionUID = 1L;
+	private Label state;
 
-	private final Label state = new Label();
+	private Label fileName;
 
-	private final Label fileName = new Label();
+	private Label textualProgress;
 
-	private final Label textualProgress = new Label();
+	private ProgressBar progress;
 
-	private final ProgressIndicator pi = new ProgressIndicator();
+	private Button cancelButton;
 
-	private final Button cancelButton;
-
-	private final Upload upload;
+	private Upload upload;
 
 	/**
 	 * Basic constructor
@@ -721,7 +718,11 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 
 		super("Status");
 		this.upload = nextUpload;
-		this.cancelButton = new Button("Cancel");
+		this.state = new Label();
+		this.fileName = new Label();
+		this.textualProgress = new Label();
+		this.progress = new ProgressBar();
+		cancelButton = new Button("Cancel");
 
 		setComponent();
 
@@ -745,8 +746,6 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 			/**
 			 * Upload interruption
 			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				upload.interruptUpload();
@@ -765,9 +764,9 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 		formLayout.addComponent(fileName);
 
 		//progress indicator
-		pi.setCaption("Progress");
-		pi.setVisible(false);
-		formLayout.addComponent(pi);
+		progress.setCaption("Progress");
+		progress.setVisible(false);
+		formLayout.addComponent(progress);
 
 		textualProgress.setVisible(false);
 		formLayout.addComponent(textualProgress);
@@ -783,7 +782,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	@Override
 	public void uploadFinished(final FinishedEvent event) {
 		state.setValue("Idle");
-		pi.setVisible(false);
+		progress.setVisible(false);
 		textualProgress.setVisible(false);
 		cancelButton.setVisible(false);
 
@@ -795,9 +794,9 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	@Override
 	public void uploadStarted(final StartedEvent event) {
 
-		pi.setValue(0f);
-		pi.setVisible(true);
-		pi.setPollingInterval(500); // hit server frequantly to get
+		progress.setValue(0f);
+		progress.setVisible(true);
+		progress.getUI().setPollInterval(500); // hit server frequantly to get
 		textualProgress.setVisible(true);
 		// updates to client
 		state.setValue("Uploading");
@@ -812,7 +811,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	@Override
 	public void updateProgress(final long readBytes, final long contentLength) {
 		// this method gets called several times during the update
-		pi.setValue(new Float(readBytes / (float) contentLength));
+		progress.setValue(new Float(readBytes / (float) contentLength));
 		textualProgress.setValue(
 				"Processed " + (readBytes / 1024) + " k bytes of "
 				+ (contentLength / 1024) + " k");
@@ -827,19 +826,17 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
  */
 class FileUploadReceiver implements Receiver {
 
-	private static final long serialVersionUID = 5099459605355200117L;
+	private Path path;
 
-	private static final int searchedByte = '\n';
+	private String fileName;
 
-	private static int total = 0;
+	public Path getPath() {
+		return path;
+	}
 
-	private boolean sleep = false;
-
-	public static String fileName;
-
-	public static File file;
-
-	public static Path path;
+	public String getFileName() {
+		return fileName;
+	}
 
 	/**
 	 * return an OutputStream
@@ -847,8 +844,8 @@ class FileUploadReceiver implements Receiver {
 	@Override
 	public OutputStream receiveUpload(final String filename,
 			final String MIMEType) {
-		fileName = filename;
 
+		this.fileName = filename;
 
 		try {
 			//create template directory
@@ -857,54 +854,19 @@ class FileUploadReceiver implements Receiver {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 
-
-		file = new File("/" + path + "/" + filename); // path for upload file in temp directory
-
-		OutputStream fos = null;
+		// path for upload file in temp directory
+		File file = new File("/" + path + "/" + fileName);
 
 		try {
-			final FileOutputStream fstream = new FileOutputStream(file);
-
-			fos = new OutputStream() {
-				@Override
-				public void write(final int b) throws IOException {
-					total++;
-
-					fstream.write(b);
-
-
-				}
-
-				@Override
-				public void write(byte b[], int off, int len) throws IOException {
-					if (b == null) {
-						throw new NullPointerException();
-					} else if ((off < 0) || (off > b.length) || (len < 0)
-							|| ((off + len) > b.length) || ((off + len) < 0)) {
-						throw new IndexOutOfBoundsException();
-					} else if (len == 0) {
-						return;
-					}
-					fstream.write(b, off, len);
-					total += len;
-
-
-				}
-
-				@Override
-				public void close() throws IOException {
-					fstream.close();
-					super.close();
-				}
-			};
+			FileOutputStream fstream = new FileOutputStream(file);
+			return fstream;
 
 		} catch (FileNotFoundException e) {
 			new Notification("Could not open file<br/>", e.getMessage(),
 					Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
-		} finally {
-			return fos;
-
+			return null;
 		}
+
 
 	}
 }
