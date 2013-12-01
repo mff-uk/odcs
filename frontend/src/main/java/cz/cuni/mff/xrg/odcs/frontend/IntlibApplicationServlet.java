@@ -8,9 +8,13 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.TransactionException;
 import ru.xpoft.vaadin.SpringApplicationContext;
 import ru.xpoft.vaadin.SpringVaadinServlet;
 
@@ -22,6 +26,8 @@ import ru.xpoft.vaadin.SpringVaadinServlet;
  * @author Jan Vojt
  */
 public class IntlibApplicationServlet extends SpringVaadinServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(IntlibApplicationServlet.class);
 
 	@Override
 	protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration) throws ServiceException {
@@ -29,7 +35,11 @@ public class IntlibApplicationServlet extends SpringVaadinServlet {
 		
 		// Preload all DPUs on servlet startup, so openning them is fast.
 		ApplicationContext context = SpringApplicationContext.getApplicationContext();
-		context.getBean(ModuleFacade.class).preLoadAllDPUs();
+		try {
+			context.getBean(ModuleFacade.class).preLoadAllDPUs();
+		} catch (TransactionException | DatabaseException ex) {
+			LOG.error("Could not preload DPUs.", ex);
+		}
 		
 		return service;
 	}
