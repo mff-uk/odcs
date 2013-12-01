@@ -1,14 +1,9 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
-import com.vaadin.server.DeploymentConfiguration;
-import com.vaadin.server.ServiceException;
-import com.vaadin.server.VaadinServletService;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.atmosphere.cpr.AtmosphereFramework;
-import org.atmosphere.cpr.DefaultBroadcasterFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.xpoft.vaadin.SpringVaadinServlet;
@@ -23,19 +18,11 @@ import ru.xpoft.vaadin.SpringVaadinServlet;
 public class IntlibApplicationServlet extends SpringVaadinServlet {
 
 	@Override
-	protected VaadinServletService createServletService(
-			DeploymentConfiguration deploymentConfiguration)
-			throws ServiceException {
-		VaadinServletService service = super.createServletService(deploymentConfiguration);
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-		return service;
-	}
-
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		//Spring needs HTTP request access
-		// Store current HTTP request in thread-local, so we can access it later.
+		// Store current HTTP request in thread-local, so Spring can access it
+		// later during user login.
 		RequestHolder.setRequest(request);
 
 		// First clear the security context, as we need to load it from session.

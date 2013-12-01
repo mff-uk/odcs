@@ -27,11 +27,6 @@
         <!-- To allow session-scoped beans -->
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
-	<listener>
-		<!-- To keep a session map in servlet context, so sessions
-			 are accessible in websocket connections. -->
-		<listener-class>cz.cuni.mff.xrg.odcs.frontend.SessionHolder</listener-class>
-	</listener>
 	
 	<servlet>
 		<servlet-name>Vaadin Application Servlet</servlet-name>
