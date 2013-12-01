@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -157,6 +158,7 @@ class OSGIModuleFacadeConfig {
 		appendPackages(packageList, commons.PACKAGE_LIST);
 		appendPackages(packageList, commons_web.PACKAGE_LIST);
 		appendPackages(packageList, commons_module.PACKAGE_LIST);
+		appendPackages(packageList, rdf.PACKAGE_LIST);
 
 		this.additionalPackages = packageList.toString();
 		// check if load data from backend's library directory
