@@ -142,7 +142,10 @@ class OSGIModuleFacadeConfig {
 			// missing configuration -> use empty
 		}
 
-		if (Application.FRONTEND.equals(app)) {
+		//if (Application.FRONTEND.equals(app)) 
+		// the dependencies are now the same .. so backend 
+		// and frontend exports the same packages
+		{
 			// frontend is running -> we need to export Vaadin packages as well
 			appendPackages(packageList, com.vaadin.PackageList.PACKAGES);
 			appendPackages(packageList, FRONTEND_BASE);
