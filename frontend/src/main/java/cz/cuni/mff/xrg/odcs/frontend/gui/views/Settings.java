@@ -493,8 +493,7 @@ public class Settings extends ViewComponent {
 
 				email.saveEditedTexts();
 				saveEmailNotifications();
-				Notification.show("E-mail settings were saved",
-						Notification.Type.HUMANIZED_MESSAGE);
+
 			}
 		});
 		buttonMyAccountBar.addComponent(saveButton);
@@ -599,6 +598,8 @@ public class Settings extends ViewComponent {
 		loggedUser.setTableRows(Integer.parseInt(rows.getValue()));
 		rows.commit();
 		App.getApp().getUsers().save(loggedUser);
+		Notification.show("E-mail settings were saved",
+				Notification.Type.HUMANIZED_MESSAGE);
 
 		if (shownTab.equals(accountButton)) {
 			accountLayout = buildMyAccountLayout();
