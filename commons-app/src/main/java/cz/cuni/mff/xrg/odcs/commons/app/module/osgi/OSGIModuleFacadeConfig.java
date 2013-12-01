@@ -57,7 +57,6 @@ class OSGIModuleFacadeConfig {
 			+ "cz.cuni.mff.xrg.odcs.rdf.data;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.enums;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.exceptions;version=\"1.0.0\","
-			+ "cz.cuni.mff.xrg.odcs.rdf.impl;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.interfaces;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.repositories;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.validators;version=\"1.0.0\","
