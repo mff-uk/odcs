@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
+import java.util.LinkedList;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +54,12 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * name. Libraries under their uri.
 	 */
 	private final ConcurrentHashMap<String, BundleContainer> bundles = new ConcurrentHashMap<>();
-
+	
+	/**
+	 * Store bundles that have been loaded as libraries.
+	 */
+	private final HashMap<String, BundleContainer> libs = new HashMap<>();
+	
 	@Autowired
 	private OSGIModuleFacadeConfig configuration;
 	
@@ -131,7 +137,7 @@ class OSGIModuleFacade implements ModuleFacade {
 				// stop equinox
 				framework.stop();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// we can't throw here ..
 		} finally {
 			framework = null;
@@ -310,6 +316,22 @@ class OSGIModuleFacade implements ModuleFacade {
 		for (String directory : directoryPaths) {
 			loadLibs(directory);
 		}
+		
+		List<String> loadFailedList = new LinkedList<>();
+		// all libraries have been loaded now try to start them
+		// so we figer out if they are resolved as well
+		for (String key : libs.keySet()) {
+			try {
+				libs.get(key).start();
+			} catch (ModuleException ex) {
+				LOG.error("Failed to resolve the library: {}", key, ex);
+				loadFailedList.add(key);
+			}			
+		}
+		
+		for (String libUri : loadFailedList) {
+			LOG.error("Failed to resolve the library: {}", libUri);
+		}
 	}
 
 	@Override
@@ -475,6 +497,12 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * @return Null in case of error.
 	 */
 	private BundleContainer installLib(String uri) {
+		synchronized(libs) {
+			if (libs.containsKey(uri)) {
+				return libs.get(uri);
+			}
+		}
+		
 		Bundle bundle;
 		try {
 			bundle = context.installBundle(uri);
@@ -485,8 +513,9 @@ class OSGIModuleFacade implements ModuleFacade {
 
 		BundleContainer bundleContainer;
 		bundleContainer = new BundleContainer(context, uri.toString(), bundle);
-		bundles.put(uri, bundleContainer);
-
+		synchronized(libs) {
+			libs.put(uri, bundleContainer);
+		}
 		return bundleContainer;
 	}
 

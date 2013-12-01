@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import java.util.Map;
 
 /**
  * Represent a single bundle. Enable loading class from bundle. Also
@@ -28,7 +29,7 @@ class BundleContainer {
 	/**
 	 * Bundle context for loading bundles.
 	 */
-	private BundleContext context;	
+	private final BundleContext context;	
 	
 	/**
 	 * The OSGI bundle it self. Can be null if bundle is not loaded.
@@ -48,17 +49,17 @@ class BundleContainer {
 	/**
 	 * List of loaded class<?> from this bundle.
 	 */
-	private java.util.Map<String, Class<?>> loadedClassCtors = new HashMap<>();
+	private final Map<String, Class<?>> loadedClassCtors = new HashMap<>();
 	
 	/**
 	 * Used to lock instance during non concurrent operations.
 	 */
-	private Object lock = new Object();	
+	private final Object lock = new Object();	
 	
 	/**
 	 * True if container encapsulate library.
 	 */
-	private boolean isLib;
+	private final boolean isLib;
 	
 	/**
 	 * Used only if {@link #isLib} == true. Cache main class name for DPUs.
@@ -92,6 +93,24 @@ class BundleContainer {
 	}
 
 	/**
+	 * Try to start bundle, throw if import-packages are not satisfied.
+	 * @throws ModuleException 
+	 */
+	public void start() throws ModuleException {
+		try {
+			if(bundle.getState() != Bundle.ACTIVE) {
+				// just installed
+				
+				// try to start bundle ... give us 
+				// exception with missing bundles
+				bundle.start();
+			}
+		} catch (BundleException e) {
+			throw new ModuleException(e);
+		}		
+	}
+	
+	/**
 	 * Load class with given name from the bundle. Automatically install 
 	 * bundle if needed.
 	 * @param className Class name prefixed with packages.
@@ -100,7 +119,6 @@ class BundleContainer {
 	 */
 	public Object loadClass(String className) 
 			throws ModuleException {
-
 		try {
 			if(bundle.getState() == Bundle.INSTALLED) {
 				// just installed
