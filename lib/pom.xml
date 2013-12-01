@@ -15,7 +15,7 @@
     </properties>
 	 	
     <modules>
-    	<module>lib-backend</module>
+    	<!-- <module>lib-backend</module> -->
     	<module>lib-core</module>
     </modules>
 </project>
