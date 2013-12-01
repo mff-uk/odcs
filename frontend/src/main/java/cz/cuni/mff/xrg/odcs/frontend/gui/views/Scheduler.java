@@ -284,7 +284,7 @@ public class Scheduler extends ViewComponent {
 					result.getContainerProperty(num, "rule").setValue(
 							"Run on " + df.format(item.getFirstExecution()));
 				} else {
-					if (item.getPeriod().equals((long) 1)) {
+					if (item.getPeriod().equals((Integer) 1)) {
 						result.getContainerProperty(num, "rule").setValue(
 								"Run on "
 								+ df.format(item.getFirstExecution())
