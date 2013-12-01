@@ -1,11 +1,17 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.VaadinServletService;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import ru.xpoft.vaadin.SpringApplicationContext;
 import ru.xpoft.vaadin.SpringVaadinServlet;
 
 /**
@@ -16,6 +22,17 @@ import ru.xpoft.vaadin.SpringVaadinServlet;
  * @author Jan Vojt
  */
 public class IntlibApplicationServlet extends SpringVaadinServlet {
+
+	@Override
+	protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration) throws ServiceException {
+		VaadinServletService service = super.createServletService(deploymentConfiguration);
+		
+		// Preload all DPUs on servlet startup, so openning them is fast.
+		ApplicationContext context = SpringApplicationContext.getApplicationContext();
+		context.getBean(ModuleFacade.class).preLoadAllDPUs();
+		
+		return service;
+	}
 
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
