@@ -2,7 +2,7 @@ fk_check_input_values(0);
 -- dbdump: dumping datasource "localhost:1111", username=dba
 -- tablequalifier=NULL  tableowner=NULL  tablename=is given, one or more  tabletype=NULL
 -- Connected to datasource "OpenLink Virtuoso", Driver v. 06.01.3127 OpenLink Virtuoso ODBC Driver.
--- get_all_tables: tablepattern="db.ODCS.%",11
+-- get_all_tables: tablepattern="db.odcs.%",9
 -- Definitions of 27 tables were read in.
 -- SELECT * FROM DB.ODCS.DPU_INSTANCE
 INSERT INTO DB.ODCS.DPU_INSTANCE(id,name,use_dpu_description,description,tool_tip,configuration,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql','','<object-stream> <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> <SPARQL__endpoint>http://dbpedia.org/sparql</SPARQL__endpoint> <Host__name></Host__name> <Password></Password> <GraphsUri class="linked-list"> <string>http://dbpedia.org</string> </GraphsUri> <SPARQL__query>CONSTRUCT {&lt;http://dbpedia.org/resource/Prague&gt; ?p ?o} where {&lt;http://dbpedia.org/resource/Prague&gt; ?p ?o } LIMIT 100</SPARQL__query> <ExtractFail>true</ExtractFail> <UseStatisticalHandler>false</UseStatisticalHandler> </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> </object-stream>',1);
@@ -29,8 +29,6 @@ INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configu
 -- Table DB.ODCS.EXEC_CONTEXT_DPU 0 rows output.
 -- SELECT * FROM DB.ODCS.EXEC_CONTEXT_PIPELINE
 -- Table DB.ODCS.EXEC_CONTEXT_PIPELINE 0 rows output.
--- SELECT * FROM DB.ODCS.EXEC_CONTEXT_PROCCONTEXT
--- Table DB.ODCS.EXEC_CONTEXT_PROCCONTEXT 0 rows output.
 -- SELECT * FROM DB.ODCS.EXEC_DATAUNIT_INFO
 -- Table DB.ODCS.EXEC_DATAUNIT_INFO 0 rows output.
 -- SELECT * FROM DB.ODCS.EXEC_PIPELINE
@@ -45,6 +43,12 @@ INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configu
 -- Table DB.ODCS.EXEC_SCHEDULE 0 rows output.
 -- SELECT * FROM DB.ODCS.EXEC_SCHEDULE_AFTER
 -- Table DB.ODCS.EXEC_SCHEDULE_AFTER 0 rows output.
+-- Table DB.ODCS.LOGGING has more than one blob column.
+-- The column stack_trace of type LONG VARCHAR might not get properly inserted.
+-- SELECT * FROM DB.ODCS.LOGGING
+-- Table DB.ODCS.LOGGING has more than one blob column.
+-- The column stack_trace of type LONG VARCHAR might not get properly inserted.
+-- Table DB.ODCS.LOGGING 0 rows output.
 -- SELECT * FROM DB.ODCS.LOGGING_EVENT
 -- Table DB.ODCS.LOGGING_EVENT 0 rows output.
 -- SELECT * FROM DB.ODCS.LOGGING_EVENT_EXCEPTION
@@ -70,8 +74,8 @@ INSERT INTO DB.ODCS.PPL_POSITION(id,pos_x,pos_y) VALUES(2,487,132);
 -- Table DB.ODCS.PPL_POSITION 2 rows output.
 -- SELECT * FROM DB.ODCS.PPL_PPL_CONFLICTS
 -- Table DB.ODCS.PPL_PPL_CONFLICTS 0 rows output.
--- SELECT * FROM DB.ODCS.RDF_PREFIX
--- Table DB.ODCS.RDF_PREFIX 0 rows output.
+-- SELECT * FROM DB.ODCS.RDF_NS_PREFIX
+-- Table DB.ODCS.RDF_NS_PREFIX 0 rows output.
 -- SELECT * FROM DB.ODCS.SCH_EMAIL
 INSERT INTO DB.ODCS.SCH_EMAIL(id,e_user,e_domain) VALUES(1,'admin','example.com');
 INSERT INTO DB.ODCS.SCH_EMAIL(id,e_user,e_domain) VALUES(2,'user','example.com');
@@ -89,8 +93,8 @@ INSERT INTO DB.ODCS.SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id) VALUES(
 INSERT INTO DB.ODCS.SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id) VALUES(2,2);
 -- Table DB.ODCS.SCH_USR_NOTIFICATION_EMAIL 2 rows output.
 -- SELECT * FROM DB.ODCS.USR_USER
-INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name) VALUES(1,'admin',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Admin');
-INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name) VALUES(2,'user',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John User');
+INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name,table_rows) VALUES(1,'admin',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Admin',20);
+INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name,table_rows) VALUES(2,'user',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John User',20);
 -- Table DB.ODCS.USR_USER 2 rows output.
 -- SELECT * FROM DB.ODCS.USR_USER_ROLE
 INSERT INTO DB.ODCS.USR_USER_ROLE(user_id,role_id) VALUES(1,0);
@@ -99,20 +103,4 @@ INSERT INTO DB.ODCS.USR_USER_ROLE(user_id,role_id) VALUES(2,0);
 -- Table DB.ODCS.USR_USER_ROLE 3 rows output.
 
 
-sequence_set('seq_dpu_record', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."DPU_INSTANCE"), 1);
-sequence_set('seq_exec_dataunit_info', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."EXEC_DATAUNIT_INFO"), 1);
-sequence_set('seq_exec_context_pipeline', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."EXEC_CONTEXT_PIPELINE"), 1);
-sequence_set('seq_exec_context_dpu', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."EXEC_CONTEXT_DPU"), 1);
-sequence_set('seq_exec_record', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."EXEC_RECORD"), 1);
-sequence_set('seq_exec_pipeline', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."EXEC_PIPELINE"), 1);
-sequence_set('seq_exec_schedule', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."EXEC_SCHEDULE"), 1);
-sequence_set('seq_ppl_model', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."PPL_MODEL"), 1);
-sequence_set('seq_ppl_edge', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."PPL_EDGE"), 1);
-sequence_set('seq_ppl_node', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."PPL_NODE"), 1);
-sequence_set('seq_ppl_graph', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."PPL_GRAPH"), 1);
-sequence_set('seq_ppl_position', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."PPL_POSITION"), 1);
-sequence_set('seq_sch_notification', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."SCH_SCH_NOTIFICATION"), 1);
-sequence_set('seq_sch_email', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."SCH_EMAIL"), 1);
-sequence_set('seq_usr_user', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."USR_USER"), 1);
-sequence_set('seq_rdf_ns_prefix', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."RDF_NS_PREFIX"), 1);
 fk_check_input_values(1);

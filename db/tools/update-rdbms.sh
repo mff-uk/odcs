@@ -13,6 +13,6 @@ dbhost=`grep "^virtuoso.rdbms.hostname" $config | head -n 1 | sed -r "s/^[^=]*=\
 dbport=`grep "^virtuoso.rdbms.port" $config | head -n 1 | sed -r "s/^[^=]*=\\s?//"`
 
 # recreate schema and import data
-cat "${dumpdir}/schema.sql" "${dumpdir}/data.sql" | \
+cat "${dumpdir}/schema.sql" "${dumpdir}/data.sql" "${dumpdir}/sequences.sql" | \
 	isql-v "${dbhost}:${dbport}" "$dbuser" "$dbpass"
 
