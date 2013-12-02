@@ -27,3 +27,5 @@ bin/
 *.war
 *.jar
 *.ear
+.idea/
+*.iml
