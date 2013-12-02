@@ -12,6 +12,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class PipelineListViewImpl extends CustomComponent implements PipelineListPresenter.PipelineListView {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineListViewImpl.class);
+	
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
@@ -107,9 +111,13 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (!tablePipelines.isSelected(event.getItemId())) {
+				if (!tablePipelines.isSelected(event.getItemId())) {					
+					LOG.trace("itemClick({}, id = {})", event.getItem(), event.getItemId());
 					ValueItem item = (ValueItem) event.getItem();
+					LOG.trace("	- object's id = {}", item.getId());
+					
 					long pipelineId = (long) item.getItemProperty("id").getValue();
+					
 					presenter.navigateToEventHandler(PipelineEdit.class, pipelineId);
 				}
 			}

@@ -232,10 +232,11 @@ public class CachedSource<T extends DataObject>
 	}
 
 	@Override
-	public T getObject(Long id) {
+	public T getObject(Long id) {		
 		if (data.containsKey(id)) {
 			// the data are already cached
 		} else {
+			LOG.trace("getObject({}) - non, cached", id);
 			loadById(id);
 		}
 		return data.get(id);
@@ -260,10 +261,11 @@ public class CachedSource<T extends DataObject>
 
 	@Override
 	public boolean containsId(Long id) {
+		LOG.trace("containsId({})", id);
 		if (data.containsKey(id)) {
 			return true;
 		}
-		LOG.debug("containsId called on non-cached data .. this generates the query into database");
+		LOG.debug("containsId called on non-cached data .. this generates the query into database");		
 		// try to load that object
 		loadById(id);
 		// ask again		
@@ -272,6 +274,7 @@ public class CachedSource<T extends DataObject>
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
+boolean onlyCached = true;
 		List<Long> result = new ArrayList<>(numberOfItems);
 		// first try to load data from cache
 		int endIndex = startIndex + numberOfItems;
@@ -280,6 +283,7 @@ public class CachedSource<T extends DataObject>
 				// we havedata
 				result.add(dataIndexes.get(index));
 			} else {
+onlyCached = false;				
 				// some data are mising, we have to load them
 				final int toLoad = numberOfItems - (index - startIndex);
 				List<T> newData = loadByIndex(index, toLoad);
@@ -295,6 +299,11 @@ public class CachedSource<T extends DataObject>
 				break;
 			}
 		}
+		
+		if (result.contains(null)) {
+			LOG.error("getItemIds return null!! only cached = {}", onlyCached);
+		}
+		
 		return result;
 	}
 
