@@ -653,6 +653,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		dataPartsOption.setMultiSelect(false);
 		verticalLayoutDetails.addComponent(dataPartsOption);
 
+		
+		VerticalLayout chunkSize = new VerticalLayout();
+		chunkSize.setSpacing(true);
+		chunkSize.setStyleName("graypanel");
+		
 		// Create chunkparts
 		chunkParts = new TextField(
 				"Chunk size of triples which inserted at once");
@@ -693,7 +698,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			}
 		});
 
-		verticalLayoutDetails.addComponent(chunkParts);
+		chunkSize.addComponent(chunkParts);
 
 		//add button
 		chunkDefault = new Button("Default size");
@@ -709,9 +714,15 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 				chunkParts.setValue(value);
 			}
 		});
-		verticalLayoutDetails.addComponent(chunkDefault);
 
-		verticalLayoutDetails.addComponent(new Label(
+		chunkSize.addComponent(chunkDefault);
+		verticalLayoutDetails.addComponent(chunkSize);
+
+		VerticalLayout attempts = new VerticalLayout();
+		attempts.setSpacing(true);
+		attempts.setStyleName("graypanel");
+		
+		attempts.addComponent(new Label(
 				"Count of attempts to reconnect if the connection to SPARQL fails"));
 
 		retrySizeField = new TextField(
@@ -748,7 +759,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			}
 		});
 
-		verticalLayoutDetails.addComponent(retrySizeField);
+		attempts.addComponent(retrySizeField);
 
 
 		retryTimeField = new TextField(
@@ -789,7 +800,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			}
 		});
 
-		verticalLayoutDetails.addComponent(retryTimeField);
+		attempts.addComponent(retryTimeField);
+		verticalLayoutDetails.addComponent(attempts);
 
 		//add checkbox for data validation
 		validateDataBefore = new CheckBox(

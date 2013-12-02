@@ -157,6 +157,7 @@ public class DPUTree extends CustomComponent {
 
 		CheckBox onlyMyDPU = new CheckBox();
 		onlyMyDPU.setCaption("Only private DPU templates");
+		onlyMyDPU.setStyleName("private");
 		onlyMyDPU.addValueChangeListener(new Property.ValueChangeListener() {
 
 			@Override

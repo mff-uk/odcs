@@ -138,6 +138,14 @@ overflow: auto !important;
 	    background-color: #eeeeee;
 }
 
+.graypanel {
+	background-color: #dddddd;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
 .select-hide-tb {
 	overflow: auto !important;
 	
@@ -182,6 +190,10 @@ overflow: auto !important;
 	font-size: 20px;
 	font-weight: bold;
 	padding: 8px;
+}
+
+.v-checkbox-private { 
+	color: #5CA0DF
 }
 
 
