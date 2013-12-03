@@ -1502,38 +1502,42 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 
 		HttpURLConnection httpConnection = null;
-		try {
-			httpConnection = getHttpURLConnection(call);
-			httpConnection.setRequestMethod("POST");
-			httpConnection.setRequestProperty("Content-Type",
-					"application/x-www-form-urlencoded");
 
-			httpConnection.setRequestProperty("Content-Length", ""
-					+ Integer.toString(parameters.getBytes().length));
+		int retryCount = 0;
 
-			httpConnection.setUseCaches(false);
-			httpConnection.setDoInput(true);
-			httpConnection.setDoOutput(true);
+		while (true) {
+			try {
+				httpConnection = (HttpURLConnection) call.openConnection();
+				httpConnection.setRequestMethod("POST");
+				httpConnection.setRequestProperty("Content-Type",
+						"application/x-www-form-urlencoded");
 
-			try (OutputStream os = httpConnection.getOutputStream()) {
-				os.write(parameters.getBytes());
-				os.flush();
-			}
+				httpConnection.setRequestProperty("Content-Length", ""
+						+ Integer.toString(parameters.getBytes().length));
 
-			int httpResponseCode = httpConnection.getResponseCode();
+				httpConnection.setUseCaches(false);
+				httpConnection.setDoInput(true);
+				httpConnection.setDoOutput(true);
 
-			if (httpResponseCode != HTTP_OK_RESPONSE) {
+				try (OutputStream os = httpConnection.getOutputStream()) {
+					os.write(parameters.getBytes());
+					os.flush();
+				}
 
-				StringBuilder message = new StringBuilder(
-						httpConnection.getHeaderField(0));
+				int httpResponseCode = httpConnection.getResponseCode();
+
+				if (httpResponseCode != HTTP_OK_RESPONSE) {
+
+					StringBuilder message = new StringBuilder(
+							httpConnection.getHeaderField(0));
 
 
-				if (httpResponseCode == HTTP_UNAUTORIZED_RESPONSE) {
-					message.append(
-							". Your USERNAME and PASSWORD for connection is wrong.");
-				} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
-					message.append(
-							". Inserted data has wrong format.");
+					if (httpResponseCode == HTTP_UNAUTORIZED_RESPONSE) {
+						message.append(
+								". Your USERNAME and PASSWORD for connection is wrong.");
+					} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
+						message.append(
+								". Inserted data has wrong format.");
 //
 //					try (InputStream errorStream = httpConnection
 //							.getErrorStream()) {
@@ -1560,67 +1564,78 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 //					}
 
 
-				} else {
-					//message.append(". You probably dont have enought PERMISSION for this action.");
-					try (InputStream errorStream = httpConnection
-							.getErrorStream()) {
+					} else {
+						//message.append(". You probably dont have enought PERMISSION for this action.");
+						try (InputStream errorStream = httpConnection
+								.getErrorStream()) {
 
-						try (BufferedReader reader = new BufferedReader(
-								new InputStreamReader(
-								errorStream, Charset.forName(encode)))) {
+							try (BufferedReader reader = new BufferedReader(
+									new InputStreamReader(
+									errorStream, Charset.forName(encode)))) {
 
-							StringBuilder inputStringBuilder = new StringBuilder();
-							String line = reader.readLine();
-							while (line != null) {
-								inputStringBuilder.append(line);
-								inputStringBuilder.append('\n');
-								line = reader.readLine();
+								StringBuilder inputStringBuilder = new StringBuilder();
+								String line = reader.readLine();
+								while (line != null) {
+									inputStringBuilder.append(line);
+									inputStringBuilder.append('\n');
+									line = reader.readLine();
+								}
+
+								String cause = ". Caused by " + inputStringBuilder
+										.toString();
+
+								message.append(cause);
+
+								//throw new InsertPartException(message.toString());
 							}
-
-							String cause = ". Caused by " + inputStringBuilder
-									.toString();
-
-							message.append(cause);
-
-							//throw new InsertPartException(message.toString());
 						}
+
 					}
 
+					throw new InsertPartException(
+							message.toString() + "\n\n" + "URL endpoint: " + endpointURL
+							.toString() + " POST content: " + parameters);
+					//throw new RDFException(message.toString());
+				} else {
+
+					InputStreamReader inputStreamReader = new InputStreamReader(
+							httpConnection.getInputStream(), Charset.forName(
+							encode));
+
+					return inputStreamReader;
 				}
 
+			} catch (UnknownHostException e) {
+				final String message = "Unknown host: ";
+				throw new RDFException(message + e.getMessage(), e);
+			} catch (IOException e) {
 
-				throw new InsertPartException(
-						message.toString() + "\n\n" + "URL endpoint: " + endpointURL
-						.toString() + " POST content: " + parameters);
-				//throw new RDFException(message.toString());
+				retryCount++;
+
+				final String message = String.format(
+						"%s/%s attempt to reconnect %s FAILED", retryCount,
+						getRetryConnectionSizeAsString(), call
+						.toString());
+
+				logger.debug(message);
+
+				if (retryCount >= RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
+					final String errorMessage = "Endpoint HTTP connection stream cannot be opened. ";
+					logger.debug(errorMessage);
+					if (httpConnection != null) {
+						httpConnection.disconnect();
+					}
+					throw new RDFException(errorMessage + e.getMessage(), e);
+				} else {
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(RETRY_CONNECTION_TIME);
+
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage());
+					}
+				}
 			}
-
-		} catch (UnknownHostException e) {
-			final String message = "Unknown host: ";
-			throw new RDFException(message + e.getMessage(), e);
-		} catch (IOException e) {
-			final String message = "Endpoint URL stream cannot be opened. ";
-			logger.debug(message);
-			if (httpConnection != null) {
-				httpConnection.disconnect();
-			}
-			throw new RDFException(message + e.getMessage(), e);
-		}
-
-		try {
-			InputStreamReader inputStreamReader = new InputStreamReader(
-					httpConnection.getInputStream(), Charset.forName(
-					encode));
-
-			return inputStreamReader;
-
-		} catch (IOException e) {
-
-			final String message = "Http connection cannot open the stream. ";
-			logger.debug(message);
-
-			throw new RDFException(message + e.getMessage(), e);
-
 		}
 	}
 
@@ -1641,41 +1656,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	private HttpURLConnection getHttpURLConnection(URL call) throws IOException {
-
-		int retryCount = 0;
-
-		HttpURLConnection httpConnection;
-
-		while (true) {
-			try {
-				httpConnection = (HttpURLConnection) call.openConnection();
-				return httpConnection;
-			} catch (IOException e) {
-				retryCount++;
-
-				final String message = String.format(
-						"%s/%s attempt to reconnect %s FAILED", retryCount,
-						getRetryConnectionSizeAsString(), call
-						.toString());
-
-				logger.debug(message);
-
-				if (retryCount >= RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
-					throw new IOException(e.getMessage(), e);
-				} else {
-					try {
-						//sleep and attempt to reconnect
-						Thread.sleep(RETRY_CONNECTION_TIME);
-
-					} catch (InterruptedException ex) {
-						logger.debug(ex.getMessage());
-					}
-				}
-			}
 		}
 	}
 
