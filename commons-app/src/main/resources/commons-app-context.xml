@@ -76,7 +76,7 @@
     <bean id="dbLogException" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogExceptionLineImpl" />
     <bean id="dbSchedule" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleImpl" />
     <bean id="dbScheduleNotification" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotificationImpl" />
-    <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbUserNotificationRecordImpl" />
+    <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserNotificationRecordImpl" />
     <bean id="dbUser" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserImpl" />
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl" />
     
