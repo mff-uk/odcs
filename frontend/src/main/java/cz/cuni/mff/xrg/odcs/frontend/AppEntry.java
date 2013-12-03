@@ -4,6 +4,9 @@ import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
+import static com.vaadin.server.DefaultErrorHandler.doDefault;
+import com.vaadin.server.ErrorHandler;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -137,8 +140,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}
 		});
 
-		// Configure the error handler for the UI
-		this.setErrorHandler(new DefaultErrorHandler() {
+		ErrorHandler errorHandler = new DefaultErrorHandler() {
 			@Override
 			public void error(com.vaadin.server.ErrorEvent event) {
 				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
@@ -158,7 +160,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 					doDefault(event);
 				}
 			}
-		});
+		};
+		// Configure the error handler for the UI
+		VaadinSession.getCurrent().setErrorHandler(errorHandler);
+		this.setErrorHandler(errorHandler);
 
 		/**
 		 * Checking user every time request is made.

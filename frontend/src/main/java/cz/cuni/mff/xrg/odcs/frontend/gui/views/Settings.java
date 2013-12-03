@@ -25,6 +25,7 @@ import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
@@ -200,6 +201,11 @@ public class Settings extends ViewComponent {
 				"Delete all intermediate graphs created \n by the pipelines in the debug mode"));
 		Button clearButton = new Button();
 		clearButton.addClickListener(new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 
@@ -279,6 +285,7 @@ public class Settings extends ViewComponent {
 		usersButton.setHeight("40px");
 		usersButton.setWidth("170px");
 		usersButton.setStyleName("multiline");
+		usersButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
 		usersButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -305,6 +312,7 @@ public class Settings extends ViewComponent {
 		recordsButton.setHeight("40px");
 		recordsButton.setWidth("170px");
 		recordsButton.setStyleName("multiline");
+		recordsButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
 		recordsButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -332,6 +340,7 @@ public class Settings extends ViewComponent {
 		pipelinesButton.setHeight("40px");
 		pipelinesButton.setWidth("170px");
 		pipelinesButton.setStyleName("multiline");
+		pipelinesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
 		pipelinesButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -360,7 +369,10 @@ public class Settings extends ViewComponent {
 		prefixesButton.setHeight("40px");
 		prefixesButton.setWidth("170px");
 		prefixesButton.setStyleName("multiline");
+		prefixesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
 		prefixesButton.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (shownTab.equals(accountButton)) {
@@ -456,6 +468,11 @@ public class Settings extends ViewComponent {
 		rows.setBuffered(true);
 		rows.setImmediate(true);
 		rows.addTextChangeListener(new FieldEvents.TextChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent event) {
 				buttonMyAccountBar.setEnabled(true);
