@@ -29,6 +29,12 @@ public class CachedSource<T extends DataObject>
 	private static final Logger LOG = LoggerFactory.getLogger(CachedSource.class);
 
 	/**
+	 * The maximum size of cache, it this size is exceeded then the cache
+	 * is cleared.
+	 */
+	private static final int CACHE_MAX_SIZE = 200;
+	
+	/**
 	 * Store size of data set in database.
 	 */
 	protected Integer size;
@@ -221,7 +227,7 @@ public class CachedSource<T extends DataObject>
 			++index;
 		}
 	}
-	
+		
 	@Override
 	public int size() {
 		if (size == null) {
@@ -232,10 +238,11 @@ public class CachedSource<T extends DataObject>
 	}
 
 	@Override
-	public T getObject(Long id) {
+	public T getObject(Long id) {		
 		if (data.containsKey(id)) {
 			// the data are already cached
 		} else {
+			LOG.trace("getObject({}) - non, cached", id);
 			loadById(id);
 		}
 		return data.get(id);
@@ -244,8 +251,8 @@ public class CachedSource<T extends DataObject>
 	@Override
 	public T getObjectByIndex(int index) {
 		if (dataIndexes.containsKey(index)) {
-			// we have data
-			return data.get(dataIndexes.get(index));
+			// we have the mapping index -> id
+			return getObject(dataIndexes.get(index));
 		} else {
 			T item = loadByIndex(index);
 			if (item != null) {
@@ -260,10 +267,11 @@ public class CachedSource<T extends DataObject>
 
 	@Override
 	public boolean containsId(Long id) {
+		LOG.trace("containsId({})", id);
 		if (data.containsKey(id)) {
 			return true;
 		}
-		LOG.debug("containsId called on non-cached data .. this generates the query into database");
+		LOG.debug("containsId called on non-cached data .. this generates the query into database");		
 		// try to load that object
 		loadById(id);
 		// ask again		
@@ -272,14 +280,17 @@ public class CachedSource<T extends DataObject>
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
+		
+boolean onlyCached = true;
 		List<Long> result = new ArrayList<>(numberOfItems);
 		// first try to load data from cache
 		int endIndex = startIndex + numberOfItems;
 		for (int index = startIndex; index < endIndex; ++index) {
 			if (dataIndexes.containsKey(index)) {
-				// we havedata
+				// we have mapping, so use it to return the index
 				result.add(dataIndexes.get(index));
 			} else {
+onlyCached = false;				
 				// some data are mising, we have to load them
 				final int toLoad = numberOfItems - (index - startIndex);
 				List<T> newData = loadByIndex(index, toLoad);
@@ -295,6 +306,28 @@ public class CachedSource<T extends DataObject>
 				break;
 			}
 		}
+		
+		if (result.contains(null)) {
+			LOG.error("getItemIds return null!! only cached = {}", onlyCached);
+		}
+		
+		if (data.size() > CACHE_MAX_SIZE) {
+			LOG.debug("Cache cleared");
+			// we preserve indexes as we may need to use them 
+			// for some direct access
+			
+			// what we remove are the data .. if they are not in result one
+			List<Long> ids = new ArrayList<>(data.keySet());
+			ids.removeAll(result);
+			// now in ids, are ids to remove ..
+			for (Long item : ids) {
+				data.remove(item);
+			}
+			
+			// this may result in additional query for the data we drop
+			// maybe we can try to be smarter here ...
+		}
+				
 		return result;
 	}
 

@@ -30,6 +30,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -39,6 +40,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tepi.filtertable.FilterGenerator;
@@ -52,6 +55,8 @@ import org.tepi.filtertable.FilterGenerator;
 @Scope("prototype")
 public class ExecutionListViewImpl extends CustomComponent implements ExecutionListPresenter.ExecutionListView {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
+	
 	private IntlibPagedTable monitorTable;
 	/**
 	 * Used to separate table from execution detail view.
@@ -411,6 +416,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
+				LOG.trace("itemClick({}, id = {})", event.getItem(), event.getItemId());
+				ValueItem item = (ValueItem) event.getItem();
+				LOG.trace("	- object's id = {}", item.getId());
+				
 				// get property for given item
 				final Property property = event.getItem().getItemProperty("id");
 				final Long executionId = (long)property.getValue();

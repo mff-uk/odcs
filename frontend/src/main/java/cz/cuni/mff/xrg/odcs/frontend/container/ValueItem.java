@@ -41,4 +41,8 @@ public class ValueItem implements Item {
 		throw new UnsupportedOperationException();
 	}
 	
+	public Long getId() {
+		return objectId;
+	}
+	
 }
