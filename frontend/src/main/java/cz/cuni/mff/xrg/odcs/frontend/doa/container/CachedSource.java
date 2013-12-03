@@ -111,14 +111,15 @@ public class CachedSource<T extends DataObject>
 	}
 
 	/**
-	 * Load data size from {@link #source} and return it. {@link #size}.
+	 * Load data size from {@link #source} and return it. Do not 
+	 * store them into any member variable.
 	 */
 	int loadSize() {
 		LOG.trace("loadSize()");
 		applyFilters();
-		int size = (int) source.executeSize(queryBuilder.getCountQuery());
-		LOG.trace("loadSize() -> {}", size);
-		return size;
+		final int newSize = (int)source.executeSize(queryBuilder.getCountQuery());
+		LOG.trace("loadSize() -> {}", newSize);
+		return newSize;
 	}
 
 	/**
@@ -251,14 +252,13 @@ public class CachedSource<T extends DataObject>
 	@Override
 	public T getObjectByIndex(int index) {
 		if (dataIndexes.containsKey(index)) {
-			LOG.trace("getObjectByIndex({}) -> getObject", index);
 			// we have the mapping index -> id
 			return getObject(dataIndexes.get(index));
 		} else {
 			T item = loadByIndex(index);
 			if (item != null) {
 				// add to caches
-				data.put(item.getId(), item);
+				data.put(item.getId(), item);					
 				dataIndexes.put(index, item.getId());
 			}
 			// return new item .. can be null
@@ -268,11 +268,10 @@ public class CachedSource<T extends DataObject>
 
 	@Override
 	public boolean containsId(Long id) {
-		LOG.trace("containsId({})", id);
 		if (data.containsKey(id)) {
 			return true;
 		}
-		LOG.debug("containsId called on non-cached data .. this generates the query into database");		
+		LOG.debug("containsId called on non-cached data .. this generates the query into database");
 		// try to load that object
 		loadById(id);
 		// ask again		
@@ -282,7 +281,6 @@ public class CachedSource<T extends DataObject>
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
 		
-boolean onlyCached = true;
 		List<Long> result = new ArrayList<>(numberOfItems);
 		// first try to load data from cache
 		int endIndex = startIndex + numberOfItems;
@@ -290,15 +288,14 @@ boolean onlyCached = true;
 			if (dataIndexes.containsKey(index)) {
 				// we have mapping, so use it to return the index
 				result.add(dataIndexes.get(index));
-			} else {
-onlyCached = false;				
+			} else {		
 				// some data are mising, we have to load them
 				final int toLoad = numberOfItems - (index - startIndex);
 				List<T> newData = loadByIndex(index, toLoad);
 				// gather IDs and add data to caches
 				List<Long> newIDs = new ArrayList<>(numberOfItems);
 				for (T item : newData) {
-					data.put(item.getId(), item);
+					data.put(item.getId(), item);				
 					dataIndexes.put(index++, item.getId());
 					newIDs.add(item.getId());
 				}
@@ -306,10 +303,6 @@ onlyCached = false;
 				result.addAll(newIDs);
 				break;
 			}
-		}
-		
-		if (result.contains(null)) {
-			LOG.error("getItemIds return null!! only cached = {}", onlyCached);
 		}
 		
 		if (data.size() > CACHE_MAX_SIZE) {

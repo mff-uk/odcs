@@ -41,6 +41,10 @@ public class ValueItem implements Item {
 		throw new UnsupportedOperationException();
 	}
 	
+	/**
+	 * Return embedded object id.
+	 * @return 
+	 */
 	public Long getId() {
 		return objectId;
 	}

@@ -74,11 +74,9 @@ public class RecordsTable extends CustomComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!messageTable.isSelected(event.getItemId())) {
-					LOG.trace("itemClick({}, id = {})", event.getItem(), event.getItemId());
 					ValueItem item = (ValueItem) event.getItem();
-					LOG.trace("	- object's id = {}", item.getId());
 					
-					long recordId = (long) item.getItemProperty("id").getValue();
+					final long recordId = item.getId();
 					MessageRecord record = dataSouce.getObject(recordId);
 					showRecordDetail(record);
 				}
