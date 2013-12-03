@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -43,6 +45,8 @@ import org.tepi.filtertable.datefilter.DateInterval;
  */
 public class LogTable extends CustomComponent {
 
+	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
+	
 	private static final int PAGE_LENGTH = 30;
 	
 	private VerticalLayout mainLayout;
@@ -102,7 +106,10 @@ public class LogTable extends CustomComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!table.isSelected(event.getItemId())) {
+					LOG.trace("itemClick({}, id = {})", event.getItem(), event.getItemId());
 					ValueItem item = (ValueItem) event.getItem();
+					LOG.trace("	- object's id = {}", item.getId());
+					
 					long logId = (long) item.getItemProperty("id").getValue();
 					Log log = dataSouce.getObject(logId);
 					showLogDetail(log);

@@ -251,6 +251,7 @@ public class CachedSource<T extends DataObject>
 	@Override
 	public T getObjectByIndex(int index) {
 		if (dataIndexes.containsKey(index)) {
+			LOG.trace("getObjectByIndex({}) -> getObject", index);
 			// we have the mapping index -> id
 			return getObject(dataIndexes.get(index));
 		} else {

@@ -23,6 +23,8 @@ import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
 
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -32,6 +34,8 @@ import java.util.Collection;
  */
 public class RecordsTable extends CustomComponent {
 
+	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
+	
 	private static final int PAGE_LENGTH = 28;
 	
 	private boolean isInitialized = false;
@@ -71,7 +75,10 @@ public class RecordsTable extends CustomComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!messageTable.isSelected(event.getItemId())) {
+					LOG.trace("itemClick({}, id = {})", event.getItem(), event.getItemId());
 					ValueItem item = (ValueItem) event.getItem();
+					LOG.trace("	- object's id = {}", item.getId());
+					
 					long recordId = (long) item.getItemProperty("id").getValue();
 					MessageRecord record = dataSouce.getObject(recordId);
 					showRecordDetail(record);
