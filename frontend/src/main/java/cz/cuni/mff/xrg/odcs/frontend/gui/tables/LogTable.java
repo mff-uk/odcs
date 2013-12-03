@@ -27,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,8 +47,6 @@ import org.tepi.filtertable.datefilter.DateInterval;
 public class LogTable extends CustomComponent {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
-	
-	private static final int PAGE_LENGTH = 30;
 	
 	private VerticalLayout mainLayout;
 
@@ -100,7 +99,6 @@ public class LogTable extends CustomComponent {
 		table = new IntlibPagedTable();
 		table.setSelectable(true);
 		table.setSizeFull();
-		table.setPageLength(PAGE_LENGTH);
 
 		table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
@@ -152,7 +150,8 @@ public class LogTable extends CustomComponent {
 		table.setFilterGenerator(filterGenerator);
 		table.setSortEnabled(false);
 		table.setFilterBarVisible(true);
-
+		table.setPageLength(Utils.getPageLength());
+		
 		// add to the main layout
 		mainLayout.addComponent(table);
 		mainLayout.addComponent(table.createControls());
@@ -191,7 +190,7 @@ public class LogTable extends CustomComponent {
 	/**
 	 * Set active DPU for which the logs are shown. Also do the site refresh.
 	 * 
-	 * @param dpuInstance 
+	 * @param dpu 
 	 */
 	public void setDpu(DPUInstanceRecord dpu) {
 		// get DPU selector

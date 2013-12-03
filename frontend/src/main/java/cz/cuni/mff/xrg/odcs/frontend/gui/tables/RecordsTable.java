@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 import java.util.Collection;
 import org.slf4j.Logger;
@@ -35,8 +36,6 @@ import org.slf4j.LoggerFactory;
 public class RecordsTable extends CustomComponent {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
-	
-	private static final int PAGE_LENGTH = 28;
 	
 	private boolean isInitialized = false;
 	
@@ -86,9 +85,11 @@ public class RecordsTable extends CustomComponent {
 			}
 		});
 		messageTable.setSizeFull();
+		messageTable.setPageLength(Utils.getPageLength());
+		
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(PAGE_LENGTH);
+
 		setCompositionRoot(mainLayout);
 	}
 
