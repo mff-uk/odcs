@@ -280,6 +280,15 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 	/**
 	 *
+	 * @return if is used Virtuoso specifix syntax for SPARQL or not.
+	 *
+	 */
+	public boolean isUsedExtension() {
+		return useExtension;
+	}
+
+	/**
+	 *
 	 * @return User name to Virtuoso connection.
 	 */
 	public String getUser() {
