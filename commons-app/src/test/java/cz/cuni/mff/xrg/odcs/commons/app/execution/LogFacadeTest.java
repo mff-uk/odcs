@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogException;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogExceptionLine;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 

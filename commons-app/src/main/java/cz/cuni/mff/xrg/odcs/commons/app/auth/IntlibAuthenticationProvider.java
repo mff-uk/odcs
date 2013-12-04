@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.auth;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;

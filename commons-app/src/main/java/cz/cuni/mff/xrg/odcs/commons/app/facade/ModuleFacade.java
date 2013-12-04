@@ -1,10 +1,11 @@
-package cz.cuni.mff.xrg.odcs.commons.app.module;
+package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.Dictionary;
 import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
  * Provide interface for manipulation with DPU's instances. 

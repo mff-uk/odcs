@@ -1,5 +1,7 @@
-package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
+package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefix;
+import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

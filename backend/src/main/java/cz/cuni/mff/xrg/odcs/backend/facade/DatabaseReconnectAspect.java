@@ -93,12 +93,7 @@ class DatabaseReconnectAspect {
 	 * @return
 	 * @throws Throwable
 	 */
-	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade.*(..)) || "
-			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade.*(..)) || "
-			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade.*(..)) || "
-			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade.*(..)) || "
-			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade.*(..)) || "
-			+ "execution(* cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefixFacade.*(..))")
+	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.facade.*Facade.*(..))")
 	public Object failureTolerant(ProceedingJoinPoint pjp) throws Throwable {
 		
 		int attempts = 0;

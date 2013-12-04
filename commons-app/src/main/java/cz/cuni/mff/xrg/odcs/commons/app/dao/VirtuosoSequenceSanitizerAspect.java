@@ -64,7 +64,8 @@ public class VirtuosoSequenceSanitizerAspect {
 	 * @return
 	 * @throws Throwable 
 	 */
-	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade.save(..))")
+	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.facade.*Facade.save(..))"
+			+ " || execution(* cz.cuni.mff.xrg.odcs.commons.app.facade.*Facade.copy*(..))")
 	public Object sanitizeSequence(ProceedingJoinPoint pjp) throws Throwable {
 		
 		Object result = null;
@@ -77,7 +78,12 @@ public class VirtuosoSequenceSanitizerAspect {
 				// retry after rollback won't hurt anything.
 				LOG.error("Virtuoso SQLERROR encountered. Will update sequences and retry.", ex);
 				updateSequences();
-				LOG.info("Sequence updating finished.");
+				
+				// TODO seperate save and copy join point
+				// TODO set ID to null for DataObject in save's argument
+				
+				LOG.info("Retrying operation after sequence update.");
+				result = pjp.proceed();
 			} else {
 				// Different exception -> rethrow
 				throw ex;
