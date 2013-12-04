@@ -101,6 +101,7 @@ public class Settings extends ViewComponent {
 
 	private GridLayout emailLayout;
 
+	@Autowired
 	private NamespacePrefixes prefixesList;
 
 	private TextField rows;
@@ -237,7 +238,6 @@ public class Settings extends ViewComponent {
 		prefixesLayout.setImmediate(true);
 		prefixesLayout.setWidth("100%");
 		prefixesLayout.setHeight("100%");
-		prefixesList = new NamespacePrefixes();
 		prefixesLayout = prefixesList.buildNamespacePrefixesLayout();
 		prefixesLayout.setStyleName("settings");
 

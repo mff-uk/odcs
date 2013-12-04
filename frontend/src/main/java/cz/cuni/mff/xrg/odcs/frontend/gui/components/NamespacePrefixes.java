@@ -19,6 +19,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * GUI for Namespace Prefixes which opens from the Administrator menu. Contains
@@ -27,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Maria Kukhar
  */
+@Component
+@Scope("prototype")
 public class NamespacePrefixes {
 
 	private IntlibPagedTable prefixesTable;
