@@ -416,13 +416,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				LOG.trace("itemClick({}, id = {})", event.getItem(), event.getItemId());
 				ValueItem item = (ValueItem) event.getItem();
-				LOG.trace("	- object's id = {}", item.getId());
+				final long executionId = item.getId();
 				
-				// get property for given item
-				final Property property = event.getItem().getItemProperty("id");
-				final Long executionId = (long)property.getValue();
 				presenter.showDebugEventHandler(executionId);
 			}
 		});

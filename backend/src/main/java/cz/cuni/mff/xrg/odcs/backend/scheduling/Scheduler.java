@@ -10,9 +10,9 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;

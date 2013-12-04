@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinServletService;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

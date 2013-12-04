@@ -13,6 +13,7 @@
 	<!-- Shared version number properties -->
 	<properties>
 		<logback.version>1.0.13</logback.version>
+		<aspectj.version>1.7.4</aspectj.version>
 	</properties>
 
 	<repositories>
@@ -221,6 +222,19 @@
 			<artifactId>jdbc-driver</artifactId>
 			<version>4</version>
 		</dependency>
+
+		<!-- Aspect Oriented Programming with AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
 		
 		<dependency> <!-- Contains DataSource with connection pooling. -->
 			<artifactId>commons-dbcp</artifactId>
@@ -268,6 +282,35 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- copy common resource files -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/src/main/resources/sql</outputDirectory>
+							<resources>          
+								<resource>
+									<directory>../db/virtuoso/rdbms</directory>
+									<filtering>false</filtering>
+									<includes>
+										<include>sequences.sql</include>
+									</includes>
+								</resource>
+							</resources>              
+						</configuration>            
+					</execution>
+				</executions>
+			</plugin>
+			
 		</plugins>
 	</build>
 

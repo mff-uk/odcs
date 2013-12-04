@@ -19,7 +19,7 @@ import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -40,7 +40,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEven
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;

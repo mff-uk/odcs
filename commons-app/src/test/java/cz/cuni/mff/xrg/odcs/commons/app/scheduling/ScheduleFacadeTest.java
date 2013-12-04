@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import java.util.Date;

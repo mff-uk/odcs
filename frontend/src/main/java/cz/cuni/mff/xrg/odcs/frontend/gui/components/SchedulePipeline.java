@@ -36,10 +36,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.PeriodUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;

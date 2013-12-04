@@ -1,6 +1,11 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dpu;
+package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;

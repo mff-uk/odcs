@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
+import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 import java.util.List;
 
 import org.junit.Test;

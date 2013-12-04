@@ -3,9 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+	
+	<!-- enable aspects -->
+	<aop:aspectj-autoproxy />
+	
+	<!-- Aspect for fixing corrupted database sequences. -->
+	<bean id="sequenceAspect" class="cz.cuni.mff.xrg.odcs.commons.app.dao.VirtuosoSequenceSanitizerAspect" />
 	
     <!-- application configuration -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
@@ -35,23 +43,23 @@
               init-method="start" destroy-method="stop"/>	
 		
     <!-- Facade for managing users -->
-    <bean id="userFacade" class="cz.cuni.mff.xrg.odcs.commons.app.user.UserFacade" />
+    <bean id="userFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade" />
 
     <!-- Facade for managing pipelines -->
-    <bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade" />
+    <bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade" />
 
     <!-- Facade for managing DPUs -->
-    <bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade" />
+    <bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade" />
 	
     <!-- Facade for viewing log messages -->
     <bean id="dbLogRead" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogReadImpl" />
-    <bean id="logFacade" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade" />
+    <bean id="logFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade" />
 
     <!-- Facade for managing shedules -->
-    <bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleFacade" />
+    <bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade" />
 
     <!-- Facade for managing RDF namespace prefixes -->
-    <bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefixFacade" />
+    <bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade" />
 	
     <!-- Service responsible for delivering emails -->
     <bean id="emailSender" class="cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender">
@@ -76,7 +84,7 @@
     <bean id="dbLogException" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogExceptionLineImpl" />
     <bean id="dbSchedule" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleImpl" />
     <bean id="dbScheduleNotification" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotificationImpl" />
-    <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbUserNotificationRecordImpl" />
+    <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserNotificationRecordImpl" />
     <bean id="dbUser" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserImpl" />
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl" />
     

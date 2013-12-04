@@ -1,6 +1,10 @@
-package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
+package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogExceptionLine;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogException;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

@@ -112,11 +112,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!tablePipelines.isSelected(event.getItemId())) {					
-					LOG.trace("itemClick({}, id = {})", event.getItem(), event.getItemId());
 					ValueItem item = (ValueItem) event.getItem();
-					LOG.trace("	- object's id = {}", item.getId());
-					
-					long pipelineId = (long) item.getItemProperty("id").getValue();
+					final long pipelineId = item.getId();
 					
 					presenter.navigateToEventHandler(PipelineEdit.class, pipelineId);
 				}

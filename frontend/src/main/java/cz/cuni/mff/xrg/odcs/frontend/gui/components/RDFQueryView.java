@@ -130,7 +130,6 @@ public class RDFQueryView extends CustomComponent {
 		queryControls.addComponent(queryButton);
 
 		VerticalLayout runDownload = new VerticalLayout();
-		runDownload.setStyleName("graypanel");
 		
 		//Export options
 		formatSelect = new NativeSelect();

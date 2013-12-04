@@ -289,7 +289,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		// common part: create layout
 
 		mainLayout = new GridLayout(1, 1);
-		mainLayout.setImmediate(false);
+		mainLayout.setImmediate(true);
 		mainLayout.setWidth("100%");
 		mainLayout.setHeight("100%");
 
@@ -329,7 +329,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private VerticalLayout buildVerticalLayoutCore() {
 		// common part: create layout
 		verticalLayoutCore = new VerticalLayout();
-		verticalLayoutCore.setImmediate(false);
+		verticalLayoutCore.setImmediate(true);
 		verticalLayoutCore.setWidth("100.0%");
 		verticalLayoutCore.setHeight("100%");
 		verticalLayoutCore.setMargin(true);
@@ -337,7 +337,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		// Admin layout
 		gridLayoutAdm = new GridLayout();
-		gridLayoutAdm.setImmediate(false);
+		gridLayoutAdm.setImmediate(true);
 		gridLayoutAdm.setWidth("100%");
 		gridLayoutAdm.setHeight("100%");
 		gridLayoutAdm.setMargin(false);
@@ -348,7 +348,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		// labelSparql
 		labelSparql = new Label();
-		labelSparql.setImmediate(false);
+		labelSparql.setImmediate(true);
 		labelSparql.setWidth("-1px");
 		labelSparql.setHeight("-1px");
 		labelSparql.setValue("SPARQL endpoint:");
@@ -395,7 +395,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		// labelNameAdm
 		labelNameAdm = new Label();
 
-		labelNameAdm.setImmediate(false);
+		labelNameAdm.setImmediate(true);
 		labelNameAdm.setWidth("-1px");
 		labelNameAdm.setHeight("-1px");
 		labelNameAdm.setValue("Name:");
@@ -405,7 +405,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		textFieldNameAdm = new TextField();
 
 		textFieldNameAdm.setNullRepresentation("");
-		textFieldNameAdm.setImmediate(false);
+		textFieldNameAdm.setImmediate(true);
 		textFieldNameAdm.setWidth("100%");
 		textFieldNameAdm.setHeight("-1px");
 		textFieldNameAdm.setInputPrompt(
@@ -415,7 +415,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		// labelPass
 		labelPass = new Label();
 
-		labelPass.setImmediate(false);
+		labelPass.setImmediate(true);
 		labelPass.setWidth("-1px");
 		labelPass.setHeight("-1px");
 		labelPass.setValue("Password:");
@@ -425,7 +425,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		passwordFieldPass = new PasswordField();
 
 		passwordFieldPass.setNullRepresentation("");
-		passwordFieldPass.setImmediate(false);
+		passwordFieldPass.setImmediate(true);
 		passwordFieldPass.setWidth("100%");
 		passwordFieldPass.setHeight("-1px");
 		passwordFieldPass.setInputPrompt("password");
@@ -434,7 +434,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		// labelGraph
 		labelGraph = new Label();
 
-		labelGraph.setImmediate(false);
+		labelGraph.setImmediate(true);
 		labelGraph.setWidth("-1px");
 		labelGraph.setHeight("-1px");
 		labelGraph.setValue("Named Graph:");
@@ -611,7 +611,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private void initializeNamedGraphList() {
 
 		gridLayoutGraph = new GridLayout();
-		gridLayoutGraph.setImmediate(false);
+		gridLayoutGraph.setImmediate(true);
 		gridLayoutGraph.setWidth("100%");
 		gridLayoutGraph.setHeight("100%");
 		gridLayoutGraph.setMargin(false);
@@ -632,7 +632,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private VerticalLayout buildVerticalLayoutDetails() {
 		// common part: create layout
 		verticalLayoutDetails = new VerticalLayout();
-		verticalLayoutDetails.setImmediate(false);
+		verticalLayoutDetails.setImmediate(true);
 		verticalLayoutDetails.setWidth("100.0%");
 		verticalLayoutDetails.setHeight("100.0%");
 		verticalLayoutDetails.setMargin(true);
@@ -640,32 +640,36 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		// OptionGroup graphOption
 		optionGroupDetail = new OptionGroup("Graph options:");
-		optionGroupDetail.setImmediate(false);
+		optionGroupDetail.setImmediate(true);
 		optionGroupDetail.setWidth("-1px");
 		optionGroupDetail.setHeight("-1px");
 		optionGroupDetail.setMultiSelect(false);
 		verticalLayoutDetails.addComponent(optionGroupDetail);
 
 		dataPartsOption = new OptionGroup("In case of data errors:");
-		dataPartsOption.setImmediate(false);
+		dataPartsOption.setImmediate(true);
 		dataPartsOption.setWidth("-1px");
 		dataPartsOption.setHeight("-1px");
 		dataPartsOption.setMultiSelect(false);
 		verticalLayoutDetails.addComponent(dataPartsOption);
 
 		
-		VerticalLayout chunkSize = new VerticalLayout();
-		chunkSize.setSpacing(true);
-		chunkSize.setStyleName("graypanel");
+		VerticalLayout chunkSizeV = new VerticalLayout();
+		chunkSizeV.setSpacing(true);
+		chunkSizeV.setStyleName("graypanel");
 		
+		chunkSizeV.addComponent( new Label("Chunk size of triples which inserted at once"));
+
+		HorizontalLayout chunkSizeH = new HorizontalLayout();
+		chunkSizeH.setSpacing(true);
 		// Create chunkparts
-		chunkParts = new TextField(
-				"Chunk size of triples which inserted at once");
+		chunkParts = new TextField();
 		chunkParts.setValue("100");
 		chunkParts.setNullRepresentation("");
-		chunkParts.setImmediate(false);
+		chunkParts.setImmediate(true);
 		chunkParts.setWidth("100px");
 		chunkParts.setHeight("-1px");
+		
 		chunkParts.setInputPrompt(
 				"Chunk size of triples which inserted at once");
 		chunkParts.addValidator(new Validator() {
@@ -698,7 +702,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			}
 		});
 
-		chunkSize.addComponent(chunkParts);
+		chunkSizeH.addComponent(chunkParts);
 
 		//add button
 		chunkDefault = new Button("Default size");
@@ -715,21 +719,20 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			}
 		});
 
-		chunkSize.addComponent(chunkDefault);
-		verticalLayoutDetails.addComponent(chunkSize);
+		chunkSizeH.addComponent(chunkDefault);
+		chunkSizeV.addComponent(chunkSizeH);
+		
+		verticalLayoutDetails.addComponent(chunkSizeV);
 
 		VerticalLayout attempts = new VerticalLayout();
 		attempts.setSpacing(true);
 		attempts.setStyleName("graypanel");
-		
-		attempts.addComponent(new Label(
-				"Count of attempts to reconnect if the connection to SPARQL fails"));
 
-		retrySizeField = new TextField(
-				"(Use 0 for no reperat, negative integer for infinity)");
+		retrySizeField = new TextField("Count of attempts to reconnect if the connection to SPARQL fails");
+		retrySizeField.setDescription("(Use 0 for no reperat, negative integer for infinity)");
 		retrySizeField.setValue("-1");
 		retrySizeField.setNullRepresentation("");
-		retrySizeField.setImmediate(false);
+		retrySizeField.setImmediate(true);
 		retrySizeField.setWidth("100px");
 		retrySizeField.setHeight("-1px");
 		retrySizeField.setInputPrompt(
@@ -766,7 +769,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 				"Time in miliseconds how long to wait before trying to reconnect");
 		retryTimeField.setValue("1000");
 		retryTimeField.setNullRepresentation("");
-		retryTimeField.setImmediate(false);
+		retryTimeField.setImmediate(true);
 		retryTimeField.setWidth("100px");
 		retryTimeField.setHeight("-1px");
 		retryTimeField.setInputPrompt(

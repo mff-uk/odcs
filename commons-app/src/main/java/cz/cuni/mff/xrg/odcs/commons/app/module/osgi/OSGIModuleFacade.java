@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import java.util.LinkedList;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;

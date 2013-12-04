@@ -21,8 +21,11 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -32,7 +35,7 @@ import java.util.Collection;
  */
 public class RecordsTable extends CustomComponent {
 
-	private static final int PAGE_LENGTH = 28;
+	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
 	
 	private boolean isInitialized = false;
 	
@@ -72,16 +75,19 @@ public class RecordsTable extends CustomComponent {
 			public void itemClick(ItemClickEvent event) {
 				if (!messageTable.isSelected(event.getItemId())) {
 					ValueItem item = (ValueItem) event.getItem();
-					long recordId = (long) item.getItemProperty("id").getValue();
+					
+					final long recordId = item.getId();
 					MessageRecord record = dataSouce.getObject(recordId);
 					showRecordDetail(record);
 				}
 			}
 		});
 		messageTable.setSizeFull();
+		messageTable.setPageLength(Utils.getPageLength());
+		
 		mainLayout.addComponent(messageTable);
 		mainLayout.addComponent(messageTable.createControls());
-		messageTable.setPageLength(PAGE_LENGTH);
+
 		setCompositionRoot(mainLayout);
 	}
 

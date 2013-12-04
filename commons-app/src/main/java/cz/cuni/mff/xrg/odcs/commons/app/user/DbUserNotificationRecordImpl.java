@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
+package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;

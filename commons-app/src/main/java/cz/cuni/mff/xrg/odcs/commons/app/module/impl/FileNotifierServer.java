@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleDeleteEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleNewEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleUpdateEvent;

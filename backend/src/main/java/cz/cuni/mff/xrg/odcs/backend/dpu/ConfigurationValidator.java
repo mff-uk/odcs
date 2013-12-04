@@ -28,7 +28,7 @@ public class ConfigurationValidator implements ApplicationListener<ApplicationEv
 	 * Facade for access to DPUs.
 	 */
 	@Autowired
-	private cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade dpuFacade;
+	private cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade dpuFacade;
 	
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {

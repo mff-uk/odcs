@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleDeleteEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleNewEvent;

@@ -1,6 +1,11 @@
-package cz.cuni.mff.xrg.odcs.commons.app.user;
+package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
+import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;

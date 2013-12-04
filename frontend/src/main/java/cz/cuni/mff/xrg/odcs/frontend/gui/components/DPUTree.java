@@ -10,7 +10,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;

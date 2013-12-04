@@ -24,12 +24,12 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 

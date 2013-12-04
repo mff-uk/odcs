@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.backend.report;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
