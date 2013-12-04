@@ -4,8 +4,8 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.awt.Point;
-import java.io.Serializable;
 import javax.persistence.*;
 
 /**
@@ -15,7 +15,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ppl_position")
-public class Position implements Serializable {
+public class Position implements DataObject {
 
 	/**
 	 * Primary key of graph stored in db
@@ -81,5 +81,10 @@ public class Position implements Serializable {
 
 	public void setY(int newY) {
 		y = newY;
+	}
+
+	@Override
+	public Long getId() {
+		return id;
 	}
 }

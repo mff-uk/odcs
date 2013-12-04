@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +10,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
@@ -25,7 +25,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ppl_graph")
-public class PipelineGraph implements Serializable {
+public class PipelineGraph implements DataObject {
 
     /**
      * Primary key of graph stored in db
@@ -394,4 +394,9 @@ public class PipelineGraph implements Serializable {
             clone.id = this.id;
             return clone;
         }
+
+	@Override
+	public Long getId() {
+		return id;
+	}
 }

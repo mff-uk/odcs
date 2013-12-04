@@ -10,7 +10,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -139,6 +138,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 		this.context = new ExecutionContextInfo(this);
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -232,6 +232,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 		this.owner = owner;
 	}
 
+	@Override
 	public User getOwner() {
 		return owner;
 	}
@@ -249,7 +250,8 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 	 * Returns duration of execution. Returns -1 for unfinished/not started
 	 * executions.
 	 * 
-	 **/
+	 * @return 
+	 */
 	public long getDuration() {
 		if (start == null || end == null) {
 			return -1;

@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import java.io.Serializable;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import javax.persistence.*;
@@ -12,7 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "sch_email")
-public class EmailAddress implements Serializable, Comparable {
+public class EmailAddress implements DataObject, Comparable {
 	
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
 	@SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
@@ -110,6 +110,8 @@ public class EmailAddress implements Serializable, Comparable {
 	/**
 	 * <b>Part of
 	 * <code>Comparable</code> interface. Sorts alphabetically.
+	 * 
+	 * @param obj
 	 */
 	@Override
 	public int compareTo(Object obj) {
@@ -134,6 +136,7 @@ public class EmailAddress implements Serializable, Comparable {
 		return sb.toString();
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}

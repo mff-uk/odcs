@@ -1,12 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.LinkedList;
 
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "exec_context_dpu")
-public class ProcessingUnitInfo implements Serializable {
+public class ProcessingUnitInfo implements DataObject {
 
 	/**
 	 * Unique id of pipeline execution.
@@ -109,6 +109,11 @@ public class ProcessingUnitInfo implements Serializable {
 	
 	public void setState(DPUExecutionState state) {
 		this.state = state;
+	}
+
+	@Override
+	public Long getId() {
+		return id;
 	}
 	
 }
