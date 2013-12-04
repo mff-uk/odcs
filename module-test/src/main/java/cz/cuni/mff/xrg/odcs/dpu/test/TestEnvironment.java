@@ -31,56 +31,47 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Hold environment used to test DPU.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class TestEnvironment {
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(TestEnvironment.class);
-
 	/**
 	 * Configuration used to access virtuoso. If tests use Virtuoso then this
 	 * must be set before first test. This value is shared by multiple tests.
 	 */
 	public static VirtuosoConfig virtuosoConfig = new VirtuosoConfig();
-
 	/**
 	 * Context used for testing.
 	 */
 	private TestContext context;
-
 	/**
 	 * Working directory.
 	 */
 	private File workingDirectory;
-
 	/**
 	 * Time of last execution.
 	 */
 	private Date lastExecution;
-
 	/**
 	 * Jar-path.
 	 */
 	private String jarPath;
-
 	/**
 	 * Used {@link ManagableDataUnit}s
 	 */
 	private LinkedList<ManagableDataUnit> dataUnits = new LinkedList<>();
-
 	/**
 	 * Directories for input {@link ManagableDataUnit}s.
 	 */
 	private HashMap<String, ManagableDataUnit> inputDataUnits = new HashMap<>();
-
 	/**
 	 * Directories for output {@link ManagableDataUnit}s.
 	 */
 	private HashMap<String, ManagableDataUnit> outputDataUnits = new HashMap<>();
-
 	/**
 	 * Counter for dataUnits id's and directories.
 	 */
@@ -94,7 +85,7 @@ public class TestEnvironment {
 
 	/**
 	 * Create test environment. As working directory is used tmp file.
-	 * 
+	 *
 	 * @return Test environment.
 	 */
 	public static TestEnvironment create() {
@@ -104,7 +95,7 @@ public class TestEnvironment {
 
 	/**
 	 * Create test environment.
-	 * 
+	 *
 	 * @param directory Working directory.
 	 * @return Test environment.
 	 */
@@ -120,7 +111,7 @@ public class TestEnvironment {
 
 	/**
 	 * Set path that is used like jar-path during execution.
-	 * 
+	 *
 	 * @param jarPath
 	 */
 	public void setJarPath(String jarPath) {
@@ -135,7 +126,7 @@ public class TestEnvironment {
 	 * Set given {@link ManagableDataUnit} as an input. If there already is
 	 * another value for given name it is overridden. The old
 	 * {@link ManagableDataUnit} is not released.
-	 * 
+	 *
 	 * @param name Name of dataUnit.
 	 * @param dataUnit
 	 */
@@ -147,13 +138,13 @@ public class TestEnvironment {
 	 * Set {@link ManagableDataUnit} where should the data, from output
 	 * DataUnit, be stored. If there is other setting for given name then it is
 	 * overwritten.
-	 * 
+	 *
 	 * The data in given {@link ManagableDataUnit} may not be accessible after
 	 * call of {@link #release()}.
-	 * 
+	 *
 	 * If there already is another value for given name it is overridden. The
 	 * old {@link ManagableDataUnit} is not released.
-	 * 
+	 *
 	 * @param name Name of dataUnit.
 	 * @param dataUnit
 	 */
@@ -163,7 +154,7 @@ public class TestEnvironment {
 
 	/**
 	 * Create input {@link RdfDataUnit} that is used in test environment.
-	 * 
+	 *
 	 * @param name Name.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @param file File with data.
@@ -176,12 +167,13 @@ public class TestEnvironment {
 		return rdf;
 	}
 
+
 	/**
 	 * Create input {@link RdfDataUnit} and populate it with data from given
 	 * file. Created {@link RdfDataUnit} is used in test environment.
-	 * 
+	 *
 	 * The data are loaded from file in test\resources.
-	 * 
+	 *
 	 * @param name Name.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @param resorceName Name of resource file.
@@ -208,10 +200,14 @@ public class TestEnvironment {
 		return rdf;
 	}
 
+
+
+
+
 	/**
 	 * Create output {@link RdfDataUnit}, add it to the test environment and
 	 * return it.
-	 * 
+	 *
 	 * @param name Name.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @return Created RDFDataUnit.
@@ -223,17 +219,20 @@ public class TestEnvironment {
 		return rdf;
 	}
 
-	// - - - - - - - - - method for test execution - - - - - - - - - //
+
+
+
+    // - - - - - - - - - method for test execution - - - - - - - - - //
 
 	/**
 	 * Run given DPU in the test environment. The test environment is not reset
 	 * before or after the test. If the test working directory should be deleted
 	 * then is deleted at the end of this method same as all the
 	 * {@link DataUnit}s
-	 * 
+	 *
 	 * Any thrown exception is passed. In every case the {@link #release()}
 	 * method must be called in order to release test data.
-	 * 
+	 *
 	 * @param dpuClass
 	 * @return False if the execution failed by sending error message
 	 */
@@ -281,7 +280,7 @@ public class TestEnvironment {
 	/**
 	 * Return context used during tests. Return null before call of
 	 * {@link #run(Class)} method.
-	 * 
+	 *
 	 * @return
 	 */
 	public TestContext getContext() {
@@ -361,7 +360,7 @@ public class TestEnvironment {
 
 	/**
 	 * Create RDF data unit.
-	 * 
+	 *
 	 * @param name
 	 * @param useVirtuoso
 	 * @return
@@ -376,7 +375,7 @@ public class TestEnvironment {
 
 	/**
 	 * Create RDF data unit with given name that is stored in local file.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -393,7 +392,7 @@ public class TestEnvironment {
 
 	/**
 	 * Create RDF data unit with given name that is stored in virtuoso.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */

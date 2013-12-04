@@ -28,16 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.solr.client.solrj.beans.Field;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * We're storing multiple harvested data sets in one SOLR index (see
  * http://wiki.apache.org/solr/MultipleIndexes for basic rationale why).

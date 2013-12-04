@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * Enumeration used to work with currencies intended for following use cases:
  * 

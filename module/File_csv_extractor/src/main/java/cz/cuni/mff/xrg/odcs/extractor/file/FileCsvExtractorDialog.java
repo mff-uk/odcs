@@ -58,7 +58,7 @@ public class FileCsvExtractorDialog extends BaseConfigDialog<FileCsvExtractorCon
 	 */
 	private TextField textFieldPath;
 
-	private HorizontalLayout horizontalLayoutOnly;
+    private HorizontalLayout horizontalLayoutOnly;
 
 	private HorizontalLayout horizontalLayoutFormat;
 
@@ -143,7 +143,7 @@ public class FileCsvExtractorDialog extends BaseConfigDialog<FileCsvExtractorCon
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
 	 *                         {@link #textFieldPath} contains null value.
-	 * @return conf Object holding configuration which is used in
+//	 * @return conf Object holding configuration which is used in
 	 *         {@link #setConfiguration} to initialize fields in the
 	 *         configuration dialog.
 	 */
@@ -228,7 +228,7 @@ public class FileCsvExtractorDialog extends BaseConfigDialog<FileCsvExtractorCon
 			textFieldOnly.setValue(conf.FileSuffix.trim());
 		}
 
-		comboBoxFormat.setValue(conf.RDFFormatValue);
+ 		comboBoxFormat.setValue(conf.RDFFormatValue);
 		useHandler.setValue(conf.UseStatisticalHandler);
 		failWhenErrors.setValue(conf.failWhenErrors);
 
@@ -459,7 +459,7 @@ public class FileCsvExtractorDialog extends BaseConfigDialog<FileCsvExtractorCon
 					uploadFileLayout.setExpandRatio(fileUpload, 0.2f);
 					uploadFileLayout.setExpandRatio(textFieldPath, 0.8f);
 
-					//Adding uploading component
+                    //Adding uploading component
 					gridLayoutCore.addComponent(uploadFileLayout, 0, 1);
 
 					//If selected "Extract file based on the path to file" option
