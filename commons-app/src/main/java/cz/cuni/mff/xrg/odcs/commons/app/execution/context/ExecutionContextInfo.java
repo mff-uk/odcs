@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,6 @@ import javax.persistence.*;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import java.io.Serializable;
 
 /**
  * Hold and manage context for pipeline execution.
@@ -30,7 +30,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "exec_context_pipeline")
-public class ExecutionContextInfo implements Serializable {
+public class ExecutionContextInfo implements DataObject {
 
 	/**
 	 * Name of working sub directory.
@@ -220,6 +220,7 @@ public class ExecutionContextInfo implements Serializable {
 		return contexts.keySet();
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}

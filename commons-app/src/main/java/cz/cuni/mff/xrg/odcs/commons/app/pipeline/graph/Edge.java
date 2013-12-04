@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 
-import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -13,7 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ppl_edge")
-public class Edge implements Serializable {
+public class Edge implements DataObject {
 
 	/**
 	 * Primary key of graph stored in db
@@ -70,7 +70,7 @@ public class Edge implements Serializable {
 	 *
 	 * @param from
 	 * @param to
-	 * @param dataUnitName
+	 * @param script
 	 */
 	public Edge(Node from, Node to, String script) {
 		this.from = from;
@@ -131,6 +131,7 @@ public class Edge implements Serializable {
 		return Objects.equals(this.id, other.id);
 	}
 	
+	@Override
 	public Long getId() {
 		return id;
 	}

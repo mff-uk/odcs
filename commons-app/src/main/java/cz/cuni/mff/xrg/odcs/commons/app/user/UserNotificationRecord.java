@@ -1,10 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.persistence.*;

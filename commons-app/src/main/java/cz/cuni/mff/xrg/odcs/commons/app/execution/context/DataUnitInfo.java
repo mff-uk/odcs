@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 
-import java.io.Serializable;
 import javax.persistence.*;
 
 /**
@@ -14,7 +14,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "exec_dataunit_info")
-public class DataUnitInfo implements Serializable {
+public class DataUnitInfo implements DataObject {
 
 	/**
 	 * Primary key.
@@ -71,6 +71,7 @@ public class DataUnitInfo implements Serializable {
 		this.isInput = isInput;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}

@@ -52,7 +52,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	/**
 	 * Create new DPUInstanceRecord with given name and type.
 	 * @param name
-	 * @param type
 	 */
 	public DPUInstanceRecord(String name) {
 		super(name);
