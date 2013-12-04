@@ -13,21 +13,24 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Shows complex debug information about current pipeline execution. Shows
@@ -76,12 +79,16 @@ public class DebuggingView extends CustomComponent {
 
 	private RecordsTable msgTable;
 
+	@Autowired
 	private DbMessageRecord dbMsg;
 
+	@Autowired
 	private DbLogRead dbLogs;
 
+	@Autowired
 	private PipelineFacade pipelineFacade;
 	
+	@Autowired
 	private DPUFacade dpuFacade;
 	
 	// - - - - -
@@ -93,6 +100,12 @@ public class DebuggingView extends CustomComponent {
 	private final List<Container.Filter> msgCoreFilters = new LinkedList<>();
 
 	private final List<Container.Filter> logCoreFilters = new LinkedList<>();
+	
+	@Autowired
+	private Utils utils;
+	
+	@Autowired
+	private LogFacade logFacade;
 
 	public DebuggingView() {
 		// empty ctor .. nothing is done on creation
@@ -106,18 +119,13 @@ public class DebuggingView extends CustomComponent {
 
 		// bind to data sources
 		{
-			dbLogs = App.getApp().getBean(DbLogRead.class);
-			dbMsg = App.getApp().getBean(DbMessageRecord.class);
-			pipelineFacade = App.getPipelines();
-			dpuFacade = App.getDPUs();
-
 			// create sources
 			logSource = new CachedSource<>(dbLogs, new NewLogAccessor(), logCoreFilters);
 			msgSource = new CachedSource<>(dbMsg, new MessageRecordAccessor(), msgCoreFilters);
 
 			// create tables
-			logTable = new LogTable(logSource);
-			msgTable = new RecordsTable(msgSource);
+			logTable = new LogTable(logSource, logFacade, utils.getPageLength());
+			msgTable = new RecordsTable(msgSource, utils.getPageLength());
 		}
 
 		// building require some thing to be set 
@@ -219,7 +227,7 @@ public class DebuggingView extends CustomComponent {
 
 		if (isFromCanvas) {
 			// update execution icon .. 
-			ThemeResource icon = IntlibHelper.getIconForExecutionStatus(pipelineExec.getStatus());
+			ThemeResource icon = DecorationHelper.getIconForExecutionStatus(pipelineExec.getStatus());
 			iconStatus.setSource(icon);
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
@@ -258,8 +266,6 @@ public class DebuggingView extends CustomComponent {
 		pipelineExec = pipelineFacade.getExecution(pipelineExec.getId());
 		// refresh the content
 		fillContent(true);
-		// TODO why ?
-		setCompositionRoot(mainLayout);
 	}
 
 	/**
@@ -289,9 +295,9 @@ public class DebuggingView extends CustomComponent {
 
 		if (!isRunFinished()) {
 			// add us to the refresh manager, so we got some refresh events
-			App.getApp().getRefreshManager().addListener(
+			((AppEntry)UI.getCurrent()).getRefreshManager().addListener(
 					RefreshManager.DEBUGGINGVIEW, 
-					RefreshManager.getDebugRefresher(this, execution));
+					RefreshManager.getDebugRefresher(this, execution, pipelineFacade));
 		}
 	}
 

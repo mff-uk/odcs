@@ -19,7 +19,7 @@ import org.vaadin.dialogs.ConfirmDialog;
  *
  * @author Bogo
  */
-public class IntlibHelper {
+public class DecorationHelper {
 
 	/**
 	 * Gets corresponding icon for given {@link ExecutionStatus}.
@@ -56,70 +56,6 @@ public class IntlibHelper {
 				break;
 		}
 		return img;
-	}
-
-	/**
-	 * Sets up parameters of pipeline execution and runs the pipeline.
-	 *
-	 * @param pipeline {@link Pipeline} to run.
-	 * @param inDebugMode Run in debug/normal mode.
-	 * @param debugNode {@link Node} where debug execution should stop. Valid
-	 * only for debug mode.
-	 * @return {@link PipelineExecution} of given {@link Pipeline}.
-	 */
-	public static PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
-
-		final PipelineExecution pipelineExec = App.getPipelines().createExecution(pipeline);
-
-		pipelineExec.setDebugging(inDebugMode);
-		if (inDebugMode && debugNode != null) {
-			pipelineExec.setDebugNode(debugNode);
-		}
-		Client client = App.getApp().getBackendClient();
-
-		// send message to backend
-		try {
-			if (client.connect()) {
-				// store into DB
-				App.getPipelines().save(pipelineExec);
-			}
-			client.checkDatabase();
-		} catch (CommunicationException e) {
-			ConfirmDialog.show(UI.getCurrent(), "Pipeline execution",
-					"Backend is offline. Should the pipeline be scheduled to be launched when backend is online or do you want to cancel the execution?",
-					"Schedule", "Cancel", new ConfirmDialog.Listener() {
-				@Override
-				public void onClose(ConfirmDialog cd) {
-					if (cd.isConfirmed()) {
-						// store into DB for later launch
-						App.getPipelines().save(pipelineExec);
-					} else {
-						App.getPipelines().delete(pipelineExec);
-					}
-				}
-			});
-//            Notification.show("Error", "Can't connect to backend. Exception: " + e.getCause().getMessage(),
-//                    Notification.Type.ERROR_MESSAGE);
-			return null;
-		}
-
-		// show message about action
-		Notification.show("Pipeline execution started ..",
-				Notification.Type.HUMANIZED_MESSAGE);
-
-		return pipelineExec;
-	}
-
-	/**
-	 * Sets up parameters of pipeline execution and runs the pipeline.
-	 *
-	 * @param pipeline {@link Pipeline} to run.
-	 * @param inDebugMode Run in debug/normal mode.
-	 *
-	 * @return {@link PipelineExecution} of given {@link Pipeline}.
-	 */
-	public static PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode) {
-		return runPipeline(pipeline, inDebugMode, null);
 	}
 
 	/**

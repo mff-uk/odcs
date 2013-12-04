@@ -17,7 +17,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
@@ -51,6 +50,11 @@ public class DPUPresenterImpl implements DPUPresenter {
 	@Autowired
 	private DPUView view;
 	
+	@Autowired
+	PipelineStatus pipelineStatus;
+	@Autowired
+	private DPUCreate createDPU;
+	
 	ClassNavigator navigator;
 	
 	@Autowired
@@ -58,7 +62,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 	/**
 	 * Evaluates permissions of currently logged in user.
 	 */
-	private IntlibPermissionEvaluator permissions = App.getApp().getBean(IntlibPermissionEvaluator.class);
+	private IntlibPermissionEvaluator permissions = ((AppEntry)UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
 	private DPUTemplateRecord selectedDpu = null;
 	@Autowired
 	private PipelineFacade pipelineFacade;
@@ -288,7 +292,6 @@ public class DPUPresenterImpl implements DPUPresenter {
 	@Override
 	public void openDPUCreateEventHandler() {
 		//Open the dialog for DPU Template creation
-		DPUCreate createDPU = new DPUCreate();
 		UI.getCurrent().addWindow(createDPU);
 		createDPU.addCloseListener(new Window.CloseListener() {
 			private static final long serialVersionUID = 1L;
@@ -348,7 +351,6 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 	@Override
 	public void pipelineStatusEventHandler(Long id) {
-		PipelineStatus pipelineStatus = new PipelineStatus();
 		Pipeline pipe = getPipeline(id);
 		pipelineStatus.setSelectedPipeline(pipe);
 		// open the window with status parameters.

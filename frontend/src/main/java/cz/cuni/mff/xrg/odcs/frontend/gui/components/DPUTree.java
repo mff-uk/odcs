@@ -44,6 +44,8 @@ public class DPUTree extends CustomComponent {
 	private Filter visibilityFilter;
 	@Autowired
 	private DPUFacade dpuFacade;
+	@Autowired
+	private DPUCreate createDPU;
 	
 	private HorizontalLayout topLine;
 
@@ -134,7 +136,6 @@ public class DPUTree extends CustomComponent {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				//Open the dialog for DPU Template creation
-				DPUCreate createDPU = new DPUCreate();
 				UI.getCurrent().addWindow(createDPU);
 				createDPU.addCloseListener(new Window.CloseListener() {
 					private static final long serialVersionUID = 1L;

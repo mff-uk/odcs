@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import java.text.DateFormat;
@@ -90,7 +90,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 				return object.getDescription();
 			case "duration":
 				PipelineExecution latestExec = pipelineFacade.getLastExec(object, PipelineExecutionStatus.FINISHED);
-				return IntlibHelper.getDuration(latestExec);
+				return DecorationHelper.getDuration(latestExec);
 			case "lastExecTime":
 				return getLastExecutionTime(object);
 			case "lastExecStatus":
@@ -155,7 +155,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 		if (latestExec != null) {
 			PipelineExecutionStatus type = latestExec.getStatus();
 			if (type != null) {
-				ThemeResource img = IntlibHelper.getIconForExecutionStatus(type);
+				ThemeResource img = DecorationHelper.getIconForExecutionStatus(type);
 				Embedded emb = new Embedded(type.name(), img);
 				emb.setDescription(type.name());
 				return emb;

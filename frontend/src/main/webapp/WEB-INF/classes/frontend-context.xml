@@ -9,6 +9,7 @@
 	
     <!-- Scan Views for bean definitions. -->
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
+	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.components"/>
 
     <!-- Application configuration is taken from war file, so we override it. -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFrom">
@@ -47,6 +48,8 @@
     <!-- sessions scope -->   
     
     <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype" />
+	
+	<bean id="pipelineHelper" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper" />
 
     <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
     <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="prototype"/>

@@ -2,14 +2,13 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.ui.UI;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
@@ -37,11 +36,11 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private DbExecution dbExecution;
 	@Autowired
-	private DbLogMessage dbLogMessage;
-	@Autowired
 	private DbMessageRecord dbMessageRecord;
 	@Autowired
 	private PipelineFacade pipelineFacade;
+	@Autowired
+	private PipelineHelper pipelineHelper;
 	@Autowired
 	private ExecutionListView view;
 	private ExecutionListData dataObject;
@@ -107,26 +106,19 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	}
 
 	@Override
-	public void showLogEventHandler(long executionId) {
-		//TODO: Show log for selected DPU?
-	}
-
-	@Override
 	public void showDebugEventHandler(long executionId) {
 		view.showExecutionDetail(getLightExecution(executionId), new ExecutionDetailData(getMessageDataSource()));
 	}
 
 	@Override
 	public void runEventHandler(long executionId) {
-		IntlibHelper.runPipeline(getLightExecution(executionId).getPipeline(), false);
-		//pipelineFacade.run(getLightExecution(executionId).getPipeline(), false);
+		pipelineHelper.runPipeline(getLightExecution(executionId).getPipeline(), false);
 		refreshEventHandler();
 	}
 
 	@Override
 	public void debugEventHandler(long executionId) {
-		PipelineExecution exec = IntlibHelper.runPipeline(getLightExecution(executionId).getPipeline(), true);
-		//pipelineFacade.run(getLightExecution(executionId).getPipeline(), true);
+		PipelineExecution exec = pipelineHelper.runPipeline(getLightExecution(executionId).getPipeline(), true);
 		if (exec != null) {
 			refreshEventHandler();
 			view.setSelectedRow(exec.getId());
@@ -157,6 +149,6 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Override
 	public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution) {
 		refreshManager.addListener(RefreshManager.DEBUGGINGVIEW,
-				RefreshManager.getDebugRefresher(debugView, execution));
+				RefreshManager.getDebugRefresher(debugView, execution, pipelineFacade));
 	}
 }

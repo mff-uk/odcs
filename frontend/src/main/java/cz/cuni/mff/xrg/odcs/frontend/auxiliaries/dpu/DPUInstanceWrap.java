@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
 /**
  * Wrap {@link DPUInstanceRecord} to made work with configuration and
@@ -11,6 +11,8 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
  *
  */
 public class DPUInstanceWrap extends DPURecordWrap {
+	
+	private DPUFacade dpuFacade;
 
 	/**
 	 * Wrapped DPUTemplateRecord.
@@ -22,8 +24,9 @@ public class DPUInstanceWrap extends DPURecordWrap {
 	 *
 	 * @param dpuTemplate
 	 */
-	public DPUInstanceWrap(DPUInstanceRecord dpuTemplate) {
+	public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade) {
 		super(dpuTemplate);
+		this.dpuFacade = dpuFacade;
 		this.dpuInstance = dpuTemplate;
 	}
 
@@ -32,7 +35,7 @@ public class DPUInstanceWrap extends DPURecordWrap {
 	 * as well call {{@link #saveConfig()} first.
 	 */
 	public void save() {
-		App.getDPUs().save(dpuInstance);
+		dpuFacade.save(dpuInstance);
 	}
 
 	public DPUInstanceRecord getDPUInstanceRecord() {

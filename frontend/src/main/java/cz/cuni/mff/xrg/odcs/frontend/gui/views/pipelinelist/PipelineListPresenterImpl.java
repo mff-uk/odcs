@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
@@ -56,6 +56,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	private SchedulePipeline schedulePipeline;
 	@Autowired
 	private ScheduleFacade scheduleFacade;
+	@Autowired
+	private PipelineHelper pipelineHelper;
 
 	@Override
 	public Object enter() {
@@ -155,7 +157,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 	@Override
 	public void runEventHandler(long id, boolean inDebugMode) {
-		PipelineExecution exec = IntlibHelper.runPipeline(getLightPipeline(id), inDebugMode);
+		PipelineExecution exec = pipelineHelper.runPipeline(getLightPipeline(id), inDebugMode);
 		if (inDebugMode && exec != null) {
 			navigator.navigateTo(ExecutionListPresenterImpl.class, exec.getId().toString());
 		}

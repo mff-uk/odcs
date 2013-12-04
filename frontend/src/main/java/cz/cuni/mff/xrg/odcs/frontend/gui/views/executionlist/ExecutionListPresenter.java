@@ -27,13 +27,6 @@ public interface ExecutionListPresenter extends Presenter {
 	public void stopEventHandler(long executionId);
 
 	/**
-	 * Show log for given execution.
-	 *
-	 * @param executionId
-	 */
-	public void showLogEventHandler(long executionId);
-
-	/**
 	 * Show debug data for given execution.
 	 *
 	 * @param executionId

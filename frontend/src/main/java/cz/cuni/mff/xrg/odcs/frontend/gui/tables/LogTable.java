@@ -20,14 +20,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,21 +77,19 @@ public class LogTable extends CustomComponent {
 	 *
 	 * @param dataSouce
 	 */
-	public LogTable(CachedSource<Log> dataSouce) {
+	public LogTable(CachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght) {
 		this.dataSouce = dataSouce;
 		this.container = new ReadOnlyContainer<>(dataSouce);
+		this.logFacade = logFacade;
 		
-		// TODO autowired ..
-		logFacade = App.getApp().getBean(LogFacade.class);
-		
-	// build layout
-		buildLayout();		
+		// build layout
+		buildLayout(pageLenght);		
 	}
 
 	/**
 	 * Build user interface.
 	 */
-	private void buildLayout() {
+	private void buildLayout(int pageLenght) {
 		mainLayout = new VerticalLayout();
 
 		table = new IntlibPagedTable();
@@ -148,7 +144,7 @@ public class LogTable extends CustomComponent {
 		table.setFilterGenerator(filterGenerator);
 		table.setSortEnabled(false);
 		table.setFilterBarVisible(true);
-		table.setPageLength(Utils.getPageLength());
+		table.setPageLength(pageLenght);
 		
 		// add to the main layout
 		mainLayout.addComponent(table);
@@ -238,58 +234,19 @@ public class LogTable extends CustomComponent {
 		// set DPU
 		setDpu(dpuInstance);
 	}
-
-//	public void setDpu(PipelineExecution exec, DPUInstanceRecord dpu, ReadOnlyContainer container) {
-//		this.dpu = dpu;
-//		this.execution = exec;	
-//		
-//		// set data source .. chat a littele and use our data source
-//		table.setContainerDataSource(this.container);
-//		
-//		coreFilters.clear();
-//		coreFilters.add(new Compare.Equal("execution", exec.getId()));
-//			
-//		// refresh dpu names list
-//		dpuNames.clear();
-//				
-//		for (Node node : exec.getPipeline().getGraph().getNodes()) {
-//			DPUInstanceRecord nodeDpu = node.getDpuInstance();
-//			dpuNames.put(nodeDpu.getId(), nodeDpu.getName());			
-//		}
-//		LOG.info("Node count: {} ", exec.getPipeline().getGraph().getNodes().size());
-//
-//		// remove all filters
-//		this.container.removeAllContainerFilters();
-//		// move to the last page
-//		table.setCurrentPage(table.getTotalAmountOfPages());
-//		
-//		
-//		refreshDpuSelector((ComboBox) table.getFilterField("dpu"));
-//	}
-//	private void refreshDpuSelector(ComboBox dpuSelector) {
-//		dpuSelector.removeAllItems();
-//		ExecutionContextInfo ctx = execution.getContextReadOnly();
-//		if (ctx != null) {
-//			for (DPUInstanceRecord dpuInstance : ctx.getDPUIndexes()) {
-//				if (!dpuSelector.containsId(dpuInstance)) {
-//					dpuSelector.addItem(dpuInstance);
-//				}
-//			}
-//			if (dpuSelector.containsId(dpu)) {
-//				dpuSelector.select(dpu);
-//			}
-//		}
-//	}	
+	
 	/**
 	 * Reload data from source, do not refresh the source it self!!
 	 *
 	 * @return
 	 */
 	public boolean refresh() {
-		// TODO do ve have to do this, when we also set page?
-		container.refresh();
-		// move us to the last page
-		table.setCurrentPage(table.getTotalAmountOfPages());
+		int lastPage = table.getTotalAmountOfPages();
+		if(table.getCurrentPage() == lastPage) {
+			container.refresh();
+		} else {
+			table.setCurrentPage(lastPage);
+		}
 		return true;
 	}
 

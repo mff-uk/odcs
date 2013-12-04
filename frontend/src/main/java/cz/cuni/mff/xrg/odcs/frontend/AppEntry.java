@@ -17,16 +17,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
@@ -143,7 +134,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 		ErrorHandler errorHandler = new DefaultErrorHandler() {
 			@Override
 			public void error(com.vaadin.server.ErrorEvent event) {
-				Throwable cause = IntlibHelper.findFinalCause(event.getThrowable());
+				Throwable cause = DecorationHelper.findFinalCause(event.getThrowable());
 				if (cause != null) {
 					if (cause.getClass() == VirtuosoException.class && ((VirtuosoException) cause).getErrorCode() == VirtuosoException.IOERROR && cause.getMessage().contains("Connection refused")) {
 						Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
@@ -308,139 +299,17 @@ public class AppEntry extends com.vaadin.ui.UI {
 	}
 
 	/**
-	 * Returns facade, which provides services for managing pipelines.
-	 *
-	 * @return pipeline facade
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public PipelineFacade getPipelines() {
-		return (PipelineFacade) context.getBean("pipelineFacade");
-	}
-
-	/**
-	 * Return facade, which provide services for manipulating with modules.
-	 *
-	 * @return modules facade
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public ModuleFacade getModules() {
-		return (ModuleFacade) context.getBean("moduleFacade");
-	}
-
-	/**
-	 * Return facade, which provide services for manipulating with DPUs.
-	 *
-	 * @return dpus facade
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public DPUFacade getDPUs() {
-		return (DPUFacade) context.getBean("dpuFacade");
-	}
-
-	/**
-	 * Return facade, which provide services for manipulating with Schedules.
-	 *
-	 * @return schedules facade
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public ScheduleFacade getSchedules() {
-		return (ScheduleFacade) context.getBean("scheduleFacade");
-	}
-
-	/**
-	 * Return facade, which provide services for manipulating with Schedules.
-	 *
-	 * @return schedules facade
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public UserFacade getUsers() {
-		return (UserFacade) context.getBean("userFacade");
-	}
-
-	/**
-	 * Return facade, which provide services for manipulating with Namespace
-	 * Prefix.
-	 *
-	 * @return NamespascePrefix facade
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public NamespacePrefixFacade getNamespacePrefixes() {
-		return (NamespacePrefixFacade) context.getBean("prefixFacade");
-	}
-
-	/**
-	 * Return facade, which provide services for manipulating with Logs.
-	 *
-	 * @return log facade
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public LogFacade getLogs() {
-		return (LogFacade) context.getBean("logFacade");
-	}
-
-	/**
-	 * Return application configuration class.
-	 *
-	 * @return
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public AppConfig getAppConfiguration() {
-		return (AppConfig) context.getBean("configuration");
-	}
-
-	/**
-	 * Return class that can be used to explore DPUs.
-	 *
-	 * @return
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public DPUExplorer getDPUExplorer() {
-		return (DPUExplorer) context.getBean(DPUExplorer.class);
-	}
-
-	/**
-	 * Fetches spring bean.
+	 * Fetches spring bean. For cases when autowiring is not a possibility.
 	 *
 	 * @param type
 	 * @return bean
-	 * @deprecated use autowire annotation instead
 	 */
-	@Deprecated
 	public <T extends Object> T getBean(Class<T> type) {
 		return context.getBean(type);
 	}
 
 	public MenuLayout getMain() {
 		return main;
-	}
-
-	/**
-	 * Helper method for retrieving authentication context.
-	 *
-	 * @return authentication context for current user session
-	 * @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public AuthenticationContext getAuthCtx() {
-		return getBean(AuthenticationContext.class);
-	}
-
-	/**
-	 *
-	 * @return @deprecated use autowire annotation instead
-	 */
-	@Deprecated
-	public DPUModuleManipulator getDPUManipulator() {
-		return getBean(DPUModuleManipulator.class);
 	}
 
 	public Client getBackendClient() {

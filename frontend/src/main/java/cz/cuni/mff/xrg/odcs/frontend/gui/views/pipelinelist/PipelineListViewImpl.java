@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
+	
+	@Autowired
+	private Utils utils;
 
 	public boolean isModified() {
 		//There are no editable fields.
@@ -84,7 +88,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
-		tablePipelines.setPageLength(Utils.getPageLength());
+		tablePipelines.setPageLength(utils.getPageLength());
 
 		// add column
 		tablePipelines.setImmediate(true);

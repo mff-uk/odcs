@@ -15,7 +15,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +45,7 @@ public class EdgeDetail extends Window {
 	private ListSelect mappingsSelect;
 	private HashMap<String, MutablePair<List<Integer>, Integer>> map;
 	
-	private DPUExplorer explorer = App.getApp().getDPUExplorer();
+	private DPUExplorer explorer;
 	
 	/**
 	 * Class for working with edge's script.
@@ -58,7 +57,8 @@ public class EdgeDetail extends Window {
 	 *
 	 * @param edge {@link Edge} which detail will be showed.
 	 */
-	public EdgeDetail(Edge e) {
+	public EdgeDetail(Edge e, DPUExplorer dpuExplorer) {
+		this.explorer = dpuExplorer;
 		this.map = new HashMap<>();
 		this.setResizable(false);
 		this.setModal(true);

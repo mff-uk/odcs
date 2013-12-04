@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.github.wolfie.refresher.Refresher;
 import com.github.wolfie.refresher.Refresher.RefreshListener;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -48,7 +49,7 @@ public class RefreshManager {
 		}
 	}
 
-	public static RefreshListener getDebugRefresher(final DebuggingView debug, final PipelineExecution exec) {
+	public static RefreshListener getDebugRefresher(final DebuggingView debug, final PipelineExecution exec, final PipelineFacade pipelineFacade) {
 		return new Refresher.RefreshListener() {
 			boolean isWorking = true;
 			PipelineExecution execution = exec;
@@ -60,7 +61,7 @@ public class RefreshManager {
 				if (!isWorking) {
 					return;
 				}
-				execution = App.getPipelines().getExecution(execution.getId());
+				execution = pipelineFacade.getExecution(execution.getId());
 				boolean isRunFinished = !(execution.getStatus() == PipelineExecutionStatus.QUEUED || execution.getStatus() == PipelineExecutionStatus.RUNNING || execution.getStatus() == PipelineExecutionStatus.CANCELLING);
 
 				if (debug.isRefreshingAutomatically()) {

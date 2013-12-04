@@ -22,13 +22,14 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
@@ -37,6 +38,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.NamespacePrefixes;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Scope;
 
@@ -86,6 +88,7 @@ public class Settings extends ViewComponent {
 
 	private Button shownTab = null;
 
+	@Autowired
 	private UsersList usersList;
 
 	public HorizontalLayout buttonMyAccountBar;
@@ -101,6 +104,12 @@ public class Settings extends ViewComponent {
 	private NamespacePrefixes prefixesList;
 
 	private TextField rows;
+	
+	@Autowired
+	private AuthenticationContext authCtx;
+	
+	@Autowired
+	private UserFacade userFacade;
 
 	/**
 	 * Currently logged in user.
@@ -140,7 +149,7 @@ public class Settings extends ViewComponent {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		loggedUser = App.getApp().getAuthCtx().getUser();
+		loggedUser = authCtx.getUser();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}
@@ -177,7 +186,6 @@ public class Settings extends ViewComponent {
 		usersLayout.setImmediate(true);
 		usersLayout.setWidth("100%");
 		usersLayout.setHeight("100%");
-		usersList = new UsersList();
 		usersLayout = usersList.buildUsersListLayout();
 		usersLayout.setStyleName("settings");
 
@@ -614,7 +622,7 @@ public class Settings extends ViewComponent {
 		}
 		loggedUser.setTableRows(Integer.parseInt(rows.getValue()));
 		rows.commit();
-		App.getApp().getUsers().save(loggedUser);
+		userFacade.save(loggedUser);
 		Notification.show("E-mail settings were saved",
 				Notification.Type.HUMANIZED_MESSAGE);
 

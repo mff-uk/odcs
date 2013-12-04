@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.vaadin.data.Container.Filter;
+import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -8,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Local;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Virtuoso;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
@@ -55,8 +57,9 @@ public class RDFDataUnitHelper {
 			case RDF_Local:
 				try {
 					// storage directory
+					AppConfig appConfig = ((AppEntry)UI.getCurrent()).getBean(AppConfig.class);
 					File dpuStorage =
-							new File(App.getAppConfig().getString(
+							new File(appConfig.getString(
 							ConfigProperty.GENERAL_WORKINGDIR),
 							executionInfo.dpu(dpuInstance).getStoragePath(info
 							.getIndex()));
@@ -89,7 +92,7 @@ public class RDFDataUnitHelper {
 	 *         file placed on home directory path.
 	 */
 	public static VirtuosoRDFRepo getVirtuosoRepository(String namedGraph) {
-		AppConfig appConfig = App.getAppConfig().getSubConfiguration(
+		AppConfig appConfig = ((AppEntry)UI.getCurrent()).getBean(AppConfig.class).getSubConfiguration(
 				ConfigProperty.VIRTUOSO_RDF);
 
 		// load configuration from appConfig

@@ -15,9 +15,10 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * GUI for Namespace Prefixes which opens from the Administrator menu. Contains
@@ -35,6 +36,8 @@ public class NamespacePrefixes {
 	private IndexedContainer tableData;
 	private Long prefixId;
 	private NamespacePrefix prefixDel;
+	@Autowired
+	private NamespacePrefixFacade namespacePrefixFacade;
 
 	public VerticalLayout buildNamespacePrefixesLayout() {
 
@@ -63,8 +66,8 @@ public class NamespacePrefixes {
 
 				boolean newPrefix = true;
 				// open usercreation dialog
-				PrefixCreate prefix = new PrefixCreate(newPrefix);
-				App.getApp().addWindow(prefix);
+				PrefixCreate prefix = new PrefixCreate(newPrefix, namespacePrefixFacade);
+				UI.getCurrent().addWindow(prefix);
 				prefix.addCloseListener(new CloseListener() {
 					private static final long serialVersionUID = 1L;
 
@@ -94,7 +97,7 @@ public class NamespacePrefixes {
 		topLine.addComponent(buttonDeleteFilters);
 		prefixesListLayout.addComponent(topLine);
 
-		tableData = getTableData(App.getApp().getNamespacePrefixes().getAllPrefixes());
+		tableData = getTableData(namespacePrefixFacade.getAllPrefixes());
 
 		//table with pipeline execution records
 		prefixesTable = new IntlibPagedTable();
@@ -178,7 +181,7 @@ public class NamespacePrefixes {
 	 */
 	private void refreshData() {
 		int page = prefixesTable.getCurrentPage();
-		tableData = getTableData(App.getApp().getNamespacePrefixes().getAllPrefixes());
+		tableData = getTableData(namespacePrefixFacade.getAllPrefixes());
 		prefixesTable.setContainerDataSource(tableData);
 		prefixesTable.setCurrentPage(page);
 		prefixesTable.setVisibleColumns((Object[]) visibleCols);
@@ -195,11 +198,11 @@ public class NamespacePrefixes {
 
 		boolean newPrefix = false;
 		// open usercreation dialog
-		PrefixCreate prefixEdit = new PrefixCreate(newPrefix);
-		NamespacePrefix prefix = App.getApp().getNamespacePrefixes().getPrefix(id);
+		PrefixCreate prefixEdit = new PrefixCreate(newPrefix, namespacePrefixFacade);
+		NamespacePrefix prefix = namespacePrefixFacade.getPrefix(id);
 		prefixEdit.setSelectedPrefix(prefix);
 
-		App.getApp().addWindow(prefixEdit);
+		UI.getCurrent().addWindow(prefixEdit);
 
 
 		prefixEdit.addCloseListener(new CloseListener() {
@@ -262,7 +265,7 @@ public class NamespacePrefixes {
 				public void buttonClick(ClickEvent event) {
 					prefixId = (Long) tableData.getContainerProperty(itemId, "id")
 							.getValue();
-					prefixDel = App.getApp().getNamespacePrefixes().getPrefix(prefixId);
+					prefixDel = namespacePrefixFacade.getPrefix(prefixId);
 					//open confirmation dialog
 					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting prefix",
 							"Delete the  " + prefixDel.getName() + " prefix?", "Delete", "Cancel",
@@ -273,7 +276,7 @@ public class NamespacePrefixes {
 						public void onClose(ConfirmDialog cd) {
 							if (cd.isConfirmed()) {
 
-								App.getApp().getNamespacePrefixes().delete(prefixDel);
+								namespacePrefixFacade.delete(prefixDel);
 								refreshData();
 
 							}

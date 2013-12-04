@@ -15,12 +15,12 @@ import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
@@ -45,17 +45,18 @@ public class DPUDetail extends Window {
 	 * DPU's configuration dialog.
 	 */
 	private AbstractConfigDialog<DPUConfigObject> confDialog;
+	private DPUFacade dpuFacade;
 
 	/**
 	 * Basic constructor, takes DPUInstance which detail should be showed.
 	 *
 	 * @param dpu {@link DPUInstanceRecord} which detail will be showed.
 	 */
-	public DPUDetail(DPUInstanceRecord dpu) {
-
+	public DPUDetail(DPUInstanceRecord dpu, DPUFacade dpuFacade) {
+		this.dpuFacade = dpuFacade;
 		this.setResizable(false);
 		this.setModal(true);
-		this.dpuInstance = new DPUInstanceWrap(dpu);
+		this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
 		this.setCaption(String.format("%s detail", dpu.getName().trim()));
 
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -251,7 +252,7 @@ public class DPUDetail extends Window {
 				Notification.show("Failed to save configuration. Reason:", ce
 						.getMessage(), Type.ERROR_MESSAGE);
 			} else {
-				Throwable rootCause = IntlibHelper.findFinalCause(ce);
+				Throwable rootCause = DecorationHelper.findFinalCause(ce);
 				String text = String.format("Exception: %s, Message: %s", rootCause.getClass().getName(), rootCause.getMessage());
 				Notification.show("Method for storing configuration threw exception:", text, Type.ERROR_MESSAGE);
 			}
@@ -268,10 +269,10 @@ public class DPUDetail extends Window {
 	 */
 	protected boolean saveDpuAsNew() {
 		if (saveDPUInstance()) {
-			DPUTemplateRecord newDPU = App.getDPUs().createTemplateFromInstance(
+			DPUTemplateRecord newDPU = dpuFacade.createTemplateFromInstance(
 					dpuInstance.getDPUInstanceRecord());
 			dpuInstance.getDPUInstanceRecord().setTemplate(newDPU);
-			App.getDPUs().save(newDPU);
+			dpuFacade.save(newDPU);
 			return true;
 		}
 		return false;

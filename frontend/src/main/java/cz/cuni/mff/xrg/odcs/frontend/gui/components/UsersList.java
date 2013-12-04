@@ -18,11 +18,14 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * GUI for User List which opens from the Administrator menu. Contains table
@@ -31,6 +34,8 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
  *
  * @author Maria Kukhar
  */
+@Component
+@Scope("prototype")
 public class UsersList {
 
 	private IntlibPagedTable usersTable;
@@ -43,6 +48,9 @@ public class UsersList {
 	private Long userId;
 	private User userDel;
 	private UserCreate userEdit;
+	
+	@Autowired
+	private UserFacade userFacade;
 
 	public VerticalLayout buildUsersListLayout() {
 
@@ -71,8 +79,8 @@ public class UsersList {
 
 				boolean newUser = true;
 				// open usercreation dialog
-				UserCreate user = new UserCreate(newUser);
-				App.getApp().addWindow(user);
+				UserCreate user = new UserCreate(newUser, userFacade);
+				UI.getCurrent().addWindow(user);
 				user.addCloseListener(new CloseListener() {
 					private static final long serialVersionUID = 1L;
 
@@ -102,7 +110,7 @@ public class UsersList {
 		topLine.addComponent(buttonDeleteFilters);
 		usersListLayout.addComponent(topLine);
 
-		tableData = getTableData(App.getApp().getUsers().getAllUsers());
+		tableData = getTableData(userFacade.getAllUsers());
 
 		//table with pipeline execution records
 		usersTable = new IntlibPagedTable();
@@ -150,8 +158,7 @@ public class UsersList {
 	 * @param data. List of users
 	 * @return result. IndexedContainer with data for users table
 	 */
-	@SuppressWarnings("unchecked")
-	public static IndexedContainer getTableData(List<User> data) {
+	private IndexedContainer getTableData(List<User> data) {
 
 		IndexedContainer result = new IndexedContainer();
 
@@ -205,7 +212,7 @@ public class UsersList {
 	 */
 	private void refreshData() {
 		int page = usersTable.getCurrentPage();
-		tableData = getTableData(App.getApp().getUsers().getAllUsers());
+		tableData = getTableData(userFacade.getAllUsers());
 		usersTable.setContainerDataSource(tableData);
 		usersTable.setCurrentPage(page);
 		usersTable.setVisibleColumns((Object[]) visibleCols);
@@ -223,7 +230,7 @@ public class UsersList {
 		boolean newUser = false;
 		// open usercreation dialog
 		if (userEdit == null) {
-			userEdit = new UserCreate(newUser);
+			userEdit = new UserCreate(newUser, userFacade);
 			userEdit.addCloseListener(new CloseListener() {
 				private static final long serialVersionUID = 1L;
 
@@ -233,11 +240,11 @@ public class UsersList {
 				}
 			});
 		}
-		User user = App.getApp().getUsers().getUser(id);
+		User user = userFacade.getUser(id);
 		userEdit.setSelectedUser(user);
 
-		if (!App.getApp().getWindows().contains(userEdit)) {
-			App.getApp().addWindow(userEdit);
+		if (!UI.getCurrent().getWindows().contains(userEdit)) {
+			UI.getCurrent().addWindow(userEdit);
 		}
 	}
 
@@ -287,7 +294,7 @@ public class UsersList {
 				public void buttonClick(ClickEvent event) {
 					userId = (Long) tableData.getContainerProperty(itemId, "id")
 							.getValue();
-					userDel = App.getApp().getUsers().getUser(userId);
+					userDel = userFacade.getUser(userId);
 					//open confirmation dialog
 					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting user",
 							"Delete the  " + userDel.getUsername() + " user?", "Delete", "Cancel",
@@ -298,7 +305,7 @@ public class UsersList {
 						public void onClose(ConfirmDialog cd) {
 							if (cd.isConfirmed()) {
 
-								App.getApp().getUsers().delete(userDel);
+								userFacade.delete(userDel);
 								refreshData();
 
 							}

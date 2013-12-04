@@ -172,7 +172,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			if (checkMode()) {
 				return;
 			}
-			var mousePos = stage.getMousePosition();
+			var mousePos = stage.getPointerPosition();
 			if (isDragging) {
 				// Takes care of repositioning connections on dragged DPU
 				var x = mousePos.x / scale;
@@ -224,16 +224,6 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			}
 		});
 
-		/*
-		 stage.onkeydown = function(evt) {
-		 writeMessage(messageLayer, evt.keyIdentifier)
-		 
-		 //46 identifier for Delete
-		 if(evt.keyIdentifier == 46) {
-		 //TODO: Delete DPU/Connection???
-		 }
-		 };
-		 */
 		backgroundLayer.add(backgroundRect);
 		stage.add(backgroundLayer);
 
@@ -409,7 +399,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	function activateTooltip(text) {
 		tooltip.getText().setText(text);
-		var position = stage.getMousePosition();
+		var position = stage.getPointerPosition();
 		position.x = (position.x + 16) / scale;
 		position.y = position.y / scale;
 		tooltip.setPosition(position);
@@ -478,7 +468,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 		// Group containing text and rect
 		if (posX < 0) {
-			var mousePos = null; //stage.getPointerPosition();// stage.getMousePosition();
+			var mousePos = null; //stage.getPointerPosition();// stage.getPointerPosition();
 			if (mousePos !== null) {
 				posX = mousePos.x;
 				posY = mousePos.y;
@@ -543,7 +533,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dpuLayer.draw();
 			if (stageMode === DEVELOP_MODE) {
 				writeMessage(messageLayer, 'action bar clicked');
-				var mousePosition = stage.getMousePosition();
+				var mousePosition = stage.getPointerPosition();
 				newConnLine = new Kinetic.Line({
 					points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
 					stroke: '#555',
@@ -687,7 +677,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			setVisibleActionBar(actionBar, false);
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'Copy clicked');
-			var mousePosition = stage.getMousePosition();
+			var mousePosition = stage.getPointerPosition();
 			rpcProxy.onDpuCopyRequested(dpu.id, parseInt(mousePosition.x / scale), parseInt(mousePosition.y / scale));
 			evt.cancelBubble = true;
 		});
@@ -730,7 +720,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			} else if (stageMode === MULTISELECT_MODE && dpu.isInMultiselect && !evt.ctrlKey) {
 				formattingActionBar.setVisible(true);
 				formattingActionBar.moveToTop();
-				var pos = stage.getMousePosition();
+				var pos = stage.getPointerPosition();
 				pos.x = (pos.x) / scale;
 				pos.y = (pos.y) / scale;
 				formattingActionBar.setPosition(pos);
@@ -791,7 +781,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				newConnLine = null;
 				stageMode = DEVELOP_MODE;
 				idFrom = newConnStart.id;
-				idTo = dpu.id; //getDpuByPosition(stage.getMousePosition());
+				idTo = dpu.id; //getDpuByPosition(stage.getPointerPosition());
 				if (idTo !== 0) {
 					rpcProxy.onConnectionAdded(idFrom, parseInt(idTo));
 				}
@@ -817,7 +807,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 					//rpcProxy.onDpuRemoved(dpu.id);
 				} else if (evt.shiftKey) {
 					writeMessage(messageLayer, 'New Edge - SHIFT');
-					var mousePosition = stage.getMousePosition();
+					var mousePosition = stage.getPointerPosition();
 					newConnLine = new Kinetic.Line({
 						points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
 						stroke: '#555',
@@ -1252,7 +1242,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				return;
 			}
 			var ab = connections[id].actionBar;
-			var pos = stage.getMousePosition();
+			var pos = stage.getPointerPosition();
 			pos.x = (pos.x - 8) / scale;
 			pos.y = (pos.y - 16) / scale;
 			ab.setPosition(pos);

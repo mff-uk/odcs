@@ -29,7 +29,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FINISHED_WARNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tepi.filtertable.FilterGenerator;
@@ -64,10 +65,15 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	private HorizontalSplitPanel hsplit;
 	private VerticalLayout logLayout;
 	private Panel mainLayout;
+	@Autowired
 	private DebuggingView debugView;
 	private HashMap<Date, Label> runTimeLabels = new HashMap<>();
 	
 	private ExecutionListPresenter presenter;
+	
+	@Autowired
+	private Utils utils;
+	
 
 	@Override
 	public Object enter(final ExecutionListPresenter presenter) {
@@ -114,7 +120,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		}
 		for (Map.Entry<Date, Label> entry : runTimeLabels.entrySet()) {
 			long duration = (new Date()).getTime() - entry.getKey().getTime();
-			entry.getValue().setValue(IntlibHelper.formatDuration(duration));
+			entry.getValue().setValue(DecorationHelper.formatDuration(duration));
 		}
 	}
 
@@ -174,7 +180,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 		hsplit.setFirstComponent(monitorTableLayout);
 		hsplit.setSecondComponent(null);
-		int height = Math.max(850, 146 + (Utils.getPageLength() * 32));
+		int height = Math.max(850, 146 + (utils.getPageLength() * 32));
 		hsplit.setHeight(height, Unit.PIXELS);
 		hsplit.setSplitPosition(100, Unit.PERCENTAGE);
 		hsplit.setLocked(true);
@@ -283,7 +289,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		logLayout.setSpacing(true);
 		logLayout.setWidth("100%");
 		//logLayout.setHeight("100%");
-		debugView = new DebuggingView();
+		//debugView = new DebuggingView();
 		// build the debug view
 		buildDebugView(execution);
 
@@ -326,7 +332,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	 * @param exec pipeline execution to show in debugging view
 	 */
 	private void buildDebugView(PipelineExecution execution) {
-		if (debugView == null) {
+		if (logLayout == null) {
 			// secure that the debug view exist
 			buildExecutionDetail(execution);
 		}
@@ -406,7 +412,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setColumnWidth("actions", 200);
 		executionTable.setColumnWidth("id", 50);
 		executionTable.setSortEnabled(true);
-		executionTable.setPageLength(Utils.getPageLength());
+		executionTable.setPageLength(utils.getPageLength());
 
 		executionTable.setFilterGenerator(createFilterGenerator());
 		executionTable.setFilterDecorator(new filterDecorator());
@@ -431,7 +437,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				PipelineExecutionStatus type = (PipelineExecutionStatus) source.getItem(itemId)
 						.getItemProperty(columnId).getValue();
 				if (type != null) {
-					ThemeResource img = IntlibHelper.getIconForExecutionStatus(type);
+					ThemeResource img = DecorationHelper.getIconForExecutionStatus(type);
 					Embedded emb = new Embedded(type.name(), img);
 					emb.setDescription(type.name());
 					return emb;
@@ -469,20 +475,20 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
 					if (start != null) {
 						duration = (new Date()).getTime() - start.getTime();
-						Label durationLabel = new Label(IntlibHelper.formatDuration(duration));
+						Label durationLabel = new Label(DecorationHelper.formatDuration(duration));
 						durationLabel.setImmediate(true);
 						runTimeLabels.put(start, durationLabel);
 						return durationLabel;
 					}
 				}
-				return IntlibHelper.formatDuration(duration);
+				return DecorationHelper.formatDuration(duration);
 			}
 		});
 		executionTable.addGeneratedColumn("schedule", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 				boolean isScheduled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
-				Embedded emb = IntlibHelper.getIconForScheduled(isScheduled);
+				Embedded emb = DecorationHelper.getIconForScheduled(isScheduled);
 				return emb;
 			}
 		});

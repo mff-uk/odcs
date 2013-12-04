@@ -28,7 +28,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
@@ -43,7 +42,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +88,8 @@ public class PipelineEdit extends ViewComponent {
 	@Autowired
 	private DPUFacade dpuFacade;
 	private RefreshManager refreshManager;
+	@Autowired
+	private PipelineHelper pipelineHelper;
 
 	/**
 	 * Empty constructor.
@@ -169,7 +170,7 @@ public class PipelineEdit extends ViewComponent {
 			}
 		};
 		//layout.setMargin(true);
-		pipelineCanvas = App.getApp().getBean(PipelineCanvas.class);
+		pipelineCanvas = ((AppEntry)UI.getCurrent()).getBean(PipelineCanvas.class);
 		pipelineCanvas.setImmediate(true);
 		pipelineCanvas.setWidth(1060, Unit.PIXELS);
 		pipelineCanvas.setHeight(630, Unit.PIXELS);
@@ -601,7 +602,7 @@ public class PipelineEdit extends ViewComponent {
 	 * @param debug {@link DebuggingView} to show.
 	 */
 	private void openDebug(final Pipeline pip, final Node debugNode) {
-		PipelineExecution pExec = IntlibHelper.runPipeline(pip, true, debugNode);
+		PipelineExecution pExec = pipelineHelper.runPipeline(pip, true, debugNode);
 		if (pExec == null) {
 			//Solved by dialog if backend is offline in method runPipeline.
 			//Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
@@ -612,10 +613,7 @@ public class PipelineEdit extends ViewComponent {
 		debug.initialize(pExec, instance, true, true);
 
 		debug.setExecution(pExec, instance);
-//		debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
-//				new ReadOnlyContainer(
-//				new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
-
+		
 		final Window debugWindow = new Window("Debug window");
 		HorizontalLayout buttonLine = new HorizontalLayout();
 		buttonLine.setSpacing(true);
@@ -623,17 +621,12 @@ public class PipelineEdit extends ViewComponent {
 		Button rerunButton = new Button("Rerun", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				PipelineExecution pExec = IntlibHelper.runPipeline(pip, true, debugNode);
+				PipelineExecution pExec = pipelineHelper.runPipeline(pip, true, debugNode);
 				if (pExec == null) {
 					//Solved by dialog if backend is offline in method runPipeline.
-					//Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
 				debug.setExecution(pExec, instance);
-				// the data are set in setExecution
-//				debug.setDisplay(new ExecutionListPresenter.ExecutionDetailData(
-//						new ReadOnlyContainer(
-//						new CachedSource<>(App.getApp().getBean(DbMessageRecord.class), new MessageRecordAccessor()))));
 			}
 		});
 		rerunButton.setWidth(100, Unit.PIXELS);
@@ -671,7 +664,7 @@ public class PipelineEdit extends ViewComponent {
 		});
 
 		if (pExec.getStatus() == RUNNING || pExec.getStatus() == QUEUED) {
-			refreshManager.addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debug, pExec));
+			refreshManager.addListener(RefreshManager.DEBUGGINGVIEW, RefreshManager.getDebugRefresher(debug, pExec, pipelineFacade));
 		}
 		UI.getCurrent().addWindow(debugWindow);
 	}

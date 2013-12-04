@@ -17,17 +17,23 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope("prototype")
 public class PipelineStatus extends Window {
 
 	private String lastRunTimeStr;
 	private Label lastRunTime;
 	private Label runsNumber;
-	private int i;
+	@Autowired
+	private PipelineFacade pipelineFacade;
 
 	/**
 	 * Basic constructor
@@ -84,16 +90,12 @@ public class PipelineStatus extends Window {
 
 		Date maxDate = null;
 
-		List<PipelineExecution> executions = App.getApp().getPipelines().getAllExecutions();
-		i = 0;
+		List<PipelineExecution> executions = pipelineFacade.getExecutions(selectedPipeline);
 
 		//getting number of pipeline run and date of the last pipeline execution
 		for (PipelineExecution item : executions) {
-			if (item.getPipeline().getId().equals(selectedPipeline.getId())) {
-				if (maxDate == null || maxDate.getTime() < item.getStart().getTime()) {
-					maxDate = item.getStart();
-				}
-				i++;
+			if (maxDate == null || maxDate.getTime() < item.getStart().getTime()) {
+				maxDate = item.getStart();
 			}
 		}
 		if (maxDate != null) {
@@ -103,7 +105,7 @@ public class PipelineStatus extends Window {
 			lastRunTimeStr = "";
 		}
 
-		runsNumber.setCaption(Integer.toString(i));
+		runsNumber.setCaption(Integer.toString(executions.size()));
 		lastRunTime.setCaption(lastRunTimeStr);
 	}
 }

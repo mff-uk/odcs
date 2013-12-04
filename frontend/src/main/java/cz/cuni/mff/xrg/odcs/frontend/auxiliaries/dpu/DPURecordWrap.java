@@ -1,14 +1,16 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu;
 
+import com.vaadin.ui.UI;
 import java.io.FileNotFoundException;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 
 /**
  * Class wrap {
@@ -115,7 +117,7 @@ class DPURecordWrap {
 			return;
 		}
 		// first we need load instance of the DPU
-		dpuRecord.loadInstance(App.getApp().getModules());
+		dpuRecord.loadInstance(((AppEntry)UI.getCurrent()).getBean(ModuleFacade.class));
 		Object instance = dpuRecord.getInstance();
 		// now try to load the dialog
 		if (instance instanceof ConfigDialogProvider<?>) {

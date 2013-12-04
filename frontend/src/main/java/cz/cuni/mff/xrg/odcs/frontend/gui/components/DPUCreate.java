@@ -27,12 +27,17 @@ import com.vaadin.ui.Upload.StartedEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.App;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Dialog for the DPU template creation. Called from the {@link #DPU}. Allows to
@@ -42,6 +47,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
  * @author Maria Kukhar
  *
  */
+@Component
+@Scope("prototype")
 public class DPUCreate extends Window {
 
 	private TextField dpuName;
@@ -54,11 +61,19 @@ public class DPUCreate extends Window {
 	private DPUTemplateRecord dpuTemplate;
 	private TextField uploadFile;
 	public static int fl = 0;
+	@Autowired
+	private DPUFacade dpuFacade;
+	@Autowired
+	private DPUModuleManipulator dpuManipulator;
 
 	/**
 	 * Basic constructor.
 	 */
 	public DPUCreate() {
+	}
+
+	@PostConstruct
+	private void init() {
 
 		this.setResizable(false);
 		this.setModal(true);
@@ -181,7 +196,7 @@ public class DPUCreate extends Window {
 				DPUTemplateWrap dpuWrap;
 				try {
 					dpuWrap = new DPUTemplateWrap(
-							App.getApp().getDPUManipulator().create(sourceFile, dpuName.getValue(), validators));
+							dpuManipulator.create(sourceFile, dpuName.getValue(), validators));
 				} catch (DPUCreateException e) {
 
 					dpuGeneralSettingsLayout.removeComponent(1, 3);
@@ -196,7 +211,7 @@ public class DPUCreate extends Window {
 				// now we know all, we can update the DPU template
 				dpuTemplate.setDescription(dpuDescription.getValue());
 				dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
-				App.getDPUs().save(dpuTemplate);
+				dpuFacade.save(dpuTemplate);
 				// and at the end we can close the dialog .. 
 				close();
 			}
@@ -223,9 +238,9 @@ public class DPUCreate extends Window {
 		this.setContent(mainLayout);
 		setSizeUndefined();
 	}
-	
-	private HorizontalLayout buildUploadLayout(){
-		
+
+	private HorizontalLayout buildUploadLayout() {
+
 		HorizontalLayout uploadFileLayout = new HorizontalLayout();
 		uploadFileLayout.setSpacing(true);
 
@@ -266,7 +281,6 @@ public class DPUCreate extends Window {
 
 		//If upload failed, upload window will be closed 
 		selectFile.addFailedListener(new Upload.FailedListener() {
-
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -276,14 +290,13 @@ public class DPUCreate extends Window {
 				uploadInfoWindow.close();
 				dpuGeneralSettingsLayout.removeComponent(1, 3);
 				dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
-				
+
 			}
 		});
-		
+
 		//If upload finish successful, upload window will be closed and the name 
 		//of the uploaded file will be shown
 		selectFile.addSucceededListener(new Upload.SucceededListener() {
-
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -320,10 +333,9 @@ public class DPUCreate extends Window {
 
 		uploadFileLayout.addComponent(uploadFile);
 
-		
+
 		return uploadFileLayout;
-				
-				
+
+
 	}
-	
 }

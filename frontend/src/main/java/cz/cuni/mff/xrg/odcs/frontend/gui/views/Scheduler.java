@@ -34,7 +34,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.IntlibHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
@@ -86,6 +86,8 @@ public class Scheduler extends ViewComponent {
 	private ScheduleFacade scheduleFacade;
 	@Autowired
 	private PipelineFacade pipelineFacade;
+	@Autowired
+	private Utils utils;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
@@ -212,7 +214,7 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setFilterFieldVisible("duration", false);
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
-		schedulerTable.setPageLength(Utils.getPageLength());
+		schedulerTable.setPageLength(utils.getPageLength());
 		schedulerTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
 			@Override
@@ -337,7 +339,7 @@ public class Scheduler extends ViewComponent {
 					item.getDescription());
 
 			PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
-			result.getContainerProperty(num, "duration").setValue(IntlibHelper.getDuration(exec));
+			result.getContainerProperty(num, "duration").setValue(DecorationHelper.getDuration(exec));
 		}
 
 		return result;

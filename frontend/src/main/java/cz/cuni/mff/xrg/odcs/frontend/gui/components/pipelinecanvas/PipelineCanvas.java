@@ -217,7 +217,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void showDPUDetail(final Node node) {
 		final DPUInstanceRecord dpu = node.getDpuInstance();
-		DPUDetail detailDialog = new DPUDetail(dpu);
+		DPUDetail detailDialog = new DPUDetail(dpu, dpuFacade);
 		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
@@ -378,7 +378,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param edge {@link Edge} which detail should be showed.
 	 */
 	private void showEdgeDetail(final Edge edge) {
-		EdgeDetail edgeDetailDialog = new EdgeDetail(edge);
+		EdgeDetail edgeDetailDialog = new EdgeDetail(edge, dpuExplorer);
 		edgeDetailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
