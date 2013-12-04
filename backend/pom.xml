@@ -11,10 +11,6 @@
 	<name>backend</name>
 	<description></description>
 
-	<properties>
-		<aspectj.version>1.7.0</aspectj.version>
-	</properties>
-
 	<dependencies>
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
@@ -41,18 +37,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
 			<version>${org.springframework.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>${aspectj.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjweaver</artifactId>
-			<version>${aspectj.version}</version>
 		</dependency>
 
 		<dependency> <!-- mockito for tests -->
