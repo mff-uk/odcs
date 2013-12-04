@@ -828,7 +828,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					QueryLanguage.SPARQL,
 					constructQuery);
 
-			graphQuery.setDataset(getDataSetForGraph());
+			graphQuery.setDataset(getDataSet());
 
 			logger.debug("Query " + constructQuery + " is valid.");
 
@@ -974,7 +974,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
-		return executeConstructQuery(constructQuery, getDataSetForGraph());
+		return executeConstructQuery(constructQuery, getDataSet());
 	}
 
 	/**
@@ -1002,7 +1002,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, selectQuery);
 
-			tupleQuery.setDataset(getDataSetForGraph());
+			tupleQuery.setDataset(getDataSet());
 
 			logger.debug("Query " + selectQuery + " is valid.");
 
@@ -1173,7 +1173,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					QueryLanguage.SPARQL,
 					constructQuery);
 
-			graphQuery.setDataset(getDataSetForGraph());
+			graphQuery.setDataset(getDataSet());
 			try {
 				GraphQueryResult result = graphQuery.evaluate();
 
@@ -1226,7 +1226,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, sizeQuery);
 
-			tupleQuery.setDataset(getDataSetForGraph());
+			tupleQuery.setDataset(getDataSet());
 			try {
 				TupleQueryResult tupleResult = tupleQuery.evaluate();
 				if (tupleResult.hasNext()) {
@@ -1311,7 +1311,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, selectQuery);
 
-			tupleQuery.setDataset(getDataSetForGraph());
+			tupleQuery.setDataset(getDataSet());
 
 			logger.debug("Query " + selectQuery + " is valid.");
 
@@ -1360,7 +1360,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
-	private Dataset getDataSetForGraph() {
+	/**
+	 *
+	 * @return dataset for graphs set in reposiotory as default.
+	 */
+	@Override
+	public Dataset getDataSet() {
 		DatasetImpl dataSet = new DatasetImpl();
 		dataSet.addDefaultGraph(graph);
 
@@ -1443,37 +1448,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		InputStreamReader inputStreamReader = getEndpointStreamReader(
 				endpointURL, "", deleteQuery, RDFFormat.RDFXML);
 
-	}
-
-	private void moveDataToTarget(URL endpointURL, String tempGraph,
-			String targetGraph) throws RDFException {
-
-		String moveQuery = String.format("DEFINE sql:log-enable 2 \n"
-				+ "ADD <%s> TO <%s>", tempGraph, targetGraph);
-
-		String start = String.format(
-				"Query for moving data from temp GRAPH <%s> to target GRAPH <%s> prepared.",
-				tempGraph, targetGraph);
-
-		logger.debug(start);
-
-		try {
-			InputStreamReader result = getEndpointStreamReader(endpointURL,
-					"", moveQuery, RDFFormat.RDFXML);
-		} catch (RDFException e) {
-			String exception = String.format(
-					"Moving from temp GRAPH <%s> to target GRAPH <%s> FAILED.",
-					tempGraph, targetGraph);
-
-			logger.error(exception);
-			throw new RDFException(e.getMessage(), e);
-		}
-
-		String finish = String.format(
-				"All data from temp GRAPH <%s> to GRAPH <%s> were moved sucessfully",
-				tempGraph, targetGraph);
-
-		logger.debug(finish);
 	}
 
 	@Override
@@ -1619,7 +1593,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				logger.debug(message);
 
-				if (retryCount >= RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
+				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
 					final String errorMessage = "Endpoint HTTP connection stream cannot be opened. ";
 					logger.debug(errorMessage);
 					if (httpConnection != null) {
