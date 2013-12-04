@@ -20,6 +20,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
 import org.openrdf.model.URI;
+import org.openrdf.query.Dataset;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -229,6 +230,12 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * @return Iterable collection of Statements need for lazy
 	 */
 	public RepositoryResult<Statement> getRepositoryResult();
+
+	/**
+	 *
+	 * @return dataset for graphs set in reposiotory as default.
+	 */
+	public Dataset getDataSet();
 
 	/**
 	 *
