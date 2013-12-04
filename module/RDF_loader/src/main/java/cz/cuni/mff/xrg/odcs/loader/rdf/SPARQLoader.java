@@ -11,10 +11,12 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.GraphNotEmptyException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -25,9 +27,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.openrdf.model.*;
+import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+
 import org.openrdf.rio.RDFFormat;
 
 /**
@@ -325,15 +328,24 @@ public class SPARQLoader {
 		}
 	}
 
+	private String getConstructQuery(long limit, long offset) {
+		if (offset < 0 | limit < 0) {
+			return "CONSTRUCT {?a ?b ?c} WHERE {?a ?b ?c}";
+		} else {
+			return String.format(
+					"CONSTRUCT {?a ?b ?c} WHERE {?a ?b ?c} LIMIT %s OFFSET %s",
+					limit, offset);
+		}
+	}
+
 	private void loadDataParts(URL endpointURL, String endpointGraph,
 			InsertType insertType, long chunkSize)
 			throws RDFException {
 
-		RepositoryResult<Statement> lazy = rdfDataUnit.getRepositoryResult();
-
-		String part = getInsertQueryPart(chunkSize, lazy);
-
 		long counter = 0;
+
+		String part = getInsertQueryPart(chunkSize, counter);
+
 		long partsCount = rdfDataUnit.getPartsCount(chunkSize);
 
 		while (part != null) {
@@ -345,7 +357,7 @@ public class SPARQLoader {
 				break;
 			}
 			final String query = part;
-			part = getInsertQueryPart(chunkSize, lazy);
+			part = getInsertQueryPart(chunkSize, counter);
 
 			final String processing = String.valueOf(counter) + "/" + String
 					.valueOf(partsCount);
@@ -384,13 +396,29 @@ public class SPARQLoader {
 				throw new RDFException(e.getMessage(), e);
 			}
 		}
+
+
 	}
 
 	private void moveDataToTarget(URL endpointURL, String tempGraph,
 			String targetGraph) throws RDFException {
 
-		String moveQuery = String.format("DEFINE sql:log-enable 2 \n"
-				+ "ADD <%s> TO <%s>", tempGraph, targetGraph);
+		boolean useExtension = false;
+
+		if (rdfDataUnit instanceof VirtuosoRDFRepo) {
+			VirtuosoRDFRepo repo = (VirtuosoRDFRepo) rdfDataUnit;
+			useExtension = repo.isUsedExtension();
+		}
+
+		String moveQuery;
+
+		if (useExtension) {
+			moveQuery = String.format("DEFINE sql:log-enable 2 \n"
+					+ "ADD <%s> TO <%s>", tempGraph, targetGraph);
+		} else {
+			moveQuery = String
+					.format("ADD <%s> TO <%s>", tempGraph, targetGraph);
+		}
 
 		String start = String.format(
 				"Query for moving data from temp GRAPH <%s> to target GRAPH <%s> prepared.",
@@ -459,8 +487,35 @@ public class SPARQLoader {
 
 	}
 
+	private GraphQueryResult getTriplesPart(String constructQuery) throws InvalidQueryException {
+		try {
+			RepositoryConnection connection = rdfDataUnit.getDataRepository()
+					.getConnection();
+
+			GraphQuery graphQuery = connection.prepareGraphQuery(
+					QueryLanguage.SPARQL,
+					constructQuery);
+
+			graphQuery.setDataset(rdfDataUnit.getDataSet());
+
+			GraphQueryResult result = graphQuery.evaluate();
+			return result;
+
+		} catch (QueryEvaluationException | MalformedQueryException ex) {
+			throw new InvalidQueryException(
+					"Given query for lazy triples is probably not valid. "
+					+ ex.getMessage(), ex);
+		} catch (RepositoryException ex) {
+
+			logger.error("Connection to RDF repository failed. "
+					+ ex.getMessage(), ex);
+		}
+		throw new InvalidQueryException(
+				"Getting GraphQueryResult for lazy triples failed.");
+	}
+
 	private String getInsertQueryPart(long sizeSplit,
-			RepositoryResult<Statement> lazy) {
+			long loadedPartsCount) throws RDFException {
 
 		final String insertStart = "INSERT {";
 		final String insertStop = "} ";
@@ -470,40 +525,70 @@ public class SPARQLoader {
 		builder.append(insertStart);
 
 		long count = 0;
+		final long offset = sizeSplit * loadedPartsCount;
 
-		try {
-			while (lazy.hasNext()) {
+		int retryCount = 0;
 
-				Statement next = lazy.next();
+		while (true) {
+			try {
 
-				Resource subject = next.getSubject();
-				URI predicate = next.getPredicate();
-				Value object = next.getObject();
+				GraphQueryResult lazy = getTriplesPart(getConstructQuery(
+						sizeSplit,
+						offset));
 
-				String appendLine = getSubjectInsertText(subject) + " "
-						+ getPredicateInsertText(predicate) + " "
-						+ getObjectInsertText(object) + " .";
+				while (lazy.hasNext()) {
 
-				builder.append(appendLine);
+					Statement next = lazy.next();
 
-				count++;
-				if (count == sizeSplit) {
+					Resource subject = next.getSubject();
+					URI predicate = next.getPredicate();
+					Value object = next.getObject();
+
+					String appendLine = getSubjectInsertText(subject) + " "
+							+ getPredicateInsertText(predicate) + " "
+							+ getObjectInsertText(object) + " .";
+
+					builder.append(appendLine);
+
+					count++;
+					if (count == sizeSplit) {
+						builder.append(insertStop);
+						return builder.toString();
+
+					}
+				}
+
+				if (count > 0) {
 					builder.append(insertStop);
 					return builder.toString();
-
 				}
+
+				return null;
+
+			} catch (InvalidQueryException | QueryEvaluationException e) {
+
+				retryCount++;
+				String error = String.format("Problem by creating %s"
+						+ ". data part - ATTEMPT number %s: ", loadedPartsCount,
+						retryCount);
+
+				if (retryCount > retrySize && retrySize >= 0) {
+					throw new RDFException(error + e.getMessage(), e);
+
+				} else {
+					logger.debug(error + e.getMessage());
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(retryTime);
+
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage(), ex);
+					}
+				}
+
 			}
 
-			if (count > 0) {
-				builder.append(insertStop);
-				return builder.toString();
-			}
-		} catch (RepositoryException e) {
-			logger.debug(e.getMessage(), e);
 		}
-
-		return null;
-
 	}
 
 	private String getSubjectInsertText(Resource subject) throws IllegalArgumentException {
