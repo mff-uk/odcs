@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,9 +94,13 @@ public abstract class DPURecord {
     	if (dpuRecord.serializedConfiguration == null) {
     		this.serializedConfiguration = null;
     	} else {
-			// deep copy
-    		this.serializedConfiguration = 
-    				dpuRecord.serializedConfiguration.clone();
+			// deep copy, also we 
+			String configAsStr = new String(dpuRecord.serializedConfiguration);			
+			try {
+				this.serializedConfiguration = configAsStr.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException ex) {
+				LOG.error("UnsupportedEncodingException", ex);
+			}
 			LOG.debug("setRawConf for: {} on: {}", dpuRecord.name, dpuRecord.serializedConfiguration);
 			LOG.debug("Copy of config: {}", this.serializedConfiguration);
     	}

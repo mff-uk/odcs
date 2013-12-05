@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
@@ -19,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
  * {@link DPUConfigObject}. {@link DPUConfigObject} is serialized as XML, using XStream.
  *
  * @author Petyr
+ * @param <C>
  *
  */
 public class ConfigWrap<C extends DPUConfigObject> {
@@ -28,12 +30,12 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	/**
 	 * Configuration's class.
 	 */
-	private Class<C> configClass;
+	private final Class<C> configClass;
 
 	/**
 	 * Stream for de/serialization.
 	 */
-	private XStream xstream;
+	private final XStream xstream;
 
 	public ConfigWrap(Class<C> configClass) {
 		this.configClass = configClass;
@@ -52,7 +54,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		try {
 			return configClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			LOG.error("Failed to create configuration instance", e);
 			return null;
 		}
 	}
@@ -62,6 +64,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 * returned.
 	 *
 	 * @param c Serialized configuration.
+	 * @return 
 	 * @throws ConfigException
 	 */
 	@SuppressWarnings("unchecked")
@@ -89,6 +92,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 * Serialized actual stored configuration. Can return null if configuration
 	 * is null.
 	 *
+	 * @param config
 	 * @return Serialized configuration, can be null.
 	 * @throws ConfigException
 	 */
@@ -110,7 +114,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		// serialise object into byte[]
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {
 			// use XStream for serialisation	
-			XStream xStream = new XStream();
+			XStream xStream = new XStream(new DomDriver("UTF-8")); // new DomDriver("UTF-8")
 			try (ObjectOutputStream objOut = xStream.createObjectOutputStream(
 					byteOut)) {
 				objOut.writeObject(config);
