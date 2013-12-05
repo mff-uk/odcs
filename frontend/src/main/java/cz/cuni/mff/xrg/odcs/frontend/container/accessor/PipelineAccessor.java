@@ -14,15 +14,23 @@ import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import java.text.DateFormat;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PipelineAccessor implements ClassAccessor<Pipeline> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineAccessor.class);
+		
+	private List<String> all = Arrays.asList("id", "name", "description", "duration", "lastExecTime", "lastExecStatus");
+	
+	private List<String> sortable = Arrays.asList("id", "name");
+	
+	private List<String> filtrable = Arrays.asList("id", "name", "description");
+	
 	@Autowired
 	PipelineFacade pipelineFacade;
-	private List<String> all = Arrays.asList("id", "name", "description", "duration", "lastExecTime", "lastExecStatus");
-	private List<String> sortable = Arrays.asList("id", "name");
-	private List<String> filtrable = Arrays.asList("id", "name", "description");
+	
 	/**
 	 * Cache for last pipeline execution, so we do not load from DB every time
 	 * table cell with duration, start, ..., is needed.
@@ -143,6 +151,11 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	Object getLastExecutionTime(Pipeline ppl) {
 		PipelineExecution latestExec = getLastExecution(ppl);
 		if (latestExec != null) {
+			if (latestExec.getStart() == null) {
+				// no start time for last execution
+				LOG.warn("The start time for execuiton id: {} is null", latestExec.getId());
+				return null;
+			}			
 			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
 			return df.format(latestExec.getStart());
 		} else {
