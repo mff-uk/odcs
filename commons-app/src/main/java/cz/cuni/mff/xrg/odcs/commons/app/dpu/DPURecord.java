@@ -101,8 +101,6 @@ public abstract class DPURecord {
 			} catch (UnsupportedEncodingException ex) {
 				LOG.error("UnsupportedEncodingException", ex);
 			}
-			LOG.debug("setRawConf for: {} on: {}", dpuRecord.name, dpuRecord.serializedConfiguration);
-			LOG.debug("Copy of config: {}", this.serializedConfiguration);
     	}
     	this.configValid = dpuRecord.configValid;
     }
