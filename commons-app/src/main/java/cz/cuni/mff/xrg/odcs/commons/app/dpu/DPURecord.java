@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represent imported DPU in database.
@@ -17,6 +19,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 @MappedSuperclass
 public abstract class DPURecord {
 
+	private static final Logger LOG = LoggerFactory.getLogger(DPURecord.class);
+	
     /**
      * Primary key of graph stored in db
      */
@@ -88,9 +92,11 @@ public abstract class DPURecord {
     	if (dpuRecord.serializedConfiguration == null) {
     		this.serializedConfiguration = null;
     	} else {
-    		// deep copy
+			// deep copy
     		this.serializedConfiguration = 
     				dpuRecord.serializedConfiguration.clone();
+			LOG.debug("setRawConf for: {} on: {}", dpuRecord.name, dpuRecord.serializedConfiguration);
+			LOG.debug("Copy of config: {}", this.serializedConfiguration);
     	}
     	this.configValid = dpuRecord.configValid;
     }
@@ -160,6 +166,7 @@ public abstract class DPURecord {
 	 * @return
 	 */
 	public byte[] getRawConf() {
+		LOG.debug("getRawConf for: {} on: {}", this.name, this.serializedConfiguration);
 		return serializedConfiguration;
 	}
 
@@ -169,6 +176,7 @@ public abstract class DPURecord {
 	 */
 	public void setRawConf(byte[] conf) {
 		serializedConfiguration = conf;
+		LOG.debug("setRawConf for: {} on: {}", this.name, this.serializedConfiguration);
 	}
 	
 	/**
