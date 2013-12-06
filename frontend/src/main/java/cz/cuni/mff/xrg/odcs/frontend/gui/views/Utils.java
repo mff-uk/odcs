@@ -21,4 +21,8 @@ public class Utils {
 		}
 		return rows;
 	}
+	
+	public static int getColumnMaxLenght() {
+		return 100;
+	}
 }

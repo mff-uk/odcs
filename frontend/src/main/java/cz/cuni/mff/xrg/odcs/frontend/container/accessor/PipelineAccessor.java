@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.text.DateFormat;
 import java.util.Locale;
 import org.slf4j.Logger;
@@ -93,9 +94,11 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 			case "id":
 				return object.getId();
 			case "name":
-				return object.getName();
+				String name = object.getName();
+				return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
 			case "description":
-				return object.getDescription();
+				String description = object.getDescription();
+				return description.length() > Utils.getColumnMaxLenght() ? description.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : description;
 			case "duration":
 				PipelineExecution latestExec = pipelineFacade.getLastExec(object, PipelineExecutionStatus.FINISHED);
 				return DecorationHelper.getDuration(latestExec);

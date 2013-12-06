@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessorBase;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 /**
  * Accessor used for containers that just list the pipelines.
@@ -19,21 +20,22 @@ public class PipelineNameAccessor extends ClassAccessorBase<Pipeline> {
 				return object.getId();
 			}
 		});
-		
+
 		addNon(String.class, "name", new ColumnGetter<String>() {
 			@Override
 			public String get(Pipeline object) {
-				return object.getName();
+				String name = object.getName();
+				return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
 			}
 		});
-		
+
 		addNon(String.class, "description", new ColumnGetter<String>() {
 			@Override
 			public String get(Pipeline object) {
-				return object.getDescription();
+				String description = object.getDescription();
+				return description.length() > Utils.getColumnMaxLenght() ? description.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : description;
 			}
 		});
-		
-	}
 
+	}
 }

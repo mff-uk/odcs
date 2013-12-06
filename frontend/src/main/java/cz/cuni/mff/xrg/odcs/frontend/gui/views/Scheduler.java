@@ -88,7 +88,6 @@ public class Scheduler extends ViewComponent {
 	private PipelineFacade pipelineFacade;
 	@Autowired
 	private Utils utils;
-	
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
 	/**
@@ -111,7 +110,7 @@ public class Scheduler extends ViewComponent {
 	public void enter(ViewChangeEvent event) {
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
-		
+
 		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
 		refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
 			@Override
@@ -182,7 +181,7 @@ public class Scheduler extends ViewComponent {
 		mainLayout.addComponent(topLine);
 
 		tableData = getTableData(scheduleFacade.getAllSchedules());
-		
+
 		//table with schedule rules records
 		schedulerTable = new IntlibPagedTable();
 		schedulerTable.setSelectable(true);
@@ -333,10 +332,10 @@ public class Scheduler extends ViewComponent {
 			} else {
 				result.getContainerProperty(num, "user").setValue(item.getOwner().getUsername());
 			}
-			result.getContainerProperty(num, "pipeline").setValue(
-					item.getPipeline().getName());
-			result.getContainerProperty(num, "description").setValue(
-					item.getDescription());
+			result.getContainerProperty(num, "pipeline").setValue(item.getPipeline().getName());
+			String description = item.getDescription();
+			description = description.length() > utils.getColumnMaxLenght() ? description.substring(0, utils.getColumnMaxLenght() - 3) + "..." : description;
+			result.getContainerProperty(num, "description").setValue(description);
 
 			PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
 			result.getContainerProperty(num, "duration").setValue(DecorationHelper.getDuration(exec));

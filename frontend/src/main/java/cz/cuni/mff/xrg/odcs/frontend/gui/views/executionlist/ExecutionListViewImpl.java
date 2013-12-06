@@ -57,7 +57,6 @@ import org.tepi.filtertable.FilterGenerator;
 public class ExecutionListViewImpl extends CustomComponent implements ExecutionListPresenter.ExecutionListView {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
-	
 	private IntlibPagedTable monitorTable;
 	/**
 	 * Used to separate table from execution detail view.
@@ -68,12 +67,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	@Autowired
 	private DebuggingView debugView;
 	private HashMap<Date, Label> runTimeLabels = new HashMap<>();
-	
 	private ExecutionListPresenter presenter;
-	
 	@Autowired
 	private Utils utils;
-	
 
 	@Override
 	public Object enter(final ExecutionListPresenter presenter) {
@@ -102,7 +98,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		// no DPU specified
 		debugView.setExecution(execution, null);
 		//debugView.setDisplay(detailDataObject);
-		
+
 		hsplit.setSecondComponent(logLayout);
 		// adjust hsplit
 		if (hsplit.isLocked()) {
@@ -180,13 +176,13 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 		hsplit.setFirstComponent(monitorTableLayout);
 		hsplit.setSecondComponent(null);
-		if(146 + (utils.getPageLength() * 32) <= 850) {
+		if (146 + (utils.getPageLength() * 32) <= 850) {
 			hsplit.setHeight(850, Unit.PIXELS);
 		} else {
 			hsplit.setHeight(-1, Unit.PIXELS);
 		}
-		
-		
+
+
 		hsplit.setSplitPosition(100, Unit.PERCENTAGE);
 		hsplit.setLocked(true);
 
@@ -341,7 +337,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			// secure that the debug view exist
 			buildExecutionDetail(execution);
 		}
-		
+
 		if (!debugView.isInitialized()) {
 			debugView.initialize(execution, null, execution.isDebugging(), false);
 		} else {
@@ -429,7 +425,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			public void itemClick(ItemClickEvent event) {
 				ValueItem item = (ValueItem) event.getItem();
 				final long executionId = item.getId();
-				
+
 				presenter.showDebugEventHandler(executionId);
 			}
 		});
@@ -497,7 +493,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				return emb;
 			}
 		});
-		
+
 		// add generated columns to the executionTable
 		executionTable.addGeneratedColumn("", createColumnGenerator(presenter));
 		executionTable.setVisibleColumns();
