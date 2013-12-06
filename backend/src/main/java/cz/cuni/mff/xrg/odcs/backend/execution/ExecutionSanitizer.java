@@ -119,9 +119,16 @@ class ExecutionSanitizer {
 				LOG.warn("Can't delete directory after execution", e);
 			}
 		}
+		Date now = new Date();
+		// check if the run has the start set .. 
+		if (execution.getStart() == null) {
+			// set current as start time
+			execution.setStart(now);
+			// this means that the execution does not run at all
+		}		
 		// set canceled state
 		execution.setStatus(PipelineExecutionStatus.CANCELLED);
-		execution.setEnd(new Date());
+		execution.setEnd(now);
 	}
 
 	/**
