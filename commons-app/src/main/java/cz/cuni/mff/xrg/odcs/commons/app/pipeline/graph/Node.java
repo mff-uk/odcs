@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import javax.persistence.*;
@@ -17,7 +17,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ppl_node")
-public class Node implements Serializable {
+public class Node implements DataObject {
 
 	/**
 	 * Primary key of graph stored in db
@@ -133,5 +133,10 @@ public class Node implements Serializable {
 		}
 		
 		return Objects.equals(this.id, other.id);
+	}
+
+	@Override
+	public Long getId() {
+		return id;
 	}
 }
