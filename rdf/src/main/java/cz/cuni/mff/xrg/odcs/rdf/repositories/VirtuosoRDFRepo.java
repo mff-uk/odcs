@@ -70,6 +70,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 		this.useExtension = repoWrapper.useVirtuosoExtension();
 		this.repository = repoWrapper;
+		this.repoConnection = repoWrapper;
 
 		try {
 			repository.initialize();
