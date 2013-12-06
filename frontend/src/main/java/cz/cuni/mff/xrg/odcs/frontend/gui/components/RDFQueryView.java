@@ -63,8 +63,8 @@ public class RDFQueryView extends CustomComponent {
 	private TextArea queryText;
 	private IntlibPagedTable resultTable;
 	private HorizontalLayout resultTableControls;
-	private NativeSelect formatSelect;
-	private NativeSelect downloadFormatSelect;
+	private ComboBox formatSelect;
+	private ComboBox downloadFormatSelect;
 	private Button tableDownload;
 	private final static Logger LOG = LoggerFactory
 			.getLogger(RDFQueryView.class);
@@ -134,7 +134,7 @@ public class RDFQueryView extends CustomComponent {
 		VerticalLayout runDownload = new VerticalLayout();
 		
 		//Export options
-		formatSelect = new NativeSelect();
+		formatSelect = new ComboBox();
 		for (RDFFormatType type : RDFFormatType.values()) {
 			if (type != RDFFormatType.AUTO) {
 				formatSelect.addItem(RDFFormatType.getStringValue(type));
@@ -244,7 +244,7 @@ public class RDFQueryView extends CustomComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				Object oValue = event.getItem().getItemProperty(event.getPropertyId()).getValue();
-				String uri = null;
+				String uri;
 				if (oValue.getClass() == URIImpl.class) {
 					uri = ((URIImpl) oValue).stringValue();
 				} else if (oValue.getClass() == String.class) {
@@ -270,7 +270,7 @@ public class RDFQueryView extends CustomComponent {
 
 		resultDownloadControls = new HorizontalLayout();
 
-		downloadFormatSelect = new NativeSelect();
+		downloadFormatSelect = new ComboBox();
 		downloadFormatSelect.setImmediate(true);
 		resultDownloadControls.addComponent(downloadFormatSelect);
 
