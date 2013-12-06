@@ -56,6 +56,8 @@ import org.tepi.filtertable.FilterGenerator;
  * @author Bogo
  */
 public class RDFQueryView extends CustomComponent {
+	
+	private final String defaultQuery = "SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 1000";
 
 	private DataUnitSelector selector;
 	private TextArea queryText;
@@ -104,7 +106,7 @@ public class RDFQueryView extends CustomComponent {
 		queryLine.setSpacing(true);
 		queryLine.setWidth(100, Unit.PERCENTAGE);
 
-		queryText = new TextArea();
+		queryText = new TextArea("", defaultQuery);
 		queryText.setWidth("100%");
 		queryText.setHeight("210px");
 		queryText.setImmediate(true);
@@ -158,10 +160,10 @@ public class RDFQueryView extends CustomComponent {
 			public InputStream getStream() {
 				RDFDataUnit repository = getRepository(selector.getSelectedDPU(),
 						selector.getSelectedDataUnit());
-				if (repository == null) {
+				String query = getQuery();
+				if (repository == null || query == null) {
 					return null;
 				}
-				String query = queryText.getValue();
 				return getDownloadData(repository, query, formatSelect
 						.getValue(), null);
 			}
@@ -327,7 +329,7 @@ public class RDFQueryView extends CustomComponent {
 
 	void refreshDPUs(PipelineExecution exec) {
 		selector.refresh(exec);
-		queryText.setValue("");
+		queryText.setValue(defaultQuery);
 		setResultVisible(false);
 	}
 
@@ -348,6 +350,15 @@ public class RDFQueryView extends CustomComponent {
 		}
 
 	}
+	
+	private String getQuery() {
+		String query = queryText.getValue();
+		if(query.trim().isEmpty()) {
+			Notification.show("No query was specified. Please specify query before running it.", Notification.Type.WARNING_MESSAGE);
+			return null;
+		}
+		return query.trim();
+	}
 
 	/**
 	 * Execute query on selected graph.
@@ -356,7 +367,10 @@ public class RDFQueryView extends CustomComponent {
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
 	private void runQuery() throws InvalidQueryException {
-		String query = queryText.getValue();
+		String query = getQuery();
+		if(query == null) {
+			return;
+		}
 
 		SPARQLQueryValidator validator = new SPARQLQueryValidator(query);
 		if (!validator.isQueryValid()) {
