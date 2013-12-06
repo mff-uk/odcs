@@ -63,7 +63,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * Count of attempts to reconnect if the connection fails. For infinite loop
 	 * use zero or negative integer.
 	 */
-	protected static int RETRY_CONNECTION_SIZE = 20;
+	protected static int RETRY_CONNECTION_SIZE = -1;
 
 	/**
 	 * Time in miliseconds how long to wait before trying to reconnect.
@@ -128,7 +128,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	/**
 	 * Singletone connection for repository.
 	 */
-	private RepositoryConnection repoConnection;
+	protected RepositoryConnection repoConnection;
 
 	/**
 	 * If is thrown RDFException and need reconnect singleton connection
