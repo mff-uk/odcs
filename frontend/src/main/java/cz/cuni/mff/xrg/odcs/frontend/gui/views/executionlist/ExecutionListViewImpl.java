@@ -180,8 +180,13 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 		hsplit.setFirstComponent(monitorTableLayout);
 		hsplit.setSecondComponent(null);
-		int height = Math.max(850, 146 + (utils.getPageLength() * 32));
-		hsplit.setHeight(height, Unit.PIXELS);
+		if(146 + (utils.getPageLength() * 32) <= 850) {
+			hsplit.setHeight(850, Unit.PIXELS);
+		} else {
+			hsplit.setHeight(-1, Unit.PIXELS);
+		}
+		
+		
 		hsplit.setSplitPosition(100, Unit.PERCENTAGE);
 		hsplit.setLocked(true);
 
