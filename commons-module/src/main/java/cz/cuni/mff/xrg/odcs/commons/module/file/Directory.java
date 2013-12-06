@@ -13,7 +13,7 @@ public final class Directory {
 	/**
 	 * Root path.
 	 */
-	private File root;
+	private final File root;
 	
 	public Directory(File root) {
 		this.root = root;

@@ -26,7 +26,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	/**
 	 * Used to convert configuration object into byte array and back.
 	 */
-	private ConfigWrap<C> configWrap;
+	private final ConfigWrap<C> configWrap;
 
 	/**
 	 * Last valid configuration that is in dialog. Is used to detect changes in
@@ -99,7 +99,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 
 	@Override
 	public boolean hasConfigChanged() {
-		byte[] configByte = null;
+		byte[] configByte;
 		try {
 			C config = getConfiguration();
 			configByte = configWrap.serialize(config);
@@ -130,6 +130,8 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	 * in dialog throw ConfigException.
 	 * 
 	 * @return getConfiguration object.
+	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
 	 */
 	protected abstract C getConfiguration() throws ConfigException;
+	
 }

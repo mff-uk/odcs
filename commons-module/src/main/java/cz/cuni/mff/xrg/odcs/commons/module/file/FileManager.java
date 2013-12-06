@@ -10,7 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
  */
 public final class FileManager {
 
-	private DPUContext context;
+	private final DPUContext context;
 	
 	public FileManager(DPUContext context) {
 		this.context = context;

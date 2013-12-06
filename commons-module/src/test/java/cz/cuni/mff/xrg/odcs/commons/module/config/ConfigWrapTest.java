@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

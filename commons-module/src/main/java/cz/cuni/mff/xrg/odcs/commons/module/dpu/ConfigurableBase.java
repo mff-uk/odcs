@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
  * 
  * @author Petyr
  * @author Tomas Knap
+ * @param <C>
  */
 public abstract class ConfigurableBase<C extends DPUConfigObject>
 		implements Configurable<C>, DPU {
@@ -24,7 +25,7 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	/**
 	 * Container for configuration de/serialization.
 	 */
-	private ConfigWrap<C> configWrap;
+	private final ConfigWrap<C> configWrap;
 
 	public ConfigurableBase(Class<C> configClass) {
 		this.configWrap = new ConfigWrap<>(configClass);
@@ -56,7 +57,7 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	 * Validate given configuration and if it's valid then configure the DPU.
 	 * Can be used to set null configuration too.
 	 * 
-	 * @param c
+	 * @param newConfig
 	 * @throws ConfigException In case of invalid configuration.
 	 */
 	public void configureDirectly(C newConfig) throws ConfigException {

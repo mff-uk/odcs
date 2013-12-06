@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.cuni.mff.xrg.odcs.commons.module.utils;
 
 import org.openrdf.model.BNode;
@@ -11,40 +7,40 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 /**
- * Workaround to add triples with triple quoted literals. 
+ * Workaround to add triples with triple quoted literals.
+ *
  * @author tomasknap
  */
 public class AddTripleWorkaround {
-    
-     /**
-      * Prepares triple to be inserted to a file from which it is loaded to the data unit (workarount - triples inserted directly via 
-      * Resource subj, URI pred, Value obj, cannot define whether literal should be single/triple quoted. 
-      * @param subj
-      * @param pred
-      * @param obj
-      * @return TTL serialization if the triple
-      */
-     public static String prepareTriple(Resource subj, URI pred,   Value obj) {
-        
+
+	/**
+	 * Prepares triple to be inserted to a file from which it is loaded to the
+	 * data unit (workarount - triples inserted directly via Resource subj, URI
+	 * pred, Value obj, cannot define whether literal should be single/triple
+	 * quoted.
+	 *
+	 * @param subj
+	 * @param pred
+	 * @param obj
+	 * @return TTL serialization if the triple
+	 */
+	public static String prepareTriple(Resource subj, URI pred, Value obj) {
+
 //        
 //        Resource subj = rdfOutput.createURI(subject);
 //        URI pred = rdfOutput.createURI(outputPredicate);
 //        Value obj = rdfOutput.createLiteral(outputString); 
 //         
- 
-       
-        String triple= getSubjectInsertText(subj) + " "
-                        + getPredicateInsertText(pred) + " "
-                        + getObjectInsertText(obj) + " .";
+		String triple = getSubjectInsertText(subj) + " "
+				+ getPredicateInsertText(pred) + " "
+				+ getObjectInsertText(obj) + " .";
 
 //        String escapedrdfa = rdfa.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quote;").replaceAll("\\*", "&#42;").replaceAll("\\\\", "&#92;");
 //	writer.println("<" + decisionURI + "> sdo:hasHTMLContent \"\"\"" + escapedrdfa + "\"\"\"@cs .");
-                                
-                                return triple;
-    }
+		return triple;
+	}
 
-     
-     private static String getSubjectInsertText(Resource subject) throws IllegalArgumentException {
+	private static String getSubjectInsertText(Resource subject) throws IllegalArgumentException {
 
 		if (subject instanceof URI) {
 			return prepareURIresource((URI) subject);
@@ -100,7 +96,6 @@ public class AddTripleWorkaround {
 		}
 		//plain literal (return in """)
 		return label;
-
 	}
-    
+
 }

@@ -6,7 +6,6 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 
 import static org.junit.Assert.*;
 
@@ -40,6 +39,7 @@ public class ConfigurableBaseTest {
 	
 	/**
 	 * Test not null default configuration.
+	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
 	 */
 	@Test
 	public void notNullInit() throws ConfigException {
@@ -49,6 +49,7 @@ public class ConfigurableBaseTest {
 	
 	/**
 	 * When null is set the configuration should not change.
+	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
 	 */	
 	@Test
 	public void nullSet() throws ConfigException {

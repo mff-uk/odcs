@@ -13,6 +13,7 @@ public class DPUConfigObjectBase implements DPUConfigObject {
 
 	@Override
 	public boolean isValid() {
+		// as default implementation return true
 		return true;
 	}
 

@@ -37,11 +37,16 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 */
 	private final XStream xstream;
 
+	private final XStream xstreamUTF;
+	
 	public ConfigWrap(Class<C> configClass) {
 		this.configClass = configClass;
+		// stream for loading, not so strict
 		this.xstream = new XStream();
-		// set class loader
-		this.xstream.setClassLoader(configClass.getClassLoader());
+		this.xstream.setClassLoader(configClass.getClassLoader());		
+		// save always in utf8
+		this.xstreamUTF = new XStream(new DomDriver("UTF-8"));
+		this.xstreamUTF.setClassLoader(configClass.getClassLoader());
 	}
 
 	/**
@@ -101,21 +106,10 @@ public class ConfigWrap<C extends DPUConfigObject> {
 			return null;
 		}
 		byte[] result = null;
-		
-		// print debug info ..
-		// UNCOMMENCT ME !!
-		/*
-		java.util.Properties prop = System.getProperties();
-		for (Object key : prop.keySet()) {			
-			LOG.debug("Property '{}' = '{}' ", key, prop.get(key) );
-		}
-		*/
-		
 		// serialise object into byte[]
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {
-			// use XStream for serialisation	
-			XStream xStream = new XStream(new DomDriver("UTF-8")); // new DomDriver("UTF-8")
-			try (ObjectOutputStream objOut = xStream.createObjectOutputStream(
+			// use XStream for serialisation
+			try (ObjectOutputStream objOut = xstreamUTF.createObjectOutputStream(
 					byteOut)) {
 				objOut.writeObject(config);
 			}
