@@ -257,7 +257,6 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			stmt.setInt(5, dpuId);
 		} catch (NumberFormatException | SQLException ex) {
 			stmt.setNull(5, java.sql.Types.INTEGER);
-			LOG.error("Failed to set DPU_INSTANCE_KEY for log.", ex);
 		}
 
 		try {
