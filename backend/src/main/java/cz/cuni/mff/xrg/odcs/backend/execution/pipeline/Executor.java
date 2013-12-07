@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.execution.ExecutionResult;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
+import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
@@ -89,6 +90,12 @@ public class Executor implements Runnable {
 	@Autowired(required = false)
 	private List<PostExecutor> postExecutors;
 
+	/**
+	 * Logger.
+	 */
+	@Autowired
+	private SqlAppender logAppender;
+	
 	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
@@ -414,6 +421,8 @@ public class Executor implements Runnable {
 
 		// set end time
 		execution.setEnd(new Date());
+		// flush the logs
+		logAppender.flush();
 		// save the execution
 		try {
 			pipelineFacade.save(execution);
