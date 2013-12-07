@@ -421,8 +421,15 @@ public class Executor implements Runnable {
 
 		// set end time
 		execution.setEnd(new Date());
+
+		// publish information for the rest of the application
+		// that the execution finished ..
+		eventPublisher.publishEvent(new PipelineFinished(execution, this));
+		
+		
 		// flush the logs
 		logAppender.flush();
+
 		// save the execution
 		try {
 			pipelineFacade.save(execution);
@@ -430,9 +437,10 @@ public class Executor implements Runnable {
 			LOG.warn("Seems like someone deleted our pipeline run.", ex);
 		}
 
-		// publish information for the rest of the application
-		// that the execution finished ..
-		eventPublisher.publishEvent(new PipelineFinished(execution, this));
+		// we have to do above in this order as event create message and logs, 
+		// those we flush into database
+		// and then we change the state, which cause the frontneds refresh
+		// to top .. but before that all the data will be ready in the database
 
 		// unregister MDC execution filter
 		MdcExecutionLevelFilter.remove(executionId);
