@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbSchedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotification;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
@@ -21,6 +20,7 @@ import java.util.*;
  * Facade providing actions with plan.
  *
  * @author Jan Vojt
+ * @author Petyr
  */
 @Transactional(readOnly = true)
 public class ScheduleFacade {
@@ -85,6 +85,7 @@ public class ScheduleFacade {
 	 *		<li>if null return all followers.</li></ul>
 	 * @return schedules configured to follow given pipeline
 	 */
+	@Deprecated
 	public List<Schedule> getFollowers(Pipeline pipeline, Boolean enabled) {
 		return scheduleDao.getFollowers(pipeline, enabled);
 	}
@@ -95,6 +96,7 @@ public class ScheduleFacade {
 	 * @param pipeline
 	 * @return 
 	 */
+	@Deprecated
 	public List<Schedule> getFollowers(Pipeline pipeline) {
 		return getFollowers(pipeline, (Boolean) null);
 	}
@@ -177,17 +179,73 @@ public class ScheduleFacade {
 	}
 
 	/**
+	 * Check for all schedule that run after some execution and run them 
+	 * if all the the pre-runs has been executed. The call of this 
+	 * function may be expensive as it check for all runAfter based 
+	 * pipelines.
+	 * 
+	 */
+	@Transactional
+	public void executeFollowers() {
+		List<Schedule> toRun = scheduleDao.getActiveRunAfterBased();
+		// filter those that should not run
+		toRun = filterActiveRunAfter(toRun);
+		// and execute
+		for (Schedule schedule : toRun) {
+			execute(schedule);
+		}		
+	}
+	
+	/**
 	 * Executes all pipelines scheduled to follow given pipeline.
 	 * 
 	 * @param pipeline to follow
 	 */
 	@Transactional
 	public void executeFollowers(Pipeline pipeline) {
-
-		List<Schedule> toRun = getFollowers(pipeline, true);
-
+		List<Schedule> toRun = scheduleDao.getFollowers(pipeline, true);
+		// filter those that should not run
+		toRun = filterActiveRunAfter(toRun);
+		// and execute
 		for (Schedule schedule : toRun) {
 			execute(schedule);
 		}
 	}
+	
+	/**
+	 * Return schedules that are of run after type and that should be executed
+	 * as all after-pipelines already has already been executed.
+	 * 
+	 * @return 
+	 */
+	List<Schedule> filterActiveRunAfter(List<Schedule> candidates) {
+		List<Schedule> result = new LinkedList<>();
+		
+		for (Schedule schedule : candidates) {
+			List<Date> times = scheduleDao.getLastExecForRunAfter(schedule);
+			boolean execute = true;
+			for (Date item : times) {
+				if (item == null) {
+					// no sucesfull execution so far .. 
+					execute = false;
+					break;
+				}
+				if (item.before(schedule.getLastExecution())) {
+					// was executed before, but not atfer 
+					execute = false;
+					break;
+				}
+			}
+			
+			if (execute) {
+				// add to the result list
+				result.add(schedule);
+			} else {
+				// no execution
+			}			
+		}
+		
+		return result;
+	} 
+	
 }

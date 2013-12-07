@@ -10,9 +10,9 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import javax.annotation.PostConstruct;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,6 +32,12 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 	 */
 	@Autowired
 	private ScheduleFacade scheduleFacade;
+	
+	@PostConstruct
+	private void initialCheck() {
+		// do initial run-after check 
+		scheduleFacade.executeFollowers();
+	}
 	
 	/**
 	 * Run pipelines that should be executed after given pipeline.
@@ -62,7 +68,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 	 */
 	@Async
 	@Scheduled(fixedDelay = 30000) 
-	private synchronized void onTimeCheck() {
+	private synchronized void timeBasedCheck() {
 		LOG.trace("onTimeCheck started");
 		// check DB for pipelines based on time scheduling
 		Date now = new Date();
@@ -83,7 +89,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 		}
 		LOG.trace("onTimeCheck finished");
 	}	
-	
+		
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof PipelineFinished) {
