@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,5 +49,21 @@ public interface DbSchedule extends DbAccess<Schedule> {
 	 * @return list of schedules
 	 */	
 	public List<Schedule> getAllTimeBased();
+	
+	/**
+	 * Fetches active (enabled) {@link Schedule}s which are activated based on 
+	 * pipelines executions.
+	 * 
+	 * @return 
+	 */
+	public List<Schedule> getActiveRunAfterBased();
+	
+	/**
+	 * Return times of last executions (or null if there has been no successful 
+	 * execution) of run-after pipelines for runAfter base schedule.
+	 * @param schedule
+	 * @return 
+	 */
+	public List<Date> getLastExecForRunAfter(Schedule schedule);
 
 }
