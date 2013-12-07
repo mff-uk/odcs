@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.logback;
 
-import ch.qos.logback.classic.db.PooledConnectionSource;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
@@ -11,8 +10,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -33,7 +32,10 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		implements SqlAppender {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SqlAppenderImpl.class);
-	
+
+	@Autowired
+	protected AppConfig appConfig;
+
 	/**
 	 * Source of database connection.
 	 */
@@ -53,57 +55,51 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 * If true then the source support batch execution.
 	 */
 	protected boolean supportsBatchUpdates;
-	
-	@Autowired
-	protected AppConfig appConfig;
-	
+
 	/**
 	 * Return string that is used as insert query into logging table.
 	 *
 	 * @return
 	 */
-	protected String getInsertSQL() {
+	private String getInsertSQL() {
 		return "INSERT INTO logging"
 				+ " (logLevel, timestmp, logger, message, dpu, execution, stack_trace)"
 				+ " VALUES (?, ?, ? ,?, ?, ?, ?)";
 	}
 
 	/**
-	 * Fetch stored logs into database. It can be executed on user demand or by
-	 * spring periodically.
+	 * Return not null {@link Conenction}. If failed to get connection then
+	 * continue to try until success.
+	 * @return 
 	 */
-	@Override
-	@Async
-	@Scheduled(fixedDelay = 4300)
-	public synchronized void fetch() {
-		
-		if (!supportsBatchUpdates) {
-			// no batch no need to execute anything
-			return;
-		}
-		
-		synchronized (this) {
-			List<ILoggingEvent> swap = primaryList;
-			primaryList = secondaryList;
-			secondaryList = swap;
-		}
-
-		if (secondaryList.isEmpty()) {
-			return;
-		}
-
-		// TODO remove those informations
-		long start = (new Date()).getTime();
-		int count = secondaryList.size();
-				
-		// now just save all the data into database
+	private Connection getConnection() {
 		Connection connection = null;
-		try {
-			connection = connectionSource.getConnection();
-			connection.setAutoCommit(false);
+		while (connection == null) {
+			try {
+				connection = connectionSource.getConnection();
+				connection.setAutoCommit(false);
+			} catch(SQLException ex) {
+				// wait for some time an try it again .. 
+				LOG.error("Failed to get sql connection, next try in second.", ex);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException intExc) {
+					// ok, continue
+				}
+			}
+		}
+		return connection;
+	}
 
-			PreparedStatement stmt = connection.prepareStatement(getInsertSQL());
-			
+	/**
+	 * Store given logs into database.
+	 * @param connection
+	 * @param logs
+	 * @return True only if all logs has been saved into database.
+	 */
+	private boolean flushIntoDatabase(Connection connection, List<ILoggingEvent> logs) {
+		try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
+			// append all logs
 			for (ILoggingEvent item : secondaryList) {
 				bindStatement(item, stmt);
 				stmt.addBatch();
@@ -113,14 +109,99 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			stmt.close();
 			connection.commit();
 		} catch (Throwable sqle) {
+			// we failed, try it again .. later
+			addError("problem appending event", sqle);
+			// wait for some time
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex) {
+				// ok just try it again
+			}			
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Fetch stored logs into database. It can be executed on user demand or by
+	 * spring periodically.
+	 */
+	@Override
+	@Async
+	@Scheduled(fixedDelay = 4300)
+	public synchronized void flush() {
+
+		if (!supportsBatchUpdates) {
+			// no batches, the data are stored immediately
+			// we have nothing to do
+			return;
+		}
+
+		// switch the logs buffers
+		synchronized (this) {
+			List<ILoggingEvent> swap = primaryList;
+			primaryList = secondaryList;
+			secondaryList = swap;
+		}
+
+		// do we have some logs to store?
+		if (secondaryList.isEmpty()) {
+			return;
+		}
+
+		// if true then we try to save data into database
+		boolean nextTry = true;
+		while(nextTry) {
+			// get connection
+			Connection connection = getConnection();
+			// update next try based on result
+			// if the save failed, we try it again .. 
+			nextTry = !flushIntoDatabase(connection, secondaryList);
+			
+			// at the end close the connection
+			DBHelper.closeConnection(connection);
+		}
+		// the data has been saved, we can clear the buffer
+		secondaryList.clear();		
+	}
+
+	/**
+	 * Do immediate write of given log into database. If the database is down
+	 * then the log is not saved.
+	 *
+	 * @param eventObject
+	 */
+	private void appendImmediate(ILoggingEvent eventObject) {
+		Connection connection = null;
+
+		try {
+			connection = connectionSource.getConnection();
+			connection.setAutoCommit(false);
+		} catch (SQLException sqle) {
+			// for sure close the connection
+			DBHelper.closeConnection(connection);
+			// log
+			addError("failed to get sql connection", sqle);
+			return;
+		}
+
+		try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
+			// inserting an event and getting the result must be exclusive
+			synchronized (this) {
+				// we can do more subAppend at time .. 
+				bindStatement(eventObject, stmt);
+				// execute ..
+				stmt.executeUpdate();
+			}
+			// we no longer need the insertStatement
+			stmt.close();
+			// commit command
+			connection.commit();
+		} catch (Throwable sqle) {
 			addError("problem appending event", sqle);
 		} finally {
 			DBHelper.closeConnection(connection);
-			// and clear the list
-			secondaryList.clear();
 		}
-
-		LOG.info("Fetch done for {} logs in {} ms", count, (new Date()).getTime() - start);
 	}
 
 	@Override
@@ -130,10 +211,10 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		connectionSource = new PooledConnectionSource(appConfig);
 		connectionSource.setContext(this.getContext());
 		connectionSource.start();
-		
+
 		// get information about the source
 		supportsBatchUpdates = connectionSource.supportsBatchUpdates();
-		
+
 		started = true;
 	}
 
@@ -141,48 +222,16 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	public void append(ILoggingEvent eventObject) {
 
 		if (supportsBatchUpdates) {
-			// we can use batch ..
-			int primarySize;
+			// we can use batch .. so we just add the logs into 
+			// the queue
 			synchronized (this) {
 				primaryList.add(eventObject);
-				primarySize = primaryList.size();
 			}
-
-			if (primarySize > 50 && secondaryList.isEmpty()) {
-				fetch();
-			}
-			return;
-		}
-		
-		// else we have to do it one by one .. 
-		
-		Connection connection = null;
-		try {
-			connection = connectionSource.getConnection();
-			connection.setAutoCommit(false);
-
-			// prepare statement
-			PreparedStatement stmt= connection.prepareStatement(getInsertSQL());
-			
-			// inserting an event and getting the result must be exclusive
-			synchronized (this) {
-				// we can do more subAppend at time .. 
-				bindStatement(eventObject, stmt);
-				// execute ..
-				stmt.executeUpdate();
-			}
-
-			// we no longer need the insertStatement
-			stmt.close();
-			
-			connection.commit();
-		} catch (Throwable sqle) {
-			addError("problem appending event", sqle);
-		} finally {
-			DBHelper.closeConnection(connection);
+		} else {
+			appendImmediate(eventObject);
 		}
 	}
-	
+
 	/**
 	 * Bind the parameters to he insert statement.
 	 *
@@ -206,16 +255,18 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			final String dpuString = mdc.get(Log.MDC_DPU_INSTANCE_KEY_NAME);
 			final int dpuId = Integer.parseInt(dpuString);
 			stmt.setInt(5, dpuId);
-		} catch (Exception ex) {
+		} catch (NumberFormatException | SQLException ex) {
 			stmt.setNull(5, java.sql.Types.INTEGER);
+			LOG.error("Failed to set DPU_INSTANCE_KEY for log.", ex);
 		}
 
 		try {
 			final String execString = mdc.get(Log.MDC_EXECUTION_KEY_NAME);
 			final int execId = Integer.parseInt(execString);
 			stmt.setInt(6, execId);
-		} catch (Exception ex) {
+		} catch (NumberFormatException | SQLException ex) {
 			stmt.setNull(6, java.sql.Types.INTEGER);
+			LOG.error("Failed to set EXECUTION_KEY for log.", ex);
 		}
 
 		IThrowableProxy proxy = event.getThrowableProxy();
@@ -261,10 +312,4 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		}
 	}
 
-	/**
-	 * @param connectionSource The connectionSource to set.
-	 */
-//	public void setConnectionSource(ConnectionSource connectionSource) {
-//		this.connectionSource = connectionSource;
-//	}
 }

@@ -1,4 +1,4 @@
-package ch.qos.logback.classic.db;
+package cz.cuni.mff.xrg.odcs.backend.logback;
 
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
