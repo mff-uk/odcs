@@ -622,7 +622,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		long size = 0;
 
 		RepositoryConnection connection = null;
-
 		try {
 			connection = getConnection();
 
@@ -1177,10 +1176,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			try {
 				GraphQueryResult result = graphQuery.evaluate();
 
-				while (result.hasNext()) {
-					result.next();
-					size++;
-				}
+				Model model = QueryResults.asModel(result);
+				size = model.size();
 
 			} catch (QueryEvaluationException ex) {
 
