@@ -104,6 +104,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public void copyEventHandler(long id) {
 		Pipeline pipeline = getLightPipeline(id);
 		pipelineFacade.copyPipeline(pipeline);
+		Notification.show("Pipeline \""  + pipeline.getName() + "\" was successfully copied" ,
+				Notification.Type.HUMANIZED_MESSAGE);
 		refreshEventHandler();
 	}
 
