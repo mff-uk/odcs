@@ -467,11 +467,12 @@ public class Settings extends ViewComponent {
 
 		Label rowsLabel = new Label("Number of rows in tables:");
 		rows = new TextField();
+		
 		Integer tableRows = loggedUser.getTableRows() != null ? loggedUser
 				.getTableRows() : 20;
 		rows.setPropertyDataSource(new ObjectProperty<>(tableRows));
 		rows.addValidator(new IntegerRangeValidator(
-				"Invalid number of rows specified! Please enter value between 5 and 100.",
+				"Please enter value between 5 and 100.",
 				5, 100));
 		rows.setBuffered(true);
 		rows.setImmediate(true);
@@ -602,7 +603,7 @@ public class Settings extends ViewComponent {
 		try {
 			rows.validate();
 		} catch (Validator.InvalidValueException ex) {
-			Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+			Notification.show("Invalid number of rows specified! " + ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
 
@@ -623,7 +624,7 @@ public class Settings extends ViewComponent {
 		loggedUser.setTableRows(Integer.parseInt(rows.getValue()));
 		rows.commit();
 		userFacade.save(loggedUser);
-		Notification.show("E-mail settings were saved",
+		Notification.show("My account settings were successfully saved",
 				Notification.Type.HUMANIZED_MESSAGE);
 
 		if (shownTab.equals(accountButton)) {
