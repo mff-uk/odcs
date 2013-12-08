@@ -3,9 +3,9 @@ package cz.cuni.mff.xrg.odcs.rdf.impl;
 import java.util.Map;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
-import org.openrdf.model.impl.TreeModel;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryResults;
 
 /**
  * Extension of interface {@link GraphQueryResult} - add methods for creating
@@ -48,11 +48,7 @@ public class MyGraphQueryResult implements GraphQueryResult {
 
 	public Model asGraph() throws QueryEvaluationException {
 
-		Model resultGraph = new TreeModel();
-
-		while (result.hasNext()) {
-			resultGraph.add(result.next());
-		}
+		Model resultGraph = QueryResults.asModel(result);
 
 		return resultGraph;
 	}
