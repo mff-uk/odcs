@@ -207,17 +207,14 @@ message appeared. </p>
 Here we need to find the library (bundle) that will export those package for us.
 Unfortunately, such a new library may also need some Import-packages...</p>
 
-<p>Finding all the DPU's dependencies may be time consuming. You can use the PowerShell plugin (Windows), that will use 
+<p>Finding all the DPU's dependencies may be time consuming. You can use the <a href="bundle-deps.ps1">PowerShell plugin (Windows)</a>, that will use 
 dependency:copy-dependencies maven plugin to obtain the dependencies 
-and create bundles from them.  </p>
+and creates bundles from them (Linux script will come soon). </p>
 
-Just copy the plugin into the same directory where your pom.xml file is. Run the plugin 
-After the plugins ends .. in './libs' you find the output, the bundled dependencies. Such dependencies may be copied to <code>module.path/lib</code> and the system needs to be restarted. 
+Just copy the plugin into the same directory where your DPU's pom.xml file is. Run the plugin 
+After the plugins ends you will find in './libs' the output - the bundled dependencies. Such dependencies may be copied to <code>module.path/lib</code> and the system needs to be restarted. 
 
-The script can give you a good start .. but it will not solve everything, 
-some dependencies may be missing some may be useless: </p>
-
-
+Then you should try to load the DPU to ODCleanStore. If there is still problem with some dependencies, add them manually. </p>
 
 
 <h5>Further hints when adjusting list of imported packages</h5>
