@@ -18,6 +18,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -492,9 +494,17 @@ public class PipelineEdit extends ViewComponent {
 
 		// open scheduler dialog
 		if (!conflictDialog.isInitialized()) {
-			conflictDialog.init();
-					}
+			conflictDialog.init(pipeline);
+			conflictDialog.addCloseListener(new CloseListener() {
+				private static final long serialVersionUID = 1L;
 
+				@Override
+				public void windowClose(CloseEvent e) {
+					setupButtons(true);
+				}
+			});
+		}
+		
 		if (!UI.getCurrent().getWindows().contains(conflictDialog)) {
 			UI.getCurrent().addWindow(conflictDialog);
 		}
