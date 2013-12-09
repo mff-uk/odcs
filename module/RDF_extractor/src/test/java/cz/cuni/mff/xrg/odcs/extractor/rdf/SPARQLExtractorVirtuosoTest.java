@@ -15,15 +15,15 @@ import org.openrdf.rio.RDFFormat;
 import static org.junit.Assert.*;
 
 /**
- * Test funcionality extaction from SPARQL endpoint.
+ * Test funcionality extaction for Virtuoso from SPARQL endpoint.
  *
  * @author Jiri Tomes
  */
 @Category(IntegrationTest.class)
-public class SPARQLExtractorTest {
+public class SPARQLExtractorVirtuosoTest {
 
 	private final Logger logger = LoggerFactory.getLogger(
-			SPARQLExtractorTest.class);
+			SPARQLExtractorVirtuosoTest.class);
 
 	private static RDFDataUnit repository;
 
@@ -47,9 +47,43 @@ public class SPARQLExtractorTest {
 
 	}
 
+	@Before
+	public void cleanRepository() {
+		repository.cleanAllData();
+	}
+
 	@AfterClass
 	public static void deleteRDFDataUnit() {
 		repository.delete();
+	}
+
+	@Test
+	public void extractBigDataFromEndpoint() {
+
+		try {
+			URL endpointURL = new URL("http://internal.opendata.cz:8890/sparql");
+			String defaultGraphUri = "http://linked.opendata.cz/resource/dataset/seznam.gov.cz/ovm/list/notransform";
+			String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}";
+
+			long sizeBefore = repository.getTripleCount();
+
+			try {
+				SPARQLExtractor extractor = new SPARQLExtractor(repository);
+				extractor
+						.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
+						query);
+
+			} catch (RDFException e) {
+				fail(e.getMessage());
+			}
+
+			long sizeAfter = repository.getTripleCount();
+
+			assertTrue(sizeBefore < sizeAfter);
+
+		} catch (MalformedURLException ex) {
+			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+		}
 	}
 
 	@Test
@@ -58,7 +92,7 @@ public class SPARQLExtractorTest {
 		try {
 			URL endpointURL = new URL("http://dbpedia.org/sparql");
 			String defaultGraphUri = "http://dbpedia.org";
-			String query = "select * where {?s ?o ?p} LIMIT 50";
+			String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 50";
 
 			long sizeBefore = repository.getTripleCount();
 
@@ -90,7 +124,7 @@ public class SPARQLExtractorTest {
 		try {
 			URL endpoint = new URL(UPDATE_ENDPOINT.toString());
 			String defaultGraphUri = "";
-			String query = "select * where {?s ?o ?p} LIMIT 10";
+			String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 10";
 
 			RDFFormat format = RDFFormat.N3;
 
