@@ -57,5 +57,5 @@
 	<bean id="pipelineCanvas" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas" scope="prototype" />
     <bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype" />
     <bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline" scope="prototype" />
-    
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts"  />
 </beans>
