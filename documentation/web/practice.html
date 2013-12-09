@@ -140,9 +140,11 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 		&lt;embed.transitive&gt;false&lt;/embed.transitive&gt; to pom.xml of the DPU project into
 		&lt;properties&gt; element. As a result, the transitive dependencies will be incorporated to the generated bundle as direct dependencies and  these dependencies will not occur as dependencies to be resolved. 
 		</li> -->
-		<li>Add manually the transitive dependency into <code>pom.xml</code> of the DPU project as a new <code>&lt;dependency&gt;</code> element. As a result, the transitive dependencies will be incorporated to the generated bundle as direct dependencies and these dependencies will not occur as dependencies "to be resolved".</li>
-		<li>Create an extra bundle that would be loaded as a library and placed to <code>module.path/lib</code>, where <code>module.path</code> is the configuration option in <code>{home}/.odcs/config.properties</code>. Such bundle will provide the required packages. Such choice is useful when the dependencies are shared by more DPU bundles. See <a href="#bundleLibrary">this section</a> for details how to create such bundle with dependencies which may be used by more DPU modules. </li>
+		<li>Add manually the transitive dependency into <code>pom.xml</code> of the DPU project as a new <code>&lt;dependency&gt;</code> element. As a result, the transitive dependencies will be incorporated to the generated bundle as direct dependencies and these dependencies will not occur as dependencies "to be resolved". The scope of the dependencies is set to "compile"</li>
+		<li>Create an extra bundle that would be loaded as a library and placed to <code>module.path/lib</code>, where <code>module.path</code> is the configuration option in <code>{home}/.odcs/config.properties</code>. Such bundle will provide the required packages. Furthermore, you still have to put such dependency also to pom.xml (with the scope set to 'provided') as long as you need to use it in the code; using the scope "provided", such dependency is not copied to the resulting JAR file.  </li>
 	</ol>
+        
+        <p>The second approach is useful when the dependencies are shared and reused by more DPU bundles. See <a href="#bundleLibrary">this section</a> for details how to create such bundle with dependencies which may be used by more DPU modules.</p>
         
         <p>
 	It may be important to mention, that you can use 
@@ -152,7 +154,9 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 
 <span class="warn">Do not create JAR file without Maven. This may result into JAR archive that may not work properly because it is not a valid OSGi bundle. Therefore, if you already have an existing Java application which uses, e.g., a folder to store all libs, you have to introduce maven dependency properly, which references the local repository represented by that lib folder.</span>
 
-	
+
+
+
 	<h4 id="bundleLibrary">Create library bundle from existing jar files</h4>
 	This section is relevant only if you selected option 2 in the previous choice. 
         Here we describe how the OSGI bundle can be created from existing JAR
@@ -182,6 +186,43 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 			<i>Next</i>.</li>
 		<li> Then select project end finish the	export.</li>
 	</ul>	
+
+
+
+
+<h4>Tutorial how to automatically solve the dependency issues: </h4>
+<p>There is no exhausting guide which works in all cases. The main problem is gathering all the 
+right dependencies. We suppose you already created your DPU, package it as a bundle
+and then tried to import it  to ODCS. Then,  the "bundle XX cannot be resolved"
+message appeared. </p>
+
+<p>Fortunately, the message also provides you with the particular missing package.
+Here we need to find the library (bundle) that will export those package for us.
+Unfortunately, such a new library may also need some Import-packages...</p>
+
+<p>Finding all the DPU's dependencies may be time consuming. You can use the PowerShell plugin (Windows), that will use 
+dependency:copy-dependencies maven plugin to obtain the dependencies 
+and create bundles from them.  </p>
+
+Just copy the plugin into the same directory where your pom.xml file is. Run the plugin 
+After the plugins ends .. in './libs' you find the output, the bundled dependencies. Such dependencies may be copied to <code>module.path/lib</code> and the system needs to be restarted. 
+
+The script can give you a good start .. but it will not solve everything, 
+some dependencies may be missing some may be useless: </p>
+
+
+
+
+<h5>Further hints when adjusting list of imported packages</h5>
+<p>Some of the required packages may be system-packages. Delete them from the list of required packages</p>
+<p>How can the system package be recognized? See the package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages, if the package is not involved there. If yes, it is a system package. Other approach is to use IDE; for example, Netbeans shows dependencies for each project as 'Dependencies', 'Test Dependencies' and  'Java Dependencies'. Finding
+    your package in the last category made him a good candidate to be a system package.</p>
+<p>How can you remove the redundand dependency (dependency not needed)? Simply delete it from MANIFEST.MF</p>
+ <p>Why is maven-bundle-plugin a bit paranoid and the result of "mvn dependency:copy-dependencies" may not be ideal? Maven budnle plugin lists all used packages, finds the dependencies, again lists the packages (which are transitively included) and from those create the list of Import-package.</p>   
+
+
+
+	
 		
 	
 	<h2>Deploying the DPU bundle to ODCleanStore web application</h2>
