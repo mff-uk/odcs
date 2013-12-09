@@ -18,6 +18,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -34,6 +36,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
@@ -82,6 +85,7 @@ public class PipelineEdit extends ViewComponent {
 	Button buttonSave;
 	Button buttonSaveAndClose;
 	Button buttonCancel;
+	Button buttonConflicts;
 	private Button btnMinimize;
 	private Button btnExpand;
 	private boolean isExpanded = true;
@@ -95,6 +99,8 @@ public class PipelineEdit extends ViewComponent {
 	private RefreshManager refreshManager;
 	@Autowired
 	private PipelineHelper pipelineHelper;
+	@Autowired
+	private PipelineConflicts conflictDialog;
 
 	/**
 	 * Empty constructor.
@@ -422,6 +428,20 @@ public class PipelineEdit extends ViewComponent {
 		});
 		buttonBar.addComponent(buttonCommit);
 		
+		buttonConflicts = new Button("Conflicts");
+		buttonConflicts.setHeight("25px");
+		buttonConflicts.setWidth("150px");
+		buttonConflicts.setImmediate(true);
+		buttonConflicts.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				showConflictPipeline();
+
+			}
+		});
+		buttonBar.addComponent(buttonConflicts);
+		
 		buttonSave = new Button("Save");
 		buttonSave.setHeight("25px");
 		buttonSave.setWidth("150px");
@@ -468,6 +488,26 @@ public class PipelineEdit extends ViewComponent {
 		calculateCanvasDimensions(bounds);
 		
 		return mainLayout;
+	}
+	
+	private void showConflictPipeline() {
+
+		// open scheduler dialog
+		if (!conflictDialog.isInitialized()) {
+			conflictDialog.init(pipeline);
+			conflictDialog.addCloseListener(new CloseListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void windowClose(CloseEvent e) {
+					setupButtons(true);
+				}
+			});
+		}
+		
+		if (!UI.getCurrent().getWindows().contains(conflictDialog)) {
+			UI.getCurrent().addWindow(conflictDialog);
+		}
 	}
 	
 	private void setDetailState(boolean expand) {
