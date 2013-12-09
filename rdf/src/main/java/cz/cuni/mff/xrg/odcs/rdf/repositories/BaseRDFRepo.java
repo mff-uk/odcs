@@ -1397,6 +1397,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		} else {
 
+			logger.debug("WITH graph clause was not added, "
+					+ "because the query was: " + updateQuery);
+
 			regex = "(insert|delete)\\sdata\\s\\{";
 			pattern = Pattern.compile(regex);
 			matcher = pattern.matcher(updateQuery.toLowerCase());
@@ -1413,8 +1416,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				String myString = updateQuery.substring(start, end);
 				String graphName = myString.replace("{",
-						"in graph <" + graph.stringValue() + "> {");
+						"{ GRAPH <" + graph.stringValue() + "> {");
 
+				second = second.replaceFirst("}", "} }");
 				String newQuery = first + graphName + second;
 
 				return newQuery;
