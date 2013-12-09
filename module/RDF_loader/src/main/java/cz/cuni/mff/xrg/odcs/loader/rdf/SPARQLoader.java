@@ -544,9 +544,18 @@ public class SPARQLoader {
 					URI predicate = next.getPredicate();
 					Value object = next.getObject();
 
-					String appendLine = getSubjectInsertText(subject) + " "
-							+ getPredicateInsertText(predicate) + " "
-							+ getObjectInsertText(object) + " .";
+					StringBuilder appendLine = new StringBuilder();
+                                        appendLine.append(getSubjectInsertText(subject));
+                                        appendLine.append(" ");
+                                        appendLine.append(getPredicateInsertText(predicate));
+                                        appendLine.append(" ");
+                                        appendLine.append(getObjectInsertText(object));
+                                        appendLine.append(" .");
+                                                
+                                        
+//                                        = getSubjectInsertText(subject) + " "
+//							+ getPredicateInsertText(predicate) + " "
+//							+ getObjectInsertText(object) + " .";
 
 					builder.append(appendLine);
 
