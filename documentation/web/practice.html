@@ -173,11 +173,18 @@ on the folder where the <code>pom.xml</code> for the DPU is locate.
 			used as a libraries in existing projects. When you select all jar
 			files click on <i>Next</i> to continue.</li>
 		<li> Now you have to specify <i>Plug-in</i> <i>Name</i>,
-			<i>Id</i> and set check boxes according to image. Then click <i>Finish</i>
-			to create project.</li>
+			<i>Id</i> and set check boxes (See the list below). Then click <i>Finish</i>
+			to create project.
+                        <ul>
+                            <li>analyze library content and add dependencies - checked</li>
+                            <li>target platform : an OSGI framework, Equinox</li>
+                            <li>unzip the JAR archives into the project - unchecked</li>
+                            <li>update references to the JAR file - checked  </li>
+                        </ul>
+                        </li>
 		<li> Now you can inspect project settings. On the right side of 
 			<i>dependency</i> tab you can see list of Import packages. 
-			This list specify packages which the OSGi bundle requires to import. 
+			This list specify packages which the OSGI bundle requires to import. 
 			These packages must be provided by other bundles or host application
 			otherwise your new bundle cannot be resolved and used.</li>
 		<li> The last step is to export the bundle
@@ -215,10 +222,10 @@ some dependencies may be missing some may be useless: </p>
 
 <h5>Further hints when adjusting list of imported packages</h5>
 <p>Some of the required packages may be system-packages. Delete them from the list of required packages</p>
-<p>How can the system package be recognized? See the package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages, if the package is not involved there. If yes, it is a system package. Other approach is to use IDE; for example, Netbeans shows dependencies for each project as 'Dependencies', 'Test Dependencies' and  'Java Dependencies'. Finding
+<p>How can the system package be recognized? See the class cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGISystemPackages, if the package is not involved there. If yes, it is a system package. Other approach is to use IDE; for example, Netbeans shows dependencies for each project as 'Dependencies', 'Test Dependencies' and  'Java Dependencies'. Finding
     your package in the last category made him a good candidate to be a system package.</p>
 <p>How can you remove the redundand dependency (dependency not needed)? Simply delete it from MANIFEST.MF</p>
- <p>Why is maven-bundle-plugin a bit paranoid and the result of "mvn dependency:copy-dependencies" may not be ideal? Maven budnle plugin lists all used packages, finds the dependencies, again lists the packages (which are transitively included) and from those create the list of Import-package.</p>   
+ <p>Why is maven-bundle-plugin a bit paranoid and the result of "mvn dependency:copy-dependencies" may not be ideal? Maven bundle plugin lists all used packages, finds the dependencies, again lists the packages (which are transitively included) and from those create the list of Import-package.</p>   
 
 
 
