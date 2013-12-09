@@ -38,6 +38,17 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 	private Repository repository;
 
 	/**
+	 * Wrapped RDF connection.
+	 */
+	private RepositoryConnection connection;
+
+	/**
+	 * If trying to get connection was thrown {@link RepositoryException} or
+	 * not.
+	 */
+	private boolean hasConnectionInterupted = false;
+
+	/**
 	 * Number of retries before giving up on reconnecting with db. Zero means
 	 * immediate failure, -1 means never give up and keep trying.
 	 */
@@ -129,8 +140,15 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		}
 	}
 
-	@Override
-	public RepositoryConnection getConnection() {
+	private synchronized RepositoryConnection repoConnection() throws RepositoryException {
+		if (connection == null || !connection.isOpen() || hasConnectionInterupted) {
+			connection = getRepoConnection();
+			hasConnectionInterupted = false;
+		}
+		return connection;
+	}
+
+	private synchronized RepositoryConnection getRepoConnection() {
 		int attempts = 0;
 		while (true) {
 			try {
@@ -140,6 +158,11 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				handleRetries(attempts, ex);
 			}
 		}
+	}
+
+	@Override
+	public RepositoryConnection getConnection() throws RepositoryException {
+		return repoConnection();
 	}
 
 	@Override
@@ -219,21 +242,32 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 			LOG.error("Giving up on database after {} retries.", attempts);
 			throw new RDFRepositoryException(ex);
 		}
+
+		hasConnectionInterupted = true;
 	}
 
 	@Override
 	public Repository getRepository() {
-		return this;
+		return repository;
 	}
 
 	@Override
 	public void setParserConfig(ParserConfig config) {
-		this.getConnection().setParserConfig(config);
+		try {
+			repoConnection().setParserConfig(config);
+		} catch (RepositoryException e) {
+			LOG.debug(e.getMessage());
+		}
 	}
 
 	@Override
 	public ParserConfig getParserConfig() {
-		return this.getConnection().getParserConfig();
+		try {
+			return repoConnection().getParserConfig();
+		} catch (RepositoryException e) {
+			LOG.debug(e.getMessage());
+			return null;
+		}
 	}
 
 	@Override
@@ -242,7 +276,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().isOpen();
+				return repoConnection().isOpen();
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -255,7 +289,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().close();
+				this.repoConnection().close();
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -269,7 +303,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareQuery(ql, query);
+				return repoConnection().prepareQuery(ql, query);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -283,7 +317,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareQuery(ql, query, baseURI);
+				return repoConnection().prepareQuery(ql, query, baseURI);
 
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -297,7 +331,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareTupleQuery(ql, query);
+				return repoConnection().prepareTupleQuery(ql, query);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -311,7 +345,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection()
+				return repoConnection()
 						.prepareTupleQuery(ql, query, baseURI);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -325,7 +359,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareGraphQuery(ql, query);
+				return repoConnection().prepareGraphQuery(ql, query);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -339,7 +373,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection()
+				return repoConnection()
 						.prepareGraphQuery(ql, query, baseURI);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -354,7 +388,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareBooleanQuery(ql, query);
+				return repoConnection().prepareBooleanQuery(ql, query);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -368,7 +402,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareBooleanQuery(ql, query,
+				return repoConnection().prepareBooleanQuery(ql, query,
 						baseURI);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -382,7 +416,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareUpdate(ql, update);
+				return repoConnection().prepareUpdate(ql, update);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -396,7 +430,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().prepareUpdate(ql, update, baseURI);
+				return repoConnection().prepareUpdate(ql, update, baseURI);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -409,7 +443,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().getContextIDs();
+				return repoConnection().getContextIDs();
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -423,7 +457,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().getStatements(subj, pred, obj,
+				return repoConnection().getStatements(subj, pred, obj,
 						includeInferred, contexts);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -438,7 +472,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().hasStatement(subj, pred, obj,
+				return repoConnection().hasStatement(subj, pred, obj,
 						includeInferred, contexts);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -453,7 +487,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().hasStatement(st, includeInferred,
+				return repoConnection().hasStatement(st, includeInferred,
 						contexts);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -469,7 +503,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().exportStatements(subj, pred, obj,
+				repoConnection().exportStatements(subj, pred, obj,
 						includeInferred, handler, contexts);
 				return;
 			} catch (RepositoryException ex) {
@@ -484,7 +518,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().export(handler, contexts);
+				repoConnection().export(handler, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -498,7 +532,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().size(contexts);
+				return repoConnection().size(contexts);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -512,7 +546,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().isEmpty();
+				return repoConnection().isEmpty();
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -526,7 +560,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().setAutoCommit(autoCommit);
+				repoConnection().setAutoCommit(autoCommit);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -541,7 +575,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().isAutoCommit();
+				return repoConnection().isAutoCommit();
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -554,7 +588,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().isActive();
+				return repoConnection().isActive();
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -567,7 +601,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().begin();
+				repoConnection().begin();
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -581,7 +615,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().commit();
+				repoConnection().commit();
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -595,7 +629,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().rollback();
+				repoConnection().rollback();
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -610,7 +644,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(in, baseURI, dataFormat,
+				repoConnection().add(in, baseURI, dataFormat,
 						contexts);
 				return;
 			} catch (RepositoryException ex) {
@@ -626,7 +660,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(reader, baseURI, dataFormat, contexts);
+				repoConnection().add(reader, baseURI, dataFormat, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -656,7 +690,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(file, baseURI, dataFormat, contexts);
+				repoConnection().add(file, baseURI, dataFormat, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -671,7 +705,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(subject, predicate, object, contexts);
+				repoConnection().add(subject, predicate, object, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -685,7 +719,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(st, contexts);
+				repoConnection().add(st, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -701,7 +735,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(statements, contexts);
+				repoConnection().add(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -717,7 +751,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(statements, contexts);
+				repoConnection().add(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -732,7 +766,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection()
+				repoConnection()
 						.remove(subject, predicate, object, contexts);
 				return;
 			} catch (RepositoryException ex) {
@@ -747,7 +781,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().remove(st, contexts);
+				repoConnection().remove(st, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -763,7 +797,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().remove(statements, contexts);
+				repoConnection().remove(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -779,7 +813,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().remove(statements, contexts);
+				repoConnection().remove(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -793,7 +827,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().clear(contexts);
+				repoConnection().clear(contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -807,7 +841,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().getNamespaces();
+				return repoConnection().getNamespaces();
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -820,7 +854,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				return this.getConnection().getNamespace(prefix);
+				return repoConnection().getNamespace(prefix);
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
 			}
@@ -847,7 +881,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().removeNamespace(prefix);
+				repoConnection().removeNamespace(prefix);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);
@@ -861,7 +895,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().clearNamespaces();
+				repoConnection().clearNamespaces();
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex);

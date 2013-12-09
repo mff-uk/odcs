@@ -2242,7 +2242,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	}
 
 	@Override
-	public RepositoryConnection getConnection() throws RepositoryException {
+	public synchronized RepositoryConnection getConnection() throws RepositoryException {
 
 		if (!hasBrokenConnection) {
 			if (repoConnection != null && repoConnection.isOpen()) {
