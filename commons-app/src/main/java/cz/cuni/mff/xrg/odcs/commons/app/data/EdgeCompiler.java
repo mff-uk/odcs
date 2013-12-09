@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.data;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,6 +9,8 @@ import org.apache.commons.lang3.tuple.MutablePair;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DataUnitMergerInstructions;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import java.util.Arrays;
 
 /**
@@ -129,11 +133,12 @@ public final class EdgeCompiler {
 
     /**
      * Update script and remove invalid mappings.
+     *
      * @param edge
      * @param sources
      * @param targets
      * @return List of invalid mappings.
-     * 
+     *
      */
     public List<String> update(Edge edge, List<DataUnitDescription> sources, List<DataUnitDescription> targets) {
         List<String> invalidMappings = new LinkedList<>();
@@ -164,7 +169,7 @@ public final class EdgeCompiler {
                 invalidMappings.add(item);
             }
         }
-        if(!invalidMappings.isEmpty()) {
+        if (!invalidMappings.isEmpty()) {
             List<MutablePair<List<Integer>, Integer>> validMappings = decompile(script, sources, targets);
             edge.setScript(compile(validMappings, sources, targets));
         }
@@ -209,5 +214,37 @@ public final class EdgeCompiler {
             ++index;
         }
         return null;
+    }
+
+    public String checkMandatoryInputs(PipelineGraph graph, DPUExplorer explorer) {
+        String report = "";
+        for (Node node : graph.getNodes()) {
+            DPUInstanceRecord dpu = node.getDpuInstance();
+            List<Edge> edges = null;
+            List<DataUnitDescription> inputs = explorer.getInputs(dpu);
+            if (!inputs.isEmpty()) {
+                edges = graph.getEdgesTo(node);
+            }
+            for (DataUnitDescription input : inputs) {
+                boolean found = false;
+                if (input.getOptional()) {
+                    continue;
+                }
+                for (Edge e : edges) {
+                    if (e.getScript().contains("-> " + input.getName())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    report += String.format("\nDPU: %s, Input: %s", dpu.getName(), input.getName());
+                }
+            }
+        }
+        if (report.isEmpty()) {
+            return null;
+        } else {
+            return report;
+        }
     }
 }

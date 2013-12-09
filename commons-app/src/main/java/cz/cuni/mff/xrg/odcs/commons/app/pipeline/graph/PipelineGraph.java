@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.persistence.*;
 
@@ -399,4 +400,14 @@ public class PipelineGraph implements DataObject {
 	public Long getId() {
 		return id;
 	}
+
+    public List<Edge> getEdgesTo(Node node) {
+        List<Edge> edgesTo = new LinkedList<>();
+        for(Edge e : edges) {
+            if(e.getTo().equals(node)) {
+                edgesTo.add(e);
+            }
+        }
+        return edgesTo;
+    }
 }

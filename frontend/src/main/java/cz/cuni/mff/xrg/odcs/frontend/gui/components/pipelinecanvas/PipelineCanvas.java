@@ -9,17 +9,26 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
+import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUInstanceWrap;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
+import java.io.FileNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -44,11 +53,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private Stack<PipelineGraph> historyStack;
 	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
 	private boolean isModified = false;
-	
 	@Autowired
 	private DPUExplorer dpuExplorer;
 	@Autowired
 	private DPUFacade dpuFacade;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -182,10 +192,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	public void addConnection(int dpuFrom, int dpuTo) {
 		String result = graph.validateNewEdge(dpuFrom, dpuTo);
 		Node to = graph.getNodeById(dpuTo);
-		if(result == null) {
-		    if(dpuExplorer.getInputs(to.getDpuInstance()).isEmpty()) {
+		if (result == null) {
+			if (dpuExplorer.getInputs(to.getDpuInstance()).isEmpty()) {
 				result = "Target DPU has no inputs.";
-            }
+			}
 		}
 		if (result == null) {
 			int connectionId = graph.addEdge(dpuFrom, dpuTo);
@@ -221,11 +231,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				DPUDetail source = (DPUDetail)e.getSource();
-				if(source.getResult()) {
+				DPUDetail source = (DPUDetail) e.getSource();
+				if (source.getResult()) {
 					isModified = true;
 					fireEvent(new DetailClosedEvent(PipelineCanvas.this, Node.class));
 					getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
+					boolean isValid = checkDPUValidity(dpu);
+					getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
 				}
 			}
 		});
@@ -340,24 +352,40 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			getRpcProxy(PipelineCanvasClientRpc.class).clearStage();
 		}
 		this.graph = pg;
-
+		LOG.debug("DPU mandatory fields check starting");
 		for (Node node : graph.getNodes()) {
 			DPUInstanceRecord dpu = node.getDpuInstance();
+			//boolean isValid = checkDPUValidity(dpu);
 			getRpcProxy(PipelineCanvasClientRpc.class).addNode(node.hashCode(), dpu.getName(), dpu.getDescription(), dpu.getType().name(), node.getPosition().getX(), node.getPosition().getY(), false);
 		}
+		LOG.debug("DPU mandatory fields check completed");
 		EdgeCompiler edgeCompiler = new EdgeCompiler();
 		boolean hadInvalidMappings = false;
 		String message = "Pipeline contained invalid mapping(s). They were removed. List of removed mappings:\n";
 		for (Edge edge : graph.getEdges()) {
 			List<String> invalidMappings = edgeCompiler.update(edge, dpuExplorer.getOutputs(edge.getFrom().getDpuInstance()), dpuExplorer.getInputs(edge.getTo().getDpuInstance()));
-			if(!invalidMappings.isEmpty()) {
+			if (!invalidMappings.isEmpty()) {
 				hadInvalidMappings = true;
 				message += String.format("Edge from %s to %s: %s.\n", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
 			}
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
 		}
-		if(hadInvalidMappings) {
+		if (hadInvalidMappings) {
 			Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
+		}
+	}
+	
+	public void validateGraph() {
+		for(Node node : graph.getNodes()) {
+			DPUInstanceRecord dpu = node.getDpuInstance();
+			boolean isValid = checkDPUValidity(dpu);
+			getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
+		}
+		
+		EdgeCompiler edgeCompiler = new EdgeCompiler();
+		String result = edgeCompiler.checkMandatoryInputs(graph, dpuExplorer);
+		if(result != null) {
+			Notification.show("Mandatory input(s) missing!", result, Notification.Type.ERROR_MESSAGE);
 		}
 	}
 
@@ -431,5 +459,27 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private void showDebugWindow(int dpuId) throws IllegalArgumentException, NullPointerException {
 		Node debugNode = graph.getNodeById(dpuId);
 		fireEvent(new ShowDebugEvent(this, debugNode));
+	}
+
+	private boolean checkDPUValidity(DPUInstanceRecord dpu) {
+		LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
+		DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
+
+		// load instance
+		AbstractConfigDialog<DPUConfigObject> confDialog;
+		try {
+			confDialog = dpuInstance.getDialog();
+			if (confDialog == null) {
+			} else {
+				// configure
+				dpuInstance.configuredDialog();
+			}
+			dpuInstance.saveConfig();
+		} catch (ModuleException | FileNotFoundException | DPUWrapException | ConfigException e) {
+			LOG.debug("DPU mandatory fields check FAILED for DPU: " + dpu.getName());
+			return false;
+		}
+		LOG.debug("DPU mandatory fields check OK for DPU: " + dpu.getName());
+		return true;
 	}
 }

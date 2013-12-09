@@ -82,4 +82,12 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 *
 	 */
 	public void setStageMode(String newMode);
+	
+	/**
+	 * Sets DPU's validity.
+	 * @param id
+	 * @param isValid 
+	 * 
+	 */
+	public void setDpuValidity(int id, boolean isValid);
 }

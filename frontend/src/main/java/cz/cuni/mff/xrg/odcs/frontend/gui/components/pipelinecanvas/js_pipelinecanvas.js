@@ -95,6 +95,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		},
 		setStageMode: function(newMode) {
 			setStageMode(newMode);
+		},
+		setDpuValidity: function(id, isValid) {
+			setDpuValidity(id, isValid);
 		}
 	});
 
@@ -145,6 +148,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	var formatIcon = null;
 	var copyIcon = null;
 	var distributeIcon = null;
+	var invalidIcon = null;
 
 	var backgroundRect = null;
 
@@ -262,6 +266,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 		distributeIcon = new Image();
 		distributeIcon.src = basePath + "distribute.png";
+		
+		invalidIcon = new Image();
+		invalidIcon.src = basePath + "exclamation.png";
 
 		tooltip = createTooltip('Tooltip');
 		dpuLayer.add(tooltip);
@@ -336,6 +343,15 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		var dpu = dpus[id];
 		dpu.text.setText(name + '\n\n' + description);
 		dpu.rect.setHeight(dpu.text.getHeight());
+		dpuLayer.draw();
+	}
+	
+	function setDpuValidity(id, isValid) {
+		var dpu = dpus[id];
+		dpu.invalidIcon.setVisible(!isValid);
+		if(!isValid) {
+			dpu.invalidIcon.moveToTop();
+		}
 		dpuLayer.draw();
 	}
 
@@ -707,6 +723,18 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 //			callback: generateImageCallback(group)
 //		});
 
+		var invalidStatus = new Kinetic.Image({
+			x: 2,
+			y: 2,
+			image: invalidIcon,
+			width: 16,
+			height: 16,
+			startScale: 1,
+			rotationDeg: 0
+		});
+		invalidStatus.setVisible(false);
+		group.add(invalidStatus);
+
 		group.add(rect);
 		group.add(complexText);
 		group.add(actionBar);
@@ -843,6 +871,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		dpu.rect = rect;
 		dpu.text = complexText;
 		dpu.group = group;
+		dpu.invalidIcon = invalidStatus;
 		dpus[id] = dpu;
 		dpuLayer.add(group);
 		dpuLayer.draw();
@@ -1720,7 +1749,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 
 		$(".v-scrollable").scroll(function() {
-			$(".changingposition").css("top", Math.max(0, 300 - $(".v-scrollable").scrollTop()));
+			$(".changingposition").css("top", Math.max(0, $("#container").offset().top - $(".v-scrollable").scrollTop()));
+			$(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()));
+		});
+		
+		$(window).mousemove(function() {
+			$(".changingposition").css("top", Math.max(0, $("#container").offset().top - $(".v-scrollable").scrollTop()));
 		});
 	});
 
