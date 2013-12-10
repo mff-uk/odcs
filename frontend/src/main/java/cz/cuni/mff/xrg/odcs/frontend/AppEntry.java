@@ -17,6 +17,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
@@ -66,8 +67,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	@Autowired
     private AppConfig appConfiguration;
+	
 	@Autowired
 	private AuthenticationContext authCtx;
+	
+	@Autowired
+	private AuthenticationService authService;
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
@@ -166,7 +171,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 				// TODO adjust this once Login screen will be presenters 
 				//	to event.getNewView().equals(Login.class)
-				if (!(event.getNewView() instanceof Login) && !authCtx.isAuthenticated()) {
+				if (!(event.getNewView() instanceof Login)
+						&& !authCtx.isAuthenticated()
+						&& !authService.tryRememberMeLogin(RequestHolder.getRequest())) {
+					
 					storedNavigation = event.getViewName();
 					String parameters = event.getParameters();
 					if (parameters != null) {

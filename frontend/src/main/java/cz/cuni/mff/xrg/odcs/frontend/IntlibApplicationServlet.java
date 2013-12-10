@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinServletService;

@@ -25,7 +25,7 @@ public class IntlibAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
 	private static final Logger LOG = LoggerFactory.getLogger(IntlibAuthenticationProvider.class);
 	
-	private UserFacade userFacade;
+	private final UserFacade userFacade;
 
 	/**
 	 * Constructor sets up dependencies.

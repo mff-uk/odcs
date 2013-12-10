@@ -4,6 +4,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -15,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.AuthenticationService;
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
@@ -42,6 +43,7 @@ public class Login extends ViewComponent {
     private VerticalLayout layout;
     private TextField login;
     private PasswordField password;
+	private CheckBox rememberme;
 	private Label error;
 	
 	@Autowired
@@ -92,6 +94,9 @@ public class Login extends ViewComponent {
 
         password = new PasswordField("Password:");
         layout.addComponent(password);
+		
+		rememberme = new CheckBox("Remember me");
+		layout.addComponent(rememberme);
 
         Button loginButton = new Button("Login", new Button.ClickListener() {
             @Override
@@ -111,7 +116,7 @@ public class Login extends ViewComponent {
 
     private void login() {
         try {
-			authService.login(login.getValue(), password.getValue(), RequestHolder.getRequest());
+			authService.login(login.getValue(), password.getValue(), rememberme.getValue(), RequestHolder.getRequest());
 			
 			error.setVisible(false);
 

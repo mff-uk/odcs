@@ -15,7 +15,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.frontend.AuthenticationService;
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
