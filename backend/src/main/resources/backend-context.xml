@@ -41,7 +41,8 @@
 	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextDeleter" />
 	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger" />
 	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer" />
-	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSealer" />
+	<bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSaver" />
+        <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSealer" />
 		
 	<!-- pipeline executor -->
 	<bean id="pipelineExecutor"

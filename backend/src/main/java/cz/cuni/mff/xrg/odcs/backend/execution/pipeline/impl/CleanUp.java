@@ -16,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -50,7 +51,9 @@ class CleanUp implements PostExecutor {
 		// first release contexts
 		for (Context item : contexts.values()) {
 			if (execution.isDebugging()) {
-				// close and save data
+				// close the data unit
+				// the data has already been saved 
+				// in DPU post executor after the DPU's execution
 				contextFacade.close(item);
 			} else {
 				// delete data ..
@@ -64,25 +67,24 @@ class CleanUp implements PostExecutor {
 		File rootDir = new File(
 				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
 		
+		// get access to the infromation in execution context
+		ExecutionInfo info = new ExecutionInfo(execution.getContext());
 		
 		if (!execution.isDebugging()) {
-			deleteDebugDate(rootDir, execution);
+			// delete working directory
+			// the sub directories should be already deleted by DPU's
+			delete(rootDir, info.getWorkingPath());
 		}
 
 		// delete result, storage if empty
-		deleteIfEmpty(rootDir, execution.getContext().getResultPath());
-		deleteIfEmpty(rootDir, execution.getContext().getStoragePath());
+				
+		deleteIfEmpty(rootDir, info.getResultPath());
+		deleteIfEmpty(rootDir, info.getStoragePath());
 		// we delete the execution directory if it is empty
-		deleteIfEmpty(rootDir, execution.getContext().getRootPath());
+		deleteIfEmpty(rootDir, info.getRootPath());
 		
 		LOG.debug("CleanUp has been finished .. ");
 		return true;
-	}
-
-	private void deleteDebugDate(File executionRoot, PipelineExecution execution) {
-		// delete working directory
-		// the sub directories should be already deleted by DPU's
-		delete(executionRoot, execution.getContext().getWorkingPath());
 	}
 
 	/**

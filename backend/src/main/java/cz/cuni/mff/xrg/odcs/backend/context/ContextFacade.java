@@ -34,6 +34,9 @@ public class ContextFacade {
 	@Autowired
 	private ContextSealer sealer;
 
+	@Autowired
+	private ContextSaver saver;
+	
 	/**
 	 * If {@link Context} for given {@link DPUInstanceRecord} and
 	 * {@link ExecutionContextInfo} already exist then load it. Otherwise create
@@ -69,17 +72,21 @@ public class ContextFacade {
 	}
 
 	/**
-	 * Close given context does not delete the data (save the date(. To open the
-	 * context use
-	 * {@link #create(DPUInstanceRecord, ExecutionContextInfo, Date)} method
-	 * with proper arguments.
-	 *
-	 * @param context
+	 * Save the data of given context.
+	 * @param context 
+	 */
+	public void save(Context context) {
+		saver.save(context);
+	}
+	
+	/**
+	 * Close the given context no data are saved.
+	 * @param context 
 	 */
 	public void close(Context context) {
-		closer.close(context);
+		closer.close(context);		
 	}
-
+	
 	/**
 	 * Delete {@link Context} and it's {@link ExecutionContextInfo}.
 	 *

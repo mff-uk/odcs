@@ -12,15 +12,12 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 class ContextCloser {
 
 	/**
-	 * Save data from given context and close it. The context should not be
+	 * Closet the given context. The context should not be
 	 * called after is closed by this method.
 	 * 
 	 * @param context
 	 */
 	public void close(Context context) {
-		// save existing dataUnits
-		context.getInputsManager().save();
-		context.getOutputsManager().save();
 		// release data
 		release(context.getInputsManager());
 		release(context.getOutputsManager());
