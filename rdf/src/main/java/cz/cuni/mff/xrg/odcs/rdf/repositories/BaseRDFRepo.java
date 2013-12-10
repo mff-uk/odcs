@@ -1371,10 +1371,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	private String AddGraphToUpdateQuery(String updateQuery) {
 
-		if (repository instanceof SailRepository) {
-			return updateQuery;
-		}
-
 		String regex = "(insert|delete)\\s\\{";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(updateQuery.toLowerCase());
