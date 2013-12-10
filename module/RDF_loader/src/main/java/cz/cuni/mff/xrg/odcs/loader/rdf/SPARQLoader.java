@@ -455,33 +455,39 @@ public class SPARQLoader {
 			throws RDFException {
 		String countQuery = "SELECT (count(*) as ?count) WHERE {?x ?y ?z}";
 
-		InputStreamReader inputStreamReader = rdfDataUnit
-				.getEndpointStreamReader(
-				endpointURL, endpointGraph,
-				countQuery, RDFFormat.RDFXML);
-
 		long count = -1;
 
-		try (Scanner scanner = new Scanner(inputStreamReader)) {
+		try {
+			try (InputStreamReader inputStreamReader = rdfDataUnit
+					.getEndpointStreamReader(
+					endpointURL, endpointGraph,
+					countQuery, RDFFormat.RDFXML)) {
 
-			String regexp = ">[0-9]+<";
-			Pattern pattern = Pattern.compile(regexp);
-			boolean find = false;
+				Scanner scanner = new Scanner(inputStreamReader);
 
-			while (scanner.hasNext() & !find) {
-				String line = scanner.next();
-				Matcher matcher = pattern.matcher(line);
+				String regexp = ">[0-9]+<";
+				Pattern pattern = Pattern.compile(regexp);
+				boolean find = false;
 
-				if (matcher.find()) {
-					String number = line.substring(matcher.start() + 1, matcher
-							.end() - 1);
-					count = Long.parseLong(number);
-					find = true;
+				while (scanner.hasNext() & !find) {
+					String line = scanner.next();
+					Matcher matcher = pattern.matcher(line);
+
+					if (matcher.find()) {
+						String number = line.substring(matcher.start() + 1,
+								matcher
+								.end() - 1);
+						count = Long.parseLong(number);
+						find = true;
+
+					}
 
 				}
-
 			}
+		} catch (IOException e) {
+			throw new RDFException(e.getMessage(), e);
 		}
+
 
 		return count;
 
@@ -545,17 +551,13 @@ public class SPARQLoader {
 					Value object = next.getObject();
 
 					StringBuilder appendLine = new StringBuilder();
-                                        appendLine.append(getSubjectInsertText(subject));
-                                        appendLine.append(" ");
-                                        appendLine.append(getPredicateInsertText(predicate));
-                                        appendLine.append(" ");
-                                        appendLine.append(getObjectInsertText(object));
-                                        appendLine.append(" .");
-                                                
-                                        
-//                                        = getSubjectInsertText(subject) + " "
-//							+ getPredicateInsertText(predicate) + " "
-//							+ getObjectInsertText(object) + " .";
+
+					appendLine.append(getSubjectInsertText(subject));
+					appendLine.append(" ");
+					appendLine.append(getPredicateInsertText(predicate));
+					appendLine.append(" ");
+					appendLine.append(getObjectInsertText(object));
+					appendLine.append(" .");
 
 					builder.append(appendLine);
 
