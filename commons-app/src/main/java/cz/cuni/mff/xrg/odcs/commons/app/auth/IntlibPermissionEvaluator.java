@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.auth;
 
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -64,6 +65,10 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 						return true;
 					}
 					break;
+				case "save" :
+				case "delete" :
+					// Pipeline has special permissions
+					return sTarget instanceof Pipeline;
 			}
 		}
 		
