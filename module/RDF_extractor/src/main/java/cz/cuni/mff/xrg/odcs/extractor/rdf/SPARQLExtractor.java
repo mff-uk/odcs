@@ -282,6 +282,15 @@ public class SPARQLExtractor {
 		} catch (RDFHandlerException | RDFParseException ex) {
 			logger.error(ex.getMessage(), ex);
 			throw new RDFException(ex.getMessage(), ex);
+		} finally {
+			if (inputStreamReader != null) {
+				try {
+					inputStreamReader.close();
+				} catch (IOException ex) {
+					logger.error("InputStream reader was not closed: " + ex
+							.getMessage(), ex);
+				}
+			}
 		}
 
 	}
