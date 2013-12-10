@@ -495,8 +495,7 @@ public class SPARQLoader {
 
 	private GraphQueryResult getTriplesPart(String constructQuery) throws InvalidQueryException {
 		try {
-			RepositoryConnection connection = rdfDataUnit.getDataRepository()
-					.getConnection();
+			RepositoryConnection connection = rdfDataUnit.getConnection();
 
 			GraphQuery graphQuery = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL,
