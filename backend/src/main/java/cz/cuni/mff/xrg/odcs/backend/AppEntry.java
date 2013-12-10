@@ -183,7 +183,7 @@ public class AppEntry {
 			{
 				// triger for name changing	
 				triggeringPolicy = new SizeAndTimeBasedFNATP();
-				triggeringPolicy.setMaxFileSize("2KB");
+				triggeringPolicy.setMaxFileSize("10MB");
 				triggeringPolicy.setTimeBasedRollingPolicy(rollingPolicy);
 				rfAppender.setTriggeringPolicy(triggeringPolicy);
 			}			
