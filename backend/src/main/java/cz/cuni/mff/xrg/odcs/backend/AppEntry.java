@@ -3,14 +3,13 @@ package cz.cuni.mff.xrg.odcs.backend;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
 import cz.cuni.mff.xrg.odcs.backend.communication.Server;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
-import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppenderImpl;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -45,7 +44,7 @@ public class AppEntry {
 	/**
 	 * Logger class.
 	 */
-	private static Logger LOG = LoggerFactory.getLogger(AppEntry.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
 
 	/**
 	 * Path to the configuration file.
@@ -159,35 +158,51 @@ public class AppEntry {
 				System.exit(1);
 			}
 		}
-				
+		
+		// now prepare the logger 
+		
 		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
 		RollingFileAppender rfAppender = new RollingFileAppender();
 		rfAppender.setContext(loggerContext);
 		rfAppender.setFile(logDirectory + "backend.log");
 
-		TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
-		rollingPolicy.setContext(loggerContext);
-		// rolling policies need to know their parent
-		// it's one of the rare cases, where a sub-component knows about its parent
-		rollingPolicy.setParent(rfAppender);
-		rollingPolicy.setFileNamePattern(logDirectory + "backend.%d{yyyy-MM-dd}.%i.log");
-		rollingPolicy.setMaxHistory(logHistory);
-		rollingPolicy.start();
+		{
+			TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
+			rollingPolicy.setContext(loggerContext);
+			// rolling policies need to know their parent
+			// it's one of the rare cases, where a sub-component knows about its parent
+			rollingPolicy.setParent(rfAppender);
+			rollingPolicy.setFileNamePattern(logDirectory + "backend.%d{yyyy-MM-dd}.%i.log");
+			//rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(timeBasedTriggeringPolicy);
+			rollingPolicy.setMaxHistory(logHistory);
+			
+			rfAppender.setRollingPolicy(rollingPolicy);
+			
+			SizeAndTimeBasedFNATP triggeringPolicy;
+			{
+				// triger for name changing	
+				triggeringPolicy = new SizeAndTimeBasedFNATP();
+				triggeringPolicy.setMaxFileSize("2KB");
+				triggeringPolicy.setTimeBasedRollingPolicy(rollingPolicy);
+				rfAppender.setTriggeringPolicy(triggeringPolicy);
+			}			
 
-		SizeBasedTriggeringPolicy triggeringPolicy = new ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy();
-		triggeringPolicy.setMaxFileSize("10MB");
-		triggeringPolicy.start();
+			rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(triggeringPolicy);
+			rollingPolicy.start();
 
+			{
+				// we need TimeBasedRollingPolicy to have the 
+				// FileNamePattern pattern initialized which is done in rollingPolicy.start();
+				triggeringPolicy.start();	
+			}
+		}	
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setContext(loggerContext);
 		encoder.setPattern("%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{50} - %msg%n");
-		encoder.start();
-
 		rfAppender.setEncoder(encoder);
-		rfAppender.setRollingPolicy(rollingPolicy);
-		rfAppender.setTriggeringPolicy(triggeringPolicy);
-
+		encoder.start();		
+				
 		rfAppender.start();
 
 		// we have the appender, now we need to attach it
