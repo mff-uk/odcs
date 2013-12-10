@@ -561,7 +561,7 @@ public class LocalRDFRepoTest {
 		try {
 			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
 		} catch (RDFException e) {
-			//*VIRTUOSO*/fail(e.getMessage());
+			fail(e.getMessage());
 		}
 	}
 
