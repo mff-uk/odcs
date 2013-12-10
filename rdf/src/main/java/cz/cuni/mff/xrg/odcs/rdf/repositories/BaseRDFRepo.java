@@ -1442,8 +1442,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		String deleteQuery = String.format("CLEAR GRAPH <%s>", endpointGraph);
 
-		InputStreamReader inputStreamReader = getEndpointStreamReader(
-				endpointURL, "", deleteQuery, RDFFormat.RDFXML);
+		try {
+			try (InputStreamReader inputStreamReader = getEndpointStreamReader(
+					endpointURL, "", deleteQuery, RDFFormat.RDFXML)) {
+			}
+		} catch (IOException e) {
+			logger.error("InputStreamReader was not closed" + e.getMessage(), e);
+		}
+
 
 	}
 
