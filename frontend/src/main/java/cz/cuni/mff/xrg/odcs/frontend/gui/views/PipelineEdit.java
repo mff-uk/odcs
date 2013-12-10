@@ -494,7 +494,7 @@ public class PipelineEdit extends ViewComponent {
 
 		// open scheduler dialog
 		if (!conflictDialog.isInitialized()) {
-			conflictDialog.init(pipeline);
+			conflictDialog.init();
 			conflictDialog.addCloseListener(new CloseListener() {
 				private static final long serialVersionUID = 1L;
 
@@ -504,6 +504,9 @@ public class PipelineEdit extends ViewComponent {
 				}
 			});
 		}
+		
+		// in every case set the data
+		conflictDialog.setData(pipeline);
 		
 		if (!UI.getCurrent().getWindows().contains(conflictDialog)) {
 			UI.getCurrent().addWindow(conflictDialog);
