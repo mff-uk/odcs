@@ -1369,7 +1369,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return dataSet;
 	}
 
-	private String AddGraphToUpdateQuery(String updateQuery) {
+	public String AddGraphToUpdateQuery(String updateQuery) {
 
 		String regex = "(insert|delete)\\s\\{";
 		Pattern pattern = Pattern.compile(regex);
