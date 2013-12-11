@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,6 @@ public class InMemorySource <T extends DataObject> implements ContainerSource<T>
 		// load new data
 		final List<T> newData = 
 				source.executeList((DbQuery<T>)source.createQueryBuilder().getQuery());
-		LOG.info("new data size: {}", newData.size());
 		loadData(newData);
 	}
 	
@@ -71,7 +71,33 @@ public class InMemorySource <T extends DataObject> implements ContainerSource<T>
 			data.put(item.getId(), item);
 			ids.add(item.getId());
 		}
-		LOG.info("ids size: {}", ids.size());
+		// sort, so we get same order based on id every time
+		Collections.sort(ids);
+	}
+
+	/**
+	 * Add given object into the source.
+	 * @param object 
+	 */
+	public void add(T object) {
+		if (data.containsKey(object.getId())) {
+			// already here ..
+		} else {
+			data.put(object.getId(), object);
+			// add to ids and sort them, so we get the same
+			// id's every time
+			ids.add(object.getId());
+			Collections.sort(ids);
+		}
+	}
+	
+	/**
+	 * Remove object of given id.
+	 * @param id 
+	 */
+	public void remove(Long id) {
+		ids.remove(id);
+		data.remove(id);
 	}	
 	
 	@Override
