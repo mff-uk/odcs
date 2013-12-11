@@ -58,6 +58,9 @@
     <bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype" />
     <bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline" scope="prototype" />
     
-    
+    <!-- dialogs -->
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype" />
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
+    <!-- TODO: we can use special package and factory class -->
+    
 </beans>

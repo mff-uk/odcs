@@ -51,6 +51,7 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -101,6 +102,15 @@ public class PipelineEdit extends ViewComponent {
 	private PipelineHelper pipelineHelper;
 	@Autowired
 	private PipelineConflicts conflictDialog;
+	
+	/**
+	 * Access to the application context in order to provide possiblity 
+	 * to create dialogs.
+	 * TODO: This is give us more power then we need, we should use
+	 * some dialog factory instead.
+	 */
+	@Autowired
+	private ApplicationContext context;
 
 	/**
 	 * Empty constructor.
@@ -711,9 +721,9 @@ public class PipelineEdit extends ViewComponent {
 			return;
 		}
 		final DPUInstanceRecord instance = debugNode.getDpuInstance();
-		final DebuggingView debug = new DebuggingView();
-		debug.initialize(pExec, instance, true, true);
-		
+		final DebuggingView debug = context.getBean(DebuggingView.class);
+				
+		debug.initialize(pExec, instance, true, true);		
 		debug.setExecution(pExec, instance);
 		
 		final Window debugWindow = new Window("Debug window");
