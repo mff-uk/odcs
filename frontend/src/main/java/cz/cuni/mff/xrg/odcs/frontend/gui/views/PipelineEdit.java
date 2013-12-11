@@ -205,7 +205,7 @@ public class PipelineEdit extends ViewComponent {
 					return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
 				} else if (c instanceof HorizontalLayout) {
 					if (c.equals(buttonBar)) {
-						return "position: fixed; bottom: 20px; left: 20px; height: 30px; background: #eee; padding: 10px;";
+						return "position: fixed; bottom: 17px; left: 20px; background: #eee; padding: 3px";
 					} else {
 						return "position: fixed; right: 20px; top: 300px;";
 					}
@@ -395,6 +395,7 @@ public class PipelineEdit extends ViewComponent {
 		buttonRevert.setHeight("25px");
 		buttonRevert.setWidth("150px");
 		buttonRevert.setEnabled(false);
+		buttonRevert.setVisible(false);
 		buttonRevert.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -414,20 +415,6 @@ public class PipelineEdit extends ViewComponent {
 		});
 		buttonBar.addComponent(buttonValidate);
 		
-		
-		Button buttonCommit = new Button("Save & Commit");
-		buttonCommit.setHeight("25px");
-		buttonCommit.setWidth("150px");
-		buttonCommit.setEnabled(false);
-		buttonCommit.addClickListener(new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// save current pipeline
-				savePipeline("none");
-			}
-		});
-		buttonBar.addComponent(buttonCommit);
-		
 		buttonConflicts = new Button("Conflicts");
 		buttonConflicts.setHeight("25px");
 		buttonConflicts.setWidth("150px");
@@ -441,6 +428,20 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonConflicts);
+		
+		Button buttonCommit = new Button("Save & Commit");
+		buttonCommit.setHeight("25px");
+		buttonCommit.setWidth("150px");
+		buttonCommit.setEnabled(false);
+		buttonCommit.setVisible(false);
+		buttonCommit.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipeline("none");
+			}
+		});
+		buttonBar.addComponent(buttonCommit);
 		
 		buttonSave = new Button("Save");
 		buttonSave.setHeight("25px");

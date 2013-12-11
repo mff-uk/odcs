@@ -1743,19 +1743,24 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	}
 
 	jQuery(document).ready(function() {
+		$(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
+		
 		$("#container").mousemove(function(e) {
 			lastPositionX = e.pageX;
 			lastPositionY = e.pageY;
 		});
 
 		$(".v-scrollable").scroll(function() {
-			$(".changingposition").css("top", Math.max(0, $("#container").offset().top - $(".v-scrollable").scrollTop()));
-			$(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()));
+			$(".changingposition").css("top", Math.max(0, $("#container").offset().top));
 		});
 		
 		$(window).mousemove(function() {
-			$(".changingposition").css("top", Math.max(0, $("#container").offset().top - $(".v-scrollable").scrollTop()));
+			$(".changingposition").css("top", Math.max(0, $("#container").offset().top));
 		});
+		
+		$(window).resize(function(){
+            $(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
+        });
 	});
 
 };
