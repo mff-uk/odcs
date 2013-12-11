@@ -37,9 +37,7 @@
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
     <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
     <bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor" />
-	
-    <bean id="debugView" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
-        
+       
     <!-- tranlator for vaadin's filters -->
     <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator" />
     
