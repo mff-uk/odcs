@@ -19,6 +19,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.GraphIterator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
@@ -45,33 +48,24 @@ import org.tepi.filtertable.datefilter.DateInterval;
 public class LogTable extends CustomComponent {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
-	
 	private VerticalLayout mainLayout;
-
 	private IntlibPagedTable table;
-
 	private PipelineExecution execution;
-
 	private FilterGenerator filterGenerator;
-
 	private LogMessageDetail detail = null;
-
 	/**
-	 * Access to data for retrieving detail log information.
-	 * TODO replace with ContainerSource
+	 * Access to data for retrieving detail log information. TODO replace with
+	 * ContainerSource
 	 */
 	private final CachedSource<Log> dataSouce;
-	
 	private final ReadOnlyContainer<Log> container;
-
 	/**
 	 * Contains names of {@link DPUInstanceRecord}s. Used as a cache for
 	 * generated column.
 	 */
 	private final Map<Long, String> dpuNames = new HashMap<>();
-
 	private final LogFacade logFacade;
-	
+
 	/**
 	 * Default constructor.
 	 *
@@ -81,9 +75,9 @@ public class LogTable extends CustomComponent {
 		this.dataSouce = dataSouce;
 		this.container = new ReadOnlyContainer<>(dataSouce);
 		this.logFacade = logFacade;
-		
+
 		// build layout
-		buildLayout(pageLenght);		
+		buildLayout(pageLenght);
 	}
 
 	/**
@@ -101,7 +95,7 @@ public class LogTable extends CustomComponent {
 			public void itemClick(ItemClickEvent event) {
 				if (!table.isSelected(event.getItemId())) {
 					ValueItem item = (ValueItem) event.getItem();
-					
+
 					final long logId = item.getId();
 					Log log = dataSouce.getObject(logId);
 					showLogDetail(log);
@@ -145,7 +139,7 @@ public class LogTable extends CustomComponent {
 		table.setSortEnabled(false);
 		table.setFilterBarVisible(true);
 		table.setPageLength(pageLenght);
-		
+
 		// add to the main layout
 		mainLayout.addComponent(table);
 		mainLayout.addComponent(table.createControls());
@@ -181,12 +175,7 @@ public class LogTable extends CustomComponent {
 
 	}
 
-	/**
-	 * Set active DPU for which the logs are shown. Also do the site refresh.
-	 * 
-	 * @param dpu 
-	 */
-	public void setDpu(DPUInstanceRecord dpu) {
+	private ComboBox refreshDpuSelector() {
 		// get DPU selector
 		ComboBox dpuSelector = (ComboBox) table.getFilterField("dpu");
 		// refresh it's content
@@ -194,27 +183,61 @@ public class LogTable extends CustomComponent {
 
 		if (execution == null) {
 			// no execution set .. 
-			return;
+			return null;
 		}
 
-		ExecutionContextInfo ctx = execution.getContextReadOnly();
-		if (ctx != null) {
-			for (DPUInstanceRecord item : ctx.getDPUIndexes()) {
+		if (isRunning(execution)) {
+
+			Node debugNode = execution.getDebugNode();
+			DependencyGraph dependencyGraph = debugNode == null ? new DependencyGraph(execution.getPipeline().getGraph()) : new DependencyGraph(execution.getPipeline().getGraph(), debugNode);
+			GraphIterator iterator = dependencyGraph.iterator();
+			while (iterator.hasNext()) {
+				DPUInstanceRecord item = iterator.next().getDpuInstance();
 				if (!dpuSelector.containsId(item)) {
 					dpuSelector.addItem(item);
 				}
 			}
-			// if the curent DPU is presented set is as active
-			if (dpu != null && dpuSelector.containsId(dpu)) {
-				dpuSelector.select(dpu);
+		} else {
+
+			ExecutionContextInfo ctx = execution.getContextReadOnly();
+			if (ctx != null) {
+				for (DPUInstanceRecord item : ctx.getDPUIndexes()) {
+					if (!dpuSelector.containsId(item)) {
+						dpuSelector.addItem(item);
+					}
+				}
 			}
 		}
+		return dpuSelector;
+	}
+
+	/**
+	 * Set active DPU for which the logs are shown. Also do the site refresh.
+	 *
+	 * @param dpu
+	 */
+	public void setDpu(DPUInstanceRecord dpu) {
+
+		ComboBox dpuSelector = refreshDpuSelector();
+		if(dpuSelector == null) {
+			return;
+		}
+		// if the curent DPU is presented set is as active
+		if (dpu != null && dpuSelector.containsId(dpu)) {
+			dpuSelector.select(dpu);
+		}
+	}
+
+	private boolean isRunning(PipelineExecution execution) {
+		PipelineExecutionStatus status = execution.getStatus();
+		return status == PipelineExecutionStatus.RUNNING || status == PipelineExecutionStatus.CANCELLING || status == PipelineExecutionStatus.QUEUED;
 	}
 
 	/**
 	 * Set execution and DPU to show logs for, also reload the data.
+	 *
 	 * @param exec
-	 * @param dpuInstance 
+	 * @param dpuInstance
 	 */
 	public void setExecution(PipelineExecution exec, DPUInstanceRecord dpuInstance) {
 		this.execution = exec;
@@ -234,15 +257,17 @@ public class LogTable extends CustomComponent {
 		// set DPU
 		setDpu(dpuInstance);
 	}
-	
+
 	/**
 	 * Reload data from source, do not refresh the source it self!!
 	 *
 	 * @return
 	 */
-	public boolean refresh() {
+	public boolean refresh(PipelineExecution exec) {
+		this.execution = exec;
+		refreshDpuSelector();
 		int lastPage = table.getTotalAmountOfPages();
-		if(table.getCurrentPage() == lastPage) {
+		if (table.getCurrentPage() == lastPage) {
 			container.refresh();
 		} else {
 			table.setCurrentPage(lastPage);
@@ -339,8 +364,6 @@ public class LogTable extends CustomComponent {
 			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
 				return null;
 			}
-
 		};
 	}
-
 }

@@ -177,7 +177,7 @@ public class DebuggingView extends CustomComponent {
 					// we set active dpu
 					logTable.setDpu(debugDpu);
 					// and we do refresh of table
-					logTable.refresh();
+					logTable.refresh(pipelineExec);
 					// and finally change the tab
 					tabs.setSelectedTab(logsTab);
 				}
@@ -238,7 +238,7 @@ public class DebuggingView extends CustomComponent {
 			logSource.invalidate();
 			msgSource.invalidate();
 			// refresh tables
-			logTable.refresh();
+			logTable.refresh(pipelineExec);
 			msgTable.refresh();
 		}
 		LOG.trace("Tables refresh done");
