@@ -1,13 +1,18 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
@@ -40,13 +45,11 @@ public class EdgeDetail extends Window {
 	private List<DataUnitDescription> outputUnits;
 	private List<DataUnitDescription> inputUnits;
 	private List<MutablePair<List<Integer>, Integer>> mappings;
-	private ListSelect outputSelect;
-	private ListSelect inputSelect;
+	private Table outputSelect;
+	private Table inputSelect;
 	private ListSelect mappingsSelect;
 	private HashMap<String, MutablePair<List<Integer>, Integer>> map;
-	
 	private DPUExplorer explorer;
-	
 	/**
 	 * Class for working with edge's script.
 	 */
@@ -72,33 +75,52 @@ public class EdgeDetail extends Window {
 		GridLayout edgeSettingsLayout = new GridLayout(3, 10);
 		edgeSettingsLayout.setSpacing(true);
 
-		outputSelect = new ListSelect("Output data units of the source DPU:");
+		outputSelect = new Table("Output data units of the source DPU:");
+		outputSelect.setSelectable(true);
 		outputSelect.setMultiSelect(true);
 		outputSelect.setNewItemsAllowed(false);
 		outputSelect.setWidth(250, Unit.PIXELS);
 		outputSelect.setImmediate(true);
-		outputSelect.setRows(10);
+		outputSelect.setPageLength(8);
+		outputSelect.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
 		outputUnits = explorer.getOutputs(edge.getFrom().getDpuInstance());
+		outputSelect.setContainerDataSource(getTableData(outputUnits));
+		outputSelect.setVisibleColumns("name");
 
-		for (DataUnitDescription unit : outputUnits) {
-			outputSelect.addItem(unit);
-		}
 		edgeSettingsLayout.addComponent(outputSelect, 0, 0, 0, 4);
 
+		ItemDescriptionGenerator tooltipGenerator = new ItemDescriptionGenerator() {
+			@Override
+			public String generateDescription(Component source, Object itemId,
+					Object propertyId) {
+				if (propertyId == null) {
+					return null;
+				} else if (propertyId == "name" && itemId.getClass() == DataUnitDescription.class) {
+					DataUnitDescription dataUnit = (DataUnitDescription) itemId;
+					return dataUnit.getDescription();
+				}
+				return null;
+			}
+		};
 
-		inputSelect = new ListSelect("Input data units of the target DPU:");
-		inputSelect.setMultiSelect(false);
+		outputSelect.setItemDescriptionGenerator(tooltipGenerator);
+
+
+		inputSelect = new Table("Input data units of the target DPU:");
+		inputSelect.setSelectable(true);
 		inputSelect.setWidth(250, Unit.PIXELS);
 		inputSelect.setNewItemsAllowed(false);
 		inputSelect.setNullSelectionAllowed(false);
 		inputSelect.setImmediate(true);
-		inputSelect.setRows(10);
-		
+		inputSelect.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+		inputSelect.setPageLength(8);
+
 		inputUnits = explorer.getInputs(edge.getTo().getDpuInstance());  //edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
 
-		for (DataUnitDescription unit : inputUnits) {
-			inputSelect.addItem(unit);
-		}
+		inputSelect.setContainerDataSource(getTableData(inputUnits));
+		inputSelect.setVisibleColumns("name");
+		inputSelect.setItemDescriptionGenerator(tooltipGenerator);
+
 		edgeSettingsLayout.addComponent(inputSelect, 1, 0, 1, 4);
 		Button mapButton = new Button("Map", new Button.ClickListener() {
 			@Override
@@ -117,13 +139,16 @@ public class EdgeDetail extends Window {
 					return;
 				}
 
-				List<Integer> left = new ArrayList<>(outputs.size());
 				for (DataUnitDescription output : outputs) {
+					List<Integer> left = new ArrayList<>(1);
 					left.add(outputUnits.indexOf(output));
-				}
-				MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
-				if (addMappingToList(mapping)) {
-					mappings.add(mapping);
+
+					MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
+					if (addMappingToList(mapping)) {
+						mappings.add(mapping);
+					} else {
+						Notification.show("Selected mapping already exists!", Notification.Type.WARNING_MESSAGE);
+					}
 				}
 			}
 		});
@@ -234,8 +259,7 @@ public class EdgeDetail extends Window {
 		if (!validate()) {
 			return false;
 		}
-		String script =
-				edgeCompiler.compile(mappings, outputUnits, inputUnits);
+		String script = edgeCompiler.compile(mappings, outputUnits, inputUnits);
 		edge.setScript(script);
 		return true;
 	}
@@ -248,6 +272,14 @@ public class EdgeDetail extends Window {
 //			return false;
 //		}
 		return true;
+	}
+
+	private Container getTableData(List<DataUnitDescription> data) {
+
+		BeanItemContainer container = new BeanItemContainer(DataUnitDescription.class);
+		container.addAll(data);
+
+		return container;
 	}
 
 	private boolean addMappingToList(MutablePair<List<Integer>, Integer> mapping) throws UnsupportedOperationException {
