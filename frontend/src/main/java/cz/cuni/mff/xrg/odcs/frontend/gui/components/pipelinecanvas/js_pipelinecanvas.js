@@ -1755,11 +1755,19 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 		
 		$(window).mousemove(function() {
-			$(".changingposition").css("top", Math.max(0, $("#container").offset().top));
+			var tree = $(".changingposition");
+			if(tree.length === 0) {
+				return;
+			}
+			tree.css("top", Math.max(0, $("#container").offset().top));
 		});
 		
 		$(window).resize(function(){
-            $(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
+			var tree = $(".changingposition");
+			if(tree.length === 0) {
+				return;
+			}
+           tree.css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
         });
 	});
 
