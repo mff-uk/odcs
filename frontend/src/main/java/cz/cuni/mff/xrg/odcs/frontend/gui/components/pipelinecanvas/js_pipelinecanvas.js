@@ -733,9 +733,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			rotationDeg: 0
 		});
 		invalidStatus.setVisible(false);
-		group.add(invalidStatus);
 
 		group.add(rect);
+		group.add(invalidStatus);
 		group.add(complexText);
 		group.add(actionBar);
 
