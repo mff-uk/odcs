@@ -1,9 +1,11 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
@@ -38,8 +40,11 @@ public class SPARQLExtractor {
 
 	private RDFDataUnit dataUnit;
 
-	public SPARQLExtractor(RDFDataUnit dataUnit) {
+	private DPUContext context;
+
+	public SPARQLExtractor(RDFDataUnit dataUnit, DPUContext context) {
 		this.dataUnit = dataUnit;
+		this.context = context;
 	}
 
 	/**
@@ -195,11 +200,15 @@ public class SPARQLExtractor {
 			Authentificator.authenticate(hostName, password);
 
 			for (int i = 0; i < graphSize; i++) {
+				if (context.canceled()) {
+					break;
+				} else {
+					final String endpointGraph = endpointGraphsURI.get(i);
 
-				final String endpointGraph = endpointGraphsURI.get(i);
-
-				extractDataFromEnpointGraph(endpointURL, endpointGraph, query,
-						format, connection, handlerExtractType, extractFail);
+					extractDataFromEnpointGraph(endpointURL, endpointGraph,
+							query,
+							format, connection, handlerExtractType, extractFail);
+				}
 
 			}
 		} catch (RepositoryException e) {
@@ -238,13 +247,13 @@ public class SPARQLExtractor {
 
 		switch (handlerExtractType) {
 			case STANDARD_HANDLER:
-				handler = new TripleCountHandler(connection);
+				handler = new TripleCountHandler(connection, context);
 				break;
 			case ERROR_HANDLER_CONTINUE_WHEN_MISTAKE:
-				handler = new StatisticalHandler(connection);
+				handler = new StatisticalHandler(connection, context);
 				break;
 			case ERROR_HANDLER_FAIL_WHEN_MISTAKE:
-				handler = new StatisticalHandler(connection);
+				handler = new StatisticalHandler(connection, context);
 				failWhenMistake = true;
 				break;
 			default:
@@ -278,6 +287,10 @@ public class SPARQLExtractor {
 			logger.error(message);
 
 			throw new RDFException(message + ex.getMessage(), ex);
+
+		} catch (RDFCancelException e) {
+			logger.debug(e.getMessage());
+			dataUnit.cleanAllData();
 
 		} catch (RDFHandlerException | RDFParseException ex) {
 			logger.error(ex.getMessage(), ex);
