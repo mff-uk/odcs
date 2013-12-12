@@ -29,10 +29,14 @@ import org.vaadin.addons.lazyquerycontainer.Query;
  */
 public class RDFQuery implements Query {
 
+	private static final String ALL_STATEMENT_QUERY = "CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}";
+
 	private String baseQuery;
+
 	private int batchSize;
+
 	private RDFQueryDefinition qd;
-	
+
 	private ArrayList<Item> cachedItems;
 
 	public RDFQuery(RDFQueryDefinition qd) {
@@ -50,7 +54,11 @@ public class RDFQuery implements Query {
 		}
 		try {
 			String filteredQuery = setWhereCriteria(baseQuery);
-			return (int) repository.getResultSizeForQuery(filteredQuery);
+			if (isAllStatementQuery(filteredQuery)) {
+				return (int) repository.getTripleCount();
+			} else {
+				return (int) repository.getResultSizeForQuery(filteredQuery);
+			}
 		} catch (InvalidQueryException ex) {
 			Notification.show("Query Validator",
 					"Query is not valid: "
@@ -62,20 +70,24 @@ public class RDFQuery implements Query {
 		return 0;
 	}
 
+	private boolean isAllStatementQuery(String query) {
+		return query.equalsIgnoreCase(ALL_STATEMENT_QUERY);
+	}
+
 	/**
 	 * Load batch of items.
 	 *
 	 * @param startIndex Starting index of the item list.
-	 * @param count Count of the items to be retrieved.
+	 * @param count      Count of the items to be retrieved.
 	 * @return List of items.
 	 */
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
-		
-		if(cachedItems != null) {
+
+		if (cachedItems != null) {
 			return cachedItems.subList(startIndex, startIndex + count);
 		}
-		
+
 		RDFDataUnit repository = RDFDataUnitHelper
 				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
@@ -103,14 +115,16 @@ public class RDFQuery implements Query {
 					data = repository.executeSelectQueryAsTuples(query);
 					break;
 				case CONSTRUCT:
-					data = getRDFTriplesData(repository.executeConstructQuery(query));
+					data = getRDFTriplesData(repository.executeConstructQuery(
+							query));
 					break;
 				case DESCRIBE:
-					String resource = query.substring(query.indexOf('<') + 1, query.indexOf('>'));
+					String resource = query.substring(query.indexOf('<') + 1,
+							query.indexOf('>'));
 					URIImpl uri = new URIImpl(resource);
 					data = getRDFTriplesData(repository.describeURI(uri));
 					break;
-				default: 
+				default:
 					return null;
 			}
 
@@ -120,7 +134,8 @@ public class RDFQuery implements Query {
 					MyTupleQueryResult result = (MyTupleQueryResult) data;
 					int id = 0;
 					while (result.hasNext()) {
-						items.add(toItem(result.getBindingNames(), result.next(),
+						items.add(
+								toItem(result.getBindingNames(), result.next(),
 								++id));
 					}
 					break;
@@ -203,7 +218,7 @@ public class RDFQuery implements Query {
 	}
 
 	private List<RDFTriple> getRDFTriplesData(Graph graph) {
-		
+
 		List<RDFTriple> triples = new ArrayList<>();
 
 		int count = 0;
