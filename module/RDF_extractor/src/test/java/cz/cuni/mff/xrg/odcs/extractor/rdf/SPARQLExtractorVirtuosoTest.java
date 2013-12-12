@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -68,7 +70,8 @@ public class SPARQLExtractorVirtuosoTest {
 			long sizeBefore = repository.getTripleCount();
 
 			try {
-				SPARQLExtractor extractor = new SPARQLExtractor(repository);
+				SPARQLExtractor extractor = new SPARQLExtractor(repository,
+						getTestContext());
 				extractor
 						.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
 						query);
@@ -97,7 +100,8 @@ public class SPARQLExtractorVirtuosoTest {
 			long sizeBefore = repository.getTripleCount();
 
 			try {
-				SPARQLExtractor extractor = new SPARQLExtractor(repository);
+				SPARQLExtractor extractor = new SPARQLExtractor(repository,
+						getTestContext());
 
 				extractor
 						.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
@@ -131,7 +135,8 @@ public class SPARQLExtractorVirtuosoTest {
 			long sizeBefore = repository.getTripleCount();
 
 			try {
-				SPARQLExtractor extractor = new SPARQLExtractor(repository);
+				SPARQLExtractor extractor = new SPARQLExtractor(repository,
+						getTestContext());
 				extractor.extractFromSPARQLEndpoint(
 						endpoint, defaultGraphUri, query, USER, PASSWORD,
 						format);
@@ -146,5 +151,10 @@ public class SPARQLExtractorVirtuosoTest {
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
+	}
+
+	private DPUContext getTestContext() {
+		TestEnvironment environment = TestEnvironment.create();
+		return environment.getContext();
 	}
 }
