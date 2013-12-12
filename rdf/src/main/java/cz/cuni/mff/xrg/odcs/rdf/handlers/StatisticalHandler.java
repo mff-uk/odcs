@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,20 @@ public class StatisticalHandler extends TripleCountHandler {
 	 */
 	public StatisticalHandler(RepositoryConnection connection) {
 		super(connection);
+		logger = Logger.getLogger(StatisticalHandler.class);
+	}
+
+	/**
+	 * Default hadler contructor for parsing and adding data from SPARQL
+	 * endpoint to repository.
+	 *
+	 * @param connection connection to repository where we add data.
+	 * @param context    DPU context for checking if parsing was cancelled or
+	 *                   not.
+	 */
+	public StatisticalHandler(RepositoryConnection connection,
+			DPUContext context) {
+		super(connection, context);
 		logger = Logger.getLogger(StatisticalHandler.class);
 	}
 

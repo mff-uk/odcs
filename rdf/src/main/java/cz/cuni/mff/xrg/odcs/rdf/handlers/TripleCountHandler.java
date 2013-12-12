@@ -1,7 +1,9 @@
 package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 	private boolean isStatementAdded = false;
 
+	private DPUContext context;
+
 	protected boolean checkData;
 
 	/**
@@ -44,7 +48,24 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	 */
 	public TripleCountHandler(RepositoryConnection connection) {
 		super(connection);
+		this.context = null;
 		this.checkData = false;
+	}
+
+	/**
+	 * Default hadler contructor for parsing and adding data from SPARQL
+	 * endpoint to repository.
+	 *
+	 * @param connection connection to repository where we add data.
+	 * @param context    DPU context for checking if parsing was cancelled or
+	 *                   not.
+	 */
+	public TripleCountHandler(RepositoryConnection connection,
+			DPUContext context) {
+		super(connection);
+		this.context = context;
+		this.checkData = false;
+
 	}
 
 	/**
@@ -67,7 +88,10 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	@Override
 	public void handleStatement(Statement st) throws RDFHandlerException {
 		try {
-			if (!hasProblem) {
+			if (isParsingCanceled()) {
+				throw new RDFCancelException("Extraction was CANCELLED by user");
+
+			} else if (!hasProblem) {
 				super.handleStatement(st);
 				tripleCount++;
 				isStatementAdded = true;
@@ -86,12 +110,16 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 				}
 
 			}
+		} catch (RDFCancelException e) {
+			throw new RDFCancelException(e.getMessage(), e);
+
 		} catch (RDFHandlerException e) {
 			logger.debug(
 					"\n" + "Triple contains problems:"
 					+ "\n Subject:" + st.getSubject().toString()
 					+ "\n Predicate:" + st.getPredicate().toString()
 					+ "\n Object:" + st.getObject().toString());
+
 		}
 	}
 
@@ -167,6 +195,14 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 	protected boolean isStatementAdded() {
 		return isStatementAdded;
+	}
+
+	private boolean isParsingCanceled() {
+		if (context != null && context.canceled()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	protected static String getWarningsAsString(List<TripleProblem> warningsList) {
