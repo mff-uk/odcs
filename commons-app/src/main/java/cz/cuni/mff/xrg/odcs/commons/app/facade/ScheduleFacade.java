@@ -158,6 +158,7 @@ public class ScheduleFacade {
 	@Transactional
 	public void execute(Schedule schedule) {
 		// update schedule
+		Date oldLastChedule = schedule.getLastExecution();
 		schedule.setLastExecution(new Date());
 		// if the schedule is run one then disable it
 		if (schedule.isJustOnce()) {
@@ -172,9 +173,14 @@ public class ScheduleFacade {
 		pipelineExec.setSilentMode(false);
 		// set user .. copy owner of schedule
 		pipelineExec.setOwner(schedule.getOwner());
-
+	
 		// save data into DB -> in next DB check Engine start the execution
 		pipelineFacade.save(pipelineExec);
+		
+		LOG.debug("Last schedule {} - > {} , new exec id: {}", 
+				oldLastChedule, schedule.getLastExecution(),
+				pipelineExec.getId());
+					
 		save(schedule);
 	}
 

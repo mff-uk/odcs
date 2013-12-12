@@ -20,12 +20,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 
 public class EmailSender {
 
-	private static Logger LOG = LoggerFactory.getLogger(EmailSender.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
 
 	/**
 	 * If false outcoming email are silently dropped.
 	 */
-	private boolean enabled;
+	private final boolean enabled;
 
 	/**
 	 * Address of SMTP server.
@@ -96,7 +96,8 @@ public class EmailSender {
 	 * @return True if and only if email has been send. 
 	 */
 	public boolean send(String subject, String body, List<String> recipients) {
-		
+		LOG.debug("send({}, , size: {})", subject, recipients.size());
+				
 		if (!enabled || recipients.isEmpty()) {
 			LOG.debug("Email send request has been ignored ... ");
 			return false;
@@ -146,6 +147,7 @@ public class EmailSender {
 			LOG.error("Failed to send email.", e);
 			return false;
 		}
+		LOG.debug("Email has been send");
 		return true;
 	}
 	
