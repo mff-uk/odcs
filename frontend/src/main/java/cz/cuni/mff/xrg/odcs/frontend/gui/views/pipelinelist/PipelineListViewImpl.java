@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tepi.filtertable.paged.PagedFilterTable;
+import org.tepi.filtertable.paged.PagedTableChangeEvent;
 
 /**
  * Vaadin implementation for PipelineListView.
@@ -92,19 +94,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 		// add column
 		tablePipelines.setImmediate(true);
-//		tablePipelines.addGeneratedColumn("description", new CustomTable.ColumnGenerator() {
-//			@Override
-//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-//				String description = (String) source.getItem(itemId).getItemProperty(columnId).getValue();
-//				if (description.length() > App.MAX_TABLE_COLUMN_LENGTH) {
-//					Label descriptionLabel = new Label(description.substring(0, App.MAX_TABLE_COLUMN_LENGTH - 3) + "...");
-//					descriptionLabel.setDescription(description);
-//					return descriptionLabel;
-//				} else {
-//					return description;
-//				}
-//			}
-//		});
 		tablePipelines.addGeneratedColumn("", 3, createColumnGenerator(presenter));
 		tablePipelines.setVisibleColumns();
 
@@ -121,6 +110,14 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 					
 					presenter.navigateToEventHandler(PipelineEdit.class, pipelineId);
 				}
+			}
+		});
+		tablePipelines.addListener(new PagedFilterTable.PageChangeListener() {
+
+			@Override
+			public void pageChanged(PagedTableChangeEvent event) {
+				int newPageNumber = event.getCurrentPage();
+				presenter.pageChangedHandler(newPageNumber);
 			}
 		});
 
@@ -187,5 +184,10 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	@Override
 	public void setDisplay(PipelineListPresenter.PipelineListData dataObject) {
 		tablePipelines.setContainerDataSource(dataObject.getContainer());
+	}
+
+	@Override
+	public void setPage(int pageNumber) {
+		tablePipelines.setCurrentPage(pageNumber);
 	}
 }

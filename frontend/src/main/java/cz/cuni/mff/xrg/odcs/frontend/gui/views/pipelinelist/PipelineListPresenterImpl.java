@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.github.wolfie.refresher.Refresher;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -91,6 +92,17 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	@Override
 	public void setParameters(Object configuration) {
 		// we do not care about parameters, we always do the same job .. 
+		String conf = configuration.toString();
+		if(conf.contains("page=")) {
+			int start = conf.indexOf("page=");
+			int end = conf.indexOf('&', start);
+			if(end < 0) {
+				end = conf.length();
+			}
+			String val = conf.substring(start + 5, end);
+			int pageNumber = Integer.parseInt(val);
+			view.setPage(pageNumber);
+		}
 	}
 
 	@Override
@@ -176,5 +188,21 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 	private Pipeline getLightPipeline(long pipelineId) {
 		return pipelineFacade.getPipeline(pipelineId);
+	}
+
+	@Override
+	public void pageChangedHandler(int newPageNumber) {
+		String uriFragment = Page.getCurrent().getUriFragment();
+		if(uriFragment.contains("page=")) {
+			int start = uriFragment.indexOf("page=");
+			int end = uriFragment.indexOf('&', start);
+			if(end < 0) {
+				end = uriFragment.length();
+			}
+			uriFragment = uriFragment.substring(0, start) + String.format("page=%s", newPageNumber) + uriFragment.substring(end);
+		} else {
+			uriFragment += String.format("/page=%s", newPageNumber);
+		}
+		Page.getCurrent().setUriFragment(uriFragment, false);
 	}
 }
