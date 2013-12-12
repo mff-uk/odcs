@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineSanitized;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -105,6 +106,9 @@ class ExecutionSanitizer {
 	 * @param execution
 	 */
 	private void sanitizeCancelling(PipelineExecution execution) {
+		// publish event about this .. 
+		eventPublisher.publishEvent(new PipelineSanitized(execution, this));
+		
 		if (execution.isDebugging()) {
 			// no deletion
 		} else {

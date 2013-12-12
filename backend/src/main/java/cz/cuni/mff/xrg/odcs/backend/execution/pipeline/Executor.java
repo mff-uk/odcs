@@ -425,11 +425,10 @@ public class Executor implements Runnable {
 		// publish information for the rest of the application
 		// that the execution finished ..
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
-		
-		
+				
 		// flush the logs
 		logAppender.flush();
-
+		
 		// save the execution
 		try {
 			pipelineFacade.save(execution);
@@ -441,7 +440,8 @@ public class Executor implements Runnable {
 		// those we flush into database
 		// and then we change the state, which cause the frontneds refresh
 		// to top .. but before that all the data will be ready in the database
-
+		LOG.debug("Execution thread is about to finish .. ");
+		
 		// unregister MDC execution filter
 		MdcExecutionLevelFilter.remove(executionId);
 		// clear all threads markers

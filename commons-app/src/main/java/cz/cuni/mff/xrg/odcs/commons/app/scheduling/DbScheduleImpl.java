@@ -7,7 +7,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.TypedQuery;
@@ -80,7 +79,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 				+ " AND s.enabled = 1";
 				
 		JPQLDbQuery<Schedule> jpql = new JPQLDbQuery<>(queryStr);
-		jpql.setParameter("type", ScheduleType.PERIODICALLY);
+		jpql.setParameter("type", ScheduleType.AFTER_PIPELINE);
 		
 		return executeList(jpql);
 	}	
