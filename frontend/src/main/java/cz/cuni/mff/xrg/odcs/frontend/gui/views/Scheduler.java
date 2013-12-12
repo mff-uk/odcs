@@ -334,7 +334,13 @@ public class Scheduler extends ViewComponent {
 			}
 			result.getContainerProperty(num, "pipeline").setValue(item.getPipeline().getName());
 			String description = item.getDescription();
-			description = description.length() > utils.getColumnMaxLenght() ? description.substring(0, utils.getColumnMaxLenght() - 3) + "..." : description;
+			if (description == null ){
+				// no text, no need for any updates
+			} else {
+				// we have the description make sure it's not too long
+				description = description.length() > utils.getColumnMaxLenght() ? 
+						description.substring(0, utils.getColumnMaxLenght() - 3) + "..." : description;
+			}
 			result.getContainerProperty(num, "description").setValue(description);
 
 			PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
