@@ -100,8 +100,6 @@ public class SchedulePipeline extends Window {
 	@Autowired
 	private DbPipeline dbPipeline;
 	@Autowired
-	private PipelineAccessor pipelineAccessor;
-	@Autowired
 	private PipelineFacade pipelineFacade;
 	@Autowired
 	private ScheduleFacade scheduleFacade;

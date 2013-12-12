@@ -33,6 +33,9 @@ public class PipelineNameAccessor extends ClassAccessorBase<Pipeline> {
 			@Override
 			public String get(Pipeline object) {
 				String description = object.getDescription();
+				if(description == null) {
+					return null;
+				}
 				return description.length() > Utils.getColumnMaxLenght() ? description.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : description;
 			}
 		});

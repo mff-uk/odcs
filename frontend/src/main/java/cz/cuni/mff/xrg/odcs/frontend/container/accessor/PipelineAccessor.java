@@ -98,6 +98,9 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 				return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
 			case "description":
 				String description = object.getDescription();
+				if(description == null) {
+					return null;
+				}
 				return description.length() > Utils.getColumnMaxLenght() ? description.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : description;
 			case "duration":
 				PipelineExecution latestExec = pipelineFacade.getLastExec(object, PipelineExecutionStatus.FINISHED);

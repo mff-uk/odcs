@@ -146,9 +146,6 @@ public class UsersList {
 			}
 		});
 
-
-
-
 		return usersListLayout;
 	}
 
