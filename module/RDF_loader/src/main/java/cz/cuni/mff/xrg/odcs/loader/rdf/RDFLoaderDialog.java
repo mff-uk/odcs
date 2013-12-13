@@ -360,7 +360,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		comboBoxSparql.setImmediate(true);
 		comboBoxSparql.setWidth("100%");
 		comboBoxSparql.setHeight("-1px");
-		comboBoxSparql.setInputPrompt("http://example:8894/sparql");
+		comboBoxSparql.setInputPrompt("http://localhost:8890/sparql");
 
 
 		//comboBoxSparql is mandatory fields
