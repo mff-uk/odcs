@@ -469,7 +469,7 @@ public class Executor implements Runnable {
 		} catch (InterruptedException e) {
 			// if we are interrupt stop waiting
 		}
-		LOG.debug("DPU thread calncelled");
+		LOG.debug("DPU thread cancelled");
 	}
 
 }
