@@ -42,7 +42,7 @@ import virtuoso.jdbc4.VirtuosoException;
  *
  * @author Jan Vojt
  */
-@Aspect
+//@Aspect
 @DeclarePrecedence("VirtuosoSequenceSanitizerAspect,AnnotationTransactionAspect")
 public class VirtuosoSequenceSanitizerAspect {
 	

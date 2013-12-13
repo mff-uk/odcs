@@ -10,12 +10,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 	
 	<!-- enable aspects -->
-	<aop:aspectj-autoproxy proxy-target-class="false" />
-	
-	<!-- Aspect for fixing corrupted database sequences. -->
-	<bean id="sequenceAspect"
-		  class="cz.cuni.mff.xrg.odcs.commons.app.dao.VirtuosoSequenceSanitizerAspect"
-		  factory-method="aspectOf" />
+	<aop:aspectj-autoproxy />
 	
     <!-- application configuration -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
@@ -98,6 +93,6 @@
     
     <context:annotation-config />
 
-    <tx:annotation-driven mode="aspectj" />
+    <tx:annotation-driven />
 
 </beans>

@@ -176,11 +176,12 @@
 		
 		<!-- Spring aspects so we can reference them in AspectJ aspects -->
 		<!-- Careful when upgrading, 3.2.5.RELEASE did not work for me. :( -->
-		<dependency>
+		<!--
+                <dependency>
 			 <groupId>org.springframework</groupId>
 			 <artifactId>spring-aspects</artifactId>
 			 <version>3.1.2.RELEASE</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- CGLIB is required for proxying classes without interface -->
 		<dependency>
@@ -270,40 +271,7 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 			
-			<!-- AspecJ Maven Plugin is neede to weave third party libs. -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.5</version>
-				<configuration>
-					<source>${project.java.version}</source>
-					<target>${project.java.version}</target>
-					<complianceLevel>${project.java.version}</complianceLevel>
-					<showWeaveInfo>true</showWeaveInfo>
-					<verbose>false</verbose>
-					<!-- It is important to proceed on errors, so AspectJ
-						 ignores uneeded interfaces/classes mentioned in
-						 weaved dependencies that are missing. -->
-					<proceedOnError>true</proceedOnError>
-					<!-- Weave EclipseLink dependency -->
-					<weaveDependencies>
-						<weaveDependency>
-							<groupId>org.eclipse.persistence</groupId>
-							<artifactId>eclipselink</artifactId>
-						</weaveDependency>
-					</weaveDependencies>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-				</dependencies>
-			</plugin>
-		
+				
 			<!-- copy common resource files -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
