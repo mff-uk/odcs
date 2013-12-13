@@ -21,10 +21,13 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tepi.filtertable.numberfilter.NumberInterval;
 import org.vaadin.dialogs.ConfirmDialog;
 
 @Component
@@ -91,17 +95,26 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 	@Override
 	public void setParameters(Object configuration) {
-		// we do not care about parameters, we always do the same job .. 
-		String conf = configuration.toString();
-		if(conf.contains("page=")) {
-			int start = conf.indexOf("page=");
-			int end = conf.indexOf('&', start);
-			if(end < 0) {
-				end = conf.length();
+		if (configuration != null && Map.class.isAssignableFrom(configuration.getClass())) {
+			int pageNumber = 0;
+			Map<String, String> config = (Map<String, String>) configuration;
+			for (Entry<String, String> entry : config.entrySet()) {
+				switch (entry.getKey()) {
+					case "page":
+						pageNumber = Integer.parseInt(entry.getValue());
+						break;
+					case "id":
+						view.setFilter(entry.getKey(), ParametersHandler.getInterval(entry.getValue()));
+						break;
+					default:
+						view.setFilter(entry.getKey(), entry.getValue());
+						break;
+				}
 			}
-			String val = conf.substring(start + 5, end);
-			int pageNumber = Integer.parseInt(val);
-			view.setPage(pageNumber);
+			if(pageNumber != 0) {
+				//Page number is set as last, because filtering automatically moves table to first page.
+				view.setPage(pageNumber);
+			}
 		}
 	}
 
@@ -116,7 +129,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public void copyEventHandler(long id) {
 		Pipeline pipeline = getLightPipeline(id);
 		pipelineFacade.copyPipeline(pipeline);
-		Notification.show("Pipeline \""  + pipeline.getName() + "\" was successfully copied" ,
+		Notification.show("Pipeline \"" + pipeline.getName() + "\" was successfully copied",
 				Notification.Type.HUMANIZED_MESSAGE);
 		refreshEventHandler();
 	}
@@ -173,7 +186,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public void runEventHandler(long id, boolean inDebugMode) {
 		PipelineExecution exec = pipelineHelper.runPipeline(getLightPipeline(id), inDebugMode);
 		if (inDebugMode && exec != null) {
-			navigator.navigateTo(ExecutionListPresenterImpl.class, exec.getId().toString());
+			navigator.navigateTo(ExecutionListPresenterImpl.class, String.format("exec=%s", exec.getId()));
 		}
 	}
 
@@ -191,18 +204,32 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	}
 
 	@Override
-	public void pageChangedHandler(int newPageNumber) {
+	public void pageChangedHandler(Integer newPageNumber) {
 		String uriFragment = Page.getCurrent().getUriFragment();
-		if(uriFragment.contains("page=")) {
-			int start = uriFragment.indexOf("page=");
-			int end = uriFragment.indexOf('&', start);
-			if(end < 0) {
-				end = uriFragment.length();
-			}
-			uriFragment = uriFragment.substring(0, start) + String.format("page=%s", newPageNumber) + uriFragment.substring(end);
+		ParametersHandler handler = new ParametersHandler(uriFragment);
+		handler.addParameter("page", newPageNumber.toString());
+		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
+	}
+
+	@Override
+	public void filterParameterEventHander(String propertyId, Object filterValue) {
+		String uriFragment = Page.getCurrent().getUriFragment();
+		ParametersHandler handler = new ParametersHandler(uriFragment);
+		if (filterValue == null || (filterValue.getClass() == String.class && ((String) filterValue).isEmpty())) {
+			//Remove from URI
+			handler.removeParameter(propertyId);
 		} else {
-			uriFragment += String.format("/page=%s", newPageNumber);
+			String value;
+			switch (propertyId) {
+				case "id":
+					value = ParametersHandler.getStringForInterval((NumberInterval) filterValue);
+					break;
+				default:
+					value = filterValue.toString();
+					break;
+			}
+			handler.addParameter(propertyId, value);
 		}
-		Page.getCurrent().setUriFragment(uriFragment, false);
+		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
 	}
 }

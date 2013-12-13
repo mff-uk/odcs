@@ -24,7 +24,7 @@ class PresenterWrap implements View {
     
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-		presenter.setParameters(event.getParameters());
+		presenter.setParameters(ParametersHandler.getConfiguration(event.getParameters()));
     }
     
     public Presenter getPresenter() {
