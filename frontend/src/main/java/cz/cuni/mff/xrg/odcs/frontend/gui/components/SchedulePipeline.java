@@ -291,7 +291,7 @@ public class SchedulePipeline extends Window {
 				if (value != null) {
 					return;
 				}
-				throw new InvalidValueException("Pipeline must be filled!");
+				throw new InvalidValueException("Pipeline must be filled");
 			}
 		});
 		
@@ -389,42 +389,62 @@ public class SchedulePipeline extends Window {
 				
 				email.saveEditedTexts();
 
-				//validation
+				String errors = "";
 				//pipeline should be filled
-				if (!comboPipeline.isValid()) {
-					Notification.show("Failed to create scheduler rule.",
-							"Mandatory fields should be filled",
-							Notification.Type.ERROR_MESSAGE);
-					return;
+				try {
+					comboPipeline.validate();
+
+				} catch (Validator.InvalidValueException e) {
+					errors = errors + e.getMessage();
 				}
+				
+				//Interval and Tolerance of PERIODICALLY type should be positive number
+				if (scheduleType.getValue().equals(ScheduleType.PERIODICALLY)){
+					try {
+						tfEvery.validate();
+	
+					} catch (Validator.InvalidValueException e) {
+						if (!errors.equals("")) {
+							errors = errors + "; Interval value must be a positive integer number, you entered \"" + tfEvery.getValue()+"\"";
+						} else {
+							errors = errors +  "Interval value must be a positive integer number, you entered \"" + tfEvery.getValue()+"\"";
+						}
+					}
+					
+					try {
+						tfTolerance.validate();
+	
+					} catch (Validator.InvalidValueException e) {
+						if (!errors.equals("")) {
+							errors = errors +  "; Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue()+"\"";
+						} else {
+							errors = errors + "Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue()+"\"";
+						}
+					}
 
-
-				//Interval of PERIODICALLY type should be positive number
-				if ((scheduleType.getValue().equals(ScheduleType.PERIODICALLY))
-						&& (!tfEvery.isValid())) {
-					Notification.show("Failed to create scheduler rule.",
-							"Interval value error",
-							Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-
-				//Interval of PERIODICALLY type should be positive number
-				if ((scheduleType.getValue().equals(ScheduleType.PERIODICALLY))
-						&& (!tfTolerance.isValid())) {
-					Notification.show("Failed to create scheduler rule.",
-							"Tolerance value error",
-							Notification.Type.ERROR_MESSAGE);
-					return;
 				}
 				//selected pipeline in the AFTER_PIPELINE case should be filled.
-				if ((scheduleType.getValue()
-						.equals(ScheduleType.AFTER_PIPELINE))
-						&& (!selectPipe.isValid())) {
+				if (scheduleType.getValue()
+						.equals(ScheduleType.AFTER_PIPELINE)) {
+					try {
+						selectPipe.validate();
+	
+					} catch (Validator.InvalidValueException e) {
+						if (!errors.equals("")) {
+							errors = errors + "; " + e.getMessage();
+						} else {
+							errors = errors + e.getMessage();
+						}
+					}
+				}
+								
+				if (!errors.equals("")) {
+					errors = errors + ".";
 					Notification.show("Failed to create scheduler rule.",
-							"Mandatory fields should be filled",
-							Notification.Type.ERROR_MESSAGE);
+							errors+  " Please correct that before saving. ", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
+	
 
 
 				//checking if the dialog was open from the Scheduler table
@@ -742,7 +762,7 @@ public class SchedulePipeline extends Window {
 					return;
 				}
 				throw new InvalidValueException(
-						"Selected pipeline must be filled!");
+						"Selected pipeline must be filled");
 				
 			}
 		});
