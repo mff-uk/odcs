@@ -44,7 +44,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
 import java.util.Date;
@@ -149,6 +148,7 @@ public class SchedulePipeline extends Window {
 	 * table in which has been pressed the button Scheduler.
 	 */
 	public void setSelectedSchedule(Schedule selectedSchedule) {
+		tabSheet.setSelectedTab(0);
 		
 		if (selectedSchedule == null) {
 			selectSch = null;
@@ -312,6 +312,7 @@ public class SchedulePipeline extends Window {
 				}
 			}
 		});
+		comboPipeline.setWidth("470px");
 		
 		layoutPipeline.addComponent(new Label("Pipeline "), 0,0);
 		HorizontalLayout selectedPipe = new HorizontalLayout();
