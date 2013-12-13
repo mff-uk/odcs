@@ -110,10 +110,10 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			connection.commit();
 		} catch (Throwable sqle) {
 			// we failed, try it again .. later
-			addError("problem appending event", sqle);
+			LOG.error("Can't save logs into database.", sqle);
 			// wait for some time
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2500);
 			} catch (InterruptedException ex) {
 				// ok just try it again
 			}			
