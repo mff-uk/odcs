@@ -162,7 +162,7 @@ public class SchedulePipeline extends Window {
 			comboEvery.setValue(PeriodUnit.DAY);
 			valueInt.setValue(1);
 			valueTol.setValue(1);
-			notifyThis.setValue(false);
+			notifyThis.setValue(true);
 			
 			if(selectPipe != null) {
 				selectPipe.setValue(null);
@@ -221,7 +221,7 @@ public class SchedulePipeline extends Window {
 			}
 			
 			if (selectedSchedule.getNotification() != null) {
-				notifyThis.setValue(true);
+				notifyThis.setValue(false);
 			}
 			
 			emailNotifications.getScheduleNotificationRecord(selectedSchedule);
@@ -650,7 +650,7 @@ public class SchedulePipeline extends Window {
 		
 		notifyThis = new CheckBox();
 		notifyThis.setImmediate(true);
-		notifyThis.setCaption("Overwrite default settings for all scheduled events with the following:");
+		notifyThis.setCaption("Use default notification settings");
 		notificationsLayout.addComponent(notifyThis, 0);
 		emailNotifications.setDisableComponents();
 		emailLayout.setEnabled(false);
@@ -660,7 +660,7 @@ public class SchedulePipeline extends Window {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				
-				if (event.getProperty().getValue().equals(false)) {
+				if (event.getProperty().getValue().equals(true)) {
 					emailNotifications.setDisableComponents();
 					
 				} else {
@@ -669,6 +669,7 @@ public class SchedulePipeline extends Window {
 				
 			}
 		});
+		notifyThis.setValue(true);
 		
 		
 		
