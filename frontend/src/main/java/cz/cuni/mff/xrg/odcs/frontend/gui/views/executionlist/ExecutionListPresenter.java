@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
+import org.tepi.filtertable.numberfilter.NumberInterval;
 
 /**
  * Interface for presenter that take care about presenting information about
@@ -51,6 +52,10 @@ public interface ExecutionListPresenter extends Presenter {
 
 	public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution);
 
+	public void pageChangedHandler(Integer newPageNumber);
+
+	public void filterParameterEventHander(String string, Object filterValue);
+
 	/**
 	 * View that can be used with the presenter.
 	 */
@@ -82,6 +87,10 @@ public interface ExecutionListPresenter extends Presenter {
 		public void refresh(boolean modified);
 
 		public void setSelectedRow(Long execId);
+
+		public void setFilter(String name, Object value);
+
+		public void setPage(int pageNumber);
 	}
 
 	/**

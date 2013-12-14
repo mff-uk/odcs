@@ -197,7 +197,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		textFieldSparql.setImmediate(true);
 		textFieldSparql.setWidth("100%");
 		textFieldSparql.setHeight("-1px");
-		textFieldSparql.setInputPrompt("http://example:8894/sparql");
+		textFieldSparql.setInputPrompt("http://localhost:8890/sparql");
 
 
 

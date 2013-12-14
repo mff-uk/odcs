@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
+import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -120,6 +121,16 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 				presenter.pageChangedHandler(newPageNumber);
 			}
 		});
+		tablePipelines.addItemSetChangeListener(new Container.ItemSetChangeListener() {
+
+			@Override
+			public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+				for(Object id : event.getContainer().getContainerPropertyIds()) {
+					Object filterValue = tablePipelines.getFilterFieldValue(id);
+					presenter.filterParameterEventHander((String)id, filterValue);
+				}
+			}
+		});
 
 		setCompositionRoot(mainLayout);
 	}
@@ -189,5 +200,10 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	@Override
 	public void setPage(int pageNumber) {
 		tablePipelines.setCurrentPage(pageNumber);
+	}
+
+	@Override
+	public void setFilter(String key, Object value) {
+		tablePipelines.setFilterFieldValue(key, value);
 	}
 }

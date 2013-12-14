@@ -265,7 +265,9 @@ public class LogTable extends CustomComponent {
 	 */
 	public boolean refresh(PipelineExecution exec) {
 		this.execution = exec;
-		refreshDpuSelector();
+		if(!isRunning(execution)) {
+			refreshDpuSelector();
+		}
 		int lastPage = table.getTotalAmountOfPages();
 		if (table.getCurrentPage() == lastPage) {
 			container.refresh();

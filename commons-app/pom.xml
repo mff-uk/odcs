@@ -13,7 +13,7 @@
 	<!-- Shared version number properties -->
 	<properties>
 		<logback.version>1.0.13</logback.version>
-		<aspectj.version>1.7.4</aspectj.version>
+		<aspectj.version>1.7.3</aspectj.version>
 	</properties>
 
 	<repositories>
@@ -174,6 +174,15 @@
 			<scope>compile</scope>
 		</dependency>
 		
+		<!-- Spring aspects so we can reference them in AspectJ aspects -->
+		<!-- Careful when upgrading, 3.2.5.RELEASE did not work for me. :( -->
+		<!--
+                <dependency>
+			 <groupId>org.springframework</groupId>
+			 <artifactId>spring-aspects</artifactId>
+			 <version>3.1.2.RELEASE</version>
+		</dependency> -->
+		
 		<!-- CGLIB is required for proxying classes without interface -->
 		<dependency>
 			<groupId>cglib</groupId>
@@ -261,28 +270,8 @@
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
-		
-			<!-- Process classes after compilation to weave bytecode for JPA entities -->
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<configuration>
-							<tasks>
-								<java classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeave"
-									  classpathref="maven.runtime.classpath" fork="true">
-									<arg line="-loglevel FINE -persistenceinfo src/main/resources target/classes target/classes"/>
-								</java>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			
+				
 			<!-- copy common resource files -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -299,6 +288,7 @@
 							<outputDirectory>${basedir}/src/main/resources/sql</outputDirectory>
 							<resources>          
 								<resource>
+									<!-- we need queries for fixing sequences in DB at runtime -->
 									<directory>../db/virtuoso/rdbms</directory>
 									<filtering>false</filtering>
 									<includes>

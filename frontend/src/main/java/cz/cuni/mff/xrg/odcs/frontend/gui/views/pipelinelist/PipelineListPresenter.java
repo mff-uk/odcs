@@ -53,7 +53,9 @@ public interface PipelineListPresenter extends Presenter {
 	 */
 	public void navigateToEventHandler(Class where, Object param);
 
-	public void pageChangedHandler(int newPageNumber);
+	public void pageChangedHandler(Integer newPageNumber);
+
+	public void filterParameterEventHander(String string, Object filterValue);
 
 	public interface PipelineListView {
 
@@ -73,6 +75,8 @@ public interface PipelineListPresenter extends Presenter {
 		public void setDisplay(PipelineListData dataObject);
 
 		public void setPage(int pageNumber);
+
+		public void setFilter(String key, Object value);
 	}
 
 	/**

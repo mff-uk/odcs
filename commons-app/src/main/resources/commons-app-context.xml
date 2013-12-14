@@ -12,9 +12,6 @@
 	<!-- enable aspects -->
 	<aop:aspectj-autoproxy />
 	
-	<!-- Aspect for fixing corrupted database sequences. -->
-	<bean id="sequenceAspect" class="cz.cuni.mff.xrg.odcs.commons.app.dao.VirtuosoSequenceSanitizerAspect" />
-	
     <!-- application configuration -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
 	

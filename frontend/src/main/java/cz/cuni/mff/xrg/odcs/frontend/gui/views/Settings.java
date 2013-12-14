@@ -595,6 +595,16 @@ public class Settings extends ViewComponent {
 
 
 		if (!emailValidationText().equals("")) {
+
+			
+			try {
+				rows.validate();
+			} catch (Validator.InvalidValueException ex) {
+				Notification.show("Failed to save settings, reason:", emailValidationText() + "; \"Number of rows in tables\" must be a number between 5 and 100. You entered \"" 
+										+ rows.getValue()+"\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
+				return false;
+			}
+			
 			Notification.show("Failed to save settings, reason:",
 					emailValidationText(), Notification.Type.ERROR_MESSAGE);
 			return false;
@@ -603,7 +613,8 @@ public class Settings extends ViewComponent {
 		try {
 			rows.validate();
 		} catch (Validator.InvalidValueException ex) {
-			Notification.show("Invalid number of rows specified! " + ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+			Notification.show("Failed to save settings, reason:","\"Number of rows in tables\" must be a number between 5 and 100. You entered \"" 
+									+ rows.getValue()+"\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
 

@@ -46,6 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tepi.filtertable.FilterGenerator;
+import org.tepi.filtertable.paged.PagedFilterTable;
+import org.tepi.filtertable.paged.PagedTableChangeEvent;
 
 /**
  * Implementation of view for {@link ExecutionListPresenter}.
@@ -400,7 +402,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 	private IntlibPagedTable initializeExecutionTable(final ExecutionListPresenter presenter) {
 
-		IntlibPagedTable executionTable = new IntlibPagedTable();
+		final IntlibPagedTable executionTable = new IntlibPagedTable();
 		executionTable.setSelectable(true);
 		executionTable.setWidth("100%");
 		executionTable.setHeight("100%");
@@ -497,6 +499,24 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		// add generated columns to the executionTable
 		executionTable.addGeneratedColumn("", createColumnGenerator(presenter));
 		executionTable.setVisibleColumns();
+		executionTable.addListener(new PagedFilterTable.PageChangeListener() {
+
+			@Override
+			public void pageChanged(PagedTableChangeEvent event) {
+				int newPageNumber = event.getCurrentPage();
+				presenter.pageChangedHandler(newPageNumber);
+			}
+		});
+		executionTable.addItemSetChangeListener(new Container.ItemSetChangeListener() {
+
+			@Override
+			public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+				for(Object id : event.getContainer().getContainerPropertyIds()) {
+					Object filterValue = executionTable.getFilterFieldValue(id);
+					presenter.filterParameterEventHander((String)id, filterValue);
+				}
+			}
+		});
 
 		return executionTable;
 	}
@@ -504,6 +524,16 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	@Override
 	public void setSelectedRow(Long execId) {
 		monitorTable.select(execId);
+	}
+
+	@Override
+	public void setFilter(String name, Object value) {
+		monitorTable.setFilterFieldValue(name, value);
+	}
+
+	@Override
+	public void setPage(int pageNumber) {
+		monitorTable.setCurrentPage(pageNumber);
 	}
 
 	/**
