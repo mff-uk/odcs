@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import com.github.wolfie.refresher.Refresher;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.Page;
 import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
@@ -17,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 import java.util.Date;
@@ -38,22 +40,34 @@ import org.tepi.filtertable.numberfilter.NumberInterval;
 @Address(url = "ExecutionList")
 public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
+	
 	@Autowired
 	private DbExecution dbExecution;
+	
 	@Autowired
 	private DbMessageRecord dbMessageRecord;
+	
 	@Autowired
 	private PipelineFacade pipelineFacade;
+	
 	@Autowired
 	private PipelineHelper pipelineHelper;
+	
 	@Autowired
 	private ExecutionListView view;
-	private ExecutionListData dataObject;
-	private CachedSource<PipelineExecution> cachedSource;
-	private RefreshManager refreshManager;
-	private Date lastLoad = new Date(0L);
-	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
 
+	@Autowired
+	private Utils utils;		
+	
+	private ExecutionListData dataObject;
+	
+	private CachedSource<PipelineExecution> cachedSource;
+	
+	private RefreshManager refreshManager;
+	
+	private Date lastLoad = new Date(0L);
+	
 	@Override
 	public Object enter() {
 		// prepare data object
@@ -71,10 +85,13 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 				LOG.debug("ExecutionMonitor refreshed.");
 			}
 		});
-
+		
 		// set data object
 		view.setDisplay(dataObject);
 
+		// add initial name filter
+		view.setFilter("owner.username", utils.getUserName());
+		
 		// return main component
 		return viewObject;
 	}
