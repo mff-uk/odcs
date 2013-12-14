@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
@@ -145,7 +146,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	@Override
 	public void showDebugEventHandler(long executionId) {
-		view.showExecutionDetail(getLightExecution(executionId), new ExecutionDetailData(getMessageDataSource()));
+		PipelineExecution exec = getLightExecution(executionId);
+		if(exec == null) {
+			Notification.show(String.format("Execution with ID=%d doesn't exist!", executionId), Notification.Type.ERROR_MESSAGE);
+			return;
+		}
+		view.showExecutionDetail(exec, new ExecutionDetailData(getMessageDataSource()));
 	}
 
 	@Override
