@@ -38,13 +38,32 @@ public class SPARQLExtractor {
 	 */
 	private static final String DEFAULT_CONSTRUCT_QUERY = "CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z}";
 
+	private static final int DEFAULT_EXTRACTOR_RETRY_SIZE = -1;
+
+	private static final long DEFAULT_EXTRACTOR_RETRY_TIME = 1000;
+
 	private RDFDataUnit dataUnit;
 
 	private DPUContext context;
 
+	private int retrySize;
+
+	private long retryTime;
+
+	public SPARQLExtractor(RDFDataUnit dataUnit, DPUContext context,
+			int retrySize, long retryTime) {
+		this.dataUnit = dataUnit;
+		this.context = context;
+		this.retrySize = retrySize;
+		this.retryTime = retryTime;
+
+	}
+
 	public SPARQLExtractor(RDFDataUnit dataUnit, DPUContext context) {
 		this.dataUnit = dataUnit;
 		this.context = context;
+		this.retrySize = DEFAULT_EXTRACTOR_RETRY_SIZE;
+		this.retryTime = DEFAULT_EXTRACTOR_RETRY_TIME;
 	}
 
 	/**
@@ -198,6 +217,9 @@ public class SPARQLExtractor {
 		try {
 			connection = dataUnit.getConnection();
 			Authentificator.authenticate(hostName, password);
+
+			dataUnit.setRetryConnectionSize(retrySize);
+			dataUnit.setRetryConnectionTime(retryTime);
 
 			for (int i = 0; i < graphSize; i++) {
 				if (context.canceled()) {

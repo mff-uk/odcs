@@ -61,6 +61,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 					.getHandlerType(useStatisticHandler, failWhenErrors);
 
 			final boolean extractFail = config.isExtractFail();
+			final int retrySize = config.getRetrySize();
+			final long retryTime = config.getRetryTime();
 
 			LOG.debug("endpointURL: {}", endpointURL);
 			LOG.debug("defaultGraphsUri: {}", defaultGraphsUri);
@@ -70,7 +72,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			LOG.debug("useStatisticHandler: {}", useStatisticHandler);
 			LOG.debug("extractFail: {}", extractFail);
 
-			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context);
+			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
+					retrySize, retryTime);
 
 			extractor.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,

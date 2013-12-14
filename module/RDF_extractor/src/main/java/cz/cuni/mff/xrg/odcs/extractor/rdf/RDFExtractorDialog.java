@@ -108,6 +108,17 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	private static final String CONTINUE = "Extract only triples with no errors.";
 
+	/**
+	 * Set Count of attempts to reconnect if the connection fails. For infinite
+	 * loop use zero or negative integer
+	 */
+	private TextField retrySizeField;
+
+	/**
+	 * For setting retry connection time before trying to reconnect.
+	 */
+	private TextField retryTimeField;
+
 	int n = 1;
 
 	/**
@@ -575,7 +586,101 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		verticalLayoutDetails.addComponent(useHandler);
 		verticalLayoutDetails.addComponent(failsWhenErrors);
 
+		VerticalLayout attempts = new VerticalLayout();
+		attempts.setSpacing(true);
+		attempts.setStyleName("graypanel");
+
+		retrySizeField = new TextField(
+				"Count of attempts to reconnect if the connection to SPARQL fails");
+		retrySizeField.setDescription(
+				"(Use 0 for no reperat, negative integer for infinity)");
+		retrySizeField.setValue("-1");
+		retrySizeField.setNullRepresentation("");
+		retrySizeField.setImmediate(true);
+		retrySizeField.setWidth("100px");
+		retrySizeField.setHeight("-1px");
+		retrySizeField.setInputPrompt(
+				"Count of attempts to reconnect if the connection to SPARQL fails\n "
+				+ "(Use 0 or negative integer for infinity)");
+
+		retrySizeField.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+
+				if (value != null) {
+					String size = value.toString().trim();
+
+					try {
+						Integer.parseInt(size);
+
+					} catch (NumberFormatException e) {
+						ex = new Validator.InvalidValueException(
+								"Count of attempts must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new Validator.EmptyValueException(
+							"Count of attempts is a null");
+				}
+			}
+		});
+
+		attempts.addComponent(retrySizeField);
+
+
+		retryTimeField = new TextField(
+				"Time in miliseconds how long to wait before trying to reconnect");
+		retryTimeField.setValue("1000");
+		retryTimeField.setNullRepresentation("");
+		retryTimeField.setImmediate(true);
+		retryTimeField.setWidth("100px");
+		retryTimeField.setHeight("-1px");
+		retryTimeField.setInputPrompt(
+				"Time in miliseconds how long to wait before trying to reconnect");
+
+		retryTimeField.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+				if (value != null) {
+					String sTime = value.toString().trim();
+
+					try {
+						long time = Long.parseLong(sTime);
+
+						if (time <= 0) {
+							ex = new Validator.InvalidValueException(
+									"Time for reconnect must be number greater than 0");
+							throw ex;
+						}
+
+					} catch (NumberFormatException e) {
+						ex = new Validator.InvalidValueException(
+								"Time for reconnect must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new Validator.EmptyValueException(
+							"Time for reconnect is a null");
+				}
+			}
+		});
+
+		attempts.addComponent(retryTimeField);
+		verticalLayoutDetails.addComponent(attempts);
+
 		return verticalLayoutDetails;
+	}
+
+	private boolean allComponentAreValid() {
+
+		boolean areValid = textFieldSparql.isValid()
+				&& retrySizeField.isValid()
+				&& retryTimeField.isValid()
+				&& areGraphsNameValid();
+
+		return areValid;
 	}
 
 	/**
@@ -591,7 +696,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
-		if (!textFieldSparql.isValid() | !areGraphsNameValid()) {
+		if (!allComponentAreValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(errorMessage);
@@ -617,9 +722,12 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 						"No value for case using statistical and error handler");
 			}
 
+			int retrySize = Integer.parseInt(retrySizeField.getValue());
+			long retryTime = Long.parseLong(retryTimeField.getValue());
+
 			RDFExtractorConfig config = new RDFExtractorConfig(SPARQLEndpoint,
 					hostName, password, GraphsUri, SPARQLQuery, extractFailed,
-					useStatisticalHandler, failWhenErrors);
+					useStatisticalHandler, failWhenErrors, retrySize, retryTime);
 
 			return config;
 		}
@@ -634,7 +742,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	null	null	null	null	null	null	null
+	 *                         null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
@@ -656,6 +765,12 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			textAreaConstr.setValue(conf.getSPARQLQuery().trim());
 			extractFail.setValue(conf.isExtractFail());
 			useHandler.setValue(conf.isUsedStatisticalHandler());
+
+			String retrySize = String.valueOf(conf.getRetrySize());
+			retrySizeField.setValue(retrySize);
+
+			String retryTime = String.valueOf(conf.getRetryTime());
+			retryTimeField.setValue(retryTime);
 
 			if (conf.isFailWhenErrors()) {
 				failsWhenErrors.setValue(STOP);
