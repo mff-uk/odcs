@@ -23,14 +23,16 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineAccessor.class);
 		
-	private List<String> all = Arrays.asList("id", "name", "description", "duration", "lastExecTime", "lastExecStatus");
+	private final List<String> all = Arrays.asList("id", "name", "owner.username", "description", "duration", "lastExecTime", "lastExecStatus");
 	
-	private List<String> sortable = Arrays.asList("id", "name");
+	private final List<String> sortable = Arrays.asList("id", "name");
 	
-	private List<String> filtrable = Arrays.asList("id", "name", "description");
+	private final List<String> filtrable = Arrays.asList("id", "name", "owner.username", "description");
+	
+	private final List<String> toFetch = Arrays.asList("owner");
 	
 	@Autowired
-	PipelineFacade pipelineFacade;
+	private PipelineFacade pipelineFacade;
 	
 	/**
 	 * Cache for last pipeline execution, so we do not load from DB every time
@@ -60,7 +62,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 
 	@Override
 	public List<String> toFetch() {
-		return null;
+		return toFetch;
 	}
 	
 	@Override
@@ -75,6 +77,8 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 				return "id";
 			case "name":
 				return "name";
+			case "owner.username":
+				return "owner";
 			case "description":
 				return "description";
 			case "duration":
@@ -96,6 +100,8 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 			case "name":
 				String name = object.getName();
 				return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
+			case "owner.username":
+				return object.getOwner().getUsername();
 			case "description":
 				String description = object.getDescription();
 				if(description == null) {
@@ -120,6 +126,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 			case "id":
 				return Integer.class;
 			case "name":
+			case "owner.username":
 			case "description":
 			case "duration":
 			case "lastExecTime":

@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
@@ -43,27 +44,42 @@ import org.vaadin.dialogs.ConfirmDialog;
 @Address(url = "PipelineList")
 public class PipelineListPresenterImpl implements PipelineListPresenter {
 
-	private ClassNavigator navigator;
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineListPresenterImpl.class);
+		
 	@Autowired
 	private PipelineFacade pipelineFacade;
+	
 	@Autowired
 	private DbPipeline dbPipeline;
+	
 	@Autowired
 	private PipelineAccessor pipelineAccessor;
+	
 	@Autowired
 	private PipelineListView view;
-	private PipelineListData dataObject;
-	private CachedSource<Pipeline> cachedSource;
-	private RefreshManager refreshManager;
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineListPresenterImpl.class);
-	private Date lastLoad = new Date(0L);
-	@Autowired
+	
+	@Autowired	
 	private SchedulePipeline schedulePipeline;
+	
 	@Autowired
 	private ScheduleFacade scheduleFacade;
+	
 	@Autowired
 	private PipelineHelper pipelineHelper;
 
+	@Autowired
+	private Utils utils;	
+	
+	private ClassNavigator navigator;
+
+	private PipelineListData dataObject;
+	
+	private CachedSource<Pipeline> cachedSource;
+	
+	private RefreshManager refreshManager;
+	
+	private Date lastLoad = new Date(0L);	
+	
 	@Override
 	public Object enter() {
 		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
@@ -89,6 +105,10 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 		// set data object
 		view.setDisplay(dataObject);
+		
+		// add initial name filter
+		view.setFilter("owner.username", utils.getUserName());
+		
 		// return main component
 		return viewObject;
 	}
