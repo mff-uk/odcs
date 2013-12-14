@@ -29,6 +29,10 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 
 	private boolean failWhenErrors;
 
+	private long retryTime;
+
+	private int retrySize;
+
 	public RDFExtractorConfig() {
 		this.SPARQL_endpoint = "";
 		this.Host_name = "";
@@ -38,12 +42,15 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		this.ExtractFail = true;
 		this.UseStatisticalHandler = true;
 		this.failWhenErrors = false;
+		this.retrySize = -1;
+		this.retryTime = 1000;
 	}
 
 	public RDFExtractorConfig(String SPARQL_endpoint, String Host_name,
 			String Password,
 			List<String> GraphsUri, String SPARQL_query, boolean ExtractFail,
-			boolean UseStatisticalHandler, boolean failWhenErrors) {
+			boolean UseStatisticalHandler, boolean failWhenErrors, int retrySize,
+			long retryTime) {
 
 		this.SPARQL_endpoint = SPARQL_endpoint;
 		this.Host_name = Host_name;
@@ -53,6 +60,8 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		this.ExtractFail = ExtractFail;
 		this.UseStatisticalHandler = UseStatisticalHandler;
 		this.failWhenErrors = failWhenErrors;
+		this.retrySize = retrySize;
+		this.retryTime = retryTime;
 	}
 
 	public String getSPARQLEndpoint() {
@@ -85,6 +94,14 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 
 	public boolean isFailWhenErrors() {
 		return failWhenErrors;
+	}
+
+	public long getRetryTime() {
+		return retryTime;
+	}
+
+	public int getRetrySize() {
+		return retrySize;
 	}
 
 	@Override
