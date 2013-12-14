@@ -26,7 +26,13 @@ public class Utils {
 		return rows;
 	}
 	
+	public String getUserName() {
+		User user = authCtx.getUser();		
+		return user == null ? "" : user.getUsername();
+	}
+	
 	public static int getColumnMaxLenght() {
 		return 100;
 	}
+	
 }
