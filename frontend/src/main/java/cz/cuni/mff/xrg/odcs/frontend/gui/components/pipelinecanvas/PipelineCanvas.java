@@ -376,16 +376,22 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 	
 	public void validateGraph() {
+		boolean isGraphValid = true;
 		for(Node node : graph.getNodes()) {
 			DPUInstanceRecord dpu = node.getDpuInstance();
 			boolean isValid = checkDPUValidity(dpu);
+			isGraphValid &= isValid;
 			getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
 		}
 		
 		EdgeCompiler edgeCompiler = new EdgeCompiler();
 		String result = edgeCompiler.checkMandatoryInputs(graph, dpuExplorer);
 		if(result != null) {
-			Notification.show("Mandatory input(s) missing!", result, Notification.Type.ERROR_MESSAGE);
+			Notification.show("Mandatory input(s) missing!", result, Notification.Type.WARNING_MESSAGE);
+			isGraphValid = false;
+		}
+		if(isGraphValid) {
+			Notification.show("Pipeline is valid!", Notification.Type.WARNING_MESSAGE);
 		}
 	}
 

@@ -18,6 +18,8 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
@@ -29,14 +31,11 @@ import org.vaadin.addons.lazyquerycontainer.Query;
  */
 public class RDFQuery implements Query {
 
+	private static final Logger LOG = LoggerFactory.getLogger(RDFQuery.class);
 	private static final String ALL_STATEMENT_QUERY = "CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}";
-
 	private String baseQuery;
-
 	private int batchSize;
-
 	private RDFQueryDefinition qd;
-
 	private ArrayList<Item> cachedItems;
 
 	public RDFQuery(RDFQueryDefinition qd) {
@@ -53,17 +52,22 @@ public class RDFQuery implements Query {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 		try {
+			int count;
 			String filteredQuery = setWhereCriteria(baseQuery);
+			LOG.debug("Size query started...");
 			if (isAllStatementQuery(filteredQuery)) {
-				return (int) repository.getTripleCount();
+				count = (int) repository.getTripleCount();
 			} else {
-				return (int) repository.getResultSizeForQuery(filteredQuery);
+				count = (int) repository.getResultSizeForQuery(filteredQuery);
 			}
+			LOG.debug("Size query finished!");
+			return count;
 		} catch (InvalidQueryException ex) {
 			Notification.show("Query Validator",
 					"Query is not valid: "
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
+			LOG.debug("Size query exception", ex);
 		} finally {
 			repository.shutDown();
 		}
@@ -78,19 +82,21 @@ public class RDFQuery implements Query {
 	 * Load batch of items.
 	 *
 	 * @param startIndex Starting index of the item list.
-	 * @param count      Count of the items to be retrieved.
+	 * @param count Count of the items to be retrieved.
 	 * @return List of items.
 	 */
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
-
+		LOG.debug(String.format("Loading %d items from %d started...", count, startIndex));
 		if (cachedItems != null) {
+			LOG.debug("Using cached items.");
 			return cachedItems.subList(startIndex, startIndex + count);
 		}
 
 		RDFDataUnit repository = RDFDataUnitHelper
 				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
+			LOG.debug("Unable to load RDFDataUnit.");
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 
@@ -149,8 +155,10 @@ public class RDFQuery implements Query {
 					for (RDFTriple triple : (List<RDFTriple>) data) {
 						cachedItems.add(toItem(triple));
 					}
+					LOG.debug("Loading of items finished, whole result preloaded and cached.");
 					return cachedItems.subList(startIndex, startIndex + count);
 			}
+			LOG.debug("Loading of items finished.");
 			return items;
 		} catch (InvalidQueryException ex) {
 			Notification.show("Query Validator",
