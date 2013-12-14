@@ -19,13 +19,13 @@ import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 
+import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
+import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TRIG;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TTL;
