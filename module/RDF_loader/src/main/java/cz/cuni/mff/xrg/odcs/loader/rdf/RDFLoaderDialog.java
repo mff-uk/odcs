@@ -372,7 +372,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 				if (value == null) {
 
 					ex = new InvalidValueException(
-							"SPARQL endpoint must be filled!");
+							"SPARQL endpoint must be filled");
 					throw ex;
 				} else {
 					String myValue = value.toString().toLowerCase().trim();
@@ -829,6 +829,65 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		return areValid;
 	}
+	
+	private String validationMessage(){
+		
+		String errors = "";
+		try {
+			comboBoxSparql.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			errors = errors + e.getMessage();
+		}
+		
+		if(!areGraphsNameValid()){
+			if (!errors.equals("")) {
+				errors = errors + "; Graph name must start with prefix \"http://\" and contain no white spaces";
+			} else {
+				errors = errors +  "Graph name must start with prefix \"http://\" and contain no white spaces";
+			}
+		}
+		
+		try {
+			chunkParts.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			if (!errors.equals("")) {
+				errors = errors + "; "+ e.getMessage();
+			} else {
+				errors = errors +  e.getMessage();
+			}
+		}
+		
+		try {
+			retrySizeField.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			if (!errors.equals("")) {
+				errors = errors + "; "+ e.getMessage();
+			} else {
+				errors = errors + e.getMessage();
+			}
+		}
+		
+		try {
+			retryTimeField.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			if (!errors.equals("")) {
+				errors = errors + "; "+ e.getMessage();
+			} else {
+				errors = errors + e.getMessage();
+			}
+		}
+		
+		
+		if (!errors.equals(""))
+			errors = errors + ".";
+	
+		
+		return errors;
+	}
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
@@ -844,7 +903,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	@Override
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
 		if (!allComponentAreValid()) {
-			throw new ConfigException(ex.getMessage(), ex);
+			String message = validationMessage();
+			
+			throw new ConfigException(message);
 		} else {
 			saveEditedTexts();
 
