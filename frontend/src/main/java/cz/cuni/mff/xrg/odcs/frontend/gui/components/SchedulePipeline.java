@@ -322,6 +322,11 @@ public class SchedulePipeline extends Window {
 					source.hide((long)event.getProperty().getValue());
 					oldPipelineId=(long)event.getProperty().getValue();
 				}
+				else{
+					if(oldPipelineId !=0)
+						source.show(oldPipelineId);
+					oldPipelineId = 0;
+				}
 
 				if (scheduleType.getValue().equals(ScheduleType.AFTER_PIPELINE)) {
 
