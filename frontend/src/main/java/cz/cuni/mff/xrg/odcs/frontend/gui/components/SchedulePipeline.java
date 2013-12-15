@@ -65,6 +65,7 @@ public class SchedulePipeline extends Window {
 	private HorizontalLayout autoLayout;
 	private GridLayout afterLayout;
 	private Container container;
+	private Container containerCombo;
 	private HorizontalLayout inervalEveryLayout;
 	private VerticalLayout inervalLayout;
 	private TextField pipeFilter;
@@ -104,6 +105,9 @@ public class SchedulePipeline extends Window {
 	private ScheduleFacade scheduleFacade;
 	@Autowired
 	private AuthenticationContext authCtx;
+	InMemorySource<Pipeline> source;
+	InMemorySource<Pipeline> sourceCombo;
+	private long oldPipelineId=0;
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -269,8 +273,13 @@ public class SchedulePipeline extends Window {
 		coreLayout.setSpacing(true);
 		coreLayout.setMargin(true);
 		
-		container = new ReadOnlyContainer<>(
-				new InMemorySource<>(new PipelineNameAccessor(), dbPipeline));
+		source = new InMemorySource<>(new PipelineNameAccessor(), dbPipeline);
+		container = new ReadOnlyContainer<>(source);
+		
+		sourceCombo = new InMemorySource<>(new PipelineNameAccessor(), dbPipeline);
+		containerCombo = new ReadOnlyContainer<>(sourceCombo);
+		
+
 		
 		GridLayout layoutPipeline = new GridLayout(2, 2);
 		layoutPipeline.setSpacing(true);
@@ -279,7 +288,7 @@ public class SchedulePipeline extends Window {
 		//Pipeline component
 		comboPipeline = new ComboBox();
 		comboPipeline.setImmediate(true);
-		comboPipeline.setContainerDataSource(container);
+		comboPipeline.setContainerDataSource(containerCombo);
 		comboPipeline.setNullSelectionAllowed(false);
 		comboPipeline.setItemCaptionPropertyId("name");
 		//setting mandatory for the pipeline component
@@ -305,7 +314,17 @@ public class SchedulePipeline extends Window {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				
+				if(event.getProperty().getValue()!=null){
+					
+					if(oldPipelineId !=0)
+						source.show(oldPipelineId);
+					source.hide((long)event.getProperty().getValue());
+					oldPipelineId=(long)event.getProperty().getValue();
+				}
+
 				if (scheduleType.getValue().equals(ScheduleType.AFTER_PIPELINE)) {
+
 					coreLayout.removeComponent(0, 3);
 					afterLayout = buildAfterLayout();
 					coreLayout.addComponent(afterLayout, 0, 3);
@@ -597,6 +616,7 @@ public class SchedulePipeline extends Window {
 				}
 				
 				close();
+
 				
 			}
 		});
