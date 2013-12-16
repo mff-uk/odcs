@@ -297,6 +297,17 @@ CREATE TABLE `RDF_NS_PREFIX`
   UNIQUE (`name`)
 );
 
+-- Table with timestamps when was the last time users opened pipelines in canvas
+CREATE SEQUENCE `seq_ppl_open_event` START WITH 100;
+CREATE TABLE `PPL_OPEN_EVENT`
+(
+  `id` INTEGER AUTO_INCREMENT,
+  `pipeline_id` INTEGER NOT NULL,
+  `user_id` INTEGER NOT NULL,
+  `opened` DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
 -- CONSTRAINTS #################################################################
 
 
@@ -506,6 +517,18 @@ ALTER TABLE `USR_USER_ROLE`
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
+-- Table `PPL_MODEL_USERS`
+ALTER TABLE `PPL_OPEN_EVENT`
+  ADD CONSTRAINT `PPL_OPEN_EVENT_USR_USER_id_id` FOREIGN KEY (`user_id`)
+    REFERENCES `USR_USER` (`id`)
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE `PPL_OPEN_EVENT`
+  ADD CONSTRAINT `PPL_OPEN_EVENT_PPL_MODEL_id_id` FOREIGN KEY (`pipeline_id`)
+    REFERENCES `PPL_MODEL` (`id`)
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
+
 -- TRIGGERS      ###############################################################
 
 
@@ -575,3 +598,5 @@ CREATE TABLE `LOGGING`
 
 CREATE INDEX `ix_LOGGING_dpu` ON `LOGGING` (`dpu`);
 CREATE INDEX `ix_LOGGIN_execution` ON `LOGGING` (`execution`);
+
+-- File must end with empty line, so last query is followed by enter.

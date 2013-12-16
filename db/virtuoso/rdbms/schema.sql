@@ -22,6 +22,7 @@ DROP TABLE "DB"."ODCS"."USR_USER_ROLE";
 DROP TABLE "DB"."ODCS"."USR_USER";
 DROP TABLE "DB"."ODCS"."SCH_EMAIL";
 DROP TABLE "DB"."ODCS"."RDF_NS_PREFIX";
+DROP TABLE "DB"."ODCS"."PPL_OPEN_EVENT";
 
 sequence_set('seq_dpu_record', 100, 1); -- shared sequence for both dpu_instance and dpu_template
 CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
@@ -316,6 +317,17 @@ CREATE TABLE "DB"."ODCS"."RDF_NS_PREFIX"
   UNIQUE ("name")
 );
 
+-- Table with timestamps when was the last time users opened pipelines in canvas
+sequence_set('seq_ppl_open_event', 100, 1);
+CREATE TABLE "DB"."ODCS"."PPL_OPEN_EVENT"
+(
+  "id" INTEGER IDENTITY,
+  "pipeline_id" INTEGER NOT NULL,
+  "user_id" INTEGER NOT NULL,
+  "opened" DATETIME NOT NULL,
+  PRIMARY KEY ("id")
+);
+
 -- CONSTRAINTS #################################################################
 
 
@@ -522,6 +534,18 @@ ALTER TABLE "DB"."ODCS"."USR_USER"
 ALTER TABLE "DB"."ODCS"."USR_USER_ROLE"
   ADD CONSTRAINT "USR_USER_USR_USER_ROLE_id_id" FOREIGN KEY ("user_id")
     REFERENCES "DB"."ODCS"."USR_USER" ("id")
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+-- Table "PPL_MODEL_USERS"
+ALTER TABLE "DB"."ODCS"."PPL_OPEN_EVENT"
+  ADD CONSTRAINT "PPL_OPEN_EVENT_USR_USER_id_id" FOREIGN KEY ("user_id")
+    REFERENCES "DB"."ODCS"."USR_USER" ("id")
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE "DB"."ODCS"."PPL_OPEN_EVENT"
+  ADD CONSTRAINT "PPL_OPEN_EVENT_PPL_MODEL_id_id" FOREIGN KEY ("pipeline_id")
+    REFERENCES "DB"."ODCS"."PPL_MODEL" ("id")
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 

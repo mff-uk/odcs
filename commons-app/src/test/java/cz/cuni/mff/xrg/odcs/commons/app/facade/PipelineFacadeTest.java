@@ -1,11 +1,14 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -21,6 +24,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Test suite for pipeline facade interface.
@@ -256,5 +260,29 @@ public class PipelineFacadeTest {
 		assertNotSame(ppl, nPpl1);
 		assertEquals(newName1, nPpl1.getName());
 		assertEquals(ppl.getDescription(), nPpl1.getDescription());
+	}
+	
+	@Test
+	@Transactional
+	public void testOpenPipelineEvent() {
+		
+		// mock logged in user
+		AuthenticationContext authCtx = mock(AuthenticationContext.class);
+		when(authCtx.getUser()).thenReturn(em.find(User.class, 1L));
+		facade.setAuthCtx(authCtx);
+		
+		// fetch a pipeline we will use
+		Pipeline pipe = facade.getPipeline(1L);
+		
+		// check we have no events so far
+		assertFalse(facade.getOpenPipelineEvents(pipe).size() > 0);
+		
+		// create event
+		facade.createOpenEvent(pipe);
+		em.flush();
+		
+		// check we get the event back
+		List<OpenEvent> events = facade.getOpenPipelineEvents(pipe);
+		assertTrue(events.size() > 0);
 	}
 }

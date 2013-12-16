@@ -4,7 +4,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -48,6 +50,14 @@ public class PipelineFacade {
 	
 	@Autowired
 	private DPUFacade dpuFacade;
+	
+	@Autowired
+	private DbOpenEvent openEventDao;
+	
+	/**
+	 * Timeout how long will we consider {@link OpenEvent} active.
+	 */
+	private static final int PPL_OPEN_TTL = 10;
 
     /* ******************* Methods for managing Pipeline ******************** */
     /**
@@ -196,6 +206,40 @@ public class PipelineFacade {
 			}
 		}
 		return dpus;
+	}
+	
+	/**
+	 * Creates an open pipeline event with current timestamp. User is taken from
+	 * authentication context (currently logged in user).
+	 * 
+	 * @param pipeline which is open
+	 */
+	@Transactional
+	public void createOpenEvent(Pipeline pipeline) {
+		
+		User user = authCtx.getUser();
+		OpenEvent event = openEventDao.getOpenEvent(user, pipeline);
+		
+		if (event == null) {
+			event = new OpenEvent();
+			event.setPipeline(pipeline);
+			event.setUser(user);
+		}
+		
+		event.setTimestamp(new Date());
+		openEventDao.save(event);
+	}
+	
+	/**
+	 * Lists all open events representing a list of pipeline that are currently
+	 * open in pipeline canvas.
+	 * 
+	 * @param pipeline
+	 * @return list of open events
+	 */
+	public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
+		Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
+		return openEventDao.getOpenEvents(pipeline, from);
 	}
 	
     /* ******************** Methods for managing PipelineExecutions ********* */
@@ -369,4 +413,14 @@ public class PipelineFacade {
         execution.stop();
         save(execution);
     }
+
+	/**
+	 * Setter for mocking authenticated users.
+	 * 
+	 * @param authCtx authentication context
+	 */
+	void setAuthCtx(AuthenticationContext authCtx) {
+		this.authCtx = authCtx;
+	}
+
 }

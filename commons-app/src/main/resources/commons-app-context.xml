@@ -74,6 +74,7 @@
     <!-- Application DAO -->
     <bean id="dbPipeline" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipelineImpl" />
     <bean id="dbExecution" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecutionImpl" />
+    <bean id="dbOpenEvent" class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEventImpl" />
     <bean id="dbTemplate" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecordImpl" />
     <bean id="dbInstance" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUInstanceRecordImpl" />
     <bean id="dbMessage" class="cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecordImpl" />

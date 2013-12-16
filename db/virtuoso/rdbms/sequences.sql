@@ -14,3 +14,4 @@ sequence_set('seq_sch_notification', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."OD
 sequence_set('seq_sch_email', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."SCH_EMAIL"), 1);
 sequence_set('seq_usr_user', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."USR_USER"), 1);
 sequence_set('seq_rdf_ns_prefix', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."RDF_NS_PREFIX"), 1);
+sequence_set('seq_ppl_open_event', (SELECT COALESCE(MAX(id)+1,1) FROM "DB"."ODCS"."PPL_OPEN_EVENT"), 1);

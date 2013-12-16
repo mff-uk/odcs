@@ -11,6 +11,7 @@
     <class>cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord</class>
+    <class>cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge</class>
