@@ -147,12 +147,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Override
 	public void refreshEventHandler() {
 		boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+		view.refresh(hasModifiedExecutions);
 		if (hasModifiedExecutions) {
 			lastLoad = new Date();
 			cachedSource.invalidate();
 			dataObject.getContainer().refresh();
 		}
-		view.refresh(hasModifiedExecutions);
 	}
 
 	@Override

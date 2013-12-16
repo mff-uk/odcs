@@ -95,7 +95,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 		// add column
 		tablePipelines.setImmediate(true);
-		tablePipelines.addGeneratedColumn("", 3, createColumnGenerator(presenter));
+		tablePipelines.addGeneratedColumn("", 4, createColumnGenerator(presenter));
 		tablePipelines.setVisibleColumns();
 
 		tablePipelines.setFilterBarVisible(true);
