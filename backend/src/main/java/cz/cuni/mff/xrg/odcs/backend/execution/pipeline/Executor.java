@@ -425,9 +425,14 @@ public class Executor implements Runnable {
 		// publish information for the rest of the application
 		// that the execution finished ..
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
-				
-		// flush the logs
-//		logAppender.flush();
+		
+		// the logs are fulshed every 4300 ms, so we wait for
+		// 5 seconds before ending
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException ex) {
+			// ok stop waiting and end 
+		}
 		
 		// save the execution
 		try {
