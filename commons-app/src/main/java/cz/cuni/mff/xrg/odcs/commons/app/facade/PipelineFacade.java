@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -198,17 +197,7 @@ public class PipelineFacade {
 		}
 		return dpus;
 	}
-
-    /**
-     * Execute the given pipeline.
-     *
-     * @param pipeline
-     * @param debug
-     */
-    public void run(Pipeline pipeline, boolean debug) {
-        throw new UnsupportedOperationException();
-    }
-
+	
     /* ******************** Methods for managing PipelineExecutions ********* */
     /**
      * Creates a new {@link PipelineExecution}, which represents a pipeline run.
