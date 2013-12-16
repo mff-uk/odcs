@@ -29,9 +29,9 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 
 	private boolean failWhenErrors;
 
-	private long retryTime;
+	private Long retryTime;
 
-	private int retrySize;
+	private Integer retrySize;
 
 	public RDFExtractorConfig() {
 		this.SPARQL_endpoint = "";
@@ -43,7 +43,7 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		this.UseStatisticalHandler = true;
 		this.failWhenErrors = false;
 		this.retrySize = -1;
-		this.retryTime = 1000;
+		this.retryTime = (long)1000;
 	}
 
 	public RDFExtractorConfig(String SPARQL_endpoint, String Host_name,
@@ -96,11 +96,11 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		return failWhenErrors;
 	}
 
-	public long getRetryTime() {
+	public Long getRetryTime() {
 		return retryTime;
 	}
 
-	public int getRetrySize() {
+	public Integer getRetrySize() {
 		return retrySize;
 	}
 

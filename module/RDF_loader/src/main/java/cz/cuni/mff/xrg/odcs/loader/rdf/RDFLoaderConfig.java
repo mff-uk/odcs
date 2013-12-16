@@ -31,9 +31,9 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 
 	private boolean validDataBefore;
 
-	private long retryTime;
+	private Long retryTime;
 
-	private int retrySize;
+	private Integer retrySize;
 
 	public RDFLoaderConfig() {
 		this.SPARQL_endpoint = "";
@@ -45,7 +45,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.chunkSize = 100;
 		this.validDataBefore = false;
 		this.retrySize = -1;
-		this.retryTime = 1000;
+		this.retryTime = (long)1000;
 	}
 
 	public RDFLoaderConfig(String SPARQL_endpoint, String Host_name,
@@ -98,11 +98,11 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		return validDataBefore;
 	}
 
-	public long getRetryTime() {
+	public Long getRetryTime() {
 		return retryTime;
 	}
 
-	public int getRetrySize() {
+	public Integer getRetrySize() {
 		return retrySize;
 	}
 

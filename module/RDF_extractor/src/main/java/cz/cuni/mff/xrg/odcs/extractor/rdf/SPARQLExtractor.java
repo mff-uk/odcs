@@ -72,7 +72,7 @@ public class SPARQLExtractor {
 	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are stored.
+	 * @param defaultGraphURI name of graph where RDF data are stored.
 	 * @throws RDFException when extraction data from SPARQL endpoint fail.
 	 */
 	public void extractFromSPARQLEndpoint(URL endpointURL,
@@ -88,7 +88,7 @@ public class SPARQLExtractor {
 	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are stored.
+	 * @param defaultGraphURI name of graph where RDF data are stored.
 	 * @param hostName        String name needed for authentication.
 	 * @param password        String password needed for authentication.
 	 *
@@ -107,7 +107,7 @@ public class SPARQLExtractor {
 	 *
 	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
 	 *                        RDF data.
-	 * @param defaultGraphUri name of graph where RDF data are loading.
+	 * @param defaultGraphURI name of graph where RDF data are loading.
 	 * @param query           String SPARQL query.
 	 * @param hostName        String name needed for authentication.
 	 * @param password        String password needed for authentication.
@@ -175,7 +175,7 @@ public class SPARQLExtractor {
 	 *
 	 * @param endpointURL        Remote URL connection to SPARQL endpoint
 	 *                           contains RDF data.
-	 * @param defaultGraphsUri   List with names of graph where RDF data are
+	 * @param endpointGraphsURI   List with names of graph where RDF data are
 	 *                           loading.
 	 * @param query              String SPARQL query.
 	 * @param hostName           String name needed for authentication.

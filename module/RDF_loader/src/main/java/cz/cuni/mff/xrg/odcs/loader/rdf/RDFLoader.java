@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		implements ConfigDialogProvider<RDFLoaderConfig> {
 
-	private final Logger logger = LoggerFactory.getLogger(RDFLoader.class);
+	private final Logger LOG = LoggerFactory.getLogger(RDFLoader.class);
 
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
@@ -62,8 +62,17 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final long chunkSize = config.getChunkSize();
 		final boolean validateDataBefore = config.isValidDataBefore();
 
-		final int retrySize = config.getRetrySize();
-		final long retryTime = config.getRetryTime();
+		Integer retrySize = config.getRetrySize();
+		if (retrySize == null) {
+			retrySize = -1;
+			LOG.info("retrySize is null, using -1 instead");
+		}
+		Long retryTime = config.getRetryTime();
+		if (retryTime == null) {
+			retryTime = (long)1000;
+			LOG.info("retryTime is null, using 1000 instead");
+		}
+
 
 		if (validateDataBefore) {
 			DataValidator dataValidator = new RepositoryDataValidator(
@@ -71,7 +80,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 			if (!dataValidator.areDataValid()) {
 				final String message = "RDF Data to load are not valid - LOADING to SPARQL FAIL";
-				logger.error(dataValidator.getErrorMessage());
+				LOG.error(dataValidator.getErrorMessage());
 
 				context.sendMessage(MessageType.WARNING, message, dataValidator
 						.getErrorMessage());
@@ -85,7 +94,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			}
 		}
 		final long triplesCount = rdfDataUnit.getTripleCount();
-		logger.info("Loading {} triples", triplesCount);
+		LOG.info("Loading {} triples", triplesCount);
 
 		try {
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,

@@ -61,16 +61,17 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 					.getHandlerType(useStatisticHandler, failWhenErrors);
 
 			final boolean extractFail = config.isExtractFail();
-			final int retrySize = config.getRetrySize();
-			final long retryTime = config.getRetryTime();
-
-			LOG.debug("endpointURL: {}", endpointURL);
-			LOG.debug("defaultGraphsUri: {}", defaultGraphsUri);
-			LOG.debug("constructQuery: {}", constructQuery);
-			LOG.debug("hostName: {}", hostName);
-			LOG.debug("password: {}", password);
-			LOG.debug("useStatisticHandler: {}", useStatisticHandler);
-			LOG.debug("extractFail: {}", extractFail);
+			
+			Integer retrySize = config.getRetrySize();
+			if (retrySize == null) {
+				retrySize = -1;
+				LOG.info("retrySize is null, using -1 instead");
+			}
+			Long retryTime = config.getRetryTime();
+			if (retryTime == null) {
+				retryTime = (long)1000;
+				LOG.info("retryTime is null, using 1000 instead");
+			}
 
 			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
 					retrySize, retryTime);
