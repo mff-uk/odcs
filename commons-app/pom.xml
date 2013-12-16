@@ -271,6 +271,26 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 			
+                        <!-- Process classes after compilation to weave bytecode for JPA entities -->
+                        <plugin>
+                                <artifactId>maven-antrun-plugin</artifactId>
+                                <executions>
+                                        <execution>
+                                                <phase>process-classes</phase>
+                                                <configuration>
+                                                        <tasks>
+                                                                <java classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeave"
+                                                                          classpathref="maven.runtime.classpath" fork="true">
+                                                                        <arg line="-loglevel FINE -persistenceinfo src/main/resources target/classes target/classes"/>
+                                                                </java>
+                                                        </tasks>
+                                                </configuration>
+                                                <goals>
+                                                        <goal>run</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                        </plugin>                        
 				
 			<!-- copy common resource files -->
 			<plugin>
