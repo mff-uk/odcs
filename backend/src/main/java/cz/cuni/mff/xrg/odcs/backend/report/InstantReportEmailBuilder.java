@@ -60,9 +60,15 @@ class InstantReportEmailBuilder {
 				body.append("<tr bgcolor=\"#FFFFA0\">");
 				break;
 			}
+					
 			// name
 			body.append("<td>");
-			body.append(message.getDpuInstance().getName());
+			if (message.getDpuInstance() == null) {
+				// no dpu ..
+			} else {
+				// add the dpu name ..
+				body.append(message.getDpuInstance().getName());
+			}
 			body.append("</td>");
 			// time
 			body.append("<td>");

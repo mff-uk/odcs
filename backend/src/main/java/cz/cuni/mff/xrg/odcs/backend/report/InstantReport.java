@@ -153,16 +153,17 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
 					return;
 				}
 
-				for (String email : emails) {
-					LOG.debug("Sending email for schedule {} on {}", 
-							schedule.getName(), email);
-				}
-				
 				final String subject = subjectInstant(execution, schedule);
 				final String body = emailBuilder.build(execution, schedule);
 				// create list of recipients
 				ArrayList<String> recipients = new ArrayList<>();
 				recipients.addAll(emails);
+				
+				for (String email : emails) {
+					LOG.debug("Sending email for schedule {} on {}", 
+							schedule.getName(), email);
+				}			
+				
 				emailSender.send(subject, body, recipients);
 			}
 		}
