@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -130,10 +131,14 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	@Async
 	@Scheduled(fixedDelay = 4300)
 	public synchronized void flush() {
-
+		
+		Date start = new Date();
+		LOG.debug("flush()");
+		
 		if (!supportsBatchUpdates) {
 			// no batches, the data are stored immediately
 			// we have nothing to do
+			LOG.debug("flush() -> no batch update");
 			return;
 		}
 
@@ -146,6 +151,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 		// do we have some logs to store?
 		if (secondaryList.isEmpty()) {
+			LOG.debug("flush() -> no data");
 			return;
 		}
 
@@ -153,7 +159,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		boolean nextTry = true;
 		while(nextTry) {
 			// get connection
+			LOG.debug("flush() : get connection");
 			Connection connection = getConnection();
+			LOG.debug("flush() : flushIntoDatabase");
 			// update next try based on result
 			// if the save failed, we try it again .. 
 			nextTry = !flushIntoDatabase(connection, secondaryList);
@@ -162,7 +170,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			DBHelper.closeConnection(connection);
 		}
 		// the data has been saved, we can clear the buffer
-		secondaryList.clear();		
+		secondaryList.clear();
+		
+		LOG.debug("flush() -> finished in: {} ms ", (new Date()).getTime() - start.getTime() );
 	}
 
 	/**
