@@ -427,7 +427,7 @@ public class Executor implements Runnable {
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
 				
 		// flush the logs
-		logAppender.flush();
+//		logAppender.flush();
 		
 		// save the execution
 		try {
