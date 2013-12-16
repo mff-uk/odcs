@@ -412,7 +412,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setColumnWidth("status", 50);
 		executionTable.setColumnWidth("isDebugging", 50);
 		executionTable.setColumnWidth("duration", 60);
-		executionTable.setColumnWidth("actions", 200);
+		executionTable.setColumnWidth("", 200);
 		executionTable.setColumnWidth("id", 50);
 		executionTable.setSortEnabled(true);
 		executionTable.setPageLength(utils.getPageLength());
