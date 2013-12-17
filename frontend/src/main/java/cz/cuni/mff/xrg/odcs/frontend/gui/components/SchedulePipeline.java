@@ -167,6 +167,7 @@ public class SchedulePipeline extends Window {
 			valueInt.setValue(1);
 			valueTol.setValue(1);
 			notifyThis.setValue(true);
+			emailNotifications.getDefaultScheduleNotificationRecord(selectedSchedule);
 			
 			if(selectPipe != null) {
 				selectPipe.setValue(null);
@@ -226,10 +227,14 @@ public class SchedulePipeline extends Window {
 			
 			if (selectedSchedule.getNotification() != null) {
 				notifyThis.setValue(false);
+				emailNotifications.getScheduleNotificationRecord(selectedSchedule);
+				email.getScheduleEmailNotification(selectedSchedule);
 			}
+			else{
+				notifyThis.setValue(true);
+				emailNotifications.getDefaultScheduleNotificationRecord(selectedSchedule);
 			
-			emailNotifications.getScheduleNotificationRecord(selectedSchedule);
-			email.getScheduleEmailNotification(selectedSchedule);
+			}
 			
 			selectSch = selectedSchedule;
 		}
@@ -547,7 +552,7 @@ public class SchedulePipeline extends Window {
 				Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 				
 				
-				if (notifyThis.getValue().equals(true)) {
+				if (notifyThis.getValue().equals(false)) {
 					
 					if (emailLayout.isEnabled()) {
 						String errorText = "";
@@ -621,7 +626,6 @@ public class SchedulePipeline extends Window {
 				}
 				
 				close();
-
 				
 			}
 		});
