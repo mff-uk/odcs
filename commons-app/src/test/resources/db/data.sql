@@ -2,12 +2,17 @@
 -- Sample user with admin role
 INSERT INTO SCH_EMAIL(id,e_user,e_domain)
  VALUES(1,'user','example.com');
+INSERT INTO SCH_EMAIL(id,e_user,e_domain)
+ VALUES(2,'pdoe','example.com');
 
 INSERT INTO USR_USER(id,username,email_id,u_password,full_name)
  VALUES(1,'jdoe',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Doe');
+INSERT INTO USR_USER(id,username,email_id,u_password,full_name)
+ VALUES(2,'pdoe',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','Peter Doe');
 
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,0);
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,1);
+INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(2,1);
 
 -- Testing piepline (DBpedia with empty configurations)
 INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description)
@@ -64,9 +69,9 @@ INSERT INTO SCH_SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
 INSERT INTO SCH_SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
  VALUES(2,2,1,1);
 INSERT INTO SCH_EMAIL(id,e_user,e_domain)
- VALUES(2,'scheduler','example.com');
+ VALUES(3,'scheduler','example.com');
 INSERT INTO SCH_SCH_NOTIFICATION_EMAIL(notification_id,email_id)
- VALUES(1,2);
+ VALUES(1,3);
 
 INSERT INTO SCH_USR_NOTIFICATION(id,user_id,type_success,type_error)
  VALUES(1,1,1,1);

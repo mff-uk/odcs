@@ -34,7 +34,7 @@ public class UserFacadeTest {
 	public void testGetAllUsers() {
 		List<User> users = facade.getAllUsers();
 		assertNotNull(users);
-		assertEquals(1, users.size());
+		assertEquals(2, users.size());
 		
 		User user = users.get(0);
 		assertNotNull(user);
@@ -78,8 +78,8 @@ public class UserFacadeTest {
 	 */
 	@Test @Transactional
 	public void testDelete() {
-		User user = facade.getUser(1L);
-		facade.delete(user);
+		facade.delete(facade.getUser(1L));
+		facade.delete(facade.getUser(2L));
 		List<User> users = facade.getAllUsers();
 		assertNotNull(users);
 		assertTrue(users.isEmpty());
