@@ -30,14 +30,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.GraphDeleter;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.NamespacePrefixes;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Scope;
@@ -105,10 +104,10 @@ public class Settings extends ViewComponent {
 	private NamespacePrefixes prefixesList;
 
 	private TextField rows;
-	
+
 	@Autowired
 	private AuthenticationContext authCtx;
-	
+
 	@Autowired
 	private UserFacade userFacade;
 
@@ -206,32 +205,70 @@ public class Settings extends ViewComponent {
 		pipelinesLayout.setImmediate(true);
 		pipelinesLayout.setStyleName("settings");
 		pipelinesLayout.setWidth("100%");
-		pipelinesLayout.addComponent(new Label(
-				"Delete all intermediate graphs created \n by the pipelines in the debug mode"));
-		Button clearButton = new Button();
-		clearButton.addClickListener(new ClickListener() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		// add information from graph deleter
+		final Label deleteMsg = new Label("The last state of graph deleter: " + 
+				GraphDeleter.getMessage());
+		pipelinesLayout.addComponent(deleteMsg);
 
+		final Label refreshLabel = new Label(
+				"The graph deletor is currently running ...");
+		pipelinesLayout.addComponent(refreshLabel);
+		final Button refreshButton = new Button("Refresh");
+		pipelinesLayout.addComponent(refreshButton);
+		final Label clearLabel = new Label(
+				"Delete all intermediate graphs created \n by the pipelines in the debug mode");
+		pipelinesLayout.addComponent(clearLabel);
+		final Button clearButton = new Button("Clear");
+		pipelinesLayout.addComponent(clearButton);
+
+		// hide some based on current state
+		if (GraphDeleter.isRunning()) {
+			clearLabel.setVisible(false);
+			clearButton.setVisible(false);
+		} else {
+			refreshLabel.setVisible(false);
+			refreshButton.setVisible(false);
+		}
+		
+		// actions ...
+		refreshButton.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
 			@Override
 			public void buttonClick(ClickEvent event) {
-
-				RDFDataUnit virtuosoRepository = RDFDataUnitHelper
-						.getVirtuosoRepository("http://Virtuoso");
-
-				String resultMessage = virtuosoRepository
-						.deleteApplicationGraphs();
-				Notification.show("Virtuoso graph cleaning", resultMessage,
-						Notification.Type.HUMANIZED_MESSAGE);
-
+				if (GraphDeleter.isRunning()) {
+					// ok .. nothing, just show the message
+					Notification.show("The graph deletor is still running.", 
+							Notification.Type.HUMANIZED_MESSAGE);
+				} else {
+					// done .. update view
+					deleteMsg.setValue("The last state of graph deleter: " + 
+							GraphDeleter.getMessage());
+					refreshLabel.setVisible(false);
+					refreshButton.setVisible(false);
+					clearLabel.setVisible(true);
+					clearButton.setVisible(true);
+				}
 			}
 		});
 
-		clearButton.setCaption("Clear");
-		pipelinesLayout.addComponent(clearButton);
-
+		clearButton.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// start the execution
+				GraphDeleter.deleteGraphs();
+				// show notification to the user
+				Notification.show("Virtuoso graph cleaning started ...", 
+						Notification.Type.HUMANIZED_MESSAGE);
+				// and update view - hide clear and show delete
+				deleteMsg.setValue("The last state of graph deleter: " + 
+						GraphDeleter.getMessage());
+				refreshLabel.setVisible(true);
+				refreshButton.setVisible(true);
+				clearLabel.setVisible(false);
+				clearButton.setVisible(false);
+			}
+		});
 
 		//layout for Namespace Prefixes
 		prefixesLayout = new VerticalLayout();
@@ -262,7 +299,6 @@ public class Settings extends ViewComponent {
 		});
 		tabsLayout.addComponent(accountButton);
 		tabsLayout.setComponentAlignment(accountButton, Alignment.TOP_RIGHT);
-
 
 		//Scheduler notifications tab
 		notificationsButton = new NativeButton("Scheduler notifications");
@@ -399,7 +435,6 @@ public class Settings extends ViewComponent {
 		tabsLayout.addComponent(prefixesButton);
 		tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
 
-
 		shownTab = accountButton;
 		mainLayout.addComponent(tabsLayout, 0, 0);
 		mainLayout.addComponent(accountLayout, 1, 0);
@@ -414,7 +449,7 @@ public class Settings extends ViewComponent {
 	 * notifications tab
 	 *
 	 * @return notificationsLayout Layout with components of Schedule
-	 *         notifications.
+	 * notifications.
 	 */
 	private VerticalLayout buildNotificationsLayout() {
 
@@ -467,7 +502,7 @@ public class Settings extends ViewComponent {
 
 		Label rowsLabel = new Label("Number of rows in tables:");
 		rows = new TextField();
-		
+
 		Integer tableRows = loggedUser.getTableRows() != null ? loggedUser
 				.getTableRows() : 20;
 		rows.setPropertyDataSource(new ObjectProperty<>(tableRows));
@@ -478,7 +513,7 @@ public class Settings extends ViewComponent {
 		rows.setImmediate(true);
 		rows.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -555,7 +590,6 @@ public class Settings extends ViewComponent {
 				email.saveEditedTexts();
 				saveEmailNotifications();
 
-
 			}
 		});
 		buttonNotificationBar.addComponent(saveButton);
@@ -570,7 +604,7 @@ public class Settings extends ViewComponent {
 	 * Showing active tab.
 	 *
 	 * @param pressedButton Tab that was pressed.
-	 * @param layoutShow    Layaut will be shown.
+	 * @param layoutShow Layaut will be shown.
 	 */
 	private void buttonPush(Button pressedButton, VerticalLayout layoutShow) {
 
@@ -593,18 +627,16 @@ public class Settings extends ViewComponent {
 	 */
 	private boolean saveEmailNotifications() {
 
-
 		if (!emailValidationText().equals("")) {
 
-			
 			try {
 				rows.validate();
 			} catch (Validator.InvalidValueException ex) {
-				Notification.show("Failed to save settings, reason:", emailValidationText() + "; \"Number of rows in tables\" must be a number between 5 and 100. You entered \"" 
-										+ rows.getValue()+"\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
+				Notification.show("Failed to save settings, reason:", emailValidationText() + "; \"Number of rows in tables\" must be a number between 5 and 100. You entered \""
+						+ rows.getValue() + "\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
 				return false;
 			}
-			
+
 			Notification.show("Failed to save settings, reason:",
 					emailValidationText(), Notification.Type.ERROR_MESSAGE);
 			return false;
@@ -613,8 +645,8 @@ public class Settings extends ViewComponent {
 		try {
 			rows.validate();
 		} catch (Validator.InvalidValueException ex) {
-			Notification.show("Failed to save settings, reason:","\"Number of rows in tables\" must be a number between 5 and 100. You entered \"" 
-									+ rows.getValue()+"\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
+			Notification.show("Failed to save settings, reason:", "\"Number of rows in tables\" must be a number between 5 and 100. You entered \""
+					+ rows.getValue() + "\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
 
@@ -653,7 +685,7 @@ public class Settings extends ViewComponent {
 	 * confirmation window will not be shown.
 	 *
 	 * @param pressedButton New tab that was push.
-	 * @param layoutShow    Layout will be shown after save/discard changes.
+	 * @param layoutShow Layout will be shown after save/discard changes.
 	 */
 	private void myAccountSaveConfirmation(final Button pressedButton,
 			final VerticalLayout layoutShow) {
@@ -664,20 +696,20 @@ public class Settings extends ViewComponent {
 					"There are unsaved changes.\nDo you wish to save them or discard?",
 					"Save", "Discard changes",
 					new ConfirmDialog.Listener() {
-				private static final long serialVersionUID = 1L;
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public void onClose(ConfirmDialog cd) {
-					if (cd.isConfirmed()) {
-						saveEmailNotifications();
-						accountLayout = buildMyAccountLayout();
-						buttonPush(pressedButton, layoutShow);
-					} else {
-						accountLayout = buildMyAccountLayout();
-						buttonPush(pressedButton, layoutShow);
-					}
-				}
-			});
+						@Override
+						public void onClose(ConfirmDialog cd) {
+							if (cd.isConfirmed()) {
+								saveEmailNotifications();
+								accountLayout = buildMyAccountLayout();
+								buttonPush(pressedButton, layoutShow);
+							} else {
+								accountLayout = buildMyAccountLayout();
+								buttonPush(pressedButton, layoutShow);
+							}
+						}
+					});
 		} else {
 			accountLayout = buildMyAccountLayout();
 			buttonPush(pressedButton, layoutShow);
@@ -692,7 +724,7 @@ public class Settings extends ViewComponent {
 	 * confirmation window will not be shown.
 	 *
 	 * @param pressedButton New tab that was push.
-	 * @param layoutShow    Layout will be shown after save/discard changes.
+	 * @param layoutShow Layout will be shown after save/discard changes.
 	 */
 	private void notificationSaveConfirmation(final Button pressedButton,
 			final VerticalLayout layoutShow) {
@@ -702,19 +734,19 @@ public class Settings extends ViewComponent {
 					"There are unsaved changes.\nDo you wish to save them or discard?",
 					"Save", "Discard changes",
 					new ConfirmDialog.Listener() {
-				private static final long serialVersionUID = 1L;
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public void onClose(ConfirmDialog cd) {
-					if (cd.isConfirmed()) {
-						saveEmailNotifications();
-						buttonPush(pressedButton, layoutShow);
-					} else {
-						notificationsLayout = buildNotificationsLayout();
-						buttonPush(pressedButton, layoutShow);
-					}
-				}
-			});
+						@Override
+						public void onClose(ConfirmDialog cd) {
+							if (cd.isConfirmed()) {
+								saveEmailNotifications();
+								buttonPush(pressedButton, layoutShow);
+							} else {
+								notificationsLayout = buildNotificationsLayout();
+								buttonPush(pressedButton, layoutShow);
+							}
+						}
+					});
 		} else {
 			buttonPush(pressedButton, layoutShow);
 		}
@@ -798,7 +830,6 @@ public class Settings extends ViewComponent {
 		} else {
 			errorText = "At least one mail has to be filled, so that the notification can be send.";
 		}
-
 
 		return errorText;
 
