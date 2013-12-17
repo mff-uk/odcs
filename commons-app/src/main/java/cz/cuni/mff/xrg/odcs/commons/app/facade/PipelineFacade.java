@@ -232,14 +232,19 @@ public class PipelineFacade {
 	
 	/**
 	 * Lists all open events representing a list of pipeline that are currently
-	 * open in pipeline canvas.
+	 * open in pipeline canvas. Events of currently logged in user are ignored
+	 * and not included in the resulting list.
 	 * 
 	 * @param pipeline
 	 * @return list of open events
 	 */
 	public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
 		Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
-		return openEventDao.getOpenEvents(pipeline, from);
+		User loggedUser = null;
+		if (authCtx != null) {
+			loggedUser = authCtx.getUser();
+		}
+		return openEventDao.getOpenEvents(pipeline, from, loggedUser);
 	}
 	
     /* ******************** Methods for managing PipelineExecutions ********* */

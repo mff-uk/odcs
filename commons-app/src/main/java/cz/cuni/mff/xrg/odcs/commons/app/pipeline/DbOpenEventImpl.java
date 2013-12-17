@@ -33,21 +33,26 @@ public class DbOpenEventImpl extends DbAccessBase<OpenEvent>
 	}
 	
 	@Override
-	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from) {
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from, User user) {
 		
 		JPQLDbQuery<OpenEvent> jpql = new JPQLDbQuery<>();
-		String query = "SELECT e FROM OpenEvent e"
+		StringBuilder query = new StringBuilder("SELECT e FROM OpenEvent e"
 				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
-				+ " WHERE e.pipeline = :pipe";
+				+ " WHERE e.pipeline = :pipe");
 		
 		jpql.setParameter("pipe", pipeline);
 		
+		if (user != null) {
+			query.append(" AND e.owner <> :usr");
+			jpql.setParameter("usr", user);
+		}
+		
 		if (from != null) {
-			query += " AND e.timestamp >= :tsp";
+			query.append(" AND e.timestamp >= :tsp");
 			jpql.setParameter("tsp", from);
 		}
 		
-		return executeList(jpql.setQuery(query));
+		return executeList(jpql.setQuery(query.toString()));
 	}
 
 }

@@ -26,8 +26,10 @@ public interface DbOpenEvent extends DbAccess<OpenEvent> {
 	 * 
 	 * @param pipeline
 	 * @param from select only events with later timestamp
+	 * @param user who's events will not be included in the returned list,
+	 *				or null
 	 * @return list of events
 	 */
-	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from);
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from, User user);
 
 }

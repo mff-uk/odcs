@@ -266,10 +266,12 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testOpenPipelineEvent() {
 		
-		// mock logged in user
-		AuthenticationContext authCtx = mock(AuthenticationContext.class);
-		when(authCtx.getUser()).thenReturn(em.find(User.class, 1L));
-		facade.setAuthCtx(authCtx);
+		// mock authentication context for 2 different users
+		AuthenticationContext authCtx1 = mock(AuthenticationContext.class);
+		when(authCtx1.getUser()).thenReturn(em.find(User.class, 1L));
+				
+		AuthenticationContext authCtx2 = mock(AuthenticationContext.class);
+		when(authCtx2.getUser()).thenReturn(em.find(User.class, 2L));
 		
 		// fetch a pipeline we will use
 		Pipeline pipe1 = facade.getPipeline(1L);
@@ -279,13 +281,25 @@ public class PipelineFacadeTest {
 		assertFalse(facade.getOpenPipelineEvents(pipe1).size() > 0);
 		assertFalse(facade.getOpenPipelineEvents(pipe2).size() > 0);
 		
-		// create event
+		// first user opens only the first pipeline
+		facade.setAuthCtx(authCtx1);
+		facade.createOpenEvent(pipe1);
+		
+		// second user opens both pipelines
+		facade.setAuthCtx(authCtx2);
 		facade.createOpenEvent(pipe1);
 		facade.createOpenEvent(pipe2);
+		
 		em.flush();
 		
-		// check we get the event back
+		// check for first user
+		facade.setAuthCtx(authCtx1);
 		assertTrue(facade.getOpenPipelineEvents(pipe1).size() == 1);
 		assertTrue(facade.getOpenPipelineEvents(pipe2).size() == 1);
+		
+		// check for second user
+		facade.setAuthCtx(authCtx2);
+		assertTrue(facade.getOpenPipelineEvents(pipe1).size() == 1);
+		assertTrue(facade.getOpenPipelineEvents(pipe2).isEmpty());
 	}
 }
