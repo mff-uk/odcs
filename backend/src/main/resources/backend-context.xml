@@ -12,7 +12,7 @@
 	<!-- we use annotations to run tasks -->
 	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
 	<task:executor id="taskExecutor" pool-size="16" />
-	<task:scheduler id="taskScheduler" pool-size="4" />
+	<task:scheduler id="taskScheduler" pool-size="8" />
 		 
 	<bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.facade.DatabaseReconnectAspect" />
 	
