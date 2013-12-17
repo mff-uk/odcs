@@ -6,7 +6,6 @@ import javax.persistence.*;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +75,6 @@ public abstract class DPURecord {
      * Constructor with name and type of DPURecord.
      *
      * @param name
-     * @param type
      */
     public DPURecord(String name) {
         this.name = name;

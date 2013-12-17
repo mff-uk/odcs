@@ -189,6 +189,7 @@ public final class Executor implements Runnable {
 
 		boolean result = true;
 		for (PreExecutor item : preExecutors) {
+			LOG.trace("Executing pre-executor: {}", item.getClass().getSimpleName());
 			if (!item.preAction(node, contexts, dpuInstance, execution, unitInfo,
 					result)) {
 				result = false;
@@ -206,6 +207,7 @@ public final class Executor implements Runnable {
 	 */
 	private void executeInstance(Object dpuInstance) {
 		// execute
+		LOG.debug("Executing DPU ... ");
 		try {
 			if (dpuInstance instanceof DPU) {
 				((DPU) dpuInstance).execute(context);
@@ -230,6 +232,7 @@ public final class Executor implements Runnable {
 					node.getDpuInstance(), execution, this));
 			executionResult.failure();
 		}
+		LOG.debug("Executing DPU ... done");
 	}
 
 	/**
@@ -250,6 +253,7 @@ public final class Executor implements Runnable {
 
 		boolean result = true;
 		for (PostExecutor item : postExecutors) {
+			LOG.trace("Executing post-executor: {}", item.getClass().getSimpleName());
 			if (!item.postAction(node, contexts, dpuInstance, execution,
 					unitInfo)) {
 				result = false;
@@ -276,11 +280,13 @@ public final class Executor implements Runnable {
 		}
 
 		// call PreExecutors
+		LOG.debug("Executing pre-executors ...");
 		if (!executePreExecutors(dpuInstance, unitInfo)) {
 			// we failed because of preExecutors
 			executionResult.failure();
 		}
-
+		LOG.debug("Executing pre-executors ... done");
+		
 		switch (unitInfo.getState()) {
 			case PREPROCESSING:
 				// this is ok .. we continue
@@ -315,7 +321,7 @@ public final class Executor implements Runnable {
 			executionResult.stop();
 			return;
 		}
-
+		
 		// execute the given instance - also catch all exception
 		eventPublisher.publishEvent(DPUEvent.createStart(context, this));
 		if (executionResult.continueExecution()) {
@@ -337,9 +343,11 @@ public final class Executor implements Runnable {
 		}
 
 		// call PostExecutors if they fail then the execution fail
+		LOG.debug("Executing post-executors ... done");
 		if (!executePostExecutors(dpuInstance, unitInfo)) {
 			executionResult.failure();
 		}
+		LOG.debug("Executing post-executors ... done");
 
 		// we save the state into database
 		try {

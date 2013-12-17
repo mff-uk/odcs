@@ -62,13 +62,15 @@ class Configurator implements PreExecutor {
 			// can be configured
 		} else {
 			// do not configure
-			LOG.debug("DPU {} is not configurable.", node.getDpuInstance().getName());
+			LOG.debug("DPU {} is not configurable.", dpu.getName());
 			return true;
 		}
 		@SuppressWarnings("unchecked")
 		Configurable<DPUConfigObject> configurable = (Configurable<DPUConfigObject>) dpuInstance;
 		try {
 			configurable.configure(dpu.getRawConf());
+			
+			LOG.debug("DPU {} hes been configured.", dpu.getName());
 		} catch (ConfigException e) {
 			eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
 					context, this, "Failed to configure DPU."));
