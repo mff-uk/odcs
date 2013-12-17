@@ -325,6 +325,7 @@ public final class Executor implements Runnable {
 				executionResult.failure();
 			}
 		}
+		LOG.trace("DPU.executeInstance completed ..");
 
 		// set state
 		if (executionResult.executionFailed()) {
@@ -396,7 +397,7 @@ public final class Executor implements Runnable {
 
 		// run dpu
 		execute(unitInfo);
-
+		
 		// publish message, this is standart end of execution
 		eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
 
@@ -412,6 +413,8 @@ public final class Executor implements Runnable {
 
 		// we have done our job
 		executionResult.finished();
+		
+		LOG.trace("DPU execution thread is about to finish");
 	}
 
 	/**
