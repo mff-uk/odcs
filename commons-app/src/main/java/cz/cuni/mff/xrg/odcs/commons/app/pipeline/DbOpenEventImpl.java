@@ -37,10 +37,13 @@ public class DbOpenEventImpl extends DbAccessBase<OpenEvent>
 		
 		JPQLDbQuery<OpenEvent> jpql = new JPQLDbQuery<>();
 		String query = "SELECT e FROM OpenEvent e"
-				+ " LEFT JOIN FETCH e.owner u"; // eagerly load users
+				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
+				+ " WHERE e.pipeline = :pipe";
+		
+		jpql.setParameter("pipe", pipeline);
 		
 		if (from != null) {
-			query += " WHERE e.timestamp >= :tsp";
+			query += " AND e.timestamp >= :tsp";
 			jpql.setParameter("tsp", from);
 		}
 		

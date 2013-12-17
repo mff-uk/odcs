@@ -272,17 +272,20 @@ public class PipelineFacadeTest {
 		facade.setAuthCtx(authCtx);
 		
 		// fetch a pipeline we will use
-		Pipeline pipe = facade.getPipeline(1L);
+		Pipeline pipe1 = facade.getPipeline(1L);
+		Pipeline pipe2 = facade.getPipeline(2L);
 		
 		// check we have no events so far
-		assertFalse(facade.getOpenPipelineEvents(pipe).size() > 0);
+		assertFalse(facade.getOpenPipelineEvents(pipe1).size() > 0);
+		assertFalse(facade.getOpenPipelineEvents(pipe2).size() > 0);
 		
 		// create event
-		facade.createOpenEvent(pipe);
+		facade.createOpenEvent(pipe1);
+		facade.createOpenEvent(pipe2);
 		em.flush();
 		
 		// check we get the event back
-		List<OpenEvent> events = facade.getOpenPipelineEvents(pipe);
-		assertTrue(events.size() > 0);
+		assertTrue(facade.getOpenPipelineEvents(pipe1).size() == 1);
+		assertTrue(facade.getOpenPipelineEvents(pipe2).size() == 1);
 	}
 }
