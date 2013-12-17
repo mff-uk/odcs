@@ -166,8 +166,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 			String path;
 			if (extractType == FileExtractType.UPLOAD_FILE) {
-				path = fileUploadReceiver.getPath() + "/" + textFieldPath
-						.getValue().trim();
+				path = fileUploadReceiver.getPath();
 
 			} else {
 				path = textFieldPath.getValue().trim();
@@ -242,8 +241,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 		if (extractType == FileExtractType.UPLOAD_FILE) {
 
-			String filename = path.substring(path.lastIndexOf("/") + 1,
-					path.length());
+			File file = new File(path);
+			String filename = file.getName();
+
+			fileUploadReceiver.setFileName(filename);
+			fileUploadReceiver.setPath(path);
 
 			textFieldPath.setReadOnly(false); // allow value settings
 			textFieldPath.setValue(filename.trim()); // set value
@@ -283,8 +285,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	public String getDescription() {
 		String path;
 		if (extractType == FileExtractType.UPLOAD_FILE) {
-			path = fileUploadReceiver.getPath() + "/" + textFieldPath
-					.getValue().trim();
+			path = fileUploadReceiver.getPath();
 		} else {
 			path = textFieldPath.getValue().trim();
 		}
@@ -382,6 +383,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		gridLayoutCore.setMargin(true);
 		gridLayoutCore.setSpacing(true);
 
+		//create fileUploadReceiver
+		fileUploadReceiver = new FileUploadReceiver();
+
 		// OptionGroup for path type definition
 		pathType = new OptionGroup();
 		pathType.setImmediate(true);
@@ -390,6 +394,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		pathType.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+
 
 				gridLayoutCore.removeComponent(0, 1);
 				gridLayoutCore.removeComponent(0, 2);
@@ -444,7 +449,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 						FileExtractType.UPLOAD_FILE))) {
 
 					extractType = FileExtractType.UPLOAD_FILE;
-					fileUploadReceiver = new FileUploadReceiver();
 
 					//Upload component
 					fileUpload = new Upload("", fileUploadReceiver);
@@ -826,11 +830,24 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
  */
 class FileUploadReceiver implements Receiver {
 
-	private Path path;
+	private String path;
 
 	private String fileName;
 
-	public Path getPath() {
+	public FileUploadReceiver() {
+		this.path = "";
+		this.fileName = "";
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getPath() {
 		return path;
 	}
 
@@ -838,24 +855,30 @@ class FileUploadReceiver implements Receiver {
 		return fileName;
 	}
 
-	/**
-	 * return an OutputStream
-	 */
-	@Override
-	public OutputStream receiveUpload(final String filename,
-			final String MIMEType) {
-
-		this.fileName = filename;
-
+	private Path createDirectoryTempPath() {
 		try {
 			//create template directory
-			path = Files.createTempDirectory("Upload");
+			Path newPath = Files.createTempDirectory("Upload");
+			return newPath;
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 
+	}
+
+	/**
+	 * return an OutputStream
+	 */
+	@Override
+	public OutputStream receiveUpload(final String fileName,
+			final String MIMEType) {
+
 		// path for upload file in temp directory
-		File file = new File("/" + path + "/" + fileName);
+		String dirPath = createDirectoryTempPath().toString();
+		File file = new File(dirPath + "/" + fileName);
+
+		setFileName(fileName);
+		setPath(file.getAbsolutePath());
 
 		try {
 			FileOutputStream fstream = new FileOutputStream(file);
