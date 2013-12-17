@@ -9,20 +9,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUInstanceWrap;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValidationException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
-import java.io.FileNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
@@ -56,8 +51,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	@Autowired
 	private DPUExplorer dpuExplorer;
 	@Autowired
+	private PipelineValidator pipelineValidator;
+	@Autowired
 	private DPUFacade dpuFacade;
-	
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
 	/**
@@ -236,7 +232,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 					isModified = true;
 					fireEvent(new DetailClosedEvent(PipelineCanvas.this, Node.class));
 					getRpcProxy(PipelineCanvasClientRpc.class).updateNode(node.hashCode(), dpu.getName(), dpu.getDescription());
-					boolean isValid = checkDPUValidity(dpu);
+					boolean isValid = pipelineValidator.checkDPUValidity(dpu);
 					getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
 				}
 			}
@@ -374,26 +370,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
 		}
 	}
-	
-	public void validateGraph() {
-		boolean isGraphValid = true;
-		for(Node node : graph.getNodes()) {
-			DPUInstanceRecord dpu = node.getDpuInstance();
-			boolean isValid = checkDPUValidity(dpu);
-			isGraphValid &= isValid;
-			getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
-		}
-		
-		EdgeCompiler edgeCompiler = new EdgeCompiler();
-		String result = edgeCompiler.checkMandatoryInputs(graph, dpuExplorer);
-		if(result != null) {
-			Notification.show("Mandatory input(s) missing!", result, Notification.Type.WARNING_MESSAGE);
-			isGraphValid = false;
-		}
-		if(isGraphValid) {
-			Notification.show("Pipeline is valid!", Notification.Type.WARNING_MESSAGE);
-		}
-	}
 
 	/**
 	 * Method updating node position on server side.
@@ -467,25 +443,21 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		fireEvent(new ShowDebugEvent(this, debugNode));
 	}
 
-	private boolean checkDPUValidity(DPUInstanceRecord dpu) {
-		LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
-		DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
-
-		// load instance
-		AbstractConfigDialog<DPUConfigObject> confDialog;
-		try {
-			confDialog = dpuInstance.getDialog();
-			if (confDialog == null) {
-			} else {
-				// configure
-				dpuInstance.configuredDialog();
-			}
-			dpuInstance.saveConfig();
-		} catch (ModuleException | FileNotFoundException | DPUWrapException | ConfigException e) {
-			LOG.debug("DPU mandatory fields check FAILED for DPU: " + dpu.getName());
-			return false;
+	public void validateGraph() {
+		boolean isGraphValid = true;
+		for (Node node : graph.getNodes()) {
+			DPUInstanceRecord dpu = node.getDpuInstance();
+			boolean isValid = pipelineValidator.checkDPUValidity(dpu);
+			isGraphValid &= isValid;
+			getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
 		}
-		LOG.debug("DPU mandatory fields check OK for DPU: " + dpu.getName());
-		return true;
+		try {
+			isGraphValid &= pipelineValidator.validateGraphEdges(graph);
+			if (isGraphValid) {
+				Notification.show("Pipeline is valid!", Notification.Type.WARNING_MESSAGE);
+			}
+		} catch (PipelineValidationException ex) {
+			Notification.show("Mandatory input(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
+		}
 	}
 }
