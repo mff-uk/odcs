@@ -51,7 +51,7 @@ public class EmailNotifications {
 		successfulExec.addItem(NotificationRecordType.INSTANT);
 		successfulExec.addItem(NotificationRecordType.DAILY);
 		successfulExec.addItem(NotificationRecordType.NO_REPORT);
-		successfulExec.select(NotificationRecordType.DAILY);
+		successfulExec.setValue(NotificationRecordType.DAILY);
 		successfulExec.setItemCaption(NotificationRecordType.INSTANT, "Instant");
 		successfulExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report (default)");
 		successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
@@ -98,7 +98,7 @@ public class EmailNotifications {
 		errorExec.addItem(NotificationRecordType.INSTANT);
 		errorExec.addItem(NotificationRecordType.DAILY);
 		errorExec.addItem(NotificationRecordType.NO_REPORT);
-		errorExec.select(NotificationRecordType.INSTANT);
+		errorExec.setValue(NotificationRecordType.INSTANT);
 		errorExec.setItemCaption(NotificationRecordType.INSTANT, "Instant (default)");
 		errorExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report");
 		errorExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
@@ -176,6 +176,14 @@ public class EmailNotifications {
 		}
 
 	}
+	
+	public void getDefaultScheduleNotificationRecord(Schedule schedule) {
+
+		errorExec.setValue(NotificationRecordType.INSTANT);
+		successfulExec.setValue(NotificationRecordType.DAILY);
+
+	}
+
 
 	public void setDisableComponents() {
 
