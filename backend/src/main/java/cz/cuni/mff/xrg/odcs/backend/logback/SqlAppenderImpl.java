@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.backend.logback;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
@@ -252,11 +253,31 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	protected void bindStatement(ILoggingEvent event,
 			PreparedStatement stmt) throws Throwable {
 
-		// bind to the query
-		stmt.setInt(1, event.getLevel().toInteger());
-		stmt.setLong(2, event.getTimeStamp());
-		stmt.setString(3, event.getLoggerName());
-		stmt.setString(4, event.getFormattedMessage());
+		// prepare the values
+		Integer logLevel = event.getLevel().toInteger();
+		Long timeStamp = event.getTimeStamp();
+		String logger = event.getLoggerName();
+		String message = event.getFormattedMessage();
+		
+		// null check
+		if (logLevel == null) {
+			logLevel = Level.INFO_INTEGER;
+		}
+		if (timeStamp == null) {
+			timeStamp = (new Date()).getTime();
+		}
+		if (logger == null) {
+			logger = "unknown";
+		}
+		if (message == null) {
+			message = "";
+		}
+		
+		// bind
+		stmt.setInt(1, logLevel);
+		stmt.setLong(2, timeStamp);
+		stmt.setString(3, logger);
+		stmt.setString(4, message);
 
 		// get DPU and EXECUTION from MDC
 		final Map<String, String> mdc = event.getMDCPropertyMap();
