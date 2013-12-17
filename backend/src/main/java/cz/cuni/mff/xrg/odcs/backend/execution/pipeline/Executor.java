@@ -373,11 +373,17 @@ public class Executor implements Runnable {
 					break;
 				}
 			} // end of single DPU thread execution
-			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
-
-			// merge result information
-			execResult.add(dpuExecutor.getExecResult());
 			
+			// merge result information
+			ExecutionResult dpuResults = dpuExecutor.getExecResult();			
+			// check for corrent ending
+			if (dpuResults.executionEndsProperly()) {
+				// ok eecution ends properly 
+			} else {
+				LOG.warn("DPU execution ends in strange way .. ");
+			}			
+			execResult.add(dpuResults);
+			// remove MDC from logs
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
 
 		}

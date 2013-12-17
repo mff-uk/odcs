@@ -53,6 +53,15 @@ public class ExecutionResult {
 	}
 	
 	/**
+	 * Return true if the execution calls any of {@link #stop()}, {@link #failure()}
+	 * or {@link #finished()} methods.
+	 * @return 
+	 */
+	public boolean executionEndsProperly() {
+		return stop || failed || finished;
+	}
+	
+	/**
 	 * 
 	 * @return true if the execution ends without errors
 	 */
