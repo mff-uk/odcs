@@ -13,13 +13,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created with IntelliJ IDEA.
- * User: janci
- * Date: 4.12.2013
- * Time: 14:08
- * To change this template use File | Settings | File Templates.
- */
 public class ProcurementRdfSerializer extends AbstractRdfSerializer<ProcurementRecord> {
 
     public final static String NS_PROCUREMENT = "http://opendata.cz/vocabulary/procurement.rdf#";

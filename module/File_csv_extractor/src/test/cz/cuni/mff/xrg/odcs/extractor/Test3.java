@@ -1,16 +1,20 @@
-package cuni.mff.xrg.odcs.extractor;
+package cz.cuni.mff.xrg.odcs.extractor;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.extractor.file.FileCsvExtractor2;
+import cz.cuni.mff.xrg.odcs.extractor.file.FileCsvExtractor3;
 import cz.cuni.mff.xrg.odcs.extractor.file.FileCsvExtractorConfig;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import org.openrdf.model.Statement;
 
-public class Test2 {
+import java.util.List;
+
+public class Test3 {
 
     @org.junit.Test
     public void test() throws ConfigException {
-        FileCsvExtractor2 extractor = new FileCsvExtractor2();
+        FileCsvExtractor3 extractor = new FileCsvExtractor3();
         FileCsvExtractorConfig config = new FileCsvExtractorConfig();
         extractor.configureDirectly(config);
 
@@ -20,6 +24,11 @@ public class Test2 {
             // run the execution
             String input = null;
             env.run(extractor);
+            List<Statement> triplets = output.getTriples();
+            String rdfPath = "e://eea//comsode//test.rdf";
+            output.loadToFile(rdfPath, RDFFormatType.RDFXML);
+            // verify result
+//            assertTrue(input == output);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } finally {

@@ -176,7 +176,7 @@ public class TransformCsvToRdf {
 
             try {
                 //load a properties file from class path, inside static method
-                prop.load(FileCsvExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
+                prop.load(FileCsvExtractor3.class.getClassLoader().getResourceAsStream("config.properties"));
                 //get the property value and print it out
                 debugProcessOnlyNItems = Integer.valueOf(prop.getProperty("debugProcessOnlyNItems"));
 
