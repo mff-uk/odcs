@@ -73,7 +73,12 @@ class Configurator implements PreExecutor {
 			LOG.debug("DPU {} hes been configured.", dpu.getName());
 		} catch (ConfigException e) {
 			eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
-					context, this, "Failed to configure DPU."));
+					context, this, "Failed to configure DPU.", e));
+			// stop the execution
+			return false;
+		} catch (Throwable t) {
+			eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
+					context, this, "dpu.configure throws non ConfigException", t));
 			// stop the execution
 			return false;
 		}
