@@ -59,6 +59,12 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	protected boolean supportsBatchUpdates;
 
 	/**
+	 * Lock used to secure privilege access to the {@link #primaryList}
+	 * and {@link #secondaryList}
+	 */
+	private final Object lockList = new Object();
+	
+	/**
 	 * Return string that is used as insert query into logging table.
 	 *
 	 * @return
@@ -144,7 +150,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		}
 
 		// switch the logs buffers
-		synchronized (this) {
+		synchronized (lockList) {
 			List<ILoggingEvent> swap = primaryList;
 			primaryList = secondaryList;
 			secondaryList = swap;
@@ -235,7 +241,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		if (supportsBatchUpdates) {
 			// we can use batch .. so we just add the logs into 
 			// the queue
-			synchronized (this) {
+			synchronized (lockList) {
 				primaryList.add(eventObject);
 			}
 		} else {
