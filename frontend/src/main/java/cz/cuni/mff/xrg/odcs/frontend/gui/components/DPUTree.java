@@ -9,7 +9,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
@@ -64,7 +64,7 @@ public class DPUTree extends CustomComponent {
 		@Override
 		public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
 			DPUTemplateRecord dpu = (DPUTemplateRecord)itemId;
-			return dpu.getVisibility() == VisibilityType.PRIVATE;
+			return dpu.getShareType() == ShareType.PRIVATE;
 		}
 
 		@Override
@@ -213,7 +213,7 @@ public class DPUTree extends CustomComponent {
 			@Override
 			public String getStyle(Tree source, Object itemId) {
 				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
-				if(dpu.getVisibility() == VisibilityType.PRIVATE) {
+				if(dpu.getShareType() == ShareType.PRIVATE) {
 					return "private";
 				} else {
 					return "public";

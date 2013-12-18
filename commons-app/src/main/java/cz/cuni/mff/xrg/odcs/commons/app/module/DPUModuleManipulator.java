@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -168,7 +168,7 @@ public class DPUModuleManipulator {
 		newTemplate.setType(dpuType);
 		newTemplate.setDescription("");
 		newTemplate.setJarDescription(jarDescription);
-		newTemplate.setVisibility(VisibilityType.PRIVATE);
+		newTemplate.setVisibility(ShareType.PRIVATE);
 
 		// validate
 		if (validators != null) {

@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -38,7 +38,7 @@ class AuthorizatorImpl implements Authorizator {
         Predicate predicate = null;
         
         if (SharedEntity.class.isAssignableFrom(entityClass)) {
-            predicate = or(cb, predicate, cb.equal(root.get("visibility"), VisibilityType.PUBLIC));
+            predicate = or(cb, predicate, root.get("shareType").in(ShareType.PUBLIC));
         }
 
         if (OwnedEntity.class.isAssignableFrom(entityClass)) {

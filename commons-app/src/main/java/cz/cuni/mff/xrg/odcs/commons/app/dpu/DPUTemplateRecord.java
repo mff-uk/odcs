@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 import java.io.File;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
@@ -35,7 +35,7 @@ public class DPUTemplateRecord extends DPURecord
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "visibility")
-	private VisibilityType visibility;
+	private ShareType shareType;
 
 	/**
 	 * Description obtained from jar file manifest.
@@ -98,14 +98,14 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	/**
-	 * Copy constructor. New instance always has private visibility, no matter
-	 * what setting was in original DPU.
+	 * Copy constructor. New instance always has private shareType, no matter
+ what setting was in original DPU.
 	 * 
 	 * @param dpu
 	 */
 	public DPUTemplateRecord(DPUTemplateRecord dpu) {
 		super(dpu);
-		visibility = VisibilityType.PRIVATE;		
+		shareType = ShareType.PRIVATE;		
 		type = dpu.type;
 		parent = dpu.parent;
 		if (parent == null) {
@@ -127,7 +127,7 @@ public class DPUTemplateRecord extends DPURecord
 	 */
 	public DPUTemplateRecord(DPUInstanceRecord dpuInstance) {
 		super(dpuInstance);
-		this.visibility = VisibilityType.PRIVATE;
+		this.shareType = ShareType.PRIVATE;
 		this.type = dpuInstance.getType();
 
 		// copy jarDescription from template of previous one ..
@@ -146,12 +146,12 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	@Override
-	public VisibilityType getVisibility() {
-		return visibility;
+	public ShareType getShareType() {
+		return shareType;
 	}
 
-	public void setVisibility(VisibilityType visibility) {
-		this.visibility = visibility;
+	public void setVisibility(ShareType visibility) {
+		this.shareType = visibility;
 	}
 
 	public String getJarDescription() {
