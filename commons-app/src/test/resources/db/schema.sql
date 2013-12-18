@@ -308,6 +308,8 @@ CREATE TABLE `PPL_OPEN_EVENT`
   `opened` DATETIME NOT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE INDEX `ix_PPL_OPEN_EVENT_pipeline_id` ON `PPL_OPEN_EVENT` (`pipeline_id`);
+CREATE INDEX `ix_PPL_OPEN_EVENT_user_id` ON `PPL_OPEN_EVENT` (`user_id`);
 
 -- CONSTRAINTS #################################################################
 
