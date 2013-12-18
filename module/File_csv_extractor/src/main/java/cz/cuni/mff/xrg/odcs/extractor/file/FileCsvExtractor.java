@@ -55,9 +55,8 @@ public class FileCsvExtractor extends ConfigurableBase<FileCsvExtractorConfig>
             //load a properties file from class path, inside static method
             prop.load(FileCsvExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
             //get the property value and print it out
-            String sourceCSV = prop.getProperty("sourceCSV");
-            path = sourceCSV;
-            LOG.debug("targetRDF is: " + sourceCSV);
+            path = prop.getProperty("sourceCSV");
+            LOG.debug("sourceCSV is: " + path);
 
         } catch (IOException e) {
             LOG.error("error was occoured while it was reading property file", e);
