@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Vector;
 
 /**
@@ -46,7 +48,22 @@ public class FileCsvExtractor extends ConfigurableBase<FileCsvExtractorConfig>
     public void execute(DPUContext context) throws DataUnitException, DPUException {
         final String baseURI = "";
         final FileExtractType extractType = config.fileExtractType;
-        final String path = config.Path;
+
+        String path = null;
+        Properties prop = new Properties();
+        try {
+            //load a properties file from class path, inside static method
+            prop.load(FileCsvExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
+            //get the property value and print it out
+            String sourceCSV = prop.getProperty("sourceCSV");
+            path = sourceCSV;
+            LOG.debug("targetRDF is: " + sourceCSV);
+
+        } catch (IOException e) {
+            LOG.error("error was occoured while it was reading property file", e);
+        }
+
+
         final String fileSuffix = config.FileSuffix;
         final boolean onlyThisSuffix = config.OnlyThisSuffix;
 
@@ -59,7 +76,7 @@ public class FileCsvExtractor extends ConfigurableBase<FileCsvExtractorConfig>
 
         RDFFormatType formatType = config.RDFFormatValue;
 
-        File file = new File(config.Path);
+        File file = new File(path);
         String filename = file.getName();
 
         AbstractDatanestHarvester<?> harvester = null;

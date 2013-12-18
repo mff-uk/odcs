@@ -34,7 +34,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  *
  */
 public class FileCsvExtractorDialog extends BaseConfigDialog<FileCsvExtractorConfig> {
-
+    //TODO: It hasn't done yet
 	private GridLayout mainLayout;
 
 	/**

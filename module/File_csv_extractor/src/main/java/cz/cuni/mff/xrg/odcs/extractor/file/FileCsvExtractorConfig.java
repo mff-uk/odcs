@@ -23,9 +23,9 @@ public class FileCsvExtractorConfig extends DPUConfigObjectBase {
 	public boolean OnlyThisSuffix = false;
 	public boolean UseStatisticalHandler = true;
 	public boolean failWhenErrors = false;
-    //TODO zapracovat
+    //TODO to read from a gui
     int DebugProcessOnlyNItems = 2;
-    //TODO zapracovat
+    //TODO to read from a gui
     int batchSize = 5;
 
 	@Override
