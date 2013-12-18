@@ -15,6 +15,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotification;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import java.util.*;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Facade providing actions with plan.
@@ -60,6 +62,7 @@ public class ScheduleFacade {
 	 * @deprecated use container with paging instead
 	 */
 	@Deprecated
+    @PostFilter("hasPermission(filterObject,'view')")
 	public List<Schedule> getAllSchedules() {
 		return scheduleDao.getAllSchedules();
 	}
@@ -126,6 +129,7 @@ public class ScheduleFacade {
 	 * @param schedule
 	 */
 	@Transactional
+    @PreAuthorize("hasPermission(#schedule, 'save')")
 	public void save(Schedule schedule) {
 		scheduleDao.save(schedule);
 	}
