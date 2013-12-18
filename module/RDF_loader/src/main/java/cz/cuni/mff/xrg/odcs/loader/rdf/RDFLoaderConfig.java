@@ -113,6 +113,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 				&& Password != null
 				&& GraphsUri != null
 				&& graphOption != null
+				&& retryTime != null
 				&& retryTime > 0;
 	}
 }
