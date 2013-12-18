@@ -22,7 +22,7 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -631,8 +631,8 @@ public class PipelineEdit extends ViewComponent {
 
 		pipelineVisibility = new OptionGroup();
 		pipelineVisibility.addStyleName("horizontalgroup");
-		pipelineVisibility.addItem(VisibilityType.PRIVATE);
-		pipelineVisibility.addItem(VisibilityType.PUBLIC);
+		pipelineVisibility.addItem(ShareType.PRIVATE);
+		pipelineVisibility.addItem(ShareType.PUBLIC_RO);
 		pipelineVisibility.setImmediate(true);
 		pipelineVisibility.setBuffered(true);
 		pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {
@@ -831,8 +831,8 @@ public class PipelineEdit extends ViewComponent {
 		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
-		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getVisibility()));
-		if (this.pipeline.getVisibility() == VisibilityType.PUBLIC) {
+		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
+		if (this.pipeline.getShareType() == ShareType.PUBLIC_RO) {
 			pipelineVisibility.setEnabled(false);
 		}
 		setupButtons(false);
@@ -858,10 +858,10 @@ public class PipelineEdit extends ViewComponent {
 			this.pipeline = pipelineFacade.createPipeline();
 			pipeline.setName("");
 			pipeline.setDescription("");
-			pipeline.setVisibility(VisibilityType.PRIVATE);
+			pipeline.setVisibility(ShareType.PRIVATE);
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 			pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
-			pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getVisibility()));
+			pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
 			setupButtons(false);
 			pipelineName.setInputPrompt("Insert pipeline name");
 			pipelineDescription.setInputPrompt("Insert pipeline description");
@@ -885,8 +885,8 @@ public class PipelineEdit extends ViewComponent {
 
 		final boolean doCleanup = pipelineCanvas.saveGraph(pipeline);
 
-		final VisibilityType visibility = (VisibilityType) pipelineVisibility.getValue();
-		if (visibility == VisibilityType.PUBLIC && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
+		final ShareType visibility = (ShareType) pipelineVisibility.getValue();
+		if (visibility == ShareType.PUBLIC_RO && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
 			ConfirmDialog.show(UI.getCurrent(), "Saving public pipeline", "Saving pipeline as public will cause all DPU templates, the pipeline is using, to become public. When they become public, they cannot be reverted to private.", "Save", "Cancel", new ConfirmDialog.Listener() {
 				@Override
 				public void onClose(ConfirmDialog cd) {
@@ -901,8 +901,8 @@ public class PipelineEdit extends ViewComponent {
 		}
 	}
 
-	private boolean finishSavePipeline(boolean doCleanup, VisibilityType visibility, String successAction) {
-		if (visibility == VisibilityType.PUBLIC) {
+	private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
+		if (visibility == ShareType.PUBLIC_RO) {
 			pipelineVisibility.setEnabled(false);
 		}
 

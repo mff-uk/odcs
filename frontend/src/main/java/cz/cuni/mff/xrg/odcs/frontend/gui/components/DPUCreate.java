@@ -25,7 +25,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
@@ -136,9 +136,9 @@ public class DPUCreate extends Window {
 
 		groupVisibility = new OptionGroup();
 		groupVisibility.addStyleName("horizontalgroup");
-		groupVisibility.addItem(VisibilityType.PRIVATE);
-		groupVisibility.addItem(VisibilityType.PUBLIC);
-		groupVisibility.setValue(VisibilityType.PUBLIC);
+		groupVisibility.addItem(ShareType.PRIVATE);
+		groupVisibility.addItem(ShareType.PUBLIC_RO);
+		groupVisibility.setValue(ShareType.PUBLIC_RO);
 
 		dpuGeneralSettingsLayout.addComponent(groupVisibility, 1, 2);
 
@@ -210,7 +210,7 @@ public class DPUCreate extends Window {
 				dpuTemplate = dpuWrap.getDPUTemplateRecord();
 				// now we know all, we can update the DPU template
 				dpuTemplate.setDescription(dpuDescription.getValue());
-				dpuTemplate.setVisibility((VisibilityType) groupVisibility.getValue());
+				dpuTemplate.setVisibility((ShareType) groupVisibility.getValue());
 				dpuFacade.save(dpuTemplate);
 				// and at the end we can close the dialog .. 
 				close();

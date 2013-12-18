@@ -20,7 +20,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
@@ -460,7 +460,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 		String selectedDpuName = selectedDpuWrap.getDPUTemplateRecord().getName();
 		String selecteDpuDescription = selectedDpuWrap.getDPUTemplateRecord().getDescription();
-		VisibilityType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getVisibility();
+		ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
 		dpuName.setValue(selectedDpuName);
 		dpuName.setReadOnly(!presenter.hasPermission("save"));
 		dpuDescription.setValue(selecteDpuDescription);
@@ -468,7 +468,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 		groupVisibility.setValue(selecteDpuVisibility);
 		groupVisibility.setEnabled(true);
-		if (selecteDpuVisibility == VisibilityType.PUBLIC) {
+		if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
 			groupVisibility.setValue(selecteDpuVisibility);
 			groupVisibility.setEnabled(false);
 		} else {
@@ -571,8 +571,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuSettingsLayout.addComponent(visibilityLabel, 0, 2);
 		groupVisibility = new OptionGroup();
 		groupVisibility.addStyleName("horizontalgroup");
-		groupVisibility.addItem(VisibilityType.PRIVATE);
-		groupVisibility.addItem(VisibilityType.PUBLIC);
+		groupVisibility.addItem(ShareType.PRIVATE);
+		groupVisibility.addItem(ShareType.PUBLIC_RO);
 		dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
 		// JAR path of DPU Template.
@@ -704,7 +704,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			return true;
 		} else if (!dpuDescription.getValue().equals(selectedDpu.getDescription())) {
 			return true;
-		} else if (!groupVisibility.getValue().equals(selectedDpu.getVisibility())) {
+		} else if (!groupVisibility.getValue().equals(selectedDpu.getShareType())) {
 			return true;
 		} else if (!jarPath.getValue().equals(selectedDpu.getJarPath())) {
 			return true;
@@ -732,7 +732,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
 					.getValue().trim());
 			selectedDpuWrap.getDPUTemplateRecord()
-					.setVisibility((VisibilityType) groupVisibility
+					.setVisibility((ShareType) groupVisibility
 					.getValue());
 			presenter.saveDPUEventHandler(selectedDpuWrap);
 		}

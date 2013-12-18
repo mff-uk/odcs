@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
@@ -69,7 +69,7 @@ public class PipelineFacade {
      */
     public Pipeline createPipeline() {
 		Pipeline newPipeline = new Pipeline();
-		newPipeline.setVisibility(VisibilityType.PRIVATE);
+		newPipeline.setVisibility(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
         }
@@ -98,7 +98,7 @@ public class PipelineFacade {
 			nName = oName + " #" + no++;
 		}
 		newPipeline.setName(nName);
-		newPipeline.setVisibility(VisibilityType.PRIVATE);
+		newPipeline.setVisibility(ShareType.PRIVATE);
 		
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
@@ -145,10 +145,13 @@ public class PipelineFacade {
 		// If pipeline is public, we need to make sure
 		// all DPU templates used in this pipeline are
 		// public as well.
-		if (VisibilityType.PUBLIC.equals(pipeline.getVisibility())) {
+		if (ShareType.PUBLIC.contains(pipeline.getShareType())) {
 			for (DPUTemplateRecord dpu : getPrivateDPUs(pipeline)) {
-				dpu.setVisibility(VisibilityType.PUBLIC);
-				dpuFacade.save(dpu);
+				if (ShareType.PRIVATE.equals(dpu.getShareType())) {
+					// we found a private DPU in public pipeline -> make public
+					dpu.setVisibility(ShareType.PUBLIC_RO);
+					dpuFacade.save(dpu);
+				}
 			}
 		}
 		
@@ -201,7 +204,7 @@ public class PipelineFacade {
 		List<DPUTemplateRecord> dpus = new ArrayList<>();
 		for (Node node : pipeline.getGraph().getNodes()) {
 			DPUTemplateRecord dpu = node.getDpuInstance().getTemplate();
-			if (VisibilityType.PRIVATE.equals(dpu.getVisibility())) {
+			if (ShareType.PRIVATE.equals(dpu.getShareType())) {
 				dpus.add(dpu);
 			}
 		}
@@ -216,6 +219,12 @@ public class PipelineFacade {
 	 */
 	@Transactional
 	public void createOpenEvent(Pipeline pipeline) {
+		
+		if (pipeline.getId() == null) {
+			// pipeline has not been persisted yet
+			// -> it cannot be opened by anyone
+			return;
+		}
 		
 		User user = authCtx.getUser();
 		OpenEvent event = openEventDao.getOpenEvent(user, pipeline);
@@ -239,6 +248,13 @@ public class PipelineFacade {
 	 * @return list of open events
 	 */
 	public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
+		
+		if (pipeline.getId() == null) {
+			// pipeline has not been persisted yet
+			// -> it cannot be opened by anyone else
+			return new ArrayList<>();
+		}
+		
 		Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
 		User loggedUser = null;
 		if (authCtx != null) {
@@ -255,11 +271,22 @@ public class PipelineFacade {
 	 *			false otherwise
 	 */
 	public boolean isUpToDate(Pipeline pipeline) {
+		if (pipeline.getId() == null) {
+			// new pipeline -> lets say it is up-to-date
+			return true;
+		}
+		
+		// fetch fresh pipeline from db
 		Pipeline dbPipeline = getPipeline(pipeline.getId());
 		if (dbPipeline == null) {
+			// someone probably deleted pipeline in the meantime
+			// -> lets say it is NOT up-to-date
 			return false;
 		}
-		return !dbPipeline.getLastChange().after(pipeline.getLastChange());
+		
+		Date lastChange = dbPipeline.getLastChange();
+		return lastChange == null
+				? true : !lastChange.after(pipeline.getLastChange());
 	}
 	
     /* ******************** Methods for managing PipelineExecutions ********* */

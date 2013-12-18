@@ -53,7 +53,7 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 			}
 		}
 		
-		// check publicly viewable entities
+		// check if our entity is shared
 		if (target instanceof SharedEntity) {
 			SharedEntity sTarget = (SharedEntity) target;
 			switch (perm.toString()) {
@@ -61,20 +61,24 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 				case "use" :
 				case "copy" :
 				case "export" :
-					if (VisibilityType.PUBLIC.equals(sTarget.getVisibility())) {
+					if (ShareType.PUBLIC.contains(sTarget.getShareType())) {
 						return true;
 					}
 					break;
 				case "save" :
+					if (ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
+						return true;
+					}
+					break;
 				case "delete" :
-					// Pipeline has special permissions
-					return sTarget instanceof Pipeline;
+					// refuse delete, only for owner or admin
+					break;
 			}
 		}
 		
 		// in other cases be restrictive
 		LOG.debug(
-				"Method hasPermission not supported for object <{}> and permission <{}>.",
+				"Method hasPermission refused access for object <{}> and permission <{}>.",
 				target,
 				perm
 		);

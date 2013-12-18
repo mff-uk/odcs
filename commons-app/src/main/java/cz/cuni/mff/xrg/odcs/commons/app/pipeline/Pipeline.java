@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.VisibilityType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 
@@ -83,11 +83,11 @@ public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializab
 	private User owner;
 
 	/**
-	 * Public vs private visibility.
+	 * Public vs private shareType.
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "visibility")
-	private VisibilityType visibility;
+	private ShareType shareType;
 
 	/**
 	 * List pipelines that must not run in order to run this pipeline.
@@ -184,12 +184,12 @@ public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializab
 	}
 
 	@Override
-	public VisibilityType getVisibility() {
-		return visibility;
+	public ShareType getShareType() {
+		return shareType;
 	}
 
-	public void setVisibility(VisibilityType visibility) {
-		this.visibility = visibility;
+	public void setVisibility(ShareType visibility) {
+		this.shareType = visibility;
 	}
 
 	public Date getLastChange() {
