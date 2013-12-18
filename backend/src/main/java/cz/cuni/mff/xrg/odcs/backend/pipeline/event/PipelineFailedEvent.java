@@ -85,7 +85,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 				pipelineExec, source);
 	}
 
-	public static PipelineFailedEvent create(Exception exception,
+	public static PipelineFailedEvent create(Throwable exception,
 			DPUInstanceRecord dpuInstance,
 			PipelineExecution pipelineExec,
 			Object source) {

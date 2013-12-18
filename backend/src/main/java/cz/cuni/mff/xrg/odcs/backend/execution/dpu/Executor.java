@@ -190,9 +190,22 @@ public final class Executor implements Runnable {
 		boolean result = true;
 		for (PreExecutor item : preExecutors) {
 			LOG.trace("Executing pre-executor: {}", item.getClass().getSimpleName());
-			if (!item.preAction(node, contexts, dpuInstance, execution, unitInfo,
-					result)) {
-				result = false;
+			
+			try {
+				if (!item.preAction(node, contexts, dpuInstance, execution, 
+						unitInfo, result)) {
+					result = false;
+				}
+			} catch (Throwable t) {
+				// instant failure
+				LOG.error("The pre-executor throws", t);
+				// one event abour failure
+				eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
+					context, item, "The pre-executor throws an unexpected exception."));
+				// and second about .. the whole failure
+				eventPublisher.publishEvent(PipelineFailedEvent.create(
+						t, node.getDpuInstance(), execution, this));
+				return false;
 			}
 		}
 		return result;
@@ -254,10 +267,23 @@ public final class Executor implements Runnable {
 		boolean result = true;
 		for (PostExecutor item : postExecutors) {
 			LOG.trace("Executing post-executor: {}", item.getClass().getSimpleName());
-			if (!item.postAction(node, contexts, dpuInstance, execution,
-					unitInfo)) {
-				result = false;
-			}
+			try 
+			{
+				if (!item.postAction(node, contexts, dpuInstance, execution,
+						unitInfo)) {
+					result = false;
+				}
+			} catch (Throwable t) {
+				// instant failure
+				LOG.error("The post-executor throws", t);
+				// one event abour failure
+				eventPublisher.publishEvent(DPUEvent.createPostExecutorFailed(
+					context, item, "The post-executor throws an unexpected exception."));
+				// and second about .. the whole failure
+				eventPublisher.publishEvent(PipelineFailedEvent.create(
+						t, node.getDpuInstance(), execution, this));
+				return false;
+			}			
 		}
 		return result;
 	}
