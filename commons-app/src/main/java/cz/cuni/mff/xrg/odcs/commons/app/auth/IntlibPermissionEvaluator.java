@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.auth;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -72,6 +73,22 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 					break;
 				case "delete" :
 					// refuse delete, only for owner or admin
+					break;
+			}
+		}
+		
+		// Pipeline execution actions are always viewable if
+		// pipeline itself is viewable
+		if (target instanceof PipelineExecution) {
+			switch (perm.toString()) {
+				case "view" :
+					Pipeline pipe = ((PipelineExecution) target).getPipeline();
+					boolean viewPipe = hasPermission(pipe, perm);
+					if (viewPipe) {
+						// user has permission to view pipeline
+						// for this execution -> allow to see execution as well
+						return true;
+					}
 					break;
 			}
 		}

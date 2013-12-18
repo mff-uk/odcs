@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -23,7 +25,7 @@ class AuthorizatorImpl implements Authorizator {
     private AuthenticationContext authCtx;
     
     @Override
-    public Predicate getAuthorizationPredicate(CriteriaBuilder cb, Root<?> root, Class<?> entityClass) {
+    public Predicate getAuthorizationPredicate(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
 
         if (authCtx == null) {
             // no athorization
@@ -44,6 +46,11 @@ class AuthorizatorImpl implements Authorizator {
         if (OwnedEntity.class.isAssignableFrom(entityClass)) {
             predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
         }
+		
+		// PipelineExecution is also viewable whenever its Pipeline is viewable
+        if (PipelineExecution.class.isAssignableFrom(entityClass)) {
+			predicate = or(cb, predicate, getAuthorizationPredicate(cb, root.get("pipeline"), Pipeline.class));
+		}
 
         return predicate;
     }
