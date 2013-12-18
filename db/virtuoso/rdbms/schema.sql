@@ -29,10 +29,10 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
 (
 -- DPURecord
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(45),
+  "name" VARCHAR(2048),
   "use_dpu_description" SMALLINT,
-  "description" VARCHAR(512),
-  "tool_tip" VARCHAR(255),
+  "description" LONG VARCHAR,
+  "tool_tip" LONG VARCHAR,
   "configuration" LONG VARBINARY,
   "config_valid" SMALLINT,
 -- DPUInstaceRecord
@@ -45,9 +45,9 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
 (
 -- DPURecord
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(45),
+  "name" VARCHAR(2048),
   "use_dpu_description" SMALLINT,
-  "description" VARCHAR(512),  
+  "description" LONG VARCHAR,  
   "configuration" LONG VARBINARY,
   "parent_id" INTEGER,
   "config_valid" SMALLINT,
@@ -69,7 +69,7 @@ sequence_set('seq_exec_dataunit_info', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_DATAUNIT_INFO"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(45),
+  "name" VARCHAR(2048),
   "idx" INTEGER,
   "type" SMALLINT,
   "is_input" SMALLINT,
@@ -146,7 +146,7 @@ sequence_set('seq_exec_schedule', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(45),
+  "name" VARCHAR(2048),
   "description" LONG VARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend

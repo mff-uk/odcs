@@ -9,10 +9,10 @@ CREATE TABLE `DPU_INSTANCE`
 (
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(45),
+  `name` VARCHAR(2048),
   `use_dpu_description` SMALLINT,
-  `description` VARCHAR(512),
-  `tool_tip` VARCHAR(255),
+  `description` TEXT,
+  `tool_tip` TEXT,
   `configuration` BLOB,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
@@ -25,9 +25,9 @@ CREATE TABLE `DPU_TEMPLATE`
 (
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(45),
+  `name` VARCHAR(2048),
   `use_dpu_description` SMALLINT,
-  `description` VARCHAR(512),  
+  `description` TEXT,  
   `configuration` BLOB,
   `parent_id` INTEGER,
   `config_valid` SMALLINT,
@@ -49,7 +49,7 @@ CREATE SEQUENCE `seq_exec_dataunit_info` START WITH 100;
 CREATE TABLE `EXEC_DATAUNIT_INFO`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(45),
+  `name` VARCHAR(2048),
   `idx` INTEGER,
   `type` SMALLINT,
   `is_input` SMALLINT,
@@ -126,7 +126,7 @@ CREATE SEQUENCE `seq_exec_schedule` START WITH 100;
 CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(45),
+  `name` VARCHAR(2048),
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
