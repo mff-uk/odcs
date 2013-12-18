@@ -220,6 +220,12 @@ public class PipelineFacade {
 	@Transactional
 	public void createOpenEvent(Pipeline pipeline) {
 		
+		if (pipeline.getId() == null) {
+			// pipeline has not been persisted yet
+			// -> it cannot be opened by anyone
+			return;
+		}
+		
 		User user = authCtx.getUser();
 		OpenEvent event = openEventDao.getOpenEvent(user, pipeline);
 		
@@ -242,6 +248,13 @@ public class PipelineFacade {
 	 * @return list of open events
 	 */
 	public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
+		
+		if (pipeline.getId() == null) {
+			// pipeline has not been persisted yet
+			// -> it cannot be opened by anyone else
+			return new ArrayList<>();
+		}
+		
 		Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
 		User loggedUser = null;
 		if (authCtx != null) {
@@ -258,11 +271,22 @@ public class PipelineFacade {
 	 *			false otherwise
 	 */
 	public boolean isUpToDate(Pipeline pipeline) {
+		if (pipeline.getId() == null) {
+			// new pipeline -> lets say it is up-to-date
+			return true;
+		}
+		
+		// fetch fresh pipeline from db
 		Pipeline dbPipeline = getPipeline(pipeline.getId());
 		if (dbPipeline == null) {
+			// someone probably deleted pipeline in the meantime
+			// -> lets say it is NOT up-to-date
 			return false;
 		}
-		return !dbPipeline.getLastChange().after(pipeline.getLastChange());
+		
+		Date lastChange = dbPipeline.getLastChange();
+		return lastChange == null
+				? true : !lastChange.after(pipeline.getLastChange());
 	}
 	
     /* ******************** Methods for managing PipelineExecutions ********* */
