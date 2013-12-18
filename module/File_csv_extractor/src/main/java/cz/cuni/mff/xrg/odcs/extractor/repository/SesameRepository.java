@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.extractor.repository;
 
 import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.file.FileCsvExtractor3;
+import cz.cuni.mff.xrg.odcs.extractor.file.FileCsvExtractor;
 import org.openrdf.repository.http.HTTPRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
         Properties prop = new Properties();
         try {
             //load a properties file from class path, inside static method
-            prop.load(FileCsvExtractor3.class.getClassLoader().getResourceAsStream("config.properties"));
+            prop.load(FileCsvExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
             //get the property value and print it out
             String target = prop.getProperty("targetRDF");
             setTargetRDF(target);

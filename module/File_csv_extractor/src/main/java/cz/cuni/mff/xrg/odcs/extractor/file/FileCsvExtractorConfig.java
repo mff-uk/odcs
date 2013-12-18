@@ -12,12 +12,13 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  */
 public class FileCsvExtractorConfig extends DPUConfigObjectBase {
 
-//    public String Path = "e://eea//comsode//dataset//political-dump.csv";
+    //public String Path = "e://eea//comsode//dataset//political-dump.csv";
+    //public String Path = "e://eea//comsode//dataset//organisations-dump.csv";
     public String Path = "e://eea//comsode//dataset//procurements-dump.csv";
-	public String FileSuffix = "";
 
-	//public String Path = "e://eea//comsode//dataset//organisations-dump.csv";
-	public RDFFormatType RDFFormatValue = RDFFormatType.AUTO;
+    public RDFFormatType RDFFormatValue = RDFFormatType.AUTO;
+
+	public String FileSuffix = "";
 	public FileExtractType fileExtractType = FileExtractType.PATH_TO_FILE;
 	public boolean OnlyThisSuffix = false;
 	public boolean UseStatisticalHandler = true;

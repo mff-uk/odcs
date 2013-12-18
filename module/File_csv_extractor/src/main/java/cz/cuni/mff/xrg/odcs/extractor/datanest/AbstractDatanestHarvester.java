@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
 import au.com.bytecode.opencsv.CSVReader;
 import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.file.FileCsvExtractor3;
+import cz.cuni.mff.xrg.odcs.extractor.file.FileCsvExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
 
             try {
                 //load a properties file from class path, inside static method
-                prop.load(FileCsvExtractor3.class.getClassLoader().getResourceAsStream("config.properties"));
+                prop.load(FileCsvExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
                 //get the property value and print it out
                 debugProcessOnlyNItems = Integer.valueOf(prop.getProperty("debugProcessOnlyNItems"));
 

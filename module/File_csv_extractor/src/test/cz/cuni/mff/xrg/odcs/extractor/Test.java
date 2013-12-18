@@ -1,4 +1,4 @@
-package cuni.mff.xrg.odcs.extractor;
+package cz.cuni.mff.xrg.odcs.extractor;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
