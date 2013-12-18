@@ -120,8 +120,6 @@ public abstract class AbstractHarvester<RecordType extends AbstractRecord> {
         }
 
 
-        System.out.println(records);
-
         for (AbstractSerializer<RecordType, ?, ?> serializer : serializers)
             serializer.store(records);
     }

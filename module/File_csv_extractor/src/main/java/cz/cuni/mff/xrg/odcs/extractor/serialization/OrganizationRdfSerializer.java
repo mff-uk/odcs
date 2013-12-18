@@ -133,7 +133,6 @@ public class OrganizationRdfSerializer extends AbstractRdfSerializer<Organizatio
         }
 
 
-        System.out.println(rdfData);
         getRepository().store(rdfData);
     }
 }

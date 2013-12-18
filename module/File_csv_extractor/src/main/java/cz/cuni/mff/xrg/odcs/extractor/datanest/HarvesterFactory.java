@@ -38,7 +38,7 @@ public abstract class HarvesterFactory {
                 }
                 break;
             default:
-                System.out.println("DEFAULT");
+                LOG.info("DEFAULT");
                 break;
 
 
