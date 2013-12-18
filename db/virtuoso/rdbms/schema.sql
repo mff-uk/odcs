@@ -182,6 +182,7 @@ CREATE TABLE "DB"."ODCS"."PPL_MODEL"
   "description" LONG VARCHAR,
   "user_id" INTEGER,
   "visibility" SMALLINT,
+  "last_change" DATETIME,
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_PPL_MODEL_user_id" ON "DB"."ODCS"."PPL_MODEL" ("user_id");

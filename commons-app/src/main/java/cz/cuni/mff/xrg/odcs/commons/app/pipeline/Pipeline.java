@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.Resource;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -98,6 +99,13 @@ public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializab
 	private Set<Pipeline> conflicts = new HashSet<>();
 	
 	/**
+	 * Timestamp when was the last time someone made changes to this pipeline.
+	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "last_change")
+	private Date lastChange;
+	
+	/**
 	 * Default constructor for JPA
 	 */
 	public Pipeline() {}
@@ -182,6 +190,14 @@ public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializab
 
 	public void setVisibility(VisibilityType visibility) {
 		this.visibility = visibility;
+	}
+
+	public Date getLastChange() {
+		return lastChange;
+	}
+
+	public void setLastChange(Date lastChange) {
+		this.lastChange = lastChange;
 	}
 	
 	/**

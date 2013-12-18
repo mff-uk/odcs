@@ -247,6 +247,21 @@ public class PipelineFacade {
 		return openEventDao.getOpenEvents(pipeline, from, loggedUser);
 	}
 	
+	/**
+	 * Checks if (possibly detached) pipeline has been modified by someone else.
+	 * 
+	 * @param pipeline to check
+	 * @return true if pipeline was changed while detached from entity manager,
+	 *			false otherwise
+	 */
+	public boolean isUpToDate(Pipeline pipeline) {
+		Pipeline dbPipeline = getPipeline(pipeline.getId());
+		if (dbPipeline == null) {
+			return false;
+		}
+		return !dbPipeline.getLastChange().after(pipeline.getLastChange());
+	}
+	
     /* ******************** Methods for managing PipelineExecutions ********* */
     /**
      * Creates a new {@link PipelineExecution}, which represents a pipeline run.
