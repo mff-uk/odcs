@@ -203,3 +203,9 @@ overflow: auto !important;
 	background-color: #e66;
 	font-weight: bold;
 }
+
+.readOnlyLabel {
+	color: #e66;
+	padding-left: 4px;
+	font-weight: bold;
+}

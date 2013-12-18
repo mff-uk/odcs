@@ -22,6 +22,7 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibPermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
@@ -71,6 +72,7 @@ public class PipelineEdit extends ViewComponent {
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 	private VerticalLayout mainLayout;
 	private Label label;
+	private Label readOnlyLabel;
 	private TextField pipelineName;
 	private TextArea pipelineDescription;
 	private OptionGroup pipelineVisibility;
@@ -107,6 +109,11 @@ public class PipelineEdit extends ViewComponent {
 	@Autowired
 	private PipelineConflicts conflictDialog;
 	/**
+	 * Evaluates permissions of currently logged in user.
+	 */
+	private IntlibPermissionEvaluator permissions = ((AppEntry)UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
+	
+	/**
 	 * Access to the application context in order to provide possiblity to
 	 * create dialogs. TODO: This is give us more power then we need, we should
 	 * use some dialog factory instead.
@@ -138,7 +145,17 @@ public class PipelineEdit extends ViewComponent {
 		if (this.pipeline == null) {
 			label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
 		} else {
-			label.setValue("<h3>Editing pipeline<h3>");// + this.pipeline.getName() + "</h3>");
+			if(!hasPermission("save")) {
+				readOnlyLabel.setVisible(true);
+				
+				canvasMode = STANDARD_MODE;
+				standardTab.setCaption("Develop");
+				standardTab.setEnabled(false);
+				developTab.setCaption("Standard");
+				tabSheet.setTabPosition(developTab, 0);
+				pipelineCanvas.changeMode(canvasMode);
+			}
+			label.setValue("<h3>Pipeline detail<h3>");
 		}
 
 		refreshManager.addListener(RefreshManager.PIPELINE_EDIT, new Refresher.RefreshListener() {
@@ -147,7 +164,11 @@ public class PipelineEdit extends ViewComponent {
 				if (pipeline != null) {
 					pipelineFacade.createOpenEvent(pipeline);
 					List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
-					if (openEvents.isEmpty()) {
+					if(!pipelineFacade.isUpToDate(pipeline)) {
+						//TODO: possibility to Reload or Save as new
+						editConflicts.setValue("Another user has saved this pipeline!");
+						editConflicts.setVisible(true);
+					} else if (openEvents.isEmpty()) {
 						editConflicts.setVisible(false);
 					} else {
 						String message;
@@ -197,8 +218,13 @@ public class PipelineEdit extends ViewComponent {
 		label.setWidth("-1px");
 		label.setHeight("-1px");
 		label.setContentMode(ContentMode.HTML);
-
-		HorizontalLayout topLine = new HorizontalLayout(label);
+		
+		readOnlyLabel = new Label("Pipeline is open in read-only mode");
+		readOnlyLabel.setStyleName("readOnlyLabel");
+		readOnlyLabel.setVisible(false);
+		
+		HorizontalLayout topLine = new HorizontalLayout(label, readOnlyLabel);
+		topLine.setComponentAlignment(readOnlyLabel, Alignment.MIDDLE_CENTER);
 		btnMinimize = new Button();
 		btnMinimize.addClickListener(new Button.ClickListener() {
 			@Override
@@ -561,6 +587,10 @@ public class PipelineEdit extends ViewComponent {
 			UI.getCurrent().addWindow(conflictDialog);
 		}
 	}
+	
+	public boolean hasPermission(String type) {
+		return permissions.hasPermission(pipeline, type);
+	}
 
 	private void setDetailState(boolean expand) {
 		isExpanded = expand;
@@ -633,6 +663,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineVisibility.addStyleName("horizontalgroup");
 		pipelineVisibility.addItem(ShareType.PRIVATE);
 		pipelineVisibility.addItem(ShareType.PUBLIC_RO);
+		pipelineVisibility.addItem(ShareType.PUBLIC_RW);
 		pipelineVisibility.setImmediate(true);
 		pipelineVisibility.setBuffered(true);
 		pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {
@@ -735,8 +766,8 @@ public class PipelineEdit extends ViewComponent {
 	}
 
 	private void setupButtons(boolean enabled) {
-		buttonSave.setEnabled(enabled);
-		buttonSaveAndClose.setEnabled(enabled);
+		buttonSave.setEnabled(enabled && hasPermission("save"));
+		buttonSaveAndClose.setEnabled(enabled && hasPermission("save"));
 	}
 
 	/**
@@ -832,8 +863,10 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
-		if (this.pipeline.getShareType() == ShareType.PUBLIC_RO) {
+		if (this.pipeline.getShareType() == ShareType.PUBLIC_RW) {
 			pipelineVisibility.setEnabled(false);
+		} else if(this.pipeline.getShareType() == ShareType.PUBLIC_RO) {
+			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
 		}
 		setupButtons(false);
 		return pipeline;
@@ -886,7 +919,7 @@ public class PipelineEdit extends ViewComponent {
 		final boolean doCleanup = pipelineCanvas.saveGraph(pipeline);
 
 		final ShareType visibility = (ShareType) pipelineVisibility.getValue();
-		if (visibility == ShareType.PUBLIC_RO && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
+		if (pipeline.getShareType() == ShareType.PRIVATE && ShareType.PUBLIC.contains(visibility) && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
 			ConfirmDialog.show(UI.getCurrent(), "Saving public pipeline", "Saving pipeline as public will cause all DPU templates, the pipeline is using, to become public. When they become public, they cannot be reverted to private.", "Save", "Cancel", new ConfirmDialog.Listener() {
 				@Override
 				public void onClose(ConfirmDialog cd) {
@@ -902,8 +935,10 @@ public class PipelineEdit extends ViewComponent {
 	}
 
 	private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
-		if (visibility == ShareType.PUBLIC_RO) {
+		if (visibility == ShareType.PUBLIC_RW) {
 			pipelineVisibility.setEnabled(false);
+		} else if(visibility == ShareType.PUBLIC_RO) {
+			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
 		}
 
 		undo.setEnabled(false);
