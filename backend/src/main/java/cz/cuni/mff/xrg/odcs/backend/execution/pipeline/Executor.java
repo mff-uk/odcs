@@ -380,7 +380,13 @@ public class Executor implements Runnable {
 			if (dpuResults.executionEndsProperly()) {
 				// ok eecution ends properly 
 			} else {
-				LOG.warn("DPU execution ends in strange way .. ");
+				// this mean that we end in non standart way ...
+				// and this is equal to the failure
+				dpuResults.failure();
+				eventPublisher.publishEvent(PipelineFailedEvent.create(
+						"DPU execution failed", 
+						"The DPU execution thread ends in non-standart way", 
+						node.getDpuInstance(), execution, this));
 			}			
 			execResult.add(dpuResults);
 			// remove MDC from logs
