@@ -196,6 +196,10 @@ overflow: auto !important;
 	color: #5CA0DF
 }
 
-
-
-  
+.editConflicts {
+	padding: 4px;
+	margin-top: 10px;
+	margin-left: 100px;
+	background-color: #e66;
+	font-weight: bold;
+}

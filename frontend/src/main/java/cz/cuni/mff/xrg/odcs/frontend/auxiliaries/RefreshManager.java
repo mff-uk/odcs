@@ -26,6 +26,7 @@ public class RefreshManager {
 	public static final String DEBUGGINGVIEW = "debugging_view";
 	public static final String PIPELINE_LIST = "pipeline_list";
 	public static final String SCHEDULER = "scheduler";
+	public static final String PIPELINE_EDIT = "pipeline_edit";
 
 	public RefreshManager(Refresher refresher) {
 		this.refresher = refresher;

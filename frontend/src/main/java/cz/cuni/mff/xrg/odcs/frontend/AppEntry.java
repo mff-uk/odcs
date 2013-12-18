@@ -190,6 +190,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 				refreshManager.removeListener(RefreshManager.DEBUGGINGVIEW);
 				refreshManager.removeListener(RefreshManager.PIPELINE_LIST);
 				refreshManager.removeListener(RefreshManager.SCHEDULER);
+				refreshManager.removeListener(RefreshManager.PIPELINE_EDIT);
 				
 				return true;
 			}
