@@ -83,8 +83,8 @@ public class PipelineEdit extends ViewComponent {
 	TabSheet tabSheet;
 	DragAndDropWrapper dadWrapper;
 	Button undo;
-	private final String STANDARD_MODE = "standard_mode";
-	private final String DEVELOP_MODE = "develop_mode";
+	public final static String STANDARD_MODE = "standard_mode";
+	public final static String DEVELOP_MODE = "develop_mode";
 	private String canvasMode = DEVELOP_MODE;
 	private Tab standardTab;
 	private Tab developTab;
@@ -730,7 +730,7 @@ public class PipelineEdit extends ViewComponent {
 
 	@Override
 	public boolean isModified() {
-		return pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified();
+		return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission("save");
 	}
 
 	@Override

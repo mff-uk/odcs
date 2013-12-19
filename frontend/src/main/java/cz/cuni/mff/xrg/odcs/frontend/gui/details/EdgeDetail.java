@@ -60,7 +60,7 @@ public class EdgeDetail extends Window {
 	 *
 	 * @param edge {@link Edge} which detail will be showed.
 	 */
-	public EdgeDetail(Edge e, DPUExplorer dpuExplorer) {
+	public EdgeDetail(Edge e, DPUExplorer dpuExplorer, boolean readOnly) {
 		this.explorer = dpuExplorer;
 		this.map = new HashMap<>();
 		this.setResizable(false);
@@ -153,6 +153,7 @@ public class EdgeDetail extends Window {
 			}
 		});
 		mapButton.setWidth(130, Unit.PIXELS);
+		mapButton.setEnabled(!readOnly);
 		edgeSettingsLayout.addComponent(mapButton, 2, 1);
 
 		Button clearButton = new Button("Clear selection", new Button.ClickListener() {
@@ -192,6 +193,7 @@ public class EdgeDetail extends Window {
 			}
 		});
 		deleteButton.setWidth(130, Unit.PIXELS);
+		deleteButton.setEnabled(!readOnly);
 		edgeSettingsLayout.addComponent(deleteButton, 2, 6);
 		mainLayout.addComponent(edgeSettingsLayout);
 
@@ -218,6 +220,7 @@ public class EdgeDetail extends Window {
 				}
 			}
 		});
+		saveAndCommitButton.setEnabled(!readOnly);
 		saveAndCommitButton.setWidth(100, Unit.PIXELS);
 		buttonBar.addComponent(saveAndCommitButton);
 
