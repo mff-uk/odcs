@@ -249,6 +249,8 @@ public class LogTable extends CustomComponent {
 		}
 		// also remove all filters
 		this.container.removeAllContainerFilters();
+		table.resetFilters();
+		((ComboBox)table.getFilterField("logLevel")).setValue(Level.ALL);
 		// set container to the table -- we may possibly re-set this
 		// but that does not do anything bad
 		table.setContainerDataSource(this.container);
