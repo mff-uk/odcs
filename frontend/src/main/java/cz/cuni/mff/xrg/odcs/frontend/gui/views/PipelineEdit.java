@@ -48,7 +48,6 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
@@ -562,9 +561,9 @@ public class PipelineEdit extends ViewComponent {
 		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				pipelineName.discard();
-				pipelineDescription.discard();
-				pipelineCanvas.cancelChanges();
+				//pipelineName.discard();
+				//pipelineDescription.discard();
+				//pipelineCanvas.cancelChanges();
 				closeView();
 			}
 		});
