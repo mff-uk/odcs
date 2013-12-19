@@ -56,9 +56,8 @@ import org.tepi.filtertable.FilterGenerator;
  * @author Bogo
  */
 public class RDFQueryView extends CustomComponent {
-	
-	private final String defaultQuery = "SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 1000";
 
+	private final String defaultQuery = "SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 1000";
 	private DataUnitSelector selector;
 	private TextArea queryText;
 	private IntlibPagedTable resultTable;
@@ -113,7 +112,7 @@ public class RDFQueryView extends CustomComponent {
 		queryLine.addComponent(queryText);
 
 		VerticalLayout queryControls = new VerticalLayout();
-		
+
 
 		queryButton = new Button("Run Query");
 		queryButton.addClickListener(new Button.ClickListener() {
@@ -132,7 +131,7 @@ public class RDFQueryView extends CustomComponent {
 		queryControls.addComponent(queryButton);
 
 		VerticalLayout runDownload = new VerticalLayout();
-		
+
 		//Export options
 		formatSelect = new ComboBox();
 		for (RDFFormatType type : RDFFormatType.values()) {
@@ -228,15 +227,13 @@ public class RDFQueryView extends CustomComponent {
 				Object oValue = source.getItem(itemId).getItemProperty(propertyId).getValue();
 				if (oValue.getClass() == URIImpl.class) {
 					return "link";
-				} else if (oValue.getClass() == String.class) {
-					String value = (String) oValue;
+				} else {
+					String value = oValue.getClass() == String.class ? (String) oValue : oValue.toString();
 					if (value.startsWith("http://")) {
 						return "link";
 					} else {
 						return null;
 					}
-				} else {
-					return null;
 				}
 			}
 		});
@@ -247,13 +244,11 @@ public class RDFQueryView extends CustomComponent {
 				String uri;
 				if (oValue.getClass() == URIImpl.class) {
 					uri = ((URIImpl) oValue).stringValue();
-				} else if (oValue.getClass() == String.class) {
-					uri = (String) oValue;
+				} else {
+					uri = oValue.getClass() == String.class ? (String) oValue : oValue.toString();
 					if (!uri.startsWith("http://")) {
 						return;
 					}
-				} else {
-					return;
 				}
 				queryText.setValue(String.format("DESCRIBE <%s>", uri));
 				try {
@@ -350,10 +345,10 @@ public class RDFQueryView extends CustomComponent {
 		}
 
 	}
-	
+
 	private String getQuery() {
 		String query = queryText.getValue();
-		if(query.trim().isEmpty()) {
+		if (query.trim().isEmpty()) {
 			Notification.show("No query was specified. Please specify query before running it.", Notification.Type.WARNING_MESSAGE);
 			return null;
 		}
@@ -368,7 +363,7 @@ public class RDFQueryView extends CustomComponent {
 	 */
 	private void runQuery() throws InvalidQueryException {
 		String query = getQuery();
-		if(query == null) {
+		if (query == null) {
 			return;
 		}
 
@@ -413,7 +408,7 @@ public class RDFQueryView extends CustomComponent {
 			resultTable.setStyleName("empty");
 			tableDownload.setEnabled(false);
 			downloadFormatSelect.setEnabled(false);
-			
+
 		} else {
 			resultTable.removeStyleName("empty");
 			tableDownload.setEnabled(true);
