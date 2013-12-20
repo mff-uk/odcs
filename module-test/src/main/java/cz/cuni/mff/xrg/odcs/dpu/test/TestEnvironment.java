@@ -21,7 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.test.context.TestContext;
+import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;

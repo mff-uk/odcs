@@ -16,7 +16,7 @@ import org.openrdf.rio.RDFFormat;
 import static org.junit.Assert.*;
 
 /**
- * Test funcionality extaction for Local RDF storage from SPARQL endpoint.
+ * Test extraction funcionality for Local RDF storage from SPARQL endpoint.
  *
  * @author Jiri Tomes
  */

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.test.context;
+package cz.cuni.mff.xrg.odcs.dpu.test.context;
 
 import java.io.File;
 import java.util.Date;
