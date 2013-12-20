@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValidationException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,6 +56,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	@Autowired
 	private DPUFacade dpuFacade;
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
+	
+	private String canvasMode = PipelineEdit.DEVELOP_MODE;
 
 	/**
 	 * Initial constructor with registering of server side RPC.
@@ -223,7 +226,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void showDPUDetail(final Node node) {
 		final DPUInstanceRecord dpu = node.getDpuInstance();
-		DPUDetail detailDialog = new DPUDetail(dpu, dpuFacade);
+		DPUDetail detailDialog = new DPUDetail(dpu, dpuFacade, canvasMode.equals(PipelineEdit.STANDARD_MODE));
 		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
@@ -301,11 +304,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 *
 	 */
 	public void changeMode(String newMode) {
-//		if(canvasMode.equals(STANDARD_MODE)) {
-//			canvasMode = DEVELOP_MODE;
-//		} else {
-//			canvasMode = STANDARD_MODE;
-//		}
+		canvasMode = newMode;
 		getRpcProxy(PipelineCanvasClientRpc.class).setStageMode(newMode);
 	}
 
@@ -388,7 +387,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param edge {@link Edge} which detail should be showed.
 	 */
 	private void showEdgeDetail(final Edge edge) {
-		EdgeDetail edgeDetailDialog = new EdgeDetail(edge, dpuExplorer);
+		EdgeDetail edgeDetailDialog = new EdgeDetail(edge, dpuExplorer, canvasMode.equals(PipelineEdit.STANDARD_MODE));
 		edgeDetailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {

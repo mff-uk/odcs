@@ -85,7 +85,6 @@ INSERT INTO LOGGING_EVENT (timestmp,formatted_message,logger_name,level_string,t
  VALUES(1373056400667,'Returning cached instance of singleton bean "transactionManager"','org.springframework.beans.factory.support.DefaultListableBeanFactory','DEBUG','pool-2-thread-1',0,NULL,NULL,NULL,NULL,'AbstractBeanFactory.java','org.springframework.beans.factory.support.AbstractBeanFactory','doGetBean','245',2);
 INSERT INTO LOGGING_EVENT(timestmp,formatted_message,logger_name,level_string,thread_name,reference_flag,arg0,arg1,arg2,arg3,caller_filename,caller_class,caller_method,caller_line,event_id)
  VALUES(1373056401201,'Returning cached instance of singleton bean "engine"','org.springframework.beans.factory.support.DefaultListableBeanFactory','DEBUG','pool-2-thread-1',0,NULL,NULL,NULL,NULL,'AbstractBeanFactory.java','org.springframework.beans.factory.support.AbstractBeanFactory','doGetBean','245',3);
-INSERT INTO LOGGING_EVENT (timestmp,formatted_message,logger_name,level_string,thread_name,reference_flag,arg0,arg1,arg2,arg3,caller_filename,caller_class,caller_method,caller_line,event_id)
 -- Log of level DEBUG without property
  VALUES(1373056400664,'Started','cz.cuni.xrg.intlib.backend.execution.PipelineWorker','DEBUG','pool-2-thread-1',0,NULL,NULL,NULL,NULL,'PipelineWorker.java','cz.cuni.xrg.intlib.backend.execution.PipelineWorker','run','213',4);
 -- Log of level DEBUG with execution property

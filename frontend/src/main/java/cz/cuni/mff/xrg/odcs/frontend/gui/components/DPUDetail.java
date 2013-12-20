@@ -52,12 +52,12 @@ public class DPUDetail extends Window {
 	 *
 	 * @param dpu {@link DPUInstanceRecord} which detail will be showed.
 	 */
-	public DPUDetail(DPUInstanceRecord dpu, DPUFacade dpuFacade) {
+	public DPUDetail(DPUInstanceRecord dpu, DPUFacade dpuFacade, boolean readOnly) {
 		this.dpuFacade = dpuFacade;
 		this.setResizable(false);
 		this.setModal(true);
 		this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
-		this.setCaption(String.format("%s detail", dpu.getName().trim()));
+		this.setCaption(String.format("%s detail%s", dpu.getName().trim(), readOnly ? " - Read only mode" : ""));
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
@@ -166,6 +166,7 @@ public class DPUDetail extends Window {
 			}
 		});
 		saveAndCommitButton.setWidth("90px");
+		saveAndCommitButton.setEnabled(!readOnly);
 		buttonBar.addComponent(saveAndCommitButton);
 
 		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
@@ -200,6 +201,7 @@ public class DPUDetail extends Window {
 				});
 			}
 		});
+		saveAsNewButton.setEnabled(!readOnly);
 		buttonBar.addComponent(saveAsNewButton);
 
 		mainLayout.addComponent(buttonBar);

@@ -168,6 +168,8 @@ public class SchedulePipeline extends Window {
 			valueTol.setValue(1);
 			notifyThis.setValue(true);
 			emailNotifications.getDefaultScheduleNotificationRecord(selectedSchedule);
+			email.getUserEmailNotification(authCtx.getUser());
+			emailNotifications.setDisableComponents();
 			
 			if(selectPipe != null) {
 				selectPipe.setValue(null);
@@ -233,6 +235,8 @@ public class SchedulePipeline extends Window {
 			else{
 				notifyThis.setValue(true);
 				emailNotifications.getDefaultScheduleNotificationRecord(selectedSchedule);
+				email.getUserEmailNotification(authCtx.getUser());
+				emailNotifications.setDisableComponents();
 			
 			}
 			

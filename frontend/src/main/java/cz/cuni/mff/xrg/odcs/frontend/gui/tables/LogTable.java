@@ -8,6 +8,7 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Field;
@@ -249,6 +250,7 @@ public class LogTable extends CustomComponent {
 		}
 		// also remove all filters
 		this.container.removeAllContainerFilters();
+		resetFilters();
 		// set container to the table -- we may possibly re-set this
 		// but that does not do anything bad
 		table.setContainerDataSource(this.container);
@@ -367,5 +369,13 @@ public class LogTable extends CustomComponent {
 				return null;
 			}
 		};
+	}
+
+	private void resetFilters() {
+		table.resetFilters();
+		Component cmpLevel = table.getFilterField("logLevel");
+		if(cmpLevel != null && cmpLevel.getClass() == ComboBox.class) {
+			((ComboBox)cmpLevel).setValue(Level.ALL);
+		}
 	}
 }

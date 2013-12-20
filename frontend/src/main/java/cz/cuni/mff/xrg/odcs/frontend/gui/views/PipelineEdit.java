@@ -83,8 +83,8 @@ public class PipelineEdit extends ViewComponent {
 	TabSheet tabSheet;
 	DragAndDropWrapper dadWrapper;
 	Button undo;
-	private final String STANDARD_MODE = "standard_mode";
-	private final String DEVELOP_MODE = "develop_mode";
+	public final static String STANDARD_MODE = "standard_mode";
+	public final static String DEVELOP_MODE = "develop_mode";
 	private String canvasMode = DEVELOP_MODE;
 	private Tab standardTab;
 	private Tab developTab;
@@ -92,6 +92,7 @@ public class PipelineEdit extends ViewComponent {
 	Button buttonSaveAndClose;
 	Button buttonCancel;
 	Button buttonConflicts;
+	Button buttonSaveAsNew;
 	private Button btnMinimize;
 	private Button btnExpand;
 	private Label editConflicts;
@@ -111,8 +112,7 @@ public class PipelineEdit extends ViewComponent {
 	/**
 	 * Evaluates permissions of currently logged in user.
 	 */
-	private IntlibPermissionEvaluator permissions = ((AppEntry)UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
-	
+	private IntlibPermissionEvaluator permissions = ((AppEntry) UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
 	/**
 	 * Access to the application context in order to provide possiblity to
 	 * create dialogs. TODO: This is give us more power then we need, we should
@@ -145,16 +145,7 @@ public class PipelineEdit extends ViewComponent {
 		if (this.pipeline == null) {
 			label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
 		} else {
-			if(!hasPermission("save")) {
-				readOnlyLabel.setVisible(true);
-				
-				canvasMode = STANDARD_MODE;
-				standardTab.setCaption("Develop");
-				standardTab.setEnabled(false);
-				developTab.setCaption("Standard");
-				tabSheet.setTabPosition(developTab, 0);
-				pipelineCanvas.changeMode(canvasMode);
-			}
+			setMode(hasPermission("save"));
 			label.setValue("<h3>Pipeline detail<h3>");
 		}
 
@@ -164,7 +155,7 @@ public class PipelineEdit extends ViewComponent {
 				if (pipeline != null) {
 					pipelineFacade.createOpenEvent(pipeline);
 					List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
-					if(!pipelineFacade.isUpToDate(pipeline)) {
+					if (!pipelineFacade.isUpToDate(pipeline)) {
 						//TODO: possibility to Reload or Save as new
 						editConflicts.setValue("Another user has saved this pipeline!");
 						editConflicts.setVisible(true);
@@ -218,11 +209,11 @@ public class PipelineEdit extends ViewComponent {
 		label.setWidth("-1px");
 		label.setHeight("-1px");
 		label.setContentMode(ContentMode.HTML);
-		
+
 		readOnlyLabel = new Label("Pipeline is open in read-only mode");
 		readOnlyLabel.setStyleName("readOnlyLabel");
 		readOnlyLabel.setVisible(false);
-		
+
 		HorizontalLayout topLine = new HorizontalLayout(label, readOnlyLabel);
 		topLine.setComponentAlignment(readOnlyLabel, Alignment.MIDDLE_CENTER);
 		btnMinimize = new Button();
@@ -280,7 +271,7 @@ public class PipelineEdit extends ViewComponent {
 				return null;
 			}
 		};
-		
+
 		//layout.setMargin(true);
 		pipelineCanvas = ((AppEntry) UI.getCurrent()).getBean(PipelineCanvas.class);
 		pipelineCanvas.setImmediate(true);
@@ -529,6 +520,20 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonSave);
+
+		buttonSaveAsNew = new Button("Save as new copy");
+		buttonSaveAsNew.setHeight("25px");
+		buttonSaveAsNew.setWidth("150px");
+		buttonSaveAsNew.setImmediate(true);
+		buttonSaveAsNew.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipelineAsNew();
+			}
+		});
+		buttonBar.addComponent(buttonSaveAsNew);
+
 		buttonSaveAndClose = new Button("Save & Close");
 		buttonSaveAndClose.setHeight("25px");
 		buttonSaveAndClose.setWidth("150px");
@@ -547,9 +552,9 @@ public class PipelineEdit extends ViewComponent {
 		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				pipelineName.discard();
-				pipelineDescription.discard();
-				pipelineCanvas.cancelChanges();
+				//pipelineName.discard();
+				//pipelineDescription.discard();
+				//pipelineCanvas.cancelChanges();
 				closeView();
 			}
 		});
@@ -587,7 +592,7 @@ public class PipelineEdit extends ViewComponent {
 			UI.getCurrent().addWindow(conflictDialog);
 		}
 	}
-	
+
 	public boolean hasPermission(String type) {
 		return permissions.hasPermission(pipeline, type);
 	}
@@ -730,7 +735,7 @@ public class PipelineEdit extends ViewComponent {
 
 	@Override
 	public boolean isModified() {
-		return pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified();
+		return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission("save");
 	}
 
 	@Override
@@ -740,6 +745,19 @@ public class PipelineEdit extends ViewComponent {
 
 	private void setupButtons() {
 		setupButtons(isModified());
+	}
+
+	private void savePipelineAsNew() {
+		if (!validate()) {
+			return;
+		}
+		pipeline.setName(pipelineName.getValue());
+		pipelineCanvas.saveGraph(pipeline);
+		Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
+		pipelineName.setValue(copiedPipeline.getName());
+		pipeline = copiedPipeline;
+		finishSavePipeline(false, ShareType.PRIVATE, "reload");
+		setMode(true);
 	}
 
 	/**
@@ -768,6 +786,7 @@ public class PipelineEdit extends ViewComponent {
 	private void setupButtons(boolean enabled) {
 		buttonSave.setEnabled(enabled && hasPermission("save"));
 		buttonSaveAndClose.setEnabled(enabled && hasPermission("save"));
+		buttonSaveAsNew.setEnabled(hasPermission("copy"));
 	}
 
 	/**
@@ -863,9 +882,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
-		if (this.pipeline.getShareType() == ShareType.PUBLIC_RW) {
-			pipelineVisibility.setEnabled(false);
-		} else if(this.pipeline.getShareType() == ShareType.PUBLIC_RO) {
+		if (this.pipeline.getShareType() != ShareType.PRIVATE) {
 			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
 		}
 		setupButtons(false);
@@ -935,9 +952,7 @@ public class PipelineEdit extends ViewComponent {
 	}
 
 	private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
-		if (visibility == ShareType.PUBLIC_RW) {
-			pipelineVisibility.setEnabled(false);
-		} else if(visibility == ShareType.PUBLIC_RO) {
+		if (visibility != ShareType.PRIVATE) {
 			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
 		}
 
@@ -1042,5 +1057,24 @@ public class PipelineEdit extends ViewComponent {
 			return false;
 		}
 		return true;
+	}
+
+	private void setMode(boolean isDevelop) {
+		readOnlyLabel.setVisible(!isDevelop);
+		if (isDevelop) {
+			canvasMode = DEVELOP_MODE;
+			standardTab.setCaption("Standard");
+			standardTab.setEnabled(false);
+			developTab.setCaption("Develop");
+			tabSheet.setTabPosition(developTab, 0);
+			pipelineCanvas.changeMode(canvasMode);
+		} else {
+			canvasMode = STANDARD_MODE;
+			standardTab.setCaption("Develop");
+			standardTab.setEnabled(false);
+			developTab.setCaption("Standard");
+			tabSheet.setTabPosition(developTab, 0);
+			pipelineCanvas.changeMode(canvasMode);
+		}
 	}
 }
