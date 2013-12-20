@@ -154,7 +154,7 @@ public class PipelineFacade {
 				}
 			}
 		}
-		
+		pipeline.setLastChange(new Date());
 		pipelineDao.save(pipeline);
     }
 
@@ -285,8 +285,9 @@ public class PipelineFacade {
 		}
 		
 		Date lastChange = dbPipeline.getLastChange();
-		return lastChange == null
-				? true : !lastChange.after(pipeline.getLastChange());
+                Date myLastChange = pipeline.getLastChange();
+		return lastChange == null ? true :
+                        myLastChange == null ? false : !lastChange.after(myLastChange);
 	}
 	
     /* ******************** Methods for managing PipelineExecutions ********* */

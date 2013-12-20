@@ -145,16 +145,7 @@ public class PipelineEdit extends ViewComponent {
 		if (this.pipeline == null) {
 			label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
 		} else {
-			if (!hasPermission("save")) {
-				readOnlyLabel.setVisible(true);
-
-				canvasMode = STANDARD_MODE;
-				standardTab.setCaption("Develop");
-				standardTab.setEnabled(false);
-				developTab.setCaption("Standard");
-				tabSheet.setTabPosition(developTab, 0);
-				pipelineCanvas.changeMode(canvasMode);
-			}
+			setMode(hasPermission("save"));
 			label.setValue("<h3>Pipeline detail<h3>");
 		}
 
@@ -757,15 +748,16 @@ public class PipelineEdit extends ViewComponent {
 	}
 
 	private void savePipelineAsNew() {
-		if(!validate()) {
+		if (!validate()) {
 			return;
 		}
 		pipeline.setName(pipelineName.getValue());
 		pipelineCanvas.saveGraph(pipeline);
-		Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);		
+		Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
 		pipelineName.setValue(copiedPipeline.getName());
 		pipeline = copiedPipeline;
 		finishSavePipeline(false, ShareType.PRIVATE, "reload");
+		setMode(true);
 	}
 
 	/**
@@ -1069,5 +1061,24 @@ public class PipelineEdit extends ViewComponent {
 			return false;
 		}
 		return true;
+	}
+
+	private void setMode(boolean isDevelop) {
+		readOnlyLabel.setVisible(!isDevelop);
+		if (isDevelop) {
+			canvasMode = DEVELOP_MODE;
+			standardTab.setCaption("Standard");
+			standardTab.setEnabled(false);
+			developTab.setCaption("Develop");
+			tabSheet.setTabPosition(developTab, 0);
+			pipelineCanvas.changeMode(canvasMode);
+		} else {
+			canvasMode = STANDARD_MODE;
+			standardTab.setCaption("Develop");
+			standardTab.setEnabled(false);
+			developTab.setCaption("Standard");
+			tabSheet.setTabPosition(developTab, 0);
+			pipelineCanvas.changeMode(canvasMode);
+		}
 	}
 }
