@@ -17,4 +17,14 @@ public class DPUConfigObjectBase implements DPUConfigObject {
 		return true;
 	}
 
+	@Override
+	public void onSerialize() {
+		
+	}
+
+	@Override
+	public void onDeserialize() {
+		
+	}
+
 }

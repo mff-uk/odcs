@@ -83,6 +83,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 				.createObjectInputStream(byteIn)) {
 			Object obj = objIn.readObject();
 			config = (C) obj;
+			config.onDeserialize();
 		} catch (IOException e) {
 			throw new ConfigException("Can't deserialize configuration.", e);
 		} catch (ClassNotFoundException e) {
@@ -111,6 +112,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 			// use XStream for serialisation
 			try (ObjectOutputStream objOut = xstreamUTF.createObjectOutputStream(
 					byteOut)) {
+				config.onSerialize();
 				objOut.writeObject(config);
 			}
 			result = byteOut.toByteArray();

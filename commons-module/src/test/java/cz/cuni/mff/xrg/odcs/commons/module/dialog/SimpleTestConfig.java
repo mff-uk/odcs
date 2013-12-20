@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.module.dialog;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Simple configuration object used in {@Link BaseConfigDialogTest}.
@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
  * @author Petyr
  *
  */
-public class SimpleTestConfig implements DPUConfigObject {
+public class SimpleTestConfig extends DPUConfigObjectBase {
 
 	public String text;
 	

@@ -1,13 +1,13 @@
 package cz.cuni.mff.xrg.odcs.commons.module.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Dummy configuration object for tests purpose.
  * @author Petyr
  *
  */
-public class ConfigDummy implements DPUConfigObject {
+public class ConfigDummy extends DPUConfigObjectBase {
 	
 	public ConfigDummy() { }
 	

@@ -17,5 +17,16 @@ public interface DPUConfigObject extends Serializable {
 	 * @return
 	 */
 	boolean isValid();
+	
+	/**
+	 * The method is called when ever the configuration is deserialized.
+	 */
+	void onSerialize();
+	
+	/**
+	 * The method is called when ever the configuration is about to be 
+	 * serialized.
+	 */
+	void onDeserialize();
 	 
 }
