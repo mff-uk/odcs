@@ -17,7 +17,7 @@
 	
     <!-- data source with db login properties loaded from application configuration -->
     <bean id="dataSource" class="virtuoso.ConfigurableDataSource">
-        <constructor-arg value="#{configuration.getSubConfiguration(T(cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty).VIRTUOSO_RDBMS)}" />
+        <constructor-arg value="#{configuration.getSubConfiguration(T(cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty).RDBMS)}" />
     </bean>
 	
     <!-- EntityManager factory -->

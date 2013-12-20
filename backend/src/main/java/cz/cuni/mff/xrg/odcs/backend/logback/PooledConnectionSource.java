@@ -34,7 +34,7 @@ public class PooledConnectionSource extends DriverManagerConnectionSource {
 	@Override
 	public void start() {
 		BasicDataSource dataSource = new ConfigurableDataSource(
-				appConfig.getSubConfiguration(ConfigProperty.VIRTUOSO_RDBMS)
+				appConfig.getSubConfiguration(ConfigProperty.RDBMS)
 		);
 		setDriverClass(dataSource.getDriverClassName());
 		pool = dataSource;

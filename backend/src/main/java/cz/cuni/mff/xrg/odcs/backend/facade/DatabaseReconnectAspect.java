@@ -73,13 +73,13 @@ class DatabaseReconnectAspect {
 			return;
 		}
 		try {
-			retries = appConfig.getInteger(ConfigProperty.VIRTUOSO_RETRIES);
+			retries = appConfig.getInteger(ConfigProperty.DATABASE_RETRIES);
 		} catch (MissingConfigPropertyException ex) {
 			LOG.info("Missing config property {}, using default value {}.",
 					ex.getProperty(), retries);
 		}
 		try {
-			wait = appConfig.getInteger(ConfigProperty.VIRTUOSO_WAIT);
+			wait = appConfig.getInteger(ConfigProperty.DATABASE_WAIT);
 		} catch (MissingConfigPropertyException ex) {
 			LOG.info("Missing config property {}, using default value {}.",
 					ex.getProperty(), wait);

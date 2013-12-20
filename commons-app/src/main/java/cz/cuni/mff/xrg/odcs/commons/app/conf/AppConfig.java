@@ -27,7 +27,7 @@ public class AppConfig {
 	/**
 	 * Modifiable configuration itself.
 	 */
-	private Properties prop = new Properties();
+	private final Properties prop = new Properties();
 	
 	/**
 	 * Logging gateway.
@@ -42,8 +42,10 @@ public class AppConfig {
 	
 	/**
 	 * Constructor reads configuration file.
+	 * @return 
 	 */
 	public static AppConfig loadFromHome() {
+		// we do not use slf4j as it is not initilized yet
 		LOG.log(Level.INFO, "Loading configuration from: {0}", confPath);
 		try {
 			return loadFrom(new FileInputStream(confPath));
@@ -56,8 +58,10 @@ public class AppConfig {
 	 * Constructor building from Spring resource.
 	 * 
 	 * @param resource configuration
+	 * @return 
 	 */
 	public static AppConfig loadFrom(Resource resource) {
+		// we do not use slf4j as it is not initilized yet
 		LOG.log(Level.INFO, "Loading configuration from classpath resource.");
 		try {
 			return loadFrom(resource.getInputStream());
@@ -70,6 +74,7 @@ public class AppConfig {
 	 * Loads configuration from input stream.
 	 * 
 	 * @param stream 
+	 * @return  
 	 */
 	public static AppConfig loadFrom(InputStream stream) {
 		AppConfig config = new AppConfig();

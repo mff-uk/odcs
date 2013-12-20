@@ -64,15 +64,15 @@ public class DataUnitFactory {
 			case RDF_Virtuoso:
 				// load configuration from appConfig
 				AppConfig config = appConfig.getSubConfiguration(
-						ConfigProperty.VIRTUOSO_RDF
+						ConfigProperty.RDF
 				);
 
 				// create repository
 				RDFDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
-						config .getString(ConfigProperty.VIRTUOSO_HOSTNAME),
-						config.getString(ConfigProperty.VIRTUOSO_PORT),
-						config.getString(ConfigProperty.VIRTUOSO_USER),
-						config.getString(ConfigProperty.VIRTUOSO_PASSWORD),
+						config .getString(ConfigProperty.DATABASE_HOSTNAME),
+						config.getString(ConfigProperty.DATABASE_PORT),
+						config.getString(ConfigProperty.DATABASE_USER),
+						config.getString(ConfigProperty.DATABASE_PASSWORD),
 						GraphUrl.translateDataUnitId(id),
 						name,
 						config.getProperties()
