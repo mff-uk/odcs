@@ -55,6 +55,8 @@ class OSGIModuleFacadeConfig {
 			+ "cz.cuni.mff.xrg.odcs.commons.dpu.annotation;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.message;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.httpconnection.utils;version=\"1.0.0\","
+			// Ontology
+			+ "cz.cuni.mff.xrg.odcs.ontology;version=\"1.0.0\","
 			//
 //			+ "org.apache.log4j;version=\"1.7.5\","
 //			+ "org.slf4j;version=\"1.7.5\","

@@ -57,6 +57,14 @@
 			<type>jar</type>
 		</dependency>
 
+                <dependency> <!-- ontology -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ontology</artifactId>
+			<!-- the version has to be specify -->
+			<version>${project.version}</version>
+			<type>jar</type>
+                </dependency>
+
 		<dependency> <!-- logback as implementation org.slf4j -->
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>

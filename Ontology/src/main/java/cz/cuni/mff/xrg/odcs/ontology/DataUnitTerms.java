@@ -1,10 +1,10 @@
-package cz.cuni.mff.xrg.odcs.commons.ontology;
+package cz.cuni.mff.xrg.odcs.ontology;
 
 /**
  * Representation of the odcs ontology
  * @author tomasknap
  */
-public class OdcsTerms {
+public class DataUnitTerms {
         
      public static final String DATA_UNIT_TEXT_VALUE_PREDICATE = "http://linked.opendata.cz/ontology/odcs/textValue";
 	 

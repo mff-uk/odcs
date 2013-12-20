@@ -47,6 +47,15 @@
 			<scope>provided</scope>
 		</dependency>
 
+                <dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ontology</artifactId>
+			<!-- the version has to be specify -->
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>provided</scope>                    
+                </dependency>
+
 		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons-web</artifactId>
@@ -79,7 +88,7 @@
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<!-- export just packages under cz.cuni.mff.xrg.odcs.commons.web -->
-						<Export-Package>cz.cuni.mff.xrg.odcs.commons.module.*;version="${odcs.version}"</Export-Package>
+						<Export-Package>cz.cuni.mff.xrg.odcs.*;version="${odcs.version}"</Export-Package>
 						<!-- import vaadin, commons, web, RDF -->
 						<Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.mff.xrg.odcs.commons.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.commons.web.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.rdf.*;version="${odcs.version}",*"</Import-Package>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
