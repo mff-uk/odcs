@@ -24,14 +24,14 @@ public enum Messages {
 	,HEARTBEAT(2);
 	
 	/**
-	 * Contains mapping from (Integer)id to (Enum)Messages.
+	 * Contains mapping from integers into the messages.
 	 */
-	private static Map<Integer, Messages> idToMessages = null;
+	private static final Map<Integer, Messages> TRANSLATOR = new HashMap<>();
 	
 	/**
 	 * Message id.
 	 */
-	protected Integer id;
+	protected final Integer id;
 
 	private Messages(Integer id) {
 		this.id = id;
@@ -46,22 +46,20 @@ public enum Messages {
 	}
 	
 	/**
-	 * Return enum with given message value.
+	 * Translate Integer into the {@link Messages}.
 	 * @param id
 	 * @return
 	 */
 	public static Messages getEnum(Integer id) {
-		if (idToMessages == null) {
-			// construct map
-			idToMessages = new HashMap<>();
+		if (TRANSLATOR.isEmpty()) {
 			// create mapping
 			for (Messages item : Messages.class.getEnumConstants()) {
-				idToMessages.put(item.getMessage(), item);
+				TRANSLATOR.put(item.getMessage(), item);
 	        }
 		}
 	
-		if (idToMessages.containsKey(id)) {
-			return idToMessages.get(id);
+		if (TRANSLATOR.containsKey(id)) {
+			return TRANSLATOR.get(id);
 		} else {
 			// unknown message
 			return UNKNOWN;
