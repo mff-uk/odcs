@@ -51,7 +51,8 @@
 		<module>module-test</module>
 		<!-- build modules-->
 		<module>module-base</module>
-		<module>module</module>
+                <!-- we do not builde module as we do not wan't to update them -->
+		<!-- <module>module</module> -->
 	</modules>
 
 	<scm>
