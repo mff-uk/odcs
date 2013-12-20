@@ -882,9 +882,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
-		if (this.pipeline.getShareType() == ShareType.PUBLIC_RW) {
-			pipelineVisibility.setEnabled(false);
-		} else if (this.pipeline.getShareType() == ShareType.PUBLIC_RO) {
+		if (this.pipeline.getShareType() != ShareType.PRIVATE) {
 			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
 		}
 		setupButtons(false);
@@ -954,9 +952,7 @@ public class PipelineEdit extends ViewComponent {
 	}
 
 	private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
-		if (visibility == ShareType.PUBLIC_RW) {
-			pipelineVisibility.setEnabled(false);
-		} else if (visibility == ShareType.PUBLIC_RO) {
+		if (visibility != ShareType.PRIVATE) {
 			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
 		}
 
