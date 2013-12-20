@@ -26,8 +26,6 @@ public interface ManagableDataUnit extends DataUnit {
 	 * DataUnit is not in read-only mode.
 	 *
 	 * @param unit {@link DataUnit} to merge with
-	 * @throws {@link IllegalArgumentException} In case of unsupported unit
-	 *                                          type.
 	 */
 	public void merge(DataUnit unit) throws IllegalArgumentException;	
 

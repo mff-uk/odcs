@@ -52,7 +52,8 @@
         <module>module-base</module>
         <!-- we do not builde module as we do not wan't to update them -->
         <!-- <module>module</module> -->
-        <module>Ontology</module>
+        <module>ontology</module>
+        <module>dataunit</module>
     </modules>
 
     <scm>

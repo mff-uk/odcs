@@ -1,20 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>cz.cuni.mff.xrg.odcs</groupId> 
-		<artifactId>odcs</artifactId> 
-		<version>1.0.0</version> 
-	</parent>	
-	<artifactId>RDF</artifactId>
-	<name>RDF</name>
-	<description />
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cz.cuni.mff.xrg.odcs</groupId> 
+        <artifactId>odcs</artifactId> 
+        <version>1.0.0</version> 
+    </parent>	
+    <artifactId>RDF</artifactId>
+    <name>RDF</name>
+    <description />
 
-	<properties>
-		<sesame.version>2.7.7</sesame.version>
-	</properties>
+    <properties>
+        <sesame.version>2.7.7</sesame.version>
+    </properties>
 
-	<dependencies>
+    <dependencies>
 
         <dependency> <!--  JUnit dependency -->
             <groupId>junit</groupId>
@@ -22,16 +22,16 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>	
-
-		<dependency> <!-- commons project -->
-			<groupId>${project.groupId}</groupId>
-			<artifactId>commons</artifactId>
-			<!-- the version has to be specify -->
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
-		
-		<dependency> <!-- openRDF dependency-->
+	
+        <dependency> <!-- dataunit base project -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit</artifactId>
+            <!-- the version has to be specify -->
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
+                
+        <dependency> <!-- openRDF dependency-->
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-config</artifactId>
             <version>${sesame.version}</version>
@@ -255,9 +255,9 @@
         </dependency>
 		
         <!-- Virtuoso dependency sesame provider from http://virtuoso.openlinksw.com/dataspace/doc/dav/wiki/Main/VOSDownload
-               Supporting openRDF 2.7.x      -->
+        Supporting openRDF 2.7.x      -->
 
-	<dependency> 
+        <dependency> 
             <groupId>com.openlinksw</groupId>
             <artifactId>virt_sesame2</artifactId>
             <version>2.7</version>
@@ -275,7 +275,7 @@
         https://github.com/openlink/virtuoso-opensource/blob/f9bd01cdd79e68c33348aeca4e85087f297cf97c/libsrc/JDBCDriverType4/virtjdbc4_1.jar
         -->
         
-         <dependency>
+        <dependency>
             <groupId>com.openlinksw</groupId>
             <artifactId>virtjdbc</artifactId>
             <version>4.1</version>
@@ -289,6 +289,6 @@
         </dependency>
         -->
 			
-	</dependencies>
+    </dependencies>
 	
 </project>
