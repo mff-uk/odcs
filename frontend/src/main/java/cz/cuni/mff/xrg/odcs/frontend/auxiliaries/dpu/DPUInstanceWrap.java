@@ -12,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
  */
 public class DPUInstanceWrap extends DPURecordWrap {
 	
-	private DPUFacade dpuFacade;
+	private final DPUFacade dpuFacade;
 
 	/**
 	 * Wrapped DPUTemplateRecord.

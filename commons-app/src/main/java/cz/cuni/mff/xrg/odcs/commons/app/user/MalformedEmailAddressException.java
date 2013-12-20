@@ -18,7 +18,7 @@ public class MalformedEmailAddressException extends RuntimeException {
 	 * <code>MalformedEmailAddressException</code> with the specified detail
 	 * message.
 	 *
-	 * @param msg the detail message.
+	 * @param email the detail message.
 	 */
 	public MalformedEmailAddressException(String email) {
 		super(String.format("Invalid email syntax or invalid domain: %s.", email));

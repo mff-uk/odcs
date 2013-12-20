@@ -8,7 +8,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.event;
  */
 public class ModuleUpdateEvent extends ModuleEvent {
 	
-	private String jarName;
+	private final String jarName;
 	
 	public ModuleUpdateEvent(Object source,
 			String directoryName,

@@ -7,7 +7,6 @@ import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Resource;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.io.Serializable;
@@ -51,7 +50,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializable, DataObject {
+public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataObject {
 
 	/**
 	 * Unique ID for each pipeline
@@ -177,11 +176,6 @@ public class Pipeline implements OwnedEntity, SharedEntity, Resource, Serializab
 	public Set<Pipeline> getConflicts() {
 		return conflicts;
 	}	
-	
-	@Override
-	public String getResourceId() {
-		return Pipeline.class.toString();
-	}
 
 	@Override
 	public ShareType getShareType() {

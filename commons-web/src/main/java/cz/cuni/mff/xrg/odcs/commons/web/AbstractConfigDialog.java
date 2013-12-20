@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
  * his DPU's configuration dialog from {@link BaseConfigDialog} instead of this class. 
  * 
  * @author Petyr
+ * @param <C>
  * 
  */
 public abstract class AbstractConfigDialog<C extends DPUConfigObject>
@@ -28,6 +29,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	 * Return serialized result of {@link #getConfiguration()}
 	 * 
 	 * @return Serialized configuration object.
+	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
 	 */
 	public abstract byte[] getConfig() throws ConfigException;
 

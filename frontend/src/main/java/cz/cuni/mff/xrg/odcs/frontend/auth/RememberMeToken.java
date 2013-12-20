@@ -1,8 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.auth;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 

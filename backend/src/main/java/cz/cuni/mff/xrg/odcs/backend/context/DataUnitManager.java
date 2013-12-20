@@ -15,6 +15,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
@@ -221,6 +222,7 @@ final class DataUnitManager {
 			// no data for this DPU
 			return;
 		}
+		
 		List<DataUnitInfo> dataUnitsInfo = dpuInfo.getDataUnits();
 		// check every DataUnit in contextInfo
 		for (DataUnitInfo info : dataUnitsInfo) {

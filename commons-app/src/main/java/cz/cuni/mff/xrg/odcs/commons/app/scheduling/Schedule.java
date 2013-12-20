@@ -238,6 +238,7 @@ public class Schedule implements DataObject, OwnedEntity {
 		this.afterPipelines = afterPipelines;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -250,6 +251,7 @@ public class Schedule implements DataObject, OwnedEntity {
 		this.notification = notification;
 	}
 
+	@Override
 	public User getOwner() {
 		return owner;
 	}

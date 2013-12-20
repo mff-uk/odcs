@@ -15,7 +15,7 @@ public enum Role implements GrantedAuthority {
 	/**
 	 * Human-readable string representation of role.
 	 */
-	private String role;
+	private final String role;
 
 	private Role(String role) {
 		this.role = role;

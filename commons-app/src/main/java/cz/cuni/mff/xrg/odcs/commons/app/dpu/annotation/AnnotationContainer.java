@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
  * not contains all annotations.
  * 
  * @author Petyr
+ * @param <T>
  *
  */
 public class AnnotationContainer<T> {
@@ -14,7 +15,7 @@ public class AnnotationContainer<T> {
 	/**
 	 * Field.
 	 */
-	private Field field;
+	private final Field field;
 	
 	/**
 	 * Field's annotation.

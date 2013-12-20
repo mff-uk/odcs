@@ -23,7 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Entity
 @Table(name = "usr_user")
-public class User implements UserDetails, OwnedEntity, RoleHolder, Resource, DataObject {
+public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Primary key for entity.
@@ -166,11 +166,6 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, Resource, Dat
 
     public void setTableRows(Integer value) {
         tableRows = value;
-    }
-
-    @Override
-    public String getResourceId() {
-        return User.class.toString();
     }
 
     @Override

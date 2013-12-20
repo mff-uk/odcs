@@ -20,8 +20,6 @@ import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
  */
 public abstract class BaseConfigDialog<C extends DPUConfigObject>
 		extends AbstractConfigDialog<C> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BaseConfigDialog.class);
 	
 	/**
 	 * Used to convert configuration object into byte array and back.

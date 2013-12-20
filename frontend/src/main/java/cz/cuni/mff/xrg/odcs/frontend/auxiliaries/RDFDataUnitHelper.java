@@ -33,9 +33,9 @@ public class RDFDataUnitHelper {
 	/**
 	 * Return repository for specified RDF DataUnit.
 	 *
-	 * @param context       The pipelineExecution context.
+	 * @param executionInfo       The pipelineExecution context.
 	 * @param dpuInstance   Owner of DataUnit.
-	 * @param dataUnitIndex Index of data unit.
+	 * @param info
 	 * @return Repository or null if there is no browser for given type.
 	 *
 	 */

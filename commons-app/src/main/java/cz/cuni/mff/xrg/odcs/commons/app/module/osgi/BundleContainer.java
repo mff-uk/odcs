@@ -151,13 +151,7 @@ class BundleContainer {
 		Object result = null;
 		try {
 			result = loaderClass.newInstance();
-		} catch (InstantiationException e) {
-			throw new ModuleException(e);
-		} catch (IllegalAccessException e) {
-			throw new ModuleException(e);
-		} catch (NoClassDefFoundError e) {
-			throw new ModuleException(e);
-		} catch (NoSuchMethodError e) {
+		} catch (InstantiationException | IllegalAccessException | NoClassDefFoundError | NoSuchMethodError e) {
 			throw new ModuleException(e);
 		}
 		// return instance

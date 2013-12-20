@@ -76,24 +76,6 @@ public class ProcessingUnitInfo implements DataObject {
 	}
 
 	/**
-	 * Return DataUnit info with given index.
-	 * 
-	 * @param index Index of DataUnit.
-	 * @return DataUnitInfo or null.
-	 * 
-	 * @deprecated use DpuContextInfo instead
-	 */
-	@Deprecated
-	public DataUnitInfo getDataUnit(Integer index) {
-		for (DataUnitInfo info : dataUnits) {
-			if (info.getIndex() == index) {
-				return info;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * 
 	 * @return
 	 * @deprecated use DpuContextInfo instead

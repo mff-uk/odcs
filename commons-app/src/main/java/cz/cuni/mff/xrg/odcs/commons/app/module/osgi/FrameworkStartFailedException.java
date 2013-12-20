@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
 /**
  * Used to announce that {@link OSGIModuleFacade#start} failed.
+ * 
  * @author Petyr
  *
  */

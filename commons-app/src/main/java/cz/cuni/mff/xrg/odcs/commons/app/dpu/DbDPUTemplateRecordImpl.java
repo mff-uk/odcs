@@ -7,7 +7,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
+ * Implementation for accessing {@link DPUTemplateRecord} data objects.
+ * 
  * @author Jan Vojt
  */
 @Transactional(propagation = Propagation.MANDATORY)

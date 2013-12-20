@@ -31,7 +31,7 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	private String toolTip;	
 	
 	/**
-	 * Empty ctor because of JPA.
+	 * Empty constructor because of JPA.
 	 */
 	public DPUInstanceRecord() {}
 	

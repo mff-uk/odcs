@@ -8,19 +8,19 @@ import java.util.List;
 /**
  * Class gather all the annotation for all the fields for given instance and
  * return them as a {@link List} of {@link AnnotationContainer}.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class AnnotationGetter {
 
 	private AnnotationGetter() {
-
 	}
 
 	/**
 	 * Get annotation of given type for all the fields.
-	 * 
+	 *
+	 * @param <T>
 	 * @param instance
 	 * @param type Type of annotation to get
 	 * @return List with {@link AnnotationContainer}, can be empty.
@@ -41,8 +41,7 @@ public class AnnotationGetter {
 				// no annotation of required type
 			} else {
 				// add to the result
-				result.add(
-						new AnnotationContainer<T>(field, annotation));
+				result.add(new AnnotationContainer<>(field, annotation));
 			}
 		}
 		return result;
