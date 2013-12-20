@@ -272,7 +272,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		switch (extractType) {
 			case HTTP_URL:
-				extractDataFileFromHTTPSource(path, baseURI, handlerExtractType);
+				extractDataFileFromHTTPSource(path, format, baseURI,
+						handlerExtractType);
 				break;
 			case PATH_TO_DIRECTORY:
 				extractDataFromDirectorySource(dirFile, suffix, useSuffix,
@@ -1704,7 +1705,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		 }*/
 	}
 
-	private void extractDataFileFromHTTPSource(String path, String baseURI,
+	private void extractDataFileFromHTTPSource(String path, RDFFormat format,
+			String baseURI,
 			HandlerExtractType handlerExtractType) throws RDFException {
 		URL urlPath;
 		try {
@@ -1717,7 +1719,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			try (InputStreamReader inputStreamReader = new InputStreamReader(
 					urlPath.openStream(), Charset.forName(encode))) {
 
-				RDFFormat format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
+				//in case that RDF format is AUTO or not fixed.
+				if (format == null) {
+					format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
+				}
+
 				RepositoryConnection connection = getConnection();
 
 				switch (handlerExtractType) {
