@@ -1,14 +1,13 @@
 package cz.cuni.mff.xrg.odcs.extractor.silklinker;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  *
  * Put your DPU's configuration here.
  *
  */
-public class SilkLinkerConfig implements DPUConfigObject {
+public class SilkLinkerConfig extends DPUConfigObjectBase {
 
     /**
      * Path to the config file driving the execution of Silk.
