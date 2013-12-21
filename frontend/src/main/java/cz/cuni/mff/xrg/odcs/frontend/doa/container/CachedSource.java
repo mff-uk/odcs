@@ -228,7 +228,18 @@ public class CachedSource<T extends DataObject>
 			++index;
 		}
 	}
-		
+	
+	/**
+	 * Return list of used core filters, do not modify the returned list!
+	 * The core filters are not modifiable by using other {@link CachedSource}
+	 * methods.
+	 * 
+	 * @return 
+	 */
+	public List<Filter> getFiltersCore() {
+		return coreFilters;
+	}
+	
 	@Override
 	public int size() {
 		if (size == null) {

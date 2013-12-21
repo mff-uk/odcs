@@ -5,8 +5,6 @@
     <class>cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log</class>
-    <class>cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage</class>
-    <class>cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogExceptionLine</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo</class>
     <class>cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo</class>

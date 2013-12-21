@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RecordsTable extends CustomComponent {
 
-	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RecordsTable.class);
 	private boolean isInitialized = false;
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable messageTable;
