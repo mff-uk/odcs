@@ -1210,13 +1210,63 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return size;
 	}
 
+	private boolean hasMoreSelect(String query) {
+		final String SELECT = "select";
+
+		String selectQuery = query.toLowerCase().replaceFirst(SELECT, "");
+		return selectQuery.contains(SELECT);
+	}
+
+	private int getWordIndex(final String query, final String word) {
+
+		return query.toLowerCase().indexOf(word.toLowerCase());
+	}
+
+	private String getRestQuery(String query) {
+
+		int index = getWordIndex(query, "from");
+
+		if (index != -1) {
+			return query.substring(index);
+		} else {
+			index = getWordIndex(query, "where");
+			if (index != -1) {
+				return query.substring(index);
+			} else {
+				return query;
+			}
+		}
+	}
+
+	private String getSelectSizeQuery(QueryPart queryPart, String sizeVar) {
+
+		String query = queryPart.getQueryWithoutPrefixes();
+
+		if (hasMoreSelect(query)) {
+			System.out.println("Vice selectu");
+			String sizeQuery = String.format(
+					"%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
+					.getQueryPrefixes(),
+					sizeVar, query);
+
+			return sizeQuery;
+
+		} else {
+			System.out.println("Ma 1 select");
+			String sizeQuery = String.format(
+					"%s SELECT (count(*) AS ?%s) %s", queryPart
+					.getQueryPrefixes(),
+					sizeVar, getRestQuery(query));
+
+			return sizeQuery;
+		}
+	}
+
 	private long getSizeForSelect(QueryPart queryPart) throws InvalidQueryException {
 
 		final String sizeVar = "selectSize";
-		final String sizeQuery = String.format(
-				"%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
-				.getQueryPrefixes(),
-				sizeVar, queryPart.getQueryWithoutPrefixes());
+
+		final String sizeQuery = getSelectSizeQuery(queryPart, sizeVar);
 		try {
 			RepositoryConnection connection = getConnection();
 
@@ -1253,6 +1303,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * For Browsing all data in graph return its size {count of rows}.
+	 */
+	@Override
+	public long getResultSizeForDataCollection() throws InvalidQueryException {
+		final String selectQuery = "SELECT ?x ?y ?z WHERE {?x ?y ?z}";
+		return getSizeForSelect(new QueryPart(selectQuery));
 	}
 
 	/**
