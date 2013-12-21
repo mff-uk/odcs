@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Jan Vojt
  */
 @Transactional(propagation = Propagation.MANDATORY)
-public class DbUserNotificationRecordImpl extends DbAccessBase<UserNotificationRecord>
+class DbUserNotificationRecordImpl extends DbAccessBase<UserNotificationRecord>
 											implements DbUserNotification {
 
 	public DbUserNotificationRecordImpl() {

@@ -34,9 +34,8 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import java.util.LinkedList;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -48,29 +47,38 @@ import org.tepi.filtertable.datefilter.DateInterval;
  */
 public class LogTable extends CustomComponent {
 
-	private static final Logger LOG = LoggerFactory.getLogger(LogTable.class);
 	private VerticalLayout mainLayout;
+
 	private IntlibPagedTable table;
+
 	private PipelineExecution execution;
+
 	private FilterGenerator filterGenerator;
+
 	private LogMessageDetail detail = null;
+
 	/**
 	 * Access to data for retrieving detail log information. TODO replace with
 	 * ContainerSource
 	 */
 	private final CachedSource<Log> dataSouce;
+
 	private final ReadOnlyContainer<Log> container;
+
 	/**
 	 * Contains names of {@link DPUInstanceRecord}s. Used as a cache for
 	 * generated column.
 	 */
 	private final Map<Long, String> dpuNames = new HashMap<>();
+
 	private final LogFacade logFacade;
 
 	/**
 	 * Default constructor.
 	 *
 	 * @param dataSouce
+	 * @param logFacade
+	 * @param pageLenght
 	 */
 	public LogTable(CachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght) {
 		this.dataSouce = dataSouce;
@@ -127,7 +135,7 @@ public class LogTable extends CustomComponent {
 		levelSelector.setImmediate(true);
 		levelSelector.setNullSelectionAllowed(false);
 		levelSelector.addItem(Level.ALL);
-		for (Level level : logFacade.getAllLevels(false)) {
+		for (Level level : logFacade.getAllLevels()) {
 			levelSelector.addItem(level);
 			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
@@ -154,20 +162,12 @@ public class LogTable extends CustomComponent {
 
 			@Override
 			public InputStream getStream() {
-				// get current dpu
-				DPUInstanceRecord dpu = (DPUInstanceRecord) table.getFilterFieldValue("dpu");
-				Level level = Level.toLevel((Integer) table.getFilterFieldValue("logLevel"));
-				String message = (String) table.getFilterFieldValue("message");
-				String source = (String) table.getFilterFieldValue("source");
-				Object date = table.getFilterFieldValue("timestamp");
-				Date start = null;
-				Date end = null;
-				if (date != null) {
-					DateInterval interval = (DateInterval) date;
-					start = interval.getFrom();
-					end = interval.getTo();
-				}
-				return logFacade.getLogsAsStream(execution, dpu, level, message, source, start, end);
+				// we need used filters
+				LinkedList<Object> filters = new LinkedList<>();
+				filters.addAll(dataSouce.getFilters());
+				filters.addAll(dataSouce.getFiltersCore());
+				// and now we used them to get data ..
+				return logFacade.getLogsAsStream(filters);
 			}
 		});
 		fileDownloader.extend(download);
@@ -220,7 +220,7 @@ public class LogTable extends CustomComponent {
 	public void setDpu(DPUInstanceRecord dpu) {
 
 		ComboBox dpuSelector = refreshDpuSelector();
-		if(dpuSelector == null) {
+		if (dpuSelector == null) {
 			return;
 		}
 		// if the curent DPU is presented set is as active
@@ -263,11 +263,12 @@ public class LogTable extends CustomComponent {
 	/**
 	 * Reload data from source, do not refresh the source it self!!
 	 *
+	 * @param exec
 	 * @return
 	 */
 	public boolean refresh(PipelineExecution exec) {
 		this.execution = exec;
-		if(!isRunning(execution)) {
+		if (!isRunning(execution)) {
 			refreshDpuSelector();
 		}
 		int lastPage = table.getTotalAmountOfPages();
@@ -374,8 +375,8 @@ public class LogTable extends CustomComponent {
 	private void resetFilters() {
 		table.resetFilters();
 		Component cmpLevel = table.getFilterField("logLevel");
-		if(cmpLevel != null && cmpLevel.getClass() == ComboBox.class) {
-			((ComboBox)cmpLevel).setValue(Level.ALL);
+		if (cmpLevel != null && cmpLevel.getClass() == ComboBox.class) {
+			((ComboBox) cmpLevel).setValue(Level.ALL);
 		}
 	}
 }

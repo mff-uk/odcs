@@ -586,54 +586,6 @@ CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" RE
     WHERE id = n.id;
 };
 
--- TABLES FOR LOGBACK
-
-DROP TABLE "DB"."ODCS"."LOGGING_EVENT_PROPERTY";
-DROP TABLE "DB"."ODCS"."LOGGING_EVENT_EXCEPTION";
-DROP TABLE "DB"."ODCS"."LOGGING_EVENT";
-
-CREATE TABLE "DB"."ODCS"."LOGGING_EVENT"
-(
-  timestmp BIGINT NOT NULL,
-  formatted_message LONG VARCHAR NOT NULL,
-  logger_name VARCHAR(254) NOT NULL,
-  level_string VARCHAR(254) NOT NULL,
-  thread_name VARCHAR(254),
-  reference_flag SMALLINT,
-  arg0 VARCHAR(254),
-  arg1 VARCHAR(254),
-  arg2 VARCHAR(254),
-  arg3 VARCHAR(254),
-  caller_filename VARCHAR(254) NOT NULL,
-  caller_class VARCHAR(254) NOT NULL,
-  caller_method VARCHAR(254) NOT NULL,
-  caller_line CHAR(4) NOT NULL,
-  event_id BIGINT NOT NULL IDENTITY,
-  PRIMARY KEY (event_id)
-);
-CREATE INDEX "ix_LOGGING_EVENT_timestmp" ON "DB"."ODCS"."LOGGING_EVENT" ("timestmp");
-CREATE INDEX "ix_LOGGING_EVENT_level_string" ON "DB"."ODCS"."LOGGING_EVENT" ("level_string");
-
-CREATE TABLE "DB"."ODCS"."LOGGING_EVENT_PROPERTY"
-(
-  event_id BIGINT NOT NULL,
-  mapped_key VARCHAR(254) NOT NULL,
-  mapped_value VARCHAR(254),
-  PRIMARY KEY (event_id, mapped_key),
-  FOREIGN KEY (event_id) REFERENCES "DB"."ODCS"."LOGGING_EVENT"(event_id)
-);
-CREATE INDEX "ix_LOGGING_EVENT_PROPERTY_mapped_key" ON "DB"."ODCS"."LOGGING_EVENT_PROPERTY" ("mapped_key");
-CREATE INDEX "ix_LOGGING_EVENT_PROPERTY_mapped_value" ON "DB"."ODCS"."LOGGING_EVENT_PROPERTY" ("mapped_value");
-
-CREATE TABLE "DB"."ODCS"."LOGGING_EVENT_EXCEPTION"
-(
-  event_id BIGINT NOT NULL,
-  i SMALLINT NOT NULL,
-  trace_line VARCHAR(254) NOT NULL,
-  PRIMARY KEY(event_id, i),
-  FOREIGN KEY (event_id) REFERENCES "DB"."ODCS"."LOGGING_EVENT"(event_id)
-);
-
 -- TABLE FOR LOGS
 
 DROP TABLE "DB"."ODCS"."LOGGING";

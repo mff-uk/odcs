@@ -74,7 +74,7 @@ class OSGIModuleFacade implements ModuleFacade {
 	 * Also for each directory store Thread, so Thread which has lock can
 	 * access all methods.
 	 * 
-	 * The structure must be accessed only inside synchronised block.
+	 * The structure must be accessed only inside synchronized block.
 	 */
 	private final Map<String, Thread> updatingBundles = new HashMap<>();
 	

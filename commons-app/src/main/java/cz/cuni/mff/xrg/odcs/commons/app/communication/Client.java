@@ -19,15 +19,18 @@ public class Client {
 	/**
 	 * Backend address.
 	 */
-	private String backendAddress;
+	private final String backendAddress;
+	
 	/**
 	 * Port for communication.
 	 */
-	private int port;
+	private final int port;
+	
 	/**
 	 * Address of backend in InetAdress format. Used as a cache.
 	 */
-	private InetAddress chacedAddress;
+	private InetAddress cachedAddress;
+	
 	/**
 	 * Socket for loading data from database.
 	 */
@@ -36,29 +39,30 @@ public class Client {
 	public Client(String backendAddress, int port) {
 		this.backendAddress = backendAddress;
 		this.port = port;
-		this.chacedAddress = null;
+		this.cachedAddress = null;
 	}
 
 	/**
 	 * Tries to establish communication with backend.
 	 *
 	 * @return If connection was successful.
+	 * @throws cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException
 	 */
 	public boolean connect() throws CommunicationException {
 		// do we know backend address ?
-		if (chacedAddress == null) {
+		if (cachedAddress == null) {
 			// no -> translate backend address
 			try {
-				chacedAddress = InetAddress.getByName(backendAddress);
+				cachedAddress = InetAddress.getByName(backendAddress);
 			} catch (UnknownHostException e) {
 				throw new CommunicationException("Can't resolve host name.", e);
 			}
 		}
 		// connect to backend
 		try {
-			socket = new Socket(chacedAddress, port);
+			socket = new Socket(cachedAddress, port);
 		} catch (IOException e) {
-			throw new CommunicationException("Can't connect to backend.", e);
+			throw new CommunicationException("Can't connect to Backend.", e);
 		}
 		return true;
 	}

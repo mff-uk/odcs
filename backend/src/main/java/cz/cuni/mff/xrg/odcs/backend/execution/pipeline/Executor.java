@@ -3,10 +3,8 @@ package cz.cuni.mff.xrg.odcs.backend.execution.pipeline;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +34,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
+import ch.qos.logback.classic.Level;
 
 /**
  * Execute given pipeline. The {@link Executor} must be bind to the certain
  * {@link PipelineExecution} by calling {@link #bind(PipelineExecution)} before
  * any future use.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class Executor implements Runnable {
 
@@ -95,7 +94,7 @@ public class Executor implements Runnable {
 	 */
 	@Autowired
 	private SqlAppender logAppender;
-	
+
 	/**
 	 * PipelineExecution record, determine pipeline to run.
 	 */
@@ -110,7 +109,7 @@ public class Executor implements Runnable {
 	 * End time of last successful pipeline execution.
 	 */
 	private Date lastSuccessfulExTime;
-	
+
 	/**
 	 * Sort pre/post executors.
 	 */
@@ -129,7 +128,7 @@ public class Executor implements Runnable {
 	/**
 	 * Bind {@link Executor} to the given {@link PipelineExecution}. Also update
 	 * the {@link PipelineExecution}'s state.
-	 * 
+	 *
 	 * @param execution
 	 */
 	public void bind(PipelineExecution execution) {
@@ -175,15 +174,14 @@ public class Executor implements Runnable {
 	 * {@link PreExecutor} return false then return false. If there are no
 	 * {@link PreExecutor} ({@link Executor#preExecutors} == null) then
 	 * instantly return true.
-	 * 
-	 * @param graph
-	 *            Dependency graph used for execution.
+	 *
+	 * @param graph Dependency graph used for execution.
 	 * @return
 	 */
 	private boolean executePreExecutors(DependencyGraph graph) {
 		if (preExecutors == null) {
 			return true;
-		}		
+		}
 		boolean success = true;
 		for (PreExecutor item : preExecutors) {
 			if (!item.preAction(execution, contexts, graph, success)) {
@@ -199,9 +197,8 @@ public class Executor implements Runnable {
 	 * {@link PostExecutor} return false then return false. If there are no
 	 * {@link PostExecutor} ({@link Executor#postExecutors} == null) then
 	 * instantly return true.
-	 * 
-	 * @param graph
-	 *            Dependency graph that has been used for execution.
+	 *
+	 * @param graph Dependency graph that has been used for execution.
 	 * @return
 	 */
 	private boolean executePostExecutors(DependencyGraph graph) {
@@ -247,15 +244,12 @@ public class Executor implements Runnable {
 				break;
 			}
 		}
-
+		
 		if (warnings) {
+			// ok we know that this is true
 		} else {
 			// test logs
-			Set<org.apache.log4j.Level> levels = new HashSet<>(3);
-			levels.add(org.apache.log4j.Level.WARN);
-			levels.add(org.apache.log4j.Level.ERROR);
-			levels.add(org.apache.log4j.Level.FATAL);
-			warnings = logFacade.existLogs(execution, levels);
+			warnings = logFacade.existLogsGreaterOrEqual(execution, Level.WARN);
 		}
 
 		if (warnings) {
@@ -263,11 +257,12 @@ public class Executor implements Runnable {
 		} else {
 			execution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
 		}
+
 	}
 
 	/**
 	 * Prepare and return instance of {@link DependencyGraph}.
-	 * 
+	 *
 	 * @return
 	 */
 	private DependencyGraph prepareDependencyGraph() {
@@ -291,8 +286,8 @@ public class Executor implements Runnable {
 		DependencyGraph dependencyGraph = prepareDependencyGraph();
 
 		// we need result state
-		ExecutionResult execResult = new ExecutionResult();		
-		
+		ExecutionResult execResult = new ExecutionResult();
+
 		// execute pre-executors
 		if (!executePreExecutors(dependencyGraph)) {
 			execResult.failure();
@@ -310,7 +305,7 @@ public class Executor implements Runnable {
 			if (!execResult.continueExecution() || userAbortRequest) {
 				break;
 			}
-			
+
 			// put dpuInstance id to MDC, so we can identify logs related to the
 			// dpuInstance
 			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME,
@@ -318,7 +313,7 @@ public class Executor implements Runnable {
 
 			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor = beanFactory
 					.getBean(cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor.class);
-			
+
 			try {
 				dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime);
 			} catch (ContextException e) {
@@ -330,13 +325,12 @@ public class Executor implements Runnable {
 
 			LOG.info("Starting execution of dpu {} = {}", node.getDpuInstance()
 					.getId(), node.getDpuInstance().getName());
-			
+
 			final String threadName = "dpu: " + node.getDpuInstance().getName();
 			Thread executorThread = new Thread(dpuExecutor, threadName);
 			executorThread.start();
 
 			// repeat until the executorThread is running
-			
 			while (executorThread.isAlive()) {
 				try {
 					// sleep for five seconds
@@ -373,9 +367,9 @@ public class Executor implements Runnable {
 					break;
 				}
 			} // end of single DPU thread execution
-			
+
 			// merge result information
-			ExecutionResult dpuResults = dpuExecutor.getExecResult();			
+			ExecutionResult dpuResults = dpuExecutor.getExecResult();
 			// check for corrent ending
 			if (dpuResults.executionEndsProperly()) {
 				// ok eecution ends properly 
@@ -384,10 +378,10 @@ public class Executor implements Runnable {
 				// and this is equal to the failure
 				dpuResults.failure();
 				eventPublisher.publishEvent(PipelineFailedEvent.create(
-						"DPU execution failed", 
-						"The DPU execution thread ends in non-standart way", 
+						"DPU execution failed",
+						"The DPU execution thread ends in non-standart way",
 						node.getDpuInstance(), execution, this));
-			}			
+			}
 			execResult.add(dpuResults);
 			// remove MDC from logs
 			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
@@ -398,8 +392,8 @@ public class Executor implements Runnable {
 		if (!executePostExecutors(dependencyGraph)) {
 			// failed ..
 			execResult.failure();
-		}	
-		
+		}
+
 		// all done, resolve the way of ending .. 
 		// set time then the pipeline's execution finished
 		if (userAbortRequest) {
@@ -427,7 +421,7 @@ public class Executor implements Runnable {
 		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
 
 		eventPublisher.publishEvent(PipelineInfo.createStart(execution, this));
-		
+
 		// execute the pipeline it self
 		execute();
 
@@ -437,7 +431,7 @@ public class Executor implements Runnable {
 		// publish information for the rest of the application
 		// that the execution finished ..
 		eventPublisher.publishEvent(new PipelineFinished(execution, this));
-		
+
 		// the logs are fulshed every 4300 ms, so we wait for
 		// 5 seconds before ending
 		try {
@@ -445,7 +439,7 @@ public class Executor implements Runnable {
 		} catch (InterruptedException ex) {
 			// ok stop waiting and end 
 		}
-		
+
 		// save the execution
 		try {
 			pipelineFacade.save(execution);
@@ -458,7 +452,7 @@ public class Executor implements Runnable {
 		// and then we change the state, which cause the frontneds refresh
 		// to top .. but before that all the data will be ready in the database
 		LOG.debug("Execution thread is about to finish .. ");
-		
+
 		// unregister MDC execution filter
 		MdcExecutionLevelFilter.remove(executionId);
 		// clear all threads markers
@@ -467,11 +461,10 @@ public class Executor implements Runnable {
 
 	/**
 	 * Stops pipeline execution. Usually invoke by user action.
-	 * 
-	 * @param executorThread
-	 *            thread servicing execution which needs to be stopped
-	 * @param dpuExecutor
-	 *            Executor for given DPUs.
+	 *
+	 * @param executorThread thread servicing execution which needs to be
+	 * stopped
+	 * @param dpuExecutor Executor for given DPUs.
 	 */
 	private void stopExecution(Thread executorThread,
 			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor) {

@@ -33,9 +33,9 @@ public class RDFDataUnitHelper {
 	/**
 	 * Return repository for specified RDF DataUnit.
 	 *
-	 * @param context       The pipelineExecution context.
+	 * @param executionInfo       The pipelineExecution context.
 	 * @param dpuInstance   Owner of DataUnit.
-	 * @param dataUnitIndex Index of data unit.
+	 * @param info
 	 * @return Repository or null if there is no browser for given type.
 	 *
 	 */
@@ -93,17 +93,17 @@ public class RDFDataUnitHelper {
 	 */
 	public static VirtuosoRDFRepo getVirtuosoRepository(String namedGraph) {
 		AppConfig appConfig = ((AppEntry)UI.getCurrent()).getBean(AppConfig.class).getSubConfiguration(
-				ConfigProperty.VIRTUOSO_RDF);
+				ConfigProperty.RDF);
 
 		// load configuration from appConfig
 		final String hostName =
-				appConfig.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
+				appConfig.getString(ConfigProperty.DATABASE_HOSTNAME);
 		final String port =
-				appConfig.getString(ConfigProperty.VIRTUOSO_PORT);
+				appConfig.getString(ConfigProperty.DATABASE_PORT);
 		final String user =
-				appConfig.getString(ConfigProperty.VIRTUOSO_USER);
+				appConfig.getString(ConfigProperty.DATABASE_USER);
 		final String password =
-				appConfig.getString(ConfigProperty.VIRTUOSO_PASSWORD);
+				appConfig.getString(ConfigProperty.DATABASE_PASSWORD);
 
 		VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
 				.createVirtuosoRDFRepo(

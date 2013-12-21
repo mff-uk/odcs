@@ -19,17 +19,17 @@ public enum ConfigProperty {
 	EXECUTION_LOG_HISTORY("exec.log.history"),
 	
 	// namespaces for virtuoso configuration
-	VIRTUOSO_RDBMS("virtuoso.rdbms"),
-	VIRTUOSO_RDF("virtuoso.rdf"),
+	RDBMS("database.sql"),
+	RDF("database.rdf"),
 	
-	VIRTUOSO_HOSTNAME("hostname"),
-	VIRTUOSO_PORT("port"),
-	VIRTUOSO_USER("user"),
-	VIRTUOSO_PASSWORD("password"),
-	VIRTUOSO_CHARSET("charset"),
-	VIRTUOSO_RETRIES("retries"),
-	VIRTUOSO_WAIT("wait"),
-	VIRTUOSO_EXTENSION("useExtension"),
+	DATABASE_HOSTNAME("hostname"),
+	DATABASE_PORT("port"),
+	DATABASE_USER("user"),
+	DATABASE_PASSWORD("password"),
+	DATABASE_CHARSET("charset"),
+	DATABASE_RETRIES("retries"),
+	DATABASE_WAIT("wait"),
+	DATABASE_EXTENSION("useExtension"),
 	
 	MODULE_PATH("module.path"),
 	MODULE_FRONT_EXPOSE("module.frontend.expose"),

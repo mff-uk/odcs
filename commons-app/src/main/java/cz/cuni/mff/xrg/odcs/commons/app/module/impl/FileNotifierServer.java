@@ -67,12 +67,12 @@ class FileNotifierServer implements Runnable {
 
 	private WatchService watcher = null;
 
-	private Map<WatchKey, Path> keys = new HashMap<>();
+	private final Map<WatchKey, Path> keys = new HashMap<>();
 
 	/**
 	 * Inverse mapping for {@link #keys}.
 	 */
-	private Map<Path, WatchKey> keysInverse = new HashMap<>();
+	private final Map<Path, WatchKey> keysInverse = new HashMap<>();
 
 	private Thread watcherThread = null;
 
@@ -82,7 +82,7 @@ class FileNotifierServer implements Runnable {
 	 * Contains names of directories in which first notification will be
 	 * ignored.
 	 */
-	private Set<String> toIgnore = new HashSet<>();
+	private final Set<String> toIgnore = new HashSet<>();
 
 	/**
 	 * Start watching for DPUs changes.
@@ -147,7 +147,7 @@ class FileNotifierServer implements Runnable {
 	 * @throws IOException
 	 */
 	private void register(Path dir) {
-		WatchKey key = null;
+		WatchKey key;
 		try {
 			key = dir.register(watcher, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
 		} catch (IOException e) {
@@ -237,12 +237,12 @@ class FileNotifierServer implements Runnable {
 				.getFileName().toString());
 		// unregister listener
 		Path directoryPath = Paths.get(dir.toString(), directory);
-		if (keys.containsKey(directoryPath)) {
+		if (keysInverse.containsKey(directoryPath)) {
 			// unregister
 			keysInverse.get(directoryPath).cancel();
 			// remove from collections
-			keysInverse.remove(directoryPath);
-			keys.remove(directoryPath);
+			keys.remove(keysInverse.get(directoryPath));
+			keysInverse.remove(directoryPath);			
 		}
 
 		if (ignore(directory)) {
@@ -310,7 +310,7 @@ class FileNotifierServer implements Runnable {
 				break;
 			}
 
-			WatchKey key = null;
+			WatchKey key;
 			try {
 				key = watcher.take();
 			} catch (InterruptedException e) {

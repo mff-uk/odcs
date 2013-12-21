@@ -2,32 +2,32 @@ package cz.cuni.mff.xrg.odcs.commons.app.data;
 
 /**
  * Class describe {@link DataUnit} class.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class DataUnitDescription {
 
 	/**
 	 * Name.
 	 */
-	private String name;
+	private final String name;
 
 	/**
 	 * Type class name.
 	 */
-	private String typeName;
+	private final String typeName;
 
 	/**
 	 * Description provided by developer.
 	 */
-	private String description;
+	private final String description;
 
 	/**
-	 * True if usage of {@link DataUnit} is optional. 
+	 * True if usage of {@link DataUnit} is optional.
 	 */
-	private boolean optional;
-	
+	private final boolean optional;
+
 	private DataUnitDescription(String name,
 			String typeName,
 			String description,
@@ -36,28 +36,30 @@ public class DataUnitDescription {
 		this.typeName = typeName;
 		this.description = description;
 		this.optional = optional;
-	}	
-	
+	}
+
 	/**
 	 * Create description for output {@link DataUnit}.
+	 *
 	 * @param name
 	 * @param typeName
 	 * @param description
-	 * @return 
+	 * @return
 	 */
 	public static DataUnitDescription createOutput(String name,
 			String typeName,
 			String description) {
 		return new DataUnitDescription(name, typeName, description, false);
-	}	
-	
+	}
+
 	/**
 	 * Create description for input {@link DataUnit}.
+	 *
 	 * @param name
 	 * @param typeName
 	 * @param description
 	 * @param optional
-	 * @return 
+	 * @return
 	 */
 	public static DataUnitDescription createInput(String name,
 			String typeName,
@@ -77,20 +79,20 @@ public class DataUnitDescription {
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/**
-	 * Return true if the usage of this DataUnit is optional. For output 
+	 * Return true if the usage of this DataUnit is optional. For output
 	 * {@link DataUnit} return false always.
+	 *
 	 * @return
 	 */
 	public boolean getOptional() {
 		return this.optional;
 	}
-        
-        @Override
-        public String toString() {
-            return name;
-        }
-        
-	
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

@@ -14,7 +14,7 @@ public class GraphIterator implements Iterator<Node> {
 	/**
 	 * Stack of nodes used to perform breath-first search.
 	 */
-	private Set<DependencyNode> stack;
+	private final Set<DependencyNode> stack;
 	
 	/**
 	 * Constructs iterator from dependency graph.

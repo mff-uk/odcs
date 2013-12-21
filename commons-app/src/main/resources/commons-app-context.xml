@@ -17,7 +17,7 @@
 	
     <!-- data source with db login properties loaded from application configuration -->
     <bean id="dataSource" class="virtuoso.ConfigurableDataSource">
-        <constructor-arg value="#{configuration.getSubConfiguration(T(cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty).VIRTUOSO_RDBMS)}" />
+        <constructor-arg value="#{configuration.getSubConfiguration(T(cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty).RDBMS)}" />
     </bean>
 	
     <!-- EntityManager factory -->
@@ -48,8 +48,7 @@
     <!-- Facade for managing DPUs -->
     <bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade" />
 	
-    <!-- Facade for viewing log messages -->
-    <bean id="dbLogRead" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogReadImpl" />
+    <!-- Facade for viewing log messages -->    
     <bean id="logFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade" />
 
     <!-- Facade for managing shedules -->
@@ -78,8 +77,7 @@
     <bean id="dbTemplate" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecordImpl" />
     <bean id="dbInstance" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUInstanceRecordImpl" />
     <bean id="dbMessage" class="cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecordImpl" />
-    <bean id="dbLog" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogMessageImpl" />
-    <bean id="dbLogException" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogExceptionLineImpl" />
+    <bean id="dbLogRead" class="cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogReadImpl" />
     <bean id="dbSchedule" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleImpl" />
     <bean id="dbScheduleNotification" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotificationImpl" />
     <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserNotificationRecordImpl" />

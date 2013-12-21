@@ -2,17 +2,9 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 
-import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Class with helper methods used in frontend.
@@ -78,6 +70,8 @@ public class DecorationHelper {
 	 * Formats duration in miliseconds to hh:mm:ss string. Returns empty string
 	 * for duration lesser than zero.
 	 *
+	 * @param duration
+	 * @return 
 	 */
 	public static String formatDuration(long duration) {
 		if (duration < 0) {

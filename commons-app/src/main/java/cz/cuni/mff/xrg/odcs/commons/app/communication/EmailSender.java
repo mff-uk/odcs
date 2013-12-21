@@ -18,6 +18,12 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 
+/**
+ * Enable clients to send email. The functionality can be set that the
+ * {@link EmailSender} silently ignore send request.
+ * 
+ * @author Petyr
+ */
 public class EmailSender {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
@@ -87,7 +93,7 @@ public class EmailSender {
 	}
 
 	/**
-	 * Send email with html content. If the list of recipients
+	 * Send email with HTML content. If the list of recipients
 	 * is empty then immediately return false.
 	 * 
 	 * @param subject

@@ -11,8 +11,7 @@ import java.util.List;
  *
  * @author Jan Vojt
  */
-public class DbOpenEventImpl extends DbAccessBase<OpenEvent>
-								implements DbOpenEvent {
+class DbOpenEventImpl extends DbAccessBase<OpenEvent> implements DbOpenEvent {
 
 	public DbOpenEventImpl() {
 		super(OpenEvent.class);

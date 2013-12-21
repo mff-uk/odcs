@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 

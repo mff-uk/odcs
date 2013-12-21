@@ -80,6 +80,7 @@ public class MessageRecord implements DataObject {
 	 * @param time
 	 * @param type
 	 * @param dpuInstance
+	 * @param execution
 	 * @param shortMessage
 	 * @param fullMessage
 	 */
@@ -97,6 +98,7 @@ public class MessageRecord implements DataObject {
 		this.fullMessage = fullMessage;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}

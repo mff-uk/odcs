@@ -310,6 +310,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	/**
 	 * Fetches spring bean. For cases when autowiring is not a possibility.
 	 *
+	 * @param <T>
 	 * @param type
 	 * @return bean
 	 */

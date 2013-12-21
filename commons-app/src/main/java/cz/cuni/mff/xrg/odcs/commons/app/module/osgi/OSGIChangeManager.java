@@ -49,7 +49,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 	 * If true then the class try to update database when receive
 	 * {@link ModuleUpdateEvent}.
 	 */
-	private boolean refreshDatabase;
+	private final boolean refreshDatabase;
 
 	public OSGIChangeManager(boolean refreshDatabase) {
 		this.refreshDatabase = refreshDatabase;

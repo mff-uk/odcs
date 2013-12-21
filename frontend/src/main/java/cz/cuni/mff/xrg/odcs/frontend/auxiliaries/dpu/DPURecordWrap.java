@@ -69,9 +69,7 @@ class DPURecordWrap {
 		// load configuration dialog
 		try {
 			loadConfigDialog();
-		} catch(ModuleException e) {
-			throw e;
-		} catch(FileNotFoundException e) {
+		} catch(ModuleException | FileNotFoundException e) {
 			throw e;
 		} catch (Throwable e) {
 			throw new DPUWrapException("Failed to load dialog.", e);

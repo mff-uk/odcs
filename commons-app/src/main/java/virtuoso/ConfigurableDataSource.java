@@ -26,8 +26,8 @@ public class ConfigurableDataSource extends BasicDataSource {
 	 */
 	public ConfigurableDataSource(AppConfig config) {
 		setUrl(buildUrl(config));
-		setUsername(config.getString(ConfigProperty.VIRTUOSO_USER));
-		setPassword(config.getString(ConfigProperty.VIRTUOSO_PASSWORD));
+		setUsername(config.getString(ConfigProperty.DATABASE_USER));
+		setPassword(config.getString(ConfigProperty.DATABASE_PASSWORD));
 		setDriverClassName(DRIVER_CLASS_NAME);
 		setDefaultAutoCommit(false);
 	}
@@ -40,9 +40,9 @@ public class ConfigurableDataSource extends BasicDataSource {
 	 */
 	private static String buildUrl(AppConfig config) {
 		String url = "jdbc:virtuoso://%s:%s/charset=%s";
-		String host = config.getString(ConfigProperty.VIRTUOSO_HOSTNAME);
-		String port = config.getString(ConfigProperty.VIRTUOSO_PORT);
-		String charset = config.getString(ConfigProperty.VIRTUOSO_CHARSET);
+		String host = config.getString(ConfigProperty.DATABASE_HOSTNAME);
+		String port = config.getString(ConfigProperty.DATABASE_PORT);
+		String charset = config.getString(ConfigProperty.DATABASE_CHARSET);
 		return String.format(url, host, port, charset);
 	}
 

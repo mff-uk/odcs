@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Jan Vojt
  */
 @Transactional(propagation = Propagation.MANDATORY)
-public class DbNamespacePrefixImpl extends DbAccessBase<NamespacePrefix>
+class DbNamespacePrefixImpl extends DbAccessBase<NamespacePrefix>
 									implements DbNamespacePrefix {
 
 	public DbNamespacePrefixImpl() {

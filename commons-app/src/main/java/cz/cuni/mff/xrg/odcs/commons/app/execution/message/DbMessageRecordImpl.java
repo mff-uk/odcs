@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(propagation = Propagation.MANDATORY)
 public class DbMessageRecordImpl extends DbAccessBase<MessageRecord>
-								 implements DbMessageRecord {
+		implements DbMessageRecord {
 
 	public DbMessageRecordImpl() {
 		super(MessageRecord.class);
@@ -23,9 +23,9 @@ public class DbMessageRecordImpl extends DbAccessBase<MessageRecord>
 	@Override
 	public List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec) {
 		JPQLDbQuery<MessageRecord> jpql = new JPQLDbQuery<>(
-			"SELECT r FROM MessageRecord r WHERE r.execution = :ins");
+				"SELECT r FROM MessageRecord r WHERE r.execution = :ins");
 		jpql.setParameter("ins", pipelineExec);
-		
+
 		return executeList(jpql);
 	}
 

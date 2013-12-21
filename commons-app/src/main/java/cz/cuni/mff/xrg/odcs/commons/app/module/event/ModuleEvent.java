@@ -12,7 +12,7 @@ public abstract class ModuleEvent extends ApplicationEvent {
 	/**
 	 * DPU's relative directory name.
 	 */
-	private String directoryName;	
+	private final String directoryName;	
 	
 	public ModuleEvent(Object source, String directoryName) {
 		super(source);

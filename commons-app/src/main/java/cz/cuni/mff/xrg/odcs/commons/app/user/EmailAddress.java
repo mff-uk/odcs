@@ -19,7 +19,7 @@ public class EmailAddress implements DataObject, Comparable {
 	private Long id;
 
 	/**
-	 * Username part of emaill address (everything before @).
+	 * Username part of email address (everything before @).
 	 */
 	@Column(name = "e_user")
 	private String name;
@@ -144,4 +144,5 @@ public class EmailAddress implements DataObject, Comparable {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
 }
