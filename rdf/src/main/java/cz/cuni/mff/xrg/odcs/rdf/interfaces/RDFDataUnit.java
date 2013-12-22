@@ -284,6 +284,12 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	public RepositoryConnection getConnection() throws RepositoryException;
 
 	/**
+	 * Method called after restarting after DB. Calling method
+	 * {@link #getConnection()} provides to get new instance of connection.
+	 */
+	public void restartConnection();
+
+	/**
 	 *
 	 * @return List of all application graphs keeps in Virtuoso storage in case
 	 *         of Virtuoso repository. When is used local repository as storage,
