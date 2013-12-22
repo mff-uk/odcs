@@ -2259,6 +2259,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		cleanAllData();
 	}
 
+	/**
+	 * Method called after restarting after DB. Calling method
+	 * {@link #getConnection()} provides to get new instance of connection.
+	 */
+	@Override
+	public void restartConnection() {
+		try {
+			closeConnection();
+		} catch (RepositoryException e) {
+			logger.debug("Connection can not be closed. " + e.getMessage());
+		}
+
+		hasBrokenConnection = true;
+	}
+
 	@Override
 	public synchronized RepositoryConnection getConnection() throws RepositoryException {
 
