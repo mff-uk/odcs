@@ -78,7 +78,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 			extractor.extractFromSPARQLEndpoint(endpointURL,
 					defaultGraphsUri,
-					constructQuery, hostName, password, RDFFormat.N3,
+					constructQuery, hostName, password, RDFFormat.NTRIPLES,
 					handlerExtractType, extractFail);
 
 			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
