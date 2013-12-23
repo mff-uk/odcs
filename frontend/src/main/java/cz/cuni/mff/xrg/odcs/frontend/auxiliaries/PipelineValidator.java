@@ -32,9 +32,9 @@ public class PipelineValidator {
 	
 	public boolean validateGraphEdges(PipelineGraph graph) throws PipelineValidationException {
 		EdgeCompiler edgeCompiler = new EdgeCompiler();
-		String result = edgeCompiler.checkMandatoryInputs(graph, dpuExplorer);
+		String result = edgeCompiler.checkMandatoryInputsAndOutputs(graph, dpuExplorer);
 		if(result != null) {
-			LOG.debug("Mandatory input check FAILED for following: " + result);
+			LOG.debug("Mandatory input/output check FAILED for following: " + result);
 			throw new PipelineValidationException(result);
 		}
 		return true;

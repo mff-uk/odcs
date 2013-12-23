@@ -216,21 +216,21 @@ public final class EdgeCompiler {
         return null;
     }
 
-    public String checkMandatoryInputs(PipelineGraph graph, DPUExplorer explorer) {
+    public String checkMandatoryInputsAndOutputs(PipelineGraph graph, DPUExplorer explorer) {
         String report = "";
         for (Node node : graph.getNodes()) {
             DPUInstanceRecord dpu = node.getDpuInstance();
-            List<Edge> edges = null;
+            List<Edge> edgesTo = null;
             List<DataUnitDescription> inputs = explorer.getInputs(dpu);
             if (!inputs.isEmpty()) {
-                edges = graph.getEdgesTo(node);
+                edgesTo = graph.getEdgesTo(node);
             }
             for (DataUnitDescription input : inputs) {
                 boolean found = false;
                 if (input.getOptional()) {
                     continue;
                 }
-                for (Edge e : edges) {
+                for (Edge e : edgesTo) {
                     if (e.getScript().contains("-> " + input.getName())) {
                         found = true;
                         break;
@@ -238,6 +238,26 @@ public final class EdgeCompiler {
                 }
                 if (!found) {
                     report += String.format("\nDPU: %s, Input: %s", dpu.getName(), input.getName());
+                }
+            }
+            List<DataUnitDescription> outputs = explorer.getOutputs(dpu);
+            List<Edge> edgesFrom = null;
+            if (!outputs.isEmpty()) {
+                edgesFrom = graph.getEdgesFrom(node);
+            }
+            for (DataUnitDescription output : outputs) {
+                boolean found = false;
+                if (output.getOptional()) {
+                    continue;
+                }
+                for (Edge e : edgesFrom) {
+                    if (e.getScript().contains(output.getName() + " ->")) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    report += String.format("\nDPU: %s, Output: %s", dpu.getName(), output.getName());
                 }
             }
         }
