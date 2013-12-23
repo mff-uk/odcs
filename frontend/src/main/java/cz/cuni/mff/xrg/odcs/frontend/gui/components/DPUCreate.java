@@ -338,4 +338,13 @@ public class DPUCreate extends Window {
 
 
 	}
+
+	public void initClean() {
+		dpuName.setValue("");
+		dpuDescription.setValue("");
+		groupVisibility.setValue(ShareType.PUBLIC_RO);
+		uploadFile.setReadOnly(false);
+		uploadFile.setValue("");
+		uploadFile.setReadOnly(true);
+	}
 }

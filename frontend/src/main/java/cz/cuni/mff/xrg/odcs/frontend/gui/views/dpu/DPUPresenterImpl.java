@@ -49,25 +49,23 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 	@Autowired
 	private DPUView view;
-	
 	@Autowired
 	PipelineStatus pipelineStatus;
 	@Autowired
 	private DPUCreate createDPU;
-	
 	ClassNavigator navigator;
-	
 	@Autowired
 	private DPUModuleManipulator dpuManipulator;
 	/**
 	 * Evaluates permissions of currently logged in user.
 	 */
-	private IntlibPermissionEvaluator permissions = ((AppEntry)UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
+	private IntlibPermissionEvaluator permissions = ((AppEntry) UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
 	private DPUTemplateRecord selectedDpu = null;
 	@Autowired
 	private PipelineFacade pipelineFacade;
 	@Autowired
 	private DPUFacade dpuFacade;
+	private Window.CloseListener createDPUCloseListener;
 	private static final Logger LOG = LoggerFactory.getLogger(DPUPresenterImpl.class);
 
 	@Override
@@ -278,22 +276,11 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 	@Override
 	public Object enter() {
-		navigator = ((AppEntry)UI.getCurrent()).getNavigation();
+		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		selectedDpu = null;
 		Object viewObject = view.enter(this);
-		return viewObject;
-	}
 
-	@Override
-	public void setParameters(Object configuration) {
-		// we do not care about parameters, we always do the same job .. 
-	}
-	
-	@Override
-	public void openDPUCreateEventHandler() {
-		//Open the dialog for DPU Template creation
-		UI.getCurrent().addWindow(createDPU);
-		createDPU.addCloseListener(new Window.CloseListener() {
+		createDPUCloseListener = new Window.CloseListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -301,7 +288,27 @@ public class DPUPresenterImpl implements DPUPresenter {
 				//refresh DPU tree after closing DPU Template creation dialog 
 				view.refresh();
 			}
-		});
+		};
+
+		return viewObject;
+	}
+
+	@Override
+	public void setParameters(Object configuration) {
+		// we do not care about parameters, we always do the same job .. 
+	}
+
+	@Override
+	public void openDPUCreateEventHandler() {
+		//Open the dialog for DPU Template creation
+		if (!UI.getCurrent().getWindows().contains(createDPU)) {
+			createDPU.initClean();
+			UI.getCurrent().addWindow(createDPU);
+			createDPU.removeCloseListener(createDPUCloseListener);
+			createDPU.addCloseListener(createDPUCloseListener);
+		} else {
+			createDPU.bringToFront();
+		}
 	}
 
 	@Override
@@ -339,10 +346,10 @@ public class DPUPresenterImpl implements DPUPresenter {
 	public void pipelineDeleteEventHandler(Long id) {
 		Pipeline pipe = pipelineFacade.getPipeline(id);
 		List<PipelineExecution> executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.QUEUED);
-		if(executions.isEmpty()) {
+		if (executions.isEmpty()) {
 			executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.RUNNING);
 		}
-		if(!executions.isEmpty()) {
+		if (!executions.isEmpty()) {
 			Notification.show("Pipeline " + pipe.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
 			return;
 		}

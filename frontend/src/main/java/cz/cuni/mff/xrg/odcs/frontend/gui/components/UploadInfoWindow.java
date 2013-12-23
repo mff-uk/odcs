@@ -127,7 +127,9 @@ public class UploadInfoWindow extends Window implements StartedListener,
 
 		progressBar.setValue(0f);
 		progressBar.setVisible(true);
-		progressBar.getUI().setPollInterval(500); // hit server frequently to get
+		if(progressBar.getUI() != null) {
+			progressBar.getUI().setPollInterval(500); // hit server frequently to get
+		}
 		textualProgress.setVisible(true);
 		// updates to client
 		state.setValue("Uploading");
