@@ -48,6 +48,8 @@ public class PipelineConflicts extends Window {
 	private Button clearConflicts;
 	
 	private boolean isInitialized = false;
+	
+	private boolean result = false;
 		
 	@Autowired
 	private PipelineFacade pipelineFacade;
@@ -79,6 +81,7 @@ public class PipelineConflicts extends Window {
 	}
 	
 	public void setData(Pipeline pipeline) {
+		result = false;
 		this.pipeline = pipeline;
 		
 		Set<Pipeline> conflicts = pipeline.getConflicts();
@@ -165,6 +168,7 @@ public class PipelineConflicts extends Window {
 					conflicts.add(item);
 				}
 
+				result = true;
 				close();
 			}
 			
@@ -178,6 +182,7 @@ public class PipelineConflicts extends Window {
 			
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
+				result = false;
 				close();
 				
 			}
@@ -191,5 +196,8 @@ public class PipelineConflicts extends Window {
 		return mainLayout;
 	}
 
+	public boolean getResult() {
+		return result;
+	}
 
 }

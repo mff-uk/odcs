@@ -643,7 +643,7 @@ public class PipelineEdit extends ViewComponent {
 
 				@Override
 				public void windowClose(CloseEvent e) {
-					setupButtons(true);
+					setupButtons(conflictDialog.getResult());
 				}
 			});
 		}
