@@ -1,4 +1,4 @@
-package com.vaadin;
+package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
 
 /**
  * Contains list of Vaadin packages that will be exported from frontend.
@@ -6,7 +6,7 @@ package com.vaadin;
  * @author Petyr
  *
  */
-public final class PackageList {
+public final class vaadin {
 
 	/**
 	 * Used Vaadin version.
@@ -117,4 +117,5 @@ public final class PackageList {
 		"com.vaadin.sass.internal.util;version=\"" + VERSION + "\"," +
 		"com.vaadin.sass.internal.visitor;version=\"" + VERSION + "\"";
 }
+
 

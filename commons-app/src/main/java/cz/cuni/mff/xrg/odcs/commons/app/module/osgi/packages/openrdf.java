@@ -1,4 +1,4 @@
-package org.openrdf;
+package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
 
 /**
  * Contains list of org.openrdf packages that will be exported from frontend and
@@ -8,7 +8,7 @@ package org.openrdf;
  * @author Jiri Tomes
  *
  */
-public final class PackageList {
+public final class openrdf {
 
 	/**
 	 * List of OSGI packages to export. Does not start nor end with separator.
@@ -140,3 +140,4 @@ public final class PackageList {
 			+ "info.aduna.text,"
 			+ "info.aduna.xml";
 }
+

@@ -14,7 +14,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -150,14 +152,14 @@ class OSGIModuleFacadeConfig {
 		// and frontend exports the same packages
 		{
 			// frontend is running -> we need to export Vaadin packages as well
-			appendPackages(packageList, com.vaadin.PackageList.PACKAGES);
+			appendPackages(packageList, vaadin.PACKAGES);
 			appendPackages(packageList, FRONTEND_BASE);
 			// print message
-			LOG.info("com.vaadin version: {}", com.vaadin.PackageList.VERSION);
+			LOG.info("com.vaadin version: {}", vaadin.VERSION);
 		}
 
 		// in every case add org.seasame packages
-		appendPackages(packageList, org.openrdf.PackageList.PACKAGES);
+		appendPackages(packageList, openrdf.PACKAGES);
 		// and system packages
 		appendPackages(packageList, OSGISystemPackages.PACKAGES);
 		// append packages from commons, commons-module, commons-web
