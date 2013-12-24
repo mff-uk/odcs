@@ -10,7 +10,7 @@
 	</parent>    
     
 	<!-- TODO 1: fill the DPU name, without special characters, use '_' instead of whitespaces -->
-	<artifactId>DPU_Name</artifactId>
+	<artifactId>dpu-name</artifactId>
     
 	<!-- TODO 2: specify module version, can be left unchanged -->
 	<version>0.0.1</version>

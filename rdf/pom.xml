@@ -7,7 +7,7 @@
         <version>1.0.0</version> 
     </parent>	
     <artifactId>RDF</artifactId>
-    <name>RDF</name>
+    <name>rdf</name>
     <description />
 
     <properties>

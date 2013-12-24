@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>module-base</artifactId>
 	<packaging>pom</packaging>
-	<name>Module' parent project.</name>
+	<name>module' parent project</name>
 	<!-- the description is used as default for DPUs -->
 	<description>No description available.</description>
 
