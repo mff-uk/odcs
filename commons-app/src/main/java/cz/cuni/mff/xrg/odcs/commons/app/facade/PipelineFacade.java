@@ -1,63 +1,25 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import java.util.ArrayList;
 
 import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade providing actions with pipelines.
  *
  * @author Jan Vojt
  */
-@Transactional(readOnly = true)
-public class PipelineFacade implements Facade {
+public interface PipelineFacade extends Facade {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
-	
-    @Autowired(required = false)
-    private AuthenticationContext authCtx;
-	
-	@Autowired
-	private DbPipeline pipelineDao;
-	
-	@Autowired
-	private DbExecution executionDao;
-	
-	@Autowired
-	private DPUFacade dpuFacade;
-	
-	@Autowired
-	private DbOpenEvent openEventDao;
-	
-	/**
-	 * Timeout how long will we consider {@link OpenEvent} active.
-	 */
-	private static final int PPL_OPEN_TTL = 10;
 
     /* ******************* Methods for managing Pipeline ******************** */
     /**
@@ -67,14 +29,7 @@ public class PipelineFacade implements Facade {
      *
      * @return newly created pipeline
      */
-    public Pipeline createPipeline() {
-		Pipeline newPipeline = new Pipeline();
-		newPipeline.setVisibility(ShareType.PRIVATE);
-        if (authCtx != null) {
-            newPipeline.setUser(authCtx.getUser());
-        }
-		return newPipeline;
-    }
+    Pipeline createPipeline();
 
     /**
      * Creates a clone of given pipeline, persists it, and returns it as a new
@@ -84,29 +39,7 @@ public class PipelineFacade implements Facade {
      * @param pipeline original pipeline to copy
      * @return newly copied pipeline
      */
-	@Transactional
-    @PreAuthorize("hasPermission(#pipeline, 'copy')")
-    public Pipeline copyPipeline(Pipeline pipeline) {
-
-		Pipeline newPipeline = new Pipeline(pipeline);
-		
-		// determine new name for pipeline
-		String oName = "Copy of " + pipeline.getName();
-		String nName = oName;
-		int no = 1;
-		while (hasPipelineWithName(nName, null)) {
-			nName = oName + " #" + no++;
-		}
-		newPipeline.setName(nName);
-		newPipeline.setVisibility(ShareType.PRIVATE);
-		
-        if (authCtx != null) {
-            newPipeline.setUser(authCtx.getUser());
-        }
-		
-		save(newPipeline);
-		return newPipeline;
-    }
+	Pipeline copyPipeline(Pipeline pipeline);
 
     /**
      * Returns list of all pipelines persisted in the database.
@@ -115,11 +48,7 @@ public class PipelineFacade implements Facade {
 	 * @deprecated performance intensive for many pipelines in DB, use lazy
 	 *			   container with paging instead
      */
-	@Deprecated
-    @PostFilter("hasPermission(filterObject,'view')")
-    public List<Pipeline> getAllPipelines() {
-		return pipelineDao.getAll();
-    }
+	List<Pipeline> getAllPipelines();
 
     /**
      * Find pipeline in database by ID and return it.
@@ -128,46 +57,21 @@ public class PipelineFacade implements Facade {
      * @return Pipeline the found pipeline or null if the pipeline with given ID
      * does not exist
      */
-    @PostAuthorize("hasPermission(returnObject,'view')")
-    public Pipeline getPipeline(long id) {
-		return pipelineDao.getInstance(id);
-    }
+   Pipeline getPipeline(long id);
 
     /**
      * Saves any modifications made to the pipeline into the database.
      *
      * @param pipeline
      */
-    @Transactional
-    @PreAuthorize("hasPermission(#pipeline,'save')")
-    public void save(Pipeline pipeline) {
-		
-		// If pipeline is public, we need to make sure
-		// all DPU templates used in this pipeline are
-		// public as well.
-		if (ShareType.PUBLIC.contains(pipeline.getShareType())) {
-			for (DPUTemplateRecord dpu : getPrivateDPUs(pipeline)) {
-				if (ShareType.PRIVATE.equals(dpu.getShareType())) {
-					// we found a private DPU in public pipeline -> make public
-					dpu.setVisibility(ShareType.PUBLIC_RO);
-					dpuFacade.save(dpu);
-				}
-			}
-		}
-		pipeline.setLastChange(new Date());
-		pipelineDao.save(pipeline);
-    }
+    void save(Pipeline pipeline);
 
     /**
      * Deletes pipeline from database.
      *
      * @param pipeline
      */
-    @Transactional
-    @PreAuthorize("hasPermission(#pipeline, 'delete')")
-    public void delete(Pipeline pipeline) {
-		pipelineDao.delete(pipeline);
-    }
+    void delete(Pipeline pipeline);
 
     /**
      * Fetches all pipelines using give DPU template.
@@ -175,10 +79,7 @@ public class PipelineFacade implements Facade {
      * @param dpu template
      * @return pipelines using DPU template
      */
-    @PreAuthorize("hasPermission(#dpu, 'view')")
-    public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
-		return pipelineDao.getPipelinesUsingDPU(dpu);
-    }
+    List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu);
 
 	/**
 	 * Checks for duplicate pipeline names. The name of pipeline in second
@@ -189,10 +90,7 @@ public class PipelineFacade implements Facade {
 	 * @param pipeline to be renamed, or null
 	 * @return 
 	 */
-    public boolean hasPipelineWithName(String newName, Pipeline pipeline) {
-		Pipeline duplicate = pipelineDao.getPipelineByName(newName);
-        return !(duplicate == null || duplicate.equals(pipeline));
-    }
+    boolean hasPipelineWithName(String newName, Pipeline pipeline);
 	
 	/**
 	 * Lists all private DPU templates which are used in given pipeline.
@@ -200,16 +98,7 @@ public class PipelineFacade implements Facade {
 	 * @param pipeline to inspect for private DPUs
 	 * @return list of private DPUs used in pipeline
 	 */
-	public List<DPUTemplateRecord> getPrivateDPUs(Pipeline pipeline) {
-		List<DPUTemplateRecord> dpus = new ArrayList<>();
-		for (Node node : pipeline.getGraph().getNodes()) {
-			DPUTemplateRecord dpu = node.getDpuInstance().getTemplate();
-			if (ShareType.PRIVATE.equals(dpu.getShareType())) {
-				dpus.add(dpu);
-			}
-		}
-		return dpus;
-	}
+	List<DPUTemplateRecord> getPrivateDPUs(Pipeline pipeline);
 	
 	/**
 	 * Creates an open pipeline event with current timestamp. User is taken from
@@ -217,27 +106,7 @@ public class PipelineFacade implements Facade {
 	 * 
 	 * @param pipeline which is open
 	 */
-	@Transactional
-	public void createOpenEvent(Pipeline pipeline) {
-		
-		if (pipeline.getId() == null) {
-			// pipeline has not been persisted yet
-			// -> it cannot be opened by anyone
-			return;
-		}
-		
-		User user = authCtx.getUser();
-		OpenEvent event = openEventDao.getOpenEvent(user, pipeline);
-		
-		if (event == null) {
-			event = new OpenEvent();
-			event.setPipeline(pipeline);
-			event.setUser(user);
-		}
-		
-		event.setTimestamp(new Date());
-		openEventDao.save(event);
-	}
+	void createOpenEvent(Pipeline pipeline);
 	
 	/**
 	 * Lists all open events representing a list of pipeline that are currently
@@ -247,21 +116,7 @@ public class PipelineFacade implements Facade {
 	 * @param pipeline
 	 * @return list of open events
 	 */
-	public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
-		
-		if (pipeline.getId() == null) {
-			// pipeline has not been persisted yet
-			// -> it cannot be opened by anyone else
-			return new ArrayList<>();
-		}
-		
-		Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
-		User loggedUser = null;
-		if (authCtx != null) {
-			loggedUser = authCtx.getUser();
-		}
-		return openEventDao.getOpenEvents(pipeline, from, loggedUser);
-	}
+	List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline);
 	
 	/**
 	 * Checks if (possibly detached) pipeline has been modified by someone else.
@@ -270,25 +125,7 @@ public class PipelineFacade implements Facade {
 	 * @return true if pipeline was changed while detached from entity manager,
 	 *			false otherwise
 	 */
-	public boolean isUpToDate(Pipeline pipeline) {
-		if (pipeline.getId() == null) {
-			// new pipeline -> lets say it is up-to-date
-			return true;
-		}
-		
-		// fetch fresh pipeline from db
-		Pipeline dbPipeline = getPipeline(pipeline.getId());
-		if (dbPipeline == null) {
-			// someone probably deleted pipeline in the meantime
-			// -> lets say it is NOT up-to-date
-			return false;
-		}
-		
-		Date lastChange = dbPipeline.getLastChange();
-                Date myLastChange = pipeline.getLastChange();
-		return lastChange == null ? true :
-                        myLastChange == null ? false : !lastChange.after(myLastChange);
-	}
+	boolean isUpToDate(Pipeline pipeline);
 	
     /* ******************** Methods for managing PipelineExecutions ********* */
     /**
@@ -299,13 +136,7 @@ public class PipelineFacade implements Facade {
      * @param pipeline
      * @return pipeline execution of given pipeline
      */
-    public PipelineExecution createExecution(Pipeline pipeline) {
-		PipelineExecution newExec = new PipelineExecution(pipeline);
-        if (authCtx != null) {
-            newExec.setOwner(authCtx.getUser());
-        }
-		return newExec;
-    }
+    PipelineExecution createExecution(Pipeline pipeline);
 
     /**
      * Fetches all {@link PipelineExecution}s from database.
@@ -314,10 +145,7 @@ public class PipelineFacade implements Facade {
 	 * @deprecated performance intensive for many pipeline executions, use
 	 *			   container with paging support instead
      */
-	@Deprecated
-    public List<PipelineExecution> getAllExecutions() {
-		return executionDao.getAllExecutions(null, null);
-    }
+	List<PipelineExecution> getAllExecutions();
 
     /**
      * Fetches all {@link PipelineExecution}s with given state from database.
@@ -325,9 +153,7 @@ public class PipelineFacade implements Facade {
      * @param status
      * @return list of executions
      */
-    public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
-		return executionDao.getAllExecutions(null, status);
-    }
+    List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status);
 
     /**
      * Find pipeline execution in database by ID and return it.
@@ -335,9 +161,7 @@ public class PipelineFacade implements Facade {
      * @param id of PipelineExecution
      * @return PipelineExecution
      */
-    public PipelineExecution getExecution(long id) {
-		return executionDao.getInstance(id);
-    }
+    PipelineExecution getExecution(long id);
 
     /**
      * Fetch all executions for given pipeline.
@@ -345,9 +169,7 @@ public class PipelineFacade implements Facade {
      * @param pipeline
      * @return pipeline executions
      */
-    public List<PipelineExecution> getExecutions(Pipeline pipeline) {
-		return executionDao.getAllExecutions(pipeline, null);
-    }
+    List<PipelineExecution> getExecutions(Pipeline pipeline);
 
     /**
      * Fetch executions for given pipeline in given status.
@@ -357,9 +179,7 @@ public class PipelineFacade implements Facade {
      * @return PipelineExecutions
      *
      */
-    public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
-        return executionDao.getAllExecutions(pipeline, status);
-    }
+    List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status);
 
     /**
      * Return end time of latest execution of given status for given pipeline.
@@ -370,14 +190,7 @@ public class PipelineFacade implements Facade {
      * @param status Execution status, used to filter pipelines.
      * @return
      */
-    public Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status) {
-
-        HashSet statuses = new HashSet(1);
-        statuses.add(status);
-        PipelineExecution exec = getLastExec(pipeline, statuses);
-
-        return (exec == null) ? null : exec.getEnd();
-    }
+    Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status);
 
     /**
      * Return latest execution of given statuses for given pipeline. Ignore null
@@ -387,10 +200,8 @@ public class PipelineFacade implements Facade {
      * @param statuses Set of execution statuses, used to filter pipelines.
      * @return last execution or null
      */
-    public PipelineExecution getLastExec(Pipeline pipeline,
-            Set<PipelineExecutionStatus> statuses) {
-		return executionDao.getLastExecution(pipeline, statuses);
-    }
+    PipelineExecution getLastExec(Pipeline pipeline,
+            Set<PipelineExecutionStatus> statuses);
 
     /**
      * Return latest execution of given pipeline. Ignore null values.
@@ -398,9 +209,7 @@ public class PipelineFacade implements Facade {
      * @param pipeline
      * @return last execution or null
      */
-    public PipelineExecution getLastExec(Pipeline pipeline) {
-		return executionDao.getLastExecution(pipeline, EnumSet.allOf(PipelineExecutionStatus.class));
-    }
+    PipelineExecution getLastExec(Pipeline pipeline);
 
     /**
      * Return latest execution of given statuses for given schedule. Ignore null
@@ -410,10 +219,8 @@ public class PipelineFacade implements Facade {
      * @param statuses Set of execution statuses, used to filter pipelines.
      * @return last execution or null
      */
-    public PipelineExecution getLastExec(Schedule schedule,
-            Set<PipelineExecutionStatus> statuses) {
-        return executionDao.getLastExecution(schedule, statuses);
-    }
+    PipelineExecution getLastExec(Schedule schedule,
+            Set<PipelineExecutionStatus> statuses);
 
     /**
      * Tells whether there were any changes to pipeline executions since the
@@ -427,9 +234,7 @@ public class PipelineFacade implements Facade {
      * @param lastLoad
      * @return
      */
-    public boolean hasModifiedExecutions(Date lastLoad) {
-		return executionDao.hasModifiedExecutions(lastLoad);
-    }
+    boolean hasModifiedExecutions(Date lastLoad);
 
     /**
      * Persists new {@link PipelineExecution} or updates it if it was already
@@ -437,38 +242,20 @@ public class PipelineFacade implements Facade {
      *
      * @param exec
      */
-    @Transactional
-    public void save(PipelineExecution exec) {
-		executionDao.save(exec);
-    }
+    void save(PipelineExecution exec);
 
     /**
      * Deletes pipeline from database.
      *
      * @param exec
      */
-    @Transactional
-    public void delete(PipelineExecution exec) {
-		executionDao.delete(exec);
-    }
+   void delete(PipelineExecution exec);
 
     /**
      * Stop the execution.
      *
      * @param execution
      */
-    public void stopExecution(PipelineExecution execution) {
-        execution.stop();
-        save(execution);
-    }
-
-	/**
-	 * Setter for mocking authenticated users.
-	 * 
-	 * @param authCtx authentication context
-	 */
-	void setAuthCtx(AuthenticationContext authCtx) {
-		this.authCtx = authCtx;
-	}
+    void stopExecution(PipelineExecution execution);
 
 }

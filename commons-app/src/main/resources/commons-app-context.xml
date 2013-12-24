@@ -40,22 +40,22 @@
               init-method="start" destroy-method="stop"/>	
 		
     <!-- Facade for managing users -->
-    <bean id="userFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade" />
+    <bean id="userFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacadeImpl" />
 
     <!-- Facade for managing pipelines -->
-    <bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade" />
+    <bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacadeImpl" />
 
     <!-- Facade for managing DPUs -->
-    <bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade" />
+    <bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacadeImpl" />
 	
     <!-- Facade for viewing log messages -->    
-    <bean id="logFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade" />
+    <bean id="logFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacadeImpl" />
 
     <!-- Facade for managing shedules -->
-    <bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade" />
+    <bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacadeImpl" />
 
     <!-- Facade for managing RDF namespace prefixes -->
-    <bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade" />
+    <bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacadeImpl" />
 	
     <!-- Service responsible for delivering emails -->
     <bean id="emailSender" class="cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender">
