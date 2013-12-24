@@ -288,7 +288,7 @@ public class SPARQLExtractor {
 		RDFParser parser = dataUnit.getRDFParser(format, handler);
 
 		try {
-			parser.parse(inputStreamReader, endpointGraph);
+			parser.parse(inputStreamReader, "");
 
 			if (extractFail) {
 				caseNoTriples(handler);

@@ -46,33 +46,42 @@ public class DPUTree extends CustomComponent {
 	private DPUFacade dpuFacade;
 	@Autowired
 	private DPUCreate createDPU;
-	
 	private HorizontalLayout topLine;
+	private Window.CloseListener createDPUCloseListener;
 
 	/**
 	 * Creates new DPUTree.
 	 */
 	public DPUTree() {
 	}
-	
+
 	@PostConstruct
 	private void initialize() {
 		buildMainLayout();
-		
+
 		visibilityFilter = new Filter() {
+			@Override
+			public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
+				return dpu.getShareType() == ShareType.PRIVATE;
+			}
 
-		@Override
-		public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-			DPUTemplateRecord dpu = (DPUTemplateRecord)itemId;
-			return dpu.getShareType() == ShareType.PRIVATE;
-		}
+			@Override
+			public boolean appliesToProperty(Object propertyId) {
+				return true;
+			}
+		};
 
-		@Override
-		public boolean appliesToProperty(Object propertyId) {
-			return true;
-		}
-	};
-		
+		createDPUCloseListener = new Window.CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(Window.CloseEvent e) {
+				//refresh DPU tree after closing DPU Template creation dialog 
+				refresh();
+			}
+		};
+
 		setCompositionRoot(mainLayout);
 	}
 
@@ -136,16 +145,14 @@ public class DPUTree extends CustomComponent {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				//Open the dialog for DPU Template creation
-				UI.getCurrent().addWindow(createDPU);
-				createDPU.addCloseListener(new Window.CloseListener() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void windowClose(Window.CloseEvent e) {
-						//refresh DPU tree after closing DPU Template creation dialog 
-						refresh();
-					}
-				});
+				if (!UI.getCurrent().getWindows().contains(createDPU)) {
+					createDPU.initClean();
+					UI.getCurrent().addWindow(createDPU);
+					createDPU.removeCloseListener(createDPUCloseListener);
+					createDPU.addCloseListener(createDPUCloseListener);
+				} else {
+					createDPU.bringToFront();
+				}
 
 			}
 		});
@@ -160,12 +167,11 @@ public class DPUTree extends CustomComponent {
 		onlyMyDPU.setCaption("Only private DPU templates");
 		onlyMyDPU.setStyleName("private");
 		onlyMyDPU.addValueChangeListener(new Property.ValueChangeListener() {
-
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				boolean onlyMy = (boolean) event.getProperty().getValue();
 				Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
-				if(onlyMy) {
+				if (onlyMy) {
 					f.addContainerFilter(visibilityFilter);
 				} else {
 					f.removeContainerFilter(visibilityFilter);
@@ -209,11 +215,10 @@ public class DPUTree extends CustomComponent {
 		//	dpuTree.setHeight(600, Unit.PIXELS);
 		dpuTree.setStyleName("dpuTree");
 		dpuTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
-
 			@Override
 			public String getStyle(Tree source, Object itemId) {
 				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
-				if(dpu.getShareType() == ShareType.PRIVATE) {
+				if (dpu.getShareType() == ShareType.PRIVATE) {
 					return "private";
 				} else {
 					return "public";
@@ -226,7 +231,7 @@ public class DPUTree extends CustomComponent {
 		layoutTree.setExpandRatio(dpuTree, 0.95f);
 		mainLayout.addComponent(layoutTree);
 	}
-	
+
 	public void fillTree() {
 		Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
 		Collection<Filter> filters = new LinkedList<>(f.getContainerFilters());
@@ -235,7 +240,7 @@ public class DPUTree extends CustomComponent {
 		for (Object itemId : dpuTree.rootItemIds()) {
 			dpuTree.expandItemsRecursively(itemId);
 		}
-		for(Filter filter : filters) {
+		for (Filter filter : filters) {
 			f.addContainerFilter(filter);
 		}
 	}
@@ -341,12 +346,9 @@ public class DPUTree extends CustomComponent {
 
 	@Override
 	public Collection<?> getListeners(Class<?> eventType) {
-		if(eventType == ItemClickEvent.class) {
+		if (eventType == ItemClickEvent.class) {
 			return dpuTree.getListeners(eventType);
 		}
 		return super.getListeners(eventType);
 	}
-	
-
-	
 }

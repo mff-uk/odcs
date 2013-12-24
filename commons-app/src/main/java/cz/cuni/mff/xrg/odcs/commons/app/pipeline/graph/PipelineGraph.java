@@ -410,4 +410,14 @@ public class PipelineGraph implements DataObject {
         }
         return edgesTo;
     }
+    
+        public List<Edge> getEdgesFrom(Node node) {
+        List<Edge> edgesFrom = new LinkedList<>();
+        for(Edge e : edges) {
+            if(e.getFrom().equals(node)) {
+                edgesFrom.add(e);
+            }
+        }
+        return edgesFrom;
+    }
 }

@@ -4,10 +4,13 @@ import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +63,42 @@ public class SPARQLExtractorVirtuosoTest {
 	}
 
 	@Test
+	public void extractNSoud() {
+		try {
+
+			RDFFormat usedRDFFormat = RDFFormat.NTRIPLES;
+
+			URL endpointURL = new URL("http://internal.xrg.cz:8890/sparql");
+			String defaultGraphUri = "http://linked.opendata.cz/resource/dataset/legislation/nsoud.cz";
+			String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o} limit 5000";
+
+			long sizeBefore = repository.getTripleCount();
+
+			List<String> defaultGraphsURI = new ArrayList<>();
+			defaultGraphsURI.add(defaultGraphUri);
+
+			try {
+				SPARQLExtractor extractor = new SPARQLExtractor(repository,
+						getTestContext());
+				extractor.extractFromSPARQLEndpoint(endpointURL,
+						defaultGraphsURI, query, "", "", usedRDFFormat,
+						HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE,
+						true);
+
+			} catch (RDFException e) {
+				fail(e.getMessage());
+			}
+
+			long sizeAfter = repository.getTripleCount();
+
+			assertTrue(sizeBefore < sizeAfter);
+
+		} catch (MalformedURLException ex) {
+			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+		}
+	}
+
+	//@Test
 	public void extractBigDataFromEndpoint() {
 
 		try {

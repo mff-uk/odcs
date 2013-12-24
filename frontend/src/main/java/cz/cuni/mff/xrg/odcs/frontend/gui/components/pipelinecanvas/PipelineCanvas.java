@@ -456,7 +456,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				Notification.show("Pipeline is valid!", Notification.Type.WARNING_MESSAGE);
 			}
 		} catch (PipelineValidationException ex) {
-			Notification.show("Mandatory input(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
+			Notification.show("Mandatory input/output(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
 		}
 	}
 }

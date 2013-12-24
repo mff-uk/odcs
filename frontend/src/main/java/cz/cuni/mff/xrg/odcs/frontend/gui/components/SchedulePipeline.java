@@ -497,7 +497,8 @@ public class SchedulePipeline extends Window {
 				schedule.setPipeline(pipe);
 
 				//setting description
-				if (scheduleDescription.getValue().trim() != null) {
+				if (scheduleDescription.getValue() != null &&
+						scheduleDescription.getValue().trim() != null) {
 					schedule.setDescription(scheduleDescription.getValue());
 				} else {
 					schedule.setDescription("");

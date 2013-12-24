@@ -213,6 +213,11 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	public void addTriplesFromGraph(Graph graphInstance);
 
 	/**
+	 * For Browsing all data in graph return its size {count of rows}.
+	 */
+	public long getResultSizeForDataCollection() throws InvalidQueryException;
+
+	/**
 	 * For given valid SELECT of CONSTRUCT query return its size {count of rows
 	 * returns for given query).
 	 *
@@ -277,6 +282,12 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *                             of the Connection.
 	 */
 	public RepositoryConnection getConnection() throws RepositoryException;
+
+	/**
+	 * Method called after restarting after DB. Calling method
+	 * {@link #getConnection()} provides to get new instance of connection.
+	 */
+	public void restartConnection();
 
 	/**
 	 *

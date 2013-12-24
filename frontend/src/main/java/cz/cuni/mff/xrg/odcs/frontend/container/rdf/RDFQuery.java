@@ -32,10 +32,15 @@ import org.vaadin.addons.lazyquerycontainer.Query;
 public class RDFQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RDFQuery.class);
+
 	private static final String ALL_STATEMENT_QUERY = "CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}";
+
 	private String baseQuery;
+
 	private int batchSize;
+
 	private RDFQueryDefinition qd;
+
 	private ArrayList<Item> cachedItems;
 
 	public RDFQuery(RDFQueryDefinition qd) {
@@ -56,7 +61,7 @@ public class RDFQuery implements Query {
 			String filteredQuery = setWhereCriteria(baseQuery);
 			LOG.debug("Size query started...");
 			if (isAllStatementQuery(filteredQuery)) {
-				count = (int) repository.getTripleCount();
+				count = (int) repository.getResultSizeForDataCollection();
 			} else {
 				count = (int) repository.getResultSizeForQuery(filteredQuery);
 			}

@@ -366,7 +366,7 @@ public class SPARQLoader {
 				try (InputStreamReader inputStreamReader = rdfDataUnit
 						.getEndpointStreamReader(
 						endpointURL, endpointGraph, query,
-						RDFFormat.N3)) {
+						RDFFormat.RDFXML)) {
 				}
 
 				logger.debug(
@@ -577,6 +577,13 @@ public class SPARQLoader {
 
 			} catch (InvalidQueryException | QueryEvaluationException e) {
 
+				if (context.canceled()) {
+					//stop loading Parts
+					logger.error("Loading data was canceled by user !!!");
+					break;
+				}
+
+				rdfDataUnit.restartConnection();
 				retryCount++;
 				String error = String.format("Problem by creating %s"
 						+ ". data part - ATTEMPT number %s: ", loadedPartsCount,
@@ -599,6 +606,7 @@ public class SPARQLoader {
 			}
 
 		}
+		return null;
 	}
 
 	private String getSubjectInsertText(Resource subject) throws IllegalArgumentException {

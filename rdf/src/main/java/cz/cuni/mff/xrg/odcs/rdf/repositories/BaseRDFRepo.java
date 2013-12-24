@@ -1213,10 +1213,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private long getSizeForSelect(QueryPart queryPart) throws InvalidQueryException {
 
 		final String sizeVar = "selectSize";
+
 		final String sizeQuery = String.format(
 				"%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
-				.getQueryPrefixes(),
-				sizeVar, queryPart.getQueryWithoutPrefixes());
+				.getQueryPrefixes(), sizeVar,
+				queryPart.getQueryWithoutPrefixes());
 		try {
 			RepositoryConnection connection = getConnection();
 
@@ -1253,6 +1254,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * For Browsing all data in graph return its size {count of rows}.
+	 */
+	@Override
+	public long getResultSizeForDataCollection() throws InvalidQueryException {
+		final String selectQuery = "SELECT ?x ?y ?z WHERE {?x ?y ?z}";
+		return getSizeForSelect(new QueryPart(selectQuery));
 	}
 
 	/**
@@ -1640,6 +1650,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		String result = null;
 		try {
 			result = URLEncoder.encode(text, encode);
+
 		} catch (UnsupportedEncodingException e) {
 			String message = "Encode " + encode + " is not supported. ";
 			logger.debug(message);
@@ -2246,6 +2257,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public void clean() {
 		// to clean documentaion in MergableDataUnit
 		cleanAllData();
+	}
+
+	/**
+	 * Method called after restarting after DB. Calling method
+	 * {@link #getConnection()} provides to get new instance of connection.
+	 */
+	@Override
+	public void restartConnection() {
+		try {
+			closeConnection();
+		} catch (RepositoryException e) {
+			logger.debug("Connection can not be closed. " + e.getMessage());
+		}
+
+		hasBrokenConnection = true;
 	}
 
 	@Override
