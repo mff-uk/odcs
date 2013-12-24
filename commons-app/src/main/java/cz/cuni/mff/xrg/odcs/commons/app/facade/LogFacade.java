@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Jan Vojt
  */
 @Transactional(readOnly = true)
-public class LogFacade {
+public class LogFacade implements Facade {
 
 	@Autowired
 	private DbLogRead logDao;

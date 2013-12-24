@@ -13,7 +13,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
  * @author Petyr
  *
  */
-public interface ModuleFacade {
+public interface ModuleFacade extends Facade {
 	
 	/**
 	 * Return instance for given {@link DPUTemplateRecord}.

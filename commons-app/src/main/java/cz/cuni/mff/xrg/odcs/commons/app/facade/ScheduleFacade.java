@@ -25,7 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * @author Petyr
  */
 @Transactional(readOnly = true)
-public class ScheduleFacade {
+public class ScheduleFacade implements Facade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleFacade.class);
 	

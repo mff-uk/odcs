@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Jan Vojt
  */
 @Transactional(readOnly = true)
-public class PipelineFacade {
+public class PipelineFacade implements Facade {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineFacade.class);
 	

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Jan Vojt
  */
 @Transactional(readOnly = true)
-public class NamespacePrefixFacade {
+public class NamespacePrefixFacade implements Facade {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(NamespacePrefixFacade.class);
 	
