@@ -30,5 +30,5 @@ public class rdf {
 		"org.apache.commons.pool.impl;uses:=\"org.apache.commons.pool\";version=\"1.5.4\"," +
 		"org.apache.commons.pool;version=\"1.5.4\"," +
 		"au.com.bytecode.opencsv;version=\"2.0.0\"," +
-		"au.com.bytecode.opencsv.bean;uses:=\"au.com.bytecode.opencsv\";version=\"2.0.0\"";	
+		"au.com.bytecode.opencsv.bean;uses:=\"au.com.bytecode.opencsv\";version=\"2.0.0\",virtuoso.sesame2.driver";	
 }
