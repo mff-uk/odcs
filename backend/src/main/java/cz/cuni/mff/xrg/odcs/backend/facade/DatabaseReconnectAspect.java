@@ -108,7 +108,7 @@ class DatabaseReconnectAspect {
 				return result;
 				
 			} catch (RuntimeException ex) { // TODO more specific exception?
-				
+				LOG.warn("failureTolerant has caught exception", ex);
 				LOG.warn("Database is down after {} attempts.", attempts);
 				
 				// check whether we should notify admin
