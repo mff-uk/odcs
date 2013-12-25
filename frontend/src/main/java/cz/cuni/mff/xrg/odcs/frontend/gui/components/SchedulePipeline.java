@@ -142,6 +142,10 @@ public class SchedulePipeline extends Window {
 	 */
 	public void setSelectePipeline(Pipeline selectedPipeline) {
 		comboPipeline.setValue(selectedPipeline.getId());
+		scheduleType.setValue(ScheduleType.PERIODICALLY);
+		source.loadData(dbPipeline);
+		sourceCombo.loadData(dbPipeline);
+		source.hide(selectedPipeline.getId());
 	}
 
 	/**
@@ -170,7 +174,9 @@ public class SchedulePipeline extends Window {
 			emailNotifications.getDefaultScheduleNotificationRecord(selectedSchedule);
 			email.getUserEmailNotification(authCtx.getUser());
 			emailNotifications.setDisableComponents();
-			
+			source.loadData(dbPipeline);
+			sourceCombo.loadData(dbPipeline);
+
 			if(selectPipe != null) {
 				selectPipe.setValue(null);
 			}
@@ -214,6 +220,8 @@ public class SchedulePipeline extends Window {
 				if (selectedSchedule.isStrictlyTimed()) {
 					valueTol.setValue(selectedSchedule.getStrictToleranceMinutes());
 				}
+				source.loadData(dbPipeline);
+				sourceCombo.loadData(dbPipeline);
 				
 			} //AFTER_PIPELINE type
 			else {
@@ -224,6 +232,9 @@ public class SchedulePipeline extends Window {
 					afterNames.add(afteritem.getId());
 				}
 				selectPipe.setValue(afterNames);
+				source.loadData(dbPipeline);
+				sourceCombo.loadData(dbPipeline);
+				source.hide(selectedSchedule.getPipeline().getId());
 				
 			}
 			
@@ -242,6 +253,7 @@ public class SchedulePipeline extends Window {
 			
 			selectSch = selectedSchedule;
 		}
+
 		
 	}
 
