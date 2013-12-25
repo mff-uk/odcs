@@ -457,9 +457,17 @@ public class PipelineFacade {
      *
      * @param execution
      */
+	@Transactional
     public void stopExecution(PipelineExecution execution) {
-        execution.stop();
-        save(execution);
+		PipelineExecution currentExec = getExecution(execution.getId());
+		
+		if (currentExec.getStatus() == PipelineExecutionStatus.RUNNING) {
+			execution.stop();
+			save(execution);
+		} else {
+			// we are not in running state enymore .. so we do not
+			// save the pipeline
+		}
     }
 
 	/**
