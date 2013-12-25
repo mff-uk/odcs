@@ -15,7 +15,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.communication.Messages;
  * @author Petyr
  *
  */
-class ClientCommunicator implements Runnable {
+class ServerCommunicator implements Runnable {
 	
     /**
      * Communication socket.
@@ -32,7 +32,7 @@ class ClientCommunicator implements Runnable {
      */
     private final Server server;
 
-    public ClientCommunicator(Socket socket, 
+    public ServerCommunicator(Socket socket, 
 			ApplicationEventPublisher eventPublisher, Server server) {
         this.socket = socket;
         this.eventPublisher = eventPublisher;

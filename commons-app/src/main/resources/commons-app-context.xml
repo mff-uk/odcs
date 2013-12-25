@@ -8,10 +8,15 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-	
-	<!-- enable aspects -->
-	<aop:aspectj-autoproxy />
-	
+
+    <!-- transactions by annotations -->
+    <tx:annotation-driven />	
+    
+    <context:annotation-config />
+    
+    <!-- enable aspects -->
+    <aop:aspectj-autoproxy />
+   	
     <!-- application configuration -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
 	
@@ -89,9 +94,5 @@
     
     <!-- translator for ODCS filters -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.ODCSFilterTranslator" />
-    
-    <context:annotation-config />
-
-    <tx:annotation-driven />
-
+   
 </beans>

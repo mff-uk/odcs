@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.backend.communication;
 
+import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 
@@ -115,7 +115,7 @@ public class Server implements Runnable {
             try {
                 newSocket = socket.accept();
                 // prepare communicator class 
-                ClientCommunicator communicator = new ClientCommunicator(newSocket, eventPublisher, this);
+                ServerCommunicator communicator = new ServerCommunicator(newSocket, eventPublisher, this);
                 // execute ..		
                 synchronized (executorService) {
                     executorService.execute(communicator);
