@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +23,19 @@ import org.openrdf.rio.helpers.BasicParserSettings;
 
 /**
  * Find out, if data in RDF repository are valid or not.
+ *
+ * Basic idea of RDF data validation :
+ *
+ * All RDF data saved in {@link #input} instance are load to temp file. Than
+ * thanks {@link StatisticalHandler} and {@link RDFParser} are loaded to target
+ * {@link RDFDataUnit} only validate data and it´s created string report
+ * {@link #message} with finding problems(no valid data) as
+ * {@link #findedProblems}. This defined target {@link RDFDataUnit} is more
+ * described in method {@link #getGoalRepository()}. If target is
+ * {@link #output} then valid data are loaded direct into {@link #output}, if
+ * it´s instance of {@link LocalRDFRepo} than is destroyed after validation
+ * ending proccess - execute method {@link #areDataValid().
+ * }
  *
  * @author Jiri Tomes
  */
@@ -52,6 +66,17 @@ public class RepositoryDataValidator implements DataValidator {
 		this.findedProblems = new ArrayList<>();
 	}
 
+	/**
+	 * If is defined output {@link RDFDataUnit} where to load RDF data than
+	 * return this {@link RDFDataUnit} instance, otherwise it´s created and
+	 * return new instance {@link RDFDataUnit } as implementation of
+	 * {@link LocalRDFRepo} which is used only for validation process and it´s
+	 * destroyed after data validation.
+	 *
+	 * See method {@link #areDataValid()} for more info.
+	 *
+	 * @return
+	 */
 	private RDFDataUnit getGoalRepository() {
 		if (hasOutput()) {
 			return output;
@@ -63,6 +88,10 @@ public class RepositoryDataValidator implements DataValidator {
 		}
 	}
 
+	/**
+	 * If is set output as {@link RDFDataUnit} instance where to data add or
+	 * not.
+	 */
 	private boolean hasOutput() {
 		if (output != null) {
 			return true;
@@ -160,11 +189,21 @@ public class RepositoryDataValidator implements DataValidator {
 
 	}
 
+	/**
+	 * String message describes syntax problem of data validation.
+	 *
+	 * @return empty string, when all data are valid.
+	 */
 	@Override
 	public String getErrorMessage() {
 		return message;
 	}
 
+	/**
+	 *
+	 * @return List of TripleProblem describes invalid triples and its cause. If
+	 *         all data are valid return empty list.
+	 */
 	@Override
 	public List<TripleProblem> getFindedProblems() {
 		return findedProblems;
