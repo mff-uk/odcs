@@ -27,7 +27,7 @@ public interface DataValidator {
 
 	/**
 	 *
-	 * @return List of tripleProbelm describes invalid triples and its cause. If
+	 * @return List of TripleProblem describes invalid triples and its cause. If
 	 *         all data are valid return empty list.
 	 */
 	public List<TripleProblem> getFindedProblems();
