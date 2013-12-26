@@ -112,6 +112,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				+ "> succesfully shut down");
 	}
 
+	/**
+	 * Return type of data unit interface implementation.
+	 *
+	 * @return DataUnit type.
+	 */
 	@Override
 	public DataUnitType getType() {
 		return DataUnitType.RDF_Virtuoso;
@@ -127,6 +132,15 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		//no save to file - using Virtuoso for intermediate results.
 	}
 
+	/**
+	 * Make RDF data merge over repository - data in repository merge with data
+	 * in second defined repository.
+	 *
+	 *
+	 * @param second Type of repository contains RDF data as implementation of
+	 *               RDFDataUnit interface.
+	 * @throws IllegalArgumentException if second repository as param is null.
+	 */
 	@Override
 	public void mergeRepositoryData(RDFDataUnit second) throws IllegalArgumentException {
 		if (second == null) {
@@ -197,6 +211,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		}
 	}
 
+	/**
+	 * Copy all data from repository to targetRepository.
+	 *
+	 * @param targetRepository goal repository where RDF data are added.
+	 */
 	@Override
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
 
