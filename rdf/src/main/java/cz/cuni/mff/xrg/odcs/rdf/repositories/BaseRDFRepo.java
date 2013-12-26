@@ -172,17 +172,46 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		RETRY_CONNECTION_SIZE = retrySizeValue;
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
+	 * serialization of RDF data
+	 *
+	 * @param file File contains RDF data to extract.
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void addFromFile(File file) throws RDFException {
 		extractFromFile(file, RDFFormat.RDFXML, "",
 				HandlerExtractType.STANDARD_HANDLER);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file   File contains RDF data to extract.
+	 * @param format Specifies concrete {@link RDFFormat} (e.g., RDFXML, Turtle,
+	 *               ..) if RDF format can not be detected from file suffix.
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void addFromFile(File file, RDFFormat format) throws RDFException {
 		extractFromFile(file, format, "", HandlerExtractType.STANDARD_HANDLER);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file               File which contains RDF data to extract.
+	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
+	 *                           RDFXML, Turtle, ..) if RDF format can not be
+	 *                           detected from file suffix.
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void addFromFile(File file, RDFFormat format,
 			HandlerExtractType handlerExtractType) throws RDFException {
@@ -190,6 +219,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		extractFromFile(file, format, "", handlerExtractType);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file    File contains RDF data to extract.
+	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
+	 *                Turtle, ..) if RDF format can not be detected from file
+	 *                suffix.
+	 * @param baseURI String name of defined used URI prefix namespace used by
+	 *                all triples.
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void extractFromFile(File file, RDFFormat format, String baseURI)
 			throws RDFException {
@@ -198,6 +239,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				HandlerExtractType.STANDARD_HANDLER);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file               File contains RDF data to extract.
+	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
+	 *                           RDFXML, Turtle, ..) if RDF format can not be
+	 *                           detected from file suffix.
+	 * @param baseURI            String name of defined used URI prefix
+	 *                           namespace used by all triples.
+	 *                           HandlerExtractType handlerExtractType
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void extractFromFile(File file, RDFFormat format, String baseURI,
 			HandlerExtractType handlerExtractType) throws RDFException {
@@ -324,6 +380,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	/**
+	 * Load all triples in repository to defined file in defined RDF format.
+	 *
+	 * @param file       File where data be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 *                   RDF/XML,etc.)
+	 * @throws RDFException when loading data to file fail.
+	 */
 	@Override
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException {
 
@@ -413,6 +477,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
+	/**
+	 *
+	 * @param chunkSize size of triples/statements in one part.
+	 * @return Count of parts as split data in reposioty by defined chunkSize .
+	 */
 	@Override
 	public long getPartsCount(long chunkSize) {
 
@@ -426,6 +495,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return partsCount;
 	}
 
+	/**
+	 * Return iterable collection of all statemens in repository. Needed for
+	 * adding/merge large collection when is not possible to return all
+	 * statements (RDF triples) at once in method as in {@link #getTriples() }.
+	 *
+	 * @return Iterable collection of Statements need for lazy
+	 */
 	@Override
 	public RepositoryResult<Statement> getRepositoryResult() {
 
@@ -1270,6 +1346,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				"Getting TupleQueryResult using SPARQL select query failed.");
 	}
 
+	/**
+	 * Merge (add) data from given DataUnit into this DataUnit. If the unit has
+	 * wrong type then the {@link IllegalArgumentException} should be thrown.
+	 * The method must not modify the current parameter (unit). The given
+	 * DataUnit is not in read-only mode.
+	 *
+	 * @param unit {@link DataUnit} to merge with
+	 * @throws {@link IllegalArgumentException} In case of unsupported unit
+	 *                                          type.
+	 */
 	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
 
@@ -1297,6 +1383,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return dataSet;
 	}
 
+	/**
+	 *
+	 * @param updateQuery String value of SPARQL update query.
+	 * @return String extension of given update query works with set repository
+	 *         GRAPH.
+	 */
 	public String AddGraphToUpdateQuery(String updateQuery) {
 
 		String regex = "(insert|delete)\\s\\{";
@@ -1382,6 +1474,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
+	/**
+	 *
+	 * @param endpointURL      URL of endpoint we can to connect to.
+	 * @param endpointGraphURI Name of graph as URI string we want to
+	 *                         extract/load RDF data.
+	 * @param query            SPARQL query to execute on sparql endpoint
+	 * @param format           RDF data format for given returned RDF data.
+	 * @return Result of given SPARQL query apply to given graph. If it produce
+	 *         some RDF data, there are in specified RDF format.
+	 * @throws RDFException if unknown host, connection problems, no permission
+	 *                      for this action.
+	 */
 	@Override
 	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
@@ -1444,34 +1548,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
 						message.append(
 								". Inserted data has wrong format.");
-//
-//					try (InputStream errorStream = httpConnection
-//							.getErrorStream()) {
-//
-//						try (BufferedReader reader = new BufferedReader(
-//								new InputStreamReader(
-//								errorStream, Charset.forName(encode)))) {
-//
-//							StringBuilder inputStringBuilder = new StringBuilder();
-//							String line = reader.readLine();
-//							while (line != null) {
-//								inputStringBuilder.append(line);
-//								inputStringBuilder.append('\n');
-//								line = reader.readLine();
-//							}
-//
-//							String cause = ". Caused by " + inputStringBuilder
-//									.toString();
-//
-//							message.append(cause);
-//
-//							throw new InsertPartException(message.toString());
-//						}
-//					}
-
-
 					} else {
-						//message.append(". You probably dont have enought PERMISSION for this action.");
 						try (InputStream errorStream = httpConnection
 								.getErrorStream()) {
 
@@ -1492,7 +1569,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 								message.append(cause);
 
-								//throw new InsertPartException(message.toString());
 							}
 						}
 
@@ -1501,7 +1577,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					throw new InsertPartException(
 							message.toString() + "\n\n" + "URL endpoint: " + endpointURL
 							.toString() + " POST content: " + parameters);
-					//throw new RDFException(message.toString());
 				} else {
 
 					InputStreamReader inputStreamReader = new InputStreamReader(
@@ -1966,6 +2041,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		shutDown();
 	}
 
+	/**
+	 *
+	 * @return String name of data unit.
+	 */
 	@Override
 	public String getDataUnitName() {
 		return dataUnitName;
@@ -2012,11 +2091,20 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	/**
+	 * Return true if DataUnit is in read only state, false otherwise.
+	 *
+	 * @return true if data in DataUnit are read only, false otherwise.
+	 * @see {@link #madeReadOnly}
+	 */
 	@Override
 	public boolean isReadOnly() {
 		return isReadOnly;
 	}
 
+	/**
+	 * Made this DataUnit read-only.
+	 */
 	@Override
 	public void madeReadOnly() {
 		setReadOnly(true);
@@ -2130,6 +2218,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return factory.createLiteral(literalLabel);
 	}
 
+	/**
+	 * Delete all the data from the {@link RDFDataUnit} but does not close or
+	 * destroy it. After this call the state of {@link RDFDataUnit} should be
+	 * the same as if it was newly created.
+	 */
 	@Override
 	public void clean() {
 		// to clean documentaion in MergableDataUnit
@@ -2151,6 +2244,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		hasBrokenConnection = true;
 	}
 
+	/**
+	 *
+	 * @return Shared connection to repository.
+	 * @throws RepositoryException If something went wrong during the creation
+	 *                             of the Connection.
+	 */
 	@Override
 	public synchronized RepositoryConnection getConnection() throws RepositoryException {
 
