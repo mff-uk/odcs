@@ -128,6 +128,11 @@ public class LocalRDFRepo extends BaseRDFRepo {
 				.toString());
 	}
 
+	/**
+	 * Return type of data unit interface implementation.
+	 *
+	 * @return DataUnit type.
+	 */
 	@Override
 	public DataUnitType getType() {
 		return DataUnitType.RDF_Local;
@@ -384,6 +389,10 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		return file;
 	}
 
+	/**
+	 *
+	 * @return file with working directory.
+	 */
 	public File getWorkingRepoDirectory() {
 		return WorkingRepoDirectory;
 	}
