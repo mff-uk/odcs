@@ -167,19 +167,18 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
 
-					logger.info("START merging " + second
-							.getTripleCount()
-							+ " triples from <" + sourceGraphName + "> "
-							+ "TO <" + targetGraphName + ">.");
+					logger.info("START merging {} triples from <{}> TO <{}>.",
+							second.getTripleCount(), sourceGraphName,
+							targetGraphName);
 
 					result.evaluate();
 
 					logger.info("Merged SUCCESSFUL");
 
 				} catch (MalformedQueryException ex) {
-					logger.debug("NOT VALID QUERY: " + ex.getMessage());
+					logger.debug("NOT VALID QUERY: {}", ex.getMessage());
 				} catch (QueryEvaluationException ex) {
-					logger.error("MERGING STOPPED" + ex.getMessage());
+					logger.error("MERGING STOPPED: {}", ex.getMessage());
 				}
 
 			}
@@ -240,18 +239,17 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
 
-					logger.info("START merging " + getTripleCount()
-							+ " triples from <" + sourceGraphName + "> "
-							+ "TO <" + targetGraphName + ">.");
+					logger.info("START merging {} triples from <{}> TO <{}>.",
+							getTripleCount(), sourceGraphName, targetGraphName);
 
 					result.evaluate();
 
 					logger.info("Merged SUCCESSFUL");
 
 				} catch (MalformedQueryException ex) {
-					logger.debug("NOT VALID QUERY: " + ex.getMessage());
+					logger.debug("NOT VALID QUERY: {}", ex.getMessage());
 				} catch (QueryEvaluationException ex) {
-					logger.error("MERGING STOPPED" + ex.getMessage());
+					logger.error("MERGING STOPPED: {}", ex.getMessage());
 				}
 
 			}
