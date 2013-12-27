@@ -15,16 +15,17 @@ public class GraphUrl {
 	}
 
 	/**
-	 * Translate the dataUnit id in to graph url format.
+	 * Translate the dataUnit id in to graph URL format.
 	 *
-	 * @param dataUnitId
-	 * @return
+	 * @param dataUnitId string value of data unit ID.
+	 * @return string representation of graph URL format.
 	 */
 	public static String translateDataUnitId(String dataUnitId) {
 		return prefix + dataUnitId.replace('_', '/');
 	}
 
 	/**
+	 * Return defined graph prefix used for application graph names.
 	 *
 	 * @return defined graph prefix used for application graph names.
 	 */

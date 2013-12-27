@@ -1264,7 +1264,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * returns for given query).
 	 *
 	 * @param query Valid SELECT/CONTRUCT query for asking.
-	 * @return
+	 * @return size for given valid query as long.
 	 * @throws InvalidQueryException if query is not valid.
 	 */
 	@Override
@@ -2095,7 +2095,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * Return true if DataUnit is in read only state, false otherwise.
 	 *
 	 * @return true if data in DataUnit are read only, false otherwise.
-	 * @see {@link #madeReadOnly}
+	 * @see #madeReadOnly()
 	 */
 	@Override
 	public boolean isReadOnly() {

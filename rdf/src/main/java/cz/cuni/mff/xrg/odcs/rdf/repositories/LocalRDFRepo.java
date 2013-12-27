@@ -94,8 +94,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	/**
 	 * Set new graph as default for working data in RDF format.
 	 *
-	 * @param defaultGraph String name of graph as URI - starts with prefix
-	 *                     http://).
+	 * @param newStringDataGraph String name of graph as URI - starts with
+	 *                           prefix http://).
 	 */
 	@Override
 	public void setDataGraph(String newStringDataGraph) {
@@ -141,7 +141,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	/**
 	 * Load data from given file into repository.
 	 *
-	 * @param file
+	 * @param directory directory where repository file is stored.
 	 */
 	@Override
 	public void load(File directory) {
@@ -324,7 +324,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	/**
 	 * Copy all data from repository to targetRepository.
 	 *
-	 * @param targetRepository goal repository where RDF data are added.
+	 * @param targetRepo goal repository where RDF data are added.
 	 */
 	@Override
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {

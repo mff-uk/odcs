@@ -73,8 +73,8 @@ public class MyTupleQueryResult implements TupleQueryResult {
 				connection.close();
 			} catch (RepositoryException ex) {
 				logger.warn(
-						"Failed to close connection to RDF repository while querying."
-						+ ex.getMessage(), ex);
+						"Failed to close connection to RDF repository while querying. {}",
+						ex.getMessage(), ex);
 			}
 		}
 	}

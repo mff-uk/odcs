@@ -222,7 +222,7 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * returns for given query).
 	 *
 	 * @param query Valid SELECT/CONTRUCT query for asking.
-	 * @return
+	 * @return size for given valid query as long.
 	 * @throws InvalidQueryException if query is not valid.
 	 */
 	public long getResultSizeForQuery(String query) throws InvalidQueryException;
