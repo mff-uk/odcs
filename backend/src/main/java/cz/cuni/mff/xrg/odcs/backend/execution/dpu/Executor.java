@@ -244,6 +244,10 @@ public final class Executor implements Runnable {
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			executionResult.failure();
+		} catch (Throwable e) {
+			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
+					node.getDpuInstance(), execution, this));
+			executionResult.failure();
 		}
 		LOG.debug("Executing DPU ... done");
 	}
