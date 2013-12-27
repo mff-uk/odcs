@@ -1598,16 +1598,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						getRetryConnectionSizeAsString(), call
 						.toString());
 
-				logger.debug(message);
-
 				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
-					final String errorMessage = "Endpoint HTTP connection stream cannot be opened. ";
+					final String errorMessage = "Count of retryConnection is OVER (TOTAL " + retryCount + " ATTEMPTS). "
+							+ "Endpoint HTTP connection stream cannot be opened. ";
 					logger.debug(errorMessage);
 					if (httpConnection != null) {
 						httpConnection.disconnect();
 					}
 					throw new RDFException(errorMessage + e.getMessage(), e);
 				} else {
+					logger.debug(message);
 					try {
 						//sleep and attempt to reconnect
 						Thread.sleep(RETRY_CONNECTION_TIME);
