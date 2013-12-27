@@ -75,7 +75,7 @@ public class RepositoryDataValidator implements DataValidator {
 	 *
 	 * See method {@link #areDataValid()} for more info.
 	 *
-	 * @return
+	 * @return instance of {@link RDFDataUnit} need for creating report.
 	 */
 	private RDFDataUnit getGoalRepository() {
 		if (hasOutput()) {
