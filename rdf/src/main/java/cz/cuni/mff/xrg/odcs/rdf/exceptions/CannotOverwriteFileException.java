@@ -42,7 +42,7 @@ public class CannotOverwriteFileException extends DataUnitException {
 
 	/**
 	 * Create new instance of {@link CannotOverwriteFileException} with a
-	 * specifi message and cause of throwing this exception.
+	 * specific message and cause of throwing this exception.
 	 *
 	 * @param message String value of described message
 	 * @param cause   Cause of throwing exception
