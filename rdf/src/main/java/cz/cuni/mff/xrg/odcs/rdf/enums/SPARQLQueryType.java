@@ -7,9 +7,20 @@ package cz.cuni.mff.xrg.odcs.rdf.enums;
  */
 public enum SPARQLQueryType {
 
+	/**
+	 * Type used for SELECT queries.
+	 */
 	SELECT,
+	/**
+	 * Type used for CONSTRUCT queries.
+	 */
 	CONSTRUCT,
+	/**
+	 * Type used for DESCRIBE queries.
+	 */
 	DESCRIBE,
-	/*as value for syntax error or other values*/
+	/**
+	 * Value for syntax error or other type of queries.
+	 */
 	UNKNOWN;
 }
