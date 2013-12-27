@@ -35,8 +35,8 @@ public class RDFRepositoryException extends RuntimeException {
 	 * Constructs an instance of {@link RDFRepositoryException} with specified
 	 * detail message and root cause.
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message String value of described message
+	 * @param cause   Cause of throwing exception
 	 */
 	public RDFRepositoryException(String message, Throwable cause) {
 		super(message, cause);
@@ -46,7 +46,7 @@ public class RDFRepositoryException extends RuntimeException {
 	 * Constructs an instance of {@link RDFRepositoryException} with specified
 	 * root cause.
 	 *
-	 * @param cause
+	 * @param cause Cause of throwing exception.
 	 */
 	public RDFRepositoryException(Throwable cause) {
 		super(cause);
