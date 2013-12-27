@@ -12,33 +12,35 @@ import org.openrdf.rio.RDFFormat;
  */
 public enum RDFFormatType {
 
-	AUTO/**
+	/**
 	 * RDF type is set automatically by suffix. If no suffix, RDFXML type is
 	 * set. *
 	 */
-	,
-	RDFXML /**
+	AUTO,
+	/**
 	 * RDF type using for storing data XML syntax*
 	 */
-	,
-	N3 /**
+	RDFXML,
+	/**
 	 * RDF type using triples - subject, predicate, object. *
 	 */
-	,
-	TRIG /**
+	N3,
+	/**
 	 * RDF type using extended turle format (TTL).
 	 */
-	,
-	TTL /**
+	TRIG,
+	/**
 	 * RDF type using turle format - extension of N3 type. *
 	 */
-	, TRIX /**
+	TTL,
+	/**
 	 * TRIX RDF format.
 	 */
-	, NT /**
+	TRIX,
+	/**
 	 * N_TRIPLES RDF format.
 	 */
-	;
+	NT;
 
 	private static Map<RDFFormat, RDFFormatType> map = new HashMap<>();
 
@@ -66,6 +68,14 @@ public enum RDFFormatType {
 		inicializeStringMap();
 	}
 
+	/**
+	 * For given {@link RDFFormat} return equivalent in {@link RDFFormatType}.
+	 * If {@link RDFFormat} is not supported in application returns
+	 * {@link #AUTO} type.
+	 *
+	 * @param format Original RDF format need for finding equivalent.
+	 * @return equivalent for given {@link RDFFormat} as {@link RDFFormatType}.
+	 */
 	public static RDFFormatType getTypeByRDFFormat(RDFFormat format) {
 
 		if (map.containsKey(format)) {
@@ -76,6 +86,13 @@ public enum RDFFormatType {
 
 	}
 
+	/**
+	 * For given desription of one of {@link RDFFormatType} return one of
+	 * concrete {@link RDFFormatType}.
+	 *
+	 * @param value String description of {@link RDFFormatType}.
+	 * @return {@link RDFFormatType} for given description.
+	 */
 	public static RDFFormatType getTypeByString(String value) {
 		if (stringMap.containsKey(value)) {
 			return stringMap.get(value);
@@ -84,6 +101,15 @@ public enum RDFFormatType {
 		}
 	}
 
+	/**
+	 * For given {@link RDFFormatType} return it´s eqvivalent as
+	 * {@link RDFFormat}.
+	 *
+	 * @param type {@link RDFFormatType} for what you can get equivalent
+	 *             {@link RDFFormat}.
+	 * @return concrete {@link RDFFormat} as equivalent for given
+	 *         {@link RDFFormatType}.
+	 */
 	public static RDFFormat getRDFFormatByType(RDFFormatType type) {
 		RDFFormat result;
 
@@ -116,6 +142,11 @@ public enum RDFFormatType {
 		return result;
 	}
 
+	/**
+	 * Return list of all {@link RDFFormatType} supported by this application.
+	 *
+	 * @return List of all {@link RDFFormatType} supported by this application.
+	 */
 	public static List<RDFFormatType> getListOfRDFType() {
 		List<RDFFormatType> list = new ArrayList<>();
 		list.add(AUTO);
@@ -124,6 +155,13 @@ public enum RDFFormatType {
 		return list;
 	}
 
+	/**
+	 * For given {@link RDFFormatType} return it´s string description.
+	 *
+	 * @param type {@link RDFFormatType} for you can get string description.
+	 * @return string description of given {@link RDFFormatType} as method
+	 *         param.
+	 */
 	public static String getStringValue(RDFFormatType type) {
 
 		String result;
