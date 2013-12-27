@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -51,72 +50,72 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	public T execute(DbQuery<T> query) {
 		// set max count of results
 		query.getQuery().setMaxResults(1);
-		try {
-			T result = (T) query.getQuery().getSingleResult();
-			return result;
-		} catch(javax.persistence.NoResultException e) {
-			return null;
-		}
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public T execute(JPQLDbQuery<T> query) {
-		TypedQuery<T> tq = em.createQuery(query.getQuery(), entityClass);
-		for (Map.Entry<String, Object> p : query.getParameters()) {
-			tq.setParameter(p.getKey(), p.getValue());
-		}
-		return execute(new DbQuery<>(tq));
+		return execute(query.getQuery());
 	}
 	
-	
-
 	@SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
 	@Override
 	public List<T> executeList(DbQuery<T> query) {
-		List<T> resultList = Collections.checkedList(
-				query.getQuery().getResultList(), entityClass);
-		return resultList;
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public List<T> executeList(JPQLDbQuery<T> query) {
-		TypedQuery<T> tq = em.createQuery(query.getQuery(), entityClass);
-		for (Map.Entry<String, Object> p : query.getParameters()) {
-			tq.setParameter(p.getKey(), p.getValue());
-		}
-		return executeList(new DbQuery<>(tq));
+		return executeList(query.getQuery());
 	}
 	
     @Transactional(readOnly = true)
 	@Override
 	public long executeSize(DbQueryCount<T> query) {
-		 Long result = (Long) query.getQuery().getSingleResult();
-		 return result;
+		 Number result = query.getQuery().getSingleResult();
+		 return result.longValue();
 	}
 
-	@Override
-    @Transactional(readOnly = true)
-	public long executeSize(JPQLDbQuery<T> query) {
-		
-		// We need to use abstract Number class here, because Virtuoso seems
-		// to return arbitrary instances of Number for INTEGER data type
-		// (Short, Long). See GH-745.
-		TypedQuery<Number> tq = em.createQuery(query.getQuery(), Number.class);
-		for (Map.Entry<String, Object> p : query.getParameters()) {
-			tq.setParameter(p.getKey(), p.getValue());
-		}
-		
-		Number result = tq.getSingleResult();
-		return result.longValue();
-	}
-	
 	@Override
 	public DbQueryBuilder<T> createQueryBuilder() {
 		return new DbQueryBuilderImpl<>(em, entityClass, 
             authorizator, translators);
 	}
 	
+	/**
+	 * Create typed query from given string.
+	 * @param sringQuery
+	 * @return 
+	 */
+	protected TypedQuery<T> createTypedQuery(String sringQuery) {
+		return em.createQuery(sringQuery, entityClass);
+	}
+	
+	/**
+	 * Execute the given string query and return the results. No filters are 
+	 * applied.
+	 * @param sringQuery
+	 * @return 
+	 */
+	protected List<T> executeList(String sringQuery) {
+		return executeList(createTypedQuery(sringQuery));
+	}
+	
+	/**
+	 * Execute given typed query and return the results. No filters are 
+	 * applied.
+	 * @param typedQuery
+	 * @return 
+	 */
+	protected List<T> executeList(TypedQuery<T> typedQuery) {
+		return Collections.checkedList(typedQuery.getResultList(), entityClass);
+	}
+	
+	/**
+	 * Execute given typed query and return the result. No filters are 
+	 * applied.
+	 * @param typedQuery
+	 * @return 
+	 */
+	protected T execute(TypedQuery<T> typedQuery) {
+		try {
+			T result = (T) typedQuery.getSingleResult();
+			return result;
+		} catch(javax.persistence.NoResultException e) {
+			// getSingleResult throws if it has no results 
+			return null;
+		}
+	}	
+		
 }

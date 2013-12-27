@@ -1,15 +1,16 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.TypedQuery;
 
 /**
  * Implementation for accessing {@link OpenEvent} data objects.
  *
  * @author Jan Vojt
+ * @author Petyr
  */
 class DbOpenEventImpl extends DbAccessBase<OpenEvent> implements DbOpenEvent {
 
@@ -18,40 +19,62 @@ class DbOpenEventImpl extends DbAccessBase<OpenEvent> implements DbOpenEvent {
 	}
 
 	@Override
-	public OpenEvent getOpenEvent(User user, Pipeline pipeline) {
-		
-		JPQLDbQuery<OpenEvent> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM OpenEvent e"
-						+ " WHERE e.owner = :user"
-						+ " AND e.pipeline = :ppl");
-		
-		jpql.setParameter("user", user)
-			.setParameter("ppl", pipeline);
-		
-		return execute(jpql);
+	public OpenEvent getOpenEvent(Pipeline pipeline, User user) {
+		final String sringQuery = "SELECT e FROM OpenEvent e"
+				+ " WHERE e.owner = :user"
+				+ " AND e.pipeline = :ppl";
+		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		query.setParameter("user", user);
+		query.setParameter("ppl", pipeline);
+		return execute(query);
 	}
 	
 	@Override
-	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from, User user) {
-		
-		JPQLDbQuery<OpenEvent> jpql = new JPQLDbQuery<>();
-		StringBuilder query = new StringBuilder("SELECT e FROM OpenEvent e"
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline) {
+		final String sringQuery = "SELECT e FROM OpenEvent e"
 				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
-				+ " WHERE e.pipeline = :pipe");
-		
-		jpql.setParameter("pipe", pipeline);
-		
-		if (user != null) {
-			query.append(" AND e.owner <> :usr");
-			jpql.setParameter("usr", user);
-		}
-		
-		if (from != null) {
-			query.append(" AND e.timestamp >= :tsp");
-			jpql.setParameter("tsp", from);
-		}
-		
-		return executeList(jpql.setQuery(query.toString()));
+				+ " WHERE e.pipeline = :pipe";
+		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		query.setParameter("pipe", pipeline);
+		return executeList(query);
+	}
+	
+	@Override
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from) {
+		final String sringQuery = "SELECT e FROM OpenEvent e"
+				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
+				+ " WHERE e.pipeline = :pipe"
+				+ " AND e.timestamp >= :tsp";
+		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		query.setParameter("pipe", pipeline);
+		query.setParameter("tsp", from);
+		return executeList(query);
 	}
 
+	@Override
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline, User user) {
+		final String sringQuery = "SELECT e FROM OpenEvent e"
+				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
+				+ " WHERE e.pipeline = :pipe"
+				+ " AND e.owner <> :usr";
+		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		query.setParameter("pipe", pipeline);
+		query.setParameter("usr", user);
+		return executeList(query);
+	}
+
+	@Override
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from, User user) {
+		final String sringQuery = "SELECT e FROM OpenEvent e"
+				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
+				+ " WHERE e.pipeline = :pipe"
+				+ " AND e.timestamp >= :tsp"
+				+ " AND e.owner <> :usr";
+		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		query.setParameter("pipe", pipeline);
+		query.setParameter("tsp", from);
+		query.setParameter("usr", user);
+		return executeList(query);
+	}
+	
 }

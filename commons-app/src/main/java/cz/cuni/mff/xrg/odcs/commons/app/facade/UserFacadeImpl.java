@@ -76,7 +76,7 @@ class UserFacadeImpl implements UserFacade {
 	@PostFilter("hasPermission(filterObject, 'view')")
 	@Override
 	public List<User> getAllUsers() {
-		return userDao.getAllUsers();
+		return userDao.getAll();
 	}
 	
 	/**

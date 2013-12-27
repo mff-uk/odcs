@@ -93,6 +93,6 @@
     <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.AuthorizatorImpl" />
     
     <!-- translator for ODCS filters -->
-    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.ODCSFilterTranslator" />
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.BaseFilterTranslator" />
    
 </beans>

@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import java.util.List;
+import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Interface providing access to {@link NamespacePrefix} data objects.
  * 
  * @author Jan Vojt
+ * @author Petyr
  */
 @Transactional(propagation = Propagation.MANDATORY)
 class DbNamespacePrefixImpl extends DbAccessBase<NamespacePrefix>
@@ -21,18 +22,16 @@ class DbNamespacePrefixImpl extends DbAccessBase<NamespacePrefix>
 	
 	@Override
 	public List<NamespacePrefix> getAllPrefixes() {
-		JPQLDbQuery<NamespacePrefix> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM NamespacePrefix e");
-		return executeList(jpql);
+		final String sringQuery = "SELECT e FROM NamespacePrefix e";
+		return executeList(sringQuery);		
 	}
 
 	@Override
 	public NamespacePrefix getByName(String name) {
-		JPQLDbQuery<NamespacePrefix> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM NamespacePrefix e WHERE e.name = :name");
-		jpql.setParameter("name", name);
-		
-		return execute(jpql);
+		final String sringQuery = "SELECT e FROM NamespacePrefix e WHERE e.name = :name";
+		TypedQuery<NamespacePrefix> query = createTypedQuery(sringQuery);	
+		query.setParameter("name", name);
+		return execute(query);		
 	}
 
 }

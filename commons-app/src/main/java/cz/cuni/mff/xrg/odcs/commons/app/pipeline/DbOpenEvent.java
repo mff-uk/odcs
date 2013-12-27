@@ -9,17 +9,45 @@ import java.util.List;
  * Interface for access to {@link OpenEvent}s.
  *
  * @author Jan Vojt
+ * @author Petyr
  */
 public interface DbOpenEvent extends DbAccess<OpenEvent> {
 	
 	/**
 	 * Finds open pipeline event by user and pipeline.
 	 * 
-	 * @param user
 	 * @param pipeline
+	 * @param user
 	 * @return open pipeline event
 	 */
-	public OpenEvent getOpenEvent(User user, Pipeline pipeline);
+	public OpenEvent getOpenEvent(Pipeline pipeline, User user);
+	
+	/**
+	 * Fetches all events when given pipeline was open in pipeline canvas.
+	 * 
+	 * @param pipeline
+	 * @return 
+	 */
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline);
+	
+	/**
+	 * Fetches all events when given pipeline was open in pipeline canvas.
+	 * 
+	 * @param pipeline
+	 * @param from select only events with later timestamp
+	 * @return 
+	 */
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from);
+	
+	/**
+	 * Fetches all events when given pipeline was open in pipeline canvas.
+	 * 
+	 * @param pipeline
+	 * @param user who's events will not be included in the returned list,
+	 *				or null
+	 * @return 
+	 */
+	public List<OpenEvent> getOpenEvents(Pipeline pipeline, User user);
 	
 	/**
 	 * Fetches all events when given pipeline was open in pipeline canvas.

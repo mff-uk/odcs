@@ -65,7 +65,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 		} else if (event instanceof ModuleNewEvent) {
 			LOG.debug("Loading jar-file for new DPU in: {}", directory);
 			// get record for DPU from database
-			final DPUTemplateRecord dpu = dpuTemplateDao.getTemplateByDirectory(directory);
+			final DPUTemplateRecord dpu = dpuTemplateDao.getByDirectory(directory);
 			if (dpu == null) {
 				LOG.warn("Missing record for new DPU in directory: ", directory);
 			} else {
@@ -74,7 +74,7 @@ class OSGIChangeManager implements ApplicationListener<ModuleEvent> {
 			}
 		} else if (event instanceof ModuleUpdateEvent) {
 			LOG.debug("Udating DPU in: {}", directory);
-			final DPUTemplateRecord dpu = dpuTemplateDao.getTemplateByDirectory(directory);
+			final DPUTemplateRecord dpu = dpuTemplateDao.getByDirectory(directory);
 			final ModuleUpdateEvent updateEvent = (ModuleUpdateEvent) event;
 			if (dpu == null) {
 				LOG.warn("Missing record for updating DPU in directory: {}",

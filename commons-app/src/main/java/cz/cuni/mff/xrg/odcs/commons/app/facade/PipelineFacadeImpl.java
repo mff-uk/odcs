@@ -237,7 +237,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 		}
 		
 		User user = authCtx.getUser();
-		OpenEvent event = openEventDao.getOpenEvent(user, pipeline);
+		OpenEvent event = openEventDao.getOpenEvent(pipeline, user);
 		
 		if (event == null) {
 			event = new OpenEvent();
@@ -267,11 +267,14 @@ class PipelineFacadeImpl implements PipelineFacade {
 		}
 		
 		Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
-		User loggedUser = null;
+
 		if (authCtx != null) {
-			loggedUser = authCtx.getUser();
+			User loggedUser = authCtx.getUser();
+			return openEventDao.getOpenEvents(pipeline, from, loggedUser);
+		} else {
+			// user is null
+			return openEventDao.getOpenEvents(pipeline, from);
 		}
-		return openEventDao.getOpenEvents(pipeline, from, loggedUser);
 	}
 	
 	/**
@@ -330,7 +333,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 	@Deprecated
 	@Override
     public List<PipelineExecution> getAllExecutions() {
-		return executionDao.getAllExecutions(null, null);
+		return executionDao.getAll();
     }
 
     /**
@@ -341,7 +344,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
 	@Override
     public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
-		return executionDao.getAllExecutions(null, status);
+		return executionDao.getAll(status);
     }
 
     /**
@@ -363,7 +366,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
 	@Override
     public List<PipelineExecution> getExecutions(Pipeline pipeline) {
-		return executionDao.getAllExecutions(pipeline, null);
+		return executionDao.getAll(pipeline);
     }
 
     /**
@@ -376,7 +379,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
 	@Override
     public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
-        return executionDao.getAllExecutions(pipeline, status);
+        return executionDao.getAll(pipeline, status);
     }
 
     /**
@@ -451,7 +454,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
 	@Override
     public boolean hasModifiedExecutions(Date lastLoad) {
-		return executionDao.hasModifiedExecutions(lastLoad);
+		return executionDao.hasModified(lastLoad);
     }
 
     /**

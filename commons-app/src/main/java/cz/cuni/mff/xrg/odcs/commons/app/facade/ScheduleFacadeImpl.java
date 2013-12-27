@@ -79,36 +79,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
 	public List<Schedule> getSchedulesFor(Pipeline pipeline) {
 		return scheduleDao.getSchedulesFor(pipeline);
 	}
-	
-	/**
-	 * Fetches all {@link Schedule}s that should be activated after given
-	 * pipeline execution.
-	 *
-	 * @param pipeline pipeline to follow
-	 * @param enabled <ul>
-	 *		<li>if true return only followers with enabled schedules,</li>
-	 *		<li>if false return only followers with disabled schedules,</li>
-	 *		<li>if null return all followers.</li></ul>
-	 * @return schedules configured to follow given pipeline
-	 */
-	@Deprecated
-	@Override
-	public List<Schedule> getFollowers(Pipeline pipeline, Boolean enabled) {
-		return scheduleDao.getFollowers(pipeline, enabled);
-	}
-	
-	/**
-	 * Fetches all schedules configured to follow given pipeline.
-	 * 
-	 * @param pipeline
-	 * @return 
-	 */
-	@Deprecated
-	@Override
-	public List<Schedule> getFollowers(Pipeline pipeline) {
-		return getFollowers(pipeline, (Boolean) null);
-	}
-	
+		
 	/**
 	 * Fetches all {@link Schedule}s which are activated in
 	 * certain time.

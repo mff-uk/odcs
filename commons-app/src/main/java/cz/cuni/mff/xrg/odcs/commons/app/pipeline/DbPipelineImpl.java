@@ -1,9 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import java.util.List;
+import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,37 +22,30 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
 	
 	@Override
 	public List<Pipeline> getAll() {
-		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>("SELECT e FROM Pipeline e");
-		return executeList(jpql);
+		final String queryStr = "SELECT e FROM Pipeline e";
+		return executeList(queryStr);		
 	}
 
 	@Override
 	public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
-		
-		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM Pipeline e"
+		final String sringQuery = "SELECT e FROM Pipeline e"
 				+ " LEFT JOIN e.graph g"
 				+ " LEFT JOIN g.nodes n"
 				+ " LEFT JOIN n.dpuInstance i"
 				+ " LEFT JOIN i.template t"
-				+ " WHERE t = :dpu");
-		jpql.setParameter("dpu", dpu);
-		
-		return executeList(jpql);
+				+ " WHERE t = :dpu";
+		TypedQuery<Pipeline> query = createTypedQuery(sringQuery);	
+		query.setParameter("dpu", dpu);
+		return executeList(query);
 	}
 
 	@Override
 	public Pipeline getPipelineByName(String name) {
-		
-		JPQLDbQuery<Pipeline> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM Pipeline e"
-                + " WHERE e.name = :name");
-		jpql.setParameter("name", name);
-		
-		return execute(jpql);
-	}
-	
-	
-	
+		final String sringQuery = "SELECT e FROM Pipeline e"
+                + " WHERE e.name = :name";
+		TypedQuery<Pipeline> query = createTypedQuery(sringQuery);	
+		query.setParameter("name", name);
+		return execute(query);		
+	}	
 
 }

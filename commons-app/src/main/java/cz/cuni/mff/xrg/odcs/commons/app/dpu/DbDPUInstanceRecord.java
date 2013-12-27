@@ -15,6 +15,6 @@ public interface DbDPUInstanceRecord extends DbAccess<DPUInstanceRecord> {
 	 *
 	 * @return DPUInstance list
 	 */
-	public List<DPUInstanceRecord> getAllDPUInstances();
+	public List<DPUInstanceRecord> getAll();
 
 }

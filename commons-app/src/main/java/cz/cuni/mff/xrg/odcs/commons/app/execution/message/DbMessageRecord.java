@@ -15,6 +15,6 @@ public interface DbMessageRecord extends DbAccess<MessageRecord> {
 	 * @param pipelineExec
 	 * @return all {@link MessageRecord} emitted by given PipelineExecution.
 	 */
-	public List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec);
+	public List<MessageRecord> getAll(PipelineExecution pipelineExec);
 
 }

@@ -13,13 +13,13 @@ import javax.persistence.TypedQuery;
  */
 public class DbQueryCount<T extends DataObject> implements DataQueryCount<T> {
 
-    private final TypedQuery<Long> query;
+    private final TypedQuery<Number> query;
     
-	DbQueryCount(TypedQuery<Long> query) {
+	DbQueryCount(TypedQuery<Number> query) {
 		this.query = query;
 	}
 
-    TypedQuery<Long> getQuery() {
+    TypedQuery<Number> getQuery() {
 		return query;
 	}
     

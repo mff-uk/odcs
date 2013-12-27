@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Test suite for facade providing persistence of scheduled pipeline runs.
@@ -56,20 +55,6 @@ public class ScheduleFacadeTest {
 		assertNotNull(result);
 		assertEquals(1, result.size());
 		assertEquals(sch.getId(), result.get(0).getId());
-	}
-
-	/**
-	 * Test of getFollowers method, of class ScheduleFacade.
-	 */
-	@Test
-	public void testGetFollowers() {
-		long pplId = 1L;
-		Pipeline pipeline = mock(Pipeline.class);
-		when(pipeline.getId()).thenReturn(pplId);
-		
-		List<Schedule> result = scheduler.getFollowers(pipeline);
-		assertEquals(1, result.size());
-		assertEquals(2L, (long) result.get(0).getId());
 	}
 
 	/**

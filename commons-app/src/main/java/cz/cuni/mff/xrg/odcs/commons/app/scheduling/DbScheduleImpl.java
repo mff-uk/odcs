@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import java.util.Collections;
@@ -21,91 +20,77 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(propagation = Propagation.MANDATORY)
 public class DbScheduleImpl extends DbAccessBase<Schedule>
-							implements DbSchedule {
+		implements DbSchedule {
 
 	public DbScheduleImpl() {
 		super(Schedule.class);
 	}
-	
+
 	@Override
 	public List<Schedule> getAllSchedules() {
-		JPQLDbQuery<Schedule> jpql = new JPQLDbQuery<>("SELECT e FROM Schedule e");
-		return executeList(jpql);
+		final String queryStr = "SELECT e FROM Schedule e";
+		return executeList(queryStr);
 	}
 
 	@Override
 	public List<Schedule> getSchedulesFor(Pipeline pipeline) {
-		
-		JPQLDbQuery<Schedule> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM Schedule e WHERE e.pipeline = :pipeline");
-		jpql.setParameter("pipeline", pipeline);
-		
-		return executeList(jpql);
+		final String sringQuery = "SELECT e FROM Schedule e WHERE e.pipeline = :pipeline";
+		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		query.setParameter("pipeline", pipeline);
+		return executeList(query);
 	}
 
 	@Override
-	public List<Schedule> getFollowers(Pipeline pipeline, Boolean enabled) {
-		
-		JPQLDbQuery<Schedule> jpql = new JPQLDbQuery<>();
-		String query = "SELECT s FROM Schedule s JOIN s.afterPipelines p"
-					+ " WHERE p.id = :pipeline AND s.type = :type";
-		
-		jpql.setParameter("pipeline", pipeline.getId())
-				.setParameter("type", ScheduleType.AFTER_PIPELINE);
-		
-		if (enabled != null) {
-			query += " AND s.enabled = :enabled";
-			jpql.setParameter("enabled", enabled);
-		}
-		
-		return executeList(jpql.setQuery(query));
+	public List<Schedule> getFollowers(Pipeline pipeline, boolean enabled) {
+		final String sringQuery = "SELECT s FROM Schedule s JOIN s.afterPipelines p"
+				+ " WHERE p.id = :pipeline"
+				+ " AND s.type = :type"
+				+ " AND s.enabled = :enabled";
+		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		query.setParameter("pipeline", pipeline);
+		query.setParameter("type", ScheduleType.AFTER_PIPELINE);	
+		query.setParameter("enabled", enabled);
+		return executeList(query);	
 	}
 
 	@Override
 	public List<Schedule> getAllTimeBased() {
-		
-		JPQLDbQuery<Schedule> jpql = new JPQLDbQuery<>(
-				"SELECT s FROM Schedule s"
-				+ " WHERE s.type = :type");
-		jpql.setParameter("type", ScheduleType.PERIODICALLY);
-		
-		return executeList(jpql);
+		final String sringQuery = "SELECT s FROM Schedule s"
+				+ " WHERE s.type = :type";
+		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		query.setParameter("type", ScheduleType.PERIODICALLY);
+		return executeList(query);
 	}
-	
+
 	@Override
 	public List<Schedule> getActiveRunAfterBased() {
-		final String queryStr = "SELECT s FROM Schedule s"
+		final String sringQuery = "SELECT s FROM Schedule s"
 				+ " WHERE s.type = :type"
 				+ " AND s.enabled = 1";
-				
-		JPQLDbQuery<Schedule> jpql = new JPQLDbQuery<>(queryStr);
-		jpql.setParameter("type", ScheduleType.AFTER_PIPELINE);
-		
-		return executeList(jpql);
-	}	
+		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		query.setParameter("type", ScheduleType.AFTER_PIPELINE);
+		return executeList(query);
+	}
 
 	@Override
 	public List<Date> getLastExecForRunAfter(Schedule schedule) {
-		final String queryStr = "SELECT"
-				+ " max(exec.end)"
+		final String sringQuery = "SELECT max(exec.end)"
 				+ " FROM Schedule schedule"
 				+ " JOIN schedule.afterPipelines pipeline"
 				+ " JOIN PipelineExecution exec ON exec.id = pipeline.id"
 				+ " WHERE schedule.id = :schedule AND exec.status IN :status"
 				+ " GROUP BY pipeline.id";
-		
+
 		Set<PipelineExecutionStatus> statuses = new HashSet<>();
 		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
 		statuses.add(PipelineExecutionStatus.FINISHED_WARNING);
-		
-		TypedQuery<Date> tq = em.createQuery(queryStr, Date.class);
-		tq.setParameter("schedule", schedule.getId());
-		tq.setParameter("status", statuses);
-		
-		tq.getResultList();
-		
-		List<Date> resultList = Collections.checkedList(tq.getResultList(), Date.class);
+
+		TypedQuery<Date> query = em.createQuery(sringQuery, Date.class);
+		query.setParameter("schedule", schedule.getId());
+		query.setParameter("status", statuses);
+
+		List<Date> resultList = Collections.checkedList(query.getResultList(), Date.class);
 		return resultList;
 	}
-	
+
 }

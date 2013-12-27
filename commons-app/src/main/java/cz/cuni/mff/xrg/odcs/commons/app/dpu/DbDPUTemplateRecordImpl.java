@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import java.util.List;
+import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Implementation for accessing {@link DPUTemplateRecord} data objects.
  * 
  * @author Jan Vojt
+ * @author petyr
  */
 @Transactional(propagation = Propagation.MANDATORY)
 public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
@@ -20,30 +21,31 @@ public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
 	}
 
 	@Override
-	public List<DPUTemplateRecord> getAllTemplates() {
-		JPQLDbQuery<DPUTemplateRecord> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM DPUTemplateRecord e");
-		return executeList(jpql);
+	public List<DPUTemplateRecord> getAll() {
+		final String queryStr = "SELECT e FROM DPUTemplateRecord e";
+		return executeList(queryStr);
 	}
 
 	@Override
-	public DPUTemplateRecord getTemplateByDirectory(String directory) {
+	public DPUTemplateRecord getByDirectory(String directory) {
+		final String sringQuery = "SELECT e FROM DPUTemplateRecord e"
+								+ " WHERE e.jarDirectory = :directory";
 		
-		JPQLDbQuery<DPUTemplateRecord> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM DPUTemplateRecord e"
-				+ " WHERE e.jarDirectory = :directory");
-		jpql.setParameter("directory", directory);
+		TypedQuery<DPUTemplateRecord> query =createTypedQuery(sringQuery);
+		query.setParameter("directory", directory);
 		
-		return execute(jpql);
+		return execute(query);
 	}
 
 	@Override
-	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parentDpu) {
-		JPQLDbQuery<DPUTemplateRecord> jpql = new JPQLDbQuery<DPUTemplateRecord>(
-				"SELECT e FROM DPUTemplateRecord e WHERE e.parent = :tmpl");
-		jpql.setParameter("tmpl", parentDpu);
+	public List<DPUTemplateRecord> getChilds(DPUTemplateRecord parentDpu) {
+		final String sringQuery = "SELECT e FROM DPUTemplateRecord e"
+								+ " WHERE e.parent = :tmpl";
 		
-		return executeList(jpql);
+		TypedQuery<DPUTemplateRecord> query = createTypedQuery(sringQuery);
+		query.setParameter("tmpl", parentDpu);
+		
+		return executeList(query);
 	}
 
 }

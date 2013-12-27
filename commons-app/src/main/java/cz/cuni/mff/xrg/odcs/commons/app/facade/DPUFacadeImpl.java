@@ -105,7 +105,7 @@ class DPUFacadeImpl implements DPUFacade {
 	@PostFilter("hasPermission(filterObject,'view')")
 	@Override
 	public List<DPUTemplateRecord> getAllTemplates() {
-		return templateDao.getAllTemplates();
+		return templateDao.getAll();
 	}
 	
 	/**
@@ -149,7 +149,7 @@ class DPUFacadeImpl implements DPUFacade {
 	 */
 	@Override
 	public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
-		return templateDao.getChildDPUs(parent);
+		return templateDao.getChilds(parent);
 	}
 
 	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
@@ -174,7 +174,7 @@ class DPUFacadeImpl implements DPUFacade {
 	 */
 	@Override
 	public List<DPUInstanceRecord> getAllDPUInstances() {
-		return instanceDao.getAllDPUInstances();
+		return instanceDao.getAll();
 	}
 
 	/**
@@ -218,7 +218,7 @@ class DPUFacadeImpl implements DPUFacade {
 	 */
 	@Override
 	public List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec) {
-		return messageDao.getAllDPURecords(pipelineExec);
+		return messageDao.getAll(pipelineExec);
 	}
 
 	/**

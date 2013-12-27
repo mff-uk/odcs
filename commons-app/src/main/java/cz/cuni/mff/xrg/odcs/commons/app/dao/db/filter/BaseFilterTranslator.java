@@ -12,7 +12,7 @@ import javax.persistence.criteria.Root;
  *
  * @author Petyr
  */
-class ODCSFilterTranslator implements FilterTranslator {
+class BaseFilterTranslator implements FilterTranslator {
 
 	@Override
 	public Predicate translate(Object filter, CriteriaBuilder cb, Root<?> root) {

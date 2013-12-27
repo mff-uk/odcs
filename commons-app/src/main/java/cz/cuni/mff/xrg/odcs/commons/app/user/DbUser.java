@@ -13,7 +13,7 @@ public interface DbUser extends DbAccess<User> {
 	/**
 	 * @return list of all users persisted in database
 	 */
-	public List<User> getAllUsers();
+	public List<User> getAll();
 	
 	/**
 	 * Find User by his unique username.

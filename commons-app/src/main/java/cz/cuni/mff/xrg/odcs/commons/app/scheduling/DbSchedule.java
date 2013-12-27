@@ -37,10 +37,9 @@ public interface DbSchedule extends DbAccess<Schedule> {
 	 * @param enabled <ul>
 	 *		<li>if true return only followers with enabled schedules,</li>
 	 *		<li>if false return only followers with disabled schedules,</li>
-	 *		<li>if null return all followers.</li></ul>
 	 * @return schedules configured to follow given pipeline
 	 */
-	public List<Schedule> getFollowers(Pipeline pipeline, Boolean enabled);
+	public List<Schedule> getFollowers(Pipeline pipeline, boolean enabled);
 	
 	/**
 	 * Fetches all {@link Schedule}s which are activated in

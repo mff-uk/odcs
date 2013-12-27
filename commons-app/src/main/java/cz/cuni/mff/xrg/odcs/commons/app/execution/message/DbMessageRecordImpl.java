@@ -1,9 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.util.List;
+import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Implementation providing access to {@link MessageRecord} data objects.
  *
  * @author Jan Vojt
+ * @author Petyr
  */
 @Transactional(propagation = Propagation.MANDATORY)
 public class DbMessageRecordImpl extends DbAccessBase<MessageRecord>
@@ -21,12 +22,13 @@ public class DbMessageRecordImpl extends DbAccessBase<MessageRecord>
 	}
 
 	@Override
-	public List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec) {
-		JPQLDbQuery<MessageRecord> jpql = new JPQLDbQuery<>(
-				"SELECT r FROM MessageRecord r WHERE r.execution = :ins");
-		jpql.setParameter("ins", pipelineExec);
-
-		return executeList(jpql);
+	public List<MessageRecord> getAll(PipelineExecution pipelineExec) {
+		final String sringQuery = "SELECT r FROM MessageRecord r WHERE r.execution = :ins";
+		
+		TypedQuery<MessageRecord> query = createTypedQuery(sringQuery);
+		query.setParameter("ins", pipelineExec);
+		
+		return executeList(query);		
 	}
 
 }

@@ -297,7 +297,7 @@ class OSGIModuleFacade implements ModuleFacade {
 	@Override
 	@Transactional(readOnly = true)
 	public void preLoadAllDPUs() {
-		preLoadDPUs(dpuTemplateDao.getAllTemplates());
+		preLoadDPUs(dpuTemplateDao.getAll());
 	}
 
 	@Override

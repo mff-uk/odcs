@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,75 +22,78 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
     }
 
 	@Override
-	public List<PipelineExecution> getAllExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
-		
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>();
-		String query = "SELECT e FROM PipelineExecution e";
-		
-		if (pipeline != null && status != null) {
-			query += " WHERE e.pipeline = :pipe"
-                + " AND e.status = :status";
-			jpql.setParameter("pipe", pipeline);
-			jpql.setParameter("status", status);
-		} else if (pipeline != null) {
-			query += " WHERE e.pipeline = :pipe";
-			jpql.setParameter("pipe", pipeline);
-		} else if (status != null) {
-			query += " WHERE e.status = :status";
-			jpql.setParameter("status", status);
-		}
-	
-		return executeList(jpql.setQuery(query));
+	public List<PipelineExecution> getAll() {
+		final String sringQuery = "SELECT e FROM PipelineExecution e";
+		return executeList(sringQuery);
 	}
-
+	
+	@Override
+	public List<PipelineExecution> getAll(Pipeline pipeline) {
+		final String sringQuery = "SELECT e FROM PipelineExecution e"
+								+ " WHERE e.pipeline = :pipe";
+		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);	
+		query.setParameter("pipe", pipeline);
+		return executeList(query);
+	}
+	
+	@Override
+	public List<PipelineExecution> getAll(PipelineExecutionStatus status) {
+		final String sringQuery = "SELECT e FROM PipelineExecution e"
+								+ " WHERE e.status = :status";
+		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);
+		query.setParameter("status", status);
+		return executeList(query);
+	}	
+	
+	@Override
+	public List<PipelineExecution> getAll(Pipeline pipeline, PipelineExecutionStatus status) {
+		final String sringQuery = "SELECT e FROM PipelineExecution e"
+								+ " WHERE e.pipeline = :pipe AND e.status = :status";
+		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);	
+		query.setParameter("pipe", pipeline);
+		query.setParameter("status", status);
+		return executeList(query);
+	}	
+	
 	@Override
 	public PipelineExecution getLastExecution(Pipeline pipeline,
 			Set<PipelineExecutionStatus> statuses) {
-
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-                    + " WHERE e.pipeline = :pipe"
-                    + " AND e.status IN :status"
-                    + " AND e.end IS NOT NULL"
-                    + " ORDER BY e.end DESC");
-		
-		jpql.setParameter("pipe", pipeline)
-			.setParameter("status", statuses);
-		
-		return execute(jpql);
+		final String sringQuery = "SELECT e FROM PipelineExecution e"
+								+ " WHERE e.pipeline = :pipe"
+								+ " AND e.status IN :status"
+								+ " AND e.end IS NOT NULL"
+								+ " ORDER BY e.end DESC";				
+		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);		
+		query.setParameter("pipe", pipeline);
+		query.setParameter("status", statuses);		
+		return execute(query);
 	}
 
 	@Override
 	public PipelineExecution getLastExecution(Schedule schedule,
-			Set<PipelineExecutionStatus> statuses) {
-		
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM PipelineExecution e"
-				+ " WHERE e.schedule = :schedule"
-				+ " AND e.status IN :status"
-				+ " AND e.end IS NOT NULL"
-				+ " ORDER BY e.end DESC");
-		
-		jpql.setParameter("schedule", schedule)
-			.setParameter("status", statuses);
-
-        return execute(jpql);
+			Set<PipelineExecutionStatus> statuses) {		
+		final String sringQuery = "SELECT e FROM PipelineExecution e"
+								+ " WHERE e.schedule = :schedule"
+								+ " AND e.status IN :status"
+								+ " AND e.end IS NOT NULL"
+								+ " ORDER BY e.end DESC";		
+		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);		
+		query.setParameter("schedule", schedule);
+		query.setParameter("status", statuses);
+        return execute(query);
 	}
 
 	@Override
-	public boolean hasModifiedExecutions(Date since) {
-		
-		JPQLDbQuery<PipelineExecution> jpql = new JPQLDbQuery<>(
-				"SELECT CASE"
-				+ " WHEN MAX(e.lastChange) > :last THEN CAST(1 AS INTEGER)"
-				+ " ELSE CAST(0 AS INTEGER)"
-				+ " END "
-				+ " FROM PipelineExecution e");
-		jpql.setParameter("last", since);
-
-		long size = executeSize(jpql);
-		
-        return size>0;
+	public boolean hasModified(Date since) {		
+		final String sringQuery = "SELECT CASE"
+								+ " WHEN MAX(e.lastChange) > :last THEN CAST(1 AS INTEGER)"
+								+ " ELSE CAST(0 AS INTEGER)"
+								+ " END "
+								+ " FROM PipelineExecution e";		
+		TypedQuery<Number> query = em.createQuery(sringQuery, Number.class);
+		query.setParameter("last", since);
+		long size = (Long) query.getSingleResult();
+		return size > 0;
 	}
 
 }

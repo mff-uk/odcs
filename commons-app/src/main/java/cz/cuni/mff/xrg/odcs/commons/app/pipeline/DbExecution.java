@@ -14,15 +14,35 @@ import java.util.Set;
  * @author Jan Vojt
  */
 public interface DbExecution extends DbAccess<PipelineExecution> {
+
+	/**
+	 * 
+	 * @return 
+	 */
+	public List<PipelineExecution> getAll();
 	
 	/**
-	 * @param pipeline or null
-	 * @param status or null
-	 * @return all pipeline executions with given status
+	 * 
+	 * @param pipeline
+	 * @return 
 	 */
-	public List<PipelineExecution> getAllExecutions(Pipeline pipeline,
-			PipelineExecutionStatus status);
+	public List<PipelineExecution> getAll(Pipeline pipeline);
 	
+	/**
+	 * 
+	 * @param status
+	 * @return 
+	 */
+	public List<PipelineExecution> getAll(PipelineExecutionStatus status);
+	
+	/**
+	 * 
+	 * @param pipeline
+	 * @param status
+	 * @return 
+	 */
+	public List<PipelineExecution> getAll(Pipeline pipeline, PipelineExecutionStatus status);
+		
     /**
      * Return latest execution of given statuses for given pipeline. Ignore null
      * values.
@@ -57,6 +77,6 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      * @param since
      * @return whether any execution was updated since given date
      */
-    public boolean hasModifiedExecutions(Date since);
+    public boolean hasModified(Date since);
 	
 }

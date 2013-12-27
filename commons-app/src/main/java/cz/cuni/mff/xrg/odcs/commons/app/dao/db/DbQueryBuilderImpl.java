@@ -15,9 +15,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
 
     /**
@@ -31,8 +28,6 @@ class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
         
     }
     
-    private final static Logger LOG = LoggerFactory.getLogger(DbQueryBuilderImpl.class);
-
     /**
      * Entity manager used to create query.
      */
@@ -95,7 +90,10 @@ class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
     @Override
     public DbQueryCount<T> getCountQuery() {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		// We need to use abstract Number class here, because Virtuoso seems
+		// to return arbitrary instances of Number for INTEGER data type
+		// (Short, Long). See GH-745.
+        final CriteriaQuery<Number> cq = cb.createQuery(Number.class);
         final Root<T> root = cq.from(entityClass);
 
         cq.select(cb.count(root));
@@ -103,7 +101,7 @@ class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
         // we just set where criteria
         setWhereCriteria(cb, cq, root);
 
-        TypedQuery<Long> query = entityManager.createQuery(cq);
+        TypedQuery<Number> query = entityManager.createQuery(cq);
         return new DbQueryCount(query);
     }
 

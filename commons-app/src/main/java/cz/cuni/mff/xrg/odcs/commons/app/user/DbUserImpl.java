@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.JPQLDbQuery;
 import java.util.List;
+import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,16 +19,17 @@ public class DbUserImpl extends DbAccessBase<User> implements DbUser {
 	}
 
 	@Override
-	public List<User> getAllUsers() {
-		JPQLDbQuery<User> jpql = new JPQLDbQuery<>("SELECT e FROM User e");
-		return executeList(jpql);
+	public List<User> getAll() {
+		final String sringQuery = "SELECT e FROM User e";
+		return executeList(sringQuery);		
 	}
 
 	@Override
 	public User getByUsername(String username) {
-		JPQLDbQuery<User> jpql = new JPQLDbQuery<>(
-				"SELECT e FROM User e WHERE e.username = :uname");
-		return execute(jpql.setParameter("uname", username));
+		final String sringQuery = "SELECT e FROM User e WHERE e.username = :uname";
+		TypedQuery<User> query = createTypedQuery(sringQuery);
+		query.setParameter("uname", username);
+		return execute(query);
 	}
 	
 	

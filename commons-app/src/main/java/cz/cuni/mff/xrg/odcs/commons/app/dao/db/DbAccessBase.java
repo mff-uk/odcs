@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Partial implementation of {@link DbAccess} interface.
@@ -16,8 +14,6 @@ import org.slf4j.LoggerFactory;
 public abstract class DbAccessBase<T extends DataObject>
 		extends DbAccessReadBase<T>
 		implements DbAccess<T> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(DbAccessBase.class);
 	
 	public DbAccessBase(Class<T> entityClass) {
 		super(entityClass);

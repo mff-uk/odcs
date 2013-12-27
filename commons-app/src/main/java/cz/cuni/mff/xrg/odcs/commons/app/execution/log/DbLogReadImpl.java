@@ -16,10 +16,9 @@ public class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
 	}
 	
 	@Transactional
-	@Override	
+	@Override
 	public void prune(Date date) {
-		Query query = em.createQuery(
-				"DELETE FROM Log l WHERE l.timestamp < :time");
+		Query query = em.createQuery("DELETE FROM Log l WHERE l.timestamp < :time");
 		query.setParameter("time", date.getTime()).executeUpdate();
 	}
 	
