@@ -1353,8 +1353,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * DataUnit is not in read-only mode.
 	 *
 	 * @param unit {@link DataUnit} to merge with
-	 * @throws {@link IllegalArgumentException} In case of unsupported unit
-	 *                                          type.
+	 * @throws IllegalArgumentException in case of unsupported unit type.
 	 */
 	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
@@ -1911,6 +1910,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		});
 	}
 
+	/**
+	 * Add RDF data contains in string in given RDF format to set graphs in
+	 * repository.
+	 *
+	 * @param rdfString String value of RDF data you want to add to repository.
+	 * @param format    RDF format of data used in rdfString.
+	 * @param graphs    Graphs where RDF will be stored.
+	 * @throws RDFException if data in rdfString are not in given RDF format.
+	 */
 	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
 			Resource... graphs) throws RDFException {
 
@@ -1938,6 +1946,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	/**
+	 * Add concrete statement to repository.
+	 *
+	 * @param statement Triple you can add to repository.
+	 * @param graphs    Graphs as resources where are statement add to.
+	 */
 	protected void addStatement(Statement statement, Resource... graphs) {
 
 		try {
@@ -1959,6 +1973,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	/**
+	 * Created file from given parameter. If file is null, nothing is created.
+	 *
+	 * @param file file instance, you can create on file path.
+	 */
 	protected void createNewFile(File file) {
 
 		if (file == null) {
@@ -1972,6 +1991,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
+	/**
+	 * Returns URI instance from given string URI representation.
+	 *
+	 * @param graphURI String representation of graph URI you can create
+	 * @return URI instance from given string URI representation.
+	 */
 	protected URI createNewGraph(String graphURI) {
 		if (graphURI.toLowerCase().startsWith("http://")) {
 
@@ -2015,6 +2040,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		destroyThread.start();
 	}
 
+	/**
+	 * Returns collection of {@link RDFTriple} with all triples from actually
+	 * set named graph.
+	 *
+	 * @return collection of {@link RDFTriple} with all triples from actually
+	 *         set named graph.
+	 */
 	public List<RDFTriple> getRDFTriplesInRepository() {
 
 		List<RDFTriple> triples = new ArrayList<>();
@@ -2110,6 +2142,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		setReadOnly(true);
 	}
 
+	/**
+	 * Set read only property to this DPU.
+	 *
+	 * @param isReadOnly true if is DPU should be read only, false otherwise.
+	 */
 	protected void setReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
 	}
@@ -2268,6 +2305,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
+	/**
+	 * Close shared connection to repository.
+	 *
+	 * @throws RepositoryException If something went wrong during closing the
+	 *                             connection.
+	 */
 	protected void closeConnection() throws RepositoryException {
 		if (!hasBrokenConnection && repoConnection != null
 				&& repoConnection.isOpen()) {

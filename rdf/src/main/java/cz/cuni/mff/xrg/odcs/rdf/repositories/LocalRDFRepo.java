@@ -50,8 +50,12 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * Public constructor - create new instance of repository in defined
 	 * repository Path.
 	 *
-	 * @param repositoryPath
-	 * @param fileName
+	 * @param repositoryPath String value of path to directory where will be
+	 *                       repository stored.
+	 * @param fileName	      String value of file, where will be repository
+	 *                       stored.
+	 * @param namedGraph     String value of URI graph that will be set to
+	 *                       repository.
 	 * @param dataUnitName   DataUnit's name. If not used in Pipeline can be
 	 *                       empty String.
 	 */
