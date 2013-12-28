@@ -14,6 +14,13 @@ public class ParamController {
 
 	private static Logger logger = Logger.getLogger(ParamController.class);
 
+	/**
+	 * Test if given param is null or not.
+	 *
+	 * @param param   Object you can test
+	 * @param message String message that could be logged if param is null.
+	 * @throws RDFException if given param is null.
+	 */
 	public static void testNullParameter(Object param, String message) throws RDFException {
 		if (param == null) {
 			logger.debug(message);
@@ -21,6 +28,13 @@ public class ParamController {
 		}
 	}
 
+	/**
+	 * Test if given param is empty or not.
+	 *
+	 * @param param   Object you can test
+	 * @param message String message that could be logged if param is empty.
+	 * @throws RDFException if given param is empty.
+	 */
 	public static void testEmptyParameter(Object param, String message) throws RDFException {
 
 		if (param != null) {
@@ -40,6 +54,14 @@ public class ParamController {
 
 	}
 
+	/**
+	 * Test if given param is positive long number or not.
+	 *
+	 * @param param   Value you can test
+	 * @param message String message that could be logged if param is not
+	 *                positive number.
+	 * @throws RDFException if given param is not positive number.
+	 */
 	public static void testPositiveParameter(long param, String message) throws RDFException {
 		if (param <= 0) {
 			logger.debug(message);
@@ -47,6 +69,13 @@ public class ParamController {
 		}
 	}
 
+	/**
+	 * Test if given param is valid URL or not.
+	 *
+	 * @param endpointURL Object you can test
+	 * @throws RDFException if given URL is null, started with "http://" or
+	 *                      contains white spaces.
+	 */
 	public static void testEndpointSyntax(URL endpointURL) throws RDFException {
 
 		String message = null;

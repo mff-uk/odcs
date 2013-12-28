@@ -9,16 +9,20 @@ package cz.cuni.mff.xrg.odcs.rdf.help;
 public class RDFTriple {
 
 	private int id;
+
 	private String subject;
+
 	private String predicate;
+
 	private String object;
 
 	/**
 	 * Constructor with complete information about triple.
-	 * @param id Id of triple for indexing in container.
-	 * @param subject {@link String} with subject of triple.
+	 *
+	 * @param id        Id of triple for indexing in container.
+	 * @param subject   {@link String} with subject of triple.
 	 * @param predicate {@link String} with predicate of triple.
-	 * @param object {@link String} with object of triple. 
+	 * @param object    {@link String} with object of triple.
 	 */
 	public RDFTriple(int id, String subject, String predicate, String object) {
 		this.id = id;
@@ -28,6 +32,8 @@ public class RDFTriple {
 	}
 
 	/**
+	 * Returns ID for indexing in container.
+	 *
 	 * @return the id
 	 */
 	public int getId() {
@@ -35,6 +41,8 @@ public class RDFTriple {
 	}
 
 	/**
+	 * Returns string value of subject.
+	 *
 	 * @return the subject
 	 */
 	public String getSubject() {
@@ -42,6 +50,8 @@ public class RDFTriple {
 	}
 
 	/**
+	 * Returns string value of predicate.
+	 *
 	 * @return the predicate
 	 */
 	public String getPredicate() {
@@ -49,6 +59,8 @@ public class RDFTriple {
 	}
 
 	/**
+	 * Returns string value of object.
+	 *
 	 * @return the object
 	 */
 	public String getObject() {
