@@ -25,6 +25,10 @@ import org.openrdf.rio.RDFHandlerException;
  */
 public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
+	/**
+	 * Responsible for log event in class {@link TripleCountHandler} and it´s
+	 * subclasses.
+	 */
 	protected Logger logger = Logger.getLogger(TripleCountHandler.class);
 
 	private List<TripleProblem> warnings = new ArrayList<>();
@@ -39,6 +43,12 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 	private DPUContext context;
 
+	/**
+	 * Variable is responsible for creating message used by {@link #logger}.
+	 * True value is set if handler is used by data validator for checking data.
+	 * False value is set if handler is used for data parsing and adding data to
+	 * repository.
+	 */
 	protected boolean checkData;
 
 	/**
@@ -85,6 +95,17 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 	private long tripleCount = 0;
 
+	/**
+	 * If given statement contains valid RDF data then call method
+	 * {@link RDFInserter#handleStatement(org.openrdf.model.Statement)} on
+	 * parent class, otherwise add this problem statement to specific problem
+	 * collection of {@link TripleProblem}.
+	 *
+	 *
+	 * @param st Statement that will be added to repostory.
+	 * @throws RDFHandlerException if handler find out problem during execution
+	 *                             this method.
+	 */
 	@Override
 	public void handleStatement(Statement st) throws RDFHandlerException {
 		try {
@@ -123,6 +144,13 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		}
 	}
 
+	/**
+	 * Call method {@link RDFInserter#startRDF()} on parent class and write log
+	 * message about it.
+	 *
+	 * @throws RDFHandlerException if handler find out problem during execution
+	 *                             this method.
+	 */
 	@Override
 	public void startRDF() throws RDFHandlerException {
 		try {
@@ -142,6 +170,13 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		}
 	}
 
+	/**
+	 * Call method {@link RDFInserter#endRDF()} on parent class and write log
+	 * message about it.
+	 *
+	 * @throws RDFHandlerException if handler find out problem during execution
+	 *                             this method.
+	 */
 	@Override
 	public void endRDF() throws RDFHandlerException {
 		try {
@@ -193,10 +228,22 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		hasProblem = true;
 	}
 
+	/**
+	 * Return true if last parsed statement was added to repository, false
+	 * otherwise.
+	 *
+	 * @return true if last parsed statement was added to repository,false
+	 *         otherwise.
+	 */
 	protected boolean isStatementAdded() {
 		return isStatementAdded;
 	}
 
+	/**
+	 * Return true, if parsing proccess was canceled by user, false otherwise.
+	 *
+	 * @return true, if parsing proccess was canceled by user, false otherwise.
+	 */
 	private boolean isParsingCanceled() {
 		if (context != null && context.canceled()) {
 			return true;
@@ -205,6 +252,15 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		}
 	}
 
+	/**
+	 * Returns string warning message contains description of all problems from
+	 * given collection.
+	 *
+	 * @param warningsList Collection of {@link TripleProblem} to create string
+	 *                     message
+	 * @return String warning message contains description of all problems from
+	 *         given collection.
+	 */
 	protected static String getWarningsAsString(List<TripleProblem> warningsList) {
 		StringBuilder result = new StringBuilder();
 
@@ -218,10 +274,26 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		return result.toString();
 	}
 
+	/**
+	 * Returns string warning message contains description of all problems from
+	 * collection {@link #warnings}.
+	 *
+	 * @return String warning message contains description of all problems from
+	 *         collection {@link #warnings}.
+	 */
 	protected String getWarningsAsString() {
 		return getWarningsAsString(warnings);
 	}
 
+	/**
+	 * Returns string error message contains description of all problems from
+	 * given collection.
+	 *
+	 * @param errorsList Collection of {@link TripleProblem} to create string
+	 *                   message
+	 * @return String error message contains description of all problems from
+	 *         given collection.
+	 */
 	protected static String getErorrsAsString(List<TripleProblem> errorsList) {
 
 		StringBuilder result = new StringBuilder();
@@ -237,10 +309,25 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
 	}
 
+	/**
+	 * Returns string warning message contains description of all problems from
+	 * collection {@link #errors}.
+	 *
+	 * @return String warning message contains description of all problems from
+	 *         collection {@link #errors}.
+	 */
 	protected String getErorrsAsString() {
 		return getErorrsAsString(errors);
 	}
 
+	/**
+	 * Create string description from given {@link TripleProblem}.
+	 *
+	 * @param next       Instance of {@link TripleProblem } used for creating
+	 *                   description from that.
+	 * @param errorCount number of finded problems used in desription.
+	 * @return string description from given {@link TripleProblem}.
+	 */
 	private static String getDescribedProblem(TripleProblem next, int errorCount) {
 
 		Statement statement = next.getStatement();
@@ -256,14 +343,31 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		return problem;
 	}
 
+	/**
+	 * Returns true if handler find out some errors, false otherwise.
+	 *
+	 * @return true if handler find out some errors, false otherwise.
+	 */
 	protected boolean hasErrors() {
 		return !errors.isEmpty();
 	}
 
+	/**
+	 * Returns true if handler find out some warnings, false otherwise.
+	 *
+	 * @return true if handler find out some warnings, false otherwise.
+	 */
 	protected boolean hasWarnings() {
 		return !warnings.isEmpty();
 	}
 
+	/**
+	 * Returns list as collection of {@link TripleProblem} contains all finded
+	 * problems - warning and errors.
+	 *
+	 * @return List as collection of {@link TripleProblem} contains all finded
+	 *         problems - warning and errors.
+	 */
 	protected List<TripleProblem> getTripleProblems() {
 
 		List<TripleProblem> problems = new ArrayList<>();
@@ -274,6 +378,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
+	 * Return count of extracted triples.
 	 *
 	 * @return count of extracted triples.
 	 */
@@ -295,6 +400,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
+	 * Return true if there is no triples, false otherwise.
 	 *
 	 * @return true if there is no triples, false otherwise.
 	 */
