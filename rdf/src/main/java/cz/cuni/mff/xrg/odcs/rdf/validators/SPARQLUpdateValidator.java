@@ -21,6 +21,12 @@ public class SPARQLUpdateValidator implements QueryValidator {
 
 	private String message;
 
+	/**
+	 * Create new instance of {@link SPARQLUpdateValidator} with given SPARQL
+	 * update query you can validate.
+	 *
+	 * @param updateQuery SPARQL update query you can validate
+	 */
 	public SPARQLUpdateValidator(String updateQuery) {
 		this.updateQuery = updateQuery;
 		this.message = "";

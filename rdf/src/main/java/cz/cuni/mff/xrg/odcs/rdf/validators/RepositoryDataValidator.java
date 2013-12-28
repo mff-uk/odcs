@@ -52,6 +52,12 @@ public class RepositoryDataValidator implements DataValidator {
 
 	private List<TripleProblem> findedProblems;
 
+	/**
+	 * Create new instance of {@link RepositoryDataValidator} that check data
+	 * for given input.
+	 *
+	 * @param input source from where are data checked if are valid.
+	 */
 	public RepositoryDataValidator(RDFDataUnit input) {
 		this.input = input;
 		this.output = null;
@@ -59,6 +65,13 @@ public class RepositoryDataValidator implements DataValidator {
 		this.findedProblems = new ArrayList<>();
 	}
 
+	/**
+	 * Create new instance of {@link RepositoryDataValidator} that check data
+	 * for given input and valid data store to output.
+	 *
+	 * @param input  source from where are data checked if are valid.
+	 * @param output target whre are valid data stored.
+	 */
 	public RepositoryDataValidator(RDFDataUnit input, RDFDataUnit output) {
 		this.input = input;
 		this.output = output;
@@ -200,9 +213,11 @@ public class RepositoryDataValidator implements DataValidator {
 	}
 
 	/**
+	 * Returns list of {@link TripleProblem} describes invalid triples and its
+	 * cause. If all data are valid return empty list.
 	 *
-	 * @return List of TripleProblem describes invalid triples and its cause. If
-	 *         all data are valid return empty list.
+	 * @return List of {@link TripleProblem} describes invalid triples and its
+	 *         cause. If all data are valid return empty list.
 	 */
 	@Override
 	public List<TripleProblem> getFindedProblems() {
