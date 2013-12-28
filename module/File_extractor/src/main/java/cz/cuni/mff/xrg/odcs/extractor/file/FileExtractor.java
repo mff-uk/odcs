@@ -79,8 +79,8 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 						problems);
 			}
 		} catch (RDFException e) {
-			context.sendMessage(MessageType.ERROR, e.getMessage());
-			throw new DPUException(e.getMessage(), e);
+			context.sendMessage(MessageType.ERROR, e.getMessage(), e
+					.fillInStackTrace().toString());
 		}
 		final long triplesCount = rdfDataUnit.getTripleCount();
 		LOG.info("Extracted {} triples", triplesCount);
