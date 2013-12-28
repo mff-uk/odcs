@@ -92,7 +92,7 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 								+ " FROM PipelineExecution e";		
 		TypedQuery<Number> query = em.createQuery(sringQuery, Number.class);
 		query.setParameter("last", since);
-		long size = (Long) query.getSingleResult();
+		long size = (Long) query.getSingleResult().longValue();
 		return size > 0;
 	}
 
