@@ -12,6 +12,9 @@ import static org.junit.Assert.assertTrue;
  */
 public class ValidationTest {
 
+	/**
+	 * Test using contruct query in transformer.
+	 */
 	@Test
 	public void testContructQueryInTransformer() {
 		String query = "prefix lex: <http://purl.org/lex#> \n"
