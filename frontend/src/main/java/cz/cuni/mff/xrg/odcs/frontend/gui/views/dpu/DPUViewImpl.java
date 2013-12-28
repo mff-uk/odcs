@@ -680,7 +680,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		}
 		boolean configChanged = false;
 		try {
-			configChanged = selectedDpuWrap.getDialog().hasConfigChanged();
+			if (selectedDpuWrap.getDialog() != null) {			
+				configChanged = selectedDpuWrap.getDialog().hasConfigChanged();
+			}
 		} catch (FileNotFoundException e) {
 			Notification.show(
 					"File not found. ",
