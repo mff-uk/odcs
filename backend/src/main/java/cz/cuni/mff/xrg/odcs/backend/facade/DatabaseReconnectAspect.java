@@ -13,7 +13,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -96,8 +95,6 @@ class DatabaseReconnectAspect {
 	 */
 	@Around("execution(public * cz.cuni.mff.xrg.odcs.commons.app.facade.Facade+.*(..))")
 	public Object failureTolerant(ProceedingJoinPoint pjp) throws Throwable {
-		LOG.trace("failureTolerant:in");
-		
 		int attempts = 0;
 		while (true) {
 			try {
@@ -107,7 +104,6 @@ class DatabaseReconnectAspect {
 				
 				// reset email status on success
 				emailSent = false;
-				LOG.trace("failureTolerant:out");
 				return result;
 				
 			} catch (RuntimeException ex) { // TODO more specific exception?
