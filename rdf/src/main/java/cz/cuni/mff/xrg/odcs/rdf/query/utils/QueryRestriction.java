@@ -19,20 +19,41 @@ public class QueryRestriction {
 
 	private static final int UNDEFINED_VALUE = -1;
 
+	/**
+	 * Create new instance of {@link QueryRestriction} based on SPARQL query.
+	 *
+	 * @param query SPARQL query for transforming using restriction LIMIT and
+	 *              OFFSET.
+	 */
 	public QueryRestriction(String query) {
 		this.query = query;
 		this.limit = UNDEFINED_VALUE;
 		this.offset = UNDEFINED_VALUE;
 	}
 
+	/**
+	 * Returns original SPARQL query used for restriction.
+	 *
+	 * @return original SPARQL query used for restriction.
+	 */
 	public String getOriginalQuery() {
 		return query;
 	}
 
+	/**
+	 * Returns true, if limit restriction was set, false otherwise.
+	 *
+	 * @return true, if limit restriction was set, false otherwise.
+	 */
 	private boolean hasLimit() {
 		return limit > UNDEFINED_VALUE;
 	}
 
+	/**
+	 * Returns true, if offset restriction was set, false otherwise.
+	 *
+	 * @return true, if offset restriction was set, false otherwise.
+	 */
 	private boolean hasOffset() {
 		return offset > UNDEFINED_VALUE;
 	}
@@ -121,6 +142,12 @@ public class QueryRestriction {
 		return resultQuery;
 	}
 
+	/**
+	 * Returns string value of set restriction - Keyword (LIMIT|OFFSET) + set
+	 * value restriction.
+	 *
+	 * @return string value of set restriction.
+	 */
 	private String getRestrictedPart() {
 		StringBuilder bulder = new StringBuilder();
 
