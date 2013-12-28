@@ -12,14 +12,32 @@ import org.openrdf.rio.RDFParser;
  */
 public class RDFCancelException extends RDFHandlerException {
 
+	/**
+	 * Create new instance of {@link RDFCancelException} with specific message.
+	 *
+	 * @param msg String value of described message
+	 */
 	public RDFCancelException(String msg) {
 		super(msg);
 	}
 
+	/**
+	 * Create new instance of {@link RDFCancelException} with cause of throwing
+	 * this exception.
+	 *
+	 * @param cause Cause of throwing exception
+	 */
 	public RDFCancelException(Throwable cause) {
 		super(cause);
 	}
 
+	/**
+	 * Create new instance of {@link RDFCancelException} with a specific message
+	 * and cause of throwing this exception.
+	 *
+	 * @param msg   String value of described message
+	 * @param cause Cause of throwing exception
+	 */
 	public RDFCancelException(String msg, Throwable cause) {
 		super(msg, cause);
 	}

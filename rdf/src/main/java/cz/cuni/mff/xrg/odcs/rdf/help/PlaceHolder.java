@@ -13,6 +13,11 @@ public class PlaceHolder {
 
 	private String graphName;
 
+	/**
+	 * Create new instance of {@link PlaceHolder} for given DPU name.
+	 *
+	 * @param DPUName string value of DPU name.
+	 */
 	public PlaceHolder(String DPUName) {
 		this.DPUName = DPUName;
 		setTempGraphName();
@@ -32,6 +37,7 @@ public class PlaceHolder {
 	}
 
 	/**
+	 * Returns string value of DPU name.
 	 *
 	 * @return DPU name.
 	 */

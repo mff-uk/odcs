@@ -233,17 +233,25 @@ public final class Executor implements Runnable {
 					this, e));
 			executionResult.failure();
 		} catch (DPUException e) {
+			LOG.error("Execution failed for DPUException.");
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			executionResult.failure();
 		} catch (Exception e) {
+			LOG.error("Execution failed for Exception.");
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			executionResult.failure();
 		} catch (Error e) {
+			LOG.error("Execution failed for Error.");
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
 			executionResult.failure();
+		} catch (Throwable e) {
+			LOG.error("Execution failed for Throwable.");
+			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
+					node.getDpuInstance(), execution, this));
+			executionResult.failure();			
 		}
 		LOG.debug("Executing DPU ... done");
 	}

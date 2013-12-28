@@ -10,11 +10,11 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFHandlerException;
 
 /**
- *
- * @author Jiri Tomes
- *
  * Class allow monitor better the extraction data process - information about
  * parsed triples and detail error log.
+ *
+ *
+ * @author Jiri Tomes
  *
  */
 public class StatisticalHandler extends TripleCountHandler {
@@ -64,6 +64,17 @@ public class StatisticalHandler extends TripleCountHandler {
 		logger = Logger.getLogger(StatisticalHandler.class);
 	}
 
+	/**
+	 * Call method
+	 * {@link TripleCountHandler#handleStatement(org.openrdf.model.Statement)}
+	 * on parent class and after successfully parsing/validating every X triples
+	 * add log about that, where X is number defined by
+	 * {@link #TRIPLE_LOGGED_SIZE} variable.
+	 *
+	 * @param st Statement that will be added to repostory.
+	 * @throws RDFHandlerException if handler find out problem during execution
+	 *                             this method.
+	 */
 	@Override
 	public void handleStatement(Statement st) throws RDFHandlerException {
 		super.handleStatement(st);
@@ -84,6 +95,17 @@ public class StatisticalHandler extends TripleCountHandler {
 		}
 	}
 
+	/**
+	 * Call method {@link TripleCountHandler#endRDF()} on parent class and add
+	 * all finded problems during parsing to collection
+	 * {@link #parsingProblems}.
+	 *
+	 * For getting this collection of problems you call method {@link #getFindedProblems()
+	 * }.
+	 *
+	 * @throws RDFHandlerException if handler find out problem during execution
+	 *                             this method.
+	 */
 	@Override
 	public void endRDF() throws RDFHandlerException {
 		super.endRDF();
@@ -103,6 +125,8 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
+	 * Return boolean value if during parsing data using handler were find some
+	 * problems (invalid data) or not.
 	 *
 	 * @return if during parsing data using handler were find some problems
 	 *         (invalid data) or not.
@@ -116,6 +140,8 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
+	 * Returns string representation of all finded problems with data
+	 * validation. If all data are valid, return empty string.
 	 *
 	 * @return String representation of all finded problems with data
 	 *         validation. If all data are valid, return empty string.
@@ -137,6 +163,8 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
+	 * Return list as collection of all finded problems with data validation. If
+	 * all data are valid, return empty list.
 	 *
 	 * @return List as collection of all finded problems with data validation.
 	 *         If all data are valid, return empty list.
@@ -145,6 +173,10 @@ public class StatisticalHandler extends TripleCountHandler {
 		return getTripleProblems();
 	}
 
+	/**
+	 * Add finded {@link TripleProblem} to collection of
+	 * {@link #parsingProblems}.
+	 */
 	private void addToParsingProblems() {
 		for (TripleProblem next : getTripleProblems()) {
 			if (!parsingProblems.contains(next)) {
@@ -153,10 +185,22 @@ public class StatisticalHandler extends TripleCountHandler {
 		}
 	}
 
+	/**
+	 * Return true, if find out some problems during parsing, false otherwise.
+	 *
+	 * @return true, if find out some problems during parsing, false otherwise.
+	 */
 	public static boolean hasParsingProblems() {
 		return !parsingProblems.isEmpty();
 	}
 
+	/**
+	 * Return string representation of all finded problems fixed by parsing
+	 * using {@link StatisticalHandler}.
+	 *
+	 * @return string representation of all finded problems fixed by parsing
+	 *         using {@link StatisticalHandler}.
+	 */
 	public static String getFindedGlobalProblemsAsString() {
 		StringBuilder result = new StringBuilder();
 
@@ -188,6 +232,10 @@ public class StatisticalHandler extends TripleCountHandler {
 		return result.toString();
 	}
 
+	/**
+	 * Clear list of problems finded by parsing using
+	 * {@link StatisticalHandler}.
+	 */
 	public static void clearParsingProblems() {
 		parsingProblems.clear();
 	}

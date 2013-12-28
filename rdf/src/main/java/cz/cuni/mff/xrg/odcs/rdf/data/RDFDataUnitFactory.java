@@ -23,10 +23,13 @@ public class RDFDataUnitFactory {
 	 */
 	private final static String repoDirName = "intlib-repo";
 
+	/**
+	 * Default name for temp file, where this repository is saved.
+	 */
 	private final static String repoFileName = "localRepository";
 
 	/**
-	 * Create RDFDataUnit as local RDF repository.
+	 * Create RDFDataUnit as Local RDF repository.
 	 *
 	 *
 	 * @param repoPath     String path to directory where can be repository
@@ -36,7 +39,7 @@ public class RDFDataUnitFactory {
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
 	 * @param namedGraph   String name of graph, where RDF data are saved.
-	 * @return
+	 * @return New {@link LocalRDFRepo} instance.
 	 */
 	public static LocalRDFRepo createLocalRDFRepo(String repoPath, String id,
 			String dataUnitName, String namedGraph) {
@@ -47,13 +50,13 @@ public class RDFDataUnitFactory {
 	}
 
 	/**
-	 * Create RDFDataUnit as local RDF repository in default set temp directory
+	 * Create RDFDataUnit as Local RDF repository in default set temp directory
 	 * path. Each directory path have to constains more that one RDF repository.
 	 *
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
 	 * @throws RuntimeException if temp directory for repository can not create.
-	 * @return
+	 * @return New {@link LocalRDFRepo} instance in default set temp directory.
 	 */
 	public static LocalRDFRepo createLocalRDFRepo(String dataUnitName) throws RuntimeException {
 		return RDFDataUnitFactory.createLocalRepoInTempDirectory(dataUnitName,
@@ -61,9 +64,8 @@ public class RDFDataUnitFactory {
 	}
 
 	/**
-	 * Create RDFDataUnit as local RDF repositorz in temp directory "dirName",
-	 * in this directory create file with "fileName" a there is repository
-	 * stored.
+	 * Create RDFDataUnit as Local RDF repository in temp directory "dirName",
+	 * in this directory create file with "fileName" where is repository stored.
 	 *
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
@@ -71,7 +73,7 @@ public class RDFDataUnitFactory {
 	 * @param id           String value of id.
 	 *
 	 * @throws RuntimeException if temp directory for repository can not create.
-	 * @return
+	 * @return New {@link LocalRDFRepo} instance.
 	 */
 	private static LocalRDFRepo createLocalRepoInTempDirectory(
 			String dataUnitName,
@@ -90,8 +92,7 @@ public class RDFDataUnitFactory {
 	}
 
 	/**
-	 * Create RDFDataUnitFactory as new instance of VirtuosoRepository as
-	 * storage.
+	 * Create RDFDataUnit as new instance of VirtuosoRepository as storage.
 	 *
 	 * @param hostName     String name of host need to Virtuoso connection.
 	 * @param port         String value of number of port need for connection to
@@ -105,8 +106,9 @@ public class RDFDataUnitFactory {
 	 *                     hasStatement, getStatements methods.
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
-	 * @param config	   configuration for {@link FailureTolerantRepositoryWrapper}
-	 * @return			   Virtuoso RDF Repository
+	 * @param config	      configuration for
+	 *                     {@link FailureTolerantRepositoryWrapper}
+	 * @return New {@link VirtuosoRDFRepo} instance.
 	 */
 	public static VirtuosoRDFRepo createVirtuosoRDFRepo(
 			String hostName,
@@ -123,8 +125,7 @@ public class RDFDataUnitFactory {
 				+ port + "/charset=UTF-8/log_enable=2";
 
 		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(
-				JDBC, user, password, namedGraph, dataUnitName, config
-		);
+				JDBC, user, password, namedGraph, dataUnitName, config);
 
 		return virtuosoRepo;
 	}

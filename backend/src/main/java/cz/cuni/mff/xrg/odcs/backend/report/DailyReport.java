@@ -48,7 +48,7 @@ class DailyReport {
 	 */
 	@Async
 	@Scheduled(cron = "0 0 0 * * *")
-	private void execute() {
+	public void execute() {
 		// today    
 		Calendar date = Calendar.getInstance();
 		// reset hour, minutes, seconds and millis

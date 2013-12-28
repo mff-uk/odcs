@@ -86,8 +86,8 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	/**
 	 * Set new graph as default for working data in RDF format.
 	 *
-	 * @param defaultGraph String name of graph as URI - starts with prefix
-	 *                     http://).
+	 * @param newStringDataGraph String name of graph as URI - starts with
+	 *                           prefix http://).
 	 */
 	@Override
 	public void setDataGraph(String newStringDataGraph) {
@@ -112,6 +112,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				+ "> succesfully shut down");
 	}
 
+	/**
+	 * Return type of data unit interface implementation.
+	 *
+	 * @return DataUnit type.
+	 */
 	@Override
 	public DataUnitType getType() {
 		return DataUnitType.RDF_Virtuoso;
@@ -127,6 +132,15 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		//no save to file - using Virtuoso for intermediate results.
 	}
 
+	/**
+	 * Make RDF data merge over repository - data in repository merge with data
+	 * in second defined repository.
+	 *
+	 *
+	 * @param second Type of repository contains RDF data as implementation of
+	 *               RDFDataUnit interface.
+	 * @throws IllegalArgumentException if second repository as param is null.
+	 */
 	@Override
 	public void mergeRepositoryData(RDFDataUnit second) throws IllegalArgumentException {
 		if (second == null) {
@@ -167,19 +181,18 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
 
-					logger.info("START merging " + second
-							.getTripleCount()
-							+ " triples from <" + sourceGraphName + "> "
-							+ "TO <" + targetGraphName + ">.");
+					logger.info("START merging {} triples from <{}> TO <{}>.",
+							second.getTripleCount(), sourceGraphName,
+							targetGraphName);
 
 					result.evaluate();
 
 					logger.info("Merged SUCCESSFUL");
 
 				} catch (MalformedQueryException ex) {
-					logger.debug("NOT VALID QUERY: " + ex.getMessage());
+					logger.debug("NOT VALID QUERY: {}", ex.getMessage());
 				} catch (QueryEvaluationException ex) {
-					logger.error("MERGING STOPPED" + ex.getMessage());
+					logger.error("MERGING STOPPED: {}", ex.getMessage());
 				}
 
 			}
@@ -198,6 +211,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		}
 	}
 
+	/**
+	 * Copy all data from repository to targetRepository.
+	 *
+	 * @param targetRepo goal repository where RDF data are added.
+	 */
 	@Override
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
 
@@ -240,18 +258,17 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
 
-					logger.info("START merging " + getTripleCount()
-							+ " triples from <" + sourceGraphName + "> "
-							+ "TO <" + targetGraphName + ">.");
+					logger.info("START merging {} triples from <{}> TO <{}>.",
+							getTripleCount(), sourceGraphName, targetGraphName);
 
 					result.evaluate();
 
 					logger.info("Merged SUCCESSFUL");
 
 				} catch (MalformedQueryException ex) {
-					logger.debug("NOT VALID QUERY: " + ex.getMessage());
+					logger.debug("NOT VALID QUERY: {}", ex.getMessage());
 				} catch (QueryEvaluationException ex) {
-					logger.error("MERGING STOPPED" + ex.getMessage());
+					logger.error("MERGING STOPPED: {}", ex.getMessage());
 				}
 
 			}

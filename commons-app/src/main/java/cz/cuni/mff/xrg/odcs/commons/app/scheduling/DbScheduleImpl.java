@@ -77,7 +77,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 		final String sringQuery = "SELECT max(exec.end)"
 				+ " FROM Schedule schedule"
 				+ " JOIN schedule.afterPipelines pipeline"
-				+ " JOIN PipelineExecution exec ON exec.id = pipeline.id"
+				+ " JOIN PipelineExecution exec ON exec.pipeline = pipeline"
 				+ " WHERE schedule.id = :schedule AND exec.status IN :status"
 				+ " GROUP BY pipeline.id";
 
@@ -89,8 +89,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 		query.setParameter("schedule", schedule.getId());
 		query.setParameter("status", statuses);
 
-		List<Date> resultList = Collections.checkedList(query.getResultList(), Date.class);
-		return resultList;
+		return Collections.checkedList(query.getResultList(), Date.class);
 	}
 
 }

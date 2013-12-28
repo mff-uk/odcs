@@ -81,9 +81,9 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 		try {
 			repository.initialize();
-			logger.info("New local repository with data graph <"
-					+ getDataGraph().stringValue()
-					+ "> successfully initialized.");
+			logger.info(
+					"New local repository with data graph <{}> successfully initialized.",
+					getDataGraph().stringValue());
 
 		} catch (RepositoryException ex) {
 			logger.debug(ex.getMessage());
@@ -94,8 +94,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	/**
 	 * Set new graph as default for working data in RDF format.
 	 *
-	 * @param defaultGraph String name of graph as URI - starts with prefix
-	 *                     http://).
+	 * @param newStringDataGraph String name of graph as URI - starts with
+	 *                           prefix http://).
 	 */
 	@Override
 	public void setDataGraph(String newStringDataGraph) {
@@ -113,7 +113,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException ex) {
-				logger.debug("Thread sleeping interupted " + ex.getMessage());
+				logger.debug("Thread sleeping interupted {}", ex.getMessage());
 			}
 		}
 		deleteDataDirectory(dataDir);
@@ -128,6 +128,11 @@ public class LocalRDFRepo extends BaseRDFRepo {
 				.toString());
 	}
 
+	/**
+	 * Return type of data unit interface implementation.
+	 *
+	 * @return DataUnit type.
+	 */
 	@Override
 	public DataUnitType getType() {
 		return DataUnitType.RDF_Local;
@@ -136,13 +141,13 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	/**
 	 * Load data from given file into repository.
 	 *
-	 * @param file
+	 * @param directory directory where repository file is stored.
 	 */
 	@Override
 	public void load(File directory) {
 		logger.info(
-				"LOAD INPUT graph <" + graph.stringValue() + "> in dir: " + directory
-				.toString());
+				"LOAD INPUT graph <{}> in dir: {}",
+				graph.stringValue(), directory.toString());
 
 		File file = getFileForDirectory(directory);
 
@@ -172,8 +177,9 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	public void save(File directory) {
 
 		logger.info(
-				"Save OUTPUT graph <" + graph.stringValue() + ">- in dir: " + directory
-				.toString());
+				"Save OUTPUT graph <{}> in dir: {}",
+				graph.stringValue(), directory.toString());
+
 		File file = getFileForDirectory(directory);
 
 		RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(),
@@ -181,7 +187,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 		RDFFormatType formatType = RDFFormatType.getTypeByRDFFormat(format);
 
-		logger.debug("saving to directory:" + directory.getAbsolutePath());
+		logger.debug("saving to directory: {}", directory.getAbsolutePath());
 
 		try {
 			loadToFile(file.getAbsolutePath(), formatType, true, false);
@@ -218,10 +224,11 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 			if (targetConnection != null) {
 
-				logger.info("Merging " + sourceDataUnit.getTripleCount()
-						+ " triples from <" + sourceDataUnit.getDataGraph()
-						.stringValue() + "> "
-						+ "to <" + getDataGraph().stringValue() + ">.");
+				logger.info(
+						"Merging {} triples from <{}> TO <{}>.",
+						sourceDataUnit.getTripleCount(),
+						sourceDataUnit.getDataGraph().stringValue(),
+						getDataGraph().stringValue());
 
 				long addedParts = 0;
 				long partsCount = sourceDataUnit.getPartsCount(
@@ -302,7 +309,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		addStatementsCollection(targetConnection, statements);
 		statements.clear();
 		logger.debug(
-				"Merging data part " + processing + " were successful");
+				"Merging data part {} were successful", processing);
 	}
 
 	private void addStatementsCollection(RepositoryConnection targetConnection,
@@ -317,7 +324,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	/**
 	 * Copy all data from repository to targetRepository.
 	 *
-	 * @param targetRepository goal repository where RDF data are added.
+	 * @param targetRepo goal repository where RDF data are added.
 	 */
 	@Override
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
@@ -382,6 +389,10 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		return file;
 	}
 
+	/**
+	 *
+	 * @return file with working directory.
+	 */
 	public File getWorkingRepoDirectory() {
 		return WorkingRepoDirectory;
 	}

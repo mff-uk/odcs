@@ -138,17 +138,13 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	@Async
 	@Scheduled(fixedDelay = 4300)
 	public synchronized void flush() {
-		
-		Date start = new Date();
-		LOG.debug("flush()");
-		
+				
 		if (!supportsBatchUpdates) {
 			// no batches, the data are stored immediately
 			// we have nothing to do
-			LOG.debug("flush() -> no batch update");
 			return;
 		}
-
+		
 		// switch the logs buffers
 		synchronized (lockList) {
 			List<ILoggingEvent> swap = primaryList;
@@ -158,10 +154,11 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 		// do we have some logs to store?
 		if (secondaryList.isEmpty()) {
-			LOG.debug("flush() -> no data");
 			return;
 		}
 
+		Date start = new Date();
+		
 		// if true then we try to save data into database
 		boolean nextTry = true;
 		while(nextTry) {

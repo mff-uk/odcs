@@ -26,9 +26,11 @@ public interface DataValidator {
 	public String getErrorMessage();
 
 	/**
+	 * Returns list of {@link TripleProblem} describes invalid triples and its
+	 * cause. If all data are valid return empty list.
 	 *
-	 * @return List of tripleProbelm describes invalid triples and its cause. If
-	 *         all data are valid return empty list.
+	 * @return List of {@link TripleProblem} describes invalid triples and its
+	 *         cause. If all data are valid return empty list.
 	 */
 	public List<TripleProblem> getFindedProblems();
 }

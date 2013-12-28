@@ -31,6 +31,11 @@ public enum ConfigProperty {
 	DATABASE_WAIT("wait"),
 	DATABASE_EXTENSION("useExtension"),
 	
+	// namespaces for database inaccessible actions
+	DATABASE_INACCESSIBLE("inaccessible"),
+	INACCESSIBLE_CMD("cmd"),
+	INACCESSIBLE_PATH("path"),
+	
 	MODULE_PATH("module.path"),
 	MODULE_FRONT_EXPOSE("module.frontend.expose"),
 	MODULE_BACK_EXPOSE("module.backend.expose"),

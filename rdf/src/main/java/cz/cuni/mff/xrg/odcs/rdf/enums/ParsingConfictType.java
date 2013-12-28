@@ -9,7 +9,13 @@ package cz.cuni.mff.xrg.odcs.rdf.enums;
  */
 public enum ParsingConfictType {
 
+	/**
+	 * Define warning type find out in case of parsing RDF triples.
+	 */
 	WARNING,
+	/**
+	 * Define error type find out in case of parsing RDF triples.
+	 */
 	ERROR;
 
 	/**

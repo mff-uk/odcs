@@ -77,8 +77,8 @@ public interface RDFDataUnitHelper {
 	 * @param literalLabel String value for literal, e.g., "myValue".
 	 * @param language     String value for language tag, e.g. "de" for German
 	 *                     literal.
-	 * @return Created language literal, e.g., """myValue"""
-	 * @de.
+	 * @return Created language literal, e.g.,{@code """myValue"""@de}.
+	 *
 	 */
 	public Literal createLiteral(String literalLabel, String language);
 
@@ -275,7 +275,7 @@ public interface RDFDataUnitHelper {
 	/**
 	 * Copy all data from repository to targetRepository.
 	 *
-	 * @param targetRepository goal repository where RDF data are added.
+	 * @param targetRepo goal repository where RDF data are added.
 	 */
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo);
 }

@@ -648,9 +648,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 					try {
 						long time = Long.parseLong(sTime);
 
-						if (time <= 0) {
+						if (time < 0) {
 							ex = new Validator.InvalidValueException(
-									"Time for reconnect must be number greater than 0");
+									"Time for reconnect must be >= 0");
 							throw ex;
 						}
 

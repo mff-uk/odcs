@@ -153,11 +153,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public void setRetryConnectionTime(long retryTimeValue) throws IllegalArgumentException {
-		if (retryTimeValue > 0) {
+		if (retryTimeValue >= 0) {
 			RETRY_CONNECTION_TIME = retryTimeValue;
 		} else {
 			throw new IllegalArgumentException(
-					"Retry connection time must be positive number");
+					"Retry connection time must be positive number or 0");
 		}
 	}
 
@@ -172,17 +172,46 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		RETRY_CONNECTION_SIZE = retrySizeValue;
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
+	 * serialization of RDF data
+	 *
+	 * @param file File contains RDF data to extract.
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void addFromFile(File file) throws RDFException {
 		extractFromFile(file, RDFFormat.RDFXML, "",
 				HandlerExtractType.STANDARD_HANDLER);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file   File contains RDF data to extract.
+	 * @param format Specifies concrete {@link RDFFormat} (e.g., RDFXML, Turtle,
+	 *               ..) if RDF format can not be detected from file suffix.
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void addFromFile(File file, RDFFormat format) throws RDFException {
 		extractFromFile(file, format, "", HandlerExtractType.STANDARD_HANDLER);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file               File which contains RDF data to extract.
+	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
+	 *                           RDFXML, Turtle, ..) if RDF format can not be
+	 *                           detected from file suffix.
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void addFromFile(File file, RDFFormat format,
 			HandlerExtractType handlerExtractType) throws RDFException {
@@ -190,6 +219,18 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		extractFromFile(file, format, "", handlerExtractType);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file    File contains RDF data to extract.
+	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
+	 *                Turtle, ..) if RDF format can not be detected from file
+	 *                suffix.
+	 * @param baseURI String name of defined used URI prefix namespace used by
+	 *                all triples.
+	 *
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void extractFromFile(File file, RDFFormat format, String baseURI)
 			throws RDFException {
@@ -198,6 +239,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				HandlerExtractType.STANDARD_HANDLER);
 	}
 
+	/**
+	 * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param file               File contains RDF data to extract.
+	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
+	 *                           RDFXML, Turtle, ..) if RDF format can not be
+	 *                           detected from file suffix.
+	 * @param baseURI            String name of defined used URI prefix
+	 *                           namespace used by all triples.
+	 *                           HandlerExtractType handlerExtractType
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
+	 * @throws RDFException when extraction fail.
+	 */
 	@Override
 	public void extractFromFile(File file, RDFFormat format, String baseURI,
 			HandlerExtractType handlerExtractType) throws RDFException {
@@ -324,6 +380,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	/**
+	 * Load all triples in repository to defined file in defined RDF format.
+	 *
+	 * @param file       File where data be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 *                   RDF/XML,etc.)
+	 * @throws RDFException when loading data to file fail.
+	 */
 	@Override
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException {
 
@@ -413,6 +477,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	}
 
+	/**
+	 *
+	 * @param chunkSize size of triples/statements in one part.
+	 * @return Count of parts as split data in reposioty by defined chunkSize .
+	 */
 	@Override
 	public long getPartsCount(long chunkSize) {
 
@@ -426,6 +495,13 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return partsCount;
 	}
 
+	/**
+	 * Return iterable collection of all statemens in repository. Needed for
+	 * adding/merge large collection when is not possible to return all
+	 * statements (RDF triples) at once in method as in {@link #getTriples() }.
+	 *
+	 * @return Iterable collection of Statements need for lazy
+	 */
 	@Override
 	public RepositoryResult<Statement> getRepositoryResult() {
 
@@ -486,9 +562,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	@Override
 	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException {
 
-		RepositoryConnection connection = null;
 		try {
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			String newUpdateQuery = AddGraphToUpdateQuery(updateQuery);
 			Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
@@ -523,18 +598,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throw new RDFException(
 					"Connection to repository is not available. "
 					+ ex.getMessage(), ex);
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn(
-		 "Failed to close connection to RDF repository while executing SPARQL transform. "
-		 + ex.getMessage(), ex);
-		 }
-		 }
-		 }
-		 */
+		}
 
 	}
 
@@ -605,7 +669,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		String deleteQuery = String.format("CLEAR GRAPH <%s>", graphName);
 		try {
 			executeSPARQLUpdateQuery(deleteQuery);
-			logger.info("Graph " + graphName + " was sucessfully deleted");
+			logger.info("Graph {} was sucessfully deleted", graphName);
 		} catch (RDFException e) {
 			logger.debug(e.getMessage());
 		}
@@ -621,9 +685,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public long getTripleCount() {
 		long size = 0;
 
-		RepositoryConnection connection = null;
 		try {
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			if (graph != null) {
 				size = connection.size(graph);
@@ -634,18 +697,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
 			logger.debug(ex.getMessage());
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn(
-		 "Failed to close connection to RDF repository while counting triples. "
-		 + ex.getMessage(), ex);
-		 }
-		 }
-		 }*/
-
+		}
 
 		return size;
 	}
@@ -663,11 +715,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			URI predicate, Value object) {
 		boolean hasTriple = false;
 
-		RepositoryConnection connection = null;
 		Statement statement = new StatementImpl(subject, predicate, object);
 
 		try {
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			if (graph != null) {
 				hasTriple = connection.hasStatement(statement, true, graph);
@@ -678,17 +729,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
 			logger.debug(ex.getMessage());
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn(
-		 "Failed to close connection to RDF repository while looking for triple. "
-		 + ex.getMessage(), ex);
-		 }
-		 }
-		 }*/
+		}
 
 		return hasTriple;
 	}
@@ -699,9 +740,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	@Override
 	public void cleanAllData() {
 
-		RepositoryConnection connection = null;
 		try {
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			if (graph != null) {
 				connection.clear(graph);
@@ -714,17 +754,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
 			logger.debug(ex.getMessage());
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn(
-		 "Failed to close connection to RDF repository while cleaning up. "
-		 + ex.getMessage(), ex);
-		 }
-		 }
-		 }*/
+		}
 
 	}
 
@@ -818,10 +848,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public File executeConstructQuery(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException {
 
-		RepositoryConnection connection = null;
-
 		try {
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			GraphQuery graphQuery = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL,
@@ -829,7 +857,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			graphQuery.setDataset(getDataSet());
 
-			logger.debug("Query " + constructQuery + " is valid.");
+			logger.debug("Query {} is valid.", constructQuery);
 
 			try {
 
@@ -839,7 +867,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				graphQuery.evaluate(goal);
 
 				logger.debug(
-						"Query " + constructQuery + " has not null result.");
+						"Query {} has not null result.", constructQuery);
 
 				return file;
 
@@ -849,7 +877,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						.getMessage(),
 						ex);
 			} catch (IOException ex) {
-				logger.error("Problems with file stream : " + ex.getMessage(),
+				logger.error("Problems with file stream : {}", ex.getMessage(),
 						ex);
 			}
 
@@ -859,21 +887,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
-			logger.error("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
+			logger.error("Connection to RDF repository failed. {}", ex
+					.getMessage(), ex);
 		} catch (RDFHandlerException ex) {
 			logger.error("RDF handler failed. " + ex.getMessage(), ex);
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn(
-		 "Failed to close connection to RDF repository while querying. "
-		 + ex.getMessage(), ex);
-		 }
-		 }
-		 }*/
+		}
 
 		throw new InvalidQueryException(
 				"Creating File with RDF data fault.");
@@ -910,10 +928,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
 			throws InvalidQueryException {
 
-		RepositoryConnection connection = null;
-
 		try {
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			GraphQuery graphQuery = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL,
@@ -921,7 +937,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			graphQuery.setDataset(dataSet);
 
-			logger.debug("Query " + constructQuery + " is valid.");
+			logger.debug("Query {} is valid.", constructQuery);
 
 			try {
 
@@ -929,7 +945,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						.evaluate());
 
 				logger.debug(
-						"Query " + constructQuery + " has not null result.");
+						"Query {} has not null result.", constructQuery);
 				return result.asGraph();
 
 			} catch (QueryEvaluationException ex) {
@@ -945,19 +961,9 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
-			logger.error("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn(
-		 "Failed to close connection to RDF repository while querying. "
-		 + ex.getMessage(), ex);
-		 }
-		 }
-		 }*/
+			logger.error("Connection to RDF repository failed. {}",
+					ex.getMessage(), ex);
+		}
 
 		throw new InvalidQueryException(
 				"Getting GraphQueryResult using SPARQL construct query failed.");
@@ -993,17 +999,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException {
 
-		RepositoryConnection connection = null;
-
 		try {
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, selectQuery);
 
 			tupleQuery.setDataset(getDataSet());
 
-			logger.debug("Query " + selectQuery + " is valid.");
+			logger.debug("Query {} is valid.", selectQuery);
 
 			File file = new File(filePath);
 			createNewFile(file);
@@ -1038,25 +1042,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					"This query is probably not valid. " + ex.getMessage(),
 					ex);
 		} catch (TupleQueryResultHandlerException ex) {
-			logger.error("Writing result to file fail. " + ex.getMessage(),
+			logger.error("Writing result to file fail. {}", ex.getMessage(),
 					ex);
 
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
-			logger.error("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
+			logger.error("Connection to RDF repository failed. {}",
+					ex.getMessage(), ex);
 		} catch (IOException ex) {
-			logger.error("Stream were not closed. " + ex.getMessage(), ex);
-		} finally {
-			/*if (connection != null) {
-			 try {
-			 connection.close();
-			 } catch (RepositoryException ex) {
-			 logger.warn(
-			 "Failed to close connection to RDF repository while querying."
-			 + ex.getMessage(), ex);
-			 }
-			 }*/
+			logger.error("Stream were not closed. {}", ex.getMessage(), ex);
 		}
 
 		throw new InvalidQueryException(
@@ -1103,8 +1097,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				try {
 					result.close();
 				} catch (QueryEvaluationException ex) {
-					logger.warn("Failed to close RDF tuple result. "
-							+ ex.getMessage(), ex);
+					logger.warn("Failed to close RDF tuple result. {}",
+							ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1193,16 +1187,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
-			logger.error("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
+			logger.error("Connection to RDF repository failed. {}",
+					ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
 					logger.warn(
-							"Failed to close connection to RDF repository while querying. "
-							+ ex.getMessage(), ex);
+							"Failed to close connection to RDF repository while querying. {}",
+							ex.getMessage(), ex);
 				}
 			}
 		}
@@ -1249,8 +1243,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
-			logger.error("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
+			logger.error("Connection to RDF repository failed. {}",
+					ex.getMessage(), ex);
 		}
 
 		return 0;
@@ -1270,7 +1264,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * returns for given query).
 	 *
 	 * @param query Valid SELECT/CONTRUCT query for asking.
-	 * @return
+	 * @return size for given valid query as long.
 	 * @throws InvalidQueryException if query is not valid.
 	 */
 	@Override
@@ -1320,12 +1314,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			tupleQuery.setDataset(getDataSet());
 
-			logger.debug("Query " + selectQuery + " is valid.");
+			logger.debug("Query {} is valid.", selectQuery);
 
 			try {
 				TupleQueryResult tupleResult = tupleQuery.evaluate();
 				logger.debug(
-						"Query " + selectQuery + " has not null result.");
+						"Query {} has not null result.", selectQuery);
 
 				MyTupleQueryResult result = new MyTupleQueryResult(
 						connection,
@@ -1345,13 +1339,23 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
-			logger.error("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
+			logger.error("Connection to RDF repository failed. {}",
+					ex.getMessage(), ex);
 		}
 		throw new InvalidQueryException(
 				"Getting TupleQueryResult using SPARQL select query failed.");
 	}
 
+	/**
+	 * Merge (add) data from given DataUnit into this DataUnit. If the unit has
+	 * wrong type then the {@link IllegalArgumentException} should be thrown.
+	 * The method must not modify the current parameter (unit). The given
+	 * DataUnit is not in read-only mode.
+	 *
+	 * @param unit {@link DataUnit} to merge with
+	 * @throws {@link IllegalArgumentException} In case of unsupported unit
+	 *                                          type.
+	 */
 	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
 
@@ -1379,6 +1383,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return dataSet;
 	}
 
+	/**
+	 *
+	 * @param updateQuery String value of SPARQL update query.
+	 * @return String extension of given update query works with set repository
+	 *         GRAPH.
+	 */
 	public String AddGraphToUpdateQuery(String updateQuery) {
 
 		String regex = "(insert|delete)\\s\\{";
@@ -1404,7 +1414,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		} else {
 
 			logger.debug("WITH graph clause was not added, "
-					+ "because the query was: " + updateQuery);
+					+ "because the query was: {}", updateQuery);
 
 			regex = "(insert|delete)\\sdata\\s\\{";
 			pattern = Pattern.compile(regex);
@@ -1457,12 +1467,25 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					endpointURL, "", deleteQuery, RDFFormat.RDFXML)) {
 			}
 		} catch (IOException e) {
-			logger.error("InputStreamReader was not closed" + e.getMessage(), e);
+			logger.error("InputStreamReader was not closed {}",
+					e.getMessage(), e);
 		}
 
 
 	}
 
+	/**
+	 *
+	 * @param endpointURL      URL of endpoint we can to connect to.
+	 * @param endpointGraphURI Name of graph as URI string we want to
+	 *                         extract/load RDF data.
+	 * @param query            SPARQL query to execute on sparql endpoint
+	 * @param format           RDF data format for given returned RDF data.
+	 * @return Result of given SPARQL query apply to given graph. If it produce
+	 *         some RDF data, there are in specified RDF format.
+	 * @throws RDFException if unknown host, connection problems, no permission
+	 *                      for this action.
+	 */
 	@Override
 	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
@@ -1525,34 +1548,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
 						message.append(
 								". Inserted data has wrong format.");
-//
-//					try (InputStream errorStream = httpConnection
-//							.getErrorStream()) {
-//
-//						try (BufferedReader reader = new BufferedReader(
-//								new InputStreamReader(
-//								errorStream, Charset.forName(encode)))) {
-//
-//							StringBuilder inputStringBuilder = new StringBuilder();
-//							String line = reader.readLine();
-//							while (line != null) {
-//								inputStringBuilder.append(line);
-//								inputStringBuilder.append('\n');
-//								line = reader.readLine();
-//							}
-//
-//							String cause = ". Caused by " + inputStringBuilder
-//									.toString();
-//
-//							message.append(cause);
-//
-//							throw new InsertPartException(message.toString());
-//						}
-//					}
-
-
 					} else {
-						//message.append(". You probably dont have enought PERMISSION for this action.");
 						try (InputStream errorStream = httpConnection
 								.getErrorStream()) {
 
@@ -1573,7 +1569,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 								message.append(cause);
 
-								//throw new InsertPartException(message.toString());
 							}
 						}
 
@@ -1582,7 +1577,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					throw new InsertPartException(
 							message.toString() + "\n\n" + "URL endpoint: " + endpointURL
 							.toString() + " POST content: " + parameters);
-					//throw new RDFException(message.toString());
 				} else {
 
 					InputStreamReader inputStreamReader = new InputStreamReader(
@@ -1604,16 +1598,16 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 						getRetryConnectionSizeAsString(), call
 						.toString());
 
-				logger.debug(message);
-
 				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
-					final String errorMessage = "Endpoint HTTP connection stream cannot be opened. ";
+					final String errorMessage = "Count of retryConnection is OVER (TOTAL " + retryCount + " ATTEMPTS). "
+							+ "Endpoint HTTP connection stream cannot be opened. ";
 					logger.debug(errorMessage);
 					if (httpConnection != null) {
 						httpConnection.disconnect();
 					}
 					throw new RDFException(errorMessage + e.getMessage(), e);
 				} else {
+					logger.debug(message);
 					try {
 						//sleep and attempt to reconnect
 						Thread.sleep(RETRY_CONNECTION_TIME);
@@ -1667,8 +1661,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	private void writeDataIntoFile(File dataFile, RDFFormatType formatType)
 			throws RDFException {
 
-		RepositoryConnection connection = null;
-
 		try (OutputStreamWriter os = new OutputStreamWriter(
 				new FileOutputStream(
 				dataFile.getAbsoluteFile()), Charset
@@ -1683,7 +1675,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 			MyRDFHandler handler = new MyRDFHandler(os, formatType);
 
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			if (graph != null) {
 				connection.export(handler, graph);
@@ -1703,17 +1695,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			throw new RDFException(
 					"Repository connection failed while trying to load into XML file."
 					+ ex.getMessage(), ex);
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn(
-		 "Failed to close connection to RDF repository while trying to load into XML file."
-		 + ex.getMessage(), ex);
-		 }
-		 }
-		 }*/
+		}
 	}
 
 	private void extractDataFileFromHTTPSource(String path, RDFFormat format,
@@ -1831,12 +1813,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					RDFFormat.RDFXML);
 		}
 
-		RepositoryConnection connection = null;
-
 		try (InputStreamReader is = new InputStreamReader(new FileInputStream(
 				dataFile), Charset.forName(encode))) {
 
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 
 			switch (handlerExtractType) {
 				case STANDARD_HANDLER:
@@ -1863,16 +1843,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			logger.debug(ex.getMessage(), ex);
 			throw new RDFException(
 					"Error by adding file to repository " + ex.getMessage(), ex);
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 logger.warn("Failed to close connection to RDF repository.",
-		 ex);
-		 }
-		 }
-		 }*/
+		}
 	}
 
 	private void parseFileUsingStatisticalHandler(RDFFormat fileFormat,
@@ -1942,11 +1913,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
 			Resource... graphs) throws RDFException {
-		RepositoryConnection connection = null;
 
 		try {
 
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 			StringReader reader = new StringReader(rdfString);
 
 			if (graphs != null) {
@@ -1965,24 +1935,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		} catch (IOException | RDFParseException ex) {
 			throw new RDFException(ex.getMessage(), ex);
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 throw new RuntimeException(ex);
-		 }
-		 }
-		 }*/
+		}
 	}
 
 	protected void addStatement(Statement statement, Resource... graphs) {
 
-		RepositoryConnection connection = null;
-
 		try {
 
-			connection = getConnection();
+			RepositoryConnection connection = getConnection();
 			if (graphs != null) {
 				connection.add(statement, graphs);
 			} else {
@@ -1996,15 +1956,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			logger.debug(e.getMessage());
 
 
-		} /*finally {
-		 if (connection != null) {
-		 try {
-		 connection.close();
-		 } catch (RepositoryException ex) {
-		 throw new RuntimeException(ex);
-		 }
-		 }
-		 }*/
+		}
 	}
 
 	protected void createNewFile(File file) {
@@ -2089,6 +2041,10 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		shutDown();
 	}
 
+	/**
+	 *
+	 * @return String name of data unit.
+	 */
 	@Override
 	public String getDataUnitName() {
 		return dataUnitName;
@@ -2135,11 +2091,20 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		}
 	}
 
+	/**
+	 * Return true if DataUnit is in read only state, false otherwise.
+	 *
+	 * @return true if data in DataUnit are read only, false otherwise.
+	 * @see #madeReadOnly()
+	 */
 	@Override
 	public boolean isReadOnly() {
 		return isReadOnly;
 	}
 
+	/**
+	 * Made this DataUnit read-only.
+	 */
 	@Override
 	public void madeReadOnly() {
 		setReadOnly(true);
@@ -2253,6 +2218,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return factory.createLiteral(literalLabel);
 	}
 
+	/**
+	 * Delete all the data from the {@link RDFDataUnit} but does not close or
+	 * destroy it. After this call the state of {@link RDFDataUnit} should be
+	 * the same as if it was newly created.
+	 */
 	@Override
 	public void clean() {
 		// to clean documentaion in MergableDataUnit
@@ -2274,6 +2244,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		hasBrokenConnection = true;
 	}
 
+	/**
+	 *
+	 * @return Shared connection to repository.
+	 * @throws RepositoryException If something went wrong during the creation
+	 *                             of the Connection.
+	 */
 	@Override
 	public synchronized RepositoryConnection getConnection() throws RepositoryException {
 
