@@ -214,6 +214,10 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 
 	/**
 	 * For Browsing all data in graph return its size {count of rows}.
+	 *
+	 * @return count of rows for browsing all data in graph.
+	 * @throws InvalidQueryException if query for find out count of rows in not
+	 *                               valid.
 	 */
 	public long getResultSizeForDataCollection() throws InvalidQueryException;
 

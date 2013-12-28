@@ -12,12 +12,14 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 public interface TripleCounter {
 
 	/**
+	 * Return count of extracted triples.
 	 *
 	 * @return count of extracted triples.
 	 */
 	public long getTripleCount();
 
 	/**
+	 * Return true if there is no triples, false otherwise.
 	 *
 	 * @return true if there is no triples, false otherwise.
 	 */
