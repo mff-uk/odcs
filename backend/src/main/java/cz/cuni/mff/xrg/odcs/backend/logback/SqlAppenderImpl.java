@@ -256,6 +256,12 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	protected void bindStatement(ILoggingEvent event,
 			PreparedStatement stmt) throws Throwable {
 
+		/* ! ! ! ! ! ! ! ! ! 
+		 * As the message and stackTrace are BLOBS interpreted as string they
+		 * must not be empty -> they have to be null or have some content
+		 *
+		 */
+		
 		// prepare the values
 		Integer logLevel = event.getLevel().toInteger();
 		Long timeStamp = event.getTimeStamp();
@@ -272,8 +278,8 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		if (logger == null) {
 			logger = "unknown";
 		}
-		if (message == null) {
-			message = "";
+		if (message == null || message.isEmpty()) {
+			message = " ";
 		}
 		
 		// bind
@@ -306,7 +312,13 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		if (proxy != null) {
 			StringBuilder sb = new StringBuilder();
 			prepareStackTrace(proxy, sb);
-			stmt.setString(7, sb.toString());
+			if (sb.length() == 0) {
+				// no empty strings, use null
+				stmt.setString(7, null);
+			} else {
+				// bind the stack trace
+				stmt.setString(7, sb.toString());
+			}
 		} else {
 			stmt.setString(7, null);
 		}
