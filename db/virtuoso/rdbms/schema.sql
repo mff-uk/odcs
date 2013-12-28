@@ -29,11 +29,11 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
 (
 -- DPURecord
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(2048),
+  "name" NVARCHAR(1024),
   "use_dpu_description" SMALLINT,
-  "description" LONG VARCHAR NOT NULL DEFAULT '',
-  "tool_tip" LONG VARCHAR,
-  "configuration" LONG VARBINARY,
+  "description" NVARCHAR(4000) NOT NULL DEFAULT '',
+  "tool_tip" NVARCHAR (256),
+  "configuration" LONG NVARCHAR,
   "config_valid" SMALLINT,
 -- DPUInstaceRecord
   "dpu_id" INTEGER,
@@ -45,19 +45,19 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
 (
 -- DPURecord
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(2048),
+  "name" NVARCHAR(1024),
   "use_dpu_description" SMALLINT,
-  "description" LONG VARCHAR NOT NULL DEFAULT '',  
-  "configuration" LONG VARBINARY,
+  "description" NVARCHAR(4000) NOT NULL DEFAULT '',  
+  "configuration" LONG NVARCHAR,
   "parent_id" INTEGER,
   "config_valid" SMALLINT,
 -- DPUTemplateRecord
   "user_id" INTEGER,
   "visibility" SMALLINT,
   "type" SMALLINT,
-  "jar_directory" VARCHAR(255),
-  "jar_name" VARCHAR(255),  
-  "jar_description" VARCHAR(512),  
+  "jar_directory" NVARCHAR(255),
+  "jar_name" NVARCHAR(255),  
+  "jar_description" NVARCHAR(512),  
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_DPU_TEMPLATE_jar_directory" ON "DB"."ODCS"."DPU_TEMPLATE" ("jar_directory");
@@ -69,7 +69,7 @@ sequence_set('seq_exec_dataunit_info', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_DATAUNIT_INFO"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(2048),
+  "name" NVARCHAR(2048),
   "idx" INTEGER,
   "type" SMALLINT,
   "is_input" SMALLINT,
@@ -82,7 +82,7 @@ sequence_set('seq_exec_context_pipeline', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
-  "directory" VARCHAR(255),
+  "directory" NVARCHAR(255),
   "dummy" SMALLINT, -- remove if table contains a column without default value
   PRIMARY KEY ("id")
 );
@@ -107,8 +107,8 @@ CREATE TABLE "DB"."ODCS"."EXEC_RECORD"
   "r_type" SMALLINT,
   "dpu_id" INTEGER,
   "execution_id" INTEGER,
-  "short_message" LONG VARCHAR,
-  "full_message" LONG VARCHAR,
+  "short_message" NVARCHAR(512),
+  "full_message" NVARCHAR(4000),
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_EXEC_RECORD_r_time" ON "DB"."ODCS"."EXEC_RECORD" ("r_time");
@@ -146,8 +146,8 @@ sequence_set('seq_exec_schedule', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(2048),
-  "description" LONG VARCHAR,
+  "name" VARCHAR(1024),
+  "description" VARCHAR(4000),
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
   "just_once" SMALLINT,
@@ -178,8 +178,8 @@ sequence_set('seq_ppl_model', 100, 1);
 CREATE TABLE "DB"."ODCS"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(2048),
-  "description" LONG VARCHAR,
+  "name" NVARCHAR(1024),
+  "description" NVARCHAR(4000),
   "user_id" INTEGER,
   "visibility" SMALLINT,
   "last_change" DATETIME,
@@ -202,7 +202,7 @@ CREATE TABLE "DB"."ODCS"."PPL_EDGE"
   "graph_id" INTEGER,
   "node_from_id" INTEGER,
   "node_to_id" INTEGER,
-  "data_unit_name" VARCHAR(2048),
+  "data_unit_name" NVARCHAR(2048),
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_PPL_EDGE_graph_id" ON "DB"."ODCS"."PPL_EDGE" ("graph_id");
@@ -266,8 +266,8 @@ sequence_set('seq_sch_email', 100, 1);
 CREATE TABLE "DB"."ODCS"."SCH_EMAIL"
 (
   "id" INTEGER IDENTITY,
-  "e_user" VARCHAR(85),
-  "e_domain" VARCHAR(45),
+  "e_user" NVARCHAR(85),
+  "e_domain" NVARCHAR(45),
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."ODCS"."SCH_EMAIL" ("e_user", "e_domain");
@@ -291,10 +291,10 @@ sequence_set('seq_usr_user', 100, 1);
 CREATE TABLE "DB"."ODCS"."USR_USER"
 (
   "id" INTEGER IDENTITY,
-  "username" VARCHAR(25) NOT NULL,
+  "username" NVARCHAR(25) NOT NULL,
   "email_id" INTEGER,
-  "u_password" CHAR(132) NOT NULL,
-  "full_name" VARCHAR(55),
+  "u_password" NCHAR(132) NOT NULL,
+  "full_name" NVARCHAR(55),
   "table_rows" INTEGER,
   PRIMARY KEY ("id"),
   UNIQUE ("username")
@@ -312,8 +312,8 @@ sequence_set('seq_rdf_ns_prefix', 100, 1);
 CREATE TABLE "DB"."ODCS"."RDF_NS_PREFIX"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(25) NOT NULL,
-  "uri" VARCHAR(255) NOT NULL,
+  "name" NVARCHAR(25) NOT NULL,
+  "uri" NVARCHAR(255) NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("name")
 );
@@ -556,9 +556,8 @@ ALTER TABLE "DB"."ODCS"."PPL_OPEN_EVENT"
 
 CREATE TRIGGER delete_instance_logs BEFORE DELETE ON "DB"."ODCS"."DPU_INSTANCE" REFERENCING old AS o
 {
-	DELETE FROM "DB"."ODCS"."LOGGING_EVENT_PROPERTY"
-		WHERE mapped_key = 'dpuInstance'
-			AND mapped_value = make_string(o.id);
+	DELETE FROM "DB"."ODCS"."LOGGING"
+		WHERE dpu = o.id;
 
 	DELETE FROM "DB"."ODCS"."EXEC_RECORD"
 		WHERE dpu_id = o.id;
@@ -594,11 +593,11 @@ CREATE TABLE "DB"."ODCS"."LOGGING"
   "id" BIGINT NOT NULL IDENTITY,
   "logLevel" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
-  "logger" VARCHAR(254) NOT NULL,
-  "message" LONG VARCHAR NOT NULL,
+  "logger" NVARCHAR(254) NOT NULL,
+  "message" LONG NVARCHAR NOT NULL,
   "dpu" INTEGER,
   "execution" INTEGER,
-  "stack_trace" LONG VARCHAR,
+  "stack_trace" LONG NVARCHAR,
   PRIMARY KEY (id)
 );
 
