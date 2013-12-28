@@ -153,11 +153,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 */
 	@Override
 	public void setRetryConnectionTime(long retryTimeValue) throws IllegalArgumentException {
-		if (retryTimeValue > 0) {
+		if (retryTimeValue >= 0) {
 			RETRY_CONNECTION_TIME = retryTimeValue;
 		} else {
 			throw new IllegalArgumentException(
-					"Retry connection time must be positive number");
+					"Retry connection time must be positive number or 0");
 		}
 	}
 
