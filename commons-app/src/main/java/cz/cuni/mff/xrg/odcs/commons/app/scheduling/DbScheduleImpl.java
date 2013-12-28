@@ -62,8 +62,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 	}
 
 	@Override
-	public List<Schedule> getAllTimeBased() {
-		
+	public List<Schedule> getAllTimeBased() {		
 		JPQLDbQuery<Schedule> jpql = new JPQLDbQuery<>(
 				"SELECT s FROM Schedule s"
 				+ " WHERE s.type = :type");
@@ -90,7 +89,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 				+ " max(exec.end)"
 				+ " FROM Schedule schedule"
 				+ " JOIN schedule.afterPipelines pipeline"
-				+ " JOIN PipelineExecution exec ON exec.id = pipeline.id"
+				+ " JOIN PipelineExecution exec ON exec.pipeline = pipeline"
 				+ " WHERE schedule.id = :schedule AND exec.status IN :status"
 				+ " GROUP BY pipeline.id";
 		
@@ -101,8 +100,6 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 		TypedQuery<Date> tq = em.createQuery(queryStr, Date.class);
 		tq.setParameter("schedule", schedule.getId());
 		tq.setParameter("status", statuses);
-		
-		tq.getResultList();
 		
 		List<Date> resultList = Collections.checkedList(tq.getResultList(), Date.class);
 		return resultList;
