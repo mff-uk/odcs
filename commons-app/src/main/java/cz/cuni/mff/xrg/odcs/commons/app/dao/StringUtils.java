@@ -51,7 +51,7 @@ public class StringUtils {
 	 * @return 
 	 */
 	public static String secureLenght(String str, LenghtLimits limit) {
-		if (str.length() >= limit.limit()) {
+		if (str != null && str.length() >= limit.limit()) {
 			StringBuilder builder = new StringBuilder(str);
 			builder.setLength(limit.limit() - 4);
 			builder.append("...");

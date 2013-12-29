@@ -8,6 +8,8 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.db.DBHelper;
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -265,7 +267,8 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		// prepare the values
 		Integer logLevel = event.getLevel().toInteger();
 		Long timeStamp = event.getTimeStamp();
-		String logger = event.getLoggerName();
+		String logger = StringUtils.secureLenght(event.getLoggerName(),
+				LenghtLimits.LOGGER_NAME);
 		String message = event.getFormattedMessage();
 		
 		// null check
@@ -278,10 +281,8 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		if (logger == null) {
 			logger = "unknown";
 		}
-		if (message == null || message.isEmpty()) {
-			message = " ";
-		}
-		
+		message = StringUtils.emptyToNull(message);
+	
 		// bind
 		stmt.setInt(1, logLevel);
 		stmt.setLong(2, timeStamp);

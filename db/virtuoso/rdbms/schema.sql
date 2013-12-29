@@ -147,7 +147,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
   "name" VARCHAR(1024),
-  "description" VARCHAR(4000),
+  "description" LONG VARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
   "just_once" SMALLINT,
@@ -179,7 +179,7 @@ CREATE TABLE "DB"."ODCS"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,
   "name" NVARCHAR(1024),
-  "description" NVARCHAR(4000),
+  "description" LONG NVARCHAR,
   "user_id" INTEGER,
   "visibility" SMALLINT,
   "last_change" DATETIME,
@@ -594,7 +594,7 @@ CREATE TABLE "DB"."ODCS"."LOGGING"
   "logLevel" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
   "logger" NVARCHAR(254) NOT NULL,
-  "message" LONG NVARCHAR NOT NULL,
+  "message" LONG NVARCHAR,
   "dpu" INTEGER,
   "execution" INTEGER,
   "stack_trace" LONG NVARCHAR,

@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -143,16 +145,16 @@ public class Schedule implements DataObject, OwnedEntity {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String newName) {
+		this.name = StringUtils.secureLenght(newName, LenghtLimits.SCHEDULE_NAME);
 	}
 
 	public String getDescription() {
-		return description;
+		return StringUtils.nullToEmpty(description);
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDescription(String newDescription) {
+		this.description = StringUtils.emptyToNull(newDescription);
 	}
 
 	public Pipeline getPipeline() {

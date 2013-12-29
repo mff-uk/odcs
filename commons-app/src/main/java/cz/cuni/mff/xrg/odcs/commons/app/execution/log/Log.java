@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.io.Serializable;
@@ -112,7 +113,7 @@ public class Log implements Serializable, DataObject {
 	 * @return the message
 	 */
 	public String getMessage() {
-		return message;
+		return StringUtils.nullToEmpty(message);
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class Log implements Serializable, DataObject {
 	 * @return 
 	 */
 	public String getStackTrace() {
-		return stackTrace;
+		return StringUtils.nullToEmpty(stackTrace);
 	}
 	
 }

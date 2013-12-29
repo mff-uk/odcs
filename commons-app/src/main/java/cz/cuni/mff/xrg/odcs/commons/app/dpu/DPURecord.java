@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import java.util.Objects;
 import javax.persistence.*;
@@ -108,8 +109,8 @@ public abstract class DPURecord {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String newName) {
+        this.name = StringUtils.secureLenght(newName, LenghtLimits.DPU_NAME);
     }
 
     public boolean useDPUDescription() {
@@ -124,8 +125,8 @@ public abstract class DPURecord {
 		return StringUtils.nullToEmpty(description);
     }
 
-    public void setDescription(String description)  {
-		this.description =  StringUtils.emptyToNull(description);
+    public void setDescription(String newDescription)  {
+		this.description = StringUtils.emptyToNull(newDescription);
     }
 
     public Long getId() {
