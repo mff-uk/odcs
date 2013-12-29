@@ -24,6 +24,11 @@ DROP TABLE "DB"."ODCS"."USR_USER";
 DROP TABLE "DB"."ODCS"."SCH_EMAIL";
 DROP TABLE "DB"."ODCS"."RDF_NS_PREFIX";
 
+-- dev. note:
+-- when updating size of limits for fields update also the limitations
+-- in given class as well in commons.app.constants.LenghtLimits
+
+
 sequence_set('seq_dpu_record', 100, 1); -- shared sequence for both dpu_instance and dpu_template
 CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
 (
