@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -120,21 +121,11 @@ public abstract class DPURecord {
     }
     
     public String getDescription() {
-		if (description == null) {
-			return "";
-		} else {
-			return description;
-		}
+		return StringUtils.nullToEmpty(description);
     }
 
     public void setDescription(String description)  {
-		if (description == null) {
-			this.description = null;
-		} else if(description.isEmpty()) {
-			this.description = null;
-		} else {
-			this.description = description;
-		}
+		this.description =  StringUtils.emptyToNull(description);
     }
 
     public Long getId() {
