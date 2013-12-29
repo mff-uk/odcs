@@ -18,7 +18,10 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
+import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import info.aduna.iteration.EmptyIteration;
 
 import java.io.*;
@@ -1291,6 +1294,55 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return size;
 
 
+	}
+
+	/**
+	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
+	 * repository data and return {@link OrderTupleQueryResult} class as result.
+	 *
+	 * This ordered select query don´t have to containt LIMIT nad OFFSET
+	 * keywords.
+	 * 
+	 * For no problem behavior check you setting "MaxSortedRows" param in your
+	 * virtuoso.ini file before using. For more info
+	 *
+	 * @see OrderTupleQueryResult class description.
+	 *
+	 * @param orderSelectQuery String representation of SPARQL select query.
+	 * @return {@link OrderTupleQueryResult} representation of ordered select
+	 *         query.
+	 * @throws InvalidQueryException when query is not valid or containst LIMIT
+	 *                               or OFFSET keyword.
+	 */
+	@Override
+	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
+			String orderSelectQuery) throws InvalidQueryException {
+
+		QueryValidator validator = new SPARQLQueryValidator(orderSelectQuery,
+				SPARQLQueryType.SELECT);
+
+		boolean hasLimit = orderSelectQuery.toLowerCase().contains("limit");
+		boolean hasOffset = orderSelectQuery.toLowerCase().contains("offset");
+
+		if (validator.isQueryValid()) {
+
+			if (hasLimit) {
+				throw new InvalidQueryException(
+						"Query: " + orderSelectQuery + " contains LIMIT keyword which is forbidden.");
+			}
+
+			if (hasOffset) {
+				throw new InvalidQueryException(
+						"Query: " + orderSelectQuery + " contains OFFSET keyword which is forbidden.");
+			}
+
+			OrderTupleQueryResult result = new OrderTupleQueryResult(
+					orderSelectQuery, this);
+			return result;
+		} else {
+			throw new InvalidQueryException(
+					"Query: " + orderSelectQuery + " is not valid SELECT query");
+		}
 	}
 
 	/**
