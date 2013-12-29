@@ -31,8 +31,8 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
   "id" INTEGER IDENTITY,
   "name" NVARCHAR(1024),
   "use_dpu_description" SMALLINT,
-  "description" NVARCHAR(4000) NOT NULL DEFAULT '',
-  "tool_tip" NVARCHAR (256),
+  "description" LONG NVARCHAR,
+  "tool_tip" NVARCHAR (512),
   "configuration" LONG NVARCHAR,
   "config_valid" SMALLINT,
 -- DPUInstaceRecord
@@ -47,7 +47,7 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
   "id" INTEGER IDENTITY,
   "name" NVARCHAR(1024),
   "use_dpu_description" SMALLINT,
-  "description" NVARCHAR(4000) NOT NULL DEFAULT '',  
+  "description" LONG NVARCHAR,  
   "configuration" LONG NVARCHAR,
   "parent_id" INTEGER,
   "config_valid" SMALLINT,
@@ -56,8 +56,8 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
   "visibility" SMALLINT,
   "type" SMALLINT,
   "jar_directory" NVARCHAR(255),
-  "jar_name" NVARCHAR(255),  
-  "jar_description" NVARCHAR(512),  
+  "jar_name" NVARCHAR(255),
+  "jar_description" NVARCHAR(1024),  
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_DPU_TEMPLATE_jar_directory" ON "DB"."ODCS"."DPU_TEMPLATE" ("jar_directory");
@@ -107,8 +107,8 @@ CREATE TABLE "DB"."ODCS"."EXEC_RECORD"
   "r_type" SMALLINT,
   "dpu_id" INTEGER,
   "execution_id" INTEGER,
-  "short_message" NVARCHAR(512),
-  "full_message" NVARCHAR(4000),
+  "short_message" NVARCHAR(128),
+  "full_message" LONG NVARCHAR,
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_EXEC_RECORD_r_time" ON "DB"."ODCS"."EXEC_RECORD" ("r_time");

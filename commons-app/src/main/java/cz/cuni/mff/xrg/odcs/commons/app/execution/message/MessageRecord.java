@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import java.util.Date;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -94,8 +96,8 @@ public class MessageRecord implements DataObject {
 		this.type = type;
 		this.dpuInstance = dpuInstance;
 		this.execution = execution;
-		this.shortMessage = shortMessage;
-		this.fullMessage = fullMessage;
+		this.shortMessage = StringUtils.secureLenght(shortMessage, LenghtLimits.SHORT_MESSAGE);
+		this.fullMessage = StringUtils.emptyToNull(fullMessage);
 	}
 
 	@Override
