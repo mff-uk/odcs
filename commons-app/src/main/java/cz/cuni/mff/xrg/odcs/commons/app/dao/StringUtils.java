@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao;
 
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+
 /**
  * Class provides functions that can be usefull when dealing with strings.
  *
@@ -41,4 +43,22 @@ public class StringUtils {
 		}
 	}
 
+	/**
+	 * Check the string length if it's longer then truncate him .. otherwise
+	 * nothing happen.
+	 * @param str
+	 * @param limit
+	 * @return 
+	 */
+	public static String secureLenght(String str, LenghtLimits limit) {
+		if (str.length() >= limit.limit()) {
+			StringBuilder builder = new StringBuilder(str);
+			builder.setLength(limit.limit() - 4);
+			builder.append("...");
+			return builder.toString();
+		} else {
+			return str;
+		}
+	}
+	
 }
