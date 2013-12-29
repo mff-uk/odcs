@@ -120,11 +120,21 @@ public abstract class DPURecord {
     }
     
     public String getDescription() {
-        return description;
+		if (description == null) {
+			return "";
+		} else {
+			return description;
+		}
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String description)  {
+		if (description == null) {
+			this.description = null;
+		} else if(description.isEmpty()) {
+			this.description = null;
+		} else {
+			this.description = description;
+		}
     }
 
     public Long getId() {
