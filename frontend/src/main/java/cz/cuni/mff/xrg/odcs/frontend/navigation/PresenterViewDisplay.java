@@ -4,6 +4,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.SingleComponentContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,9 @@ class PresenterViewDisplay implements ViewDisplay {
             LOG.error("container is null, showView ignored");
             return;
         }
-        
+        if(container instanceof Panel) {
+			((Panel)container).setScrollLeft(0);
+		}
         if (view instanceof Component) {
             container.setContent((Component) view);
         } else if (view instanceof PresenterWrap) {
