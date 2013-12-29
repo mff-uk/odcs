@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -126,11 +127,7 @@ public class DPUModuleManipulator {
 					"Failed to load DPU bacuse of exception:" + e.getMessage());
 		}
 
-		String jarDescription = dpuExplorer.getJarDescription(newTemplate);
-		if (jarDescription == null) {
-			// failed to read description .. use empty string
-			jarDescription = "";
-		}
+		final String jarDescription = dpuExplorer.getJarDescription(newTemplate);
 		// check type ..
 		final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
 		if (dpuType == null) {
@@ -311,7 +308,7 @@ public class DPUModuleManipulator {
 			// type match .. we can continue
 		} else {
 			// we store message about type here
-			String typeMessage = "";
+			String typeMessage;
 			if (dpuType == null) {
 				typeMessage = "New DPU has unspecified type. Check the DPU's annotations";
 			} else {
@@ -444,8 +441,8 @@ public class DPUModuleManipulator {
 	 * @param originalDPU
 	 * @return
 	 */
-	protected File createBackUpName(File originalDpU) {
-		return new File(originalDpU.toString() + ".backup");
+	protected File createBackUpName(File originalDPU) {
+		return new File(originalDPU.toString() + ".backup");
 	}
 
 	/**
