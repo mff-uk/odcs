@@ -21,7 +21,7 @@ public class StringUtils {
 	 * @return
 	 */
 	public static String nullToEmpty(String str) {
-		if (str == null) {
+		if (str == null || str.equals("--null--") ) {
 			return "";
 		} else {
 			return str;
@@ -37,7 +37,7 @@ public class StringUtils {
 	 */
 	public static String emptyToNull(String str) {
 		if (str == null || str.isEmpty()) {
-			return null;
+			return "--null--";
 		} else {
 			return str;
 		}

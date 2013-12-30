@@ -47,7 +47,7 @@ public abstract class DPURecord {
     /**
      * DPURecord description, can be provided by user or by the DPU's dialog.
      */
-	@Column(name="description")
+	@Column(name="description", nullable = true)
     private String description;
     		
 	/**
@@ -94,13 +94,8 @@ public abstract class DPURecord {
     	if (dpuRecord.serializedConfiguration == null) {
     		this.serializedConfiguration = null;
     	} else {
-			// deep copy, also we 
-			String configAsStr = new String(dpuRecord.serializedConfiguration);			
-			try {
-				this.serializedConfiguration = configAsStr.getBytes("UTF-8");
-			} catch (UnsupportedEncodingException ex) {
-				LOG.error("UnsupportedEncodingException", ex);
-			}
+			// deep copy
+			this.serializedConfiguration = dpuRecord.serializedConfiguration.clone();
     	}
     	this.configValid = dpuRecord.configValid;
     }

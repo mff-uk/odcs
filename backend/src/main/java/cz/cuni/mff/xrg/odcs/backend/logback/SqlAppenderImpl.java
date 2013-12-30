@@ -309,21 +309,16 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			LOG.error("Failed to set EXECUTION_KEY for log.", ex);
 		}
 
+		String stackTrace = null;
 		IThrowableProxy proxy = event.getThrowableProxy();
 		if (proxy != null) {
 			StringBuilder sb = new StringBuilder();
 			prepareStackTrace(proxy, sb);
-			if (sb.length() == 0) {
-				// no empty strings, use null
-				stmt.setString(7, null);
-			} else {
-				// bind the stack trace
-				stmt.setString(7, sb.toString());
-			}
-		} else {
-			stmt.setString(7, null);
-		}
-
+			stackTrace = sb.toString();
+		} 
+		
+		stackTrace = StringUtils.emptyToNull(stackTrace);
+		stmt.setString(7, stackTrace);
 	}
 
 	/**
