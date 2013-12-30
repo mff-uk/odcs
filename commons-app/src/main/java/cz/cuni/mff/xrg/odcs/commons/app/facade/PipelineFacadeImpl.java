@@ -259,7 +259,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 	 */
 	@Override
 	public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
-		
+		LOG.trace("getOpenPipelineEvents({})", pipeline.getId());
 		if (pipeline.getId() == null) {
 			// pipeline has not been persisted yet
 			// -> it cannot be opened by anyone else
@@ -286,6 +286,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 	 */
 	@Override
 	public boolean isUpToDate(Pipeline pipeline) {
+		LOG.trace("isUpToDate({})", pipeline.getId());
 		if (pipeline.getId() == null) {
 			// new pipeline -> lets say it is up-to-date
 			return true;
