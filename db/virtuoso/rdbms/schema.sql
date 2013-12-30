@@ -34,10 +34,10 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
 (
 -- DPURecord
   "id" INTEGER IDENTITY,
-  "name" NVARCHAR(1024),
+  "name" VARCHAR(1024),
   "use_dpu_description" SMALLINT,
   "description" LONG NVARCHAR,
-  "tool_tip" NVARCHAR (512),
+  "tool_tip" VARCHAR (512),
   "configuration" LONG NVARCHAR,
   "config_valid" SMALLINT,
 -- DPUInstaceRecord
@@ -50,7 +50,7 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
 (
 -- DPURecord
   "id" INTEGER IDENTITY,
-  "name" NVARCHAR(1024),
+  "name" VARCHAR(1024),
   "use_dpu_description" SMALLINT,
   "description" LONG NVARCHAR,  
   "configuration" LONG NVARCHAR,
@@ -60,9 +60,9 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
   "user_id" INTEGER,
   "visibility" SMALLINT,
   "type" SMALLINT,
-  "jar_directory" NVARCHAR(255),
-  "jar_name" NVARCHAR(255),
-  "jar_description" NVARCHAR(1024),  
+  "jar_directory" VARCHAR(255),
+  "jar_name" VARCHAR(255),
+  "jar_description" VARCHAR(1024),  
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_DPU_TEMPLATE_jar_directory" ON "DB"."ODCS"."DPU_TEMPLATE" ("jar_directory");
@@ -74,7 +74,7 @@ sequence_set('seq_exec_dataunit_info', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_DATAUNIT_INFO"
 (
   "id" INTEGER IDENTITY,
-  "name" NVARCHAR(2048),
+  "name" VARCHAR(2048),
   "idx" INTEGER,
   "type" SMALLINT,
   "is_input" SMALLINT,
@@ -87,7 +87,7 @@ sequence_set('seq_exec_context_pipeline', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
-  "directory" NVARCHAR(255),
+  "directory" VARCHAR(255),
   "dummy" SMALLINT, -- remove if table contains a column without default value
   PRIMARY KEY ("id")
 );
@@ -112,7 +112,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_RECORD"
   "r_type" SMALLINT,
   "dpu_id" INTEGER,
   "execution_id" INTEGER,
-  "short_message" NVARCHAR(128),
+  "short_message" VARCHAR(128),
   "full_message" LONG NVARCHAR,
   PRIMARY KEY ("id")
 );
@@ -152,7 +152,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
   "name" VARCHAR(1024),
-  "description" LONG VARCHAR,
+  "description" LONG NVARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
   "just_once" SMALLINT,
@@ -183,7 +183,7 @@ sequence_set('seq_ppl_model', 100, 1);
 CREATE TABLE "DB"."ODCS"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,
-  "name" NVARCHAR(1024),
+  "name" VARCHAR(1024),
   "description" LONG NVARCHAR,
   "user_id" INTEGER,
   "visibility" SMALLINT,
@@ -207,7 +207,7 @@ CREATE TABLE "DB"."ODCS"."PPL_EDGE"
   "graph_id" INTEGER,
   "node_from_id" INTEGER,
   "node_to_id" INTEGER,
-  "data_unit_name" NVARCHAR(2048),
+  "data_unit_name" VARCHAR(2048),
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_PPL_EDGE_graph_id" ON "DB"."ODCS"."PPL_EDGE" ("graph_id");
@@ -271,8 +271,8 @@ sequence_set('seq_sch_email', 100, 1);
 CREATE TABLE "DB"."ODCS"."SCH_EMAIL"
 (
   "id" INTEGER IDENTITY,
-  "e_user" NVARCHAR(85),
-  "e_domain" NVARCHAR(45),
+  "e_user" VARCHAR(85),
+  "e_domain" VARCHAR(45),
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."ODCS"."SCH_EMAIL" ("e_user", "e_domain");
@@ -296,10 +296,10 @@ sequence_set('seq_usr_user', 100, 1);
 CREATE TABLE "DB"."ODCS"."USR_USER"
 (
   "id" INTEGER IDENTITY,
-  "username" NVARCHAR(25) NOT NULL,
+  "username" VARCHAR(25) NOT NULL,
   "email_id" INTEGER,
-  "u_password" NCHAR(132) NOT NULL,
-  "full_name" NVARCHAR(55),
+  "u_password" CHAR(132) NOT NULL,
+  "full_name" VARCHAR(55),
   "table_rows" INTEGER,
   PRIMARY KEY ("id"),
   UNIQUE ("username")
@@ -317,8 +317,8 @@ sequence_set('seq_rdf_ns_prefix', 100, 1);
 CREATE TABLE "DB"."ODCS"."RDF_NS_PREFIX"
 (
   "id" INTEGER IDENTITY,
-  "name" NVARCHAR(25) NOT NULL,
-  "uri" NVARCHAR(255) NOT NULL,
+  "name" VARCHAR(25) NOT NULL,
+  "uri" VARCHAR(255) NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("name")
 );
@@ -598,7 +598,7 @@ CREATE TABLE "DB"."ODCS"."LOGGING"
   "id" BIGINT NOT NULL IDENTITY,
   "logLevel" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
-  "logger" NVARCHAR(254) NOT NULL,
+  "logger" VARCHAR(254) NOT NULL,
   "message" LONG NVARCHAR,
   "dpu" INTEGER,
   "execution" INTEGER,
