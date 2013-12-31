@@ -49,6 +49,8 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 *                      hasStatement, getStatements methods.
 	 * @param dataUnitName	 DataUnit's name. If not used in Pipeline can be
 	 *                      empty String.
+	 * @param config        configuration properties you want to set to
+	 *                      repository.
 	 */
 	public VirtuosoRDFRepo(String URL_Host_List, String user, String password,
 			String defaultGraph, String dataUnitName, Properties config) {

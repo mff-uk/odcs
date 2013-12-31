@@ -61,7 +61,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 					.getHandlerType(useStatisticHandler, failWhenErrors);
 
 			final boolean extractFail = config.isExtractFail();
-			
+
 			Integer retrySize = config.getRetrySize();
 			if (retrySize == null) {
 				retrySize = -1;
@@ -69,7 +69,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			}
 			Long retryTime = config.getRetryTime();
 			if (retryTime == null) {
-				retryTime = (long)1000;
+				retryTime = (long) 1000;
 				LOG.info("retryTime is null, using 1000 instead");
 			}
 
@@ -98,8 +98,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 					+ ex.getMessage());
 			throw new DPUException(ex);
 		} catch (RDFDataUnitException ex) {
-			context.sendMessage(MessageType.ERROR, ex.getMessage());
-			throw new DPUException(ex.getMessage(), ex);
+			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+					.fillInStackTrace().toString());
 		}
 
 		final long triplesCount = rdfDataUnit.getTripleCount();

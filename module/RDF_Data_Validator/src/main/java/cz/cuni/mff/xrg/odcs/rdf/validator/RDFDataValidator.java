@@ -128,8 +128,8 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
 			}
 		} catch (RDFException e) {
-			context.sendMessage(MessageType.ERROR, e.getMessage());
-			throw new DPUException(e.getMessage(), e);
+			context.sendMessage(MessageType.ERROR, e.getMessage(), e
+					.fillInStackTrace().toString());
 		}
 
 

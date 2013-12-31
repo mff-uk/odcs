@@ -51,10 +51,19 @@ public class LocalRDFRepoTest {
 	 */
 	protected static RDFDataUnit rdfRepo;
 
+	/**
+	 * Count of thread used in tests.
+	 */
 	protected static final int THREAD_SIZE = 10;
 
+	/**
+	 * Logging info about behavior method.
+	 */
 	protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
+	/**
+	 * Basic setting before test execution.
+	 */
 	@Before
 	public void setUp() {
 		try {
@@ -70,11 +79,17 @@ public class LocalRDFRepoTest {
 				"localRepo", "", "http://default");
 	}
 
+	/**
+	 * Test if repository is created.
+	 */
 	@Test
 	public void isRepositoryCreated() {
 		assertNotNull(rdfRepo);
 	}
 
+	/**
+	 * Test adding triple to repository.
+	 */
 	@Test
 	public void addTripleToRepositoryTest1() {
 
@@ -91,6 +106,9 @@ public class LocalRDFRepoTest {
 
 	}
 
+	/**
+	 * Test adding triple to repository.
+	 */
 	@Test
 	public void addTripleToRepositoryTest2() {
 		String namespace = "http://human/person/";
@@ -105,6 +123,9 @@ public class LocalRDFRepoTest {
 		testNewTriple(subject, predicate, object, rdfRepo);
 	}
 
+	/**
+	 * Test adding triple to repository.
+	 */
 	@Test
 	public void addTripleToRepositoryTest3() {
 		String namespace = "http://namespace/intlib/";
@@ -124,6 +145,9 @@ public class LocalRDFRepoTest {
 		return file.getAbsolutePath();
 	}
 
+	/**
+	 * Test loading data to RDF/XML file.
+	 */
 	@Test
 	public void loadRDFtoXMLFile() {
 
@@ -143,6 +167,9 @@ public class LocalRDFRepoTest {
 
 	}
 
+	/**
+	 * Test loading data to N3 file.
+	 */
 	@Test
 	public void loadRDFtoN3File() {
 
@@ -161,6 +188,9 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Test loading data to TRIG file.
+	 */
 	@Test
 	public void loadRDFtoTRIGFile() {
 
@@ -179,6 +209,9 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Test loading data to TTL file.
+	 */
 	@Test
 	public void loadRDFtoTURTLEFile() {
 
@@ -197,6 +230,9 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Testing overwriting file.
+	 */
 	@Test
 	public void loadOverWriteFail() {
 
@@ -217,6 +253,9 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Test extracting data using Statistical handler.
+	 */
 	@Test
 	public void extractUsingStatisticHandler() {
 		String suffix = ".rdf";
@@ -239,6 +278,9 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test extracting data using not existed file.
+	 */
 	@Test
 	public void extractNotExistedFile() {
 		File dirFile = new File("NotExistedFile");
@@ -263,6 +305,9 @@ public class LocalRDFRepoTest {
 
 	}
 
+	/**
+	 * Test extracting data from RDF/XML files.
+	 */
 	@Test
 	public void extract_RDFXML_FilesToRepository() {
 
@@ -286,6 +331,9 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test extracting data from N3 files.
+	 */
 	@Test
 	public void extract_N3_FilesToRepository() {
 
@@ -310,6 +358,9 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test extracting data from TTL files.
+	 */
 	@Test
 	public void extract_TTL_FilesToRepository() {
 
@@ -334,6 +385,9 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test extracting data from N-TRIPLES files.
+	 */
 	@Test
 	public void extract_NTRIPLES_FilesToRepository() {
 
@@ -358,6 +412,9 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test extracting data from TRIG files.
+	 */
 	@Test
 	public void extract_TRIG_FilesToRepository() {
 
@@ -382,6 +439,9 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test extracting data from TRIX files.
+	 */
 	@Test
 	public void extract_TRIX_FilesToRepository() {
 
@@ -406,6 +466,9 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test loading data to RDF/XML file.
+	 */
 	@Test
 	public void loadAllToXMLfile() {
 
@@ -424,6 +487,9 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Test SPARQL transform using SPARQL update query.
+	 */
 	@Test
 	public void transformUsingSPARQLUpdate() {
 
@@ -536,6 +602,10 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Test running pipeline 'TED' - 2 extraction, 1 transform, 1 load to TTL
+	 * file.
+	 */
 	@Test
 	public void TEDPipelineTest() {
 		TEDextractFile1ToRepository();
@@ -548,6 +618,9 @@ public class LocalRDFRepoTest {
 		assertTrue(addedData > 0);
 	}
 
+	/**
+	 * Test SPARQL transform using SPARQL update query.
+	 */
 	@Test
 	public void SecondUpdateQueryTest() {
 
@@ -565,12 +638,18 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Test if repository is empty.
+	 */
 	@Test
 	public void isRepositoryEmpty() {
 		rdfRepo.cleanAllData();
 		assertEquals(0, rdfRepo.getTripleCount());
 	}
 
+	/**
+	 * Delete used repository files for testing.
+	 */
 	@After
 	public void cleanUp() {
 		deleteDirectory(pathRepo.toFile());
@@ -599,7 +678,7 @@ public class LocalRDFRepoTest {
 	/**
 	 * Recursively deletes a directory, follows symbolic links
 	 *
-	 * @param directory
+	 * @param directory directory you can delete.
 	 */
 	protected static void deleteDirectory(File directory) {
 		File[] files = directory.listFiles();
@@ -737,6 +816,9 @@ public class LocalRDFRepoTest {
 		LOG.debug("LOADING from FILE - OK");
 	}
 
+	/**
+	 * Run 'BIG' pipeline - 3 transformer, 1 loader to N3 file.
+	 */
 	@Test
 	@Category(IntegrationTest.class)
 	public void BIGDataTest() {
@@ -748,6 +830,9 @@ public class LocalRDFRepoTest {
 		loadBigDataToN3File();
 	}
 
+	/**
+	 * Testing paralell pipeline running.
+	 */
 	@Test
 	public void paralellPipelineRunning() {
 
@@ -786,6 +871,11 @@ public class LocalRDFRepoTest {
 
 	}
 
+	/**
+	 * Test adding RDF tripes to given repository instance.
+	 *
+	 * @param repository repository used for adding triples.
+	 */
 	protected void addParalelTripleToRepository(RDFDataUnit repository) {
 
 		String namespace = "http://school/catedra/";
@@ -800,6 +890,11 @@ public class LocalRDFRepoTest {
 		testNewTriple(subject, predicate, object, repository);
 	}
 
+	/**
+	 * Test extracting RDF data from given repository instance.
+	 *
+	 * @param repository repository used for extracting
+	 */
 	protected void extractFromFileToRepository(RDFDataUnit repository) {
 		String suffix = ".rdf";
 		String baseURI = "";
@@ -821,6 +916,11 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
+	/**
+	 * Test transforming SPARQL update query on give repository instance.
+	 *
+	 * @param repository repository used for transforming
+	 */
 	protected void transformOverRepository(RDFDataUnit repository) {
 		String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX dcterms: <http://purl.org/dc/terms/> "
@@ -843,6 +943,11 @@ public class LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Test loading to file based on give repository instance.
+	 *
+	 * @param repository repository used for loading
+	 */
 	protected void loadToFile(RDFDataUnit repository) {
 		String fileName = "TTL_output.ttl";
 		RDFFormatType format = RDFFormatType.TTL;

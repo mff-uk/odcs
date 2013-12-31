@@ -32,10 +32,12 @@ public class LazyTriples {
 
 	/**
 	 * Create new contructor for {@link LazyTriples} based on lazy RDF data
-	 * iterator {@link RepositoryResult<Statement>} used
+	 * iterator
+	 * <code> RepositoryResult&lt;Statement&gt;</code> used
 	 * {@link #DEFAULT_SPLIT_SIZE} for one data part.
 	 *
-	 * @param lazy RDF data lazy iterator {{@link RepositoryResult<Statement>}}
+	 * @param lazy RDF data lazy iterator
+	 *             <code> RepositoryResult&lt;Statement&gt;</code>
 	 */
 	public LazyTriples(RepositoryResult<Statement> lazy) {
 		this.lazy = lazy;
@@ -45,10 +47,12 @@ public class LazyTriples {
 
 	/**
 	 * Create new contructor for {@link LazyTriples} based on lazy RDF data
-	 * iterator {@link RepositoryResult<Statement>} and size for one data part.
+	 * iterator
+	 * <code> RepositoryResult&lt;Statement&gt;</code> and size for one data
+	 * part.
 	 *
 	 * @param lazy      RDF data lazy iterator
-	 *                  {{@link RepositoryResult<Statement>}}
+	 *                  <code> RepositoryResult&lt;Statement&gt;</code>
 	 * @param splitSize define size of one data part as long number.
 	 */
 	public LazyTriples(RepositoryResult<Statement> lazy, long splitSize) {
@@ -57,10 +61,10 @@ public class LazyTriples {
 	}
 
 	/**
-	 * Returns true if reposiotory keeps some RDF data, which were not return
+	 * Returns true if repository keeps some RDF data, which were not return
 	 * yet, false otherwise.
 	 *
-	 * @return true if reposiotory keeps some RDF data, which were not return
+	 * @return true if repository keeps some RDF data, which were not return
 	 *         yet, false otherwise.
 	 */
 	public boolean hasNextTriples() {
@@ -76,7 +80,7 @@ public class LazyTriples {
 	}
 
 	/**
-	 * Returns List of RDF triples in repository for next data part defined by
+	 * Returns list of RDF triples in repository for next data part defined by
 	 * split RDF data keeps in repository using splitSize. If there is no
 	 * triples to return yet, it returns empty collection.
 	 *

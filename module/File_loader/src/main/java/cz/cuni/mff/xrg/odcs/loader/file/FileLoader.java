@@ -72,8 +72,9 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 			rdfDataUnit.loadToFile(filePath, formatType,
 					canFileOverwritte, isNameUnique);
 		} catch (RDFException | CannotOverwriteFileException ex) {
-			context.sendMessage(MessageType.ERROR, ex.getMessage());
-			throw new DPUException(ex);
+			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+					.fillInStackTrace().toString());
+
 		}
 	}
 

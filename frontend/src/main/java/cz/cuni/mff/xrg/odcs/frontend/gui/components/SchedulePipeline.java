@@ -564,53 +564,16 @@ public class SchedulePipeline extends Window {
 				}
 				schedule.setEnabled(true);
 
-				// store scheduling rule record to DB
-				scheduleFacade.save(schedule);
-				Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+//				// store scheduling rule record to DB
+//				scheduleFacade.save(schedule);
+//				Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 				
 				
 				if (notifyThis.getValue().equals(false)) {
 					
 					if (emailLayout.isEnabled()) {
-						String errorText = "";
-						String wrongFormat = "";
-						boolean notEmpty = false;
-						int errorNumber = 0;
-						int fieldNumber = 0;
-						for (TextField emailField : email.listedEditText) {
-							if (!emailField.getValue().trim().isEmpty()) {
-								notEmpty = true;
-								break;
-							}
-						}
 						
-						if (notEmpty) {
-							for (TextField emailField : email.listedEditText) {
-								fieldNumber++;
-								try {
-									emailField.validate();
-									
-								} catch (Validator.InvalidValueException e) {
-									
-									if (e.getMessage().equals("wrong е-mail format")) {
-										if (fieldNumber == 1) {
-											wrongFormat = "\"" + emailField.getValue() + "\"";
-										} else {
-											wrongFormat = wrongFormat + ", " + "\"" + emailField.getValue() + "\"";
-										}
-										errorNumber++;
-									}
-								}
-							}
-							if (errorNumber == 1) {
-								errorText = "Email " + wrongFormat + " has wrong format.";
-							}
-							if (errorNumber > 1) {
-								errorText = "Emails " + wrongFormat + ", have wrong format.";
-							}
-						} else {
-							errorText = "At least one mail has to be filled, so that the notification can be send.";
-						}
+						String errorText = emailValidation();
 						
 						if (!errorText.equals("")) {
 							Notification.show("Failed to save settings, reason:", errorText, Notification.Type.ERROR_MESSAGE);
@@ -640,8 +603,13 @@ public class SchedulePipeline extends Window {
 					if (schedule.getNotification() != null) {
 						scheduleFacade.deleteNotification(schedule.getNotification());
 					}
-				}
+					else{
+					// store scheduling rule record to DB
+					scheduleFacade.save(schedule);
+					Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 				
+					}
+				}
 				close();
 				
 			}
@@ -1037,5 +1005,88 @@ public class SchedulePipeline extends Window {
 		
 		return autoLayout;
 		
+	}
+	/**
+	 * Creating error message in case of wrong email format or duplicate emails in Notification tab
+	 * @return String with error message
+	 */
+	
+	private String emailValidation(){
+		
+		String errorText = "";
+		String wrongFormat = "";
+		String duplicate = "";
+		boolean notEmpty = false;
+		boolean dupl = true;
+		int errorNumber = 0;
+		int duplicateNumber = 0;
+		List<TextField> duplicateEmails = null;
+		duplicateEmails = new ArrayList<>();
+		for (TextField emailField : email.listedEditText) {
+			if (!emailField.getValue().trim().isEmpty()) {
+				notEmpty = true;
+				break;
+			}
+		}
+		
+		if (notEmpty) {
+			for (TextField emailField : email.listedEditText) {
+
+				try {
+					emailField.validate();
+					
+				} catch (Validator.InvalidValueException e) {
+					
+					if (e.getMessage().equals("wrong е-mail format")) {
+						if (errorNumber == 0) {
+							wrongFormat = "\"" + emailField.getValue() + "\"";
+						} else {
+							wrongFormat = wrongFormat + ", " + "\"" + emailField.getValue() + "\"";
+						}
+						errorNumber++;
+					}
+					if (e.getMessage().equals("duplicate e-mail")) {
+						
+						if (duplicateNumber == 0 ) {
+							duplicate = "\"" + emailField.getValue() + "\"";
+							duplicateEmails.add(emailField);
+							duplicateNumber++;
+
+						} else {
+							
+							for (TextField duplicateField : duplicateEmails)
+								if (emailField.getValue().equals(duplicateField.getValue())){
+									dupl=false;
+									break;
+									}
+							if(dupl){
+								duplicate = duplicate + ", " + "\"" + emailField.getValue() + "\"";
+								duplicateEmails.add(emailField);
+								duplicateNumber++;
+							}
+							dupl=true;
+						}
+
+					}
+				}
+			}
+			if (errorNumber == 1) {
+				errorText = "Email " + wrongFormat + " has wrong format. ";
+			}
+			if (errorNumber > 1) {
+				errorText = "Emails " + wrongFormat + ", have wrong format. ";
+			}
+			if (duplicateNumber == 1) {
+				errorText = errorText + "Email " + duplicate + " is introduced more times, please correct.";
+			}
+			if (duplicateNumber > 1) {
+				errorText = errorText + "Emails " + duplicate + ", are introduced more times, please correct.";
+			}
+		} else {
+			errorText = "At least one mail has to be filled, so that the notification can be send.";
+		}
+		
+		return errorText;
+				
 	}
 }

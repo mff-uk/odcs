@@ -19,12 +19,20 @@ public class QueryPart {
 
 	private int prefixEndIndex;
 
+	/**
+	 * Create new instance of {@link QueryPart} based on given SPARQL query.
+	 *
+	 * @param query SPARQL query you can analyze - split to prefixes and rest.
+	 */
 	public QueryPart(String query) {
 		setQuery(query);
 		setPrefixEndIndex();
 
 	}
 
+	/**
+	 * Find out and set index, when prefixes in query ends.
+	 */
 	private void setPrefixEndIndex() {
 		String regex = ".*prefix\\s+[\\w-_]+[:]\\s*[<]http://[\\w:/\\.#-_]+[>][\\s]*";
 		Pattern pattern = Pattern.compile(regex);
@@ -46,6 +54,7 @@ public class QueryPart {
 	}
 
 	/**
+	 * Returns string representation of query without defined prefixes.
 	 *
 	 * @return String representation of query without defined prefixes.
 	 */
@@ -54,6 +63,7 @@ public class QueryPart {
 	}
 
 	/**
+	 * Returns all defined prefixes in given query.
 	 *
 	 * @return all defined prefixes in given query.
 	 */
@@ -62,6 +72,7 @@ public class QueryPart {
 	}
 
 	/**
+	 * Returns original SPARQL query.
 	 *
 	 * @return string representation of query.
 	 */

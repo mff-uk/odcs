@@ -69,7 +69,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		}
 		Long retryTime = config.getRetryTime();
 		if (retryTime == null) {
-			retryTime = (long)1000;
+			retryTime = (long) 1000;
 			LOG.info("retryTime is null, using 1000 instead");
 		}
 
@@ -107,8 +107,8 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 					"Loading data to SPARQL endpoint ends SUCCESSFULLY");
 
 		} catch (RDFDataUnitException ex) {
-			context.sendMessage(MessageType.ERROR, ex.getMessage());
-			throw new DPUException(ex.getMessage(), ex);
+			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+					.fillInStackTrace().toString());
 		}
 	}
 

@@ -27,41 +27,103 @@ public class MyTupleQueryResult implements TupleQueryResult {
 
 	private RepositoryConnection connection;
 
+	/**
+	 * Create new instance of {@link MyTupleQueryResult} based on repository
+	 * connection you used to get instance of {@link TupleQueryResult} and this
+	 * concrete instance.
+	 *
+	 * @param connection connection of repository where instance result of
+	 *                   {@link TupleQueryResult} interface was created by.
+	 * @param result     instance of interface {@link TupleQueryResult} that
+	 *                   will be used in no extented method.
+	 */
 	public MyTupleQueryResult(RepositoryConnection connection,
 			TupleQueryResult result) {
 		this.connection = connection;
 		this.result = result;
 	}
 
+	/**
+	 *
+	 * @return @throws QueryEvaluationException
+	 */
 	@Override
 	public List<String> getBindingNames() throws QueryEvaluationException {
 		return result.getBindingNames();
 	}
 
+	/**
+	 * Close used connection and holding resource.
+	 *
+	 * @throws QueryEvaluationException An exception indicating that the
+	 *                                  evaluation of a query failed.
+	 */
 	@Override
 	public void close() throws QueryEvaluationException {
 		closeConnection();
 		result.close();
 	}
 
+	/**
+	 * Get a list containing all elements obtained from the
+	 * {@link TupleQueryResult} instance.
+	 *
+	 * @return List containing all elements obtained from the
+	 *         {@link TupleQueryResult} instance.
+	 * @throws QueryEvaluationException An exception indicating that the
+	 *                                  evaluation of a query failed.
+	 */
 	public List<BindingSet> asList() throws QueryEvaluationException {
 		return Iterations.asList(result);
+
 	}
 
+	/**
+	 * Get a set containing all elements obtained from the
+	 * {@link TupleQueryResult} instance.
+	 *
+	 * @return Set containing all elements obtained from the
+	 *         {@link TupleQueryResult} instance.
+	 * @throws QueryEvaluationException An exception indicating that the
+	 *                                  evaluation of a query failed.
+	 */
 	public Set<BindingSet> asSet() throws QueryEvaluationException {
 		return Iterations.asSet(result);
+
 	}
 
+	/**
+	 * Returns true if the iteration has more elements, false otherwise.
+	 *
+	 * @return true if the iteration has more elements, false otherwise.
+	 * @throws QueryEvaluationException An exception indicating that the
+	 *                                  evaluation of a query failed.
+	 */
 	@Override
 	public boolean hasNext() throws QueryEvaluationException {
 		return result.hasNext();
 	}
 
+	/**
+	 * Returns the next BindingSet element in the iteration.
+	 *
+	 * @return the next Statement element in the iteration.
+	 * @throws QueryEvaluationException An exception indicating that the
+	 *                                  evaluation of a query failed.
+	 */
 	@Override
 	public BindingSet next() throws QueryEvaluationException {
 		return result.next();
 	}
 
+	/**
+	 * Removes from the underlying collection the last element returned by the
+	 * iteration (optional operation). This method can be called only once per
+	 * call to next.
+	 *
+	 * @throws QueryEvaluationException An exception indicating that the
+	 *                                  evaluation of a query failed.
+	 */
 	@Override
 	public void remove() throws QueryEvaluationException {
 		result.remove();

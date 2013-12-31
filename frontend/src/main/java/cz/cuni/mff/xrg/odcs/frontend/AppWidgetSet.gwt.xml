@@ -48,4 +48,6 @@
 
     <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
 
+
+    <inherits name="cz.cuni.intlib.frontend.AppWidgetSet" />
 </module>
