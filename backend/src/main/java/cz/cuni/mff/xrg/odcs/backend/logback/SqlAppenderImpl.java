@@ -43,7 +43,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 * How many logs we can commit in single query.
 	 */
 	private static final int LOG_BATCH_SIZE = 50;
-	
+
 	@Autowired
 	protected AppConfig appConfig;
 
@@ -68,11 +68,11 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	protected boolean supportsBatchUpdates;
 
 	/**
-	 * Lock used to secure privilege access to the {@link #primaryList}
-	 * and {@link #secondaryList}
+	 * Lock used to secure privilege access to the {@link #primaryList} and
+	 * {@link #secondaryList}
 	 */
 	private final Object lockList = new Object();
-	
+
 	/**
 	 * Return string that is used as insert query into logging table.
 	 *
@@ -87,7 +87,8 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	/**
 	 * Return not null {@link Conenction}. If failed to get connection then
 	 * continue to try until success.
-	 * @return 
+	 *
+	 * @return
 	 */
 	private Connection getConnection() {
 		Connection connection = null;
@@ -95,7 +96,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			try {
 				connection = connectionSource.getConnection();
 				connection.setAutoCommit(false);
-			} catch(SQLException ex) {
+			} catch (SQLException ex) {
 				// wait for some time an try it again .. 
 				LOG.error("Failed to get sql connection, next try in second.", ex);
 				try {
@@ -110,11 +111,13 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 	/**
 	 * Store given logs into database.
+	 *
 	 * @param connection
 	 * @param logs
 	 * @return True only if all logs has been saved into database.
 	 */
 	private boolean flushIntoDatabase(Connection connection, List<ILoggingEvent> logs) {
+		LOG.trace("flushIntoDatabase called for {} logs", logs.size());
 		try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
 			// append all logs
 			for (ILoggingEvent item : logs) {
@@ -133,13 +136,13 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 				Thread.sleep(2500);
 			} catch (InterruptedException ex) {
 				// ok just try it again
-			}			
+			}
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Fetch stored logs into database. It can be executed on user demand or by
 	 * spring periodically.
@@ -148,13 +151,13 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	@Async
 	@Scheduled(fixedDelay = 4300)
 	public synchronized void flush() {
-				
+
 		if (!supportsBatchUpdates) {
 			// no batches, the data are stored immediately
 			// we have nothing to do
 			return;
 		}
-		
+
 		// switch the logs buffers
 		synchronized (lockList) {
 			ArrayList<ILoggingEvent> swap = primaryList;
@@ -185,30 +188,42 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 				LOG.debug("Created list <{}, {})", index, topIndex);
 			}
 		}
-		
-		
+
 		// if true then we try to save data into database
 		boolean nextTry = true;
 		Iterator<List<ILoggingEvent>> iterator = toFetchQueue.iterator();
 		// we know that the toFetchQueue has at leas one item
 		List<ILoggingEvent> toFetch = iterator.next();
-		
-		while(nextTry) {
+
+		while (nextTry) {
+			// we do not continue in next, or at least we assume that
+			// it can be changed by flushIntoDatabase
+			nextTry = false;
+
 			// get connection
 			LOG.debug("flush() : get connection");
 			Connection connection = getConnection();
-			LOG.debug("flush() : flushIntoDatabase");
-			
+
 			// update next try based on result
 			// if the save failed, we try it again .. 
-			while(iterator.hasNext()) {
+			while (toFetch != null) {
+				// if one of them failed, then we instantly end,
+				// close connection, get new one .. and give
+				// it another try
 				nextTry = !flushIntoDatabase(connection, toFetch);
 				if (nextTry) {
 					// we failed to save, give it another try
+					// value of toFetch will not changed
 					break;
 				} else {
-					// ok, move to the next
-					toFetch = iterator.next();
+					// we have made it .. do we have next to save ?
+					if (iterator.hasNext()) {
+						// yes move and fetch
+						toFetch = iterator.next();
+					} else {
+						// the last one\
+						toFetch = null;
+					}
 				}
 			}
 			
@@ -217,8 +232,8 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		}
 		// the data has been saved, we can clear the buffer
 		secondaryList.clear();
-		
-		LOG.debug("flush() -> finished in: {} ms ", (new Date()).getTime() - start.getTime() );
+
+		LOG.debug("flush() -> finished in: {} ms ", (new Date()).getTime() - start.getTime());
 	}
 
 	/**
@@ -303,14 +318,13 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		 * must not be empty -> they have to be null or have some content
 		 *
 		 */
-		
 		// prepare the values
 		Integer logLevel = event.getLevel().toInteger();
 		Long timeStamp = event.getTimeStamp();
 		String logger = StringUtils.secureLenght(event.getLoggerName(),
 				LenghtLimits.LOGGER_NAME);
 		String message = event.getFormattedMessage();
-		
+
 		// null check
 		if (logLevel == null) {
 			logLevel = Level.INFO_INTEGER;
@@ -322,7 +336,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			logger = "unknown";
 		}
 		message = StringUtils.emptyToNull(message);
-	
+
 		// bind
 		stmt.setInt(1, logLevel);
 		stmt.setLong(2, timeStamp);
@@ -355,8 +369,8 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			StringBuilder sb = new StringBuilder();
 			prepareStackTrace(proxy, sb);
 			stackTrace = sb.toString();
-		} 
-		
+		}
+
 		stackTrace = StringUtils.emptyToNull(stackTrace);
 		stmt.setString(7, stackTrace);
 	}
