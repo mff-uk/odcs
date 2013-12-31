@@ -118,8 +118,11 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 	 */
 	@SuppressWarnings("LeakingThisInConstructor")
 	public Pipeline(Pipeline pipeline) {
-		name = pipeline.getName();
-		description = pipeline.getDescription();
+		// we want pure acces to the values, not by getter as the may
+		// modify the values
+		name = pipeline.name;
+		description = pipeline.description;
+		// 
 		graph = new PipelineGraph(pipeline.getGraph());
 		graph.setPipeline(this);
 	}
