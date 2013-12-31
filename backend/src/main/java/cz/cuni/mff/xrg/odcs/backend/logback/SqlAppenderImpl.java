@@ -16,6 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -37,6 +39,11 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 	private static final Logger LOG = LoggerFactory.getLogger(SqlAppenderImpl.class);
 
+	/**
+	 * How many logs we can commit in single query.
+	 */
+	private static final int LOG_BATCH_SIZE = 50;
+	
 	@Autowired
 	protected AppConfig appConfig;
 
@@ -48,12 +55,12 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	/**
 	 * List into which add new logs.
 	 */
-	protected List<ILoggingEvent> primaryList = new ArrayList<>(100);
+	protected ArrayList<ILoggingEvent> primaryList = new ArrayList<>(100);
 
 	/**
 	 * List of logs that should be save into database.
 	 */
-	protected List<ILoggingEvent> secondaryList = new ArrayList<>(100);
+	protected ArrayList<ILoggingEvent> secondaryList = new ArrayList<>(100);
 
 	/**
 	 * If true then the source support batch execution.
@@ -110,7 +117,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	private boolean flushIntoDatabase(Connection connection, List<ILoggingEvent> logs) {
 		try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
 			// append all logs
-			for (ILoggingEvent item : secondaryList) {
+			for (ILoggingEvent item : logs) {
 				bindStatement(item, stmt);
 				stmt.addBatch();
 			}
@@ -129,6 +136,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			}			
 			return false;
 		}
+		
 		return true;
 	}
 	
@@ -149,7 +157,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		
 		// switch the logs buffers
 		synchronized (lockList) {
-			List<ILoggingEvent> swap = primaryList;
+			ArrayList<ILoggingEvent> swap = primaryList;
 			primaryList = secondaryList;
 			secondaryList = swap;
 		}
@@ -160,17 +168,49 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		}
 
 		Date start = new Date();
+
+		// prepare data to fetch
+		LinkedList<List<ILoggingEvent>> toFetchQueue = new LinkedList<>();
+		if (secondaryList.size() < LOG_BATCH_SIZE) {
+			// go all in once
+			toFetchQueue.add(secondaryList);
+		} else {
+			// split
+			int indexMax = secondaryList.size();
+			LOG.debug("The logs are too big ({})spliting ..", indexMax);
+			for (int index = 0; index < indexMax; index += LOG_BATCH_SIZE) {
+				int topIndex = index + LOG_BATCH_SIZE < indexMax ? index + LOG_BATCH_SIZE : indexMax;
+				// create sub list and add to toFetch
+				toFetchQueue.add(secondaryList.subList(index, topIndex));
+				LOG.debug("Created list <{}, {})", index, topIndex);
+			}
+		}
+		
 		
 		// if true then we try to save data into database
 		boolean nextTry = true;
+		Iterator<List<ILoggingEvent>> iterator = toFetchQueue.iterator();
+		// we know that the toFetchQueue has at leas one item
+		List<ILoggingEvent> toFetch = iterator.next();
+		
 		while(nextTry) {
 			// get connection
 			LOG.debug("flush() : get connection");
 			Connection connection = getConnection();
 			LOG.debug("flush() : flushIntoDatabase");
+			
 			// update next try based on result
 			// if the save failed, we try it again .. 
-			nextTry = !flushIntoDatabase(connection, secondaryList);
+			while(iterator.hasNext()) {
+				nextTry = !flushIntoDatabase(connection, toFetch);
+				if (nextTry) {
+					// we failed to save, give it another try
+					break;
+				} else {
+					// ok, move to the next
+					toFetch = iterator.next();
+				}
+			}
 			
 			// at the end close the connection
 			DBHelper.closeConnection(connection);
