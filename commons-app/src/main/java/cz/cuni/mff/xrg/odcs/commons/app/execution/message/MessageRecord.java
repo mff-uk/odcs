@@ -126,7 +126,7 @@ public class MessageRecord implements DataObject {
 	}
 
 	public String getFullMessage() {
-		return fullMessage;
+		return StringUtils.nullToEmpty(fullMessage);
 	}
 	
 	public Timestamp getTimestamp() {
