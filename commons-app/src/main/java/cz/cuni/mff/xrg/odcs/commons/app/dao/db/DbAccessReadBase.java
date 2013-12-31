@@ -110,6 +110,8 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	 */
 	protected T execute(TypedQuery<T> typedQuery) {
 		try {
+			// set max result for sure .. 
+			typedQuery.setMaxResults(1);
 			T result = (T) typedQuery.getSingleResult();
 			return result;
 		} catch(javax.persistence.NoResultException e) {
