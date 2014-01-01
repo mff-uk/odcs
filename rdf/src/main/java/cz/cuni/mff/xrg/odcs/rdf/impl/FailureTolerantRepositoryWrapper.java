@@ -103,7 +103,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repository.initialize();
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "initialize()");
 			}
 		}
 	}
@@ -122,7 +122,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repository.shutDown();
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "shutDown()");
 			}
 		}
 	}
@@ -135,7 +135,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repository.isWritable();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "isWritable()");
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repository.getConnection();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "getRepoConnection()");
 			}
 		}
 	}
@@ -220,9 +220,11 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 	 * @param attempts number of attempts so far
 	 * @param ex       exception to be thrown in case we give up
 	 */
-	private void handleRetries(int attempts, RepositoryException ex) {
+	private void handleRetries(int attempts, RepositoryException ex,
+			String methodName) {
 
-		LOG.warn("Database is down after {} attempts.", attempts);
+		LOG.warn("Database is down after {} attempts while calling method {}.",
+				attempts, methodName);
 		if (attempts == 1) {
 			// TODO send notification after first error only
 			//notify(ex);
@@ -278,7 +280,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().isOpen();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "isOpen()");
 			}
 		}
 	}
@@ -292,7 +294,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				this.repoConnection().close();
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "close()");
 			}
 		}
 	}
@@ -305,7 +307,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().prepareQuery(ql, query);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareQuery(QueryLanguage ql, String query)");
 			}
 		}
 	}
@@ -320,7 +323,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				return repoConnection().prepareQuery(ql, query, baseURI);
 
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareQuery(QueryLanguage ql, String query, String baseURI)");
 			}
 		}
 	}
@@ -333,7 +337,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().prepareTupleQuery(ql, query);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareTupleQuery(QueryLanguage ql, String query)");
 			}
 		}
 	}
@@ -348,7 +353,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				return repoConnection()
 						.prepareTupleQuery(ql, query, baseURI);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareTupleQuery(QueryLanguage ql, String query,String baseURI)");
 			}
 		}
 	}
@@ -361,7 +367,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().prepareGraphQuery(ql, query);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareGraphQuery(QueryLanguage ql, String query)");
 			}
 		}
 	}
@@ -376,7 +383,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				return repoConnection()
 						.prepareGraphQuery(ql, query, baseURI);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareGraphQuery(QueryLanguage ql, String query,String baseURI)");
 			}
 		}
 	}
@@ -390,7 +398,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().prepareBooleanQuery(ql, query);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareBooleanQuery(QueryLanguage ql, String query)");
 			}
 		}
 	}
@@ -405,7 +414,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				return repoConnection().prepareBooleanQuery(ql, query,
 						baseURI);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareBooleanQuery(QueryLanguage ql, String query, String baseURI)");
 			}
 		}
 	}
@@ -418,7 +428,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().prepareUpdate(ql, update);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareUpdate(QueryLanguage ql, String update)");
 			}
 		}
 	}
@@ -432,7 +443,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().prepareUpdate(ql, update, baseURI);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"prepareUpdate(QueryLanguage ql, String update, String baseURI)");
 			}
 		}
 	}
@@ -445,7 +457,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().getContextIDs();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "getContextIDs()");
 			}
 		}
 	}
@@ -460,7 +472,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				return repoConnection().getStatements(subj, pred, obj,
 						includeInferred, contexts);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "getStatements()");
 			}
 		}
 	}
@@ -475,7 +487,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				return repoConnection().hasStatement(subj, pred, obj,
 						includeInferred, contexts);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"hasStatement(Resource subj, URI pred, Value obj,boolean includeInferred, Resource... contexts)");
 			}
 		}
 	}
@@ -490,7 +503,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				return repoConnection().hasStatement(st, includeInferred,
 						contexts);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"hasStatement(Statement st, boolean includeInferred,Resource... contexts)");
 			}
 		}
 	}
@@ -507,7 +521,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 						includeInferred, handler, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "exportStatements()");
 			}
 		}
 	}
@@ -521,7 +535,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().export(handler, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "export()");
 			}
 		}
 	}
@@ -534,7 +548,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().size(contexts);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "size(Resource... contexts)");
 			}
 		}
 	}
@@ -548,7 +562,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().isEmpty();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "isEmpty()");
 			}
 		}
 	}
@@ -563,7 +577,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().setAutoCommit(autoCommit);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "setAutoCommit(boolean autoCommit)");
 			}
 		}
 	}
@@ -577,7 +591,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().isAutoCommit();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "isAutoCommit()");
 			}
 		}
 	}
@@ -590,7 +604,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().isActive();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "isActive()");
 			}
 		}
 	}
@@ -604,7 +618,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().begin();
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "begin()");
 			}
 		}
 	}
@@ -618,7 +632,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().commit();
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "comit()");
 			}
 		}
 	}
@@ -632,7 +646,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().rollback();
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "rollback()");
 			}
 		}
 	}
@@ -648,7 +662,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 						contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(InputStream in, String baseURI, RDFFormat dataFormat,Resource... contexts)");
 			}
 		}
 	}
@@ -663,7 +678,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().add(reader, baseURI, dataFormat, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(Reader reader, String baseURI, RDFFormat dataFormat,Resource... contexts");
 			}
 		}
 	}
@@ -678,7 +694,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				this.getConnection().add(url, baseURI, dataFormat, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(URL url, String baseURI, RDFFormat dataFormat,Resource... contexts)");
 			}
 		}
 	}
@@ -693,7 +710,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().add(file, baseURI, dataFormat, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(File file, String baseURI, RDFFormat dataFormat,Resource... contexts)");
 			}
 		}
 	}
@@ -708,7 +726,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().add(subject, predicate, object, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(Resource subject, URI predicate, Value object,Resource... contexts)");
 			}
 		}
 	}
@@ -722,7 +741,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().add(st, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(Statement st, Resource... contexts)");
 			}
 		}
 	}
@@ -738,7 +758,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().add(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(Iterable<? extends Statement> statements, Resource... contexts)");
 			}
 		}
 	}
@@ -754,7 +775,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().add(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"add(Iteration<? extends Statement, E> statements, Resource... contexts)");
 			}
 		}
 	}
@@ -770,7 +792,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 						.remove(subject, predicate, object, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"remove(Resource subject, URI predicate, Value object,Resource... contexts)");
 			}
 		}
 	}
@@ -784,7 +807,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().remove(st, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"remove(Statement st, Resource... contexts)");
 			}
 		}
 	}
@@ -800,7 +824,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().remove(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"remove(Iterable<? extends Statement> statements, Resource... contexts)");
 			}
 		}
 	}
@@ -816,7 +841,8 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().remove(statements, contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex,
+						"remove(Iteration<? extends Statement, E> statements, Resource... contexts)");
 			}
 		}
 	}
@@ -830,7 +856,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().clear(contexts);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "clear()");
 			}
 		}
 	}
@@ -843,7 +869,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().getNamespaces();
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "getNamespaces()");
 			}
 		}
 	}
@@ -856,7 +882,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				attempts++;
 				return repoConnection().getNamespace(prefix);
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "getNamespace(String prefix)");
 			}
 		}
 	}
@@ -870,7 +896,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				this.getConnection().setNamespace(prefix, name);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "setNamespace()");
 			}
 		}
 	}
@@ -884,7 +910,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().removeNamespace(prefix);
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "removeNamespace()");
 			}
 		}
 	}
@@ -898,7 +924,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 				repoConnection().clearNamespaces();
 				return;
 			} catch (RepositoryException ex) {
-				handleRetries(attempts, ex);
+				handleRetries(attempts, ex, "clearNamespaces()");
 			}
 		}
 	}
