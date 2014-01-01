@@ -15,7 +15,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
  *
  */
 public class ContextFacade {
-
+	
 	@Autowired
 	private ContextCloser closer;
 
@@ -50,7 +50,7 @@ public class ContextFacade {
 	 */
 	public Context create(DPUInstanceRecord dpuInstance,
 			ExecutionContextInfo contextInfo, Date lastSuccExec)
-			throws ContextException {
+			throws ContextException {		
 		Context context = creater.createContext(dpuInstance, contextInfo, lastSuccExec);
 		// and try to reload
 		try {

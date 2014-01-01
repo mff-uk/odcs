@@ -220,8 +220,11 @@ final class DataUnitManager {
 		ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpuInstance);
 		if (dpuInfo == null) {
 			// no data for this DPU
+			LOG.trace("No info from, skipped.");
 			return;
 		}
+		
+		LOG.trace("Loading dataUnits input: {}", indexes);
 		
 		List<DataUnitInfo> dataUnitsInfo = dpuInfo.getDataUnits();
 		// check every DataUnit in contextInfo
@@ -229,6 +232,15 @@ final class DataUnitManager {
 			if (indexes.containsValue(info.getIndex())) {
 				// DataUnit is already presented
 			} else {
+				if (info.isInput() == isInput) {
+					// ok, it's ours .. 
+					LOG.trace("Loading data unit name: {}", info.getName());
+				} else {
+					// we are out it's in .. orotherwise, just skip
+					LOG.trace("Skip over data unit name: {}", info.getName());
+					continue;
+				}
+				
 				// create new DataUnit
 				Integer index = info.getIndex();
 				String id = 
@@ -280,10 +292,11 @@ final class DataUnitManager {
 			if ( (du.getType() == realType || du.getType() == type) && 
 					du.getDataUnitName().compareTo(name) == 0) {
 				// the DPU already exist .. 
-				LOG.trace("DPU name: {} type: {} already exist", name, realType.toString());
+				LOG.trace("dataUnit with name: {} type: {} already exist", name, realType.toString());
 				return du;
 			}
 		}
+		LOG.trace("create new DPU name: {} type: {} already exist", name, realType.toString());
 		// gather information for new DataUnit
 		Integer index;
 		if (isInput) {
