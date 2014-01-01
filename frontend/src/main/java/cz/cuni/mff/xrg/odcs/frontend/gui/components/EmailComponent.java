@@ -126,6 +126,15 @@ public class EmailComponent {
 						if (!inputEmail.matches("[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})")) {
 							throw new InvalidValueException("wrong е-mail format");
 						}
+						
+						int count=0;
+						for (TextField emailField : listedEditText) {
+							if (emailField.getValue().equals(inputEmail)) count++;
+							if(count>1)
+								throw new InvalidValueException("duplicate e-mail");
+							
+						}
+
 						return;
 					}
 
