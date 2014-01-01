@@ -25,7 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 public class Context implements DPUContext {
-	
+
 	/**
 	 * Name of directory for shared DPU's data.
 	 */
@@ -64,8 +64,8 @@ public class Context implements DPUContext {
 	/**
 	 * Manager for output DataUnits.
 	 */
-	private DataUnitManager outputsManager;	
-	
+	private DataUnitManager outputsManager;
+
 	/**
 	 * Used DataUnit factory.
 	 */
@@ -76,46 +76,46 @@ public class Context implements DPUContext {
 	 * Application configuration.
 	 */
 	@Autowired
-	protected AppConfig appConfig;	
-	
+	protected AppConfig appConfig;
+
 	/**
 	 * Application event publisher used to publish messages from DPURecord.
 	 */
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
-	
+
 	/**
 	 * Used to get DPU's directory.
 	 */
 	@Autowired
 	private ModuleFacade moduleFacade;
-	
+
 	/**
-	 * True if {@link #sendMessage(MessageType, String)} or 
-	 * {@link #sendMessage(MessageType, String, String)} has been used to 
+	 * True if {@link #sendMessage(MessageType, String)} or
+	 * {@link #sendMessage(MessageType, String, String)} has been used to
 	 * publish {@link MessageType#WARNING} message.
 	 */
 	private boolean warningMessage;
-	
+
 	/**
-	 * True if {@link #sendMessage(MessageType, String)} or 
-	 * {@link #sendMessage(MessageType, String, String)} has been used to 
+	 * True if {@link #sendMessage(MessageType, String)} or
+	 * {@link #sendMessage(MessageType, String, String)} has been used to
 	 * publish {@link MessageType#ERROR} message.
-	 */	
+	 */
 	private boolean errorMessage;
-	
+
 	/**
-	 * Set to true if the current DPU execution should be stopped 
-	 * as soon as possible.
+	 * Set to true if the current DPU execution should be stopped as soon as
+	 * possible.
 	 */
 	private boolean canceled;
-	
+
 	/**
 	 * True if the execution should be stopped on DPU's request. The execution
 	 * does not failed instantly by this.
 	 */
 	private boolean stopExecution;
-	
+
 	public Context() {
 		this.dpuInstance = null;
 		this.contextInfo = null;
@@ -127,53 +127,54 @@ public class Context implements DPUContext {
 		this.canceled = false;
 		this.stopExecution = false;
 	}
-	
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - //
-	
 	public DPUInstanceRecord getDPU() {
 		return dpuInstance;
 	}
-	
+
 	void setDPU(DPUInstanceRecord dpu) {
 		this.dpuInstance = dpu;
 	}
-	
+
 	public ExecutionContextInfo getContextInfo() {
 		return contextInfo;
 	}
-	
+
 	void setContextInfo(ExecutionContextInfo contextInfo) {
 		this.contextInfo = contextInfo;
 	}
-	
+
 	public Date getLastSuccExec() {
 		return lastSuccExec;
 	}
-	
+
 	void setLastSuccExec(Date lastSuccExec) {
 		this.lastSuccExec = lastSuccExec;
 	}
-	
+
 	DataUnitManager getOutputsManager() {
 		return outputsManager;
 	}
-	
+
 	void setOutputsManager(DataUnitManager manager) {
 		this.outputsManager = manager;
 	}
-	
+
 	DataUnitManager getInputsManager() {
 		return inputsManager;
 	}
-	
+
 	void setInputsManager(DataUnitManager manager) {
 		this.inputsManager = manager;
 	}
-	
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - //
-	
 	/**
-	 * Create required {@link ManagableDataUnit} and add it to the context.
+	 * Create required {@link ManagableDataUnit} and add it to the context if
+	 * not exist, if the {@link ManagableDataUnit} with given type is already in
+	 * context then the existing instance is returned.
+	 *
 	 * @param type Type of {@link ManagableDataUnit} to create.
 	 * @param name DataUnit name.
 	 * @return Created DataUni.
@@ -183,91 +184,95 @@ public class Context implements DPUContext {
 			throws DataUnitCreateException {
 		return outputsManager.addDataUnit(type, name);
 	}
-	
+
 	/**
-	 * Set cancel flag for execution to true. This command DPU to stop
-	 * as soon as possible. Can be called from other then DPU's execution
-	 * thread.
+	 * Set cancel flag for execution to true. This command DPU to stop as soon
+	 * as possible. Can be called from other then DPU's execution thread.
 	 */
 	public void cancel() {
 		this.canceled = true;
 	}
-	
+
 	/**
 	 * Return respective {@link PipelineExecution}.
+	 *
 	 * @return
 	 */
 	public PipelineExecution getExecution() {
 		return contextInfo.getExecution();
 	}
-	
+
 	/**
 	 * Return list of all input {@link ManagableDataUnit}s.
+	 *
 	 * @return
 	 */
 	public List<ManagableDataUnit> getInputs() {
 		return inputsManager.getDataUnits();
-	}	
-	
+	}
+
 	/**
 	 * Return list of all output {@link ManagableDataUnit}s.
+	 *
 	 * @return
 	 */
 	public List<ManagableDataUnit> getOutputs() {
 		return outputsManager.getDataUnits();
-	}	
-	
+	}
+
 	/**
-	 * 	Return true if the warning message has been publish using this context.
-     * @return 
+	 * Return true if the warning message has been publish using this context.
+	 *
+	 * @return
 	 */
 	public boolean warningMessagePublished() {
 		return this.warningMessage;
 	}
-	
+
 	/**
 	 * Return true if the error message has been publish using this context.
+	 *
 	 * @return
 	 */
 	public boolean errorMessagePublished() {
 		return this.errorMessage;
-	}	
-	
+	}
+
 	/**
 	 * True if the execution should be stopped but not failed instantly.
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean shouldStopExecution() {
 		return stopExecution;
 	}
-	
+
 	/**
 	 * Return engine's general working directory.
-	 * 
+	 *
 	 * @return
 	 */
 	private File getGeneralWorkingDir() {
 		return new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-	}	
-	
+	}
+
 	/**
 	 * Return identification of single DPU template shared by all templates with
 	 * same name.
-	 * 
+	 *
 	 * @return
 	 */
 	private String getTemplateIdentification() {
 		return dpuInstance.getTemplate().getJarDirectory();
-	}	
+	}
 
 	// - - - - - - - - - - ProcessingContext - - - - - - - - - - //
-	
 	@Override
 	public void sendMessage(MessageType type, String shortMessage) {
-        // jest re-call the other function
-        sendMessage(type, shortMessage, "");
+		// jest re-call the other function
+		sendMessage(type, shortMessage, "");
 	}
-	
+
 	@Override
 	public void sendMessage(MessageType type,
 			String shortMessage,
@@ -275,7 +280,7 @@ public class Context implements DPUContext {
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
 				type, this, this));
 		// set warningMessage and errorMessage 
-		switch(type) {
+		switch (type) {
 			case WARNING:
 				this.warningMessage = true;
 				break;
@@ -285,10 +290,10 @@ public class Context implements DPUContext {
 			case TERMINATION_REQUEST:
 				this.stopExecution = true;
 				break;
-			default:			
+			default:
 		}
 	}
-	
+
 	@Override
 	public boolean isDebugging() {
 		return contextInfo.getExecution().isDebugging();
@@ -297,8 +302,8 @@ public class Context implements DPUContext {
 	@Override
 	public boolean canceled() {
 		return canceled;
-	}	
-	
+	}
+
 	@Override
 	public File getWorkingDir() {
 		File directory = new File(getGeneralWorkingDir(),
@@ -306,7 +311,7 @@ public class Context implements DPUContext {
 		directory.mkdirs();
 		return directory;
 	}
-	
+
 	@Override
 	public File getResultDir() {
 		File directory = new File(getGeneralWorkingDir(),
@@ -317,11 +322,11 @@ public class Context implements DPUContext {
 
 	@Override
 	public File getJarPath() {
-        File path = new File(moduleFacade.getDPUDirectory() + 
-        		File.separator + dpuInstance.getJarPath());
+		File path = new File(moduleFacade.getDPUDirectory()
+				+ File.separator + dpuInstance.getJarPath());
 		return path;
 	}
-	
+
 	@Override
 	public Date getLastExecutionTime() {
 		return lastSuccExec;
@@ -338,18 +343,18 @@ public class Context implements DPUContext {
 	@Override
 	public File getUserDirectory() {
 		User owner = getExecution().getOwner();
-		String userId; 
+		String userId;
 		if (owner == null) {
 			userId = "default";
 		} else {
 			// user name is unique .. we can use it
 			userId = owner.getUsername();
 		}
-		
+
 		File result = new File(getGeneralWorkingDir(), USER_DIR + File.separator
 				+ userId + File.separator + getTemplateIdentification());
 		result.mkdirs();
 		return result;
 	}
-		
+
 }
