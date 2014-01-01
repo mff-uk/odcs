@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
@@ -47,14 +47,14 @@
 			<scope>provided</scope>
 		</dependency>
 
-                <dependency>
+		<dependency> <!-- ontology -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ontology</artifactId>
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>provided</scope>                    
-                </dependency>
+		</dependency>
 
 		<dependency> <!-- commons project -->
 			<groupId>${project.groupId}</groupId>
@@ -88,7 +88,7 @@
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<!-- export just packages under cz.cuni.mff.xrg.odcs.commons.module
-                                                    by changing this we may let maven plugin to embeed dependencies -->
+						by changing this we may let maven plugin to embeed dependencies -->
 						<Export-Package>cz.cuni.mff.xrg.odcs.commons.module*;version="${odcs.version}"</Export-Package>
 						<!-- import vaadin, commons, web, RDF -->
 						<Import-Package>com.vaadin.ui;version="${vaadin.version}",cz.cuni.mff.xrg.odcs.commons.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.commons.web.*;version="${odcs.version}",cz.cuni.mff.xrg.odcs.rdf.*;version="${odcs.version}",*"</Import-Package>
