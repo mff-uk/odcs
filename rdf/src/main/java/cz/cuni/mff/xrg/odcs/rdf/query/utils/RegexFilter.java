@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class responsible for FILTER regex for given query.
+ * Class responsible adding FILTER regex for given varName and SPARQL query.
  *
  * @author Jiri Tomes
  */
@@ -15,6 +15,16 @@ public class RegexFilter implements QueryFilter {
 
 	private String pattern;
 
+	/**
+	 * Create new instance of {@link RegexFilter} based on varName and pattern.
+	 *
+	 * Example of adding regexp filter:
+	 *
+	 * FILTER regex(str(?varName),"pattern", 'i')
+	 *
+	 * @param varName String value of variable name without '?' at the start.
+	 * @param pattern String pattern used in substitution
+	 */
 	public RegexFilter(String varName, String pattern) {
 		this.varName = varName;
 		this.pattern = pattern;
@@ -78,6 +88,12 @@ public class RegexFilter implements QueryFilter {
 		return resultQuery;
 	}
 
+	/**
+	 * Construct Matcher based on finding varName in SPARQL query WHERE part.
+	 *
+	 * @param query SPARQL query when we find set varName
+	 * @return instance of {@link Matcher}.
+	 */
 	private Matcher getMatcher(String query) {
 		String regex = "where[\\s+]?\\{[\\s\\w-_\"\'(),\\*\\?:/\\.#<>]*\\?" + varName
 				.toLowerCase() + "[\\s\\w-_\"\'(),\\*\\?:/\\.#<>]*\\}";

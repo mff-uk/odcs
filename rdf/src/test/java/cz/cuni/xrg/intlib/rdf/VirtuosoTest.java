@@ -33,6 +33,9 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 
 	private static final String defaultGraph = "http://default";
 
+	/**
+	 * Basic setting before inicializing test class.
+	 */
 	@BeforeClass
 	public static void setUpLogger() {
 
@@ -42,6 +45,9 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		rdfRepo.cleanAllData();
 	}
 
+	/**
+	 * Basic setting before test execution.
+	 */
 	@Override
 	public void setUp() {
 		try {
@@ -54,16 +60,25 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Delete used repository files for testing.
+	 */
 	@Override
 	public void cleanUp() {
 		deleteDirectory(new File(outDir.toString()));
 	}
 
+	/**
+	 * Cleaning after ending test class.
+	 */
 	@AfterClass
 	public static void cleaning() {
 		rdfRepo.delete();
 	}
 
+	/**
+	 * Test adding data using transformer.
+	 */
 	@Test
 	public void addDataUsingTransformer() {
 		String query = "insert data {<http://test>  <http://test>  <http://test> .}";
@@ -74,17 +89,26 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		}
 	}
 
+	/**
+	 * Run 'BIG' pipeline - 3 transformer, 1 loader to N3 file.
+	 */
 	@Test
 	@Override
 	public void BIGDataTest() {
 		super.BIGDataTest();
 	}
 
+	/**
+	 * Extract file with size 2GB.
+	 */
 	@Test
 	public void BIGTwoGigaFileExtraction() {
 		//extractTwoGigaFile();
 	}
 
+	/**
+	 * Create copy of repository.
+	 */
 	@Test
 	public void repositoryCopy() {
 		RDFDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(
@@ -121,6 +145,9 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 				"EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
 	}
 
+	/**
+	 * Testing paralell pipeline running.
+	 */
 	@Test
 	@Override
 	public void paralellPipelineRunning() {

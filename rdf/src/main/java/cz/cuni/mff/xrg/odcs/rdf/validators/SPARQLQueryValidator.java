@@ -27,6 +27,14 @@ public class SPARQLQueryValidator implements QueryValidator {
 
 	boolean requireSPARQLType;
 
+	/**
+	 * Create new instance of {@link SPARQLQueryValidator} with given SPARQL
+	 * query you can validate.
+	 *
+	 * For SPARQL update query use {@link SPARQLUpdateValidator}.
+	 *
+	 * @param query SPARQL query you can validate
+	 */
 	public SPARQLQueryValidator(String query) {
 		this.query = query;
 		this.message = "";
@@ -35,6 +43,16 @@ public class SPARQLQueryValidator implements QueryValidator {
 
 	}
 
+	/**
+	 * Create new instance of {@link SPARQLQueryValidator} with given SPARQL
+	 * query and it´s required {@link SPARQLQueryType} you can validate.
+	 *
+	 * For SPARQL update query use {@link SPARQLUpdateValidator}.
+	 *
+	 * @param query        SPARQL query you can validate
+	 * @param requiredType Type of SPARQL query that is required to by same as
+	 *                     in given query
+	 */
 	public SPARQLQueryValidator(String query, SPARQLQueryType requiredType) {
 		this.query = query;
 		this.message = "";
@@ -46,9 +64,14 @@ public class SPARQLQueryValidator implements QueryValidator {
 		return type1.equals(type2);
 	}
 
-	/*
-	 * If query has required type returns true if type of the given query and required type are the same, false otherwise. 
-	 * If no required query type is set returns true. 
+	/**
+	 * If query has required type returns true if type of the given query and
+	 * required type are the same, false otherwise. If no required query type is
+	 * set returns true.
+	 *
+	 * @return true if query has required type and type of the given query and
+	 *         required type are the same, false otherwise. If no required query
+	 *         type is set returns true.
 	 */
 	public boolean hasSameType() {
 		if (requireSPARQLType) {
@@ -64,53 +87,6 @@ public class SPARQLQueryValidator implements QueryValidator {
 		}
 	}
 
-	/*
-	 private String getQueryForCaseSELECT_COUNT(String myQuery) {
-	 String countRegex = "count([\\s]+)?\\([\\s\\w-_\\?\\*]+\\)(([\\s]+)?as[\\s]?\\?[\\w-_\\*]+)?";
-	 Pattern pattern = Pattern.compile(countRegex);
-	 Matcher countMatcher = pattern.matcher(myQuery);
-
-	 boolean hasResult = countMatcher.find();
-
-	 String result = myQuery;
-
-	 while (hasResult) {
-
-	 String nextCount = myQuery.substring(countMatcher.start(),
-	 countMatcher.end());
-
-	 int start = nextCount.indexOf("(") + 1;
-	 int end = nextCount.lastIndexOf(")");
-
-	 boolean hasNext = (start < end) && (start != -1);
-
-	 if (hasNext) {
-	 String nextCountReplace = nextCount.substring(
-	 start, end);
-
-	 result = result.replace(nextCount, nextCountReplace);
-
-	 }
-
-	 hasResult = countMatcher.find();
-
-	 }
-
-	 return result;
-	 }
-
-	 private String getQueryForExtendedSPARQL() {
-	 QueryPart queryPart = new QueryPart(query);
-
-	 if (isSameType(queryPart.getSPARQLQueryType(), SPARQLQueryType.SELECT)) {
-
-	 String result = getQueryForCaseSELECT_COUNT(query);
-
-	 return result;
-	 } else {
-	 return query;
-	 }
-	 }*/
 	/**
 	 * Method for detection right syntax of sparql query.
 	 *

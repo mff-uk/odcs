@@ -110,8 +110,8 @@ public class SPARQLTransformer
 			}
 
 		} catch (RDFDataUnitException ex) {
-			context.sendMessage(MessageType.ERROR, ex.getMessage());
-			throw new DPUException(ex.getMessage(), ex);
+			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+					.fillInStackTrace().toString());
 		}
 
 		final long beforeTriplesCount = intputDataUnit.getTripleCount();

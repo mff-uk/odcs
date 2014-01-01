@@ -7,6 +7,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResult;
 
 import java.io.File;
 import java.util.List;
@@ -188,6 +189,27 @@ public interface RDFDataUnitHelper {
 	public File executeSelectQuery(String selectQuery,
 			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException;
+
+	/**
+	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
+	 * repository data and return {@link OrderTupleQueryResult} class as result.
+	 *
+	 * This ordered select query don´t have to containt LIMIT nad OFFSET
+	 * keywords.
+	 *
+	 * For no problem behavior check you setting "MaxSortedRows" param in your
+	 * virtuoso.ini file before using. For more info
+	 *
+	 * @see OrderTupleQueryResult class description.
+	 *
+	 * @param orderSelectQuery String representation of SPARQL select query.
+	 * @return {@link OrderTupleQueryResult} representation of ordered select
+	 *         query.
+	 * @throws InvalidQueryException when query is not valid or containst LIMIT
+	 *                               or OFFSET keyword.
+	 */
+	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
+			String orderSelectQuery) throws InvalidQueryException;
 
 	/**
 	 * Make select query over repository data and return MyTupleQueryResult

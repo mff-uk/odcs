@@ -16,6 +16,12 @@ public class QueryFilterManager {
 
 	private String query;
 
+	/**
+	 * Create new instance of {@link QueryFilterManager} based on given SPARQL
+	 * query.
+	 *
+	 * @param query String value of SPARQL query.
+	 */
 	public QueryFilterManager(String query) {
 		this.query = query;
 	}
@@ -23,7 +29,7 @@ public class QueryFilterManager {
 	/**
 	 * Add next filter to the filters collection if there are not yet.
 	 *
-	 * @param filter instance of filter we can add for applying.
+	 * @param filter instance of filter we can add for applying on query.
 	 */
 	public void addFilter(QueryFilter filter) {
 		if (!filters.contains(filter)) {
@@ -70,6 +76,7 @@ public class QueryFilterManager {
 	}
 
 	/**
+	 * Returns count of used filters.
 	 *
 	 * @return count of used filters.
 	 */
@@ -78,6 +85,7 @@ public class QueryFilterManager {
 	}
 
 	/**
+	 * Returns collection of used filters.
 	 *
 	 * @return collection of used filters.
 	 */
@@ -86,6 +94,7 @@ public class QueryFilterManager {
 	}
 
 	/**
+	 * Returns SPARQL query without using filters.
 	 *
 	 * @return query without using filters.
 	 */
@@ -94,6 +103,8 @@ public class QueryFilterManager {
 	}
 
 	/**
+	 * Returns string value of query as applying of all given set filters to
+	 * original query.
 	 *
 	 * @return query as applying of all given set filters.
 	 */
