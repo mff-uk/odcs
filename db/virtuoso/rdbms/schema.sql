@@ -36,7 +36,7 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
   "id" INTEGER IDENTITY,
   "name" VARCHAR(1024),
   "use_dpu_description" SMALLINT,
-  "description" LONG NVARCHAR,
+  "description" LONG VARCHAR,
   "tool_tip" VARCHAR (512),
   "configuration" LONG NVARCHAR,
   "config_valid" SMALLINT,
@@ -52,7 +52,7 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
   "id" INTEGER IDENTITY,
   "name" VARCHAR(1024),
   "use_dpu_description" SMALLINT,
-  "description" LONG NVARCHAR,  
+  "description" LONG VARCHAR,  
   "configuration" LONG NVARCHAR,
   "parent_id" INTEGER,
   "config_valid" SMALLINT,
@@ -113,7 +113,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_RECORD"
   "dpu_id" INTEGER,
   "execution_id" INTEGER,
   "short_message" VARCHAR(128),
-  "full_message" LONG NVARCHAR,
+  "full_message" LONG VARCHAR,
   PRIMARY KEY ("id")
 );
 CREATE INDEX "ix_EXEC_RECORD_r_time" ON "DB"."ODCS"."EXEC_RECORD" ("r_time");
@@ -152,7 +152,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
   "name" VARCHAR(1024),
-  "description" LONG NVARCHAR,
+  "description" LONG VARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
   "just_once" SMALLINT,
@@ -184,7 +184,7 @@ CREATE TABLE "DB"."ODCS"."PPL_MODEL"
 (
   "id" INTEGER IDENTITY,
   "name" VARCHAR(1024),
-  "description" LONG NVARCHAR,
+  "description" LONG VARCHAR,
   "user_id" INTEGER,
   "visibility" SMALLINT,
   "last_change" DATETIME,
@@ -599,10 +599,10 @@ CREATE TABLE "DB"."ODCS"."LOGGING"
   "logLevel" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
   "logger" VARCHAR(254) NOT NULL,
-  "message" LONG NVARCHAR,
+  "message" LONG VARCHAR,
   "dpu" INTEGER,
   "execution" INTEGER,
-  "stack_trace" LONG NVARCHAR,
+  "stack_trace" LONG VARCHAR,
   PRIMARY KEY (id)
 );
 
