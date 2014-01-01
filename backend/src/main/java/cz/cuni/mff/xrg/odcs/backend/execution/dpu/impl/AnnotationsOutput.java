@@ -150,6 +150,8 @@ public class AnnotationsOutput implements PreExecutor {
 		// let's create dataUnit
 		ManagableDataUnit dataUnit;
 		try {
+			// if the data unit with such name and type already
+			// exist then is returned and reused
 			dataUnit = context.addOutputDataUnit(type, annotation.name());
 		} catch (DataUnitCreateException e) {
 			// create message

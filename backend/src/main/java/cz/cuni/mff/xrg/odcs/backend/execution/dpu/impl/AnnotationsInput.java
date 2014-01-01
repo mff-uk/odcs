@@ -45,12 +45,6 @@ public class AnnotationsInput implements PreExecutor {
 			.getLogger(AnnotationsInput.class);
 	
 	/**
-	 * DataUnit factory used to create new {@link DataUnit}s.
-	 */
-	@Autowired
-	private DataUnitFactory dataUnitFactory;
-
-	/**
 	 * Event publisher used to publish error event.
 	 */
 	@Autowired

@@ -259,7 +259,8 @@ final class DataUnitManager {
 	 * Request creating a new DataUnit of given type. If the requested
 	 * {@link DataUnit} can't be created from any reason the 
 	 * {@link DataUnitCreateException} is thrown.
-	 * The DataUnit's name can be further changed.
+	 * The DataUnit's name can be further changed. If the {@link DataUnit}
+	 * witch given name and type alredy exist then is returned.
 	 * 
 	 * @param type Type of DataUnit.
 	 * @param name DataUnit's name.
@@ -268,22 +269,33 @@ final class DataUnitManager {
 	 */	
 	public ManagableDataUnit addDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
-		// check for type changes only for outputs
+		// check for type changes only for outputs, the type that should be 
+		// for real use is stored in realType
+		DataUnitType realType = type;
 		if (!isInput) {
-			type = checkType(type);
+			realType = checkType(type);
+		}
+		// check if we do not already have such DataUnit
+		for (ManagableDataUnit du : dataUnits) {
+			if ( (du.getType() == realType || du.getType() == type) && 
+					du.getDataUnitName().compareTo(name) == 0) {
+				// the DPU already exist .. 
+				LOG.trace("DPU name: {} type: {} already exist", name, realType.toString());
+				return du;
+			}
 		}
 		// gather information for new DataUnit
 		Integer index;
 		if (isInput) {
-			index = context.createInput(dpuInstance, name, type);
+			index = context.createInput(dpuInstance, name, realType);
 		} else {
-			index = context.createOutput(dpuInstance, name, type);
+			index = context.createOutput(dpuInstance, name, realType);
 		}
 		String id = context.generateDataUnitId(dpuInstance, index);
 		File directory = new File(workingDir, context.getDataUnitTmpPath(
 				dpuInstance, index));
 		// create instance
-		ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
+		ManagableDataUnit dataUnit = dataUnitFactory.create(realType, id, name, directory);
 		// add to storage
 		dataUnits.add(dataUnit);
 		indexes.put(dataUnit, index);
