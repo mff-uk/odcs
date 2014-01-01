@@ -79,6 +79,9 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 			logger.info(
 					"Virtuoso repository with data graph <{}> successfully initialized.",
 					defaultGraph);
+			logger.info("Virtuoso repository contains {} TRIPLES",
+					getTripleCount());
+
 
 		} catch (RepositoryException ex) {
 			logger.warn("Your Virtuoso might be offline.", ex);
