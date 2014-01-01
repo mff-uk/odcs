@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -124,7 +123,19 @@ public class DPUModuleManipulator {
 			}
 			moduleFacade.unLoad(newTemplate);
 			throw new DPUCreateException(
-					"Failed to load DPU bacuse of exception:" + e.getMessage());
+					"Failed to load DPU bacause of exception:" + e.getMessage());
+		} catch (Throwable t) {
+			LOG.error("Failed to load new DPU bundle for unexpected exception.", t);
+			// release
+			newDPUFile.delete();
+			try {
+				FileUtils.deleteDirectory(newDPUDir);
+			} catch (IOException ex) {
+				LOG.error("Failed to delete directory after DPU.", ex);
+			}
+			moduleFacade.unLoad(newTemplate);
+			throw new DPUCreateException(
+					"Failed to load DPU bacause of !unexpected! exception:" + t.getMessage());			
 		}
 
 		final String jarDescription = dpuExplorer.getJarDescription(newTemplate);
@@ -158,8 +169,8 @@ public class DPUModuleManipulator {
 				moduleFacade.unLoad(newTemplate);
 				//
 				throw new DPUCreateException("Failed to obtain DPU's default configuration.");
-			}			
-		}		
+			}
+		}
 		
 		// set other DPUs variables
 		newTemplate.setType(dpuType);
@@ -183,6 +194,16 @@ public class DPUModuleManipulator {
 				}
 				moduleFacade.unLoad(newTemplate);
 				throw new DPUCreateException(e.getMessage());
+			} catch (Throwable t) {
+				// release
+				newDPUFile.delete();
+				try {
+					FileUtils.deleteDirectory(newDPUDir);
+				} catch (IOException ex) {
+					LOG.error("Failed to delete directory after DPU.", ex);
+				}
+				moduleFacade.unLoad(newTemplate);
+				throw new DPUCreateException(t.getMessage());				
 			}
 		}
 
@@ -297,6 +318,16 @@ public class DPUModuleManipulator {
 			throw new DPUReplaceException(
 					"Can't load instance from new bundle. Exception: "
 							+ e.getMessage());
+		} catch (Throwable e) {
+			LOG.warn("Unexpected exception! Failed to load bunle during replace.", e);
+			// recover
+			recoverFromBackUp(originalDpuFile);
+			// finish update and unload remove DPU record
+			moduleFacade.endUpdate(dpu, true);
+			// the old bundle will be loaded with first user request
+			throw new DPUReplaceException(
+					"Can't load instance from new bundle. !Unexpected! exception: "
+							+ e.getMessage());			
 		}
 
 		// if we are here we have backUp bundle which has been uninstalled
@@ -341,6 +372,13 @@ public class DPUModuleManipulator {
 				// finish update and unload remove DPU record
 				moduleFacade.endUpdate(dpu, true);
 				throw new DPUReplaceException(e.getMessage());
+			} catch (Throwable e) {
+				LOG.error("Unexpected exception occure during DPu validations.", e);
+				// recover
+				recoverFromBackUp(originalDpuFile);
+				// finish update and unload remove DPU record
+				moduleFacade.endUpdate(dpu, true);
+				throw new DPUReplaceException(e.getMessage());				
 			}
 		}
 		dpuFacade.save(dpu);

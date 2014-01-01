@@ -83,7 +83,6 @@ public class ConfigWrap<C extends DPUConfigObject> {
 				.createObjectInputStream(byteIn)) {
 			Object obj = objIn.readObject();
 			config = (C) obj;
-			config.onDeserialize();
 		} catch (IOException e) {
 			throw new ConfigException("Can't deserialize configuration.", e);
 		} catch (ClassNotFoundException e) {
@@ -91,6 +90,17 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		} catch (Exception e) {
 			throw new ConfigException(e);
 		}
+		
+		// the config does not have to implement this, so be carefull
+		try {		
+			config.onDeserialize();
+		} catch (AbstractMethodError e) {
+			// the method is missing, well ignore this, just log
+			LOG.warn("The DPU does not implement abstract method onSerialize() "
+					+ "it probably does not inherit from base class. "
+					+ "The call was ignored." , e);
+		}		
+		
 		return config;
 	}
 
@@ -106,19 +116,28 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		if (config == null) {
 			return null;
 		}
+		// the config does not have to implement this, so be carefull
+		try {		
+			config.onSerialize();
+		} catch (AbstractMethodError e) {
+			// the method is missing, well ignore this, just log
+			LOG.warn("The DPU does not implement abstract method onSerialize() "
+					+ "it probably does not inherit from base class. "
+					+ "The call was ignored." , e);
+		}
+		
 		byte[] result = null;
 		// serialise object into byte[]
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {
 			// use XStream for serialisation
 			try (ObjectOutputStream objOut = xstreamUTF.createObjectOutputStream(
 					byteOut)) {
-				config.onSerialize();
 				objOut.writeObject(config);
 			}
 			result = byteOut.toByteArray();
 		} catch (IOException e) {
 			throw new ConfigException("Can't serialize configuration.", e);
-		}
+		} 
 		LOG.trace("Configuration {} serialized as {}", config.getClass().getName(), result);
 		return result;
 	}
