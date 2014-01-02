@@ -14,6 +14,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -657,10 +658,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 		// Description of JAR of DPU Template.
 		dpuSettingsLayout.addComponent(new Label("Description of JAR:"), 0, 4);
-		TextArea jDescription = new TextArea(selectedDpuWrap.getDPUTemplateRecord().getJarDescription());
+		RichTextArea jDescription = new RichTextArea();
+		jDescription.setValue(selectedDpuWrap.getDPUTemplateRecord().getJarDescription());
 		jDescription.setReadOnly(true);
 		jDescription.setWidth("100%");
-		jDescription.setHeight("100%");
+		
 		dpuSettingsLayout.addComponent(jDescription, 1, 4);
 
 		verticalLayoutData.addComponent(dpuSettingsLayout);
