@@ -238,6 +238,11 @@ class PipelineFacadeImpl implements PipelineFacade {
 		}
 		
 		User user = authCtx.getUser();
+		if (user == null) {
+			// user logged out in the meantime -> ignore
+			return;
+		}
+		
 		OpenEvent event = openEventDao.getOpenEvent(pipeline, user);
 		
 		if (event == null) {
