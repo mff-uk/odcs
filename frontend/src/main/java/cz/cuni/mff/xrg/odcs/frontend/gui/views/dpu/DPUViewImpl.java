@@ -582,7 +582,15 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		jarPathLayout.setSpacing(true);
 		jarPathLayout.setHeight("100%");
 		dpuSettingsLayout.addComponent(new Label("JAR path:"), 0, 3);
-		jarPath = new Label(selectedDpuWrap.getDPUTemplateRecord().getJarPath());
+		
+		jarPath = new Label();
+		String jarPathText = selectedDpuWrap.getDPUTemplateRecord().getJarPath(); 
+		if(jarPathText.length() > 64) {
+			jarPath.setValue("..." + jarPathText.substring(jarPathText.length() - 61));
+		} else {
+			jarPath.setValue(jarPathText);
+		}
+		jarPath.setDescription(jarPathText);
 
 		//reload JAR file button
 		fileUploadReceiver = new FileUploadReceiver();
@@ -633,7 +641,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				}
 			}
 		}));
-
 
 		reloadFile.addFailedListener(new Upload.FailedListener() {
 			private static final long serialVersionUID = 1L;
@@ -710,7 +717,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			return true;
 		} else if (!groupVisibility.getValue().equals(selectedDpu.getShareType())) {
 			return true;
-		} else if (!jarPath.getValue().equals(selectedDpu.getJarPath())) {
+		} else if (!jarPath.getDescription().equals(selectedDpu.getJarPath())) {
 			return true;
 		} else if (configChanged) {
 			return true;
@@ -718,7 +725,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			return false;
 		}
 	}
-
 	/**
 	 * Store DPU Template record to DB
 	 */
