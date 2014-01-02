@@ -48,9 +48,10 @@ public class ParametersHandler {
 			//TODO: Invalid parameter - ignore?
 			return;
 		}
-		String parameter = String.format("%s=", name);
-		if (uriFragment.contains(parameter)) {
-			int start = uriFragment.indexOf(parameter);
+		String parameter = String.format("/%s=", name);
+		String parameter2 = String.format("&%s=", name);
+		if (uriFragment.contains(parameter) || uriFragment.contains(parameter2)) {
+			int start = Math.max(uriFragment.indexOf(parameter), uriFragment.indexOf(parameter2)) + 1;
 			int end = uriFragment.indexOf('&', start);
 			if (end < 0) {
 				end = uriFragment.length();
@@ -93,9 +94,10 @@ public class ParametersHandler {
 	}
 
 	public void removeParameter(String name) {
-		String parameter = String.format("%s=", name);
-		if (uriFragment.contains(parameter)) {
-			int start = uriFragment.indexOf(parameter);
+		String parameter = String.format("/%s=", name);
+		String parameter2 = String.format("&%s=", name);
+		if (uriFragment.contains(parameter) || uriFragment.contains(parameter2)) {
+			int start = Math.max(uriFragment.indexOf(parameter), uriFragment.indexOf(parameter2)) + 1;
 			int end = uriFragment.indexOf('&', start);
 			boolean isLast = false;
 			if (end < 0) {
