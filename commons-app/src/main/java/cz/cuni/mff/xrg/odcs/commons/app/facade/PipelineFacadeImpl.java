@@ -229,7 +229,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 	 */
 	@Transactional
 	@Override
-	public void createOpenEvent(Pipeline pipeline) throws SQLException {
+	public void createOpenEvent(Pipeline pipeline) {
 		
 		if (pipeline.getId() == null) {
 			// pipeline has not been persisted yet

@@ -106,9 +106,8 @@ public interface PipelineFacade extends Facade {
 	 * authentication context (currently logged in user).
 	 * 
 	 * @param pipeline which is open
-	 * @throws java.sql.SQLException
 	 */
-	void createOpenEvent(Pipeline pipeline) throws SQLException;
+	void createOpenEvent(Pipeline pipeline);
 	
 	/**
 	 * Lists all open events representing a list of pipeline that are currently

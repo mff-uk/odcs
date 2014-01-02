@@ -160,13 +160,7 @@ public class PipelineEdit extends ViewComponent {
 			@Override
 			public void refresh(Refresher source) {
 				if (pipeline != null) {
-					try {
-						pipelineFacade.createOpenEvent(pipeline);
-					} catch (SQLException ex) {
-						// ignore DB errors
-						// TODO remove this try-catch block once VirtuosoSequenceSanitizerAspect works
-						LOG.error("Could not create pipeline open-event because of DB error.", ex);
-					}
+					pipelineFacade.createOpenEvent(pipeline);
 					List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
 					if (!pipelineFacade.isUpToDate(pipeline)) {
 						editConflicts.setValue("Another user made changes to the version you are editing, please refresh the pipeline detail!");
